@@ -17,9 +17,9 @@ var RIGHT = 39;
 var UP = 38;
 var DOWN = 40;
 
-var tilesize = 2;
-var gridw = 257;
-var gridh = 257;
+var TILESIZE = 2;
+var GRID_WIDTH = 257;
+var GRID_HEIGHT = 257;
 
 var WATERLEVEL = 45,
     MIN_HEIGHT = 1,
@@ -51,7 +51,7 @@ var Grid = (function(w, h){
         height: h,
         get: function(x, y){
             if (y < 0 || y >= h || x < 0 || x >= w){
-                return {value: -1};
+                return {value: undefined};
             }
             return _grid[y][x];
         },
@@ -70,10 +70,10 @@ var Grid = (function(w, h){
             }
         }
     };
-})(gridw, gridh);
+})(GRID_WIDTH, GRID_HEIGHT);
 
-canvas.width = gridw * tilesize;
-canvas.height = gridh * tilesize;
+canvas.width = GRID_WIDTH * TILESIZE;
+canvas.height = GRID_HEIGHT * TILESIZE;
 
 
 var Rand = {
@@ -95,7 +95,7 @@ var Rand = {
 var Terrain = (function(){
     return {
         average: function(values) {
-            var valid = values.filter(function(val) { return val !== -1; });
+            var valid = values.filter(function(val) { return Boolean(val); });
             var total = valid.reduce(function(sum, val) { return sum + val; }, 0);
             return Math.round(total / valid.length);
         },
@@ -122,13 +122,13 @@ var Terrain = (function(){
                 var half = size / 2,
                     scale = ROUGHNESS * size;
 
-                for (var y = half; y < gridw-1; y += size) {
-                    for (var x = half; x < gridw-1; x += size) {
+                for (var y = half; y < GRID_WIDTH-1; y += size) {
+                    for (var x = half; x < GRID_WIDTH-1; x += size) {
                         this.square(grid, x, y, half, Rand.choice(-scale, scale));
                     }
                 }
-                for (var y = 0; y <= gridw-1; y += half) {
-                    for (var x = (y + half) % size; x <= gridw-1; x += size) {
+                for (var y = 0; y <= GRID_WIDTH-1; y += half) {
+                    for (var x = (y + half) % size; x <= GRID_WIDTH-1; x += size) {
                         this.diamond(grid, x, y, half, Rand.choice(-scale, scale));
                     }
                 }
@@ -136,11 +136,11 @@ var Terrain = (function(){
         },
         generate: function(grid){
             grid.set(0, 0, MAX_HEIGHT);
-            grid.set(gridw-1, 0, MAX_HEIGHT);
-            grid.set(0, gridh-1, MAX_HEIGHT);
-            grid.set(gridw-1, gridh-1, MAX_HEIGHT);
+            grid.set(GRID_WIDTH-1, 0, MAX_HEIGHT);
+            grid.set(0, GRID_HEIGHT-1, MAX_HEIGHT);
+            grid.set(GRID_WIDTH-1, GRID_HEIGHT-1, MAX_HEIGHT);
 
-            this.diamondSquare(grid, gridw - 1);
+            this.diamondSquare(grid, GRID_WIDTH - 1);
         },
     };
 })();
@@ -148,8 +148,8 @@ var Terrain = (function(){
 
 var draw = function(){
     //desenha o cenario
-    for(var i = 0; i < gridw; i++){
-        for(var j = 0; j < gridh; j++){
+    for(var i = 0; i < GRID_WIDTH; i++){
+        for(var j = 0; j < GRID_HEIGHT; j++){
             ctx.beginPath();
             ctx.fillStyle = "ForestGreen";
             var tile = Grid.get(i, j).value;
@@ -176,7 +176,7 @@ var draw = function(){
                 ctx.fillStyle = "#DDD";
             }
 
-            ctx.fillRect(i*tilesize, j*tilesize, tilesize, tilesize);
+            ctx.fillRect(i*TILESIZE, j*TILESIZE, TILESIZE, TILESIZE);
 
         }
     }
