@@ -16,7 +16,7 @@ var TILESIZE = 2;
 var GRID_WIDTH = 257;
 var GRID_HEIGHT = 257;
 
-var WATERLEVEL = 45,
+var WATERLEVEL = 40,
     MIN_HEIGHT = 1,
     MAX_HEIGHT = 100,
     ROUGHNESS = 1;
@@ -57,6 +57,7 @@ var grid = (function(w, h){
     };
 })(GRID_WIDTH, GRID_HEIGHT);
 
+//var grid = Grid.new(GRID_WIDTH, GRID_HEIGHT, 0);
 
 var Terrain = (function(){
     return {
@@ -65,7 +66,6 @@ var Terrain = (function(){
             var total = valid.reduce(function(sum, val) {
                 return sum + val;
             }, 0);
-
             return Math.round(total / valid.length);
         },
         diamond: function(grid, point, size, offset){
@@ -77,6 +77,8 @@ var Terrain = (function(){
                 grid.get(Point.new(x, y + size)),      // bottom
                 grid.get(Point.new(x - size, y))       // left
             ]);
+            if (value + offset > MAX_HEIGHT){log(value + offset);}
+
             grid.set(point, value + offset);
         },
         square: function(grid, point, size, offset){
@@ -88,6 +90,7 @@ var Terrain = (function(){
                 grid.get(Point.new(x + size, y + size)),   // lower right
                 grid.get(Point.new(x - size, y + size))    // lower left
             ]);
+            if (value + offset > MAX_HEIGHT){log(value + offset);}
             grid.set(point, value + offset);
         },
         diamondSquare: function(grid){
@@ -143,15 +146,26 @@ var draw = function(grid){
                 ctx.fillStyle = "#E1D595";  //beach
             }
 
+            if (value > WATERLEVEL+12){
+                ctx.fillStyle = "darkseagreen";
+            }
+
             if (value > WATERLEVEL+15){
                 ctx.fillStyle = "darkgreen";
             }
 
-            if (value >= MAX_HEIGHT-10){
+            if (value >= MAX_HEIGHT-15){
+                ctx.fillStyle = "green";
+            }
+
+            if (value == MAX_HEIGHT-2){
                 ctx.fillStyle = "gray";
             }
-            if (value >= MAX_HEIGHT-5){
+            if (value == MAX_HEIGHT-1){
                 ctx.fillStyle = "#DDD";
+            }
+            if (value == MAX_HEIGHT){
+                ctx.fillStyle = "#FFF";
             }
 
             ctx.fillRect(i*TILESIZE, j*TILESIZE, TILESIZE, TILESIZE);
