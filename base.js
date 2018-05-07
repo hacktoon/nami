@@ -1,5 +1,49 @@
 var Log = console.log.bind(console);
 
+var clamp = function(value, minValue, maxValue) {
+    if (value > maxValue){ return maxValue; }
+    if (value < minValue){ return minValue; }
+    return value;
+};
+
+var Range = (function() {
+    var _Range = function(){
+        this.list = [];
+        this.contains = function contains(number) {
+            return this.start <= number && number <= this.end;
+        };
+
+        this.overlaps = function contains(range) {
+            return this.end >= range.start || this.start <= range.end;
+        };
+
+        this.map = function map(callback) {
+            for(var x = this.start; x <= this.end; x += this.step) {
+                callback(x);
+            }
+        };
+    };
+
+    return {
+        _class: _Range,
+        new: function(start, end, step){
+            var range = new _Range();
+            range.step = step || 1;
+            if (end) {
+                range.start = start;
+                range.end = end;
+            } else {
+                range.start = 0;
+                range.end = start;
+            }
+            for(var i = range.start; i <= range.end; i += range.step) {
+                range.list.push(i);
+            }
+            return range;
+        }
+    };
+})();
+
 var Random = {
     _int: function(num){
         return parseInt(Math.random() * num, 10);
@@ -65,6 +109,7 @@ var Point = (function(){
 
 
 var GridNeighbourhood = (function(){
+    // four direct adjacents
     var _vonNeumann = [
         Point.new(0, 1),
         Point.new(0, -1),
@@ -72,6 +117,7 @@ var GridNeighbourhood = (function(){
         Point.new(-1, 0),
     ];
 
+    // all eight adjacents
     var _moore = _vonNeumann.concat([
         Point.new(1, 1),
         Point.new(1, -1),
@@ -127,10 +173,10 @@ var Grid = (function(){
                 }
             }
         },
-        this.map = function(_function){
+        this.map = function(callback){
             for(var y = 0; y < this.height; y++){
                 for(var x = 0; x < this.width; x++){
-                    _function(this.get(Point.new(x, y)), Point.new(x, y));
+                    callback(this.get(Point.new(x, y)), Point.new(x, y));
                 }
             }
         }
@@ -155,9 +201,3 @@ var Grid = (function(){
         }
     };
 })();
-
-// print: function(){
-//     for(var i = 0; i < h; i++){
-//         log(_grid[i].join(','));
-//     }
-// }
