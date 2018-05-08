@@ -26,17 +26,24 @@ var Range = (function() {
 
     return {
         _class: _Range,
+
         new: function(start, end, step){
-            var range = new _Range();
-            range.step = step || 1;
-            if (end) {
-                range.start = start;
-                range.end = end;
-            } else {
-                range.start = 0;
-                range.end = start;
+            var range = new _Range(),
+                step = step || 1;
+
+            if (end === undefined) {
+                start = 0;
+                end = start;
             }
-            for(var i = range.start; i <= range.end; i += range.step) {
+
+            if (end > start){
+                for(var i = start; i <= end; i += step) {
+                    range.list.push(i);
+                }
+                return range;
+            }
+
+            for(var i = start; i >= end; i += step) {
                 range.list.push(i);
             }
             return range;
