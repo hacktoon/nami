@@ -12,10 +12,23 @@ var WATERLEVEL = 35,
     ROUGHNESS = 1.8,
     BORDER_OFFSET = 5;
 
-var stats = {
+var world = {
     waterTiles: 0,
-    landTiles: 0
+    landTiles: 0,
+
+    updateData: function(height) {
+        if (height <= WATERLEVEL){
+            this.waterTiles += 1;
+        } else {
+            this.landTiles += 1;
+        }
+    },
+
+    toString: function() {
+        return "Land: " + this.landTiles + ", Water: " + this.waterTiles;
+    }
 };
+
 
 var grid = Grid.new(GRID_WIDTH + 1, GRID_HEIGHT + 1, 0);
 
@@ -46,14 +59,12 @@ var Terrain = (function(){
                     grid.get(Point.new(x, y + size)),      // bottom
                     grid.get(Point.new(x - size, y))       // left
                 ]);
+
             if (insideLandArea(grid, point)){
                 height = clamp(average + offset, MIN_HEIGHT, MAX_HEIGHT);
             }
-            if (height <= WATERLEVEL){
-                stats.waterTiles += 1;
-            } else {
-                stats.landTiles += 1;
-            }
+
+            world.updateData(height);
             grid.set(point, height);
         },
         square: function(grid, point, size, offset){
@@ -66,14 +77,12 @@ var Terrain = (function(){
                     grid.get(Point.new(x + size, y + size)),   // lower right
                     grid.get(Point.new(x - size, y + size))    // lower left
                 ]);
+
             if (insideLandArea(grid, point)){
                 height = clamp(average + offset, MIN_HEIGHT, MAX_HEIGHT);
             }
-            if (height <= WATERLEVEL){
-                stats.waterTiles += 1;
-            } else {
-                stats.landTiles += 1;
-            }
+
+            world.updateData(height);
             grid.set(point, height);
         },
         diamondSquare: function(grid){
@@ -105,7 +114,6 @@ var Terrain = (function(){
             grid.set(Point.new(grid.width-1, grid.height-1), randInt());
 
             this.diamondSquare(grid);
-            infoPanel.innerHTML = "Land: " + stats.landTiles + ", Water: " + stats.waterTiles;
         },
     };
 })();
@@ -162,3 +170,4 @@ canvas.height = grid.height * TILESIZE;
 Terrain.generate(grid);
 
 draw(grid);
+infoPanel.innerHTML = world.toString();
