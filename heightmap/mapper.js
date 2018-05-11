@@ -6,33 +6,54 @@ var TILESIZE = 2,
     GRID_WIDTH = 256,
     GRID_HEIGHT = 256;
 
-var WATERLEVEL = 35,
+var WATERLEVEL = 30,
     MIN_HEIGHT = 1,
     MAX_HEIGHT = 100,
-    ROUGHNESS = 1.8,
-    BORDER_OFFSET = 5;
+    ROUGHNESS = 1.5,
+    BORDER_OFFSET = 20;
+
+var grid = Grid.new(GRID_WIDTH + 1, GRID_HEIGHT + 1, 0);
 
 var world = {
     waterTiles: 0,
     landTiles: 0,
+    edgeTiles: 0,
 
-    updateData: function(height) {
-        if (height <= WATERLEVEL){
-            this.waterTiles += 1;
-        } else {
+    isLand: function(grid, point){
+        return grid.get(point) > WATERLEVEL;
+    },
+
+    isEdge: function(grid, point){
+        var neighbours = GridNeighbourhood.moore(grid, point),
+            waterTiles = neighbours.filter(function(point) {
+                return grid.get(point) < WATERLEVEL;
+            });
+        return this.isLand(grid, point) && waterTiles.length > 0;
+    },
+
+    updateData: function(point, value) {
+        if (this.isLand(grid, point)){
             this.landTiles += 1;
+        } else {
+            this.waterTiles += 1;
         }
     },
 
     toString: function() {
-        return "Land: " + this.landTiles + ", Water: " + this.waterTiles;
+        var percent = function(value) {
+                var percentage = (value * 100) / (GRID_WIDTH * GRID_HEIGHT);
+                return Math.round(percentage) + '%';
+            };
+
+        return [
+            "Land: " + this.landTiles + " = " + percent(this.landTiles),
+            "Water: " + this.waterTiles + " = " + percent(this.waterTiles),
+            "Edges: " + this.edgeTiles
+        ].join('<br/>');
     }
 };
 
-
-var grid = Grid.new(GRID_WIDTH + 1, GRID_HEIGHT + 1, 0);
-
-var Terrain = (function(){
+var Fractal = (function(){
     var insideLandArea = function(grid, point) {
         var x = point.x,
             y = point.y,
@@ -41,49 +62,53 @@ var Terrain = (function(){
         return horz && vert;
     };
 
-    return {
-        average: function(values) {
-            var valid = values.filter(function(val) { return Boolean(val); });
-            var total = valid.reduce(function(sum, val) {
-                return sum + val;
+    var averagePoints = function(points) {
+        var valid = points.filter(function(val) { return Boolean(val); }),
+            total = valid.reduce(function(sum, point) {
+                return sum + grid.get(point);
             }, 0);
-            return Math.round(total / valid.length);
+        return Math.round(total / valid.length);
+    };
+
+    return {
+        setValue: function(value) {
+            return clamp(value, MIN_HEIGHT, MAX_HEIGHT)
         },
         diamond: function(grid, point, size, offset){
             var x = point.x,
                 y = point.y,
                 height = MIN_HEIGHT,
-                average = this.average([
-                    grid.get(Point.new(x, y - size)),      // top
-                    grid.get(Point.new(x + size, y)),      // right
-                    grid.get(Point.new(x, y + size)),      // bottom
-                    grid.get(Point.new(x - size, y))       // left
+                average = averagePoints([
+                    Point.new(x, y - size),      // top
+                    Point.new(x + size, y),      // right
+                    Point.new(x, y + size),      // bottom
+                    Point.new(x - size, y)       // left
                 ]);
 
             if (insideLandArea(grid, point)){
-                height = clamp(average + offset, MIN_HEIGHT, MAX_HEIGHT);
+                height = this.setValue(average + offset);
             }
 
-            world.updateData(height);
             grid.set(point, height);
+            world.updateData(point, height);
         },
         square: function(grid, point, size, offset){
             var x = point.x,
                 y = point.y,
                 height = MIN_HEIGHT,
-                average = this.average([
-                    grid.get(Point.new(x - size, y - size)),   // upper left
-                    grid.get(Point.new(x + size, y - size)),   // upper right
-                    grid.get(Point.new(x + size, y + size)),   // lower right
-                    grid.get(Point.new(x - size, y + size))    // lower left
+                average = averagePoints([
+                    Point.new(x - size, y - size),   // upper left
+                    Point.new(x + size, y - size),   // upper right
+                    Point.new(x + size, y + size),   // lower right
+                    Point.new(x - size, y + size)    // lower left
                 ]);
 
             if (insideLandArea(grid, point)){
-                height = clamp(average + offset, MIN_HEIGHT, MAX_HEIGHT);
+                height = this.setValue(average + offset);
             }
 
-            world.updateData(height);
             grid.set(point, height);
+            world.updateData(point, height);
         },
         diamondSquare: function(grid){
             for(var size = grid.width - 1; size/2 >= 1; size /= 2){
@@ -92,14 +117,16 @@ var Terrain = (function(){
 
                 for (var y = half; y < grid.width-1; y += size) {
                     for (var x = half; x < grid.width-1; x += size) {
-                        var variance = Random.int(-scale, scale);
-                        this.square(grid, Point.new(x, y), half, variance);
+                        var variance = Random.int(-scale, scale),
+                            point = Point.new(x, y);
+                        this.square(grid, point, half, variance);
                     }
                 }
                 for (var y = 0; y <= grid.width-1; y += half) {
                     for (var x = (y + half) % size; x <= grid.width-1; x += size) {
-                        var variance = Random.int(-scale, scale);
-                        this.diamond(grid, Point.new(x, y), half, variance);
+                        var variance = Random.int(-scale, scale),
+                            point = Point.new(x, y);
+                        this.diamond(grid, point, half, variance);
                     }
                 }
             }
@@ -119,46 +146,58 @@ var Terrain = (function(){
 })();
 
 
-var draw = function(grid){
-    //desenha o cenario
+var draw = function(ctx, grid){
+
 
     grid.map(function(value, point){
         ctx.beginPath();
-        ctx.fillStyle = "ForestGreen";
 
-        if (value < WATERLEVEL){
-            ctx.fillStyle = "darkblue";
-        }
-
-        if (value >= WATERLEVEL && value <= WATERLEVEL+10){
-            ctx.fillStyle = "blue";
-        }
-
-        if (value > WATERLEVEL+10 && value <= WATERLEVEL+12){
-            ctx.fillStyle = "#E1D595";  //beach
-        }
-
-        if (value > WATERLEVEL+12){
-            ctx.fillStyle = "darkseagreen";
-        }
-
-        if (value > WATERLEVEL+15){
-            ctx.fillStyle = "darkgreen";
-        }
-
-        if (value >= MAX_HEIGHT-12){
+        if (value > WATERLEVEL) {
             ctx.fillStyle = "green";
         }
 
-        if (value == MAX_HEIGHT-2){
-            ctx.fillStyle = "gray";
+        if (value < WATERLEVEL){
+            ctx.fillStyle = "#0056B9";
         }
-        if (value == MAX_HEIGHT-1){
+
+        if (value < WATERLEVEL - 20){
+            ctx.fillStyle = "#0052AF";
+        }
+
+        if (value >= MAX_HEIGHT - 3){
+            ctx.fillStyle = "#BBB";
+        }
+
+        if (value >= MAX_HEIGHT - 2){
             ctx.fillStyle = "#DDD";
         }
+
         if (value == MAX_HEIGHT){
             ctx.fillStyle = "#FFF";
         }
+
+        // if (value > WATERLEVEL+10 && value <= WATERLEVEL+12){
+        //     ctx.fillStyle = "#E1D595";  //beach
+        // }
+
+        // if (value > WATERLEVEL+12){
+        //     ctx.fillStyle = "darkseagreen";
+        // }
+
+        // if (value > WATERLEVEL+15){
+        //     ctx.fillStyle = "darkgreen";
+        // }
+
+        // if (value >= MAX_HEIGHT-12){
+        //     ctx.fillStyle = "green";
+        // }
+
+        // if (value == MAX_HEIGHT-2){
+        //     ctx.fillStyle = "gray";
+        // }
+        // if (value == MAX_HEIGHT-1){
+        //     ctx.fillStyle = "#DDD";
+        // }
 
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
@@ -167,7 +206,7 @@ var draw = function(grid){
 canvas.width = grid.width * TILESIZE;
 canvas.height = grid.height * TILESIZE;
 
-Terrain.generate(grid);
+Fractal.generate(grid);
 
-draw(grid);
+draw(ctx, grid);
 infoPanel.innerHTML = world.toString();
