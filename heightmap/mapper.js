@@ -65,14 +65,14 @@ var Fractal = (function(){
     var averagePoints = function(points) {
         var valid = points.filter(function(val) { return Boolean(val); }),
             total = valid.reduce(function(sum, point) {
-                return sum + grid.get(point);
+                return sum + (grid.get(point) || 0);
             }, 0);
         return Math.round(total / valid.length);
     };
 
     return {
         setValue: function(value) {
-            return clamp(value, MIN_HEIGHT, MAX_HEIGHT)
+            return clamp(value, MIN_HEIGHT, MAX_HEIGHT);
         },
         diamond: function(grid, point, size, offset){
             var x = point.x,
