@@ -58,6 +58,13 @@ var DiamondSquare = (function(){
                     return sum + (grid.get(point) || 0);
                 }, 0);
             return Math.round(total / valid.length);
+        },
+        insideOffset = function(point) {
+            var x = point.x,
+                y = point.y,
+                hor = x > BORDER_OFFSET && x < grid.width - BORDER_OFFSET,
+                ver = y > BORDER_OFFSET && y < grid.height - BORDER_OFFSET;
+            return hor && ver;
         };
 
     return {
@@ -119,16 +126,12 @@ var DiamondSquare = (function(){
             this.setPoint(point, height);
         },
         pointHeight: function(height, point) {
-            var x = point.x,
-                y = point.y,
-                middlePoint = Point.new((grid.width-1) / 2,
+            var middlePoint = Point.new((grid.width-1) / 2,
                                         (grid.height-1) / 2),
                 height = clamp(height, MIN_HEIGHT, MAX_HEIGHT),
-                distance = Point.distance(point, middlePoint),
-                insideHorz = x > BORDER_OFFSET && x < grid.width - BORDER_OFFSET,
-                insideVert = y > BORDER_OFFSET && y < grid.height - BORDER_OFFSET;
+                distance = Point.distance(point, middlePoint);
 
-            if (distance < MAX_DISTANCE || (insideHorz && insideVert)){
+            if (distance < MAX_DISTANCE || insideOffset(point)){
                 return height;
             }
             return clamp(height - distance/2, MIN_HEIGHT, MAX_HEIGHT);
