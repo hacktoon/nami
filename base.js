@@ -158,9 +158,10 @@ var GridNeighbourhood = (function(){
 
 var Grid = (function(){
     var _Grid = function(){
-        this.matrix = [],
-        this.width = 0,
-        this.height = 0,
+        this.matrix = [];
+        this.width = 0;
+        this.height = 0;
+
         this.get = function(point){
             var x = point.x,
                 y = point.y;
@@ -168,7 +169,8 @@ var Grid = (function(){
                 return undefined;
             }
             return this.matrix[y][x];
-        },
+        };
+
         this.set = function(point, value){
             var x = point.x,
                 y = point.y;
@@ -176,25 +178,48 @@ var Grid = (function(){
                 return;
             }
             this.matrix[y][x] = value;
-        },
+        };
+
         this.shuffle = function(values){
             for(var y = 0; y < this.height; y++){
                 for(var x = 0; x < this.width; x++){
                     this.set(Point.new(x, y), Random.choice(values));
                 }
             }
-        },
+        };
+
         this.map = function(callback){
             for(var y = 0; y < this.height; y++){
                 for(var x = 0; x < this.width; x++){
                     callback(this.get(Point.new(x, y)), Point.new(x, y));
                 }
             }
-        }
+        };
+
+        this.inEdge = function(point){
+            var topLeft = point.x === 0 || point.y === 0,
+                bottomRight = point.x === this.width - 1 ||
+                              point.y === this.height - 1;
+            return topLeft || bottomRight;
+        };
+
+        this.oppositeEdge = function(point){
+            var x = point.x,
+                y = point.y;
+            if (! this.inEdge(point)) {
+                throw new RangeError("Point not in edge");
+            }
+            if (point.x === 0) { x = grid.width - 1; }
+            if (point.x === grid.width - 1) { x = 0; }
+            if (point.y === 0) { y = grid.height - 1; }
+            if (point.y === grid.height - 1) { y = 0; }
+            return Point.new(x, y);
+        };
     };
 
     return {
         _class: _Grid,
+
         new: function(width, height, default_value) {
             var grid = new _Grid(),
                 default_value = default_value || 0;
@@ -202,7 +227,7 @@ var Grid = (function(){
             grid.width = width;
             grid.height = height;
 
-            for(var y = 0; y < height; y++){
+            for(var y = 0; y < height; y++) {
                 grid.matrix.push([]);
                 for(var x = 0; x < width; x++){
                     grid.matrix[y].push(default_value);
