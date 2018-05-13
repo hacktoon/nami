@@ -17,12 +17,17 @@ var grid = Grid.new(GRID_WIDTH + 1, GRID_HEIGHT + 1, UNSET);
 
 var DiamondSquare = (function(){
     var averagePoints = function(points) {
-            var valid = points.filter(function(val) { return Boolean(val); }),
-                total = valid.reduce(function(sum, point) {
-                    return sum + (grid.get(point) || 0);
-                }, 0);
-            return Math.round(total / valid.length);
-        };
+        var sum = 0, count = 0;
+
+        points.map(function(point) {
+            var value = grid.get(point);
+            if (value != undefined){
+                sum += value;
+                count++;
+            }
+        });
+        return Math.round(sum / count);
+    };
 
     return {
         setPoint: function(point, height){
