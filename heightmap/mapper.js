@@ -7,48 +7,13 @@ var UNSET = -1,
     GRID_WIDTH = 256,
     GRID_HEIGHT = 256;
 
-var WATER_LEVEL = 50,
+var WATER_LEVEL = 40,
     MIN_HEIGHT = 0,
     MAX_HEIGHT = 100,
     ROUGHNESS = 1.5;
 
 var grid = Grid.new(GRID_WIDTH + 1, GRID_HEIGHT + 1, UNSET);
 
-var world = {
-    waterTiles: 0,
-    landTiles: 0,
-    edgeTiles: 0,
-
-    isEdge: function(grid, point){
-        var neighbours = GridNeighbourhood.moore(grid, point),
-            waterTiles = neighbours.filter(function(point) {
-                return grid.get(point) < WATER_LEVEL;
-            });
-        return this.isLand(grid, point) && waterTiles.length > 0;
-    },
-
-    updateData: function(height) {
-        if (height > WATER_LEVEL){
-            this.landTiles += 1;
-        } else {
-            this.waterTiles += 1;
-        }
-    },
-
-    toString: function() {
-        var totalTiles = (grid.width * grid.height);
-        var percent = function(value) {
-                var percentage = (value * 100) / totalTiles;
-                return Math.round(percentage) + '%';
-            };
-
-        return [
-            "Land: " + this.landTiles + " = " + percent(this.landTiles),
-            "Water: " + this.waterTiles + " = " + percent(this.waterTiles),
-            "Edges: " + this.edgeTiles
-        ].join('<br/>');
-    }
-};
 
 var DiamondSquare = (function(){
     var averagePoints = function(points) {
@@ -61,21 +26,21 @@ var DiamondSquare = (function(){
 
     return {
         setPoint: function(point, height){
+            var height = clamp(height, MIN_HEIGHT, MAX_HEIGHT);
             if (grid.inEdge(point)) {
                 var oppositePoint = grid.oppositeEdge(point);
                 grid.set(oppositePoint, height);
             }
             grid.set(point, height);
-            world.updateData(height);
         },
         generate: function(grid){
             var randInt = function() {
                 return Random.int(MIN_HEIGHT, MAX_HEIGHT);
             };
-            this.setPoint(Point.new(0, 0), MIN_HEIGHT);
-            this.setPoint(Point.new(grid.width-1, 0), MIN_HEIGHT);
-            this.setPoint(Point.new(0, grid.height-1), MIN_HEIGHT);
-            this.setPoint(Point.new(grid.width-1, grid.height-1), MIN_HEIGHT);
+            this.setPoint(Point.new(0, 0), randInt());
+            this.setPoint(Point.new(grid.width-1, 0), randInt());
+            this.setPoint(Point.new(0, grid.height-1), randInt());
+            this.setPoint(Point.new(grid.width-1, grid.height-1), randInt());
 
             this.diamondSquare(grid);
         },
@@ -108,9 +73,8 @@ var DiamondSquare = (function(){
                     Point.new(x + size, y),      // right
                     Point.new(x, y + size),      // bottom
                     Point.new(x - size, y)       // left
-                ]),
-                height = this.pointHeight(average + offset, point);
-            this.setPoint(point, height);
+                ]);
+            this.setPoint(point, average + offset);
         },
         square: function(grid, point, size, offset){
             var x = point.x,
@@ -120,19 +84,9 @@ var DiamondSquare = (function(){
                     Point.new(x + size, y - size),   // upper right
                     Point.new(x + size, y + size),   // lower right
                     Point.new(x - size, y + size)    // lower left
-                ])
-                ,height = this.pointHeight(average + offset, point);
-            this.setPoint(point, height);
-        },
-        pointHeight: function(height, point) {
-            var middlePoint = Point.new((grid.width-1) / 2,
-                                        (grid.height-1) / 2),
-                height = clamp(height, MIN_HEIGHT, MAX_HEIGHT),
-                distance = Point.distance(point, middlePoint);
-
-            return height;
+                ]);
+            this.setPoint(point, average + offset);
         }
-
     };
 })();
 
@@ -175,6 +129,7 @@ var draw = function(ctx, grid){
     });
 
     var mapImage = ctx.getImageData(0, 0, mapCanvas.width, mapCanvas.height);
+
     copies.forEach(function(id, index){
         var canvas = document.getElementById(id),
             copyCtx = canvas.getContext("2d");
@@ -190,4 +145,3 @@ canvas.height = grid.height * TILESIZE;
 DiamondSquare.generate(grid);
 
 draw(mapCtx, grid);
-infoPanel.innerHTML = world.toString();
