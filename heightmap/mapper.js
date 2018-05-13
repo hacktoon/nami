@@ -1,19 +1,18 @@
-var canvas = document.getElementById("canvas")
-    infoPanel = document.getElementById("info"),
-    ctx = canvas.getContext("2d");
+var infoPanel = document.getElementById("info"),
+    mapCanvas = document.getElementById("canvas"),
+    mapCtx = mapCanvas.getContext("2d");
 
-var TILESIZE = 2,
+var UNSET = -1,
+    TILESIZE = 2,
     GRID_WIDTH = 256,
     GRID_HEIGHT = 256;
 
 var WATER_LEVEL = 50,
     MIN_HEIGHT = 0,
     MAX_HEIGHT = 100,
-    ROUGHNESS = 2;
-    BORDER_OFFSET = 10,
-    MAX_DISTANCE = GRID_WIDTH / 2;
+    ROUGHNESS = 1.5;
 
-var grid = Grid.new(GRID_WIDTH + 1, GRID_HEIGHT + 1, 0);
+var grid = Grid.new(GRID_WIDTH + 1, GRID_HEIGHT + 1, UNSET);
 
 var world = {
     waterTiles: 0,
@@ -58,21 +57,21 @@ var DiamondSquare = (function(){
                     return sum + (grid.get(point) || 0);
                 }, 0);
             return Math.round(total / valid.length);
-        },
-        insideOffset = function(point) {
-            var x = point.x,
-                y = point.y,
-                hor = x > BORDER_OFFSET && x < grid.width - BORDER_OFFSET,
-                ver = y > BORDER_OFFSET && y < grid.height - BORDER_OFFSET;
-            return hor && ver;
         };
 
     return {
         setPoint: function(point, height){
+            if (grid.inEdge(point)) {
+                var oppositePoint = grid.oppositeEdge(point);
+                grid.set(oppositePoint, height);
+            }
             grid.set(point, height);
             world.updateData(height);
         },
         generate: function(grid){
+            var randInt = function() {
+                return Random.int(MIN_HEIGHT, MAX_HEIGHT);
+            };
             this.setPoint(Point.new(0, 0), MIN_HEIGHT);
             this.setPoint(Point.new(grid.width-1, 0), MIN_HEIGHT);
             this.setPoint(Point.new(0, grid.height-1), MIN_HEIGHT);
@@ -131,10 +130,7 @@ var DiamondSquare = (function(){
                 height = clamp(height, MIN_HEIGHT, MAX_HEIGHT),
                 distance = Point.distance(point, middlePoint);
 
-            if (distance < MAX_DISTANCE || insideOffset(point)){
-                return height;
-            }
-            return clamp(height - distance/2, MIN_HEIGHT, MAX_HEIGHT);
+            return height;
         }
 
     };
@@ -142,7 +138,7 @@ var DiamondSquare = (function(){
 
 
 var draw = function(ctx, grid){
-
+    var copies = ['q1', 'q2', 'q3', 'q4'];
 
     grid.map(function(value, point){
         ctx.beginPath();
@@ -177,6 +173,15 @@ var draw = function(ctx, grid){
 
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
+
+    var mapImage = ctx.getImageData(0, 0, mapCanvas.width, mapCanvas.height);
+    copies.forEach(function(id, index){
+        var canvas = document.getElementById(id),
+            copyCtx = canvas.getContext("2d");
+        canvas.width = grid.width * TILESIZE/2;
+        canvas.height = grid.height * TILESIZE/2;
+        copyCtx.drawImage(mapCanvas, 0, 0, canvas.width, canvas.height);
+    });
 };
 
 canvas.width = grid.width * TILESIZE;
@@ -184,5 +189,5 @@ canvas.height = grid.height * TILESIZE;
 
 DiamondSquare.generate(grid);
 
-draw(ctx, grid);
+draw(mapCtx, grid);
 infoPanel.innerHTML = world.toString();

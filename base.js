@@ -1,5 +1,10 @@
 var Log = console.log.bind(console);
 
+var canvasContextById = function(id) {
+    var canvas = document.getElementById(id);
+    return canvas.getContext("2d");
+};
+
 var clamp = function(value, minValue, maxValue) {
     if (value > maxValue){ return maxValue; }
     if (value < minValue){ return minValue; }

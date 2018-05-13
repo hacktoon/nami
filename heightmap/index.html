@@ -2,10 +2,32 @@
 <html>
   <head>
       <title>Map</title>
+      <style type="text/css">
+        #seam {
+            width: 514px;
+            height: 514px;
+            float: right;
+        }
+            #seam canvas {
+                float: left;
+                background: #EEE;
+            }
+
+        #info {
+            clear: left;
+        }
+
+      </style>
   </head>
 
   <body>
     <canvas id="canvas"></canvas>
+    <div id="seam">
+        <canvas id="q1"></canvas>
+        <canvas id="q2"></canvas>
+        <canvas id="q3"></canvas>
+        <canvas id="q4"></canvas>
+    </div>
     <p id="info"></p>
     <script src="../base.js"></script>
     <script src="mapper.js"></script>
