@@ -7,7 +7,7 @@ var UNSET = -1,
     GRID_WIDTH = 256,
     GRID_HEIGHT = 256;
 
-var WATER_LEVEL = 40,
+var WATER_LEVEL = 50,
     MIN_HEIGHT = 0,
     MAX_HEIGHT = 100,
     ROUGHNESS = 1.5;
