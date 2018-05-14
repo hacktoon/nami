@@ -5,77 +5,6 @@ var canvasContextById = function(id) {
     return canvas.getContext("2d");
 };
 
-var clamp = function(value, minValue, maxValue) {
-    if (value > maxValue){ return maxValue; }
-    if (value < minValue){ return minValue; }
-    return value;
-};
-
-var Range = (function() {
-    var _Range = function(){
-        this.list = [];
-        this.contains = function contains(number) {
-            return this.start <= number && number <= this.end;
-        };
-
-        this.overlaps = function contains(range) {
-            return this.end >= range.start || this.start <= range.end;
-        };
-
-        this.map = function map(callback) {
-            for(var x = this.start; x <= this.end; x += this.step) {
-                callback(x);
-            }
-        };
-    };
-
-    return {
-        _class: _Range,
-
-        new: function(start, end, step){
-            var range = new _Range(),
-                step = step || 1;
-
-            if (end === undefined) {
-                start = 0;
-                end = start;
-            }
-
-            if (end > start){
-                for(var i = start; i <= end; i += step) {
-                    range.list.push(i);
-                }
-                return range;
-            }
-
-            for(var i = start; i >= end; i += step) {
-                range.list.push(i);
-            }
-            return range;
-        }
-    };
-})();
-
-var Random = {
-    _int: function(num){
-        return parseInt(Math.random() * num, 10);
-    },
-    int: function(min, max){
-        if (max < min){ return; }
-        var arr = [];
-        for(var i=min; i<=max; i++){
-            arr.push(i);
-        }
-        return arr[this._int(arr.length)];
-    },
-    choice: function(values){
-        var last_index = values.length-1;
-            index = this.int(0, last_index);
-        return values[index];
-    }
-};
-
-
 var Tile = (function(){
     var _Tile = function(){
         this.value = 0;
@@ -116,8 +45,8 @@ var Point = (function(){
             return Math.sqrt(sum);
         },
         random: function(max_width, max_height){
-            var x = Random.int(0, GRID_WIDTH),
-                y = Random.int(0, GRID_HEIGHT);
+            var x = _.random(0, GRID_WIDTH),
+                y = _.random(0, GRID_HEIGHT);
             return this.new(x, y);
         }
     };
@@ -188,7 +117,7 @@ var Grid = (function(){
         this.shuffle = function(values){
             for(var y = 0; y < this.height; y++){
                 for(var x = 0; x < this.width; x++){
-                    this.set(Point.new(x, y), Random.choice(values));
+                    this.set(Point.new(x, y), _.sample(values));
                 }
             }
         };

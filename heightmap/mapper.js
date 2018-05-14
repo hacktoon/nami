@@ -31,7 +31,7 @@ var DiamondSquare = (function(){
 
     return {
         setPoint: function(point, height){
-            var height = clamp(height, MIN_HEIGHT, MAX_HEIGHT);
+            var height = _.clamp(height, MIN_HEIGHT, MAX_HEIGHT);
             if (grid.inEdge(point)) {
                 var oppositePoint = grid.oppositeEdge(point);
                 grid.set(oppositePoint, height);
@@ -40,7 +40,7 @@ var DiamondSquare = (function(){
         },
         generate: function(grid){
             var randInt = function() {
-                return Random.int(MIN_HEIGHT, MAX_HEIGHT);
+                return _.random(MIN_HEIGHT, MAX_HEIGHT);
             };
             this.setPoint(Point.new(0, 0), randInt());
             this.setPoint(Point.new(grid.width-1, 0), randInt());
@@ -56,14 +56,14 @@ var DiamondSquare = (function(){
 
                 for (var y = half; y < grid.width-1; y += size) {
                     for (var x = half; x < grid.width-1; x += size) {
-                        var variance = Random.int(-scale, scale),
+                        var variance = _.random(-scale, scale),
                             point = Point.new(x, y);
                         this.square(grid, point, half, variance);
                     }
                 }
                 for (var y = 0; y <= grid.width-1; y += half) {
                     for (var x = (y + half) % size; x <= grid.width-1; x += size) {
-                        var variance = Random.int(-scale, scale),
+                        var variance = _.random(-scale, scale),
                             point = Point.new(x, y);
                         this.diamond(grid, point, half, variance);
                     }
