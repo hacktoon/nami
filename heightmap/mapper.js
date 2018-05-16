@@ -1,5 +1,7 @@
 var infoPanel = document.getElementById("info"),
     mapCanvas = document.getElementById("canvas"),
+    generateButton = document.getElementById("generate"),
+    waterlevelInput = document.getElementById("waterlevel"),
     mapCtx = mapCanvas.getContext("2d");
 
 var UNSET = -1,
@@ -7,12 +9,15 @@ var UNSET = -1,
     GRID_WIDTH = 256,
     GRID_HEIGHT = 256;
 
-var WATER_LEVEL = 50,
-    MIN_HEIGHT = 0,
+var MIN_HEIGHT = 0,
     MAX_HEIGHT = 100,
     ROUGHNESS = 1.5;
 
 var grid = Grid.new(GRID_WIDTH + 1, GRID_HEIGHT + 1, UNSET);
+
+var world = {
+    waterLevel: 50
+};
 
 
 var DiamondSquare = (function(){
@@ -102,19 +107,19 @@ var draw = function(ctx, grid){
     grid.map(function(value, point){
         ctx.beginPath();
 
-        if (value > WATER_LEVEL) {
+        if (value > world.waterLevel) {
             ctx.fillStyle = "#009000";
         }
 
-        if (value > WATER_LEVEL+20) {
+        if (value > world.waterLevel+20) {
             ctx.fillStyle = "#009c00";
         }
 
-        if (value < WATER_LEVEL){
+        if (value < world.waterLevel){
             ctx.fillStyle = "#005fca";
         }
 
-        if (value < WATER_LEVEL - 15){
+        if (value < world.waterLevel - 15){
             ctx.fillStyle = "#0052AF";
         }
 
@@ -147,6 +152,16 @@ var draw = function(ctx, grid){
 canvas.width = grid.width * TILESIZE;
 canvas.height = grid.height * TILESIZE;
 
-DiamondSquare.generate(grid);
+var generate = function() {
+    DiamondSquare.generate(grid);
+    draw(mapCtx, grid);
+};
 
-draw(mapCtx, grid);
+generateButton.addEventListener('click', generate);
+waterlevelInput.addEventListener('change', function(){
+    world.waterLevel = Number(waterlevelInput.value);
+    draw(mapCtx, grid);
+});
+
+waterlevelInput.value = world.waterLevel;
+generate();

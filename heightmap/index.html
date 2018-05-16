@@ -3,6 +3,9 @@
   <head>
       <title>Map</title>
       <style type="text/css">
+        #button-panel {
+            padding: 10px 0;
+        }
         #seam {
             width: 514px;
             height: 514px;
@@ -21,6 +24,10 @@
   </head>
 
   <body>
+    <div id="button-panel">
+        <input type="number" id="waterlevel" placeholder="water level" />
+        <button id="generate">generate</button>
+    </div>
     <canvas id="canvas"></canvas>
     <div id="seam">
         <canvas id="q1"></canvas>
