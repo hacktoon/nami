@@ -19,7 +19,7 @@ var world = {
 };
 
 
-var HeightMap = function(width, height, min_height, max_height){
+var HeightMap = function(width, height, minHeight, maxHeight){
     var grid = Grid.new(width + 1, height + 1, undefined);
 
     var diamondSquare = function(grid){
@@ -53,7 +53,7 @@ var HeightMap = function(width, height, min_height, max_height){
                 Point.new(x, y + size),      // bottom
                 Point.new(x - size, y)       // left
             ]);
-        setPoint(point, average + offset);
+        pointHeight(point, average + offset);
     };
 
     var square = function(grid, point, size, offset){
@@ -65,7 +65,7 @@ var HeightMap = function(width, height, min_height, max_height){
                 Point.new(x + size, y + size),   // lower right
                 Point.new(x - size, y + size)    // lower left
             ]);
-        setPoint(point, average + offset);
+        pointHeight(point, average + offset);
     };
 
     var averagePoints = function(points) {
@@ -81,8 +81,8 @@ var HeightMap = function(width, height, min_height, max_height){
         return Math.round(sum / count);
     };
 
-    var setPoint = function(point, height){
-        var height = _.clamp(height, min_height, max_height);
+    var pointHeight = function(point, height){
+        var height = _.clamp(height, minHeight, maxHeight);
         if (grid.inEdge(point)) {
             var oppositePoint = grid.oppositeEdge(point);
             grid.set(oppositePoint, height);
@@ -91,12 +91,13 @@ var HeightMap = function(width, height, min_height, max_height){
     };
 
     var randInt = function() {
-        return _.random(min_height, max_height);
+        return _.random(minHeight, maxHeight);
     };
-    setPoint(Point.new(0, 0), randInt());
-    setPoint(Point.new(grid.width-1, 0), randInt());
-    setPoint(Point.new(0, grid.height-1), randInt());
-    setPoint(Point.new(grid.width-1, grid.height-1), randInt());
+
+    pointHeight(Point.new(0, 0), randInt());
+    pointHeight(Point.new(grid.width-1, 0), randInt());
+    pointHeight(Point.new(0, grid.height-1), randInt());
+    pointHeight(Point.new(grid.width-1, grid.height-1), randInt());
 
     diamondSquare(grid);
 
@@ -159,7 +160,10 @@ var generateHeightMap = function() {
     world.grid = HeightMap(GRID_WIDTH, GRID_HEIGHT, MIN_HEIGHT, MAX_HEIGHT);
 };
 
-generateButton.addEventListener('click', generateHeightMap);
+generateButton.addEventListener('click', function() {
+    generateHeightMap();
+    draw(mapCtx, world.grid);
+});
 
 waterlevelInput.addEventListener('change', function(){
     world.waterLevel = Number(waterlevelInput.value);
