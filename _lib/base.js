@@ -143,10 +143,10 @@ var Grid = (function(){
             if (! this.inEdge(point)) {
                 throw new RangeError("Point not in edge");
             }
-            if (point.x === 0) { x = grid.width - 1; }
-            if (point.x === grid.width - 1) { x = 0; }
-            if (point.y === 0) { y = grid.height - 1; }
-            if (point.y === grid.height - 1) { y = 0; }
+            if (point.x === 0) { x = this.width - 1; }
+            if (point.x === this.width - 1) { x = 0; }
+            if (point.y === 0) { y = this.height - 1; }
+            if (point.y === this.height - 1) { y = 0; }
             return Point.new(x, y);
         };
     };

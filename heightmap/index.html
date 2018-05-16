@@ -6,6 +6,7 @@
         #button-panel {
             padding: 10px 0;
         }
+        #waterlevel { width: 50px; }
         #seam {
             width: 514px;
             height: 514px;
@@ -25,7 +26,9 @@
 
   <body>
     <div id="button-panel">
-        <input type="number" id="waterlevel" placeholder="water level" />
+        <label for="waterlevel">Water level
+          <input type="number" id="waterlevel"/>
+        </label>
         <button id="generate">generate</button>
     </div>
     <canvas id="canvas"></canvas>
