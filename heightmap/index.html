@@ -29,6 +29,9 @@
         <label for="waterlevel">Water level
           <input type="range" min="0" max="100" value="50" id="waterlevel" />
         </label>
+        <label for="roughness">Roughness
+          <input type="number" min="0" max="3" step="0.1" value="1" id="roughness" />
+        </label>
         <button id="generate">generate</button>
     </div>
     <canvas id="canvas"></canvas>
@@ -41,6 +44,7 @@
 
     <script src="../_lib/lodash.min.js"></script>
     <script src="../_lib/base.js"></script>
+    <script src="../_lib/heightmap.js"></script>
     <script src="mapper.js"></script>
   </body>
 </html>

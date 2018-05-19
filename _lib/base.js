@@ -23,6 +23,26 @@ var Tile = (function(){
 })();
 
 
+var Range = (function(){
+    var _Range = function(start, end, step){
+        this.start = start;
+        this.end = end;
+        this.step = step;
+
+        this.list = function() {
+            return _.range(this.start, this.end, this.step);
+        };
+    };
+
+    return {
+        _class: _Range,
+        new: function(start, end, step){
+            return new _Range(start, end, step || 1);
+        }
+    };
+})();
+
+
 var Point = (function(){
     var _Point = function(){
         this.x = 0;

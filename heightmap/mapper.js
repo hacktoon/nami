@@ -2,6 +2,7 @@ var infoPanel = document.getElementById("info"),
     mapCanvas = document.getElementById("canvas"),
     generateButton = document.getElementById("generate"),
     waterlevelInput = document.getElementById("waterlevel"),
+    roughnessInput = document.getElementById("roughness"),
     mapCtx = mapCanvas.getContext("2d");
 
 var TILESIZE = 2,
@@ -9,101 +10,14 @@ var TILESIZE = 2,
     GRID_HEIGHT = 256;
 
 var MIN_HEIGHT = 0,
-    MAX_HEIGHT = 100,
-    ROUGHNESS = 1.5;
+    MAX_HEIGHT = 100;
 
 
 var world = {
     waterLevel: 50,
+    roughness: 1.5,
     grid: undefined
 };
-
-
-var HeightMap = function(width, height, minHeight, maxHeight){
-    var grid = Grid.new(width + 1, height + 1, undefined);
-
-    var diamondSquare = function(grid){
-        for(var size = grid.width - 1; size/2 >= 1; size /= 2){
-            var half = size / 2,
-                scale = ROUGHNESS * size;
-
-            for (var y = half; y < grid.width-1; y += size) {
-                for (var x = half; x < grid.width-1; x += size) {
-                    var variance = _.random(-scale, scale),
-                        point = Point.new(x, y);
-                    square(grid, point, half, variance);
-                }
-            }
-            for (var y = 0; y <= grid.width-1; y += half) {
-                for (var x = (y + half) % size; x <= grid.width-1; x += size) {
-                    var variance = _.random(-scale, scale),
-                        point = Point.new(x, y);
-                    diamond(grid, point, half, variance);
-                }
-            }
-        }
-    };
-
-    var diamond = function(grid, point, size, offset){
-        var x = point.x,
-            y = point.y,
-            average = averagePoints([
-                Point.new(x, y - size),      // top
-                Point.new(x + size, y),      // right
-                Point.new(x, y + size),      // bottom
-                Point.new(x - size, y)       // left
-            ]);
-        pointHeight(point, average + offset);
-    };
-
-    var square = function(grid, point, size, offset){
-        var x = point.x,
-            y = point.y,
-            average = averagePoints([
-                Point.new(x - size, y - size),   // upper left
-                Point.new(x + size, y - size),   // upper right
-                Point.new(x + size, y + size),   // lower right
-                Point.new(x - size, y + size)    // lower left
-            ]);
-        pointHeight(point, average + offset);
-    };
-
-    var averagePoints = function(points) {
-        var sum = 0, count = 0;
-
-        points.map(function(point) {
-            var value = grid.get(point);
-            if (value != undefined){
-                sum += value;
-                count++;
-            }
-        });
-        return Math.round(sum / count);
-    };
-
-    var pointHeight = function(point, height){
-        var height = _.clamp(height, minHeight, maxHeight);
-        if (grid.inEdge(point)) {
-            var oppositePoint = grid.oppositeEdge(point);
-            grid.set(oppositePoint, height);
-        }
-        grid.set(point, height);
-    };
-
-    var randInt = function() {
-        return _.random(minHeight, maxHeight);
-    };
-
-    pointHeight(Point.new(0, 0), randInt());
-    pointHeight(Point.new(grid.width-1, 0), randInt());
-    pointHeight(Point.new(0, grid.height-1), randInt());
-    pointHeight(Point.new(grid.width-1, grid.height-1), randInt());
-
-    diamondSquare(grid);
-
-    return grid;
-};
-
 
 var draw = function(ctx, grid){
     var copies = ['q1', 'q2', 'q3', 'q4'];
@@ -157,10 +71,11 @@ var draw = function(ctx, grid){
 };
 
 var generateHeightMap = function() {
-    world.grid = HeightMap(GRID_WIDTH, GRID_HEIGHT, MIN_HEIGHT, MAX_HEIGHT);
+    world.grid = HeightMap(GRID_WIDTH, GRID_HEIGHT, MIN_HEIGHT, MAX_HEIGHT, world.roughness);
 };
 
 generateButton.addEventListener('click', function() {
+    world.roughness = Number(roughnessInput.value);
     generateHeightMap();
     draw(mapCtx, world.grid);
 });
@@ -171,6 +86,7 @@ waterlevelInput.addEventListener('change', function(){
 });
 
 waterlevelInput.value = world.waterLevel;
+roughnessInput.value = world.roughness;
 
 generateHeightMap();
 draw(mapCtx, world.grid);
