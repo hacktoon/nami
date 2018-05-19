@@ -14,6 +14,7 @@ var HeightMap = function(width, height, minHeight, maxHeight, roughness){
                     square(grid, point, half, variance);
                 }
             }
+
             for (var y = 0; y <= grid.width-1; y += half) {
                 for (var x = (y + half) % size; x <= grid.width-1; x += size) {
                     var variance = _.random(-scale, scale),
@@ -85,12 +86,14 @@ var HeightMap = function(width, height, minHeight, maxHeight, roughness){
 };
 
 
-var smoothHeightMap = function(grid) {
-    grid.map(function(value, point) {
-        var neighbours = GridNeighbourhood.vonNeumann(grid, point);
-        var sum = _.sumBy(neighbours, function(p) {
-            return grid.get(p);
+var smoothHeightMap = function(originalGrid) {
+    var grid = _.cloneDeep(originalGrid);
+    originalGrid.map(function(value, point) {
+        var neighbours = GridNeighbourhood.vonNeumann(originalGrid, point);
+        var sum = _.sumBy(neighbours, function(pt) {
+            return originalGrid.get(pt);
         })
-        grid.set(point, sum/neighbours.length);
+        grid.set(point, Math.round(sum / neighbours.length));
     });
+    return grid;
 };

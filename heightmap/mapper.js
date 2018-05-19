@@ -82,7 +82,7 @@ generateButton.addEventListener('click', function() {
 });
 
 smoothButton.addEventListener('click', function() {
-    smoothHeightMap(world.grid);
+    world.grid = smoothHeightMap(world.grid);
     draw(mapCtx, world.grid);
 });
 
