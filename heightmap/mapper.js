@@ -1,9 +1,10 @@
 var infoPanel = document.getElementById("info"),
     mapCanvas = document.getElementById("canvas"),
+    mapCtx = mapCanvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
     waterlevelInput = document.getElementById("waterlevel"),
     roughnessInput = document.getElementById("roughness"),
-    mapCtx = mapCanvas.getContext("2d");
+    smoothButton = document.getElementById("smooth");
 
 var TILESIZE = 2,
     GRID_WIDTH = 256,
@@ -28,31 +29,31 @@ var draw = function(ctx, grid){
     grid.map(function(value, point){
         ctx.beginPath();
 
-        if (value > world.waterLevel) {
-            ctx.fillStyle = "#009000";
-        }
-
-        if (value > world.waterLevel+20) {
-            ctx.fillStyle = "#009c00";
-        }
-
         if (value < world.waterLevel){
             ctx.fillStyle = "#005fca";
         }
 
-        if (value < world.waterLevel - 15){
+        if (value < world.waterLevel - 20){
             ctx.fillStyle = "#0052AF";
         }
 
-        if (value >= MAX_HEIGHT - 3){
+        if (value > world.waterLevel) {
+            ctx.fillStyle = "#009000";
+        }
+
+        if (value > world.waterLevel + 20) {
+            ctx.fillStyle = "#009c00";
+        }
+
+        if (value >= world.waterLevel + 47){
             ctx.fillStyle = "#BBB";
         }
 
-        if (value >= MAX_HEIGHT - 2){
+        if (value >= world.waterLevel + 48){
             ctx.fillStyle = "#DDD";
         }
 
-        if (value == MAX_HEIGHT){
+        if (value == world.waterLevel + 49){
             ctx.fillStyle = "#FFF";
         }
 
@@ -71,12 +72,17 @@ var draw = function(ctx, grid){
 };
 
 var generateHeightMap = function() {
-    world.grid = HeightMap(GRID_WIDTH, GRID_HEIGHT, MIN_HEIGHT, MAX_HEIGHT, world.roughness);
+    return HeightMap(GRID_WIDTH, GRID_HEIGHT, MIN_HEIGHT, MAX_HEIGHT, world.roughness);
 };
 
 generateButton.addEventListener('click', function() {
     world.roughness = Number(roughnessInput.value);
-    generateHeightMap();
+    world.grid = generateHeightMap();
+    draw(mapCtx, world.grid);
+});
+
+smoothButton.addEventListener('click', function() {
+    smoothHeightMap(world.grid);
     draw(mapCtx, world.grid);
 });
 
@@ -88,5 +94,5 @@ waterlevelInput.addEventListener('change', function(){
 waterlevelInput.value = world.waterLevel;
 roughnessInput.value = world.roughness;
 
-generateHeightMap();
+world.grid = generateHeightMap();
 draw(mapCtx, world.grid);

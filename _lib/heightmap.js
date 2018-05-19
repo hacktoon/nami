@@ -83,3 +83,14 @@ var HeightMap = function(width, height, minHeight, maxHeight, roughness){
 
     return grid;
 };
+
+
+var smoothHeightMap = function(grid) {
+    grid.map(function(value, point) {
+        var neighbours = GridNeighbourhood.vonNeumann(grid, point);
+        var sum = _.sumBy(neighbours, function(p) {
+            return grid.get(p);
+        })
+        grid.set(point, sum/neighbours.length);
+    });
+};
