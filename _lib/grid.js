@@ -17,10 +17,16 @@ var GridNeighbourhood = (function(){
     ]);
 
     var _points = function(refPoints, grid, pivotPoint){
-        return refPoints.map(function(point){
-            return Point.add(pivotPoint, point);
-        }).filter(function(point){
-            return grid.get(point) != undefined;
+        return refPoints.map(function(refPoint){
+            var point = Point.add(pivotPoint, refPoint),
+                x = point.x,
+                y = point.y;
+            //use adjacent points in opposite grid side
+            if (y < 0) { y = grid.height - y; }
+            if (y >= grid.height) { y -= grid.height; }
+            if (x < 0) { x = grid.width - x; }
+            if (x >= grid.width) { x -= grid.width; }
+            return Point.new(x, y);
         });
     };
 
