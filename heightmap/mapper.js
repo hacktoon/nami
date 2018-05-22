@@ -9,7 +9,6 @@ var TILESIZE = 2;
 
 var world = {
     size: 256,
-    waterLevel: 50,
     heightRange: Range.new(0, 100),
     roughness: 1.5,
     grid: undefined

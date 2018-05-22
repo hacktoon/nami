@@ -6,14 +6,12 @@ var TOP = 1,
     BOTTOM = 3,
     RIGHT = 4,
     TILESIZE = 5,
-    NUM_PLATES = 10,
-    GRID_WIDTH = 150,
-    GRID_HEIGHT = 100;
+    NUM_PLATES = 10;
 
-var grid = Grid.new(GRID_WIDTH, GRID_HEIGHT, 0);
+var grid = Grid.new(128, 128, 0);
 
-canvas.width = GRID_WIDTH * TILESIZE;
-canvas.height = GRID_HEIGHT * TILESIZE;
+canvas.width = grid.width * TILESIZE;
+canvas.height = grid.height * TILESIZE;
 
 
 var Plate = (function(){
@@ -55,7 +53,9 @@ var choosePlatePoints = function(grid, numPoints) {
         platePoints = [];
 
     for(var i = 0; i < numPoints; i++){
-        var point = Point.random(grid.width-1, grid.height-1);
+        var x = _.random(0, grid.width-1),
+            y = _.random(0, grid.height-1);
+        var point = Point.new(x, y);
         platePoints.push(point);
     };
 

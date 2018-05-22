@@ -45,10 +45,10 @@ var Range = (function(){
         },
         parse: function(template){
             var args = template.split(':'),
-                start = parseInt(args[0], 10),
-                end = parseInt(args[1], 10),
-                step = parseInt(args[2], 10);
-            return new _Range(start, end, step || 1);
+                start = _.toNumber(args[0]),
+                end = _.toNumber(args[1]),
+                step = _.toNumber(args[2]);
+            return this.new(start, end, step);
         }
     };
 })();
@@ -74,11 +74,6 @@ var Point = (function(){
         distance: function(p1, p2){
             var sum = Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2);
             return Math.sqrt(sum);
-        },
-        random: function(max_width, max_height){
-            var x = _.random(0, GRID_WIDTH),
-                y = _.random(0, GRID_HEIGHT);
-            return this.new(x, y);
         }
     };
 })();
