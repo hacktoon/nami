@@ -30,13 +30,24 @@ var Range = (function(){
         this.step = step;
 
         this.list = function() {
-            return _.range(this.start, this.end, this.step);
+            return _.range(this.start, this.end + 1, this.step);
+        };
+
+        this.contains = function(number) {
+            return number >= this.start && number <= this.end;
         };
     };
 
     return {
         _class: _Range,
         new: function(start, end, step){
+            return new _Range(start, end, step || 1);
+        },
+        parse: function(template){
+            var args = template.split(':'),
+                start = parseInt(args[0], 10),
+                end = parseInt(args[1], 10),
+                step = parseInt(args[2], 10);
             return new _Range(start, end, step || 1);
         }
     };

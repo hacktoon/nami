@@ -26,36 +26,29 @@ var draw = function(ctx, grid){
     canvas.width = grid.width * TILESIZE;
     canvas.height = grid.height * TILESIZE;
 
-    grid.map(function(value, point){
+    var colorMap = [
+        {range: '0:30', color: "#0052AF"},
+        {range: '31:40', color: "#005FCA"},
+        {range: '41:50', color: "#008900"},
+        {range: '51:60', color: "#009000"},
+        {range: '61:70', color: "#009C00"},
+        {range: '71:80', color: "#00A600"},
+        {range: '81:84', color: "#00ab00"},
+        {range: '85:95', color: "#00af00"},
+        {range: '96:98', color: "#00be00"},
+        {range: '99:100', color: "#00d000"},
+    ];
+
+    grid.map(function(currentHeight, point){
         ctx.beginPath();
 
-        if (value < world.waterLevel){
-            ctx.fillStyle = "#005fca";
-        }
+        colorMap.forEach(function(item, index) {
+            var range = Range.parse(item.range);
+            if (range.contains(currentHeight)){
+                ctx.fillStyle = item.color;
 
-        if (value < world.waterLevel - 20){
-            ctx.fillStyle = "#0052AF";
-        }
-
-        if (value > world.waterLevel) {
-            ctx.fillStyle = "#009000";
-        }
-
-        if (value > world.waterLevel + 20) {
-            ctx.fillStyle = "#009c00";
-        }
-
-        if (value >= world.waterLevel + 47){
-            ctx.fillStyle = "#BBB";
-        }
-
-        if (value >= world.waterLevel + 48){
-            ctx.fillStyle = "#DDD";
-        }
-
-        if (value == world.waterLevel + 49){
-            ctx.fillStyle = "#FFF";
-        }
+            }
+        });
 
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
@@ -72,7 +65,8 @@ var draw = function(ctx, grid){
 };
 
 var generateHeightMap = function() {
-    return HeightMap(GRID_WIDTH, GRID_HEIGHT, MIN_HEIGHT, MAX_HEIGHT, world.roughness);
+    var heightMap = HeightMap(GRID_WIDTH, GRID_HEIGHT, MIN_HEIGHT, MAX_HEIGHT, world.roughness);
+    return smoothHeightMap(heightMap);
 };
 
 generateButton.addEventListener('click', function() {
