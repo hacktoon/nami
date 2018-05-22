@@ -52,7 +52,8 @@ var Grid = (function(){
             var x = point.x,
                 y = point.y;
             if (y < 0 || y >= this.height || x < 0 || x >= this.width){
-                return undefined;
+                //throw new RangeError('Index out of range: ' + x + ', ' + y);
+                return;
             }
             return this.matrix[y][x];
         };
@@ -61,6 +62,7 @@ var Grid = (function(){
             var x = point.x,
                 y = point.y;
             if (y < 0 || y >= this.height || x < 0 || x >= this.width){
+                //throw new RangeError('Index out of range: ' + x + ', ' + y);
                 return;
             }
             this.matrix[y][x] = value;
@@ -83,10 +85,10 @@ var Grid = (function(){
         };
 
         this.inEdge = function(point){
-            var topLeft = point.x === 0 || point.y === 0,
-                bottomRight = point.x === this.width - 1 ||
+            var isTopLeft = point.x === 0 || point.y === 0,
+                isBottomRight = point.x === this.width - 1 ||
                               point.y === this.height - 1;
-            return topLeft || bottomRight;
+            return isTopLeft || isBottomRight;
         };
 
         this.oppositeEdge = function(point){
@@ -99,6 +101,12 @@ var Grid = (function(){
             if (point.x === this.width - 1) { x = 0; }
             if (point.y === 0) { y = this.height - 1; }
             if (point.y === this.height - 1) { y = 0; }
+            return Point.new(x, y);
+        };
+
+        this.randomPoint = function(){
+            var x = _.random(0, this.width-1),
+                y = _.random(0, this.height-1);
             return Point.new(x, y);
         };
     };
@@ -120,6 +128,67 @@ var Grid = (function(){
                 }
             }
             return grid;
+        },
+        str: function(grid){
+            for(var y = 0; y < grid.height; y++) {
+                Log('\n');
+                for(var x = 0; x < grid.width; x++){
+                    Log(grid.matrix[y][x]);
+                }
+            }
+        }
+    };
+})();
+
+
+var TileableGrid = (function(){
+    var _TileableGrid = function(){
+        this.grid = undefined;
+
+        this.get = function(point){
+            var x = point.x,
+                y = point.y;
+            if (x >= this.grid.width){ x %= this.grid.width; }
+            if (y >= this.grid.height){ y %= this.grid.height; }
+            if (x < 0){ x = this.grid.width - 1 - x % this.grid.width; }
+            if (y < 0){ y = this.grid.height - 1 - y % this.grid.height; }
+            return this.grid.get(Point.new(x, y));
+        };
+
+        this.set = function(point, value){
+            var x = point.x,
+                y = point.y;
+            if (x >= this.grid.width){ x %= this.grid.width; }
+            if (y >= this.grid.height){ y %= this.grid.height; }
+            if (x < 0){ x = this.grid.width - 1 - x % this.grid.width; }
+            if (y < 0){ y = this.grid.height - 1 - y % this.grid.height; }
+            this.grid.set(Point.new(x, y), value);
+        };
+
+        this.map = function(callback){
+            return this.grid.map(callback);
+        };
+
+        this.inEdge = function(point){
+            return this.grid.inEdge(point);
+        };
+
+        this.oppositeEdge = function(point){
+            return this.grid.oppositeEdge(point);
+        };
+
+        this.randomPoint = function(){
+            return this.grid.randomPoint();
+        };
+    };
+
+    return {
+        _class: _TileableGrid,
+
+        new: function(width, height, default_value) {
+            var tileableGrid = new _TileableGrid();
+            tileableGrid.grid = Grid.new(width, height, default_value);
+            return tileableGrid;
         }
     };
 })();

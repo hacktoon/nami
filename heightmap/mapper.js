@@ -11,7 +11,11 @@ var world = {
     size: 256,
     heightRange: Range.new(0, 100),
     roughness: 1.5,
-    grid: undefined
+    waterLevel: 40,
+    grid: undefined,
+    stats: {
+        highland: []
+    }
 };
 
 var draw = function(ctx, grid){
@@ -40,7 +44,9 @@ var draw = function(ctx, grid){
             var range = Range.parse(item.range);
             if (range.contains(currentHeight)){
                 ctx.fillStyle = item.color;
-
+            }
+            if (currentHeight == -5){
+                ctx.fillStyle = "red";
             }
         });
 
@@ -58,14 +64,35 @@ var draw = function(ctx, grid){
     });
 };
 
-var generateHeightMap = function() {
+var generateHeightMap = function(world) {
     var heightMap = HeightMap(world.size, world.heightRange, world.roughness);
-    return smoothHeightMap(heightMap);
+    world.grid = smoothHeightMap(heightMap);
+};
+
+var generateRivers = function(world) {
+    var grid = world.grid,
+        sproutPoint = _.sample(world.stats.highland);
+        headPoint = sproutPoint;
+
+    while(grid.get(headPoint) > world.waterLevel){
+        var neighbours = GridNeighbourhood.vonNeumann(grid, headPoint);
+        grid.set(headPoint, -5);
+        headPoint = _.minBy(neighbours, function(p) { return grid.get(p); });
+        Log(grid.get(sproutPoint), grid.get(headPoint));
+    }
+};
+
+var stats = function(world) {
+    world.grid.map(function(height, point) {
+        if (height > world.heightRange.end - 10){
+            world.stats.highland.push(point);
+        }
+    });
 };
 
 generateButton.addEventListener('click', function() {
     world.roughness = Number(roughnessInput.value);
-    world.grid = generateHeightMap();
+    world.grid = generateHeightMap(world);
     draw(mapCtx, world.grid);
 });
 
@@ -76,5 +103,9 @@ smoothButton.addEventListener('click', function() {
 
 roughnessInput.value = world.roughness;
 
-world.grid = generateHeightMap();
+generateHeightMap(world);
+stats(world);
+
+generateRivers(world);
+
 draw(mapCtx, world.grid);

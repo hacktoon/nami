@@ -5,24 +5,6 @@ var canvasContextById = function(id) {
     return canvas.getContext("2d");
 };
 
-var Tile = (function(){
-    var _Tile = function(){
-        this.value = 0;
-        this.pivot = false;
-    };
-
-    return {
-        _class: _Tile,
-        new: function(value){
-            var tile = new _Tile();
-            tile.value = value;
-            tile.pivot = false;
-            return tile;
-        }
-    };
-})();
-
-
 var Range = (function(){
     var _Range = function(start, end, step){
         this.start = start;
