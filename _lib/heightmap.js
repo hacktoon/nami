@@ -1,6 +1,6 @@
 
-var HeightMap = function(width, height, minHeight, maxHeight, roughness){
-    var grid = Grid.new(width + 1, height + 1, undefined);
+var HeightMap = function(gridSize, heightRange, roughness){
+    var grid = Grid.new(gridSize + 1, gridSize + 1, undefined);
 
     var diamondSquare = function(grid){
         for(var size = grid.width - 1; size/2 >= 1; size /= 2){
@@ -63,7 +63,7 @@ var HeightMap = function(width, height, minHeight, maxHeight, roughness){
     };
 
     var pointHeight = function(point, height){
-        var height = _.clamp(height, minHeight, maxHeight);
+        var height = _.clamp(height, heightRange.start, heightRange.end);
         if (grid.inEdge(point)) {
             var oppositePoint = grid.oppositeEdge(point);
             grid.set(oppositePoint, height);
@@ -72,7 +72,7 @@ var HeightMap = function(width, height, minHeight, maxHeight, roughness){
     };
 
     var randInt = function() {
-        return _.random(minHeight, maxHeight);
+        return _.random(heightRange.start, heightRange.end);
     };
 
     pointHeight(Point.new(0, 0), randInt());

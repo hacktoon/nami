@@ -2,20 +2,15 @@ var infoPanel = document.getElementById("info"),
     mapCanvas = document.getElementById("canvas"),
     mapCtx = mapCanvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
-    waterlevelInput = document.getElementById("waterlevel"),
     roughnessInput = document.getElementById("roughness"),
     smoothButton = document.getElementById("smooth");
 
-var TILESIZE = 2,
-    GRID_WIDTH = 256,
-    GRID_HEIGHT = 256;
-
-var MIN_HEIGHT = 0,
-    MAX_HEIGHT = 100;
-
+var TILESIZE = 2;
 
 var world = {
+    size: 256,
     waterLevel: 50,
+    heightRange: Range.new(0, 100),
     roughness: 1.5,
     grid: undefined
 };
@@ -65,7 +60,7 @@ var draw = function(ctx, grid){
 };
 
 var generateHeightMap = function() {
-    var heightMap = HeightMap(GRID_WIDTH, GRID_HEIGHT, MIN_HEIGHT, MAX_HEIGHT, world.roughness);
+    var heightMap = HeightMap(world.size, world.heightRange, world.roughness);
     return smoothHeightMap(heightMap);
 };
 
@@ -80,12 +75,6 @@ smoothButton.addEventListener('click', function() {
     draw(mapCtx, world.grid);
 });
 
-waterlevelInput.addEventListener('change', function(){
-    world.waterLevel = Number(waterlevelInput.value);
-    draw(mapCtx, world.grid);
-});
-
-waterlevelInput.value = world.waterLevel;
 roughnessInput.value = world.roughness;
 
 world.grid = generateHeightMap();
