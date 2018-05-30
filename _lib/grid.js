@@ -131,10 +131,7 @@ var Grid = (function(){
         },
         str: function(grid){
             for(var y = 0; y < grid.height; y++) {
-                Log('\n');
-                for(var x = 0; x < grid.width; x++){
-                    Log(grid.matrix[y][x]);
-                }
+                Log(grid.matrix[y]);
             }
         }
     };
@@ -144,14 +141,16 @@ var Grid = (function(){
 var TileableGrid = (function(){
     var _TileableGrid = function(){
         this.grid = undefined;
+        this.width = 0;
+        this.height = 0;
 
         this.get = function(point){
             var x = point.x,
                 y = point.y;
             if (x >= this.grid.width){ x %= this.grid.width; }
             if (y >= this.grid.height){ y %= this.grid.height; }
-            if (x < 0){ x = this.grid.width - 1 - x % this.grid.width; }
-            if (y < 0){ y = this.grid.height - 1 - y % this.grid.height; }
+            if (x < 0){ x = this.grid.width - 1 - Math.abs(x+1) % this.grid.width; }
+            if (y < 0){ y = this.grid.height - 1 - Math.abs(y+1) % this.grid.height; }
             return this.grid.get(Point.new(x, y));
         };
 
@@ -160,8 +159,8 @@ var TileableGrid = (function(){
                 y = point.y;
             if (x >= this.grid.width){ x %= this.grid.width; }
             if (y >= this.grid.height){ y %= this.grid.height; }
-            if (x < 0){ x = this.grid.width - 1 - x % this.grid.width; }
-            if (y < 0){ y = this.grid.height - 1 - y % this.grid.height; }
+            if (x < 0){ x = this.grid.width - 1 - Math.abs(x+1) % this.grid.width; }
+            if (y < 0){ y = this.grid.height - 1 - Math.abs(y+1) % this.grid.height; }
             this.grid.set(Point.new(x, y), value);
         };
 
@@ -186,8 +185,12 @@ var TileableGrid = (function(){
         _class: _TileableGrid,
 
         new: function(width, height, default_value) {
-            var tileableGrid = new _TileableGrid();
-            tileableGrid.grid = Grid.new(width, height, default_value);
+            var tileableGrid = new _TileableGrid(),
+                grid = Grid.new(width, height, default_value);
+            tileableGrid.grid = grid;
+            tileableGrid.matrix = grid.matrix;
+            tileableGrid.width = grid.width;
+            tileableGrid.height = grid.height;
             return tileableGrid;
         }
     };
