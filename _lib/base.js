@@ -40,6 +40,10 @@ var Point = (function(){
     var _Point = function(){
         this.x = 0;
         this.y = 0;
+
+        this.hash = function() {
+            return this.x + ',' + this.y;
+        };
     };
 
     return {

@@ -39,7 +39,6 @@ var draw = function(ctx, grid, opts){
     ];
 
     grid.map(function(currentHeight, point){
-        ctx.beginPath();
 
         colorMap.forEach(function(item, index) {
             var range = Range.parse(item.range);

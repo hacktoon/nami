@@ -51,20 +51,20 @@ var Grid = (function(){
         this.get = function(point){
             var x = point.x,
                 y = point.y;
-            if (y < 0 || y >= this.height || x < 0 || x >= this.width){
-                //throw new RangeError('Index out of range: ' + x + ', ' + y);
-                return;
-            }
+            if (x >= this.width){ x %= this.width; }
+            if (y >= this.height){ y %= this.height; }
+            if (x < 0){ x = this.width - 1 - Math.abs(x+1) % this.width; }
+            if (y < 0){ y = this.height - 1 - Math.abs(y+1) % this.height; }
             return this.matrix[y][x];
         };
 
         this.set = function(point, value){
             var x = point.x,
                 y = point.y;
-            if (y < 0 || y >= this.height || x < 0 || x >= this.width){
-                //throw new RangeError('Index out of range: ' + x + ', ' + y);
-                return;
-            }
+            if (x >= this.width){ x %= this.width; }
+            if (y >= this.height){ y %= this.height; }
+            if (x < 0){ x = this.width - 1 - Math.abs(x+1) % this.width; }
+            if (y < 0){ y = this.height - 1 - Math.abs(y+1) % this.height; }
             this.matrix[y][x] = value;
         };
 
@@ -104,10 +104,21 @@ var Grid = (function(){
             return Point.new(x, y);
         };
 
-        this.randomPoint = function(){
-            var x = _.random(0, this.width-1),
-                y = _.random(0, this.height-1);
-            return Point.new(x, y);
+        this.randomPoints = function(numPoints) {
+            var chosenPoints = {},
+                count = 0;
+
+            while(count < numPoints){
+                var x = _.random(0, this.width-1),
+                    y = _.random(0, this.height-1),
+                    point = Point.new(x, y),
+                    hash = point.hash();
+                if (chosenPoints[hash] === undefined){
+                    chosenPoints[hash] = point;
+                    count++;
+                }
+            }
+            return _.values(chosenPoints);
         };
     };
 
@@ -132,65 +143,6 @@ var Grid = (function(){
             for(var y = 0; y < grid.height; y++) {
                 Log(grid.matrix[y]);
             }
-        }
-    };
-})();
-
-
-var TileableGrid = (function(){
-    var _TileableGrid = function(){
-        this.grid = undefined;
-        this.width = 0;
-        this.height = 0;
-
-        this.get = function(point){
-            var x = point.x,
-                y = point.y;
-            if (x >= this.grid.width){ x %= this.grid.width; }
-            if (y >= this.grid.height){ y %= this.grid.height; }
-            if (x < 0){ x = this.grid.width - 1 - Math.abs(x+1) % this.grid.width; }
-            if (y < 0){ y = this.grid.height - 1 - Math.abs(y+1) % this.grid.height; }
-            return this.grid.get(Point.new(x, y));
-        };
-
-        this.set = function(point, value){
-            var x = point.x,
-                y = point.y;
-            if (x >= this.grid.width){ x %= this.grid.width; }
-            if (y >= this.grid.height){ y %= this.grid.height; }
-            if (x < 0){ x = this.grid.width - 1 - Math.abs(x+1) % this.grid.width; }
-            if (y < 0){ y = this.grid.height - 1 - Math.abs(y+1) % this.grid.height; }
-            this.grid.set(Point.new(x, y), value);
-        };
-
-        this.map = function(callback){
-            return this.grid.map(callback);
-        };
-
-        this.inEdge = function(point){
-            return this.grid.inEdge(point);
-        };
-
-        this.oppositeEdge = function(point){
-            return this.grid.oppositeEdge(point);
-        };
-
-        this.randomPoint = function(){
-            return this.grid.randomPoint();
-        };
-    };
-
-    return {
-        _class: _TileableGrid,
-
-        new: function(width, height, default_value) {
-            var tileableGrid = new _TileableGrid(),
-                grid = Grid.new(width, height, default_value);
-            tileableGrid.grid = grid;
-            tileableGrid.matrix = grid.matrix;
-            tileableGrid.width = grid.width;
-            tileableGrid.height = grid.height;
-            return tileableGrid;
         }
     };
 })();
