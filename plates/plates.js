@@ -8,10 +8,24 @@ var TOP = 1,
     TILESIZE = 4,
     NUM_PLATES = 10;
 
-var grid = Grid.new(128, 128, undefined);
+var grid = TileableGrid.new(128, 128);
 
 canvas.width = grid.width * TILESIZE;
 canvas.height = grid.height * TILESIZE;
+
+
+var colorMap = {
+    1: 'red',
+    2: 'green',
+    3: 'blue',
+    4: 'wheat',
+    5: 'orchid',
+    6: 'grey',
+    7: 'yellow',
+    8: 'brown',
+    9: 'indigo',
+    10: 'purple'
+};
 
 
 var Plate = (function(){
@@ -41,51 +55,33 @@ var Plate = (function(){
 })();
 
 
-
 var floodfill = function(point) {
 
 };
 
 
-var randomPlatePoints = function(grid, numPoints) {
+var createPlates = function(grid, numPoints) {
     var numPoints = numPoints || 1,
-        platePoints = [];
+        plates = [];
 
-    _.times(numPoints,function() {
-        platePoints.push(grid.randomPoint());
+    _.times(numPoints, function() {
+        var plate = Plate.new(),
+            point = grid.randomPoint();
+        plate.points.push(point);
+        plates.push(plate);
+        grid.set(point, plate.id);
     });
-
-    return platePoints;
+    return plates;
 };
 
 
-var createPlates = function(grid, totalPlates) {
-    var platePoints = randomPlatePoints(grid, totalPlates);
-    return platePoints.map(function(point) {
-        var plate = Plate.new();
-        plate.schedule(point);
-        return plate;
-    });
-}
-
 var growPlate = function(grid, plate) {
-    var totalPoints = grid.width * grid.height,
-        visitedPoints = 0,
-        scheduled = [];
-
-    platePoints.map(function(point, index){
-        var plate = Plate.new();
+    plate.points.forEach(function(point, index){
         var neighbours = GridNeighbourhood.vonNeumann(grid, point);
 
-        plates.push(plate);
-
-        neighbours.map(function(neighbourPoint){
-            grid.set(neighbourPoint, 1);
-            globalVisited.push(neighbourPoint);
+        neighbours.forEach(function(point, index){
+            grid.set(point, plate.id);
         });
-
-        grid.set(point, plate.id);
-        scheduled = scheduled.concat(neighbours);
     });
 };
 
@@ -93,11 +89,18 @@ var growPlate = function(grid, plate) {
 var draw = function(grid){
     grid.map(function(value, point) {
         var value = grid.get(point);
-        ctx.fillStyle = value === 1 ? "forestgreen" : "lightblue";
+        if (colorMap[value]){
+            ctx.fillStyle = colorMap[value];
+        } else {
+            ctx.fillStyle = "lightblue";
+        }
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
 };
 
 
 var plates = createPlates(grid, NUM_PLATES);
+plates.forEach(function(plate, index) {
+    growPlate(grid, plate);
+})
 draw(grid);

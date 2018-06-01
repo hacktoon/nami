@@ -115,8 +115,7 @@ var Grid = (function(){
         _class: _Grid,
 
         new: function(width, height, default_value) {
-            var grid = new _Grid(),
-                default_value = default_value || 0;
+            var grid = new _Grid();
 
             grid.width = width;
             grid.height = height;

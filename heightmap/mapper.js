@@ -8,7 +8,7 @@ var infoPanel = document.getElementById("info"),
 var TILESIZE = 2;
 
 var world = {
-    size: 256,
+    size: 128,
     heightRange: Range.new(0, 100),
     roughness: 1.5,
     waterLevel: 40,
@@ -18,8 +18,9 @@ var world = {
     }
 };
 
-var draw = function(ctx, grid){
-    var copies = ['q1', 'q2', 'q3', 'q4'];
+var draw = function(ctx, grid, opts){
+    var opts = opts || {},
+        copies = ['q1', 'q2', 'q3', 'q4'];
 
     canvas.width = grid.width * TILESIZE;
     canvas.height = grid.height * TILESIZE;
@@ -53,15 +54,15 @@ var draw = function(ctx, grid){
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
 
-    var mapImage = ctx.getImageData(0, 0, mapCanvas.width, mapCanvas.height);
-
-    copies.forEach(function(id, index){
-        var canvas = document.getElementById(id),
-            copyCtx = canvas.getContext("2d");
-        canvas.width = grid.width * TILESIZE/2;
-        canvas.height = grid.height * TILESIZE/2;
-        copyCtx.drawImage(mapCanvas, 0, 0, canvas.width, canvas.height);
-    });
+    if (opts.tileable){
+        copies.forEach(function(id, index){
+            var canvas = document.getElementById(id),
+                copyCtx = canvas.getContext("2d");
+            canvas.width = grid.width * TILESIZE/2;
+            canvas.height = grid.height * TILESIZE/2;
+            copyCtx.drawImage(mapCanvas, 0, 0, canvas.width, canvas.height);
+        });
+    }
 };
 
 var generateHeightMap = function(world) {
@@ -92,6 +93,7 @@ var stats = function(world) {
 generateButton.addEventListener('click', function() {
     world.roughness = Number(roughnessInput.value);
     generateHeightMap(world);
+    generateRivers(world);
     draw(mapCtx, world.grid);
 });
 
