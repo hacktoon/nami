@@ -2,8 +2,7 @@ var infoPanel = document.getElementById("info"),
     mapCanvas = document.getElementById("canvas"),
     mapCtx = mapCanvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
-    roughnessInput = document.getElementById("roughness"),
-    smoothButton = document.getElementById("smooth");
+    roughnessInput = document.getElementById("roughness");
 
 var TILESIZE = 2;
 
@@ -89,23 +88,18 @@ var stats = function(world) {
     });
 };
 
+var generate = function() {
+    generateHeightMap(world);
+    stats(world);
+    generateRivers(world);
+    draw(mapCtx, world.grid, {tileable: 1});
+};
+
 generateButton.addEventListener('click', function() {
     world.roughness = Number(roughnessInput.value);
-    generateHeightMap(world);
-    generateRivers(world);
-    draw(mapCtx, world.grid);
-});
-
-smoothButton.addEventListener('click', function() {
-    world.grid = smoothHeightMap(world.grid);
-    draw(mapCtx, world.grid);
+    generate();
 });
 
 roughnessInput.value = world.roughness;
 
-generateHeightMap(world);
-stats(world);
-
-generateRivers(world);
-
-draw(mapCtx, world.grid);
+generate();
