@@ -78,7 +78,6 @@ var generateRivers = function(world) {
         var neighbours = GridNeighbourhood.vonNeumann(grid, headPoint);
         grid.set(headPoint, -5);
         headPoint = _.minBy(neighbours, function(p) { return grid.get(p); });
-        Log(grid.get(sproutPoint), grid.get(headPoint));
     }
 };
 
@@ -92,7 +91,7 @@ var stats = function(world) {
 
 generateButton.addEventListener('click', function() {
     world.roughness = Number(roughnessInput.value);
-    world.grid = generateHeightMap(world);
+    generateHeightMap(world);
     draw(mapCtx, world.grid);
 });
 
