@@ -21,11 +21,6 @@ var GridNeighbourhood = (function(){
             var point = Point.add(pivotPoint, refPoint),
                 x = point.x,
                 y = point.y;
-            //use adjacent points in opposite grid side
-            if (y < 0) { y = grid.height - y; }
-            if (y >= grid.height) { y -= grid.height; }
-            if (x < 0) { x = grid.width - x; }
-            if (x >= grid.width) { x -= grid.width; }
             return Point.new(x, y);
         });
     };
@@ -68,12 +63,9 @@ var Grid = (function(){
             this.matrix[y][x] = value;
         };
 
-        this.shuffle = function(values){
-            for(var y = 0; y < this.height; y++){
-                for(var x = 0; x < this.width; x++){
-                    this.set(Point.new(x, y), _.sample(values));
-                }
-            }
+        this.neighbours = function(point, opts){
+            var opts = _.defaults(opts, {method: 'vonNeumann'});
+            return GridNeighbourhood[opts.method](this, point);
         };
 
         this.map = function(callback){
@@ -137,6 +129,15 @@ var Grid = (function(){
                     grid.matrix[y].push(default_value);
                 }
             }
+            return grid;
+        },
+        from: function(matrix) {
+            var grid = new _Grid();
+
+            grid.matrix = matrix;
+            grid.width = matrix[0].length;
+            grid.height = matrix.length;
+
             return grid;
         },
         str: function(grid){
