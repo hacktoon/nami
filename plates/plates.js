@@ -1,6 +1,7 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
+    resetButton = document.getElementById("reset"),
     growButton = document.getElementById("grow");
 
 var TOP = 1,
@@ -8,11 +9,13 @@ var TOP = 1,
     BOTTOM = 3,
     RIGHT = 4,
     TILESIZE = 4,
-    NUM_PLATES = 10;
+    NUM_PLATES = 15;
 
 var grid = Grid.new(128, 128),
     plates = [],
-    scheduled = [];
+    scheduled = [],
+    totalPoints = grid.width * grid.height,
+    visitedPoints = 0;
 
 var colorMap = {
     1: 'red',
@@ -24,13 +27,17 @@ var colorMap = {
     7: 'yellow',
     8: 'brown',
     9: 'indigo',
-    10: 'purple'
+    10: 'purple',
+    11: 'gold',
+    12: 'teal',
+    13: 'salmon',
+    14: 'black',
+    15: 'darkkhaki'
 };
 
 
 var Plate = (function(){
-    var _instanceID = 1,
-        _plates = {};
+    var _instanceID = 1;
 
     var _Plate = function(){
         this.id = undefined;
@@ -49,12 +56,10 @@ var Plate = (function(){
             plate.weight = _.defaultTo(weight, 10);
             plate.speed = _.defaultTo(speed, 5);
             plate.direction = _.defaultTo(direction, TOP);
-            _plates[plate.id] = plate;
             return plate;
         },
         reset: function() {
             _instanceID = 1;
-            _plates = {};
         }
     };
 })();
@@ -70,6 +75,7 @@ var createPlates = function(grid, numPoints) {
         plate.points.push(point);
         plate.scheduled.push(point);
         grid.set(point, plate.id);
+        visitedPoints++;
     });
     return plates;
 };
@@ -85,6 +91,7 @@ var growPlate = function(grid, plate) {
             if (grid.get(neighbourPoint) === undefined){
                 validNeighbours.push(neighbourPoint);
                 grid.set(neighbourPoint, plate.id);
+                visitedPoints++;
             }
         });
     });
@@ -113,17 +120,30 @@ var generate = function() {
     plates.forEach(function(plate) {
         growPlate(grid, plate);
     });
-    draw(grid);
 };
 
 
-generateButton.addEventListener('click', function() {
-    plates = [];
+var reset = function() {
+    visitedPoints = 0;
     Plate.reset();
     grid.reset();
     generate();
+};
+
+generateButton.addEventListener('click', function() {
+    reset();
+    while(visitedPoints < totalPoints){
+        plates.forEach(function(plate) {
+            growPlate(grid, plate);
+        });
+    }
+    draw(grid);
 });
 
+resetButton.addEventListener('click', function() {
+    reset();
+    draw(grid);
+});
 
 growButton.addEventListener('click', function() {
     plates.forEach(function(plate) {
@@ -133,3 +153,4 @@ growButton.addEventListener('click', function() {
 });
 
 generate();
+draw(grid);
