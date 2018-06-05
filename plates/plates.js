@@ -22,7 +22,7 @@ var colorMap = {
     2: 'green',
     3: 'blue',
     4: 'wheat',
-    5: 'orchid',
+    5: 'orange',
     6: 'grey',
     7: 'yellow',
     8: 'brown',
@@ -72,7 +72,6 @@ var createPlates = function(grid, numPoints) {
     points.forEach(function(point) {
         var plate = Plate.new();
         plates.push(plate);
-        plate.points.push(point);
         plate.scheduled.push(point);
         grid.set(point, plate.id);
         visitedPoints++;
@@ -89,9 +88,13 @@ var growPlate = function(grid, plate) {
 
         neighbours.forEach(function(neighbourPoint){
             if (grid.get(neighbourPoint) === undefined){
-                validNeighbours.push(neighbourPoint);
-                grid.set(neighbourPoint, plate.id);
-                visitedPoints++;
+                if (_.sample([1, 2, 3, 4, 5, 7]) % 2 === 0){
+                    grid.set(neighbourPoint, plate.id);
+                    visitedPoints++;
+                    validNeighbours.push(neighbourPoint);
+                } else {
+                    validNeighbours.push(point);
+                }
             }
         });
     });
