@@ -105,7 +105,8 @@ var Grid = (function(){
         };
 
         this.randomPoints = function(numPoints) {
-            var chosenPoints = {},
+            var numPoints = numPoints || 1,
+                chosenPoints = {},
                 count = 0;
 
             while(count < numPoints){
