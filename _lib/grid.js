@@ -63,6 +63,14 @@ var Grid = (function(){
             this.matrix[y][x] = value;
         };
 
+        this.reset = function(value){
+            var self = this,
+                value = value || undefined;
+            this.map(function(_, point) {
+                self.set(point, value);
+            });
+        };
+
         this.neighbours = function(point, opts){
             var opts = _.defaults(opts, {method: 'vonNeumann'});
             return GridNeighbourhood[opts.method](this, point);
