@@ -71,9 +71,14 @@ var Grid = (function(){
             });
         };
 
-        this.neighbours = function(point, opts){
-            var opts = _.defaults(opts, {method: 'vonNeumann'});
-            return GridNeighbourhood[opts.method](this, point);
+        this.directNeighbours = function(point, predicate){
+            var neighbours = GridNeighbourhood.vonNeumann(this, point);
+            return _.filter(neighbours, predicate);
+        };
+
+        this.allNeighbours = function(point, predicate){
+            var neighbours = GridNeighbourhood.moore(this, point);
+            return _.filter(neighbours, predicate);
         };
 
         this.map = function(callback){

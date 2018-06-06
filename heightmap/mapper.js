@@ -74,7 +74,7 @@ var generateRivers = function(world) {
         headPoint = sproutPoint;
 
     while(grid.get(headPoint) > world.waterLevel){
-        var neighbours = grid.neighbours(headPoint);
+        var neighbours = grid.directNeighbours(headPoint);
         grid.set(headPoint, -5);
         headPoint = _.minBy(neighbours, function(p) { return grid.get(p); });
     }

@@ -40,7 +40,6 @@ var colors = [
     'darkseagreen'
 ];
 
-
 var Plate = (function(){
 
     var _Plate = function(id){
@@ -61,12 +60,11 @@ var Plate = (function(){
                 self = this;
 
             this.scheduled.forEach(function(point){
-                var neighbours = grid.neighbours(point);
+                var neighbours = grid.directNeighbours(point, function(point){
+                    return grid.get(point) === undefined;
+                });
 
                 neighbours.forEach(function(neighbourPoint){
-                    if (grid.get(neighbourPoint) != undefined) {
-                        return;
-                    }
                     if (_.sample([true, false])){
                         grid.set(neighbourPoint, self.id);
                         visitedPoints++;
@@ -88,7 +86,6 @@ var Plate = (function(){
     };
 })();
 
-
 var createPlates = function(grid, numPoints) {
     var points = grid.randomPoints(numPoints),
         plates = [],
@@ -103,7 +100,6 @@ var createPlates = function(grid, numPoints) {
     });
     return plates;
 };
-
 
 var draw = function(grid){
     canvas.width = grid.width * TILESIZE;
@@ -120,19 +116,17 @@ var draw = function(grid){
     });
 };
 
+var reset = function() {
+    visitedPoints = 0;
+    grid.reset();
+    init();
+};
 
 var init = function() {
     plates = createPlates(grid, NUM_PLATES);
     plates.forEach(function(plate) {
         plate.grow(grid);
     });
-};
-
-
-var reset = function() {
-    visitedPoints = 0;
-    grid.reset();
-    init();
 };
 
 generateButton.addEventListener('click', function() {
