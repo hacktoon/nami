@@ -17,40 +17,44 @@ var grid = Grid.new(256, 256),
     totalPoints = grid.width * grid.height,
     visitedPoints = 0;
 
-var colorMap = {
-    1: 'red',
-    2: 'green',
-    3: 'blue',
-    4: 'wheat',
-    5: 'orange',
-    6: 'grey',
-    7: 'yellow',
-    8: 'brown',
-    9: 'indigo',
-    10: 'purple',
-    11: 'indianred',
-    12: 'teal',
-    13: 'salmon',
-    14: 'black',
-    15: 'darkkhaki',
-    16: 'aliceblue ',
-    17: 'aqua',
-    18: 'coral',
-    19: 'darkolivegreen',
-    20: 'darkseagreen'
-};
+var colors = [
+    'red',
+    'green',
+    'blue',
+    'wheat',
+    'orange',
+    'black',
+    'yellow',
+    'brown',
+    'indigo',
+    'purple',
+    'indianred',
+    'teal',
+    'salmon',
+    'grey',
+    'darkkhaki',
+    'aliceblue ',
+    'aqua',
+    'coral',
+    'darkolivegreen',
+    'darkseagreen'
+];
 
 
 var Plate = (function(){
-    var _instanceID = 1;
 
-    var _Plate = function(){
-        this.id = undefined;
+    var _Plate = function(id){
+        this.id = id;
         this.points = [];
         this.scheduled = [];
         this.speed = 5;
         this.weight = 10;
+        this.priority = _.sample([1, 1, 1, 2]);
         this.direction = _.sample([TOP, LEFT, RIGHT, BOTTOM]);
+
+        this.addPoint = function(point) {
+            this.points.push(point);
+        };
 
         this.grow = function(grid) {
             var validNeighbours = [],
@@ -61,8 +65,8 @@ var Plate = (function(){
 
                 neighbours.forEach(function(neighbourPoint){
                     if (grid.get(neighbourPoint) != undefined) {
-                        return
-                    };
+                        return;
+                    }
                     if (_.sample([true, false])){
                         grid.set(neighbourPoint, self.id);
                         visitedPoints++;
@@ -78,16 +82,8 @@ var Plate = (function(){
 
     return {
         _class: _Plate,
-        new: function(weight, speed, direction){
-            var plate = new _Plate();
-            plate.id = _instanceID++;
-            plate.weight = _.defaultTo(weight, 10);
-            plate.speed = _.defaultTo(speed, 5);
-            plate.direction = _.defaultTo(direction, TOP);
-            return plate;
-        },
-        reset: function() {
-            _instanceID = 1;
+        new: function(id){
+            return new _Plate(id);
         }
     };
 })();
@@ -95,10 +91,11 @@ var Plate = (function(){
 
 var createPlates = function(grid, numPoints) {
     var points = grid.randomPoints(numPoints),
-        plates = [];
+        plates = [],
+        id = 0;
 
     points.forEach(function(point) {
-        var plate = Plate.new();
+        var plate = Plate.new(id++);
         plate.scheduled.push(point);
         grid.set(point, plate.id);
         visitedPoints++;
@@ -114,8 +111,8 @@ var draw = function(grid){
 
     grid.map(function(value, point) {
         var value = grid.get(point);
-        if (colorMap[value]){
-            ctx.fillStyle = colorMap[value];
+        if (colors[value]){
+            ctx.fillStyle = colors[value];
         } else {
             ctx.fillStyle = "lightblue";
         }
@@ -124,7 +121,7 @@ var draw = function(grid){
 };
 
 
-var generate = function() {
+var init = function() {
     plates = createPlates(grid, NUM_PLATES);
     plates.forEach(function(plate) {
         plate.grow(grid);
@@ -134,9 +131,8 @@ var generate = function() {
 
 var reset = function() {
     visitedPoints = 0;
-    Plate.reset();
     grid.reset();
-    generate();
+    init();
 };
 
 generateButton.addEventListener('click', function() {
@@ -161,5 +157,5 @@ growButton.addEventListener('click', function() {
     draw(grid);
 });
 
-generate();
+init();
 draw(grid);
