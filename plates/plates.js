@@ -1,5 +1,5 @@
-var canvas = document.getElementById("canvas");
-var ctx = canvas.getContext("2d"),
+var canvas = document.getElementById("canvas"),
+    ctx = canvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
     resetButton = document.getElementById("reset"),
     growButton = document.getElementById("grow");
@@ -8,10 +8,10 @@ var TOP = 1,
     LEFT = 2,
     BOTTOM = 3,
     RIGHT = 4,
-    TILESIZE = 4,
-    NUM_PLATES = 15;
+    TILESIZE = 2,
+    NUM_PLATES = 12;
 
-var grid = Grid.new(128, 128),
+var grid = Grid.new(256, 256),
     plates = [],
     scheduled = [],
     totalPoints = grid.width * grid.height,
@@ -28,11 +28,16 @@ var colorMap = {
     8: 'brown',
     9: 'indigo',
     10: 'purple',
-    11: 'gold',
+    11: 'indianred',
     12: 'teal',
     13: 'salmon',
     14: 'black',
-    15: 'darkkhaki'
+    15: 'darkkhaki',
+    16: 'aliceblue ',
+    17: 'aqua',
+    18: 'coral',
+    19: 'darkolivegreen',
+    20: 'darkseagreen'
 };
 
 
@@ -45,7 +50,7 @@ var Plate = (function(){
         this.scheduled = [];
         this.speed = 5;
         this.weight = 10;
-        this.direction = TOP;
+        this.direction = _.sample([TOP, LEFT, RIGHT, BOTTOM]);
     };
 
     return {
@@ -71,10 +76,10 @@ var createPlates = function(grid, numPoints) {
 
     points.forEach(function(point) {
         var plate = Plate.new();
-        plates.push(plate);
         plate.scheduled.push(point);
         grid.set(point, plate.id);
         visitedPoints++;
+        plates.push(plate);
     });
     return plates;
 };
@@ -87,14 +92,15 @@ var growPlate = function(grid, plate) {
         var neighbours = grid.neighbours(point);
 
         neighbours.forEach(function(neighbourPoint){
-            if (grid.get(neighbourPoint) === undefined){
-                if (_.sample([1, 2, 3, 4, 5, 7]) % 2 === 0){
-                    grid.set(neighbourPoint, plate.id);
-                    visitedPoints++;
-                    validNeighbours.push(neighbourPoint);
-                } else {
-                    validNeighbours.push(point);
-                }
+            if (grid.get(neighbourPoint) != undefined) {
+                return
+            };
+            if (_.sample([true, false])){
+                grid.set(neighbourPoint, plate.id);
+                visitedPoints++;
+                validNeighbours.push(neighbourPoint);
+            } else {
+                validNeighbours.push(point);
             }
         });
     });
