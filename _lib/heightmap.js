@@ -71,14 +71,10 @@ var HeightMap = function(gridSize, heightRange, roughness){
         grid.set(point, height);
     };
 
-    var randInt = function() {
-        return _.random(heightRange.start, heightRange.end);
-    };
-
-    pointHeight(Point.new(0, 0), randInt());
-    pointHeight(Point.new(grid.width-1, 0), randInt());
-    pointHeight(Point.new(0, grid.height-1), randInt());
-    pointHeight(Point.new(grid.width-1, grid.height-1), randInt());
+    pointHeight(Point.new(0, 0), heightRange.start);
+    pointHeight(Point.new(grid.width-1, 0), heightRange.start);
+    pointHeight(Point.new(0, grid.height-1), heightRange.start);
+    pointHeight(Point.new(grid.width-1, grid.height-1), heightRange.start);
 
     diamondSquare(grid);
 
