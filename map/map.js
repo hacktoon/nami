@@ -7,7 +7,7 @@ var infoPanel = document.getElementById("info"),
 var TILESIZE = 2;
 
 var world = {
-    size: 128,
+    size: 256,
     heightRange: Range.new(0, 100),
     roughness: 1.5,
     waterLevel: 40,
@@ -65,7 +65,7 @@ var draw = function(ctx, grid, opts){
 
 var generateHeightMap = function(world) {
     var heightMap = HeightMap(world.size, world.heightRange, world.roughness);
-    world.grid = smoothHeightMap(heightMap);
+    world.grid = smoothGrid(heightMap);
 };
 
 var generateRivers = function(world) {

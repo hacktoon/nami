@@ -86,14 +86,3 @@ var HeightMap = function(gridSize, heightRange, roughness){
 };
 
 
-var smoothHeightMap = function(originalGrid) {
-    var grid = _.cloneDeep(originalGrid);
-    originalGrid.map(function(value, point) {
-        var neighbours = GridNeighbourhood.vonNeumann(originalGrid, point);
-        var sum = _.sumBy(neighbours, function(pt) {
-            return originalGrid.get(pt);
-        })
-        grid.set(point, Math.round(sum / neighbours.length));
-    });
-    return grid;
-};

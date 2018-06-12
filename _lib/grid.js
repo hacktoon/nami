@@ -37,6 +37,19 @@ var GridNeighbourhood = (function(){
 })();
 
 
+var smoothGrid = function(originalGrid) {
+    var grid = _.cloneDeep(originalGrid);
+    originalGrid.map(function(value, point) {
+        var neighbours = GridNeighbourhood.vonNeumann(originalGrid, point);
+        var sum = _.sumBy(neighbours, function(pt) {
+            return originalGrid.get(pt);
+        })
+        grid.set(point, Math.round(sum / neighbours.length));
+    });
+    return grid;
+};
+
+
 var Grid = (function(){
     var _Grid = function(){
         this.matrix = [];
