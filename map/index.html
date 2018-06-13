@@ -6,36 +6,25 @@
         #button-panel {
             padding: 10px 0;
         }
-        #seam {
-            width: 514px;
-            height: 514px;
-            float: right;
-        }
-            #seam canvas {
-                float: left;
-                background: #EEE;
-            }
-
-        #info {
-            clear: left;
-        }
-
       </style>
   </head>
 
   <body>
     <div id="button-panel">
         <label for="roughness">Roughness
-          <input type="number" min="0" max="3" step="0.1" value="1" id="roughness" />
+            <input type="number" min="0" max="3" step="0.1" value="1" id="roughness" />
         </label>
+
+        <select id="map-view">
+            <option selected value="heightmap">Heightmap</option>
+            <option value="moisture"/>Moisture</option>
+        </select>
+
         <button id="generate">generate</button>
     </div>
-    <canvas id="canvas"></canvas>
-    <div id="seam">
-        <canvas id="q1"></canvas>
-        <canvas id="q2"></canvas>
-        <canvas id="q3"></canvas>
-        <canvas id="q4"></canvas>
+
+    <div id="canvas-group">
+        <canvas id="heightmap-canvas"></canvas>
     </div>
 
     <script src="../_lib/lodash.min.js"></script>

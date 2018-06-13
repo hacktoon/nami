@@ -1,8 +1,8 @@
-var infoPanel = document.getElementById("info"),
-    mapCanvas = document.getElementById("canvas"),
+var mapCanvas = document.getElementById("heightmap-canvas"),
     mapCtx = mapCanvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
-    roughnessInput = document.getElementById("roughness");
+    roughnessInput = document.getElementById("roughness"),
+    mapViewInput = document.getElementById("map-view");
 
 var TILESIZE = 2;
 
@@ -18,11 +18,10 @@ var world = {
 };
 
 var draw = function(ctx, grid, opts){
-    var opts = opts || {},
-        copies = ['q1', 'q2', 'q3', 'q4'];
+    var opts = opts || {};
 
-    canvas.width = grid.width * TILESIZE;
-    canvas.height = grid.height * TILESIZE;
+    mapCanvas.width = grid.width * TILESIZE;
+    mapCanvas.height = grid.height * TILESIZE;
 
     var colorMap = [
         {range: '0:30', color: "#0052AF"},
@@ -38,7 +37,6 @@ var draw = function(ctx, grid, opts){
     ];
 
     grid.map(function(currentHeight, point){
-
         colorMap.forEach(function(item, index) {
             var range = Range.parse(item.range);
             if (range.contains(currentHeight)){
@@ -48,24 +46,8 @@ var draw = function(ctx, grid, opts){
                 ctx.fillStyle = "red";
             }
         });
-
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
-
-    if (opts.tileable){
-        copies.forEach(function(id, index){
-            var canvas = document.getElementById(id),
-                copyCtx = canvas.getContext("2d");
-            canvas.width = grid.width * TILESIZE/2;
-            canvas.height = grid.height * TILESIZE/2;
-            copyCtx.drawImage(mapCanvas, 0, 0, canvas.width, canvas.height);
-        });
-    }
-};
-
-var generateHeightMap = function(world) {
-    var heightMap = HeightMap(world.size, world.heightRange, world.roughness);
-    world.grid = smoothGrid(heightMap);
 };
 
 var generateRivers = function(world) {
@@ -88,18 +70,26 @@ var stats = function(world) {
     });
 };
 
-var generate = function() {
-    generateHeightMap(world);
+var generate = function(world) {
+    var heightMap = HeightMap(world.size, world.heightRange, world.roughness);
+    var moistureMap = HeightMap(world.size, Range.new(0, 10), 1);
+
+    world.grid = GridFilter.smooth(heightMap);
+
     stats(world);
     generateRivers(world);
-    draw(mapCtx, world.grid, {tileable: 1});
+    draw(mapCtx, world.grid);
 };
 
 generateButton.addEventListener('click', function() {
     world.roughness = Number(roughnessInput.value);
-    generate();
+    generate(world);
+});
+
+mapViewInput.addEventListener('change', function(e) {
+    var mapView = e.target.selectedOptions[0].value;
 });
 
 roughnessInput.value = world.roughness;
 
-generate();
+generate(world);
