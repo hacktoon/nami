@@ -2,7 +2,8 @@ var mapCanvas = document.getElementById("canvas"),
     mapCtx = mapCanvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
     roughnessInput = document.getElementById("roughness"),
-    mapViewInput = document.getElementById("map-view");
+    mapViewInput = document.getElementById("map-view"),
+    infoPanel = document.getElementById("info");
 
 var TILESIZE = 2;
 
@@ -31,10 +32,10 @@ var heightmapColorMap = [
 ];
 
 var moistureColorMap = [
-    {range: '0:15', color: "tomato"},
-    {range: '16:25', color: "darkorange"},
-    {range: '26:35', color: "mediumseagreen"},
-    {range: '36:50', color: "mediumaquamarine"}
+    {range: '0:35', color: "tomato"},
+    {range: '36:55', color: "darkorange"},
+    {range: '56:85', color: "mediumseagreen"},
+    {range: '86:100', color: "mediumaquamarine"}
 ];
 
 
@@ -54,16 +55,19 @@ var draw = function(ctx, grid, opts){
 
 var drawMap = function(ctx, world){
     world.heightMap.map(function(currentValue, point){
-        heightmapColorMap.forEach(function(item, index) {
-            var range = Range.parse(item.range);
+        for (var i=0; i< heightmapColorMap.length; i++){
+            var item = heightmapColorMap[i],
+                range = Range.parse(item.range);
+
+            if (world.moistureMap.get(point) <= 35 && currentValue > world.waterLevel){
+                ctx.fillStyle = "PaleGoldenRod";
+                break;
+            }
             if (range.contains(currentValue)){
                 ctx.fillStyle = item.color;
             }
 
-            if (world.moistureMap.get(point) <= 15 && currentValue > world.waterLevel + 20){
-                ctx.fillStyle = "PaleGoldenRod";
-            }
-        });
+        };
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
 };
@@ -90,7 +94,7 @@ var stats = function(world) {
 
 var generate = function(world) {
     var heightMap = HeightMap(world.size, world.heightRange, world.roughness),
-        moistureMap = HeightMap(world.size, Range.new(0, 50), 0.8)
+        moistureMap = HeightMap(world.size, world.heightRange, world.roughness);
 
     world.heightMap = GridFilter.smooth(heightMap);
     world.moistureMap = GridFilter.smooth(moistureMap);
@@ -112,6 +116,16 @@ mapViewInput.addEventListener('change', function(e) {
     } else {
         drawMap(mapCtx, world);
     }
+});
+
+mapCanvas.addEventListener('mousemove', function(e) {
+    var x = _.parseInt((e.clientX - mapCanvas.offsetLeft) / TILESIZE),
+        y = _.parseInt((e.clientY - mapCanvas.offsetTop) / TILESIZE);
+        point = Point.new(x, y),
+        height = world.heightMap.get(point),
+        moisture = world.moistureMap.get(point);
+    var text = "(x: "+ x + ", y:" + y + ")<br/>" + "Height: " + height + ",  Moisture: " + moisture;
+    infoPanel.innerHTML = text;
 });
 
 roughnessInput.value = world.roughness;
