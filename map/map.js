@@ -32,10 +32,10 @@ var heightmapColorMap = [
 ];
 
 var moistureColorMap = [
-    {range: '0:35', color: "tomato"},
-    {range: '36:55', color: "darkorange"},
-    {range: '56:85', color: "mediumseagreen"},
-    {range: '86:100', color: "mediumaquamarine"}
+    {range: '0:35', color: getRandomColor()},
+    {range: '36:55', color: getRandomColor()},
+    {range: '56:85', color: getRandomColor()},
+    {range: '86:100', color: getRandomColor()}
 ];
 
 
@@ -93,11 +93,8 @@ var stats = function(world) {
 };
 
 var generate = function(world) {
-    var heightMap = HeightMap(world.size, world.heightRange, world.roughness),
-        moistureMap = HeightMap(world.size, world.heightRange, world.roughness);
-
-    world.heightMap = GridFilter.smooth(heightMap);
-    world.moistureMap = GridFilter.smooth(moistureMap);
+    world.heightMap = HeightMap(world.size, world.heightRange, world.roughness),
+    world.moistureMap = HeightMap(world.size, world.heightRange, world.roughness);
 
     //stats(world);
     //generateRivers(world);

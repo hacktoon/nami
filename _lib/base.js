@@ -5,6 +5,15 @@ var canvasContextById = function(id) {
     return canvas.getContext("2d");
 };
 
+var getRandomColor = function() {
+    var letters = '0123456789ABCDEF',
+        color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 var Range = (function(){
     var _Range = function(start, end, step){
         this.start = start;
