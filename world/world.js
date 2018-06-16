@@ -59,10 +59,10 @@ var drawMap = function(ctx, world){
             var item = heightmapColorMap[i],
                 range = Range.parse(item.range);
 
-            if (world.moistureMap.get(point) <= 35 && currentValue > world.waterLevel){
-                ctx.fillStyle = "PaleGoldenRod";
-                break;
-            }
+            // if (world.moistureMap.get(point) <= 35 && currentValue > world.waterLevel){
+            //     ctx.fillStyle = "PaleGoldenRod";
+            //     break;
+            // }
             if (range.contains(currentValue)){
                 ctx.fillStyle = item.color;
             }
@@ -71,6 +71,7 @@ var drawMap = function(ctx, world){
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
 };
+
 
 var generateRivers = function(world) {
     var grid = world.heightMap,
@@ -92,12 +93,11 @@ var stats = function(world) {
     });
 };
 
+
 var generate = function(world) {
     world.heightMap = HeightMap(world.size, world.heightRange, world.roughness),
     world.moistureMap = HeightMap(world.size, world.heightRange, world.roughness);
 
-    //stats(world);
-    //generateRivers(world);
     drawMap(mapCtx, world);
 };
 
@@ -121,7 +121,7 @@ mapCanvas.addEventListener('mousemove', function(e) {
         point = Point.new(x, y),
         height = world.heightMap.get(point),
         moisture = world.moistureMap.get(point);
-    var text = "(x: "+ x + ", y:" + y + ")<br/>" + "Height: " + height + ",  Moisture: " + moisture;
+    var text = "(x: "+ x + ", y: " + y + ")<br/>" + "Height: " + height + ",  Moisture: " + moisture;
     infoPanel.innerHTML = text;
 });
 
