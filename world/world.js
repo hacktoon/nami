@@ -10,7 +10,7 @@ var TILESIZE = 2;
 var world = {
     size: 256,
     heightRange: Range.new(0, 100),
-    roughness: 1.5,
+    roughness: 1,
     waterLevel: 40,
     heightMap: undefined,
     stats: {
@@ -19,15 +19,15 @@ var world = {
 };
 
 var heightmapColorMap = [
-    {range: '0:30', color: "#0052AF"},
-    {range: '31:40', color: "#005FCA"},
-    {range: '41:50', color: "#008900"},
-    {range: '51:60', color: "#009000"},
-    {range: '61:70', color: "#009C00"},
-    {range: '71:80', color: "#00A600"},
-    {range: '81:84', color: "#00ab00"},
-    {range: '85:95', color: "#00af00"},
-    {range: '96:98', color: "#00be00"},
+    {range: '0:40', color: "#0052AF"},
+    {range: '41:50', color: "#005FCA"},
+    {range: '51:60', color: "#008900"},
+    {range: '61:70', color: "#009000"},
+    {range: '71:80', color: "#009C00"},
+    {range: '81:90', color: "#00A600"},
+    {range: '91:94', color: "#00ab00"},
+    {range: '95:96', color: "#00af00"},
+    {range: '97:98', color: "#00be00"},
     {range: '99:100', color: "#00d000"},
 ];
 
@@ -73,6 +73,11 @@ var drawMap = function(ctx, world){
 };
 
 
+var erode = function(world) {
+    var edges = world.tiles.atWaterLevel;
+};
+
+
 var generateRivers = function(world) {
     var grid = world.heightMap,
         sproutPoint = _.sample(world.stats.highland);
@@ -95,8 +100,11 @@ var stats = function(world) {
 
 
 var generate = function(world) {
-    world.heightMap = HeightMap(world.size, world.heightRange, world.roughness),
-    world.moistureMap = HeightMap(world.size, world.heightRange, world.roughness);
+    var heightMap = HeightMap(world.size, world.heightRange, world.roughness),
+        moistureMap = HeightMap(world.size, world.heightRange, world.roughness);
+
+    world.heightMap = GridFilter.smooth(heightMap);
+    world.moistureMap = GridFilter.smooth(moistureMap);
 
     drawMap(mapCtx, world);
 };

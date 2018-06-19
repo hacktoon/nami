@@ -1,4 +1,10 @@
 
+var MidpointDisplacement = function(p1, p2, roughness){
+    var verticalDisplacement = (p1.y + p2.y) / 2,
+        points = [p1, p2]
+};
+
+
 var HeightMap = function(gridSize, heightRange, roughness){
     var grid = Grid.new(gridSize + 1, gridSize + 1, undefined);
 
