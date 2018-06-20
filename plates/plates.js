@@ -42,9 +42,10 @@ var colors = [
 
 var Plate = (function(){
 
-    var _Plate = function(id){
+    var _Plate = function(id, startPoint){
         this.id = id;
         this.points = [];
+        this.edges = [startPoint];
         this.scheduled = [];
         this.speed = 5;
         this.weight = 10;
@@ -56,7 +57,7 @@ var Plate = (function(){
         };
 
         this.grow = function(grid) {
-            var validNeighbours = [],
+            var newEdges = [],
                 self = this;
 
             this.scheduled.forEach(function(point){
@@ -68,20 +69,20 @@ var Plate = (function(){
                     if (_.sample([true, false])){
                         grid.set(neighbourPoint, self.id);
                         visitedPoints++;
-                        validNeighbours.push(neighbourPoint);
+                        newEdges.push(neighbourPoint);
                     } else {
-                        validNeighbours.push(point);
+                        newEdges.push(point);
                     }
                 });
             });
-            this.scheduled = validNeighbours;
+            this.scheduled = newEdges;
         };
     };
 
     return {
         _class: _Plate,
-        new: function(id){
-            return new _Plate(id);
+        new: function(id, startPoint){
+            return new _Plate(id, startPoint);
         }
     };
 })();
@@ -91,10 +92,10 @@ var createPlates = function(grid, numPoints) {
         plates = [],
         id = 0;
 
-    points.forEach(function(point) {
-        var plate = Plate.new(id++);
-        plate.scheduled.push(point);
-        grid.set(point, plate.id);
+    points.forEach(function(startPoint) {
+        var plate = Plate.new(id++, startPoint);
+        plate.scheduled.push(startPoint);
+        grid.set(startPoint, plate.id);
         visitedPoints++;
         plates.push(plate);
     });
