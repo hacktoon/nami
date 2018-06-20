@@ -49,7 +49,6 @@ var Plate = (function(){
         this.scheduled = [];
         this.speed = 5;
         this.weight = 10;
-        this.priority = _.sample([1, 1, 1, 2]);
         this.direction = _.sample([TOP, LEFT, RIGHT, BOTTOM]);
 
         this.addPoint = function(point) {
@@ -61,9 +60,7 @@ var Plate = (function(){
                 self = this;
 
             this.scheduled.forEach(function(point){
-                var neighbours = grid.directNeighbours(point, function(point){
-                    return grid.get(point) === undefined;
-                });
+                var neighbours = point.neighbours('axials');
 
                 neighbours.forEach(function(neighbourPoint){
                     if (_.sample([true, false])){

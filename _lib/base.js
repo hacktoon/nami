@@ -12,7 +12,7 @@ var getRandomColor = function() {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-}
+};
 
 var Range = (function(){
     var _Range = function(start, end, step){
@@ -51,7 +51,7 @@ var Point = (function(){
         this.y = 0;
 
         this.hash = function() {
-            return this.x + ',' + this.y;
+            return this.x + ', ' + this.y;
         };
     };
 
@@ -59,6 +59,7 @@ var Point = (function(){
         _class: _Point,
         new: function(x, y){
             var point = new _Point();
+            point.neighbours = PointNeighbours(point);
             point.x = x;
             point.y = y;
             return point;
@@ -69,6 +70,51 @@ var Point = (function(){
         distance: function(p1, p2){
             var sum = Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2);
             return Math.sqrt(sum);
+        },
+        from: function(text){
+            var bits = text.replace(' ', '').split(','),
+                x = _.parseInt(bits[0]),
+                y = _.parseInt(bits[1]);
+            return Point.new(x, y);
+        }
+    };
+})();
+
+
+var PointNeighbours = (function(context){
+    var specs = {
+        axials: [[0, 1], [0, -1], [1, 0], [-1, 0]],
+        diagonals: [[1, 1], [1, -1], [-1, -1], [-1, 1]],
+        around: _.concat(axials, diagonals)
+    };
+
+    var createPoint = function(refPoint){
+        var x = context.x + refPoint[0],
+            y = context.y + refPoint[1];
+        return Point.new(x, y);
+    };
+
+    var neighbours = function(spec){
+        var refPoints = _.defaultTo(spec, specs.around),
+            points = refPoints.map(createPoint);
+        return points;
+    };
+
+    var _PointNeighbours = function(){
+        this.x = 0;
+        this.y = 0;
+
+        this.hash = function() {
+            return this.x + ', ' + this.y;
+        };
+    };
+
+    return {
+        _class: _PointNeighbours,
+        new: function(point){
+            var point = new _PointNeighbours();
+
+            return point;
         }
     };
 })();

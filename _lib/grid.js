@@ -1,47 +1,10 @@
 
-var GridNeighbourhood = (function(){
-    // four direct adjacents
-    var _vonNeumann = [
-        Point.new(0, 1),
-        Point.new(0, -1),
-        Point.new(1, 0),
-        Point.new(-1, 0),
-    ];
-
-    // all eight adjacents
-    var _moore = _vonNeumann.concat([
-        Point.new(1, 1),
-        Point.new(1, -1),
-        Point.new(-1, -1),
-        Point.new(-1, 1),
-    ]);
-
-    var _points = function(refPoints, grid, pivotPoint){
-        return refPoints.map(function(refPoint){
-            var point = Point.add(pivotPoint, refPoint),
-                x = point.x,
-                y = point.y;
-            return Point.new(x, y);
-        });
-    };
-
-    return {
-        vonNeumann: function(grid, point){
-            return _points(_vonNeumann, grid, point);
-        },
-        moore: function(grid, point){
-            return _points(_moore, grid, point);
-        }
-    };
-
-})();
-
 
 var GridFilter = (function(){
     var smooth = function(originalGrid) {
         var grid = _.cloneDeep(originalGrid);
         originalGrid.map(function(value, point) {
-            var neighbours = GridNeighbourhood.vonNeumann(originalGrid, point),
+            var neighbours = point.neighbours(),
                 sum = _.sumBy(neighbours, function(pt) {
                     return originalGrid.get(pt);
                 });
@@ -89,16 +52,6 @@ var Grid = (function(){
             this.map(function(_, point) {
                 self.set(point, value);
             });
-        };
-
-        this.directNeighbours = function(point, predicate){
-            var neighbours = GridNeighbourhood.vonNeumann(this, point);
-            return _.filter(neighbours, predicate);
-        };
-
-        this.allNeighbours = function(point, predicate){
-            var neighbours = GridNeighbourhood.moore(this, point);
-            return _.filter(neighbours, predicate);
         };
 
         this.map = function(callback){
