@@ -5,7 +5,7 @@ var canvasContextById = function(id) {
     return canvas.getContext("2d");
 };
 
-var getRandomColor = function() {
+var RandomColor = function() {
     var letters = '0123456789ABCDEF',
         color = '#';
     for (var i = 0; i < 6; i++) {
@@ -46,75 +46,52 @@ var Range = (function(){
 
 
 var Point = (function(){
-    var _Point = function(){
-        this.x = 0;
-        this.y = 0;
-
-        this.hash = function() {
-            return this.x + ', ' + this.y;
-        };
+    var _Point = function(x, y){
+        this.x = x;
+        this.y = y;
+        this.hash = x + ', ' + y;
     };
 
     return {
-        _class: _Point,
         new: function(x, y){
-            var point = new _Point();
-            point.neighbours = PointNeighbours(point);
-            point.x = x;
-            point.y = y;
-            return point;
+            return new _Point(x, y);
         },
         add: function(p1, p2){
             return Point.new(p1.x + p2.x, p1.y + p2.y);
-        },
-        distance: function(p1, p2){
-            var sum = Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2);
-            return Math.sqrt(sum);
         },
         from: function(text){
             var bits = text.replace(' ', '').split(','),
                 x = _.parseInt(bits[0]),
                 y = _.parseInt(bits[1]);
             return Point.new(x, y);
-        }
-    };
-})();
+        },
+        euclidianDistance: function(point1, point2){
+            var deltaX = Math.pow(point2.x - point1.x, 2),
+                deltaY = Math.pow(point2.y - point1.y, 2);
+            return Math.sqrt(deltaX + deltaY);
+        },
+        manhattanDistance: function(point1, point2){
+            var deltaX = Math.abs(point2.x - point1.x),
+                deltaY = Math.abs(point2.y - point1.y);
+            return deltaX + deltaY;
+        },
+        neighborHood: function(point, type) {
+            var type = type || 'axials',
+                axials = [[0, 1], [0, -1], [1, 0], [-1, 0]],
+                diagonals = [[1, 1], [1, -1], [-1, -1], [-1, 1]],
+                neighbourCoordsByType = {
+                    axials: axials,
+                    diagonals: diagonals,
+                    around: _.concat(axials, diagonals)
+                };
 
+            var _Point = function(coords){
+                var x = point.x + coords[0],
+                    y = point.y + coords[1];
+                return Point.new(x, y);
+            };
 
-var PointNeighbours = (function(context){
-    var specs = {
-        axials: [[0, 1], [0, -1], [1, 0], [-1, 0]],
-        diagonals: [[1, 1], [1, -1], [-1, -1], [-1, 1]],
-        around: _.concat(axials, diagonals)
-    };
-
-    var createPoint = function(refPoint){
-        var x = context.x + refPoint[0],
-            y = context.y + refPoint[1];
-        return Point.new(x, y);
-    };
-
-    var neighbours = function(spec){
-        var refPoints = _.defaultTo(spec, specs.around),
-            points = refPoints.map(createPoint);
-        return points;
-    };
-
-    var _PointNeighbours = function(){
-        this.x = 0;
-        this.y = 0;
-
-        this.hash = function() {
-            return this.x + ', ' + this.y;
-        };
-    };
-
-    return {
-        _class: _PointNeighbours,
-        new: function(point){
-            var point = new _PointNeighbours();
-
-            return point;
+            return neighbourCoordsByType[type].map(_Point);
         }
     };
 })();

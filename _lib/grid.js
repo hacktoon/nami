@@ -1,20 +1,37 @@
 
 
 var GridFilter = (function(){
-    var smooth = function(originalGrid) {
+    var average = function(originalGrid) {
         var grid = _.cloneDeep(originalGrid);
         originalGrid.map(function(value, point) {
-            var neighbours = point.neighbours(),
-                sum = _.sumBy(neighbours, function(pt) {
+            var neighbors = Point.neighborHood(point, 'axials'),
+                sum = _.sumBy(neighbors, function(pt) {
                     return originalGrid.get(pt);
                 });
-            grid.set(point, Math.round(sum / neighbours.length));
+            grid.set(point, Math.round(sum / neighbors.length));
+        });
+        return grid;
+    };
+
+    var median = function(originalGrid) {
+        var grid = _.cloneDeep(originalGrid),
+            getNeighborhoodValues = function(point){
+                var neighbors = Point.neighborHood(point, 'around');
+                return neighbors.map(function(point) {
+                    return originalGrid.get(point)
+                });
+            };
+
+        originalGrid.map(function(value, point) {
+            var neighborhoodValues = getNeighborhoodValues(point);
+            grid.set(point, _.sortBy(neighborhoodValues)[4]);
         });
         return grid;
     };
 
     return {
-        smooth: smooth
+        average: average,
+        median: median
     };
 
 })();
@@ -90,10 +107,9 @@ var Grid = (function(){
             while(count < numPoints){
                 var x = _.random(0, this.width-1),
                     y = _.random(0, this.height-1),
-                    point = Point.new(x, y),
-                    hash = point.hash();
+                    hash = x + "," + y;
                 if (chosenPoints[hash] === undefined){
-                    chosenPoints[hash] = point;
+                    chosenPoints[hash] = Point.new(x, y);
                     count++;
                 }
             }

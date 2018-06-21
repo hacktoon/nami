@@ -60,13 +60,13 @@ var Plate = (function(){
                 self = this;
 
             this.scheduled.forEach(function(point){
-                var neighbours = point.neighbours('axials');
+                var neighbours = Point.neighborHood(point, 'axials');
 
-                neighbours.forEach(function(neighbourPoint){
+                neighbours.forEach(function(neighbour){
                     if (_.sample([true, false])){
-                        grid.set(neighbourPoint, self.id);
+                        grid.set(neighbour, self.id);
                         visitedPoints++;
-                        newEdges.push(neighbourPoint);
+                        newEdges.push(neighbour);
                     } else {
                         newEdges.push(point);
                     }

@@ -5,12 +5,12 @@ var mapCanvas = document.getElementById("canvas"),
     mapViewInput = document.getElementById("map-view"),
     infoPanel = document.getElementById("info");
 
-var TILESIZE = 2;
+var TILESIZE = 4;
 
 var world = {
-    size: 256,
+    size: 128,
     heightRange: Range.new(0, 100),
-    roughness: 1,
+    roughness: 3,
     waterLevel: 40,
     heightMap: undefined,
     stats: {
@@ -32,10 +32,10 @@ var heightmapColorMap = [
 ];
 
 var moistureColorMap = [
-    {range: '0:35', color: getRandomColor()},
-    {range: '36:55', color: getRandomColor()},
-    {range: '56:85', color: getRandomColor()},
-    {range: '86:100', color: getRandomColor()}
+    {range: '0:35', color: RandomColor()},
+    {range: '36:55', color: RandomColor()},
+    {range: '56:85', color: RandomColor()},
+    {range: '86:100', color: RandomColor()}
 ];
 
 
@@ -84,7 +84,7 @@ var generateRivers = function(world) {
         headPoint = sproutPoint;
 
     while(grid.get(headPoint) > world.waterLevel){
-        var neighbours = headPoint.neighbours();
+        var neighbours = Point.neighborHood(headPoint, 'axials');
         grid.set(headPoint, -5);
         headPoint = _.minBy(neighbours, function(p) { return grid.get(p); });
     }
@@ -103,8 +103,8 @@ var generate = function(world) {
     var heightMap = HeightMap(world.size, world.heightRange, world.roughness),
         moistureMap = HeightMap(world.size, world.heightRange, world.roughness);
 
-    world.heightMap = GridFilter.smooth(heightMap);
-    world.moistureMap = GridFilter.smooth(moistureMap);
+    world.heightMap = GridFilter.average(heightMap);
+    world.moistureMap = GridFilter.average(moistureMap);
 
     drawMap(mapCtx, world);
 };

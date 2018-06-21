@@ -56,16 +56,10 @@ var HeightMap = function(gridSize, heightRange, roughness){
     };
 
     var averagePoints = function(points) {
-        var sum = 0, count = 0;
-
-        points.map(function(point) {
-            var value = grid.get(point);
-            if (value != undefined){
-                sum += value;
-                count++;
-            }
+        var values = points.map(function(point) {
+            return grid.get(point);
         });
-        return Math.round(sum / count);
+        return Math.round(_.sum(values) / values.length);
     };
 
     var pointHeight = function(point, height){
