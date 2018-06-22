@@ -3,7 +3,7 @@
 var GridFilter = (function(){
     var average = function(originalGrid) {
         var grid = _.cloneDeep(originalGrid);
-        originalGrid.map(function(value, point) {
+        originalGrid.forEach(function(value, point) {
             var neighbors = Point.neighborHood(point, 'axials'),
                 sum = _.sumBy(neighbors, function(pt) {
                     return originalGrid.get(pt);
@@ -22,7 +22,7 @@ var GridFilter = (function(){
                 });
             };
 
-        originalGrid.map(function(value, point) {
+        originalGrid.forEach(function(value, point) {
             var neighborhoodValues = getNeighborhoodValues(point);
             grid.set(point, _.sortBy(neighborhoodValues)[4]);
         });
@@ -66,12 +66,12 @@ var Grid = (function(){
         this.reset = function(value){
             var self = this,
                 value = value || undefined;
-            this.map(function(_, point) {
+            this.forEach(function(_, point) {
                 self.set(point, value);
             });
         };
 
-        this.map = function(callback){
+        this.forEach = function(callback){
             for(var y = 0; y < this.height; y++){
                 for(var x = 0; x < this.width; x++){
                     callback(this.get(Point.new(x, y)), Point.new(x, y));
@@ -118,8 +118,6 @@ var Grid = (function(){
     };
 
     return {
-        _class: _Grid,
-
         new: function(width, height, default_value) {
             var grid = new _Grid();
 

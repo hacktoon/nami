@@ -103,7 +103,7 @@ var draw = function(grid){
     canvas.width = grid.width * TILESIZE;
     canvas.height = grid.height * TILESIZE;
 
-    grid.map(function(value, point) {
+    grid.forEach(function(value, point) {
         var value = grid.get(point);
         if (colors[value]){
             ctx.fillStyle = colors[value];

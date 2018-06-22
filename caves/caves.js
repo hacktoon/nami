@@ -39,7 +39,7 @@ var run = function(grid) {
 var step = function(grid) {
     var new_grid = Grid.new(grid.width, grid.height, 0);
 
-    grid.map(function(value, point) {
+    grid.forEach(function(value, point) {
         var neighbours = Point.neighborHood(point, 'around'),
             count_one = count_zero = 0;
 
@@ -67,7 +67,7 @@ var step = function(grid) {
 var draw = function(grid, valueMap){
     var valueMap = valueMap || {};
 
-    grid.map(function(value, point) {
+    grid.forEach(function(value, point) {
         var tile = grid.get(point);
         ctx.fillStyle = tile ? 'black' : 'white';
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
