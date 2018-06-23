@@ -1,41 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-      <title>World map</title>
-      <style type="text/css">
-        #button-panel {
-            padding: 10px 0;
-        }
-      </style>
+      <title>Nami</title>
   </head>
 
   <body>
+    <h1>Nami</h1>
     <nav>
         <a href="../plates/index.html">Plates</a>
         <a href="../caves/index.html">Caves</a>
         <a href="../world/index.html">World</a>
     </nav>
-    <div id="button-panel">
-        <label for="roughness">Roughness
-            <input type="number" min="0" max="3" step="0.1" value="1" id="roughness" />
-        </label>
-
-        <select id="map-view">
-            <option selected value="heightmap">Heightmap</option>
-            <option value="moisture"/>Moisture</option>
-        </select>
-
-        <button id="generate">generate</button>
-    </div>
-
-    <canvas id="canvas"></canvas>
-    <div id="info"></div>
-
-    <script src="../_lib/lodash.min.js"></script>
-    <script src="../_lib/base.js"></script>
-    <script src="../_lib/grid.js"></script>
-    <script src="../_lib/heightmap.js"></script>
-    <script src="world/world.js"></script>
-    <script src="world/app.js"></script>
   </body>
 </html>

@@ -1,56 +1,56 @@
-function hex(number) {
-    var chars = '0123456789ABCDEF';
-    var i = parseInt(number, 10);
-    if (i == 0 || isNaN (number))
-        return '00';
-    i = Math.round (Math.min (Math.max (0, i), 255));
-    return chars.charAt((i - i % 16) / 16) + chars.charAt (i % 16);
-}
+var HexByte = function (number){
+    var chars = '0123456789ABCDEF',
+        number = parseInt(number, 10);
+
+    if (number == 0 || isNaN(number)) { return '00'; }
+
+    number = Math.min(Math.max(0, number), 255);
+    return chars.charAt((number - number % 16) / 16) + chars.charAt (number % 16);
+};
 
 /* Convert an RGB triplet to a hex string */
-function convertToHex (rgb) {
-    return '#' + hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);
-}
+var HTMLHex = function (RGB){
+    return HexByte(RGB[0]) + HexByte(RGB[1]) + HexByte(RGB[2]);
+};
 
 /* Convert a hex string to an RGB triplet */
-var convertToRGB = function(hex) {
-    hex = hex.replace('#', '');
-    return [
-        parseInt(hex.substring(0, 2), 16),
-        parseInt(hex.substring(2, 4), 16),
-        parseInt(hex.substring(4, 6), 16)
-    ]
-};
-
-
-var NumberRange = function(start, end, total){
-    var step = (end - start) / (total - 1);
-    var items = [start];
-    var current = start;
-    while (current < end){
-        current += step;
-        items.push(Math.round(current));
+var RGBTriplet = function(hexString) {
+    if(hexString.length == 3){
+        hexString = hexString[0] + hexString[0] +
+            hexString[1] + hexString[1] + hexString[2] + hexString[2];
     }
-    return items;
+    return [
+        parseInt(hexString.substring(0, 2), 16),
+        parseInt(hexString.substring(2, 4), 16),
+        parseInt(hexString.substring(4, 6), 16)
+    ];
 };
 
-/* The start of your code. */
-var ColorGradient = function(total){
-    var start = convertToRGB ('#000000');    /* The beginning of your gradient */
-    var end   = convertToRGB ('#ffffff');    /* The end of your gradient */
-    var total = total - 1;
-    var colors = [start];
+var NumberRange = function(start, end, steps){
+    var totalNumbers = end - start + 1,
+        stepValue = totalNumbers / steps,
+        numbers = [start],
+        current = start;
 
-    for (i = 0; i < total; i++) {
-        var c = [];
+    _.times(steps - 2, function(){
+        current += stepValue;
+        numbers.push(Math.round(current));
+    });
+    numbers.push(end);
 
-        c[0] = NumberRange(start[0], end[0], total);
-        c[1] = NumberRange(start[1], end[1], total);
-        c[2] = NumberRange(start[2], end[2], total);
-        console.log(c);
+    return numbers;
+};
 
-        /* Set the background color of this element */
-        colors[i] = convertToHex(c);
+var ColorGradient = function(from, to, steps){
+    var start = RGBTriplet(from),
+        end   = RGBTriplet(to),
+        red = NumberRange(start[0], end[0], steps),
+        green = NumberRange(start[1], end[1], steps),
+        blue = NumberRange(start[2], end[2], steps),
+        colors = [];
+
+    for (var i = 0; i < steps; i++) {
+        colors.push('#' + HTMLHex([red[i], green[i], blue[i]]));
     }
     return colors;
 };
