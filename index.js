@@ -7,26 +7,14 @@ var mapCanvas = document.getElementById("surface"),
     moistureViewInput = document.getElementById("moisture-button"),
     infoPanel = document.getElementById("info");
 
-var TILESIZE = 5;
+var interface = {
+    TILESIZE: 5
+};
 
 var world = World.new(128);
 
 var heightmapColorMap = {},
     moistureColorMap = {};
-
-var generateWorldColorMap = function() {
-    var water = ColorGradient('0052AF', '005FCA', world.waterLevel),
-        ground = ColorGradient('008900', '00d000', 100 - world.waterLevel);
-    _.concat(water, ground).forEach(function(item, index) {
-        heightmapColorMap[index+1] = item;
-    });
-};
-
-var generateMoistureColorMap = function() {
-    ColorGradient('CC0000', '0000CC', 100).forEach(function(item, index) {
-        moistureColorMap[index] = item;
-    });
-};
 
 generateButton.addEventListener('click', function() {
     world.roughness = Number(roughnessInput.value);
@@ -49,20 +37,22 @@ waterLevelInput.addEventListener('change', function(e) {
 });
 
 mapCanvas.addEventListener('mousemove', function(e) {
-    var x = _.parseInt((e.clientX - mapCanvas.offsetLeft) / TILESIZE),
-        y = _.parseInt((e.clientY - mapCanvas.offsetTop) / TILESIZE);
+    var mouseX = e.clientX - mapCanvas.offsetLeft,
+        mouseY = e.clientY - mapCanvas.offsetTop,
+        x = _.parseInt(mouseX / interface.TILESIZE),
+        y = _.parseInt(mouseY / interface.TILESIZE),
         point = Point.new(x, y),
         height = world.heightMap.get(point),
-        moisture = world.moistureMap.get(point);
-    var text = "(x: "+ x + ", y: " + y + ") = " + "Height: " + height + ",  Moisture: " + moisture;
+        moisture = world.moistureMap.get(point),
+        text = "(x: "+ x + ", y: " + y + ") = " + "Height: " + height + ",  Moisture: " + moisture;
     infoPanel.innerHTML = text;
 });
 
 roughnessInput.value = world.roughness;
 waterLevelInput.value = world.waterLevel;
 
-mapCanvas.width = world.size * TILESIZE;
-mapCanvas.height = world.size * TILESIZE;
+mapCanvas.width = world.size * interface.TILESIZE;
+mapCanvas.height = world.size * interface.TILESIZE;
 
 generateWorldColorMap();
 generateMoistureColorMap();
