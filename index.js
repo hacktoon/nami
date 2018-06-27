@@ -8,10 +8,10 @@ var mapCanvas = document.getElementById("surface"),
     infoPanel = document.getElementById("info");
 
 var View = {
-    TILESIZE: 5
+    TILESIZE: 4
 };
 
-var world = World.new(128);
+var world = World.new(128, Number(roughnessInput.value));
 
 var heightmapColorMap = {},
     moistureColorMap = {};

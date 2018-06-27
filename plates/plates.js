@@ -29,7 +29,7 @@ var Plate = (function(){
 
     var _Plate = function(id, startPoint){
         this.id = id;
-        this.points = [];
+        this.points = [startPoint];
         this.edges = [startPoint];
         this.scheduled = [];
         this.speed = 5;
@@ -44,10 +44,10 @@ var Plate = (function(){
             var newEdges = [],
                 self = this;
 
-            this.scheduled.forEach(function(point){
-                var neighbours = Point.neighborHood(point, 'axials');
+            this.edges.forEach(function(point){
+                var edgeNeighbours = Point.neighborHood(point, 'axials');
 
-                neighbours.forEach(function(neighbour){
+                edgeNeighbours.forEach(function(neighbour){
                     if (_.sample([true, false])){
                         grid.set(neighbour, self.id);
                         visitedPoints++;

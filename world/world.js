@@ -1,11 +1,11 @@
 
 var World = (function(){
-    var _World = function(size){
-        this.size = 128;
+    var _World = function(size, roughness){
+        this.size = size;
         this.heightMap = Grid.new(size, size);
         this.heightRange = Range.new(0, 100);
         this.moistureMap = Grid.new(size, size);
-        this.roughness = 4;
+        this.roughness = roughness;
         this.waterLevel = 50;
         this.data = {};
 
@@ -34,8 +34,8 @@ var World = (function(){
     };
 
     return {
-        new: function(size) {
-            return new _World(size);
+        new: function(size, roughness) {
+            return new _World(size, roughness);
         }
     };
 })();
