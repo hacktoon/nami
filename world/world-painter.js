@@ -14,7 +14,7 @@ var generateMoistureColorMap = function() {
 
 var drawMap = function(ctx, grid, opts){
     var opts = opts || {},
-        tSize = interface.TILESIZE;
+        tSize = View.TILESIZE;
 
     grid.forEach(function(currentValue, point){
         ctx.fillStyle = opts.colorMap[currentValue];

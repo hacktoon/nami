@@ -7,7 +7,7 @@ var mapCanvas = document.getElementById("surface"),
     moistureViewInput = document.getElementById("moisture-button"),
     infoPanel = document.getElementById("info");
 
-var interface = {
+var View = {
     TILESIZE: 5
 };
 
@@ -39,8 +39,8 @@ waterLevelInput.addEventListener('change', function(e) {
 mapCanvas.addEventListener('mousemove', function(e) {
     var mouseX = e.clientX - mapCanvas.offsetLeft,
         mouseY = e.clientY - mapCanvas.offsetTop,
-        x = _.parseInt(mouseX / interface.TILESIZE),
-        y = _.parseInt(mouseY / interface.TILESIZE),
+        x = _.parseInt(mouseX / View.TILESIZE),
+        y = _.parseInt(mouseY / View.TILESIZE),
         point = Point.new(x, y),
         height = world.heightMap.get(point),
         moisture = world.moistureMap.get(point),
@@ -51,8 +51,8 @@ mapCanvas.addEventListener('mousemove', function(e) {
 roughnessInput.value = world.roughness;
 waterLevelInput.value = world.waterLevel;
 
-mapCanvas.width = world.size * interface.TILESIZE;
-mapCanvas.height = world.size * interface.TILESIZE;
+mapCanvas.width = world.size * View.TILESIZE;
+mapCanvas.height = world.size * View.TILESIZE;
 
 generateWorldColorMap();
 generateMoistureColorMap();

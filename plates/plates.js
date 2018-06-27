@@ -1,4 +1,4 @@
-var canvas = document.getElementById("canvas"),
+var canvas = document.getElementById("surface"),
     ctx = canvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
     resetButton = document.getElementById("reset"),
@@ -8,37 +8,22 @@ var TOP = 1,
     LEFT = 2,
     BOTTOM = 3,
     RIGHT = 4,
-    TILESIZE = 2,
-    NUM_PLATES = 12;
+    TILESIZE = 5,
+    NUM_PLATES = 10;
 
-var grid = Grid.new(256, 256),
+var grid = Grid.new(128, 128),
     plates = [],
     scheduled = [],
     totalPoints = grid.width * grid.height,
     visitedPoints = 0;
 
-var colors = [
-    'red',
-    'green',
-    'blue',
-    'wheat',
-    'orange',
-    'black',
-    'yellow',
-    'brown',
-    'indigo',
-    'purple',
-    'indianred',
-    'teal',
-    'salmon',
-    'grey',
-    'darkkhaki',
-    'aliceblue ',
-    'aqua',
-    'coral',
-    'darkolivegreen',
-    'darkseagreen'
-];
+var platesColorMap = (function() {
+    var colors = [];
+    _.times(NUM_PLATES, function() {
+        colors.push(RandomColor());
+    })
+    return colors;
+})();
 
 var Plate = (function(){
 
@@ -105,11 +90,7 @@ var draw = function(grid){
 
     grid.forEach(function(value, point) {
         var value = grid.get(point);
-        if (colors[value]){
-            ctx.fillStyle = colors[value];
-        } else {
-            ctx.fillStyle = "lightblue";
-        }
+        ctx.fillStyle = platesColorMap[value] || 'lightblue';
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
 };
