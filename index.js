@@ -14,10 +14,14 @@ var View = {
 var heightmapColorMap = {},
     moistureColorMap = {};
 
-var world = World.new(128, Number(roughnessInput.value), Number(seaLevelInput.value));
+var createWorld = function(){
+    return World.new(128, Number(roughnessInput.value), Number(seaLevelInput.value));
+};
+
+var world = createWorld();
 
 generateButton.addEventListener('click', function() {
-    //world = World.new(128, Number(roughnessInput.value));
+    world = createWorld();
     world.roughness = Number(roughnessInput.value);
     world.build();
     drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});

@@ -4,9 +4,6 @@ var generateSurfaceColorMap = function() {
     _.concat(water, ground).forEach(function(item, index) {
         heightmapColorMap[index+1] = item;
     });
-
-    // specific colors
-    heightmapColorMap[world.heightRange.end] = '#FFF';
 };
 
 var generateMoistureColorMap = function() {
