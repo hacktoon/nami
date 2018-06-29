@@ -2,7 +2,7 @@ var mapCanvas = document.getElementById("surface"),
     mapCtx = mapCanvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
     roughnessInput = document.getElementById("roughness"),
-    waterLevelInput = document.getElementById("waterLevel"),
+    seaLevelInput = document.getElementById("seaLevel"),
     surfaceViewInput = document.getElementById("surface-button"),
     moistureViewInput = document.getElementById("moisture-button"),
     infoPanel = document.getElementById("info");
@@ -11,15 +11,23 @@ var View = {
     TILESIZE: 4
 };
 
-var world = World.new(128, Number(roughnessInput.value));
-
 var heightmapColorMap = {},
     moistureColorMap = {};
 
+var world = World.new(128, Number(roughnessInput.value));
+
 generateButton.addEventListener('click', function() {
+    //world = World.new(128, Number(roughnessInput.value));
     world.roughness = Number(roughnessInput.value);
     world.build();
     drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
+    seaLevelInput.value = world.seaLevel;
+    Log("land: " + world.data.land, "water: " + world.data.water);
+    if (world.data.land > world.data.water) {
+        Log('more land');
+    } else {
+        Log('more water');
+    }
 });
 
 surfaceViewInput.addEventListener('click', function(e) {
@@ -30,9 +38,9 @@ moistureViewInput.addEventListener('click', function(e) {
     drawMap(mapCtx, world.moistureMap, {colorMap: moistureColorMap});
 });
 
-waterLevelInput.addEventListener('change', function(e) {
-    world.waterLevel = waterLevelInput.value;
-    generateWorldColorMap();
+seaLevelInput.addEventListener('change', function(e) {
+    world.seaLevel = seaLevelInput.value;
+    generateSurfaceColorMap();
     drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
 });
 
@@ -49,12 +57,12 @@ mapCanvas.addEventListener('mousemove', function(e) {
 });
 
 roughnessInput.value = world.roughness;
-waterLevelInput.value = world.waterLevel;
+seaLevelInput.value = world.seaLevel;
 
 mapCanvas.width = world.size * View.TILESIZE;
 mapCanvas.height = world.size * View.TILESIZE;
 
-generateWorldColorMap();
+generateSurfaceColorMap();
 generateMoistureColorMap();
 world.build();
 drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});

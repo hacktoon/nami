@@ -1,16 +1,32 @@
 
+var WorldMapAnalysis = function(){
+
+};
+
+
 var World = (function(){
     var _World = function(size, roughness){
+        var self = this;
         this.size = size;
         this.heightMap = Grid.new(size, size);
         this.heightRange = Range.new(0, 100);
         this.moistureMap = Grid.new(size, size);
         this.roughness = roughness;
-        this.waterLevel = 50;
-        this.data = {};
+        this.seaLevel = 50;
+        self.data = {
+            water: 0,
+            land: 0
+        };
 
         this.generateHeightMap = function() {
-            var heightMap = HeightMap(this.size, this.heightRange, this.roughness);
+            var callback = function(point, height){
+                 if (height <= self.seaLevel) {
+                    self.data['water'] += 1;
+                 } else {
+                    self.data['land'] += 1;
+                }
+            };
+            var heightMap = HeightMap(this.size, this.heightRange, this.roughness, {callback: callback});
             this.heightMap = GridFilter.average(heightMap);
         };
 

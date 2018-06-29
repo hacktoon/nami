@@ -1,9 +1,12 @@
-var generateWorldColorMap = function() {
-    var water = ColorGradient('0052AF', '005FCA', world.waterLevel),
-        ground = ColorGradient('008900', '00d000', 100 - world.waterLevel);
+var generateSurfaceColorMap = function() {
+    var water = ColorGradient('0052AF', '005FCA', world.seaLevel),
+        ground = ColorGradient('008900', '00d000', world.heightRange.end - world.seaLevel);
     _.concat(water, ground).forEach(function(item, index) {
         heightmapColorMap[index+1] = item;
     });
+
+    // specific colors
+    heightmapColorMap[world.heightRange.end] = '#FFF';
 };
 
 var generateMoistureColorMap = function() {
