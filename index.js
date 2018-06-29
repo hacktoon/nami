@@ -14,7 +14,7 @@ var View = {
 var heightmapColorMap = {},
     moistureColorMap = {};
 
-var world = World.new(128, Number(roughnessInput.value));
+var world = World.new(128, Number(roughnessInput.value), Number(seaLevelInput.value));
 
 generateButton.addEventListener('click', function() {
     //world = World.new(128, Number(roughnessInput.value));

@@ -5,14 +5,14 @@ var WorldMapAnalysis = function(){
 
 
 var World = (function(){
-    var _World = function(size, roughness){
+    var _World = function(size, roughness, seaLevel){
         var self = this;
         this.size = size;
         this.heightMap = Grid.new(size, size);
         this.heightRange = Range.new(0, 100);
         this.moistureMap = Grid.new(size, size);
         this.roughness = roughness;
-        this.seaLevel = 50;
+        this.seaLevel = seaLevel;
         self.data = {
             water: 0,
             land: 0
@@ -50,8 +50,8 @@ var World = (function(){
     };
 
     return {
-        new: function(size, roughness) {
-            return new _World(size, roughness);
+        new: function(size, roughness, seaLevel) {
+            return new _World(size, roughness, seaLevel);
         }
     };
 })();
