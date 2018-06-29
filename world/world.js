@@ -35,14 +35,6 @@ var World = (function(){
             this.moistureMap = GridFilter.average(moistureMap);
         };
 
-        this.stats = function(world) {
-            world.heightMap.map(function(height, point) {
-                if (height > world.heightRange.end - 10){
-                    world.stats.highland.push(point);
-                }
-            });
-        };
-
         this.build = function() {
             this.generateHeightMap();
             this.generateMoistureMap();
