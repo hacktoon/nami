@@ -66,6 +66,11 @@ var draw = function(grid){
     });
 };
 
+var grow = function(region) {
+    if (_.sample([true, false]))
+        region.grow();
+};
+
 var autoGrow = function() {
     var completed = 0,
         completedMap = {};
@@ -76,8 +81,9 @@ var autoGrow = function() {
             if (region.isComplete()) {
                 completed += Boolean(completedMap[plate.id]) ? 0 : 1;
                 completedMap[plate.id] = 1;
+                return;
             }
-            region.grow();
+            grow(region);
         });
     }
 };
@@ -109,10 +115,7 @@ resetButton.addEventListener('click', function() {
 growButton.addEventListener('click', function() {
     plates.forEach(function(plate) {
         var region = regionMap[plate.id];
-        region.grow();
-        if (region.isComplete()){
-            Log(plate.id, );
-        }
+        grow(region);
     });
     draw(grid);
 });
