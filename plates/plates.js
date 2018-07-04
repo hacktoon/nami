@@ -12,17 +12,17 @@ var TOP = 1,
     NUM_PLATES = 10;
 
 var grid = Grid.new(128, 128),
-    plates = [];
+    plates = [],
+    platesColorMap = {};
+var regionMap = {};
 
-var platesColorMap = (function() {
+var colorMap = function() {
     var colors = [];
     _.times(NUM_PLATES, function() {
         colors.push(RandomColor());
     })
     return colors;
-})();
-
-var regionMap = {};
+};
 
 var Plate = (function(){
 
@@ -61,9 +61,25 @@ var draw = function(grid){
 
     grid.forEach(function(value, point) {
         var value = grid.get(point);
-        ctx.fillStyle = platesColorMap[value] || 'lightblue';
+        ctx.fillStyle = platesColorMap[value] || '#5F9EA0';
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
+};
+
+var autoGrow = function() {
+    var completed = 0,
+        completedMap = {};
+
+    while (completed != NUM_PLATES){
+        plates.forEach(function(plate) {
+            var region = regionMap[plate.id];
+            if (region.isComplete()) {
+                completed += Boolean(completedMap[plate.id]) ? 0 : 1;
+                completedMap[plate.id] = 1;
+            }
+            region.grow();
+        });
+    }
 };
 
 var reset = function() {
@@ -72,6 +88,7 @@ var reset = function() {
 };
 
 var init = function() {
+    platesColorMap = colorMap();
     plates = createPlates(grid, NUM_PLATES);
     plates.forEach(function(plate) {
         regionMap[plate.id].grow();
@@ -80,7 +97,7 @@ var init = function() {
 
 generateButton.addEventListener('click', function() {
     reset();
-
+    autoGrow();
     draw(grid);
 });
 
@@ -91,7 +108,11 @@ resetButton.addEventListener('click', function() {
 
 growButton.addEventListener('click', function() {
     plates.forEach(function(plate) {
-        regionMap[plate.id].grow();
+        var region = regionMap[plate.id];
+        region.grow();
+        if (region.isComplete()){
+            Log(plate.id, );
+        }
     });
     draw(grid);
 });
