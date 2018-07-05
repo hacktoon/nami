@@ -67,7 +67,7 @@ var draw = function(grid){
 };
 
 var grow = function(region) {
-    if (_.sample([true, false]))
+    //if (_.sample([true, false]))
         region.grow();
 };
 
@@ -78,7 +78,7 @@ var autoGrow = function() {
     while (completed != NUM_PLATES){
         plates.forEach(function(plate) {
             var region = regionMap[plate.id];
-            if (region.isComplete()) {
+            if (region.complete) {
                 completed += Boolean(completedMap[plate.id]) ? 0 : 1;
                 completedMap[plate.id] = 1;
                 return;
