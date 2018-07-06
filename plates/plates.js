@@ -49,6 +49,7 @@ var createPlates = function(grid, totalPlates) {
         var plate = Plate.new(i);
 
         plateRegionMap[i] = GridFill.new(grid, points[i], i);
+        plateRegionMap[i].fillPoint(points[i]);
         plates.push(plate);
     });
     return plates;
@@ -60,7 +61,7 @@ var draw = function(grid){
 
     grid.forEach(function(value, point) {
         var value = grid.get(point);
-        ctx.fillStyle = platesColorMap[value] || '#CCC';
+        ctx.fillStyle = platesColorMap[value] || '#FFF';
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
 };
