@@ -95,9 +95,6 @@ var reset = function() {
 var init = function() {
     platesColorMap = colorMap();
     plates = createPlates(grid, totalPlatesInput.value);
-    plates.forEach(function(plate) {
-        plateRegionMap[plate.id].grow();
-    });
 };
 
 generateButton.addEventListener('click', function() {
