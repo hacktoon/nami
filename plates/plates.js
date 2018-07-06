@@ -45,15 +45,22 @@ var createPlates = function(grid, totalPlates) {
     var points = grid.randomPoints(totalPlates),
         plates = [];
 
-    _.times(totalPlates, function(i) {
-        var plate = Plate.new(i);
+    _.times(totalPlates, function(index) {
+        var plate = Plate.new(index);
 
-        plateRegionMap[i] = GridFill.new(grid, points[i], i);
-        plateRegionMap[i].fillPoint(points[i]);
+        plateRegionMap[index] = GridFill.new(grid, points[index], index);
         plates.push(plate);
     });
     return plates;
 };
+
+var drawEdges = function() {
+    plateRegionMap[0].edges.forEach(function(point) {
+        var value = grid.get(point);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
+    });
+}
 
 var draw = function(grid){
     canvas.width = grid.width * TILESIZE;
