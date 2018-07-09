@@ -87,7 +87,7 @@ var autoGrow = function() {
     while (completed != totalPlatesInput.value){
         plates.forEach(function(plate) {
             var region = plateRegionMap[plate.id];
-            if (region.complete) {
+            if (region.isComplete()) {
                 completed += Boolean(completedMap[plate.id]) ? 0 : 1;
                 completedMap[plate.id] = 1;
                 return;
