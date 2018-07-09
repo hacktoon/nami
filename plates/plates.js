@@ -3,7 +3,8 @@ var canvas = document.getElementById("surface"),
     totalPlatesInput = document.getElementById("totalPlates"),
     generateButton = document.getElementById("generate"),
     resetButton = document.getElementById("reset"),
-    growButton = document.getElementById("grow");
+    growButton = document.getElementById("grow"),
+    drawEdgesOpt = document.getElementById("drawEdges");
 
 var TOP = 1,
     LEFT = 2,
@@ -73,7 +74,9 @@ var draw = function(grid){
         ctx.fillStyle = platesColorMap[value] || '#FFF';
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
-    drawEdges();
+    if (drawEdgesOpt.checked){
+        drawEdges();
+    }
 };
 
 var grow = function(region) {
