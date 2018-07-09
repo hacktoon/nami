@@ -55,12 +55,14 @@ var createPlates = function(grid, totalPlates) {
 };
 
 var drawEdges = function() {
-    plateRegionMap[0].edges.forEach(function(point) {
-        var value = grid.get(point);
-        ctx.fillStyle = 'red';
-        ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
+    _.values(plateRegionMap).forEach(function(region) {
+        region.edges().forEach(function(edgePoint) {
+            var point = grid.wrap(edgePoint);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
+        });
     });
-}
+};
 
 var draw = function(grid){
     canvas.width = grid.width * TILESIZE;
@@ -71,6 +73,7 @@ var draw = function(grid){
         ctx.fillStyle = platesColorMap[value] || '#FFF';
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
+    drawEdges();
 };
 
 var grow = function(region) {
@@ -96,6 +99,7 @@ var autoGrow = function() {
 
 var reset = function() {
     grid.reset();
+    plateRegionMap = {};
     init();
 };
 
@@ -117,8 +121,7 @@ resetButton.addEventListener('click', function() {
 
 growButton.addEventListener('click', function() {
     plates.forEach(function(plate) {
-        var region = plateRegionMap[plate.id];
-        grow(region);
+        plateRegionMap[plate.id].grow();
     });
     draw(grid);
 });
