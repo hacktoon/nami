@@ -6,11 +6,7 @@ var canvas = document.getElementById("surface"),
     growButton = document.getElementById("grow"),
     drawEdgesOpt = document.getElementById("drawEdges");
 
-var TOP = 1,
-    LEFT = 2,
-    BOTTOM = 3,
-    RIGHT = 4,
-    TILESIZE = 5;
+var TILESIZE = 4;
 
 var grid = Grid.new(128, 128),
     plates = [],
@@ -31,7 +27,7 @@ var Plate = (function(){
         this.points = [];
         this.speed = _.sample([1, 2, 3, 4, 5]);
         this.weight = _.sample([1, 2]);
-        this.direction = _.sample([TOP, LEFT, RIGHT, BOTTOM]);
+        this.direction = Direction.random();
     };
 
     return {
