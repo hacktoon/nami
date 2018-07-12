@@ -51,6 +51,23 @@ var createPlates = function(grid, totalPlates) {
     return plates;
 };
 
+var drawPoint = function(point, color) {
+    var point = grid.wrap(point);
+    ctx.fillStyle = color;
+    ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
+};
+
+var drawEdgesByDirection = function(direction, color) {
+    var directionName = Direction.getName(direction).toLowerCase();
+    _.values(plateRegionMap).forEach(function(region) {
+        region[directionName+'Edges'].forEach(function(edgePoint) {
+            var point = grid.wrap(edgePoint);
+            ctx.fillStyle = color;
+            ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
+        });
+    });
+};
+
 var drawEdges = function() {
     _.values(plateRegionMap).forEach(function(region) {
         region.edges().forEach(function(edgePoint) {
