@@ -70,7 +70,7 @@ var drawEdgesByDirection = function(direction, color) {
 
 var drawEdges = function() {
     _.values(plateRegionMap).forEach(function(region) {
-        region.edges.forEach(function(edgePoint) {
+        region.borderPoints(function(edgePoint) {
             var point = grid.wrap(edgePoint);
             ctx.fillStyle = 'black';
             ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
