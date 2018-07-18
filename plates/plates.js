@@ -57,23 +57,25 @@ var drawPoint = function(point, color) {
     ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
 };
 
-var drawEdgesByDirection = function(direction, color) {
-    var directionName = Direction.getName(direction).toLowerCase();
-    _.values(plateRegionMap).forEach(function(region) {
-        region[directionName+'Edges'].forEach(function(edgePoint) {
-            var point = grid.wrap(edgePoint);
-            ctx.fillStyle = color;
-            ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
+var drawEdgesByDirection = function(direction, color, regionId) {
+    if (_.isNumber(regionId)) {
+        plateRegionMap[regionId].edgesByDirection(direction, function(point) {
+            drawPoint(point, color);
         });
-    });
+    } else {
+        // TODO remove _values, use _.each
+        _.each(plateRegionMap, function(region, id) {
+            region.edgesByDirection(direction, function(point) {
+                drawPoint(point, color);
+            });
+        });
+    }
 };
 
-var drawEdges = function() {
-    _.values(plateRegionMap).forEach(function(region) {
-        region.edges(function(edgePoint) {
-            var point = grid.wrap(edgePoint);
-            ctx.fillStyle = 'black';
-            ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
+var drawEdges = function(color) {
+    _.each(plateRegionMap, function(region, id) {
+        region.edges(function(point) {
+            drawPoint(point, color);
         });
     });
 };
@@ -88,7 +90,7 @@ var draw = function(grid){
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
     if (drawEdgesOpt.checked){
-        drawEdges();
+        drawEdges("#000");
     }
 };
 
