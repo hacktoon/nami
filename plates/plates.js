@@ -43,9 +43,11 @@ var createPlates = function(grid, totalPlates) {
         plates = [];
 
     _.times(totalPlates, function(index) {
-        var plate = Plate.new(index);
+        var plate = Plate.new(index),
+            region = GridFill.new(grid, index);
+            region.seed(points[index]);
 
-        plateRegionMap[index] = GridFill.new(grid, points[index], index);
+        plateRegionMap[index] = region;
         plates.push(plate);
     });
     return plates;
@@ -72,7 +74,12 @@ var drawEdgesByDirection = function(direction, color, regionId) {
     }
 };
 
-var drawEdges = function(color) {
+var drawEdges = function(color, regionId) {
+    if (_.isNumber(regionId)) {
+        plateRegionMap[regionId].edges(function(point) {
+            drawPoint(point, color);
+        });
+    }
     _.each(plateRegionMap, function(region, id) {
         region.edges(function(point) {
             drawPoint(point, color);
