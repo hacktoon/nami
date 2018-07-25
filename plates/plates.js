@@ -10,13 +10,14 @@ var canvas = document.getElementById("surface"),
 var TILESIZE = 4;
 
 var grid = Grid.new(128, 128),
+    maxPlates = _.toNumber((grid.width * grid.height) / 4),
     plates = [],
     platesColorMap = {},
     plateRegionMap = {};
 
 var colorMap = function() {
     var colors = [];
-    _.times(totalPlatesInput.value, function() {
+    _.times(getTotalPlates(), function() {
         colors.push(RandomColor());
     })
     return colors;
@@ -46,8 +47,8 @@ var createPlates = function(grid, totalPlates) {
     _.times(totalPlates, function(index) {
         var plate = Plate.new(index),
             region = GridFill.new(grid, index);
-            region.seed(points[index]);
 
+        region.seed(points[index]);
         plateRegionMap[index] = region;
         plates.push(plate);
     });
@@ -56,6 +57,7 @@ var createPlates = function(grid, totalPlates) {
 
 var drawPoint = function(point, color) {
     var point = grid.wrap(point);
+
     ctx.fillStyle = color;
     ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
 };
@@ -109,14 +111,15 @@ var grow = function(region) {
 };
 
 var autoGrow = function() {
-    var completed = 0,
-        completedMap = {};
+    var totalCompleted = 0,
+        completedMap = {},
+        totalPlates = getTotalPlates();
 
-    while (completed != totalPlatesInput.value) {
+    while (totalCompleted != totalPlates) {
         plates.forEach(function(plate) {
             var region = plateRegionMap[plate.id];
             if (region.isComplete()) {
-                completed += Boolean(completedMap[plate.id]) ? 0 : 1;
+                totalCompleted += Boolean(completedMap[plate.id]) ? 0 : 1;
                 completedMap[plate.id] = 1;
                 return;
             }
@@ -133,7 +136,14 @@ var reset = function() {
 
 var init = function() {
     platesColorMap = colorMap();
-    plates = createPlates(grid, totalPlatesInput.value);
+    plates = createPlates(grid, getTotalPlates());
+};
+
+var getTotalPlates = function() {
+    var value = _.clamp(totalPlatesInput.value, 1, maxPlates);
+
+    totalPlatesInput.value = value;
+    return value;
 };
 
 drawEdgesCheckbox.addEventListener('click', function() {
