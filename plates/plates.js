@@ -21,8 +21,8 @@ var colorMap = function() {
     return colors;
 };
 
-var Plate = (function(){
-    var _Plate = function(id){
+var Plate = (function() {
+    var _Plate = function(id) {
         this.id = id;
         this.points = [];
         this.speed = _.sample([1, 2, 3, 4, 5]);
@@ -32,7 +32,7 @@ var Plate = (function(){
 
     return {
         _class: _Plate,
-        new: function(id){
+        new: function(id) {
             return new _Plate(id);
         }
     };
@@ -65,7 +65,6 @@ var drawEdgesByDirection = function(direction, color, regionId) {
             drawPoint(point, color);
         });
     } else {
-        // TODO remove _values, use _.each
         _.each(plateRegionMap, function(region, id) {
             region.edgesByDirection(direction, function(point) {
                 drawPoint(point, color);
@@ -87,7 +86,7 @@ var drawEdges = function(color, regionId) {
     });
 };
 
-var draw = function(grid){
+var draw = function(grid) {
     canvas.width = grid.width * TILESIZE;
     canvas.height = grid.height * TILESIZE;
 
@@ -96,7 +95,7 @@ var draw = function(grid){
         ctx.fillStyle = platesColorMap[value] || '#FFF';
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
-    if (drawEdgesOpt.checked){
+    if (drawEdgesOpt.checked) {
         drawEdges("#000");
     }
 };
@@ -109,7 +108,7 @@ var autoGrow = function() {
     var completed = 0,
         completedMap = {};
 
-    while (completed != totalPlatesInput.value){
+    while (completed != totalPlatesInput.value) {
         plates.forEach(function(plate) {
             var region = plateRegionMap[plate.id];
             if (region.isComplete()) {
