@@ -4,14 +4,21 @@
       <title>Plates</title>
 
       <style type="text/css">
-        #button-panel {
-            padding: 10px 0;
+        canvas {
+            outline: solid 1px #DDD;
+        }
+        .button-panel {
+            padding: 5px 0 10px;
+        }
+
+        .button-panel.edge-colors input {
+            width: 55px;
         }
       </style>
   </head>
 
   <body>
-    <div id="button-panel">
+    <div class="button-panel">
         <label for="totalPlates">Plates
             <input type="number" min="1" step="1" value="8" id="totalPlates" />
         </label>
@@ -24,6 +31,21 @@
         <button id="grow">grow</button>
     </div>
     <canvas id="surface"></canvas>
+    <div class="button-panel edge-colors">
+        <strong>Edges colors: </strong>
+        <label for="NORTH">North
+            <input type="text" maxlength="7" id="NORTH" class="edgeColor" />
+        </label>
+        <label for="EAST">East
+            <input type="text" maxlength="7" id="EAST" class="edgeColor" />
+        </label>
+        <label for="SOUTH">South
+            <input type="text" maxlength="7" id="SOUTH" class="edgeColor" />
+        </label>
+        <label for="WEST">West
+            <input type="text" maxlength="7" id="WEST" class="edgeColor" />
+        </label>
+    </div>
 
     <script src="../lib/lodash.min.js"></script>
     <script src="../lib/base.js"></script>

@@ -4,7 +4,8 @@ var canvas = document.getElementById("surface"),
     generateButton = document.getElementById("generate"),
     resetButton = document.getElementById("reset"),
     growButton = document.getElementById("grow"),
-    drawEdgesOpt = document.getElementById("drawEdges");
+    drawEdgesCheckbox = document.getElementById("drawEdges"),
+    edgeColorInput = document.getElementsByClassName("edgeColor");
 
 var TILESIZE = 4;
 
@@ -91,12 +92,15 @@ var draw = function(grid) {
     canvas.height = grid.height * TILESIZE;
 
     grid.forEach(function(value, point) {
-        var value = grid.get(point);
         ctx.fillStyle = platesColorMap[value] || '#FFF';
         ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
     });
-    if (drawEdgesOpt.checked) {
-        drawEdges("#000");
+
+    if (drawEdgesCheckbox.checked) {
+        _.each(edgeColorInput, function(input) {
+            var direction = Direction[input.id];
+            drawEdgesByDirection(direction, input.value || 'black');
+        });
     }
 };
 
@@ -131,6 +135,19 @@ var init = function() {
     platesColorMap = colorMap();
     plates = createPlates(grid, totalPlatesInput.value);
 };
+
+drawEdgesCheckbox.addEventListener('click', function() {
+    draw(grid);
+});
+
+_.each(edgeColorInput, function(input) {
+    var direction = Direction[input.id];
+    input.addEventListener('change', function(e) {
+        if (drawEdgesCheckbox.checked) {
+            drawEdgesByDirection(direction, input.value);
+        }
+    });
+});
 
 generateButton.addEventListener('click', function() {
     reset();
