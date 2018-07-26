@@ -107,7 +107,9 @@ var draw = function(grid) {
 };
 
 var grow = function(region) {
-    region.grow();
+    if (_.sample([true, false, false])) {
+        region.grow({partial: true});
+    }
 };
 
 var autoGrow = function() {
@@ -172,7 +174,7 @@ resetButton.addEventListener('click', function() {
 
 growButton.addEventListener('click', function() {
     plates.forEach(function(plate) {
-        plateRegionMap[plate.id].grow();
+        grow(plateRegionMap[plate.id]);
     });
     draw(grid);
 });
