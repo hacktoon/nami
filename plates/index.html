@@ -30,6 +30,15 @@
         <button id="reset">reset</button>
         <button id="grow">grow</button>
     </div>
+    <div class="button-panel">
+        <label for="sizeVariance">Size variance
+            <input type="number" min="1" max="7" value="5" id="sizeVariance" class="sizeVariance" />
+        </label>
+        <label for="partialGrow">
+            <input type="checkbox" checked id="partialGrow" />
+            Partial grow
+        </label>
+    </div>
     <canvas id="surface"></canvas>
     <div class="button-panel edge-colors">
         <strong>Edges colors: </strong>
