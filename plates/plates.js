@@ -7,7 +7,8 @@ var canvas = document.getElementById("surface"),
     drawEdgesCheckbox = document.getElementById("drawEdges"),
     edgeColorInput = document.getElementsByClassName("edgeColor"),
     sizeVarianceInput = document.getElementById("sizeVariance"),
-    partialGrowCheckbox = document.getElementById("partialGrow");
+    partialGrowCheckbox = document.getElementById("partialGrow"),
+    growLotteryCheckbox = document.getElementById("growLottery");
 
 var TILESIZE = 4;
 
@@ -110,12 +111,14 @@ var draw = function(grid) {
 };
 
 var grow = function(region) {
-    if (_.sample([true, false, false])) {
-        region.grow({
-            partial: partialGrowCheckbox.checked,
-            times: getSizeVariance()
-        });
+    var canGrow = _.sample([true, false, false]);
+    if (growLotteryCheckbox.checked && canGrow) {
+        return;
     }
+    region.grow({
+        partial: partialGrowCheckbox.checked,
+        times: getSizeVariance()
+    });
 };
 
 var autoGrow = function() {
@@ -156,6 +159,7 @@ var getTotalPlates = function() {
 
 var getSizeVariance = function() {
     var value = _.clamp(sizeVarianceInput.value, 1, maxSizeVariance);
+
     sizeVarianceInput.value = value;
     return value;
 };

@@ -11,6 +11,7 @@
             padding: 5px 0 10px;
         }
 
+        #edgesColor,
         .button-panel.edge-colors input {
             width: 55px;
         }
@@ -21,10 +22,6 @@
     <div class="button-panel">
         <label for="totalPlates">Plates
             <input type="number" min="1" step="1" value="16" id="totalPlates" />
-        </label>
-        <label for="drawEdges">
-            <input type="checkbox" checked id="drawEdges" />
-            Draw edges
         </label>
         <button id="generate">generate</button>
         <button id="reset">reset</button>
@@ -38,8 +35,18 @@
             <input type="checkbox" checked id="partialGrow" />
             Partial grow
         </label>
+        <label for="drawEdges">
+            <input type="checkbox" checked id="drawEdges" />
+            Draw edges
+        </label>
+        <label for="growLottery">
+            <input type="checkbox" checked id="growLottery" />
+            Grow lottery
+        </label>
     </div>
+
     <canvas id="surface"></canvas>
+
     <div class="button-panel edge-colors">
         <strong>Edges colors: </strong>
         <label for="NORTH">North
