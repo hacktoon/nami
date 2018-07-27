@@ -5,12 +5,3 @@
 * detect water/land regions
 * detect interior water tiles
 * detect litoral tiles
-
-
-## NOTES
-```
-O manguezal incide em regiões tropicais e subtropicais, no encontro de rios e mares
-
-usa all neighbours numa montanha pra descobrir as vizinhas
-compor dois mundos / movimentar placas -> gerar uma modificação geologica, e fazer dela uma missao valiosa
-```
