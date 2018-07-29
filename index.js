@@ -26,11 +26,11 @@ generateButton.addEventListener('click', function() {
     world.build();
     drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
     seaLevelInput.value = world.seaLevel;
-    Log("land: " + world.data.land, "water: " + world.data.water);
+    log("land: " + world.data.land, "water: " + world.data.water);
     if (world.data.land > world.data.water) {
-        Log('more land');
+        log('more land');
     } else {
-        Log('more water');
+        log('more water');
     }
 });
 
