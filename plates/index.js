@@ -111,13 +111,10 @@ var draw = function(grid) {
 };
 
 var grow = function(region) {
-    var canGrow = _.sample([true, false, false]);
-    if (growLotteryCheckbox.checked && canGrow) {
-        return;
-    }
     region.grow({
         partial: partialGrowCheckbox.checked,
-        times: getGrowthRate()
+        times: getGrowthRate(),
+        chance: growLotteryCheckbox.checked
     });
 };
 

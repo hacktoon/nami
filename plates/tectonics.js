@@ -26,12 +26,11 @@ var Tectonics = (function() {
                     completedMap[plate.id] = 1;
                     return;
                 }
-                if (_.sample([true, false])) {
-                    plate.region.grow({
-                        partial: true,
-                        times: 4
-                    });
-                }
+                plate.region.grow({
+                    partial: true,
+                    times: 4,
+                    chance: true
+                });
             });
         }
         return tectonics;
