@@ -8,7 +8,7 @@ var mapCanvas = document.getElementById("surface"),
     infoPanel = document.getElementById("info");
 
 var View = {
-    TILESIZE: 4
+    TILESIZE: 5
 };
 
 var heightmapColorMap = {},
