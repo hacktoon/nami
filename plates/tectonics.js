@@ -9,18 +9,11 @@ var Tectonics = (function() {
         //TODO  this.subductions = {};
 
         //TODO this.mountainRanges = {};
-        this.createPlates = function(totalPlates) {
-            var points = self.grid.randomPoints(totalPlates),
-                totalCompleted = 0,
+        this._createPlates = function(totalPlates) {
+            var totalCompleted = 0,
                 completedMap = {};
 
-            _.each(points, function(point, index) {
-                var plate = Plate.new(index);
-
-                plate.region = GridFill.new(self.grid, index);
-                plate.region.seed(point);
-                self.plates.push(plate);
-            });
+            this._initPlates(totalPlates);
 
             while (totalCompleted != self.plates.length) {
                 _.each(self.plates, function(plate) {
@@ -31,13 +24,20 @@ var Tectonics = (function() {
                         completedMap[plate.id] = 1;
                         return;
                     }
-                    plate.region.grow({
-                        partial: true,
-                        times: 4,
-                        chance: true
-                    });
+                    plate.region.grow({partial: true, times: 4, chance: true});
                 });
             }
+        };
+
+        this._initPlates = function(totalPlates) {
+            var points = self.grid.randomPoints(totalPlates);
+            _.each(points, function(point, index) {
+                var plate = Plate.new(index);
+
+                plate.region = GridFill.new(self.grid, index);
+                plate.region.seed(point);
+                self.plates.push(plate);
+            });
         };
 
     };
@@ -48,7 +48,7 @@ var Tectonics = (function() {
 
         new: function(size, totalPlates) {
             var tectonics = new _Tectonics(size);
-            tectonics.createPlates(totalPlates);
+            tectonics._createPlates(totalPlates);
             return tectonics;
         }
     };
