@@ -1,6 +1,7 @@
 ## TODO
 
-* apply plates deformation
+* add plate deformation while generating heightmap
+     * ex: increase tile height on plate-plate collision
 * detect water/land regions
 * detect interior water tiles
 * detect litoral tiles
