@@ -16,6 +16,9 @@ var drawMap = function(ctx, grid, opts){
     var opts = opts || {},
         tSize = View.TILESIZE;
 
+    mapCanvas.width = world.size * View.TILESIZE;
+    mapCanvas.height = world.size * View.TILESIZE;
+
     var isBeach = function(point){
         var neighbors = PointNeighborhood.new(point);
         var found = false;
@@ -30,7 +33,6 @@ var drawMap = function(ctx, grid, opts){
         })
         return found;
     };
-
 
     grid.forEach(function(currentValue, point){
         var x = point.x * tSize,

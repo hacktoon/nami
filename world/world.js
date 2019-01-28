@@ -18,6 +18,10 @@ var World = (function(){
             land: 0
         };
 
+        this.generateTectonicsMap = function() {
+            this.tectonicsMap = HeightMap(this.size, this.heightRange, this.roughness);
+        };
+
         this.generateHeightMap = function() {
             var callback = function(point, height){
                  if (height <= self.seaLevel) {

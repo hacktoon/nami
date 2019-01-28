@@ -2,9 +2,11 @@ var mapCanvas = document.getElementById("surface"),
     mapCtx = mapCanvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
     roughnessInput = document.getElementById("roughness"),
+    sizeInput = document.getElementById("size"),
     seaLevelInput = document.getElementById("seaLevel"),
     surfaceViewInput = document.getElementById("surface-button"),
     moistureViewInput = document.getElementById("moisture-button"),
+    tectonicsViewInput = document.getElementById("tectonics-button"),
     infoPanel = document.getElementById("info");
 
 var View = {
@@ -15,7 +17,7 @@ var heightmapColorMap = {},
     moistureColorMap = {};
 
 var createWorld = function(){
-    return World.new(128, Number(roughnessInput.value), Number(seaLevelInput.value));
+    return World.new(Number(sizeInput.value), Number(roughnessInput.value), Number(seaLevelInput.value));
 };
 
 var world = createWorld();
@@ -42,6 +44,10 @@ moistureViewInput.addEventListener('click', function(e) {
     drawMap(mapCtx, world.moistureMap, {colorMap: moistureColorMap});
 });
 
+tectonicsViewInput.addEventListener('click', function(e) {
+    //drawMap(mapCtx, world.tectonicsMap, {colorMap: tectonicsColorMap});
+});
+
 seaLevelInput.addEventListener('change', function(e) {
     world.seaLevel = seaLevelInput.value;
     generateSurfaceColorMap();
@@ -59,12 +65,6 @@ mapCanvas.addEventListener('mousemove', function(e) {
         text = "(x: "+ x + ", y: " + y + ") = " + "Height: " + height + ",  Moisture: " + moisture;
     infoPanel.innerHTML = text;
 });
-
-roughnessInput.value = world.roughness;
-seaLevelInput.value = world.seaLevel;
-
-mapCanvas.width = world.size * View.TILESIZE;
-mapCanvas.height = world.size * View.TILESIZE;
 
 generateSurfaceColorMap();
 generateMoistureColorMap();

@@ -57,14 +57,21 @@
   <body>
     <header>Nami : Map generator</header>
     <nav id="main-menu">
-        <!--button id="cavegen-button">Caves</button-->
-        <!--button id="plategen-button">Tectonic plates</button-->
         <button id="surface-button">Surface</button>
+        <button id="tectonics-button">Tectonics</button>
         <button id="moisture-button">Moisture</button>
     </nav>
 
     <main>
         <div class="generation-options" id="worldgen-options">
+            <label for="size">Size
+                <select id="size">
+                    <option value="32">32</option>
+                    <option value="64">64</option>
+                    <option value="128" selected>128</option>
+                    <option value="256">256</option>
+                </select>
+            </label>
             <label for="roughness">Roughness
                 <input type="number" min="0" max="10" step="0.1" value="4" id="roughness" />
             </label>
