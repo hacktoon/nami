@@ -19,7 +19,7 @@ var World = (function(){
         };
 
         this.generateTectonicsMap = function() {
-            this.tectonicsMap = HeightMap(this.size, this.heightRange, this.roughness);
+            this.tectonicsMap = Tectonics(this.size, 8);
         };
 
         this.generateHeightMap = function() {
