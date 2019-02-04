@@ -8,21 +8,23 @@ var World = (function(){
     var _World = function(size, roughness, seaLevel){
         var self = this;
         this.size = size;
-        this.heightMap = Grid.new(size, size);
         this.heightRange = Range.new(0, size);
-        this.moistureMap = Grid.new(size, size);
+        this.heightMap = undefined;
+        this.moistureMap = undefined;
+        this.tectonicsMap = undefined;
         this.roughness = roughness;
+        this.totalPlates = 8;
         this.seaLevel = seaLevel;
         self.data = {
             water: 0,
             land: 0
         };
 
-        this.generateTectonicsMap = function() {
-            this.tectonicsMap = Tectonics.new(this.size, 8);
+        var _generateTectonicsMap = function() {
+            self.tectonicsMap = Tectonics.new(self.size, self.totalPlates);
         };
 
-        this.generateHeightMap = function() {
+        var _generateHeightMap = function() {
             var callback = function(point, height){
                  if (height <= self.seaLevel) {
                     self.data['water'] += 1;
@@ -30,25 +32,27 @@ var World = (function(){
                     self.data['land'] += 1;
                 }
             };
-            var heightMap = HeightMap(this.size, this.heightRange, this.roughness, {callback: callback});
-            this.heightMap = GridFilter.average(heightMap);
+            var hmap = HeightMap(self.size, self.heightRange, self.roughness, {callback: callback});
+            self.heightMap = GridFilter.average(hmap);
         };
 
-        this.generateMoistureMap = function() {
-            var moistureMap = HeightMap(this.size, this.heightRange, this.roughness);
-            this.moistureMap = GridFilter.average(moistureMap);
+        var _generateMoistureMap = function() {
+            var moistureMap = HeightMap(self.size, self.heightRange, self.roughness);
+            self.moistureMap = GridFilter.average(moistureMap);
         };
 
         this.build = function() {
-            this.generateTectonicsMap();
-            this.generateHeightMap();
-            this.generateMoistureMap();
+            _generateTectonicsMap();
+            _generateHeightMap();
+            _generateMoistureMap();
         };
     };
 
     return {
         new: function(size, roughness, seaLevel) {
-            return new _World(size, roughness, seaLevel);
+            var world = new _World(size, roughness, seaLevel);
+            world.build();
+            return world;
         }
     };
 })();

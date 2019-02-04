@@ -24,9 +24,9 @@ var drawMap = function(ctx, grid, opts){
         var found = false;
         neighbors.adjacent(function (neighbor) {
             var isLand = grid.get(point) > world.seaLevel;
-            var isNeighborWater = grid.get(neighbor) <= world.seaLevel;
+            var hasWaterNeighbor = grid.get(neighbor) <= world.seaLevel;
             var diff = grid.get(point) - grid.get(neighbor);
-            if (isLand && isNeighborWater && diff < 7){
+            if (isLand && hasWaterNeighbor && diff < 8){
                 found = true;
                 return
             }
@@ -40,9 +40,22 @@ var drawMap = function(ctx, grid, opts){
 
         ctx.fillStyle = opts.colorMap[currentValue];
 
-        // if (currentValue >= 98) {
-        //     ctx.fillStyle = "#FFF";
+        // if (currentValue > world.seaLevel) {
+        //     ctx.fillStyle = "#0a5816";
         // }
+
+        // if (currentValue > world.seaLevel + 30) {
+        //     ctx.fillStyle = "#0f8220";
+        // }
+
+        // if (currentValue > world.seaLevel + 50) {
+        //     ctx.fillStyle = "#8abd34";
+        // }
+
+        // if (currentValue > world.seaLevel + 60) {
+        //     ctx.fillStyle = "#d0ff82";
+        // }
+
         // if (isBeach(point)) {
         //     ctx.fillStyle = "#f5e886";
         // }

@@ -24,8 +24,6 @@ var world = createWorld();
 
 generateButton.addEventListener('click', function() {
     world = createWorld();
-    world.roughness = Number(roughnessInput.value);
-    world.build();
     drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
     seaLevelInput.value = world.seaLevel;
     log("land: " + world.data.land, "water: " + world.data.water);
@@ -68,5 +66,4 @@ mapCanvas.addEventListener('mousemove', function(e) {
 
 generateSurfaceColorMap();
 generateMoistureColorMap();
-world.build();
 drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
