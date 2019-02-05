@@ -14,10 +14,10 @@ var generateMoistureColorMap = function() {
 
 var drawMap = function(ctx, grid, opts){
     var opts = opts || {},
-        tSize = View.TILESIZE;
+        tSize = TILESIZE;
 
-    mapCanvas.width = world.size * View.TILESIZE;
-    mapCanvas.height = world.size * View.TILESIZE;
+    canvas.width = world.size * TILESIZE;
+    canvas.height = world.size * TILESIZE;
 
     var isBeach = function(point){
         var neighbors = PointNeighborhood.new(point);

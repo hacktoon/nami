@@ -1,5 +1,5 @@
-var mapCanvas = document.getElementById("surface"),
-    mapCtx = mapCanvas.getContext("2d"),
+var canvas = document.getElementById("surface"),
+    mapCtx = canvas.getContext("2d"),
     generateButton = document.getElementById("generate"),
     roughnessInput = document.getElementById("roughness"),
     sizeInput = document.getElementById("size"),
@@ -9,15 +9,19 @@ var mapCanvas = document.getElementById("surface"),
     tectonicsViewInput = document.getElementById("tectonics-button"),
     infoPanel = document.getElementById("info");
 
-var View = {
-    TILESIZE: 5
-};
+var TILESIZE = 5;
 
 var heightmapColorMap = {},
-    moistureColorMap = {};
+    moistureColorMap = {},
+    tectonicsPainter = undefined;
 
 var createWorld = function(){
-    return World.new(Number(sizeInput.value), Number(roughnessInput.value), Number(seaLevelInput.value));
+    var size = Number(sizeInput.value),
+        roughness = Number(roughnessInput.value),
+        seaLevel = Number(seaLevelInput.value);
+    var world = World.new(size, roughness, seaLevel);
+    tectonicsPainter = TectonicsPainter.new(world.tectonicsMap, canvas, TILESIZE);
+    return world;
 };
 
 var world = createWorld();
@@ -43,7 +47,8 @@ moistureViewInput.addEventListener('click', function(e) {
 });
 
 tectonicsViewInput.addEventListener('click', function(e) {
-    //drawMap(mapCtx, world.tectonicsMap, {colorMap: tectonicsColorMap});
+    tectonicsPainter.draw();
+    tectonicsPainter.drawEdges();
 });
 
 seaLevelInput.addEventListener('change', function(e) {
@@ -52,11 +57,11 @@ seaLevelInput.addEventListener('change', function(e) {
     drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
 });
 
-mapCanvas.addEventListener('mousemove', function(e) {
-    var mouseX = e.clientX - mapCanvas.offsetLeft,
-        mouseY = e.clientY - mapCanvas.offsetTop,
-        x = _.parseInt(mouseX / View.TILESIZE),
-        y = _.parseInt(mouseY / View.TILESIZE),
+canvas.addEventListener('mousemove', function(e) {
+    var mouseX = e.clientX - canvas.offsetLeft,
+        mouseY = e.clientY - canvas.offsetTop,
+        x = _.parseInt(mouseX / TILESIZE),
+        y = _.parseInt(mouseY / TILESIZE),
         point = Point.new(x, y),
         height = world.heightMap.get(point),
         moisture = world.moistureMap.get(point),

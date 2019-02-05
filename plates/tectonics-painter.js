@@ -8,7 +8,7 @@ var TectonicsPainter = (function () {
         this.ctx = canvas.getContext("2d");
         this.colorMap = (function () {
             var colors = [];
-            _.times(getTotalPlates(), function () {
+            _.times(tectonics.plates.length, function () {
                 colors.push(RandomColor());
             })
             return colors;
@@ -24,7 +24,7 @@ var TectonicsPainter = (function () {
         this.drawEdges = function(color) {
             _.each(self.tectonics.plates, function (plate) {
                 plate.forEachEdge(function (point) {
-                    self.drawPoint(point, color);
+                    self.drawPoint(point, color || "#000");
                 });
             });
         };
