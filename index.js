@@ -42,7 +42,7 @@ moistureViewInput.addEventListener('click', function() {
 
 tectonicsViewInput.addEventListener('click', function() {
     tectonicsPainter.draw();
-    tectonicsPainter.drawEdges();
+    //tectonicsPainter.drawEdges();
 });
 
 seaLevelInput.addEventListener('change', function() {

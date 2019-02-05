@@ -48,6 +48,20 @@ var TectonicsPainter = (function () {
                 var color = self.colorMap[value] || '#FFF';
                 self.drawPoint(point, color);
             });
+
+            drawLabel();
+        };
+
+        var drawLabel = function(){
+            _.each(self.tectonics.plates, function (plate) {
+                var text = Direction.getSymbolByCode(plate.direction),
+                    point = plate.region.startPoint,
+                    x = self.tilesize * point.x,
+                    y = self.tilesize * point.y;
+                self.ctx.fillStyle = "black";
+                self.ctx.font = "30px Arial";
+                self.ctx.fillText(text, x, y);
+            });
         };
     };
 

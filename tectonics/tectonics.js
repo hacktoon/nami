@@ -26,7 +26,7 @@ var Tectonics = (function() {
         this.buildPlates = function (growOptions) {
             var totalCompleted = 0,
                 completedMap = {},
-                growOptions = growOptions || {partial: true, times: 4, chance: false};
+                growOptions = growOptions || {partial: true, times: 5, chance: false};
 
             while (totalCompleted < self.plates.length) {
                 _.each(self.plates, function(plate) {
@@ -76,7 +76,7 @@ var Plate = (function() {
         var self = this;
         this.id = id;
         this.region = undefined;
-        this.speed = _.sample([1, 2]);
+        this.speed = _.sample([1, 2, 3]);
         this.weight = _.sample([1, 2]);
         this.direction = Direction.random();
 
