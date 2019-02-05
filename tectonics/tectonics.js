@@ -42,7 +42,7 @@ var Tectonics = (function() {
 
                 plate.region = GridFill.new(self.grid, index);
                 self.plateRegionMap[index] = plate.region;
-                plate.region.seed(point);
+                plate.region.startAt(point);
                 self.plates.push(plate);
             });
         };
