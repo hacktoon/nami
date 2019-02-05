@@ -6,18 +6,16 @@ var Tectonics = (function() {
 
         this.grid = Grid.new(size, size);
         this.plates = [];
-        this.edgesMap = {};
         this.plateIdMap = {};
-        //TODO this.subductions = {};
-        //TODO this.mountainRanges = {};
+        this.edgeDeformationMap = {};
 
         this.initPlates = function(totalPlates) {
             var points = self.grid.randomPoints(totalPlates);
-            _.each(points, function(point, index) {
-                var plate = Plate.new(index);
+            _.each(points, function(point, plateId) {
+                var plate = Plate.new(plateId);
 
-                plate.region = GridFill.new(self.grid, index);
-                self.plateIdMap[index] = plate;
+                plate.region = GridFill.new(self.grid, plateId);
+                self.plateIdMap[plateId] = plate;
                 plate.region.startAt(point);
                 self.plates.push(plate);
             });
@@ -43,11 +41,10 @@ var Tectonics = (function() {
         };
 
         var registerFeatures = function() {
-            _.each(self.plates, function(plate) {
-                var direction = plate.direction;
+            self.forEachPlate(function(plate) {
                 plate.region.edges(function(point){
                     var neighbors = PointNeighborhood.new(point);
-                    //self.edgesMap[outerEdgePoint.hash()] = outerEdgePoint;
+                    self.edgeDeformationMap[point.hash()] = 1;
                 });
             });
         };
