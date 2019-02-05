@@ -21,7 +21,9 @@ var World = (function(){
         };
 
         var _generateTectonicsMap = function() {
-            self.tectonicsMap = Tectonics.new(self.size, self.totalPlates);
+            var tectonics = Tectonics.new(self.size, self.totalPlates);
+            tectonics.buildPlates();
+            self.tectonicsMap = tectonics;
         };
 
         var _generateHeightMap = function() {

@@ -12,55 +12,15 @@ var canvas = document.getElementById("surface"),
 
 var TILESIZE = 4;
 
-var grid = Grid.new(128, 128),
-    maxPlates = _.toNumber((grid.width * grid.height) / 4),
+var tectonics = undefined,
+    size = 128,
+    maxPlates = _.toNumber((size * size) / 4),
     maxGrowthRate = 10,
-    plates = [],
-    platesColorMap = {},
-    plateRegionMap = {};
+    platesColorMap = {};
 
-var colorMap = function() {
-    var colors = [];
-    _.times(getTotalPlates(), function() {
-        colors.push(RandomColor());
-    })
-    return colors;
-};
-
-var Plate = (function() {
-    var _Plate = function(id) {
-        this.id = id;
-        this.points = [];
-        this.speed = _.sample([1, 2, 3, 4, 5]);
-        this.weight = _.sample([1, 2]);
-        this.direction = Direction.random();
-    };
-
-    return {
-        _class: _Plate,
-        new: function(id) {
-            return new _Plate(id);
-        }
-    };
-})();
-
-var createPlates = function(grid, totalPlates) {
-    var points = grid.randomPoints(totalPlates),
-        plates = [];
-
-    _.times(totalPlates, function(index) {
-        var plate = Plate.new(index),
-            region = GridFill.new(grid, index);
-
-        region.seed(points[index]);
-        plateRegionMap[index] = region;
-        plates.push(plate);
-    });
-    return plates;
-};
 
 var drawPoint = function(point, color) {
-    var point = grid.wrap(point);
+    var point = tectonics.grid.wrap(point);
 
     ctx.fillStyle = color;
     ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
@@ -68,11 +28,12 @@ var drawPoint = function(point, color) {
 
 var drawEdgesByDirection = function(direction, color, regionId) {
     if (_.isNumber(regionId)) {
-        plateRegionMap[regionId].edgesByDirection(direction, function(point) {
+        var region = tectonics.plateRegionMap[regionId];
+        region.edgesByDirection(direction, function(point) {
             drawPoint(point, color);
         });
     } else {
-        _.each(plateRegionMap, function(region, id) {
+        _.each(tectonics.plateRegionMap, function(region, id) {
             region.edgesByDirection(direction, function(point) {
                 drawPoint(point, color);
             });
@@ -82,18 +43,19 @@ var drawEdgesByDirection = function(direction, color, regionId) {
 
 var drawEdges = function(color, regionId) {
     if (_.isNumber(regionId)) {
-        plateRegionMap[regionId].edges(function(point) {
+        tectonics.plateRegionMap[regionId].edges(function(point) {
             drawPoint(point, color);
         });
     }
-    _.each(plateRegionMap, function(region, id) {
+    _.each(tectonics.plateRegionMap, function(region, id) {
         region.edges(function(point) {
             drawPoint(point, color);
         });
     });
 };
 
-var draw = function(grid) {
+var draw = function (tectonics) {
+    var grid = tectonics.grid;
     canvas.width = grid.width * TILESIZE;
     canvas.height = grid.height * TILESIZE;
 
@@ -118,34 +80,6 @@ var grow = function(region) {
     });
 };
 
-var autoGrow = function() {
-    var totalCompleted = 0,
-        completedMap = {},
-        totalPlates = getTotalPlates();
-
-    while (totalCompleted != totalPlates) {
-        plates.forEach(function(plate) {
-            var region = plateRegionMap[plate.id];
-            if (region.isComplete()) {
-                totalCompleted += Boolean(completedMap[plate.id]) ? 0 : 1;
-                completedMap[plate.id] = 1;
-                return;
-            }
-            grow(region);
-        });
-    }
-};
-
-var reset = function() {
-    grid.reset();
-    plateRegionMap = {};
-    init();
-};
-
-var init = function() {
-    platesColorMap = colorMap();
-    plates = createPlates(grid, getTotalPlates());
-};
 
 var getTotalPlates = function() {
     var value = _.clamp(totalPlatesInput.value, 1, maxPlates);
@@ -162,7 +96,7 @@ var getGrowthRate = function() {
 };
 
 drawEdgesCheckbox.addEventListener('click', function() {
-    draw(grid);
+    draw(tectonics);
 });
 
 _.each(edgeColorInput, function(input) {
@@ -175,22 +109,35 @@ _.each(edgeColorInput, function(input) {
 });
 
 generateButton.addEventListener('click', function() {
-    reset();
-    autoGrow();
-    draw(grid);
+    init();
+    tectonics.buildPlates();
+    draw(tectonics);
 });
 
 resetButton.addEventListener('click', function() {
-    reset();
-    draw(grid);
+    init();
+    draw(tectonics);
 });
 
 growButton.addEventListener('click', function() {
-    plates.forEach(function(plate) {
-        grow(plateRegionMap[plate.id]);
+    tectonics.plates.forEach(function(plate) {
+        grow(tectonics.plateRegionMap[plate.id]);
     });
-    draw(grid);
+    draw(tectonics);
 });
 
+var init = function () {
+    platesColorMap = generateColorMap();
+    tectonics = Tectonics.new(size, getTotalPlates());
+};
+
+var generateColorMap = function () {
+    var colors = [];
+    _.times(getTotalPlates(), function () {
+        colors.push(RandomColor());
+    })
+    return colors;
+};
+
 init();
-draw(grid);
+draw(tectonics);
