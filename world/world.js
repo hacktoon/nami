@@ -27,12 +27,8 @@ var World = (function(){
         };
 
         var _generateHeightMap = function() {
-            var callback = function(point, height){
-                 if (height <= self.seaLevel) {
-                    self.data['water'] += 1;
-                 } else {
-                    self.data['land'] += 1;
-                }
+            var callback = function(grid, point, height){
+                //grid.set(point, height);
             };
             var hmap = HeightMap(self.size, self.heightRange, self.roughness, {callback: callback});
             self.heightMap = GridFilter.average(hmap);
