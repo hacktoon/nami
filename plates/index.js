@@ -1,5 +1,4 @@
 var canvas = document.getElementById("surface"),
-    ctx = canvas.getContext("2d"),
     totalPlatesInput = document.getElementById("totalPlates"),
     generateButton = document.getElementById("generate"),
     resetButton = document.getElementById("reset"),
@@ -10,66 +9,16 @@ var canvas = document.getElementById("surface"),
     partialGrowCheckbox = document.getElementById("partialGrow"),
     growLotteryCheckbox = document.getElementById("growLottery");
 
-var TILESIZE = 4;
+var TILESIZE = 4,
+    SIZE = 128,
+    MAXPLATES = _.toNumber((SIZE * SIZE) / 4),
+    MAXGROWTHRATE = 10;
+    tectonics = undefined,
+    painter = undefined;
 
-var tectonics = undefined,
-    size = 128,
-    maxPlates = _.toNumber((size * size) / 4),
-    maxGrowthRate = 10,
-    platesColorMap = {};
-
-
-var drawPoint = function(point, color) {
-    var point = tectonics.grid.wrap(point);
-
-    ctx.fillStyle = color;
-    ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
-};
-
-var drawEdgesByDirection = function(direction, color, regionId) {
-    if (_.isNumber(regionId)) {
-        var region = tectonics.plateRegionMap[regionId];
-        region.edgesByDirection(direction, function(point) {
-            drawPoint(point, color);
-        });
-    } else {
-        _.each(tectonics.plateRegionMap, function(region, id) {
-            region.edgesByDirection(direction, function(point) {
-                drawPoint(point, color);
-            });
-        });
-    }
-};
-
-var drawEdges = function(color, regionId) {
-    if (_.isNumber(regionId)) {
-        tectonics.plateRegionMap[regionId].edges(function(point) {
-            drawPoint(point, color);
-        });
-    }
-    _.each(tectonics.plateRegionMap, function(region, id) {
-        region.edges(function(point) {
-            drawPoint(point, color);
-        });
-    });
-};
-
-var draw = function (tectonics) {
-    var grid = tectonics.grid;
-    canvas.width = grid.width * TILESIZE;
-    canvas.height = grid.height * TILESIZE;
-
-    grid.forEach(function(value, point) {
-        ctx.fillStyle = platesColorMap[value] || '#FFF';
-        ctx.fillRect(point.x * TILESIZE, point.y * TILESIZE, TILESIZE, TILESIZE);
-    });
-
-    if (drawEdgesCheckbox.checked) {
-        _.each(edgeColorInput, function(input) {
-            var direction = Direction[input.id];
-            drawEdgesByDirection(direction, input.value || 'black');
-        });
-    }
+var createTectonics = function() {
+    tectonics = Tectonics.new(SIZE, getTotalPlates());
+    painter = TectonicsPainter.new(tectonics, canvas, TILESIZE);
 };
 
 var getGrowOptions = function() {
@@ -78,65 +27,58 @@ var getGrowOptions = function() {
         times: getGrowthRate(),
         chance: growLotteryCheckbox.checked
     };
-}
+};
 
 var getTotalPlates = function() {
-    var value = _.clamp(totalPlatesInput.value, 1, maxPlates);
-
+    var value = _.clamp(totalPlatesInput.value, 1, MAXPLATES);
     totalPlatesInput.value = value;
     return value;
 };
 
 var getGrowthRate = function() {
-    var value = _.clamp(growthRateInput.value, 1, maxGrowthRate);
-
+    var value = _.clamp(growthRateInput.value, 1, MAXGROWTHRATE);
     growthRateInput.value = value;
     return value;
 };
 
-drawEdgesCheckbox.addEventListener('click', function() {
-    draw(tectonics);
-});
+var draw = function () {
+    painter.draw();
+    if (drawEdgesCheckbox.checked) {
+        _.each(edgeColorInput, function (input) {
+            var direction = Direction[input.id];
+            painter.drawEdgesByDirection(direction, input.value || '#000');
+        });
+    }
+};
+
+var init = function () {
+    createTectonics();
+    draw();
+};
 
 _.each(edgeColorInput, function(input) {
     var direction = Direction[input.id];
     input.addEventListener('change', function(e) {
         if (drawEdgesCheckbox.checked) {
-            drawEdgesByDirection(direction, input.value);
+            painter.drawEdges(input.value || '#000');
         }
     });
 });
 
 generateButton.addEventListener('click', function() {
-    init();
+    createTectonics();
     tectonics.buildPlates(getGrowOptions());
-    draw(tectonics);
+    draw();
 });
 
-resetButton.addEventListener('click', function() {
-    init();
-    draw(tectonics);
-});
+drawEdgesCheckbox.addEventListener('click', draw);
+resetButton.addEventListener('click', init);
 
 growButton.addEventListener('click', function() {
     tectonics.forEachPlate(function(plate) {
         plate.region.grow(getGrowOptions());
     });
-    draw(tectonics);
+    draw();
 });
 
-var init = function () {
-    platesColorMap = generateColorMap();
-    tectonics = Tectonics.new(size, getTotalPlates());
-};
-
-var generateColorMap = function () {
-    var colors = [];
-    _.times(getTotalPlates(), function () {
-        colors.push(RandomColor());
-    })
-    return colors;
-};
-
 init();
-draw(tectonics);
