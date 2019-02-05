@@ -37,14 +37,19 @@ var Tectonics = (function() {
                     plate.region.grow(growOptions);
                 });
             }
-            registerFeatures();
+            applyDeformations();
         };
 
-        var registerFeatures = function() {
+        var applyDeformations = function() {
             self.forEachPlate(function(plate) {
                 plate.region.edges(function(point){
                     var neighbors = PointNeighborhood.new(point);
-                    self.edgeDeformationMap[point.hash()] = 1;
+                    neighbors.around(function(neighbor, direction){
+                        var neighborValue = self.grid.get(neighbor)
+                        if (neighborValue == plate.id) return;
+                        var otherPlate = self.plateIdMap[neighborValue];
+                        self.edgeDeformationMap[point.hash()] = 1;
+                    });
                 });
             });
         };
@@ -97,3 +102,20 @@ var Plate = (function() {
         }
     };
 })();
+
+
+var PlateDeformation = (function() {
+    var _PlateDeformation = function() {
+        var self = this;
+
+    };
+
+    return {
+        _class: _PlateDeformation,
+        new: function(plate1, plate2) {
+            return new _PlateDeformation(plate1, plate2);
+        }
+    };
+})();
+
+

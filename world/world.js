@@ -28,7 +28,9 @@ var World = (function(){
 
         var _generateHeightMap = function() {
             var callback = function(grid, point, height){
-                //grid.set(point, height);
+                // if (self.tectonicsMap.edgeDeformationMap[point.hash()]) {
+                //     grid.set(point, self.size);
+                // }
             };
             var hmap = HeightMap(self.size, self.heightRange, self.roughness, {callback: callback});
             self.heightMap = GridFilter.average(hmap);

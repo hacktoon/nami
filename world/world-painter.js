@@ -60,6 +60,10 @@ var drawMap = function(ctx, grid, opts){
         //     ctx.fillStyle = "#f5e886";
         // }
 
+        // if (world.tectonicsMap.edgeDeformationMap[point.hash()]) {
+        //     ctx.fillStyle = "#FFF";
+        // }
+
         ctx.fillRect(x, y, tSize, tSize);
 
         // ctx.font = "12px Arial";
