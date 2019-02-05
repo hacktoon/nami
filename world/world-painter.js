@@ -7,7 +7,7 @@ var generateSurfaceColorMap = function() {
 };
 
 var generateMoistureColorMap = function() {
-    ColorGradient('CC0000', '0000CC', 100).forEach(function(item, index) {
+    ColorGradient('CC0000', '0000CC', world.size).forEach(function(item, index) {
         moistureColorMap[index] = item;
     });
 };
