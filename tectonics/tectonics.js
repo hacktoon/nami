@@ -7,7 +7,7 @@ var Tectonics = (function() {
         this.grid = Grid.new(size, size);
         this.plates = [];
         this.plateRegionMap = {};
-        //TODO  this.subductions = {};
+        //TODO this.subductions = {};
         //TODO this.mountainRanges = {};
 
         this.buildPlates = function (growOptions) {
@@ -15,11 +15,10 @@ var Tectonics = (function() {
                 completedMap = {},
                 growOptions = growOptions || {partial: true, times: 4, chance: false};
 
-            while (totalCompleted != self.plates.length) {
+            while (totalCompleted < self.plates.length) {
                 _.each(self.plates, function(plate) {
                     if (plate.region.isComplete()) {
                         var plateCompleted = Boolean(completedMap[plate.id]);
-                        // TODO  TruthMap
                         totalCompleted += plateCompleted ? 0 : 1;
                         completedMap[plate.id] = 1;
                         return;
