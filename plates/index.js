@@ -72,14 +72,13 @@ var draw = function (tectonics) {
     }
 };
 
-var grow = function(region) {
-    region.grow({
+var getGrowOptions = function() {
+    return {
         partial: partialGrowCheckbox.checked,
         times: getGrowthRate(),
         chance: growLotteryCheckbox.checked
-    });
-};
-
+    };
+}
 
 var getTotalPlates = function() {
     var value = _.clamp(totalPlatesInput.value, 1, maxPlates);
@@ -110,7 +109,7 @@ _.each(edgeColorInput, function(input) {
 
 generateButton.addEventListener('click', function() {
     init();
-    tectonics.buildPlates();
+    tectonics.buildPlates(getGrowOptions());
     draw(tectonics);
 });
 
@@ -120,8 +119,8 @@ resetButton.addEventListener('click', function() {
 });
 
 growButton.addEventListener('click', function() {
-    tectonics.plates.forEach(function(plate) {
-        grow(tectonics.plateRegionMap[plate.id]);
+    tectonics.forEachPlate(function(plate) {
+        plate.region.grow(getGrowOptions());
     });
     draw(tectonics);
 });
