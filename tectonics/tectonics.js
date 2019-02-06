@@ -43,6 +43,7 @@ var Tectonics = (function() {
 
         var applyDeformations = function() {
             self.forEachPlate(function(plate) {
+                var deformation = PlateDeformation.new(plate);
                 plate.region.edges(function(edge){
                     var neighbors = PointNeighborhood.new(edge),
                         deformationValue = 0;
@@ -50,9 +51,8 @@ var Tectonics = (function() {
                         var neighborValue = self.grid.get(neighbor);
                         if (neighborValue == plate.id)
                             return;
-                        var otherPlate = self.plateIdMap[neighborValue],
-                            deformation = PlateDeformation.new(plate, otherPlate);
-                        deformationValue += deformation.get();
+                        var otherPlate = self.plateIdMap[neighborValue];
+                        deformationValue += deformation.between(otherPlate);
                     });
                     self.edgeDeformationMap[edge.hash()] = deformationValue;
                 });
@@ -93,7 +93,7 @@ var Plate = (function() {
         this.id = id;
         this.region = undefined;
         this.speed = _.sample([1, 2, 3]);
-        this.weight = _.sample([1, 2]);
+        this.density = _.sample([1, 2]);
         this.direction = Direction.randomCardinal();
 
         this.forEachEdge = function(callback) {
@@ -119,18 +119,38 @@ var Plate = (function() {
 
 
 var PlateDeformation = (function() {
-    var _PlateDeformation = function (target_plate, other_plate) {
-        var self = this;
+    var _PlateDeformation = function (target_plate) {
+        var self = this,
+            densityPenalty = 10,
+            speedPenalty = 10,
+            directionPenalty = 10;
+        this.plate = target_plate;
 
-        this.get = function() {
-            return 10;
+        this.between = function (plate) {
+            var value = 0;
+            self.plate.direction == plate.direction
+
+            // check dir
+            if (self.plate.speed > plate.speed) {
+                value -= speedPenalty;
+            } else {
+                value += speedPenalty;
+            }
+
+            if (self.plate.density > plate.density){
+                value -= densityPenalty;
+            } else {
+                value += densityPenalty;
+            }
+
+            return value;
         };
     };
 
     return {
         _class: _PlateDeformation,
-        new: function(target_plate, other_plate) {
-            return new _PlateDeformation(target_plate, other_plate);
+        new: function(target_plate) {
+            return new _PlateDeformation(target_plate);
         }
     };
 })();
