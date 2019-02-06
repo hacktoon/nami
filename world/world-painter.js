@@ -14,10 +14,10 @@ var generateMoistureColorMap = function() {
 
 var drawMap = function(ctx, grid, opts){
     var opts = opts || {},
-        tSize = TILESIZE;
+        tilesize = getTileSize();
 
-    canvas.width = world.size * TILESIZE;
-    canvas.height = world.size * TILESIZE;
+    canvas.width = world.size * tilesize;
+    canvas.height = world.size * tilesize;
 
     var isBeach = function(point){
         var neighbors = PointNeighborhood.new(point);
@@ -35,8 +35,8 @@ var drawMap = function(ctx, grid, opts){
     };
 
     grid.forEach(function(currentValue, point){
-        var x = point.x * tSize,
-            y = point.y * tSize;
+        var x = point.x * tilesize,
+            y = point.y * tilesize;
 
         ctx.fillStyle = opts.colorMap[currentValue];
 
@@ -64,7 +64,7 @@ var drawMap = function(ctx, grid, opts){
         //     ctx.fillStyle = "#FFF";
         // }
 
-        ctx.fillRect(x, y, tSize, tSize);
+        ctx.fillRect(x, y, tilesize, tilesize);
 
         // ctx.font = "12px Arial";
         // ctx.fillStyle = "black";
