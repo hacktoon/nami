@@ -50,7 +50,7 @@ var Tectonics = (function() {
                         if (neighborValue == plate.id) return;
                         var other = self.plateIdMap[neighborValue];
                         //var deformation = PlateDeformation(plate, other);
-                        self.edgeDeformationMap[edge.hash()] = -20 //deformation;
+                        self.edgeDeformationMap[edge.hash()] = -40 //deformation;
                     });
                 });
             });

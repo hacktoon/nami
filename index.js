@@ -18,10 +18,11 @@ var createWorld = function(){
     var size = Number(sizeInput.value),
         roughness = Number(roughnessInput.value),
         seaLevel = Number(seaLevelInput.value),
-        totalPlates = Number(totalPlatesInput.value);
+        totalPlates = Number(totalPlatesInput.value),
+        tilesize = getTileSize();
 
     var world = World.new(size, roughness, seaLevel, totalPlates);
-    tectonicsPainter = TectonicsPainter.new(world.tectonicsMap, canvas, getTileSize());
+    tectonicsPainter = TectonicsPainter.new(world.tectonicsMap, canvas, tilesize);
     return world;
 };
 

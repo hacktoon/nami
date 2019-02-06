@@ -34,7 +34,8 @@ var World = (function(){
             var callback = function(grid, point, height){
                 if (self.tectonicsMap.hasPointInEdges(point)) {
                     var deformation = self.tectonicsMap.getDeformation(point);
-                    grid.set(point, height + deformation);
+                    var height = _.clamp(height + deformation, 0, self.size);
+                    grid.set(point, height);
                 }
             };
             var hmap = HeightMap(self.size, self.heightRange, self.roughness, {callback: callback});
