@@ -21,6 +21,7 @@ var Tectonics = (function() {
             });
         };
 
+        /* Grow the plates until all them complete. */
         this.buildPlates = function (growOptions) {
             var totalCompleted = 0,
                 completedMap = {},
@@ -42,16 +43,22 @@ var Tectonics = (function() {
 
         var applyDeformations = function() {
             self.forEachPlate(function(plate) {
-                plate.region.edges(function(point){
-                    var neighbors = PointNeighborhood.new(point);
+                plate.region.edges(function(edge){
+                    var neighbors = PointNeighborhood.new(edge);
                     neighbors.around(function(neighbor, direction){
-                        var neighborValue = self.grid.get(neighbor)
+                        var neighborValue = self.grid.get(neighbor);
                         if (neighborValue == plate.id) return;
-                        var otherPlate = self.plateIdMap[neighborValue];
-                        self.edgeDeformationMap[point.hash()] = 1;
+                        var other = self.plateIdMap[neighborValue];
+                        //var deformation = PlateDeformation(plate, other);
+                        self.edgeDeformationMap[edge.hash()] = 1 //deformation;
                     });
                 });
             });
+        };
+
+        this.hasPointInEdges = function (point) {
+            var key = point.hash();
+            return _.has(self.edgeDeformationMap, key);
         };
 
         this.forEachPlate = function(callback) {
@@ -117,5 +124,3 @@ var PlateDeformation = (function() {
         }
     };
 })();
-
-
