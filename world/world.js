@@ -4,6 +4,9 @@ var WorldMapAnalysis = function(){
 };
 
 
+// var WorldBuilder = (function () {})();
+
+
 var World = (function(){
     var _World = function (size, roughness, seaLevel, totalPlates){
         var self = this;
