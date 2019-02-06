@@ -9,6 +9,7 @@ var World = (function(){
         var self = this;
         this.size = size;
         this.heightRange = Range.new(0, size);
+        this.groundRange = Range.new(0, size);
         this.heightMap = undefined;
         this.moistureMap = undefined;
         this.tectonicsMap = undefined;
