@@ -5,7 +5,7 @@ var WorldMapAnalysis = function(){
 
 
 var World = (function(){
-    var _World = function(size, roughness, seaLevel){
+    var _World = function (size, roughness, seaLevel, totalPlates){
         var self = this;
         this.size = size;
         this.heightRange = Range.new(0, size);
@@ -13,7 +13,7 @@ var World = (function(){
         this.moistureMap = undefined;
         this.tectonicsMap = undefined;
         this.roughness = roughness;
-        this.totalPlates = 8;
+        this.totalPlates = totalPlates;
         this.seaLevel = seaLevel;
         self.data = {
             water: 0,
@@ -28,10 +28,10 @@ var World = (function(){
 
         var _generateHeightMap = function() {
             var callback = function(grid, point, height){
-                // if (self.tectonicsMap.hasPointInEdges(point)) {
-                //     grid.set(point, self.size/3);
-                //     // TODO: opção com  grid.set(point, self.size/3);
-                // }
+                if (self.tectonicsMap.hasPointInEdges(point)) {
+                    grid.set(point, self.seaLevel);
+                    // TODO: opção com  grid.set(point, self.size/3);
+                }
             };
             var hmap = HeightMap(self.size, self.heightRange, self.roughness, {callback: callback});
             self.heightMap = GridFilter.average(hmap);
@@ -50,8 +50,8 @@ var World = (function(){
     };
 
     return {
-        new: function(size, roughness, seaLevel) {
-            var world = new _World(size, roughness, seaLevel);
+        new: function(size, roughness, seaLevel, totalPlates) {
+            var world = new _World(size, roughness, seaLevel, totalPlates);
             world.build();
             return world;
         }

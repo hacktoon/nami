@@ -4,6 +4,7 @@ var canvas = document.getElementById("surface"),
     roughnessInput = document.getElementById("roughness"),
     sizeInput = document.getElementById("size"),
     seaLevelInput = document.getElementById("seaLevel"),
+    totalPlatesInput = document.getElementById("totalPlates"),
     surfaceViewInput = document.getElementById("surface-button"),
     moistureViewInput = document.getElementById("moisture-button"),
     tectonicsViewInput = document.getElementById("tectonics-button"),
@@ -18,8 +19,10 @@ var heightmapColorMap = {},
 var createWorld = function(){
     var size = Number(sizeInput.value),
         roughness = Number(roughnessInput.value),
-        seaLevel = Number(seaLevelInput.value);
-    var world = World.new(size, roughness, seaLevel);
+        seaLevel = Number(seaLevelInput.value),
+        totalPlates = Number(totalPlatesInput.value);
+
+    var world = World.new(size, roughness, seaLevel, totalPlates);
     tectonicsPainter = TectonicsPainter.new(world.tectonicsMap, canvas, TILESIZE);
     return world;
 };
