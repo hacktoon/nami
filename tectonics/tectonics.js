@@ -44,14 +44,17 @@ var Tectonics = (function() {
         var applyDeformations = function() {
             self.forEachPlate(function(plate) {
                 plate.region.edges(function(edge){
-                    var neighbors = PointNeighborhood.new(edge);
-                    neighbors.around(function(neighbor, direction){
+                    var neighbors = PointNeighborhood.new(edge),
+                        deformationValue = 0;
+                    neighbors.around(function(neighbor){
                         var neighborValue = self.grid.get(neighbor);
-                        if (neighborValue == plate.id) return;
-                        var other = self.plateIdMap[neighborValue];
-                        //var deformation = PlateDeformation(plate, other);
-                        self.edgeDeformationMap[edge.hash()] = -40 //deformation;
+                        if (neighborValue == plate.id)
+                            return;
+                        var otherPlate = self.plateIdMap[neighborValue],
+                            deformation = PlateDeformation.new(plate, otherPlate);
+                        deformationValue += deformation.get();
                     });
+                    self.edgeDeformationMap[edge.hash()] = deformationValue;
                 });
             });
         };
@@ -91,7 +94,7 @@ var Plate = (function() {
         this.region = undefined;
         this.speed = _.sample([1, 2, 3]);
         this.weight = _.sample([1, 2]);
-        this.direction = Direction.random();
+        this.direction = Direction.randomCardinal();
 
         this.forEachEdge = function(callback) {
             self.region.edges(function(point) {
@@ -116,15 +119,18 @@ var Plate = (function() {
 
 
 var PlateDeformation = (function() {
-    var _PlateDeformation = function() {
+    var _PlateDeformation = function (target_plate, other_plate) {
         var self = this;
 
+        this.get = function() {
+            return 10;
+        };
     };
 
     return {
         _class: _PlateDeformation,
-        new: function(plate1, plate2) {
-            return new _PlateDeformation(plate1, plate2);
+        new: function(target_plate, other_plate) {
+            return new _PlateDeformation(target_plate, other_plate);
         }
     };
 })();

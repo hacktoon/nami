@@ -52,8 +52,12 @@ var drawMap = function(ctx, grid, opts){
         //     ctx.fillStyle = "#8abd34";
         // }
 
-        // if (currentValue > world.seaLevel + 60) {
-        //     ctx.fillStyle = "#d0ff82";
+        // if (currentValue > world.seaLevel + 55) {
+        //     ctx.fillStyle = "#7d7553";
+        // }
+
+        // if (currentValue > world.seaLevel + 66) {
+        //     ctx.fillStyle = "#FFF";
         // }
 
         // if (isBeach(point)) {
