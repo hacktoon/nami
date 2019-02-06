@@ -12,28 +12,34 @@
             header {
                 background: #333;
                 margin: 0;
-                padding: 10px 20px;
+                height: 2em;
+                line-height: 2em;
+                padding: 0 20px;
                 color: white;
                 font-size: 2em;
             }
 
             #main-menu {
+                display: block;
                 background: #DDD;
                 margin: 0;
                 padding: 0;
-                border-bottom: 1px solid #CCC;
+                height: 50px;
+                line-height: 50px;
             }
 
-            #main-menu button {
+            #main-menu label {
                 background: #EEE;
-                height: 40px;
                 border: none;
+                float: left;
                 cursor: pointer;
                 margin: 0;
                 font-size: 1.1em;
-                padding: 5px 10px;
+                padding: 0 10px;
             }
-            #main-menu button:hover { background: #FFF; }
+            #main-menu label input { display: none; }
+            #main-menu label:hover { background: #CCC; }
+            #main-menu label.selected { background: #888; }
 
             main {
                 padding: 20px;
@@ -59,9 +65,15 @@
   <body>
     <header>Nami : Map generator</header>
     <nav id="main-menu">
-        <button id="surface-button">Surface</button>
-        <button id="tectonics-button">Tectonics</button>
-        <button id="moisture-button">Moisture</button>
+        <label for="surface-view">Surface
+            <input id="surface-view" type="radio" name="view" value="surface" />
+        </label>
+        <label for="tectonics-view">Tectonics
+            <input id="tectonics-view" type="radio" name="view" value="tectonics" />
+        </label>
+        <label for="moisture-view">Moisture
+            <input id="moisture-view" type="radio" name="view" value="moisture" />
+        </label>
     </nav>
 
     <main>

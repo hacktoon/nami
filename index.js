@@ -5,10 +5,9 @@ var canvas = document.getElementById("surface"),
     sizeInput = document.getElementById("size"),
     seaLevelInput = document.getElementById("seaLevel"),
     totalPlatesInput = document.getElementById("totalPlates"),
-    surfaceViewInput = document.getElementById("surface-button"),
-    moistureViewInput = document.getElementById("moisture-button"),
-    tectonicsViewInput = document.getElementById("tectonics-button"),
-    infoPanel = document.getElementById("info");
+    infoPanel = document.getElementById("info"),
+    viewRadio = document.getElementsByName('view'),
+    currentView = "surface";
 
 var TILESIZE = 5;
 
@@ -29,29 +28,42 @@ var createWorld = function(){
 
 var world = createWorld();
 
+var viewOptions = {
+    surface: function () {
+        drawMap(mapCtx, world.heightMap, { colorMap: heightmapColorMap });
+    },
+    moisture: function () {
+        drawMap(mapCtx, world.moistureMap, { colorMap: moistureColorMap });
+    },
+    tectonics: function () {
+        tectonicsPainter.draw();
+        //tectonicsPainter.drawEdges();
+    }
+};
+
+viewRadio.forEach(function(radio) {
+    radio.addEventListener('click', function (e) {
+        currentView = e.target.value;
+        draw();
+    });
+});
+
+
+var draw = function() {
+    viewOptions[currentView]();
+}
+
 generateButton.addEventListener('click', function() {
     world = createWorld();
     seaLevelInput.value = world.seaLevel;
-    drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
+    draw();
 });
 
-surfaceViewInput.addEventListener('click', function() {
-    drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
-});
-
-moistureViewInput.addEventListener('click', function() {
-    drawMap(mapCtx, world.moistureMap, {colorMap: moistureColorMap});
-});
-
-tectonicsViewInput.addEventListener('click', function() {
-    tectonicsPainter.draw();
-    //tectonicsPainter.drawEdges();
-});
 
 seaLevelInput.addEventListener('change', function() {
     world.seaLevel = seaLevelInput.value;
     generateSurfaceColorMap();
-    drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
+    draw();
 });
 
 canvas.addEventListener('mousemove', function(e) {
@@ -68,4 +80,4 @@ canvas.addEventListener('mousemove', function(e) {
 
 generateSurfaceColorMap();
 generateMoistureColorMap();
-drawMap(mapCtx, world.heightMap, {colorMap: heightmapColorMap});
+draw();
