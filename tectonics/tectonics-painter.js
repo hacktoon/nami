@@ -54,7 +54,8 @@ var TectonicsPainter = (function () {
 
         var drawLabel = function(){
             _.each(self.tectonics.plates, function (plate) {
-                var text = Direction.getSymbol(plate.direction),
+                var symbol = Direction.getSymbol(plate.direction),
+                    text = symbol + plate.speed +"sp/"+plate.density+"k",
                     point = plate.region.startPoint,
                     x = self.tilesize * point.x,
                     y = self.tilesize * point.y;
