@@ -1,14 +1,13 @@
 var canvas = document.getElementById("surface"),
     mapCtx = canvas.getContext("2d"),
-    generateButton = document.getElementById("generate"),
+    generateButton = document.getElementById("generateButton"),
     roughnessInput = document.getElementById("roughness"),
     sizeInput = document.getElementById("size"),
     seaLevelInput = document.getElementById("seaLevel"),
     totalPlatesInput = document.getElementById("totalPlates"),
     tilesizeInput = document.getElementById("tilesize"),
     infoPanel = document.getElementById("info"),
-    viewRadio = document.getElementsByName('view'),
-    currentView = "surface";
+    viewInput = document.getElementById('viewInput');
 
 var heightmapColorMap = {},
     moistureColorMap = {},
@@ -32,30 +31,29 @@ var getTileSize = function(){
 
 var world = createWorld();
 
-var viewOptions = {
-    surface: function () {
-        drawMap(mapCtx, world.heightMap, { colorMap: heightmapColorMap });
-    },
-    moisture: function () {
-        drawMap(mapCtx, world.moistureMap, { colorMap: moistureColorMap });
-    },
-    tectonics: function () {
-        tectonicsPainter.draw();
-        //tectonicsPainter.drawEdges();
-    }
+var getViewOption = function () {
+    var input = document.querySelector("#viewInput"),
+        option = input.options[input.selectedIndex];
+    return option.value;
 };
 
-viewRadio.forEach(function(radio) {
-    radio.addEventListener('click', function (e) {
-        currentView = e.target.value;
-        draw();
-    });
-});
-
-
-var draw = function() {
-    viewOptions[currentView]();
+var draw = function () {
+    var view = getViewOption();
+    return {
+        surface: function () {
+            drawMap(mapCtx, world.heightMap, { colorMap: heightmapColorMap });
+        },
+        moisture: function () {
+            drawMap(mapCtx, world.moistureMap, { colorMap: moistureColorMap });
+        },
+        tectonics: function () {
+            tectonicsPainter.draw();
+            tectonicsPainter.drawEdges();
+        }
+    }[view]();
 }
+
+viewInput.addEventListener('change', draw);
 
 generateButton.addEventListener('click', function() {
     world = createWorld();

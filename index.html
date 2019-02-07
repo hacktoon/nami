@@ -8,42 +8,55 @@
             body {
                 margin: 0;
                 padding: 0;
+                font-family: Arial, Helvetica, sans-serif;
             }
             header {
                 background: #333;
-                margin: 0;
-                height: 2em;
-                line-height: 2em;
-                padding: 0 20px;
                 color: white;
-                font-size: 2em;
+                height: 1.8em;
+                margin: 0;
+                line-height: 1.8em;
+                font-size: 1.8em;
+                padding: 0 20px;
             }
 
             #main-menu {
                 display: block;
                 background: #DDD;
                 margin: 0;
-                padding: 0;
+                padding: 0 20px;
                 height: 50px;
                 line-height: 50px;
+                border-bottom: 1px solid #AAA;
             }
-
-            #main-menu label {
-                background: #EEE;
-                border: none;
-                float: left;
-                cursor: pointer;
-                margin: 0;
-                font-size: 1.1em;
+            #main-menu select,
+            #main-menu button {
+                border: 1px solid #CCC;
+                background: #FFF;
+                font-size: 1em;
+                height: 30px;
+                line-height: 30px;
                 padding: 0 10px;
             }
-            #main-menu label input { display: none; }
-            #main-menu label:hover { background: #CCC; }
-            #main-menu label.selected { background: #888; }
+            #main-menu button {
+                background: rgb(13, 77, 33);
+                color: #FFF;
+                font-weight: bold;
+            }
+            #main-menu label {
+                font-size: 1.2em;
+                height: 30px;
+                line-height: 30px;
+            }
 
             main {
                 padding: 20px;
             }
+
+            input#roughness { width: 3em; }
+            input#seaLevel { width: 3.5em; }
+            input#totalPlates { width: 3em; }
+
 
             .generation-options {
                 margin-bottom: 20px;
@@ -65,15 +78,14 @@
   <body>
     <header>Nami : Map generator</header>
     <nav id="main-menu">
-        <label for="surface-view">Surface
-            <input id="surface-view" type="radio" name="view" value="surface" />
+        <label for="viewInput">View
+            <select id="viewInput">
+                <option value="surface" selected>Surface</option>
+                <option value="tectonics">Tectonics</option>
+                <option value="moisture">Moisture</option>
+            </select>
         </label>
-        <label for="tectonics-view">Tectonics
-            <input id="tectonics-view" type="radio" name="view" value="tectonics" />
-        </label>
-        <label for="moisture-view">Moisture
-            <input id="moisture-view" type="radio" name="view" value="moisture" />
-        </label>
+        <button id="generateButton">Generate!</button>
     </nav>
 
     <main>
@@ -101,8 +113,6 @@
             <label for="tilesize">Tile size
                 <input type="number" min="1" max="10" step="1" value="5" id="tilesize" />
             </label>
-
-            <button id="generate">generate</button>
         </div>
 
         <div id="view">
