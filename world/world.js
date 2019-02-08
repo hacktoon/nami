@@ -4,7 +4,7 @@
 
 
 var World = (function(){
-    var _World = function (size, roughness, seaLevel, totalPlates){
+    var _World = function (size, roughness, totalPlates){
         var self = this;
         this.size = size;
         this.heightMap = undefined;
@@ -12,7 +12,6 @@ var World = (function(){
         this.tectonicsMap = undefined;
         this.roughness = roughness;
         this.totalPlates = totalPlates;
-        this.seaLevel = seaLevel;
         this.terrainMap = {
             1: { name: "abyssal water", rate: 10 },
             2: { name: "deep water", rate: 10 },
@@ -22,6 +21,7 @@ var World = (function(){
             6: { name: "plateau", rate: 10 },
             7: { name: "hill", rate: 10 },
             8: { name: "mountain", rate: 5 },
+            9: { name: "peak", rate: 2 },
         };
         self.data = {
             water: 0,
@@ -43,7 +43,7 @@ var World = (function(){
                 }
             };
             var heightmap = HeightMap(self.size, self.roughness, {callback: setPoint});
-            heightmap = WorldFilter.apply(heightmap, self.seaLevel);
+            heightmap = WorldFilter.apply(heightmap);
             self.heightMap = heightmap;
         };
 
@@ -54,8 +54,8 @@ var World = (function(){
     };
 
     return {
-        new: function(size, roughness, seaLevel, totalPlates) {
-            var world = new _World(size, roughness, seaLevel, totalPlates);
+        new: function(size, roughness, totalPlates) {
+            var world = new _World(size, roughness, totalPlates);
             world.build();
             return world;
         }
@@ -79,24 +79,25 @@ var WorldFilter = (function(){
         return Math.round(sum / neighborCount);
     };
 
-    var normalizeHeight = function (averageHeight, seaLevel) {
+    var normalizeHeight = function (averageHeight) {
         var height = 1;
         if (averageHeight > 50) { height = 2; }
         if (averageHeight > 90) { height = 3; }
-        if (averageHeight > seaLevel) { height = 4; }
-        if (averageHeight > seaLevel + 50) { height = 5; }
-        if (averageHeight > seaLevel + 85) { height = 6; }
-        if (averageHeight > seaLevel + 110) { height = 7; }
-        if (averageHeight > seaLevel + 140) { height = 8; }
+        if (averageHeight > 120) { height = 4; }
+        if (averageHeight > 170) { height = 5; }
+        if (averageHeight > 205) { height = 6; }
+        if (averageHeight > 230) { height = 7; }
+        if (averageHeight > 250) { height = 8; }
+        if (averageHeight > 255) { height = 9; }
         return height;
     };
 
-    var apply = function (originalGrid, seaLevel) {
+    var apply = function (originalGrid) {
         var newGrid = _.cloneDeep(originalGrid);
 
         originalGrid.forEach(function(_, point) {
             var averageHeight = averageNeighbors(originalGrid, point);
-            var height = normalizeHeight(averageHeight, seaLevel);
+            var height = normalizeHeight(averageHeight);
             newGrid.set(point, height);
         });
         return newGrid;

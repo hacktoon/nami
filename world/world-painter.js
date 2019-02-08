@@ -13,7 +13,8 @@ var discreteColorMap = function (terrainCode) {
         5: "#0f8220",
         6: "#8abd34",
         7: "#7d7553",
-        8: "#FFF",
+        8: "#AAA",
+        9: "#FFF",
     }[terrainCode];
 };
 
@@ -22,7 +23,7 @@ var isBeach = function (point) {
         found = false;
     neighbors.adjacent(function (neighbor) {
         var isLand = grid.get(point) > world.seaLevel;
-        var hasWaterNeighbor = grid.get(neighbor) <= world.seaLevel;
+        //var hasWaterNeighbor = grid.get(neighbor) <= world.seaLevel;
         var diff = grid.get(point) - grid.get(neighbor);
         if (isLand && hasWaterNeighbor && diff < 8) {
             found = true;

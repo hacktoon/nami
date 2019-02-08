@@ -3,7 +3,6 @@ var canvas = document.getElementById("surface"),
     generateButton = document.getElementById("generateButton"),
     roughnessInput = document.getElementById("roughness"),
     sizeInput = document.getElementById("size"),
-    seaLevelInput = document.getElementById("seaLevel"),
     totalPlatesInput = document.getElementById("totalPlates"),
     tilesizeInput = document.getElementById("tilesize"),
     infoPanel = document.getElementById("info"),
@@ -15,11 +14,10 @@ var moistureColorMap = {},
 var createWorld = function(){
     var size = Number(sizeInput.value),
         roughness = Number(roughnessInput.value),
-        seaLevel = Number(seaLevelInput.value),
         totalPlates = Number(totalPlatesInput.value),
         tilesize = getTileSize();
 
-    var world = World.new(size, roughness, seaLevel, totalPlates);
+    var world = World.new(size, roughness, totalPlates);
     tectonicsPainter = TectonicsPainter.new(world.tectonicsMap, canvas, tilesize);
     return world;
 };
@@ -56,11 +54,6 @@ viewInput.addEventListener('change', draw);
 
 generateButton.addEventListener('click', function() {
     world = createWorld();
-    draw();
-});
-
-seaLevelInput.addEventListener('change', function() {
-    world.seaLevel = Number(seaLevelInput.value);
     draw();
 });
 
