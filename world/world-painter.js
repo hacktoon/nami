@@ -1,47 +1,21 @@
-var generateSurfaceColorMap = function() {
-    var water = ColorGradient('000056', '489CFF', world.seaLevel),
-        ground = ColorGradient('0a5816', 'bdff2e', world.size - world.seaLevel + 1); // solve index problem on drawMap
-    _.concat(water, ground).forEach(function(item, index) {
-        heightmapColorMap[index] = item;
-    });
-};
-
 var generateMoistureColorMap = function() {
     ColorGradient('CC0000', '0000CC', world.size).forEach(function(item, index) {
         moistureColorMap[index] = item;
     });
 };
 
-var discreteColorMap = function (currentValue) {
-    var color = "#000056";
-    if (currentValue > 40) {
-        color = "#1a3792";
-    }
-
-    if (currentValue > 80) {
-        color = "#489CFF";
-    }
-
-    if (currentValue > world.seaLevel) {
-        color = "#0a5816";
-    }
-
-    if (currentValue > world.seaLevel + 50) {
-        color = "#0f8220";
-    }
-
-    if (currentValue > world.seaLevel + 85) {
-        color = "#8abd34";
-    }
-
-    if (currentValue > world.seaLevel + 110) {
-        color = "#7d7553";
-    }
-
-    if (currentValue > world.seaLevel + 130) {
-        color = "#FFF";
-    }
-    return color;
+var discreteColorMap = function (terrainCode) {
+    var colorMap = {
+        1: "#000056",
+        2: "#1a3792",
+        3: "#489CFF",
+        4: "#0a5816",
+        5: "#0f8220",
+        6: "#8abd34",
+        7: "#7d7553",
+        8: "#FFF",
+    };
+    return colorMap[terrainCode];
 };
 
 var isBeach = function (point) {
@@ -70,11 +44,11 @@ var drawMap = function(ctx, grid, opts){
         var x = point.x * tilesize,
             y = point.y * tilesize;
 
-        ctx.fillStyle = opts.colorMap[currentValue];
         if (getViewOption() == "surface") {
             ctx.fillStyle = discreteColorMap(currentValue);
+        } else {
+            ctx.fillStyle = opts.colorMap[currentValue];
         }
-
         ctx.fillRect(x, y, tilesize, tilesize);
     });
 };

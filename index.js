@@ -9,8 +9,7 @@ var canvas = document.getElementById("surface"),
     infoPanel = document.getElementById("info"),
     viewInput = document.getElementById('viewInput');
 
-var heightmapColorMap = {},
-    moistureColorMap = {},
+var moistureColorMap = {},
     tectonicsPainter = undefined;
 
 var createWorld = function(){
@@ -41,7 +40,7 @@ var draw = function () {
     var view = getViewOption();
     return {
         surface: function () {
-            drawMap(canvasCtx, world.heightMap, { colorMap: heightmapColorMap });
+            drawMap(canvasCtx, world.heightMap);
         },
         moisture: function () {
             drawMap(canvasCtx, world.moistureMap, { colorMap: moistureColorMap });
@@ -66,8 +65,9 @@ seaLevelInput.addEventListener('change', function() {
 });
 
 var getCanvasMousePoint = function(e, canvas){
-    var mouseX = e.clientX - canvas.offsetLeft,
-        mouseY = e.clientY - canvas.offsetTop,
+    var scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
+        mouseX = e.clientX - canvas.offsetLeft,
+        mouseY = e.clientY - canvas.offsetTop + scrollOffset,
         x = _.parseInt(mouseX / getTileSize()),
         y = _.parseInt(mouseY / getTileSize());
     return Point.new(x, y);
@@ -82,6 +82,5 @@ canvas.addEventListener('mousemove', function(e) {
     infoPanel.innerHTML = text;
 });
 
-generateSurfaceColorMap();
 generateMoistureColorMap();
 draw();
