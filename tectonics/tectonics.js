@@ -21,6 +21,10 @@ var Tectonics = (function() {
             });
         };
 
+        this.getPlateById = function (id) {
+            return self.plateIdMap[id];
+        };
+
         /* Grow the plates until all them complete. */
         this.buildPlates = function (growOptions) {
             var totalCompleted = 0,
@@ -38,25 +42,33 @@ var Tectonics = (function() {
                     plate.region.grow(growOptions);
                 });
             }
-            applyDeformations();
+            deformEdges();
         };
 
-        var applyDeformations = function() {
-            self.forEachPlate(function(plate) {
+        var deformEdges = function() {
+            var getNeighborPlates = function (point){
+                var plates = [];
+                PointNeighborhood.new(point).around(function (neighbor) {
+                    var neighborValue = self.grid.get(neighbor);
+                    if (neighborValue == self.grid.get(point))
+                        return;
+                    var plate = self.getPlateById(neighborValue);
+                    plates.push(plate);
+                });
+                return plates;
+            };
+
+            var deformPlateEdges = function (plate) {
                 var deformation = PlateDeformation.new(plate);
-                plate.region.edges(function(edge){
-                    var neighbors = PointNeighborhood.new(edge),
-                        deformationValue = 0;
-                    neighbors.around(function(neighbor){
-                        var neighborValue = self.grid.get(neighbor);
-                        if (neighborValue == plate.id)
-                            return;
-                        var otherPlate = self.plateIdMap[neighborValue];
+                plate.region.edges(function (edge) {
+                    var deformationValue = 0;
+                    _.each(getNeighborPlates(edge), function(otherPlate){
                         deformationValue += deformation.between(otherPlate);
                     });
                     self.edgeDeformationMap[edge.hash()] = deformationValue;
                 });
-            });
+            }
+            self.forEachPlate(deformPlateEdges);
         };
 
         this.hasPointInEdges = function (point) {
@@ -119,31 +131,42 @@ var Plate = (function() {
 
 
 var PlateDeformation = (function() {
-    var _PlateDeformation = function (target_plate) {
+    var _PlateDeformation = function (plate) {
         var self = this,
             densityPenalty = 5,
             speedPenalty = 5,
             directionPenalty = 10;
-        this.plate = target_plate;
+        this.plate = plate;
+
+        var distanceDeformation = function(dir1, dir2) {
+            if (dir1 == Direction.NORTH) {
+
+            }
+        };
 
         this.between = function (plate) {
-            var value = 0;
-            self.plate.direction == plate.direction
+            var deformation = 0;
+            // deformation = distanceDeformation(self.plate.direction, plate.direction);
+            // if (deformation){
+
+            // } else {
+            //     deformation -= directionPenalty;
+            // }
 
             // check dir
             if (self.plate.speed > plate.speed) {
-                value -= speedPenalty;
+                deformation -= speedPenalty;
             } else {
-                value += speedPenalty;
+                deformation += speedPenalty;
             }
 
             if (self.plate.density > plate.density){
-                value -= densityPenalty;
+                deformation -= densityPenalty;
             } else {
-                value += densityPenalty;
+                deformation += densityPenalty;
             }
 
-            return value;
+            return deformation;
         };
     };
 
