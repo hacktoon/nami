@@ -13,12 +13,12 @@ var generateMoistureColorMap = function() {
 };
 
 var discreteColorMap = function (currentValue) {
-    color = "#000056";
-    if (currentValue > 20) {
+    var color = "#000056";
+    if (currentValue > 40) {
         color = "#1a3792";
     }
 
-    if (currentValue > 40) {
+    if (currentValue > 80) {
         color = "#489CFF";
     }
 
@@ -26,19 +26,19 @@ var discreteColorMap = function (currentValue) {
         color = "#0a5816";
     }
 
-    if (currentValue > world.seaLevel + 30) {
+    if (currentValue > world.seaLevel + 50) {
         color = "#0f8220";
     }
 
-    if (currentValue > world.seaLevel + 45) {
+    if (currentValue > world.seaLevel + 85) {
         color = "#8abd34";
     }
 
-    if (currentValue > world.seaLevel + 55) {
+    if (currentValue > world.seaLevel + 110) {
         color = "#7d7553";
     }
 
-    if (currentValue > world.seaLevel + 65) {
+    if (currentValue > world.seaLevel + 130) {
         color = "#FFF";
     }
     return color;
