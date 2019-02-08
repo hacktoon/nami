@@ -75,11 +75,12 @@ var getCanvasMousePoint = function(e, canvas){
 
 canvas.addEventListener('mousemove', function(e) {
     var point = getCanvasMousePoint(e, canvas),
+        position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = world.heightMap.get(point),
-        moisture = world.moistureMap.get(point),
-        text = "(x = "+ point.x + ", y = " + point.y + ") / ";
-    text += "Height: " + height + ",  Moisture: " + moisture;
-    infoPanel.innerHTML = text;
+        heightText = " | Height: " + height,
+        moisture = " | Moisture: " + world.moistureMap.get(point),
+        terrain = " | Terrain: " + world.terrainMap[height].name;
+    infoPanel.innerHTML = position + terrain + heightText + moisture;;
 });
 
 generateMoistureColorMap();

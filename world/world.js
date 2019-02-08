@@ -9,14 +9,14 @@ var World = (function(){
         this.size = size;
         this.heightMap = undefined;
         this.terrainMap = {
-            1: {name: "abyssal",  rate: 10},
-            2: {name: "deep",     rate: 10},
-            3: {name: "shallow",  rate: 10},
-            4: {name: "coast",    rate: 10},
-            5: {name: "plain",    rate: 10},
-            6: {name: "plateau",  rate: 10},
-            7: {name: "hill",     rate: 10},
-            8: {name: "mountain", rate: 5},
+            1: {name: "abyssal water", rate: 10},
+            2: {name: "deep water",    rate: 10},
+            3: {name: "shallow water", rate: 10},
+            4: {name: "coast",         rate: 10},
+            5: {name: "plain",         rate: 10},
+            6: {name: "plateau",       rate: 10},
+            7: {name: "hill",          rate: 10},
+            8: {name: "mountain",      rate: 5},
         };
         this.moistureMap = undefined;
         this.tectonicsMap = undefined;
@@ -45,7 +45,7 @@ var World = (function(){
             var heightmap = HeightMap(self.size, self.roughness, {callback: setPoint});
             heightmap = WorldFilter.average(heightmap);
             heightmap = WorldFilter.normalizeHeight(heightmap, self.seaLevel);
-            //heightmap = WorldFilter.trimPoints(heightmap); --> needs terrain level info %
+            heightmap = WorldFilter.trimPoints(heightmap);
             self.heightMap = heightmap;
         };
 
@@ -107,20 +107,19 @@ var WorldFilter = (function(){
         return grid;
     };
 
-    var trimPoints = function(originalGrid) {
-        var grid = _.cloneDeep(originalGrid);
-        originalGrid.forEach(function(originalValue, point) {
+    var trimPoints = function(grid) {
+        grid.forEach(function(originalValue, point) {
             var neighborhood = PointNeighborhood.new(point),
                 differentNeighbors = 0,
                 newValue = originalValue;
                 neighborhood.around(function(neighborPoint) {
-                    var value = originalGrid.get(neighborPoint);
+                    var value = grid.get(neighborPoint);
                     if (value != originalValue) {
                         differentNeighbors++;
                         newValue = value;
                     }
                 });
-            if (differentNeighbors > 3){
+            if (differentNeighbors > 6){
                 grid.set(point, newValue);
             }
         });
