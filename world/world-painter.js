@@ -70,8 +70,10 @@ var drawMap = function(ctx, grid, opts){
         var x = point.x * tilesize,
             y = point.y * tilesize;
 
-        //ctx.fillStyle = opts.colorMap[currentValue];
-        ctx.fillStyle = discreteColorMap(currentValue);
+        ctx.fillStyle = opts.colorMap[currentValue];
+        if (getViewOption() == "surface") {
+            ctx.fillStyle = discreteColorMap(currentValue);
+        }
 
         ctx.fillRect(x, y, tilesize, tilesize);
     });
