@@ -37,14 +37,14 @@ var World = (function(){
                     grid.set(point, height);
                 }
             };
-            var hmap = HeightMap(self.size, self.size, self.roughness, {callback: callback});
+            var hmap = HeightMap(self.size, self.roughness, {callback: callback});
             hmap = GridFilter.average(hmap);
-            //hmap = GridFilter.clean(hmap); --> needs terrain level info %
+            //hmap = GridFilter.trimPoints(hmap); --> needs terrain level info %
             self.heightMap = hmap;
         };
 
         var _generateMoistureMap = function() {
-            var moistureMap = HeightMap(self.size, self.size, self.roughness);
+            var moistureMap = HeightMap(self.size, self.roughness);
             self.moistureMap = GridFilter.average(moistureMap);
         };
 
