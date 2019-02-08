@@ -30,7 +30,7 @@ var discreteColorMap = function (currentValue) {
         color = "#0f8220";
     }
 
-    if (currentValue > world.seaLevel + 50) {
+    if (currentValue > world.seaLevel + 45) {
         color = "#8abd34";
     }
 
@@ -38,7 +38,7 @@ var discreteColorMap = function (currentValue) {
         color = "#7d7553";
     }
 
-    if (currentValue > world.seaLevel + 66) {
+    if (currentValue > world.seaLevel + 65) {
         color = "#FFF";
     }
     return color;
