@@ -1,5 +1,5 @@
 var canvas = document.getElementById("surface"),
-    mapCtx = canvas.getContext("2d"),
+    canvasCtx = canvas.getContext("2d"),
     generateButton = document.getElementById("generateButton"),
     roughnessInput = document.getElementById("roughness"),
     sizeInput = document.getElementById("size"),
@@ -41,10 +41,10 @@ var draw = function () {
     var view = getViewOption();
     return {
         surface: function () {
-            drawMap(mapCtx, world.heightMap, { colorMap: heightmapColorMap });
+            drawMap(canvasCtx, world.heightMap, { colorMap: heightmapColorMap });
         },
         moisture: function () {
-            drawMap(mapCtx, world.moistureMap, { colorMap: moistureColorMap });
+            drawMap(canvasCtx, world.moistureMap, { colorMap: moistureColorMap });
         },
         tectonics: function () {
             tectonicsPainter.draw();
@@ -57,25 +57,28 @@ viewInput.addEventListener('change', draw);
 
 generateButton.addEventListener('click', function() {
     world = createWorld();
-    seaLevelInput.value = world.seaLevel;
     draw();
 });
 
 seaLevelInput.addEventListener('change', function() {
-    world.seaLevel = seaLevelInput.value;
-    generateSurfaceColorMap();
+    world.seaLevel = Number(seaLevelInput.value);
     draw();
 });
 
-canvas.addEventListener('mousemove', function(e) {
+var getCanvasMousePoint = function(e, canvas){
     var mouseX = e.clientX - canvas.offsetLeft,
         mouseY = e.clientY - canvas.offsetTop,
         x = _.parseInt(mouseX / getTileSize()),
-        y = _.parseInt(mouseY / getTileSize()),
-        point = Point.new(x, y),
+        y = _.parseInt(mouseY / getTileSize());
+    return Point.new(x, y);
+};
+
+canvas.addEventListener('mousemove', function(e) {
+    var point = getCanvasMousePoint(e, canvas),
         height = world.heightMap.get(point),
         moisture = world.moistureMap.get(point),
-        text = "(x: "+ x + ", y: " + y + ") = " + "Height: " + height + ",  Moisture: " + moisture;
+        text = "(x = "+ point.x + ", y = " + point.y + ") / ";
+    text += "Height: " + height + ",  Moisture: " + moisture;
     infoPanel.innerHTML = text;
 });
 
