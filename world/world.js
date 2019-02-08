@@ -45,7 +45,7 @@ var World = (function(){
             var heightmap = HeightMap(self.size, self.roughness, {callback: setPoint});
             heightmap = WorldFilter.average(heightmap);
             heightmap = WorldFilter.normalizeHeight(heightmap, self.seaLevel);
-            heightmap = WorldFilter.trimPoints(heightmap);
+            //heightmap = WorldFilter.trimPoints(heightmap);
             self.heightMap = heightmap;
         };
 
@@ -74,7 +74,7 @@ var World = (function(){
 
 var WorldFilter = (function(){
     var average = function(originalGrid) {
-        var grid = _.cloneDeep(originalGrid);
+        var newGrid = _.cloneDeep(originalGrid);
         originalGrid.forEach(function(_, point) {
             var neighborhood = PointNeighborhood.new(point),
                 totalNeighbors = 0,
@@ -87,9 +87,9 @@ var WorldFilter = (function(){
                         totalNeighbors++;
                     }
                 });
-            grid.set(point, Math.round(sum / totalNeighbors));
+            newGrid.set(point, Math.round(sum / totalNeighbors));
         });
-        return grid;
+        return newGrid;
     };
 
     var normalizeHeight = function(grid, seaLevel) {

@@ -5,7 +5,7 @@ var generateMoistureColorMap = function() {
 };
 
 var discreteColorMap = function (terrainCode) {
-    var colorMap = {
+    return {
         1: "#000056",
         2: "#1a3792",
         3: "#489CFF",
@@ -14,8 +14,7 @@ var discreteColorMap = function (terrainCode) {
         6: "#8abd34",
         7: "#7d7553",
         8: "#FFF",
-    };
-    return colorMap[terrainCode];
+    }[terrainCode];
 };
 
 var isBeach = function (point) {
