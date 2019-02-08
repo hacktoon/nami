@@ -135,9 +135,9 @@ var Plate = (function() {
 var PlateDeformation = (function() {
     var _PlateDeformation = function (plate) {
         var self = this,
-            densityPenalty = 10,
-            speedPenalty = 5,
-            directionPenalty = 10;
+            densityPenalty = 30,
+            speedPenalty = 20,
+            directionPenalty = 30;
         this.plate = plate;
 
         var distanceDeformation = function(dir1, dir2) {
@@ -147,17 +147,19 @@ var PlateDeformation = (function() {
             }
             // convergence
             if (dir1 > 0 && dir2 < 0) {
-                return directionPenalty * 2;
+                return directionPenalty;
             }
             return 0;
         };
 
         this.between = function (plate, atDirection) {
             var deformation = distanceDeformation(self.plate.direction, atDirection);
-            if (self.plate.density > plate.density){
-                deformation -= densityPenalty;
-            } else {
-                deformation += densityPenalty;
+            if (deformation > 0) {
+                if (self.plate.density > plate.density) {
+                    deformation -= densityPenalty;
+                } else {
+                    deformation += densityPenalty;
+                }
             }
             if (self.plate.speed > plate.speed) {
                 deformation += speedPenalty;

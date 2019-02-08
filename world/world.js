@@ -11,7 +11,6 @@ var World = (function(){
     var _World = function (size, roughness, seaLevel, totalPlates){
         var self = this;
         this.size = size;
-        this.heightRange = Range.new(0, size);
         this.groundRange = Range.new(0, size);
         this.heightMap = undefined;
         this.moistureMap = undefined;
@@ -38,12 +37,14 @@ var World = (function(){
                     grid.set(point, height);
                 }
             };
-            var hmap = HeightMap(self.size, self.heightRange, self.roughness, {callback: callback});
-            self.heightMap = GridFilter.average(hmap);
+            var hmap = HeightMap(self.size, self.size, self.roughness, {callback: callback});
+            hmap = GridFilter.average(hmap);
+            //hmap = GridFilter.clean(hmap); --> needs terrain level info %
+            self.heightMap = hmap;
         };
 
         var _generateMoistureMap = function() {
-            var moistureMap = HeightMap(self.size, self.heightRange, self.roughness);
+            var moistureMap = HeightMap(self.size, self.size, self.roughness);
             self.moistureMap = GridFilter.average(moistureMap);
         };
 

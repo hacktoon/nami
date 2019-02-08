@@ -1,6 +1,6 @@
 var generateSurfaceColorMap = function() {
     var water = ColorGradient('000056', '489CFF', world.seaLevel),
-        ground = ColorGradient('0a5816', 'bdff2e', world.heightRange.end - world.seaLevel + 1); // solve index problem on drawMap
+        ground = ColorGradient('0a5816', 'bdff2e', world.size - world.seaLevel + 1); // solve index problem on drawMap
     _.concat(water, ground).forEach(function(item, index) {
         heightmapColorMap[index] = item;
     });
