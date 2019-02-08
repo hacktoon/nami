@@ -8,21 +8,21 @@ var World = (function(){
         var self = this;
         this.size = size;
         this.heightMap = undefined;
-        this.terrainMap = {
-            1: {name: "abyssal water", rate: 10},
-            2: {name: "deep water",    rate: 10},
-            3: {name: "shallow water", rate: 10},
-            4: {name: "coast",         rate: 10},
-            5: {name: "plain",         rate: 10},
-            6: {name: "plateau",       rate: 10},
-            7: {name: "hill",          rate: 10},
-            8: {name: "mountain",      rate: 5},
-        };
-        this.moistureMap = undefined;
+        this.moistureMap = HeightMap(self.size, self.roughness);
         this.tectonicsMap = undefined;
         this.roughness = roughness;
         this.totalPlates = totalPlates;
         this.seaLevel = seaLevel;
+        this.terrainMap = {
+            1: { name: "abyssal water", rate: 10 },
+            2: { name: "deep water", rate: 10 },
+            3: { name: "shallow water", rate: 10 },
+            4: { name: "coast", rate: 10 },
+            5: { name: "plain", rate: 10 },
+            6: { name: "plateau", rate: 10 },
+            7: { name: "hill", rate: 10 },
+            8: { name: "mountain", rate: 5 },
+        };
         self.data = {
             water: 0,
             land: 0
@@ -43,21 +43,13 @@ var World = (function(){
                 }
             };
             var heightmap = HeightMap(self.size, self.roughness, {callback: setPoint});
-            heightmap = WorldFilter.average(heightmap);
-            heightmap = WorldFilter.normalizeHeight(heightmap, self.seaLevel);
-            //heightmap = WorldFilter.trimPoints(heightmap);
+            heightmap = WorldFilter.apply(heightmap, self.seaLevel);
             self.heightMap = heightmap;
-        };
-
-        var _generateMoistureMap = function() {
-            var moistureMap = HeightMap(self.size, self.roughness);
-            self.moistureMap = WorldFilter.average(moistureMap);
         };
 
         this.build = function() {
             _generateTectonicsMap();
             _generateHeightMap();
-            _generateMoistureMap();
         };
     };
 
@@ -73,38 +65,41 @@ var World = (function(){
 
 
 var WorldFilter = (function(){
-    var average = function(originalGrid) {
-        var newGrid = _.cloneDeep(originalGrid);
-        originalGrid.forEach(function(_, point) {
-            var neighborhood = PointNeighborhood.new(point),
-                totalNeighbors = 0,
-                sum = 0;
-
-                neighborhood.around(function(point) {
-                    var value = originalGrid.get(point);
-                    if (value != undefined) {
-                        sum += originalGrid.get(point);
-                        totalNeighbors++;
-                    }
-                });
-            newGrid.set(point, Math.round(sum / totalNeighbors));
+    var averageNeighbors = function(grid, point) {
+        var neighborhood = PointNeighborhood.new(point),
+            neighborCount = 0,
+            sum = 0;
+        neighborhood.around(function (neighbor) {
+            var height = grid.get(neighbor);
+            if (height != undefined) {
+                sum += height;
+                neighborCount++;
+            }
         });
-        return newGrid;
+        return Math.round(sum / neighborCount);
     };
 
-    var normalizeHeight = function(grid, seaLevel) {
-        grid.forEach(function(originalValue, point) {
-            var height = 1;
-            if (originalValue > 40)             { height = 2; }
-            if (originalValue > 80)             { height = 3; }
-            if (originalValue > seaLevel)       { height = 4; }
-            if (originalValue > seaLevel + 50)  { height = 5; }
-            if (originalValue > seaLevel + 85)  { height = 6; }
-            if (originalValue > seaLevel + 110) { height = 7; }
-            if (originalValue > seaLevel + 130) { height = 8; }
-            grid.set(point, height);
+    var normalizeHeight = function (averageHeight, seaLevel) {
+        var height = 1;
+        if (averageHeight > 50) { height = 2; }
+        if (averageHeight > 90) { height = 3; }
+        if (averageHeight > seaLevel) { height = 4; }
+        if (averageHeight > seaLevel + 50) { height = 5; }
+        if (averageHeight > seaLevel + 85) { height = 6; }
+        if (averageHeight > seaLevel + 110) { height = 7; }
+        if (averageHeight > seaLevel + 140) { height = 8; }
+        return height;
+    };
+
+    var apply = function (originalGrid, seaLevel) {
+        var newGrid = _.cloneDeep(originalGrid);
+
+        originalGrid.forEach(function(_, point) {
+            var averageHeight = averageNeighbors(originalGrid, point);
+            var height = normalizeHeight(averageHeight, seaLevel);
+            newGrid.set(point, height);
         });
-        return grid;
+        return newGrid;
     };
 
     var trimPoints = function(grid) {
@@ -127,9 +122,7 @@ var WorldFilter = (function(){
     };
 
     return {
-        average: average,
-        trimPoints: trimPoints,
-        normalizeHeight: normalizeHeight
+        apply: apply
     };
 
 })();
