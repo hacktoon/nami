@@ -47,13 +47,13 @@ var Tectonics = (function() {
 
         var deformEdges = function() {
             var getNeighborPlates = function (point){
-                var plates = [];
-                PointNeighborhood.new(point).around(function (neighbor) {
+                var plates = {};
+                PointNeighborhood.new(point).around(function (neighbor, direction) {
                     var neighborValue = self.grid.get(neighbor);
                     if (neighborValue == self.grid.get(point))
                         return;
                     var plate = self.getPlateById(neighborValue);
-                    plates.push(plate);
+                    plates[direction] = plate;
                 });
                 return plates;
             };
@@ -61,9 +61,11 @@ var Tectonics = (function() {
             var deformPlateEdges = function (plate) {
                 var deformation = PlateDeformation.new(plate);
                 plate.region.edges(function (edge) {
-                    var deformationValue = 0;
-                    _.each(getNeighborPlates(edge), function(otherPlate){
-                        deformationValue += deformation.between(otherPlate);
+                    var deformationValue = 0,
+                        directionMap = getNeighborPlates(edge);
+                    _.each(directionMap, function(otherPlate, key){
+                        var direction = key;
+                        deformationValue += deformation.between(otherPlate, direction);
                     });
                     self.edgeDeformationMap[edge.hash()] = deformationValue;
                 });
@@ -139,31 +141,28 @@ var PlateDeformation = (function() {
         this.plate = plate;
 
         var distanceDeformation = function(dir1, dir2) {
-            if (dir1 == Direction.NORTH) {
-
+            // divergence
+            if (dir1 < 0 && dir2 > 0) {
+                return -directionPenalty;
             }
+            // convergence
+            if (dir1 > 0 && dir2 < 0) {
+                return directionPenalty * 2;
+            }
+            return 0;
         };
 
-        this.between = function (plate) {
-            var deformation = 0;
-            // deformation = distanceDeformation(self.plate.direction, plate.direction);
-            // if (deformation){
-
-            // } else {
-            //     deformation -= directionPenalty;
-            // }
-
-            // check dir
-            if (self.plate.speed > plate.speed) {
-                deformation -= speedPenalty;
-            } else {
-                deformation += speedPenalty;
-            }
-
+        this.between = function (plate, atDirection) {
+            var deformation = distanceDeformation(self.plate.direction, atDirection);
             if (self.plate.density > plate.density){
                 deformation -= densityPenalty;
             } else {
                 deformation += densityPenalty;
+            }
+            if (self.plate.speed > plate.speed) {
+                deformation += speedPenalty;
+            } else {
+                deformation -= speedPenalty;
             }
 
             return deformation;

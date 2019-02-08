@@ -33,8 +33,8 @@ var World = (function(){
         var _generateHeightMap = function() {
             var callback = function(grid, point, height){
                 if (self.tectonicsMap.hasPointInEdges(point)) {
-                    var deformation = self.tectonicsMap.getDeformation(point);
-                    var height = _.clamp(height + deformation, 0, self.size);
+                    var deformation = self.tectonicsMap.getDeformation(point),
+                        height = _.clamp(height + deformation, 0, self.size);
                     grid.set(point, height);
                 }
             };
