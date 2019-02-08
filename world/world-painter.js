@@ -12,6 +12,53 @@ var generateMoistureColorMap = function() {
     });
 };
 
+var discreteColorMap = function (currentValue) {
+    color = "#000056";
+    if (currentValue > 20) {
+        color = "#1a3792";
+    }
+
+    if (currentValue > 40) {
+        color = "#489CFF";
+    }
+
+    if (currentValue > world.seaLevel) {
+        color = "#0a5816";
+    }
+
+    if (currentValue > world.seaLevel + 30) {
+        color = "#0f8220";
+    }
+
+    if (currentValue > world.seaLevel + 50) {
+        color = "#8abd34";
+    }
+
+    if (currentValue > world.seaLevel + 55) {
+        color = "#7d7553";
+    }
+
+    if (currentValue > world.seaLevel + 66) {
+        color = "#FFF";
+    }
+    return color;
+};
+
+var isBeach = function (point) {
+    var neighbors = PointNeighborhood.new(point),
+        found = false;
+    neighbors.adjacent(function (neighbor) {
+        var isLand = grid.get(point) > world.seaLevel;
+        var hasWaterNeighbor = grid.get(neighbor) <= world.seaLevel;
+        var diff = grid.get(point) - grid.get(neighbor);
+        if (isLand && hasWaterNeighbor && diff < 8) {
+            found = true;
+            return
+        }
+    })
+    return found;
+};
+
 var drawMap = function(ctx, grid, opts){
     var opts = opts || {},
         tilesize = getTileSize();
@@ -19,55 +66,13 @@ var drawMap = function(ctx, grid, opts){
     canvas.width = world.size * tilesize;
     canvas.height = world.size * tilesize;
 
-    var isBeach = function(point){
-        var neighbors = PointNeighborhood.new(point);
-        var found = false;
-        neighbors.adjacent(function (neighbor) {
-            var isLand = grid.get(point) > world.seaLevel;
-            var hasWaterNeighbor = grid.get(neighbor) <= world.seaLevel;
-            var diff = grid.get(point) - grid.get(neighbor);
-            if (isLand && hasWaterNeighbor && diff < 8){
-                found = true;
-                return
-            }
-        })
-        return found;
-    };
-
     grid.forEach(function(currentValue, point){
         var x = point.x * tilesize,
             y = point.y * tilesize;
 
-        ctx.fillStyle = opts.colorMap[currentValue];
-
-        // if (currentValue > world.seaLevel) {
-        //     ctx.fillStyle = "#0a5816";
-        // }
-
-        // if (currentValue > world.seaLevel + 30) {
-        //     ctx.fillStyle = "#0f8220";
-        // }
-
-        // if (currentValue > world.seaLevel + 50) {
-        //     ctx.fillStyle = "#8abd34";
-        // }
-
-        // if (currentValue > world.seaLevel + 55) {
-        //     ctx.fillStyle = "#7d7553";
-        // }
-
-        // if (currentValue > world.seaLevel + 66) {
-        //     ctx.fillStyle = "#FFF";
-        // }
-
-        // if (isBeach(point)) {
-        //     ctx.fillStyle = "#f5e886";
-        // }
+        //ctx.fillStyle = opts.colorMap[currentValue];
+        ctx.fillStyle = discreteColorMap(currentValue);
 
         ctx.fillRect(x, y, tilesize, tilesize);
-
-        // ctx.font = "12px Arial";
-        // ctx.fillStyle = "black";
-        // ctx.fillText(currentValue, x, y+20);
     });
 };

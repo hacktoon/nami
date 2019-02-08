@@ -121,8 +121,8 @@ var Plate = (function() {
 var PlateDeformation = (function() {
     var _PlateDeformation = function (target_plate) {
         var self = this,
-            densityPenalty = 10,
-            speedPenalty = 10,
+            densityPenalty = 5,
+            speedPenalty = 5,
             directionPenalty = 10;
         this.plate = target_plate;
 
