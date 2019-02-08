@@ -12,7 +12,7 @@ var canvas = document.getElementById("surface"),
 var TILESIZE = 4,
     SIZE = 128,
     MAXPLATES = _.toNumber((SIZE * SIZE) / 4),
-    MAXGROWTHRATE = 10;
+    MAXGROWTHRATE = 20;
     tectonics = undefined,
     painter = undefined;
 

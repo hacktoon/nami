@@ -29,7 +29,7 @@ var Tectonics = (function() {
         this.buildPlates = function (growOptions) {
             var totalCompleted = 0,
                 completedMap = {},
-                growOptions = growOptions || {partial: true, times: 5, chance: false};
+                growOptions = growOptions || {partial: true, times: 15, chance: true};
 
             while (totalCompleted < self.plates.length) {
                 _.each(self.plates, function(plate) {
