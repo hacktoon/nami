@@ -70,11 +70,8 @@ var WorldFilter = (function(){
             neighborCount = 0,
             sum = 0;
         neighborhood.around(function (neighbor) {
-            var height = grid.get(neighbor);
-            if (height != undefined) {
-                sum += height;
-                neighborCount++;
-            }
+            sum += grid.get(neighbor);
+            neighborCount++;
         });
         return Math.round(sum / neighborCount);
     };
