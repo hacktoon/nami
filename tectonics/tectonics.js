@@ -138,36 +138,21 @@ var PlateDeformation = (function() {
         var self = this,
             densityPenalty = 40,
             speedPenalty = 30,
-            directionPenalty = 40;
+            directionPenalty = 50;
         this.plate = plate;
 
         var distanceDeformation = function(dir1, dir2) {
-            // divergence
-            if (dir1 < 0 && dir2 > 0) {
+            if (Direction.isDivergent(dir1, dir2)) {
                 return -directionPenalty;
             }
-            // convergence
-            if (dir1 > 0 && dir2 < 0) {
+            if (Direction.isConvergent(dir1, dir2)) {
                 return directionPenalty;
             }
             return 0;
         };
 
         this.between = function (plate, atDirection) {
-            var deformation = distanceDeformation(self.plate.direction, atDirection);
-            if (deformation > 0) {
-                if (self.plate.density > plate.density) {
-                    deformation -= densityPenalty;
-                } else {
-                    deformation += densityPenalty;
-                }
-            }
-            if (self.plate.speed > plate.speed) {
-                deformation += speedPenalty;
-            } else {
-                deformation -= speedPenalty;
-            }
-            return deformation;
+            return distanceDeformation(self.plate.direction, atDirection);
         };
     };
 
