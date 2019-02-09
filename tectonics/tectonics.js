@@ -51,8 +51,8 @@ var Tectonics = (function() {
                 plate.region.edges(function (edge) {
                     var deformationRate = 0,
                         plateDirectionMap = getNeighborPlates(edge);
-                    _.each(plateDirectionMap, function(otherPlate, atDirection){
-                        deformationRate += deformation.between(otherPlate, atDirection);
+                    _.each(plateDirectionMap, function(otherPlate){
+                        deformationRate += deformation.between(otherPlate);
                     });
                     self.edgeDeformationMap[edge.hash()] = deformationRate;
                 });
@@ -136,23 +136,18 @@ var Plate = (function() {
 var PlateDeformation = (function() {
     var _PlateDeformation = function (plate) {
         var self = this,
-            densityPenalty = 40,
-            speedPenalty = 30,
             directionPenalty = 50;
         this.plate = plate;
 
-        var distanceDeformation = function(dir1, dir2) {
-            if (Direction.isDivergent(dir1, dir2)) {
+        this.between = function (plate) {
+            var direction = self.plate.direction;
+            if (Direction.isDivergent(direction, plate.direction)) {
                 return -directionPenalty;
             }
-            if (Direction.isConvergent(dir1, dir2)) {
+            if (Direction.isConvergent(direction, plate.direction)) {
                 return directionPenalty;
             }
             return 0;
-        };
-
-        this.between = function (plate, atDirection) {
-            return distanceDeformation(self.plate.direction, atDirection);
         };
     };
 
