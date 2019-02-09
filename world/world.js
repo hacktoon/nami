@@ -2,6 +2,7 @@
 
 // var WorldBuilder = (function () {})();
 
+// var WorldStatistics = (function () {})();
 
 var World = (function(){
     var _World = function (size, roughness, totalPlates){
@@ -12,17 +13,17 @@ var World = (function(){
         this.tectonicsMap = undefined;
         this.roughness = roughness;
         this.totalPlates = totalPlates;
-        this.terrainMap = {
-            1: { name: "abyssal water", rate: 10 },
-            2: { name: "deep water", rate: 10 },
-            3: { name: "shallow water", rate: 10 },
-            4: { name: "coast", rate: 10 },
-            5: { name: "plain", rate: 10 },
-            6: { name: "plateau", rate: 10 },
-            7: { name: "hill", rate: 10 },
-            8: { name: "mountain", rate: 5 },
-            9: { name: "peak", rate: 2 },
-        };
+        this.terrainMap = [
+            {code: 1, height: 0,   name: "abyssal water"},
+            {code: 2, height: 50,  name: "deep water"   },
+            {code: 3, height: 90,  name: "shallow water"},
+            {code: 4, height: 120, name: "coast"        },
+            {code: 5, height: 170, name: "plain"        },
+            {code: 6, height: 205, name: "plateau"      },
+            {code: 7, height: 230, name: "hill"         },
+            {code: 8, height: 250, name: "mountain"     },
+            {code: 9, height: 255, name: "peak"         }
+        ];
         self.data = {
             water: 0,
             land: 0
@@ -43,7 +44,7 @@ var World = (function(){
                 }
             };
             var heightmap = HeightMap(self.size, self.roughness, {callback: setPoint});
-            heightmap = WorldFilter.apply(heightmap);
+            heightmap = WorldFilter.apply(self, heightmap);
             self.heightMap = heightmap;
         };
 
@@ -76,25 +77,22 @@ var WorldFilter = (function(){
         return Math.round(sum / neighborCount);
     };
 
-    var normalizeHeight = function (averageHeight) {
+    var normalizeHeight = function (world, averageHeight) {
         var height = 1;
-        if (averageHeight > 50) { height = 2; }
-        if (averageHeight > 90) { height = 3; }
-        if (averageHeight > 120) { height = 4; }
-        if (averageHeight > 170) { height = 5; }
-        if (averageHeight > 205) { height = 6; }
-        if (averageHeight > 230) { height = 7; }
-        if (averageHeight > 250) { height = 8; }
-        if (averageHeight > 255) { height = 9; }
+        _.each(world.terrainMap, function(terrain){
+            if (averageHeight >= terrain.height) {
+                height = terrain.code;
+            }
+        });
         return height;
     };
 
-    var apply = function (originalGrid) {
+    var apply = function (world, originalGrid) {
         var newGrid = _.cloneDeep(originalGrid);
 
         originalGrid.forEach(function(_, point) {
             var averageHeight = averageNeighbors(originalGrid, point);
-            var height = normalizeHeight(averageHeight);
+            var height = normalizeHeight(world, averageHeight);
             newGrid.set(point, height);
         });
         return newGrid;
