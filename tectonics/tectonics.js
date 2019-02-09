@@ -136,15 +136,14 @@ var Plate = (function() {
 var PlateDeformation = (function() {
     var _PlateDeformation = function (plate) {
         var self = this,
-            directionPenalty = 50;
+            directionPenalty = 60;
         this.plate = plate;
 
         this.between = function (plate) {
             var direction = self.plate.direction;
             if (Direction.isDivergent(direction, plate.direction)) {
                 return -directionPenalty;
-            }
-            if (Direction.isConvergent(direction, plate.direction)) {
+            } else if (Direction.isConvergent(direction, plate.direction)) {
                 return directionPenalty;
             }
             return 0;
