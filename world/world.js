@@ -31,7 +31,7 @@ var World = (function(){
     return {
         new: function(size, roughness) {
             var world = new _World(size, roughness);
-            world.heightMap = WorldFilter.apply(world, world.heightMap);
+            WorldFilter.apply(world);
             return world;
         }
     };
@@ -51,14 +51,14 @@ var WorldFilter = (function(){
         return height;
     };
 
-    var apply = function (world, originalGrid) {
-        var newGrid = _.cloneDeep(originalGrid);
+    var apply = function (world) {
+        var heightMap = _.cloneDeep(world.heightMap);
 
-        originalGrid.forEach(function(_, point) {
+        world.heightMap.forEach(function(_, point) {
             var height = normalizeHeight(world, point);
-            newGrid.set(point, height);
+            heightMap.set(point, height);
         });
-        return newGrid;
+        world.heightMap = heightMap;
     };
 
     return {
