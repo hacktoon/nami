@@ -40,22 +40,12 @@ var World = (function(){
 
 
 var WorldFilter = (function(){
-    var averageNeighbors = function(grid, point) {
-        var neighborhood = PointNeighborhood.new(point),
-            neighborCount = 0,
-            sum = 0;
-        neighborhood.around(function (neighbor) {
-            sum += grid.get(neighbor);
-            neighborCount++;
-        });
-        return Math.round(sum / neighborCount);
-    };
-
-    var normalizeHeight = function (world, averageHeight) {
-        var height = 1;
-        _.each(world.terrainMap, function(terrain, key){
-            if (averageHeight >= terrain.height) {
-                height = key;
+    var normalizeHeight = function (world, point) {
+        var rawHeight = world.heightMap.get(point),
+            height = 1;
+        _.each(world.terrainMap, function(terrain){
+            if (rawHeight >= terrain.height) {
+                height = terrain.code;
             }
         });
         return height;
@@ -65,8 +55,7 @@ var WorldFilter = (function(){
         var newGrid = _.cloneDeep(originalGrid);
 
         originalGrid.forEach(function(_, point) {
-            var averageHeight = averageNeighbors(originalGrid, point);
-            var height = normalizeHeight(world, averageHeight);
+            var height = normalizeHeight(world, point);
             newGrid.set(point, height);
         });
         return newGrid;
