@@ -7,10 +7,11 @@
 var World = (function(){
     var _World = function (){
         var self = this;
+        var roughness = 3;
+
         this.size = 256;
-        this.roughness = 3;
-        this.heightMap = HeightMap(this.size, this.roughness);
-        this.moistureMap = HeightMap(this.size, this.roughness);
+        this.heightMap = HeightMap(this.size, roughness);
+        this.moistureMap = HeightMap(this.size, roughness);
         this.terrainMap = {
             1: {code: 1, height: 0,   name: "abyssal water"},
             2: {code: 2, height: 50,  name: "deep water"   },
