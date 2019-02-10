@@ -3,23 +3,16 @@ var canvas = document.getElementById("surface"),
     generateButton = document.getElementById("generateButton"),
     roughnessInput = document.getElementById("roughness"),
     sizeInput = document.getElementById("size"),
-    totalPlatesInput = document.getElementById("totalPlates"),
     tilesizeInput = document.getElementById("tilesize"),
     infoPanel = document.getElementById("info"),
     viewInput = document.getElementById('viewInput');
 
-var moistureColorMap = {},
-    tectonicsPainter = undefined;
+var moistureColorMap = {};
 
 var createWorld = function(){
     var size = Number(sizeInput.value),
-        roughness = Number(roughnessInput.value),
-        totalPlates = Number(totalPlatesInput.value),
-        tilesize = getTileSize();
-
-    var world = World.new(size, roughness, totalPlates);
-    tectonicsPainter = TectonicsPainter.new(world.tectonicsMap, canvas, tilesize);
-    return world;
+        roughness = Number(roughnessInput.value);
+    return World.new(size, roughness);
 };
 
 var getTileSize = function(){
@@ -42,10 +35,6 @@ var draw = function () {
         },
         moisture: function () {
             drawMap(canvasCtx, world.moistureMap, { colorMap: moistureColorMap });
-        },
-        tectonics: function () {
-            tectonicsPainter.draw();
-            tectonicsPainter.drawEdges();
         }
     }[view]();
 }

@@ -5,14 +5,12 @@
 // var WorldStatistics = (function () {})();
 
 var World = (function(){
-    var _World = function (size, roughness, totalPlates){
+    var _World = function (size, roughness){
         var self = this;
         this.size = size;
-        this.heightMap = undefined;
-        this.moistureMap = HeightMap(self.size, self.roughness);
-        this.tectonicsMap = undefined;
         this.roughness = roughness;
-        this.totalPlates = totalPlates;
+        this.heightMap = HeightMap(size, roughness);
+        this.moistureMap = HeightMap(size, roughness);
         this.terrainMap = {
             1: {code: 1, height: 0,   name: "abyssal water"},
             2: {code: 2, height: 50,  name: "deep water"   },
@@ -28,37 +26,12 @@ var World = (function(){
             water: 0,
             land: 0
         };
-
-        var _generateTectonicsMap = function() {
-            var tectonics = Tectonics.new(self.size, self.totalPlates);
-            tectonics.buildPlates();
-            self.tectonicsMap = tectonics;
-        };
-
-        var _generateHeightMap = function() {
-            var setPoint = function(grid, point, height){
-                if (self.tectonicsMap.hasPointInEdges(point)) {
-                    var deformation = self.tectonicsMap.getDeformation(point),
-                        height = _.clamp(height + deformation, 0, self.size);
-                    grid.set(point, height);
-                }
-            };
-            var heightmap = HeightMap(self.size, self.roughness, {callback: setPoint});
-            heightmap = WorldFilter.apply(self, heightmap);
-            self.heightMap = heightmap;
-        };
-
-        this.build = function() {
-            //TODO: call tectonics later, to morph discretized terrain
-            _generateTectonicsMap();
-            _generateHeightMap();
-        };
     };
 
     return {
-        new: function(size, roughness, totalPlates) {
-            var world = new _World(size, roughness, totalPlates);
-            world.build();
+        new: function(size, roughness) {
+            var world = new _World(size, roughness);
+            world.heightMap = WorldFilter.apply(world, world.heightMap);
             return world;
         }
     };
