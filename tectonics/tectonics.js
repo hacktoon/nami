@@ -136,7 +136,7 @@ var Plate = (function() {
 var PlateDeformation = (function() {
     var _PlateDeformation = function (plate) {
         var self = this,
-            directionPenalty = 100;
+            directionPenalty = 300;
         this.plate = plate;
 
         this.between = function (plate) {

@@ -49,6 +49,7 @@ var World = (function(){
         };
 
         this.build = function() {
+            //TODO: call tectonics later, to morph discretized terrain
             _generateTectonicsMap();
             _generateHeightMap();
         };

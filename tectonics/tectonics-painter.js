@@ -37,8 +37,9 @@ var TectonicsPainter = (function () {
             });
         };
 
-        this.draw = function() {
+        this.draw = function(label) {
             var grid = self.tectonics.grid,
+                label = _.defaultTo(label, true),
                 ts = self.tilesize;
 
             canvas.width = grid.width * ts;
@@ -49,19 +50,22 @@ var TectonicsPainter = (function () {
                 self.drawPoint(point, color);
             });
 
-            drawLabel();
+            if (label)
+                drawLabel();
         };
 
         var drawLabel = function(){
             _.each(self.tectonics.plates, function (plate) {
                 var symbol = Direction.getSymbol(plate.direction),
-                    text = symbol + plate.speed +"sp/"+plate.density+"k",
+                    text = symbol + plate.speed +"S\n"+plate.density+"D",
                     point = plate.region.startPoint,
                     x = self.tilesize * point.x,
                     y = self.tilesize * point.y;
-                self.ctx.fillStyle = "black";
-                self.ctx.font = "30px Arial";
+                self.ctx.fillStyle = "white";
+                self.ctx.font = "20px Arial";
+                self.ctx.strokeStyle = "black";
                 self.ctx.fillText(text, x, y);
+                self.ctx.strokeText(text, x, y);
             });
         };
     };

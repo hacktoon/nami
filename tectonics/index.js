@@ -7,7 +7,8 @@ var canvas = document.getElementById("surface"),
     edgeColorInput = document.getElementsByClassName("edgeColor"),
     growthRateInput = document.getElementById("growthRate"),
     partialGrowCheckbox = document.getElementById("partialGrow"),
-    growLotteryCheckbox = document.getElementById("growLottery");
+    growLotteryCheckbox = document.getElementById("growLottery"),
+    drawLabelsCheckbox = document.getElementById("drawLabels");
 
 var TILESIZE = 4,
     SIZE = 128,
@@ -42,7 +43,7 @@ var getGrowthRate = function() {
 };
 
 var draw = function () {
-    painter.draw();
+    painter.draw(drawLabelsCheckbox.checked);
     if (drawEdgesCheckbox.checked) {
         _.each(edgeColorInput, function (input) {
             var direction = Direction[input.id];
@@ -71,6 +72,7 @@ generateButton.addEventListener('click', function() {
     draw();
 });
 
+drawLabelsCheckbox.addEventListener('click', draw);
 drawEdgesCheckbox.addEventListener('click', draw);
 resetButton.addEventListener('click', init);
 
