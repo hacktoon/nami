@@ -72,25 +72,6 @@ var WorldFilter = (function(){
         return newGrid;
     };
 
-    var trimPoints = function(grid) {
-        grid.forEach(function(originalValue, point) {
-            var neighborhood = PointNeighborhood.new(point),
-                differentNeighbors = 0,
-                newValue = originalValue;
-                neighborhood.around(function(neighborPoint) {
-                    var value = grid.get(neighborPoint);
-                    if (value != originalValue) {
-                        differentNeighbors++;
-                        newValue = value;
-                    }
-                });
-            if (differentNeighbors > 6){
-                grid.set(point, newValue);
-            }
-        });
-        return grid;
-    };
-
     return {
         apply: apply
     };
