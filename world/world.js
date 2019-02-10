@@ -13,17 +13,17 @@ var World = (function(){
         this.tectonicsMap = undefined;
         this.roughness = roughness;
         this.totalPlates = totalPlates;
-        this.terrainMap = [
-            {code: 1, height: 0,   name: "abyssal water"},
-            {code: 2, height: 50,  name: "deep water"   },
-            {code: 3, height: 90,  name: "shallow water"},
-            {code: 4, height: 120, name: "coast"        },
-            {code: 5, height: 170, name: "plain"        },
-            {code: 6, height: 205, name: "plateau"      },
-            {code: 7, height: 230, name: "hill"         },
-            {code: 8, height: 250, name: "mountain"     },
-            {code: 9, height: 255, name: "peak"         }
-        ];
+        this.terrainMap = {
+            1: {code: 1, height: 0,   name: "abyssal water"},
+            2: {code: 2, height: 50,  name: "deep water"   },
+            3: {code: 3, height: 90,  name: "shallow water"},
+            4: {code: 4, height: 120, name: "coast"        },
+            5: {code: 5, height: 170, name: "plain"        },
+            6: {code: 6, height: 205, name: "plateau"      },
+            7: {code: 7, height: 230, name: "hill"         },
+            8: {code: 8, height: 250, name: "mountain"     },
+            9: {code: 9, height: 254, name: "peak"         }
+        };
         self.data = {
             water: 0,
             land: 0
@@ -80,9 +80,9 @@ var WorldFilter = (function(){
 
     var normalizeHeight = function (world, averageHeight) {
         var height = 1;
-        _.each(world.terrainMap, function(terrain){
+        _.each(world.terrainMap, function(terrain, key){
             if (averageHeight >= terrain.height) {
-                height = terrain.code;
+                height = key;
             }
         });
         return height;

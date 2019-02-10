@@ -73,6 +73,7 @@ canvas.addEventListener('mousemove', function(e) {
         heightText = " | Height: " + height,
         moisture = " | Moisture: " + world.moistureMap.get(point),
         terrain = " | Terrain: " + world.terrainMap[height].name;
+
     infoPanel.innerHTML = position + terrain + heightText + moisture;;
 });
 
