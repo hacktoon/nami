@@ -19,7 +19,7 @@ var Terrain = (function () {
 var World = (function(){
     var _World = function (){
         var self = this;
-        var roughness = 3;
+        var roughness = 4;
 
         this.size = 256;
         this.heightMap = HeightMap(this.size, roughness);
@@ -53,9 +53,8 @@ var World = (function(){
 
 
 var WorldFilter = (function(){
-    var normalizeHeight = function (world, point) {
-        var rawHeight = world.heightMap.get(point),
-            height = 1;
+    var normalizeHeight = function (world,rawHeight) {
+        var height = 1;
         _.each(world.terrainMap, function(terrain, code){
             if (rawHeight >= terrain.height) {
                 height = code;
@@ -64,11 +63,23 @@ var WorldFilter = (function(){
         return height;
     };
 
-    var apply = function (world) {
-        var heightMap = _.cloneDeep(world.heightMap);
+    var smooth = function (world, point) {
+        var neighborhood = PointNeighborhood.new(point),
+            neighborCount = 0,
+            sum = 0;
+        neighborhood.around(function (neighbor) {
+            sum += world.heightMap.get(neighbor);
+            neighborCount++;
+        });
+        return Math.round(sum / neighborCount);
+    };
 
+    var apply = function (world) {
+        var heightMap = _.cloneDeep(world.heightMap),
+            height = 0;
         world.heightMap.forEach(function(_, point) {
-            var height = normalizeHeight(world, point);
+            height = smooth(world, point);
+            height = normalizeHeight(world, height);
             heightMap.set(point, height);
         });
         world.heightMap = heightMap;
