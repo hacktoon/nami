@@ -1,25 +1,17 @@
 var canvas = document.getElementById("surface"),
     canvasCtx = canvas.getContext("2d"),
     generateButton = document.getElementById("generateButton"),
-    roughnessInput = document.getElementById("roughness"),
-    sizeInput = document.getElementById("size"),
-    tilesizeInput = document.getElementById("tilesize"),
+    tilesizeInput = document.getElementById("tilesizeInput"),
     infoPanel = document.getElementById("info"),
     viewInput = document.getElementById('viewInput');
 
 var moistureColorMap = {};
 
-var createWorld = function(){
-    var size = Number(sizeInput.value),
-        roughness = Number(roughnessInput.value);
-    return World.new(size, roughness);
-};
-
 var getTileSize = function(){
     return Number(tilesizeInput.value)
 };
 
-var world = createWorld();
+var world = World.new();
 
 var getViewOption = function () {
     var input = document.querySelector("#viewInput"),
@@ -42,7 +34,7 @@ var draw = function () {
 viewInput.addEventListener('change', draw);
 
 generateButton.addEventListener('click', function() {
-    world = createWorld();
+    world = World.new();
     draw();
 });
 

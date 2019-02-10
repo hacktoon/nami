@@ -5,12 +5,12 @@
 // var WorldStatistics = (function () {})();
 
 var World = (function(){
-    var _World = function (size, roughness){
+    var _World = function (){
         var self = this;
-        this.size = size;
-        this.roughness = roughness;
-        this.heightMap = HeightMap(size, roughness);
-        this.moistureMap = HeightMap(size, roughness);
+        this.size = 256;
+        this.roughness = 3;
+        this.heightMap = HeightMap(this.size, this.roughness);
+        this.moistureMap = HeightMap(this.size, this.roughness);
         this.terrainMap = {
             1: {code: 1, height: 0,   name: "abyssal water"},
             2: {code: 2, height: 50,  name: "deep water"   },
@@ -29,8 +29,8 @@ var World = (function(){
     };
 
     return {
-        new: function(size, roughness) {
-            var world = new _World(size, roughness);
+        new: function() {
+            var world = new _World();
             WorldFilter.apply(world);
             return world;
         }

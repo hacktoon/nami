@@ -20,6 +20,14 @@
                 padding: 0 20px;
             }
 
+            main {
+                padding: 20px;
+            }
+
+            canvas {
+                display: block;
+            }
+
             #main-menu {
                 display: block;
                 background: #DDD;
@@ -30,6 +38,7 @@
                 border-bottom: 1px solid #AAA;
             }
             #main-menu select,
+            #main-menu input,
             #main-menu button {
                 border: 1px solid #CCC;
                 background: #FFF;
@@ -37,6 +46,11 @@
                 height: 30px;
                 line-height: 30px;
                 padding: 0 10px;
+            }
+
+            #main-menu #tilesizeInput {
+                width: 50px;
+                padding-right: 0;
             }
 
             #main-menu label {
@@ -52,21 +66,6 @@
             }
             #main-menu button:active {
                 background: rgb(133, 156, 141);
-            }
-
-            main {
-                padding: 20px;
-            }
-
-            input#roughness { width: 3em; }
-            input#totalPlates { width: 3em; }
-
-            .generation-options {
-                margin-bottom: 20px;
-            }
-
-            #surface {
-                display: block;
             }
 
             #info {
@@ -87,28 +86,13 @@
                 <!--option value="moisture">Moisture</option -->
             </select>
         </label>
+        <label for="tilesizeInput">Tile size
+            <input type="number" min="1" max="10" step="1" value="3" id="tilesizeInput" />
+        </label>
         <button id="generateButton">Generate!</button>
     </nav>
 
     <main>
-        <div class="generation-options" id="worldgen-options">
-            <label for="size">Size
-                <select id="size">
-                    <option value="32">32</option>
-                    <option value="64">64</option>
-                    <option value="128">128</option>
-                    <option value="256" selected>256</option>
-                </select>
-            </label>
-            <label for="roughness">Roughness
-                <input type="number" min="0" max="10" step="0.5" value="3" id="roughness" />
-            </label>
-
-            <label for="tilesize">Tile size
-                <input type="number" min="1" max="10" step="1" value="3" id="tilesize" />
-            </label>
-        </div>
-
         <div id="view">
             <canvas id="surface"></canvas>
             <div id="info">Move mouse over map to view details</div>
