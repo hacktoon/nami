@@ -1,7 +1,7 @@
-var surfaceCanvas = document.getElementById("surfaceCanvas"),
+var worldCanvas = document.getElementById("worldCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
-    infoPanel = document.getElementById("info"),
+    infoText = document.getElementById("infoText"),
     viewInput = document.getElementById('viewInput');
 
 var getTileSize = function(){
@@ -9,7 +9,7 @@ var getTileSize = function(){
 };
 
 var world = World.new();
-    painter = SurfacePainter.new(surfaceCanvas, getTileSize())
+    painter = WorldPainter.new(worldCanvas, getTileSize())
 
 var getViewOption = function () {
     var input = document.getElementById("viewInput"),
@@ -20,16 +20,16 @@ var getViewOption = function () {
 var draw = function (world) {
     var view = getViewOption();
     return {
-        surface: function () {
+        world: function () {
             painter.draw(world.heightMap);
         }
     }[view]();
 };
 
-var getCanvasMousePoint = function(e, surfaceCanvas){
+var getCanvasMousePoint = function(e, worldCanvas){
     var scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
-        mouseX = e.clientX - surfaceCanvas.offsetLeft,
-        mouseY = e.clientY - surfaceCanvas.offsetTop + scrollOffset,
+        mouseX = e.clientX - worldCanvas.offsetLeft,
+        mouseY = e.clientY - worldCanvas.offsetTop + scrollOffset,
         x = _.parseInt(mouseX / getTileSize()),
         y = _.parseInt(mouseY / getTileSize());
     return Point.new(x, y);
@@ -44,14 +44,14 @@ generateButton.addEventListener('click', function() {
     draw(world);
 });
 
-surfaceCanvas.addEventListener('mousemove', function(e) {
-    var point = getCanvasMousePoint(e, surfaceCanvas),
+worldCanvas.addEventListener('mousemove', function(e) {
+    var point = getCanvasMousePoint(e, worldCanvas),
         position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = world.heightMap.get(point),
         heightText = " | Height: " + height,
         terrain = " | Terrain: " + world.terrainMap[height].name;
 
-    infoPanel.innerHTML = position + terrain + heightText;
+    infoText.innerHTML = position + terrain + heightText;
 });
 
 draw(world);

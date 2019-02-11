@@ -1,6 +1,6 @@
 
-var SurfacePainter = (function () {
-    var _SurfacePainter = function (canvas, tilesize) {
+var WorldPainter = (function () {
+    var _WorldPainter = function (canvas, tilesize) {
         var self = this;
         this.tilesize = tilesize;
         this.canvas = canvas;
@@ -38,9 +38,9 @@ var SurfacePainter = (function () {
     };
 
     return {
-        _class: _SurfacePainter,
+        _class: _WorldPainter,
         new: function (canvas, tilesize) {
-            return new _SurfacePainter(canvas, tilesize);
+            return new _WorldPainter(canvas, tilesize);
         }
     };
 })();

@@ -1,4 +1,4 @@
-var canvas = document.getElementById("surface"),
+var canvas = document.getElementById("world"),
     totalPlatesInput = document.getElementById("totalPlates"),
     generateButton = document.getElementById("generate"),
     resetButton = document.getElementById("reset"),
