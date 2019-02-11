@@ -1,14 +1,14 @@
 
-var TemperaturePainter = (function () {
-    var _TemperaturePainter = function (canvas) {
+var HeatPainter = (function () {
+    var _HeatPainter = function (canvas) {
         var self = this;
         this.ctx = canvas.getContext("2d"),
 
-        this.draw = function(temperatureMap, tilesize){
-            canvas.width = temperatureMap.size * tilesize;
-            canvas.height = temperatureMap.size * tilesize;
+        this.draw = function(heatMap, tilesize){
+            canvas.width = heatMap.size * tilesize;
+            canvas.height = heatMap.size * tilesize;
 
-            _.each(temperatureMap.points, function(point){
+            _.each(heatMap.points, function(point){
                 var x = point.x * tilesize,
                     y = point.y * tilesize;
 
@@ -20,9 +20,9 @@ var TemperaturePainter = (function () {
     };
 
     return {
-        _class: _TemperaturePainter,
+        _class: _HeatPainter,
         new: function (canvas) {
-            return new _TemperaturePainter(canvas);
+            return new _HeatPainter(canvas);
         }
     };
 })();

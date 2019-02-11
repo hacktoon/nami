@@ -1,6 +1,6 @@
 
-var Temperature = (function(){
-    var _Temperature = function (size){
+var Heat = (function(){
+    var _Heat = function (size){
         var self = this;
         this.size = size;
         this.zones = {
@@ -53,9 +53,9 @@ var Temperature = (function(){
 
     return {
         new: function(size) {
-            var temperature = new _Temperature(size);
-            temperature.build();
-            return temperature;
+            var heat = new _Heat(size);
+            heat.build();
+            return heat;
         }
     };
 })();

@@ -1,5 +1,5 @@
 var worldCanvas = document.getElementById("worldCanvas"),
-    temperatureCanvas = document.getElementById("temperatureCanvas"),
+    heatCanvas = document.getElementById("heatCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
@@ -26,12 +26,12 @@ var createWorld = function(){
 };
 
 var worldPainter = WorldPainter.new(worldCanvas),
-    temperaturePainter = TemperaturePainter.new(temperatureCanvas);
+    heatPainter = HeatPainter.new(heatCanvas);
 
 var draw = function(world) {
     var tilesize = getTileSizeInput();
     worldPainter.draw(world.heightMap, tilesize);
-    temperaturePainter.draw(world.temperatureMap, tilesize);
+    heatPainter.draw(world.heatMap, tilesize);
 };
 
 var getCanvasMousePoint = function(e, worldCanvas){
@@ -47,10 +47,10 @@ var getCanvasMousePoint = function(e, worldCanvas){
 
 viewInput.addEventListener('change', function(){
     var option = getViewInput();
-    if (option == "temperature") {
-        temperatureCanvas.style.display = "block";
+    if (option == "heat") {
+        heatCanvas.style.display = "block";
     } else {
-        temperatureCanvas.style.display = "none";
+        heatCanvas.style.display = "none";
     }
 });
 

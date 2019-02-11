@@ -74,7 +74,7 @@ canvas {
     display: block;
     z-index: 1;
 }
-#temperatureCanvas { z-index: 2; }
+#heatCanvas { z-index: 2; }
 
 #infoText {
     line-height: 30px;
