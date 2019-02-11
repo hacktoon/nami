@@ -1,9 +1,3 @@
-var generateMoistureColorMap = function() {
-    ColorGradient('CC0000', '0000CC', world.size).forEach(function(item, index) {
-        moistureColorMap[index] = item;
-    });
-};
-
 var discreteColorMap = function (terrainCode) {
     return {
         1: "#000056",

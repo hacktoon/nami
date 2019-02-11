@@ -18,22 +18,21 @@ var Terrain = (function () {
 
 var World = (function(){
     var _World = function (){
-        var self = this;
-        var roughness = 4;
+        var self = this,
+            roughness = 5;
 
         this.size = 256;
         this.heightMap = HeightMap(this.size, roughness);
-        this.moistureMap = HeightMap(this.size, roughness);
         this.terrainMap = {
-            1: {height: 0,   name: "abyssal water"},
-            2: {height: 50,  name: "deep water"   },
-            3: {height: 90,  name: "shallow water"},
-            4: {height: 120, name: "coast"        },
-            5: {height: 170, name: "plain"        },
-            6: {height: 205, name: "plateau"      },
-            7: {height: 230, name: "hill"         },
-            8: {height: 250, name: "mountain"     },
-            9: {height: 254, name: "peak"         }
+            1: {height: 0,   name: "Abyssal water"},
+            2: {height: 50,  name: "Deep water"   },
+            3: {height: 90,  name: "Shallow water"},
+            4: {height: 120, name: "Coast"        },
+            5: {height: 170, name: "Plain"        },
+            6: {height: 205, name: "Plateau"      },
+            7: {height: 230, name: "Hill"         },
+            8: {height: 250, name: "Mountain"     },
+            9: {height: 254, name: "Peak"         }
         };
         self.data = {
             water: 0,

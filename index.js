@@ -5,8 +5,6 @@ var canvas = document.getElementById("surface"),
     infoPanel = document.getElementById("info"),
     viewInput = document.getElementById('viewInput');
 
-var moistureColorMap = {};
-
 var getTileSize = function(){
     return Number(tilesizeInput.value)
 };
@@ -24,12 +22,9 @@ var draw = function () {
     return {
         surface: function () {
             drawMap(canvasCtx, world.heightMap);
-        },
-        moisture: function () {
-            drawMap(canvasCtx, world.moistureMap, { colorMap: moistureColorMap });
         }
     }[view]();
-}
+};
 
 viewInput.addEventListener('change', draw);
 
@@ -52,11 +47,9 @@ canvas.addEventListener('mousemove', function(e) {
         position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = world.heightMap.get(point),
         heightText = " | Height: " + height,
-        moisture = " | Moisture: " + world.moistureMap.get(point),
         terrain = " | Terrain: " + world.terrainMap[height].name;
 
-    infoPanel.innerHTML = position + terrain + heightText + moisture;;
+    infoPanel.innerHTML = position + terrain + heightText;
 });
 
-generateMoistureColorMap();
 draw();
