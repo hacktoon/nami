@@ -6,6 +6,8 @@ var worldCanvas = document.getElementById("worldCanvas"),
     viewInput = document.getElementById('viewInput'),
     infoText = document.getElementById("infoText");
 
+var currentWorld;
+
 var getViewInput = function () {
     var option = viewInput.options[viewInput.selectedIndex];
     return option.value;
@@ -23,11 +25,13 @@ var createWorld = function(){
     return World.new(getRoughnessInput());
 };
 
-var world = createWorld(),
-    painter = WorldPainter.new(worldCanvas, getTileSizeInput());
+var worldPainter = WorldPainter.new(worldCanvas),
+    temperaturePainter = TemperaturePainter.new(temperatureCanvas);
 
-var draw = function (world) {
-    painter.draw(world.heightMap);
+var draw = function(world) {
+    var tilesize = getTileSizeInput();
+    worldPainter.draw(world.heightMap, tilesize);
+    temperaturePainter.draw(world.temperatureMap, tilesize);
 };
 
 var getCanvasMousePoint = function(e, worldCanvas){
@@ -44,8 +48,6 @@ var getCanvasMousePoint = function(e, worldCanvas){
 viewInput.addEventListener('change', function(){
     var option = getViewInput();
     if (option == "temperature") {
-        var painter = TemperaturePainter.new(temperatureCanvas, getTileSizeInput());
-        painter.draw(world.heightMap);
         temperatureCanvas.style.display = "block";
     } else {
         temperatureCanvas.style.display = "none";
@@ -53,16 +55,16 @@ viewInput.addEventListener('change', function(){
 });
 
 generateButton.addEventListener('click', function() {
-    world = createWorld();
-    draw(world);
+    currentWorld = createWorld();
+    draw(currentWorld);
 });
 
 worldCanvas.addEventListener('mousemove', function(e) {
     var point = getCanvasMousePoint(e, worldCanvas),
         position = "(x = "+ point.x + ", y = " + point.y + ")",
-        height = world.heightMap.get(point),
+        height = currentWorld.heightMap.get(point),
         heightText = " | Height: " + height,
-        terrain = " | Terrain: " + world.terrainMap[height].name;
+        terrain = " | Terrain: " + currentWorld.terrainMap[height].name;
 
     infoText.innerHTML = position + heightText + terrain;
 });
@@ -71,4 +73,4 @@ worldCanvas.addEventListener('mouseout', function(e) {
     infoText.innerHTML = infoText.title;
 });
 
-draw(world);
+generateButton.click();

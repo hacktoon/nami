@@ -20,8 +20,9 @@ var World = (function(){
     var _World = function (roughness){
         var self = this;
 
-        this.size = 256;
+        this.size = 257;
         this.heightMap = HeightMap(this.size, roughness);
+        this.temperatureMap = Temperature.new(this.size);
         this.terrainMap = {
             1: {height: 0,   name: "Abyssal water"},
             2: {height: 50,  name: "Deep water"   },

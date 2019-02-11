@@ -1,9 +1,7 @@
 
 var WorldPainter = (function () {
-    var _WorldPainter = function (canvas, tilesize) {
+    var _WorldPainter = function (canvas) {
         var self = this;
-        this.tilesize = tilesize;
-        this.canvas = canvas;
         this.ctx = canvas.getContext("2d"),
 
         this.discreteColorMap = function (terrainCode) {
@@ -20,9 +18,7 @@ var WorldPainter = (function () {
             }[terrainCode];
         };
 
-        this.draw = function(grid){
-            var tilesize = self.tilesize;
-
+        this.draw = function(grid, tilesize){
             canvas.width = grid.width * tilesize;
             canvas.height = grid.height * tilesize;
 
@@ -39,8 +35,8 @@ var WorldPainter = (function () {
 
     return {
         _class: _WorldPainter,
-        new: function (canvas, tilesize) {
-            return new _WorldPainter(canvas, tilesize);
+        new: function (canvas) {
+            return new _WorldPainter(canvas);
         }
     };
 })();
