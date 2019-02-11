@@ -13,14 +13,6 @@ header {
     padding: 0 20px;
 }
 
-main {
-    padding: 20px;
-}
-
-canvas {
-    display: block;
-}
-
 #main-menu {
     display: block;
     background: #DDD;
@@ -66,9 +58,25 @@ canvas {
     background: rgb(133, 156, 141);
 }
 
-#info {
-    padding: 5px 10px;
+main { padding: 20px; }
+
+#view { position: relative; }
+
+canvas {
+    display: none;
+    position: absolute;
+}
+
+#worldCanvas {
+    z-index: 1;
+    display: block;
+}
+#temperatureCanvas { z-index: 2; }
+
+
+#infoText {
     line-height: 30px;
+    margin: 0;
     color: #333;
-    font-size: 1.1em;
+    font-size: 1em;
 }
