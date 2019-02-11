@@ -1,24 +1,10 @@
 
-var WorldPainter = (function () {
-    var _WorldPainter = function (canvas, tilesize) {
+var TemperaturePainter = (function () {
+    var _TemperaturePainter = function (canvas, tilesize) {
         var self = this;
         this.tilesize = tilesize;
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d"),
-
-        this.discreteColorMap = function (terrainCode) {
-            return {
-                1: "#000056",
-                2: "#1a3792",
-                3: "#489CFF",
-                4: "#0a5816",
-                5: "#31771a",
-                6: "#7ac85b",
-                7: "#7d7553",
-                8: "#AAA",
-                9: "#FFF",
-            }[terrainCode];
-        };
 
         this.draw = function(grid){
             var tilesize = self.tilesize;
@@ -30,7 +16,7 @@ var WorldPainter = (function () {
                 var x = point.x * tilesize,
                     y = point.y * tilesize;
 
-                self.ctx.fillStyle = self.discreteColorMap(currentValue);
+                self.ctx.fillStyle = "rgba(255, 255, 255, .5)";
                 self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };
@@ -38,9 +24,9 @@ var WorldPainter = (function () {
     };
 
     return {
-        _class: _WorldPainter,
+        _class: _TemperaturePainter,
         new: function (canvas, tilesize) {
-            return new _WorldPainter(canvas, tilesize);
+            return new _TemperaturePainter(canvas, tilesize);
         }
     };
 })();

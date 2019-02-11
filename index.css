@@ -58,13 +58,16 @@ header {
     padding-right: 0;
 }
 
-main { padding: 15px; }
+main { padding: 10px 20px 0; }
 
-#view { position: relative; }
+#view {
+    position: relative;
+}
 
 canvas {
     display: none;
     position: absolute;
+    margin-bottom: 20px;
 }
 
 #worldCanvas {
