@@ -11,17 +11,16 @@ var Temperature = (function(){
         }
         this.points = [];
 
-        this.createZoneEdge = function(yAxis){
-            var x = _.sample([1, 2, 3, 4, 5]),
-                amplitude = 1.5;
+        this.createZoneLine = function(yAxis, amplitude){
+            var x = _.random(1, 5);
 
             var getFrequency = function(){
-                return _.sample([.1, .2, .3, .4, .5, .6]);
+                return _.random(.1, .5, true);
             };
 
             var calculateY = function(x){
-                var y = Math.sin(x) + Math.sin(x / 2) + Math.sin(x / 4);
-                return Math.floor(y) * amplitude;
+                var y = Math.sin(x) + Math.sin(x / 4) + Math.sin(x / 8);
+                return Math.floor(y * amplitude);
             };
 
             _.times(self.size, function(count){
@@ -33,7 +32,10 @@ var Temperature = (function(){
         };
 
         this.build = function(){
-            self.createZoneEdge(127);
+            self.createZoneLine(32, 1);
+            self.createZoneLine(64, 1.5);
+            self.createZoneLine(127, 2);
+            self.createZoneLine(200, 3);
         };
     };
 
