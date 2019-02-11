@@ -1,5 +1,4 @@
-var canvas = document.getElementById("surface"),
-    canvasCtx = canvas.getContext("2d"),
+var surfaceCanvas = document.getElementById("surfaceCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
     infoPanel = document.getElementById("info"),
@@ -10,40 +9,43 @@ var getTileSize = function(){
 };
 
 var world = World.new();
+    painter = SurfacePainter.new(surfaceCanvas, getTileSize())
 
 var getViewOption = function () {
-    var input = document.querySelector("#viewInput"),
+    var input = document.getElementById("viewInput"),
         option = input.options[input.selectedIndex];
     return option.value;
 };
 
-var draw = function () {
+var draw = function (world) {
     var view = getViewOption();
     return {
         surface: function () {
-            drawMap(canvasCtx, world.heightMap);
+            painter.draw(world.heightMap);
         }
     }[view]();
 };
 
-viewInput.addEventListener('change', draw);
-
-generateButton.addEventListener('click', function() {
-    world = World.new();
-    draw();
-});
-
-var getCanvasMousePoint = function(e, canvas){
+var getCanvasMousePoint = function(e, surfaceCanvas){
     var scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
-        mouseX = e.clientX - canvas.offsetLeft,
-        mouseY = e.clientY - canvas.offsetTop + scrollOffset,
+        mouseX = e.clientX - surfaceCanvas.offsetLeft,
+        mouseY = e.clientY - surfaceCanvas.offsetTop + scrollOffset,
         x = _.parseInt(mouseX / getTileSize()),
         y = _.parseInt(mouseY / getTileSize());
     return Point.new(x, y);
 };
 
-canvas.addEventListener('mousemove', function(e) {
-    var point = getCanvasMousePoint(e, canvas),
+/************ EVENT HANDLING *************************/
+
+viewInput.addEventListener('change', draw);
+
+generateButton.addEventListener('click', function() {
+    world = World.new();
+    draw(world);
+});
+
+surfaceCanvas.addEventListener('mousemove', function(e) {
+    var point = getCanvasMousePoint(e, surfaceCanvas),
         position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = world.heightMap.get(point),
         heightText = " | Height: " + height,
@@ -52,4 +54,4 @@ canvas.addEventListener('mousemove', function(e) {
     infoPanel.innerHTML = position + terrain + heightText;
 });
 
-draw();
+draw(world);
