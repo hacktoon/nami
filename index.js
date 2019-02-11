@@ -1,6 +1,7 @@
 var worldCanvas = document.getElementById("worldCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
+    roughnessInput = document.getElementById("roughnessInput"),
     infoText = document.getElementById("infoText"),
     viewInput = document.getElementById('viewInput');
 
@@ -8,7 +9,15 @@ var getTileSize = function(){
     return Number(tilesizeInput.value)
 };
 
-var world = World.new();
+var getRoughness = function(){
+    return Number(roughnessInput.value)
+};
+
+var createWorld = function(){
+    return World.new(getRoughness());
+};
+
+var world = createWorld(),
     painter = WorldPainter.new(worldCanvas, getTileSize())
 
 var getViewOption = function () {
@@ -40,7 +49,7 @@ var getCanvasMousePoint = function(e, worldCanvas){
 viewInput.addEventListener('change', draw);
 
 generateButton.addEventListener('click', function() {
-    world = World.new();
+    world = createWorld();
     draw(world);
 });
 

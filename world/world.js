@@ -17,9 +17,8 @@ var Terrain = (function () {
 
 
 var World = (function(){
-    var _World = function (){
-        var self = this,
-            roughness = 5;
+    var _World = function (roughness){
+        var self = this;
 
         this.size = 256;
         this.heightMap = HeightMap(this.size, roughness);
@@ -41,8 +40,8 @@ var World = (function(){
     };
 
     return {
-        new: function() {
-            var world = new _World();
+        new: function(roughness) {
+            var world = new _World(roughness);
             WorldFilter.apply(world);
             return world;
         }
