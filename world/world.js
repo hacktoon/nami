@@ -22,7 +22,7 @@ var World = (function(){
 
         this.size = 257;
         this.heightMap = HeightMap(this.size, roughness);
-        this.heatMap = Heat.new(this.size);
+        this.heatMap = HeatMap.new(this.size);
         this.terrainMap = {
             1: {height: 0,   name: "Abyssal water"},
             2: {height: 50,  name: "Deep water"   },

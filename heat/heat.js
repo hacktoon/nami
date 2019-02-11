@@ -1,5 +1,5 @@
 
-var Heat = (function(){
+var HeatMap = (function(){
     var _Heat = function (size){
         var self = this;
         this.size = size;
