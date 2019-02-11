@@ -4,7 +4,8 @@ var worldCanvas = document.getElementById("worldCanvas"),
     tilesizeInput = document.getElementById("tilesizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
     viewInput = document.getElementById('viewInput'),
-    infoText = document.getElementById("infoText");
+    infoText = document.getElementById("infoText"),
+    viewPanel = document.getElementById("viewPanel");
 
 var currentWorld;
 
@@ -36,8 +37,8 @@ var draw = function(world) {
 
 var getCanvasMousePoint = function(e, worldCanvas){
     var scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
-        mouseX = e.clientX - worldCanvas.offsetParent.offsetLeft,
-        mouseY = e.clientY - worldCanvas.offsetParent.offsetTop + scrollOffset,
+        mouseX = e.clientX - worldCanvas.offsetLeft,
+        mouseY = e.clientY - worldCanvas.offsetTop + scrollOffset,
         x = _.parseInt(mouseX / getTileSizeInput()),
         y = _.parseInt(mouseY / getTileSizeInput());
     return Point.new(x, y);
@@ -56,11 +57,13 @@ viewInput.addEventListener('change', function(){
 
 generateButton.addEventListener('click', function() {
     currentWorld = createWorld();
+    viewPanel.width = worldCanvas.width;
+    viewPanel.height = worldCanvas.height;
     draw(currentWorld);
 });
 
-worldCanvas.addEventListener('mousemove', function(e) {
-    var point = getCanvasMousePoint(e, worldCanvas),
+viewPanel.addEventListener('mousemove', function(e) {
+    var point = getCanvasMousePoint(e, viewPanel),
         position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = currentWorld.heightMap.get(point),
         heightText = " | Height: " + height,
@@ -69,7 +72,7 @@ worldCanvas.addEventListener('mousemove', function(e) {
     infoText.innerHTML = position + heightText + terrain;
 });
 
-worldCanvas.addEventListener('mouseout', function(e) {
+viewPanel.addEventListener('mouseout', function(e) {
     infoText.innerHTML = infoText.title;
 });
 
