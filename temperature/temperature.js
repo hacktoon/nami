@@ -11,7 +11,7 @@ var Temperature = (function(){
         }
         this.points = [];
 
-        this.createZoneEdge = function(){
+        this.createZoneEdge = function(yAxis){
             var x = _.sample([1, 2, 3, 4, 5]),
                 amplitude = 1.5;
 
@@ -25,7 +25,7 @@ var Temperature = (function(){
             };
 
             _.times(self.size, function(count){
-                var y = 127 + calculateY(x);
+                var y = yAxis + calculateY(x);
                     point = Point.new(count, y);
                 x += getFrequency();
                 self.points.push(point);
@@ -33,7 +33,7 @@ var Temperature = (function(){
         };
 
         this.build = function(){
-            self.createZoneEdge();
+            self.createZoneEdge(127);
         };
     };
 
