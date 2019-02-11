@@ -1,16 +1,16 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font: 14px inherit Arial, Helvetica, sans-serif;
 }
+
 header {
     background: #333;
     color: white;
-    height: 1.8em;
     margin: 0;
-    line-height: 1.8em;
+    font-weight: bold;
     font-size: 1.8em;
-    padding: 0 20px;
+    padding: 0.5em 20px;
 }
 
 #main-menu {
@@ -22,43 +22,43 @@ header {
     line-height: 50px;
     border-bottom: 1px solid #AAA;
 }
+#main-menu label,
 #main-menu select,
-#main-menu input,
-#main-menu button {
+#main-menu input {
+    font-size: 1em;
+    height: 25px;
+    line-height: 25px;
+}
+
+#main-menu select,
+#main-menu input {
     border: 1px solid #CCC;
     background: #FFF;
-    font-size: 1em;
-    height: 30px;
-    line-height: 30px;
-    padding: 0 10px;
-}
-
-#main-menu #tilesizeInput {
-    width: 50px;
-    padding-right: 0;
-}
-
-#main-menu #roughnessInput {
-    width: 50px;
-    padding-right: 0;
-}
-
-#main-menu label {
-    font-size: 1.2em;
-    height: 30px;
-    line-height: 30px;
+    padding: 0 5px;
 }
 
 #main-menu button {
     background: rgb(13, 77, 33);
     color: #FFF;
+    border: 0;
+    height: 25px;
     font-weight: bold;
 }
 #main-menu button:active {
     background: rgb(133, 156, 141);
 }
 
-main { padding: 20px; }
+#main-menu #tilesizeInput {
+    width: 40px;
+    padding-right: 0;
+}
+
+#main-menu #roughnessInput {
+    width: 40px;
+    padding-right: 0;
+}
+
+main { padding: 15px; }
 
 #view { position: relative; }
 
@@ -68,11 +68,10 @@ canvas {
 }
 
 #worldCanvas {
-    z-index: 1;
     display: block;
+    z-index: 1;
 }
 #temperatureCanvas { z-index: 2; }
-
 
 #infoText {
     line-height: 30px;

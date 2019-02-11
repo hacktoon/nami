@@ -5,48 +5,44 @@ var worldCanvas = document.getElementById("worldCanvas"),
     viewInput = document.getElementById('viewInput'),
     infoText = document.getElementById("infoText");
 
-var getTileSize = function(){
+var getViewInput = function () {
+    var option = viewInput.options[viewInput.selectedIndex];
+    return option.value;
+};
+
+var getTileSizeInput = function(){
     return Number(tilesizeInput.value)
 };
 
-var getRoughness = function(){
+var getRoughnessInput = function(){
     return Number(roughnessInput.value)
 };
 
 var createWorld = function(){
-    return World.new(getRoughness());
+    return World.new(getRoughnessInput());
 };
 
 var world = createWorld(),
-    painter = WorldPainter.new(worldCanvas, getTileSize());
-
-var getViewOption = function () {
-    var input = document.getElementById("viewInput"),
-        option = input.options[input.selectedIndex];
-    return option.value;
-};
+    painter = WorldPainter.new(worldCanvas, getTileSizeInput());
 
 var draw = function (world) {
-    var view = getViewOption();
-    return {
-        world: function () {
-            painter.draw(world.heightMap);
-        }
-    }[view]();
+    painter.draw(world.heightMap);
 };
 
 var getCanvasMousePoint = function(e, worldCanvas){
     var scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
         mouseX = e.clientX - worldCanvas.offsetParent.offsetLeft,
         mouseY = e.clientY - worldCanvas.offsetParent.offsetTop + scrollOffset,
-        x = _.parseInt(mouseX / getTileSize()),
-        y = _.parseInt(mouseY / getTileSize());
+        x = _.parseInt(mouseX / getTileSizeInput()),
+        y = _.parseInt(mouseY / getTileSizeInput());
     return Point.new(x, y);
 };
 
 /************ EVENT HANDLING *************************/
 
-viewInput.addEventListener('change', draw);
+viewInput.addEventListener('change', function(){
+    log(getViewInput());
+});
 
 generateButton.addEventListener('click', function() {
     world = createWorld();
