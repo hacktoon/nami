@@ -22,8 +22,8 @@ var World = (function(){
             size = 257;
 
         this.terrainMap = TerrainMap.new(size, roughness);
-        this.heatMap = HeatMap.new(size);
-        this.moistureMap = MoistureMap.new(size, roughness/2);
+        // this.heatMap = HeatMap.new(size);
+        // this.moistureMap = MoistureMap.new(size, roughness/2);
 
         self.data = {
             water: 0,
