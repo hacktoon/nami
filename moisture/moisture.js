@@ -6,10 +6,10 @@ var MoistureMap = (function(){
 
         this.grid = HeightMap(size, roughness);
         this.codeMap = {
-            1: {height: 0,   color: "red",        name: "Very dry"},
-            2: {height: 30,  color: "coral",      name: "Dry"},
+            1: {height: 0,   color: "red",       name: "Very dry"},
+            2: {height: 30,  color: "coral",     name: "Dry"},
             3: {height: 100, color: "lightblue", name: "Wet"},
-            4: {height: 220, color: "blue",       name: "Very wet"}
+            4: {height: 220, color: "blue",      name: "Very wet"}
         };
 
         this.build = function(){

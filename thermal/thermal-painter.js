@@ -5,9 +5,7 @@ var ThermalPainter = (function () {
         this.ctx = canvas.getContext("2d");
 
         this.draw = function(thermalMap, tilesize){
-            canvas.width = thermalMap.size * tilesize;
-            canvas.height = thermalMap.size * tilesize;
-            self.ctx.globalAlpha = .4;
+            self.ctx.globalAlpha = .3;
 
             thermalMap.grid.forEach(function (value, point) {
                 var x = point.x * tilesize,
