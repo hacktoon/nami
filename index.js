@@ -24,7 +24,7 @@ var createWorld = function(){
     return World.new(getRoughnessInput());
 };
 
-var thermalPainter = ThermalPainter.new(viewCanvas),
+var heatPainter = HeatPainter.new(viewCanvas),
     moisturePainter = MoisturePainter.new(viewCanvas);
     terrainPainter = TerrainPainter.new(viewCanvas);
 
@@ -32,8 +32,8 @@ var draw = function() {
     var option = getViewInput(),
         tilesize = getTileSizeInput();
         terrainPainter.draw(currentWorld.terrainMap, tilesize);
-    if (option == "thermal") {
-        thermalPainter.draw(currentWorld.thermalMap, tilesize);
+    if (option == "heat") {
+        heatPainter.draw(currentWorld.heatMap, tilesize);
     } else if (option == "moisture") {
         moisturePainter.draw(currentWorld.moistureMap, tilesize);
     }
@@ -62,13 +62,13 @@ viewCanvas.addEventListener('mousemove', function(e) {
         position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = currentWorld.terrainMap.grid.get(point),
         heightText = " | Height: " + height,
-        thermal = currentWorld.thermalMap.grid.get(point),
-        thermalText = " | Temp.: " + currentWorld.thermalMap.idMap[thermal].name,
+        heat = currentWorld.heatMap.grid.get(point),
+        heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
         moisture = currentWorld.moistureMap.grid.get(point),
         moistureText = " | Pluviosity: " + currentWorld.moistureMap.idMap[moisture].name,
         terrain = " | Terrain: " + currentWorld.terrainMap.idMap[height].name;
 
-    infoText.innerHTML = position + heightText + terrain + thermalText + moistureText;
+    infoText.innerHTML = position + heightText + terrain + heatText + moistureText;
 });
 
 viewCanvas.addEventListener('mouseout', function(e) {

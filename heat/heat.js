@@ -1,6 +1,6 @@
 
-var ThermalMap = (function(){
-    var _Thermal = function (size){
+var HeatMap = (function(){
+    var _Heat = function (size){
         var self = this,
             defaultValue = 0,
             roughness = .1;
@@ -48,9 +48,9 @@ var ThermalMap = (function(){
 
     return {
         new: function(size) {
-            var thermal = new _Thermal(size);
-            thermal.build();
-            return thermal;
+            var heat = new _Heat(size);
+            heat.build();
+            return heat;
         }
     };
 })();

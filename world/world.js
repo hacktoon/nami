@@ -22,7 +22,7 @@ var World = (function(){
             size = 257;
 
         this.terrainMap = TerrainMap.new(size, roughness);
-        this.thermalMap = ThermalMap.new(size);
+        this.heatMap = HeatMap.new(size);
         this.moistureMap = MoistureMap.new(size, roughness/2);
 
         self.data = {
