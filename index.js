@@ -24,14 +24,14 @@ var createWorld = function(){
     return World.new(getRoughnessInput());
 };
 
-var worldPainter = WorldPainter.new(viewCanvas),
-    thermalPainter = ThermalPainter.new(viewCanvas),
+var thermalPainter = ThermalPainter.new(viewCanvas),
     moisturePainter = MoisturePainter.new(viewCanvas);
+    terrainPainter = TerrainPainter.new(viewCanvas);
 
 var draw = function() {
     var option = getViewInput(),
         tilesize = getTileSizeInput();
-    worldPainter.draw(currentWorld.heightMap, tilesize);
+        terrainPainter.draw(currentWorld.terrainMap, tilesize);
     if (option == "thermal") {
         thermalPainter.draw(currentWorld.thermalMap, tilesize);
     } else if (option == "moisture") {
@@ -60,13 +60,13 @@ generateButton.addEventListener('click', function() {
 viewCanvas.addEventListener('mousemove', function(e) {
     var point = getCanvasMousePoint(e, viewCanvas),
         position = "(x = "+ point.x + ", y = " + point.y + ")",
-        height = currentWorld.heightMap.get(point),
+        height = currentWorld.terrainMap.grid.get(point),
         heightText = " | Height: " + height,
         thermal = currentWorld.thermalMap.grid.get(point),
         thermalText = " | Temp.: " + currentWorld.thermalMap.zones[thermal].name,
         moisture = currentWorld.moistureMap.grid.get(point),
         moistureText = " | Pluviosity: " + currentWorld.moistureMap.codeMap[moisture].name,
-        terrain = " | Terrain: " + currentWorld.terrainMap[height].name;
+        terrain = " | Terrain: " + currentWorld.terrainMap.codeMap[height].name;
 
     infoText.innerHTML = position + heightText + terrain + thermalText + moistureText;
 });

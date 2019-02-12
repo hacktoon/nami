@@ -4,31 +4,7 @@ var WorldPainter = (function () {
         var self = this;
         this.ctx = canvas.getContext("2d"),
 
-        this.discreteColorMap = function (terrainCode) {
-            return {
-                1: "#000056",
-                2: "#1a3792",
-                3: "#489CFF",
-                4: "#0a5816",
-                5: "#31771a",
-                6: "#7ac85b",
-                7: "#7d7553",
-                8: "#AAA",
-                9: "#FFF",
-            }[terrainCode];
-        };
-
         this.draw = function(grid, tilesize){
-            canvas.width = grid.width * tilesize;
-            canvas.height = grid.height * tilesize;
-
-            grid.forEach(function(currentValue, point){
-                var x = point.x * tilesize,
-                    y = point.y * tilesize;
-
-                self.ctx.fillStyle = self.discreteColorMap(currentValue);
-                self.ctx.fillRect(x, y, tilesize, tilesize);
-            });
         };
 
     };
