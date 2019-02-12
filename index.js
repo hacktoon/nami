@@ -1,12 +1,9 @@
-var worldCanvas = document.getElementById("worldCanvas"),
-    thermalCanvas = document.getElementById("thermalCanvas"),
-    moistureCanvas = document.getElementById("moistureCanvas"),
+var viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
     viewInput = document.getElementById('viewInput'),
-    infoText = document.getElementById("infoText"),
-    viewPanel = document.getElementById("viewPanel");
+    infoText = document.getElementById("infoText");
 
 var currentWorld;
 
@@ -27,21 +24,25 @@ var createWorld = function(){
     return World.new(getRoughnessInput());
 };
 
-var worldPainter = WorldPainter.new(worldCanvas),
-    thermalPainter = ThermalPainter.new(thermalCanvas),
-    moisturePainter = MoisturePainter.new(moistureCanvas);
+var worldPainter = WorldPainter.new(viewCanvas),
+    thermalPainter = ThermalPainter.new(viewCanvas),
+    moisturePainter = MoisturePainter.new(viewCanvas);
 
-var draw = function(world) {
-    var tilesize = getTileSizeInput();
-    worldPainter.draw(world.heightMap, tilesize);
-    thermalPainter.draw(world.thermalMap, tilesize);
-    moisturePainter.draw(world.moistureMap, tilesize);
+var draw = function() {
+    var option = getViewInput(),
+        tilesize = getTileSizeInput();
+    worldPainter.draw(currentWorld.heightMap, tilesize);
+    if (option == "thermal") {
+        thermalPainter.draw(currentWorld.thermalMap, tilesize);
+    } else if (option == "moisture") {
+        moisturePainter.draw(currentWorld.moistureMap, tilesize);
+    }
 };
 
-var getCanvasMousePoint = function(e, worldCanvas){
+var getCanvasMousePoint = function(e, viewCanvas){
     var scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
-        mouseX = e.clientX - worldCanvas.offsetLeft,
-        mouseY = e.clientY - worldCanvas.offsetTop + scrollOffset,
+        mouseX = e.clientX - viewCanvas.offsetLeft,
+        mouseY = e.clientY - viewCanvas.offsetTop + scrollOffset,
         x = _.parseInt(mouseX / getTileSizeInput()),
         y = _.parseInt(mouseY / getTileSizeInput());
     return Point.new(x, y);
@@ -49,29 +50,15 @@ var getCanvasMousePoint = function(e, worldCanvas){
 
 /************ EVENT HANDLING *************************/
 
-viewInput.addEventListener('change', function(){
-    var option = getViewInput();
-    if (option == "thermal") {
-        thermalCanvas.style.display = "block";
-    } else {
-        thermalCanvas.style.display = "none";
-    }
-    if (option == "moisture") {
-        moistureCanvas.style.display = "block";
-    } else {
-        moistureCanvas.style.display = "none";
-    }
-});
+viewInput.addEventListener('change', draw);
 
 generateButton.addEventListener('click', function() {
     currentWorld = createWorld();
-    viewPanel.width = worldCanvas.width;
-    viewPanel.height = worldCanvas.height;
-    draw(currentWorld);
+    draw();
 });
 
-viewPanel.addEventListener('mousemove', function(e) {
-    var point = getCanvasMousePoint(e, viewPanel),
+viewCanvas.addEventListener('mousemove', function(e) {
+    var point = getCanvasMousePoint(e, viewCanvas),
         position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = currentWorld.heightMap.get(point),
         heightText = " | Height: " + height,
@@ -84,9 +71,8 @@ viewPanel.addEventListener('mousemove', function(e) {
     infoText.innerHTML = position + heightText + terrain + thermalText + moistureText;
 });
 
-viewPanel.addEventListener('mouseout', function(e) {
+viewCanvas.addEventListener('mouseout', function(e) {
     infoText.innerHTML = infoText.title;
 });
 
 generateButton.click();
-moistureCanvas.style.display = "block";

@@ -1,7 +1,9 @@
 body {
+    background: #FFF;
+    color: #333;
+    font: 14px inherit Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
-    font: 14px inherit Arial, Helvetica, sans-serif;
 }
 
 header {
@@ -14,13 +16,13 @@ header {
 }
 
 #main-menu {
-    display: block;
     background: #DDD;
+    border-bottom: 1px solid #AAA;
+    display: block;
     margin: 0;
     padding: 0 20px;
     height: 50px;
     line-height: 50px;
-    border-bottom: 1px solid #AAA;
 }
 #main-menu label,
 #main-menu select,
@@ -48,37 +50,16 @@ header {
     background: rgb(133, 156, 141);
 }
 
-#main-menu #tilesizeInput {
-    width: 40px;
-    padding-right: 0;
-}
-
+#main-menu #tilesizeInput,
 #main-menu #roughnessInput {
     width: 40px;
     padding-right: 0;
 }
 
-main { padding: 10px 20px 0; }
-
-#view {
-    position: relative;
-}
-
-canvas {
-    display: none;
-    position: absolute;
-    margin-bottom: 20px;
-    z-index: 2;
-}
-
-#worldCanvas {
-    display: block;
-    z-index: 1;
-}
+main { padding: 10px 20px 30px; }
 
 #infoText {
     line-height: 30px;
     margin: 0;
-    color: #333;
     font-size: 1em;
 }
