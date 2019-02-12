@@ -8,8 +8,8 @@ var MoistureMap = (function(){
         this.idMap = {
             1: {height: 0,   color: "red",       name: "Very dry"},
             2: {height: 30,  color: "coral",     name: "Dry"},
-            3: {height: 100, color: "lightblue", name: "Wet"},
-            4: {height: 220, color: "blue",      name: "Very wet"}
+            3: {height: 90,  color: "lightblue", name: "Wet"},
+            4: {height: 210, color: "blue",      name: "Very wet"}
         };
 
         this.build = function(){
