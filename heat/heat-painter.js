@@ -2,18 +2,24 @@
 var HeatPainter = (function () {
     var _HeatPainter = function (canvas) {
         var self = this;
-        this.ctx = canvas.getContext("2d"),
+        this.ctx = canvas.getContext("2d");
 
-        this.draw = function(heatMap, tilesize){
-            canvas.width = heatMap.size * tilesize;
-            canvas.height = heatMap.size * tilesize;
-
-            _.each(heatMap.points, function(point){
+        this.drawLines = function (points, tilesize){
+            _.each(points, function (point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize;
 
                 self.ctx.fillStyle = "rgba(255, 255, 255, 1)";
                 self.ctx.fillRect(x, y, tilesize, tilesize);
+            });
+        };
+
+        this.draw = function(heatMap, tilesize){
+            canvas.width = heatMap.size * tilesize;
+            canvas.height = heatMap.size * tilesize;
+
+            _.each(heatMap.zones, function (zone) {
+                self.drawLines(zone.points, tilesize);
             });
         };
 
