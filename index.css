@@ -65,7 +65,7 @@ main { padding: 10px 20px 0; }
 }
 
 canvas {
-    /* display: none; */
+    display: none;
     position: absolute;
     margin-bottom: 20px;
 }
