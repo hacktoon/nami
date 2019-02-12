@@ -63,10 +63,10 @@ viewCanvas.addEventListener('mousemove', function(e) {
         height = currentWorld.terrainMap.grid.get(point),
         heightText = " | Height: " + height,
         thermal = currentWorld.thermalMap.grid.get(point),
-        thermalText = " | Temp.: " + currentWorld.thermalMap.zones[thermal].name,
+        thermalText = " | Temp.: " + currentWorld.thermalMap.idMap[thermal].name,
         moisture = currentWorld.moistureMap.grid.get(point),
-        moistureText = " | Pluviosity: " + currentWorld.moistureMap.codeMap[moisture].name,
-        terrain = " | Terrain: " + currentWorld.terrainMap.codeMap[height].name;
+        moistureText = " | Pluviosity: " + currentWorld.moistureMap.idMap[moisture].name,
+        terrain = " | Terrain: " + currentWorld.terrainMap.idMap[height].name;
 
     infoText.innerHTML = position + heightText + terrain + thermalText + moistureText;
 });

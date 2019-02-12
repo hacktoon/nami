@@ -11,7 +11,7 @@ var ThermalPainter = (function () {
                 var x = point.x * tilesize,
                     y = point.y * tilesize;
 
-                self.ctx.fillStyle = thermalMap.zones[Number(value)].color;
+                self.ctx.fillStyle = thermalMap.idMap[Number(value)].color;
                 self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };

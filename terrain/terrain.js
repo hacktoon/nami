@@ -5,7 +5,7 @@ var TerrainMap = (function(){
         this.size = size;
 
         this.grid = HeightMap(size, roughness);
-        this.codeMap = {
+        this.idMap = {
             1: {height: 0,   color: "#000056", name: "Abyssal water"},
             2: {height: 50,  color: "#1a3792", name: "Deep water"   },
             3: {height: 90,  color: "#489CFF", name: "Shallow water"},

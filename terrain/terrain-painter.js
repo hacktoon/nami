@@ -13,7 +13,7 @@ var TerrainPainter = (function () {
                     y = point.y * tilesize,
                     code = Number(value);
 
-                self.ctx.fillStyle = terrainMap.codeMap[code].color;
+                self.ctx.fillStyle = terrainMap.idMap[code].color;
                 self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };

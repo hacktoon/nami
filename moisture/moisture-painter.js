@@ -12,7 +12,7 @@ var MoisturePainter = (function () {
                     y = point.y * tilesize,
                     code = Number(value);
 
-                self.ctx.fillStyle = moistureMap.codeMap[code].color;
+                self.ctx.fillStyle = moistureMap.idMap[code].color;
                 self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };

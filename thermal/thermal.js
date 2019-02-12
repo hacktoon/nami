@@ -7,7 +7,7 @@ var ThermalMap = (function(){
 
         this.size = size;
         this.grid = Grid.new(size, size, defaultValue);
-        this.zones = {
+        this.idMap = {
             1: { height: 15,  color: "white",  name: "Polar"},
             2: { height: 60,  color: "blue",   name: "Temperate"},
             3: { height: 96,  color: "yellow", name: "Subtropical"},
@@ -18,7 +18,7 @@ var ThermalMap = (function(){
         };
 
         this.build = function(){
-            _.each(self.zones, buildZones);
+            _.each(self.idMap, buildZones);
         };
 
         var buildZones = function(zone, code){

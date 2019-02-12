@@ -45,7 +45,7 @@ var World = (function(){
 var WorldFilter = (function(){
     var normalizeHeight = function (world, rawHeight) {
         var height = 1;
-        _.each(world.terrainMap.codeMap, function(terrain, code){
+        _.each(world.terrainMap.idMap, function(terrain, code){
             if (rawHeight >= terrain.height) {
                 height = code;
             }
