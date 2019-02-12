@@ -1,4 +1,34 @@
 
+
+var MidpointDisplacement = function (p1, p2, size, roughness) {
+    var points = Array(size),
+        size = size - 1,
+        displacement = roughness * (size / 2);
+
+    var buildPoint = function(p1, p2){
+        if (p2.x - p1.x <= 1) return;
+        var x = Math.floor((p1.x + p2.x) / 2),
+            y = (p1.y + p2.y) / 2 + _.random(-displacement, displacement);
+        return Point.new(x, Math.round(y));
+    };
+
+    var midpoint = function (p1, p2, size){
+        var point = buildPoint(p1, p2);
+        if (! point) return;
+        points[point.x] = point;
+        displacement = roughness * size;
+        midpoint(p1, point, size / 2);
+        midpoint(point, p2, size / 2);
+    }
+
+    points[p1.x] = p1;
+    points[p2.x] = p2;
+
+    midpoint(p1, p2, size/2);
+    return points;
+};
+
+
 var HeatMap = (function(){
     var _Heat = function (size){
         var self = this;
@@ -12,29 +42,7 @@ var HeatMap = (function(){
         this.points = [];
 
         this.createZoneLine = function(baseY, amplitude){
-            var baseX = _.random(1, 5);
 
-            var buildPoint = function(x){
-                var y = baseY + calculateY(baseX);
-                baseX += getFrequency();
-                return Point.new(x, y);
-            };
-
-            var calculateY = function(x) {
-                // a superposition of different sine functions
-                var y = Math.sin(x) + Math.sin(x / 4) + Math.sin(x / 8);
-                return Math.floor(y * amplitude);
-            };
-
-            var getFrequency = function(){
-                if (_.sample([true, false])) return 0;
-                return _.random(.2, .6, true);
-            };
-
-            _.times(self.size, function(count){
-                var point = buildPoint(count);
-                self.points.push(point);
-            });
         };
 
         this.createZone = function(startY, endY, zoneInfo){
@@ -42,12 +50,9 @@ var HeatMap = (function(){
         };
 
         this.build = function(){
-            self.createZoneLine(32, 1);
-            self.createZoneLine(64, 1.5);
-            self.createZoneLine(127, 2);
-            self.createZoneLine(200, 3);
-
-            self.createZone(0, 32, self.zones[1]);
+            var p1 = Point.new(0, 66),
+                p2 = Point.new (256, 66);
+            this.points = MidpointDisplacement(p1, p2, size, .15);
         };
     };
 

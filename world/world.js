@@ -18,11 +18,11 @@ var Terrain = (function () {
 
 var World = (function(){
     var _World = function (roughness){
-        var self = this;
+        var self = this,
+            size = 257;
 
-        this.size = 257;
-        this.heightMap = HeightMap(this.size, roughness);
-        this.heatMap = HeatMap.new(this.size);
+        this.heightMap = HeightMap(size, roughness);
+        this.heatMap = HeatMap.new(size);
         this.terrainMap = {
             1: {height: 0,   name: "Abyssal water"},
             2: {height: 50,  name: "Deep water"   },
