@@ -4,22 +4,17 @@ var HeatPainter = (function () {
         var self = this;
         this.ctx = canvas.getContext("2d");
 
-        this.drawLines = function (points, color, tilesize){
-            _.each(points, function (point) {
-                var x = point.x * tilesize,
-                    y = point.y * tilesize;
-
-                self.ctx.fillStyle = color;
-                self.ctx.fillRect(x, y, tilesize, tilesize);
-            });
-        };
-
         this.draw = function(heatMap, tilesize){
             canvas.width = heatMap.size * tilesize;
             canvas.height = heatMap.size * tilesize;
+            self.ctx.globalAlpha = .4;
 
-            _.each(heatMap.zones, function (zone) {
-                self.drawLines(zone.points, zone.color, tilesize);
+            heatMap.grid.forEach(function (value, point) {
+                var x = point.x * tilesize,
+                    y = point.y * tilesize;
+
+                self.ctx.fillStyle = heatMap.zones[Number(value)].color;
+                self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };
 

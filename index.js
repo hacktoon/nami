@@ -66,10 +66,12 @@ viewPanel.addEventListener('mousemove', function(e) {
     var point = getCanvasMousePoint(e, viewPanel),
         position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = currentWorld.heightMap.get(point),
+        heat = currentWorld.heatMap.grid.get(point),
         heightText = " | Height: " + height,
+        heatText = " | Temp.: " + currentWorld.heatMap.zones[heat].name,
         terrain = " | Terrain: " + currentWorld.terrainMap[height].name;
 
-    infoText.innerHTML = position + heightText + terrain;
+    infoText.innerHTML = position + heightText + terrain + heatText;
 });
 
 viewPanel.addEventListener('mouseout', function(e) {
