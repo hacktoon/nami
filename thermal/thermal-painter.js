@@ -1,19 +1,19 @@
 
-var HeatPainter = (function () {
-    var _HeatPainter = function (canvas) {
+var ThermalPainter = (function () {
+    var _ThermalPainter = function (canvas) {
         var self = this;
         this.ctx = canvas.getContext("2d");
 
-        this.draw = function(heatMap, tilesize){
-            canvas.width = heatMap.size * tilesize;
-            canvas.height = heatMap.size * tilesize;
+        this.draw = function(thermalMap, tilesize){
+            canvas.width = thermalMap.size * tilesize;
+            canvas.height = thermalMap.size * tilesize;
             self.ctx.globalAlpha = .4;
 
-            heatMap.grid.forEach(function (value, point) {
+            thermalMap.grid.forEach(function (value, point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize;
 
-                self.ctx.fillStyle = heatMap.zones[Number(value)].color;
+                self.ctx.fillStyle = thermalMap.zones[Number(value)].color;
                 self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };
@@ -21,9 +21,9 @@ var HeatPainter = (function () {
     };
 
     return {
-        _class: _HeatPainter,
+        _class: _ThermalPainter,
         new: function (canvas) {
-            return new _HeatPainter(canvas);
+            return new _ThermalPainter(canvas);
         }
     };
 })();

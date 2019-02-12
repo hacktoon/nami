@@ -1,5 +1,5 @@
 var worldCanvas = document.getElementById("worldCanvas"),
-    heatCanvas = document.getElementById("heatCanvas"),
+    thermalCanvas = document.getElementById("thermalCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
@@ -27,12 +27,12 @@ var createWorld = function(){
 };
 
 var worldPainter = WorldPainter.new(worldCanvas),
-    heatPainter = HeatPainter.new(heatCanvas);
+    thermalPainter = ThermalPainter.new(thermalCanvas);
 
 var draw = function(world) {
     var tilesize = getTileSizeInput();
     worldPainter.draw(world.heightMap, tilesize);
-    heatPainter.draw(world.heatMap, tilesize);
+    thermalPainter.draw(world.thermalMap, tilesize);
 };
 
 var getCanvasMousePoint = function(e, worldCanvas){
@@ -48,10 +48,10 @@ var getCanvasMousePoint = function(e, worldCanvas){
 
 viewInput.addEventListener('change', function(){
     var option = getViewInput();
-    if (option == "heat") {
-        heatCanvas.style.display = "block";
+    if (option == "thermal") {
+        thermalCanvas.style.display = "block";
     } else {
-        heatCanvas.style.display = "none";
+        thermalCanvas.style.display = "none";
     }
 });
 
@@ -66,12 +66,12 @@ viewPanel.addEventListener('mousemove', function(e) {
     var point = getCanvasMousePoint(e, viewPanel),
         position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = currentWorld.heightMap.get(point),
-        heat = currentWorld.heatMap.grid.get(point),
+        thermal = currentWorld.thermalMap.grid.get(point),
         heightText = " | Height: " + height,
-        heatText = " | Temp.: " + currentWorld.heatMap.zones[heat].name,
+        thermalText = " | Temp.: " + currentWorld.thermalMap.zones[thermal].name,
         terrain = " | Terrain: " + currentWorld.terrainMap[height].name;
 
-    infoText.innerHTML = position + heightText + terrain + heatText;
+    infoText.innerHTML = position + heightText + terrain + thermalText;
 });
 
 viewPanel.addEventListener('mouseout', function(e) {

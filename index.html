@@ -13,7 +13,7 @@
         <label for="viewInput">View
             <select id="viewInput">
                 <option value="" selected>---</option>
-                <option value="heat">HeatMap</option>
+                <option value="thermal">ThermalMap</option>
             </select>
         </label>
         <label for="tilesizeInput">Tile size
@@ -31,7 +31,7 @@
         </p>
         <section id="viewPanel">
             <canvas id="worldCanvas"></canvas>
-            <canvas id="heatCanvas"></canvas>
+            <canvas id="thermalCanvas"></canvas>
         </section>
     </main>
 
@@ -42,8 +42,8 @@
     <script src="lib/heightmap.js"></script>
     <script src="world/world.js"></script>
     <script src="world/world-painter.js"></script>
-    <script src="heat/heat.js"></script>
-    <script src="heat/heat-painter.js"></script>
+    <script src="thermal/thermal.js"></script>
+    <script src="thermal/thermal-painter.js"></script>
     <script src="index.js"></script>
   </body>
 </html>
