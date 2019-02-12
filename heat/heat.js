@@ -4,12 +4,12 @@ var HeatMap = (function(){
         var self = this;
         this.size = size;
         this.zones = {
-            1: {height: 15, name: "Polar"},
-            2: {height: 64, name: "Temperate"},
-            3: {height: 96, name: "Subtropical"},
-            4: {height: 160, name: "Tropical"},
-            5: {height: 192, name: "Subtropical"},
-            6: {height: 241, name: "Temperate"},
+            1: { height: 15, color: "white", name: "Polar" },
+            2: { height: 60, color: "blue", name: "Temperate" },
+            3: { height: 96, color: "orange", name: "Subtropical" },
+            4: { height: 160, color: "red", name: "Tropical" },
+            5: { height: 196, color: "orange", name: "Subtropical" },
+            6: { height: 241, color: "blue", name: "Temperate" },
         };
 
         this.build = function(){
