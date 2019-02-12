@@ -23,6 +23,7 @@ var World = (function(){
 
         this.heightMap = HeightMap(size, roughness);
         this.thermalMap = ThermalMap.new(size);
+        this.moistureMap = MoistureMap.new(size, roughness/2);
         this.terrainMap = {
             1: {height: 0,   name: "Abyssal water"},
             2: {height: 50,  name: "Deep water"   },
@@ -52,7 +53,7 @@ var World = (function(){
 
 
 var WorldFilter = (function(){
-    var normalizeHeight = function (world,rawHeight) {
+    var normalizeHeight = function (world, rawHeight) {
         var height = 1;
         _.each(world.terrainMap, function(terrain, code){
             if (rawHeight >= terrain.height) {

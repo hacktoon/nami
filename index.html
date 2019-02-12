@@ -14,6 +14,7 @@
             <select id="viewInput">
                 <option value="" selected>---</option>
                 <option value="thermal">Thermal zones</option>
+                <option value="moisture">Moisture</option>
             </select>
         </label>
         <label for="tilesizeInput">Tile size
@@ -32,6 +33,7 @@
         <section id="viewPanel">
             <canvas id="worldCanvas"></canvas>
             <canvas id="thermalCanvas"></canvas>
+            <canvas id="moistureCanvas"></canvas>
         </section>
     </main>
 
@@ -44,6 +46,8 @@
     <script src="world/world-painter.js"></script>
     <script src="thermal/thermal.js"></script>
     <script src="thermal/thermal-painter.js"></script>
+    <script src="moisture/moisture.js"></script>
+    <script src="moisture/moisture-painter.js"></script>
     <script src="index.js"></script>
   </body>
 </html>

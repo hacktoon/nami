@@ -68,13 +68,13 @@ canvas {
     display: none;
     position: absolute;
     margin-bottom: 20px;
+    z-index: 2;
 }
 
 #worldCanvas {
     display: block;
     z-index: 1;
 }
-#thermalCanvas { z-index: 2; }
 
 #infoText {
     line-height: 30px;
