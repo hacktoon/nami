@@ -2,6 +2,7 @@ var viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
+    platesInput = document.getElementById("platesInput"),
     viewInput = document.getElementById('viewInput'),
     infoText = document.getElementById("infoText");
 
@@ -20,18 +21,28 @@ var getRoughnessInput = function(){
     return Number(roughnessInput.value)
 };
 
+var getPlatesInput = function () {
+    return Number(platesInput.value)
+};
+
 var createWorld = function(){
     return World.new(getRoughnessInput());
 };
 
-var terrainPainter = TerrainPainter.new(viewCanvas)
+var terrainPainter = TerrainPainter.new(viewCanvas),
+    tectonicsPainter = TectonicsPainter.new(viewCanvas);
     // heatPainter = HeatPainter.new(viewCanvas),
     // moisturePainter = MoisturePainter.new(viewCanvas);
 
 var draw = function() {
     var option = getViewInput(),
         tilesize = getTileSizeInput();
+    if (option == "tectonics") {
+        tectonicsPainter.draw(currentWorld.tectonicsMap, tilesize);
+    } else {
         terrainPainter.draw(currentWorld.terrainMap, tilesize);
+    }
+
     // if (option == "heat") {
     //     heatPainter.draw(currentWorld.heatMap, tilesize);
     // } else if (option == "moisture") {

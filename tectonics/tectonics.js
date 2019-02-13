@@ -1,15 +1,16 @@
 
 
 var TectonicsMap = (function() {
-    var _TectonicsMap = function(size) {
+    var _TectonicsMap = function(size, totalPlates) {
         var self = this;
 
         this.grid = Grid.new(size, size);
+        this.idMap = {};
         this.plates = [];
         this.plateIdMap = {};
         this.edgeDeformationMap = {};
 
-        this.initPlates = function(totalPlates) {
+        this.initPlates = function() {
             var points = self.grid.randomPoints(totalPlates);
             _.each(points, function(point, plateId) {
                 var plate = Plate.new(plateId);
@@ -19,6 +20,18 @@ var TectonicsMap = (function() {
                 plate.region.startAt(point);
                 self.plates.push(plate);
             });
+            self.buildIdMap();
+            self.buildPlates();
+        };
+
+        this.buildIdMap = function () {
+            self.idMap = (function () {
+                var colors = {};
+                _.times(totalPlates, function (id) {
+                    colors[id] = { color: RandomColor() };
+                })
+                return colors;
+            })();
         };
 
         this.getPlateById = function (id) {
@@ -94,8 +107,8 @@ var TectonicsMap = (function() {
         _class: _TectonicsMap,
 
         new: function(size, totalPlates) {
-            var tectonics = new _TectonicsMap(size);
-            tectonics.initPlates(totalPlates);
+            var tectonics = new _TectonicsMap(size, totalPlates);
+            tectonics.initPlates();
             return tectonics;
         }
     };

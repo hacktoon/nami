@@ -1,66 +1,50 @@
 
 var TectonicsPainter = (function () {
-    var _TectonicsPainter = function (tectonics, canvas, tilesize) {
+    var _TectonicsPainter = function (canvas) {
         var self = this;
-        this.tectonics = tectonics;
-        this.canvas = canvas;
-        this.tilesize = tilesize;
         this.ctx = canvas.getContext("2d");
-        this.colorMap = (function () {
-            var colors = [];
-            _.times(tectonics.plates.length, function () {
-                colors.push(RandomColor());
-            })
-            return colors;
-        })();
+        this.tectonics = undefined;
 
-        this.drawPoint = function(point, color) {
+        this.drawPoint = function (point, color, tilesize) {
             var point = self.tectonics.grid.wrap(point),
-                ts = self.tilesize;
+                ts = tilesize;
             self.ctx.fillStyle = color;
             self.ctx.fillRect(point.x * ts, point.y * ts, ts, ts);
         };
 
-        this.drawEdges = function(color) {
+        this.drawEdges = function (color, tilesize) {
             _.each(self.tectonics.plates, function (plate) {
                 plate.forEachEdge(function (point) {
-                    self.drawPoint(point, color || "#000");
+                    self.drawPoint(point, color || "#000", tilesize);
                 });
             });
         };
 
-        this.drawEdgesByDirection = function(direction, color) {
+        this.drawEdgesByDirection = function (direction, color, tilesize) {
             _.each(self.tectonics.plates, function (plate) {
                 plate.forEachEdgeInDirection(direction, function (point) {
-                    self.drawPoint(point, color);
+                    self.drawPoint(point, color, tilesize);
                 });
             });
         };
 
-        this.draw = function(label) {
-            var grid = self.tectonics.grid,
-                label = _.defaultTo(label, true),
-                ts = self.tilesize;
-
-            canvas.width = grid.width * ts;
-            canvas.height = grid.height * ts;
-
-            grid.forEach(function (value, point) {
-                var color = self.colorMap[value] || '#FFF';
-                self.drawPoint(point, color);
+        this.draw = function(tectonics, tilesize) {
+            self.tectonics = tectonics;
+            tectonics.grid.forEach(function (code, point) {
+                var color = tectonics.idMap[code].color;
+                self.drawPoint(point, color, tilesize);
             });
-
-            if (label)
-                drawLabel();
+            self.drawEdges("#222", tilesize);
+            drawLabel(tilesize);
         };
 
-        var drawLabel = function(){
+        var drawLabel = function (tilesize){
             _.each(self.tectonics.plates, function (plate) {
                 var symbol = Direction.getSymbol(plate.direction),
                     text = symbol + plate.speed +"S\n"+plate.density+"D",
                     point = plate.region.startPoint,
-                    x = self.tilesize * point.x,
-                    y = self.tilesize * point.y;
+                    x = tilesize * point.x,
+                    y = tilesize * point.y;
                 self.ctx.fillStyle = "white";
                 self.ctx.font = "20px Arial";
                 self.ctx.strokeStyle = "black";
