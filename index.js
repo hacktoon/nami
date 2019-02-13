@@ -26,7 +26,7 @@ var getPlatesInput = function () {
 };
 
 var createWorld = function(){
-    return World.new(getRoughnessInput());
+    return World.new(getRoughnessInput(), getPlatesInput());
 };
 
 var terrainPainter = TerrainPainter.new(viewCanvas),

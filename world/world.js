@@ -17,12 +17,12 @@ var Terrain = (function () {
 
 
 var World = (function(){
-    var _World = function (roughness){
+    var _World = function (roughness, plates){
         var self = this,
             size = 257;
 
         this.terrainMap = TerrainMap.new(size, roughness);
-        this.tectonicsMap = TectonicsMap.new(size, 8);
+        this.tectonicsMap = TectonicsMap.new(size, plates);
         // this.heatMap = HeatMap.new(size);
         // this.moistureMap = MoistureMap.new(size, roughness/2);
 
@@ -33,8 +33,8 @@ var World = (function(){
     };
 
     return {
-        new: function(roughness) {
-            var world = new _World(roughness);
+        new: function (roughness, plates) {
+            var world = new _World(roughness, plates);
             WorldFilter.apply(world);
             return world;
         }
