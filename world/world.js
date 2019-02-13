@@ -69,7 +69,7 @@ var WorldFilter = (function(){
         var originalGrid = world.terrainMap.grid,
             heightMap = _.cloneDeep(originalGrid),
             height = 0;
-        originalGrid.forEach(function(_, point) {
+        originalGrid.forEach(function (value, point) {
             height = smooth(originalGrid, point);
             height = normalizeHeight(world, height);
             heightMap.set(point, height);

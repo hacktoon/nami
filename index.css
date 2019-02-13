@@ -39,6 +39,11 @@ header {
     padding: 0 5px;
 }
 
+#main-menu input {
+    width: 40px;
+    padding-right: 0;
+}
+
 #main-menu button {
     background: rgb(13, 77, 33);
     color: #FFF;
@@ -48,12 +53,6 @@ header {
 }
 #main-menu button:active {
     background: rgb(133, 156, 141);
-}
-
-#main-menu #tilesizeInput,
-#main-menu #roughnessInput {
-    width: 40px;
-    padding-right: 0;
 }
 
 main { padding: 10px 20px 30px; }
