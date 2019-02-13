@@ -1,7 +1,7 @@
 
 
-var Tectonics = (function() {
-    var _Tectonics = function(size) {
+var TectonicsMap = (function() {
+    var _TectonicsMap = function(size) {
         var self = this;
 
         this.grid = Grid.new(size, size);
@@ -91,10 +91,10 @@ var Tectonics = (function() {
     };
 
     return {
-        _class: _Tectonics,
+        _class: _TectonicsMap,
 
         new: function(size, totalPlates) {
-            var tectonics = new _Tectonics(size);
+            var tectonics = new _TectonicsMap(size);
             tectonics.initPlates(totalPlates);
             return tectonics;
         }
