@@ -26,7 +26,11 @@ var getPlatesInput = function () {
 };
 
 var createWorld = function(){
-    return World.new(getRoughnessInput(), getPlatesInput());
+    var tilesize = getTileSizeInput();
+    currentWorld = World.new(getRoughnessInput(), getPlatesInput());
+    viewCanvas.width = currentWorld.terrainMap.grid.width * tilesize;
+    viewCanvas.height = currentWorld.terrainMap.grid.height * tilesize;
+    return currentWorld;
 };
 
 var terrainPainter = TerrainPainter.new(viewCanvas),
@@ -37,6 +41,7 @@ var terrainPainter = TerrainPainter.new(viewCanvas),
 var draw = function() {
     var option = getViewInput(),
         tilesize = getTileSizeInput();
+
     terrainPainter.draw(currentWorld.terrainMap, tilesize);
     if (option == "tectonics") {
         tectonicsPainter.draw(currentWorld.tectonicsMap, tilesize);
@@ -63,7 +68,7 @@ var getCanvasMousePoint = function(e, viewCanvas){
 viewInput.addEventListener('change', draw);
 
 generateButton.addEventListener('click', function() {
-    currentWorld = createWorld();
+    createWorld();
     draw();
 });
 

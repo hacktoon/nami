@@ -5,9 +5,6 @@ var TerrainPainter = (function () {
         this.ctx = canvas.getContext("2d");
 
         this.draw = function(terrainMap, tilesize){
-            canvas.width = terrainMap.grid.width * tilesize;
-            canvas.height = terrainMap.grid.height * tilesize;
-
             terrainMap.grid.forEach(function (value, point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize,
