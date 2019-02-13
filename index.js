@@ -37,10 +37,9 @@ var terrainPainter = TerrainPainter.new(viewCanvas),
 var draw = function() {
     var option = getViewInput(),
         tilesize = getTileSizeInput();
+    terrainPainter.draw(currentWorld.terrainMap, tilesize);
     if (option == "tectonics") {
         tectonicsPainter.draw(currentWorld.tectonicsMap, tilesize);
-    } else {
-        terrainPainter.draw(currentWorld.terrainMap, tilesize);
     }
 
     // if (option == "heat") {

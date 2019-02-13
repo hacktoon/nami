@@ -5,7 +5,6 @@ var TectonicsMap = (function() {
         var self = this;
 
         this.grid = Grid.new(size, size);
-        this.idMap = {};
         this.plates = [];
         this.plateIdMap = {};
         this.edgeDeformationMap = {};
@@ -21,18 +20,7 @@ var TectonicsMap = (function() {
                 plate.region.startAt(point);
                 self.plates.push(plate);
             });
-            self.buildIdMap();
             self.buildPlates();
-        };
-
-        this.buildIdMap = function () {
-            self.idMap = (function () {
-                var colors = {};
-                _.times(totalPlates, function (id) {
-                    colors[id] = { color: RandomColor() };
-                })
-                return colors;
-            })();
         };
 
         this.getPlateById = function (id) {

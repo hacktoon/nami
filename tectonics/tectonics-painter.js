@@ -30,11 +30,7 @@ var TectonicsPainter = (function () {
 
         this.draw = function(tectonics, tilesize) {
             self.tectonics = tectonics;
-            tectonics.grid.forEach(function (code, point) {
-                var color = tectonics.idMap[code].color;
-                self.drawPoint(point, color, tilesize);
-            });
-            self.drawEdges("#222", tilesize);
+            self.drawEdges("red", tilesize);
             drawLabel(tilesize);
         };
 
@@ -45,11 +41,13 @@ var TectonicsPainter = (function () {
                     point = plate.region.startPoint,
                     x = tilesize * point.x,
                     y = tilesize * point.y;
-                self.ctx.fillStyle = "white";
+                self.ctx.fillStyle = "black";
                 self.ctx.font = "20px Arial";
                 self.ctx.strokeStyle = "black";
-                self.ctx.fillText(text, x, y);
+                self.ctx.lineWidth = 4;
                 self.ctx.strokeText(text, x, y);
+                self.ctx.fillStyle = "white";
+                self.ctx.fillText(text, x, y);
             });
         };
     };
