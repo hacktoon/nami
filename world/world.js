@@ -35,6 +35,7 @@ var World = (function(){
     return {
         new: function (roughness, plates) {
             var world = new _World(roughness, plates);
+            world.tectonicsMap.buildPlates();
             WorldFilter.apply(world);
             return world;
         }

@@ -1,4 +1,4 @@
-var canvas = document.getElementById("world"),
+var viewCanvas = document.getElementById("world"),
     totalPlatesInput = document.getElementById("totalPlates"),
     generateButton = document.getElementById("generate"),
     resetButton = document.getElementById("reset"),
@@ -10,16 +10,18 @@ var canvas = document.getElementById("world"),
     growLotteryCheckbox = document.getElementById("growLottery"),
     drawLabelsCheckbox = document.getElementById("drawLabels");
 
-var TILESIZE = 4,
-    SIZE = 128,
+var TILESIZE = 3,
+    SIZE = 256,
     MAXPLATES = _.toNumber((SIZE * SIZE) / 4),
     MAXGROWTHRATE = 20;
     tectonics = undefined,
     painter = undefined;
 
 var createTectonics = function() {
-    tectonics = Tectonics.new(SIZE, getTotalPlates());
-    painter = TectonicsPainter.new(tectonics, canvas, TILESIZE);
+    tectonics = TectonicsMap.new(SIZE, getTotalPlates());
+    painter = TectonicsPainter.new(viewCanvas);
+    viewCanvas.width = tectonics.grid.width * TILESIZE;
+    viewCanvas.height = tectonics.grid.height * TILESIZE;
 };
 
 var getGrowOptions = function() {
@@ -43,11 +45,11 @@ var getGrowthRate = function() {
 };
 
 var draw = function () {
-    painter.draw(drawLabelsCheckbox.checked);
+    painter.draw(tectonics, TILESIZE);
     if (drawEdgesCheckbox.checked) {
         _.each(edgeColorInput, function (input) {
             var direction = Direction[input.id];
-            painter.drawEdgesByDirection(direction, input.value || '#000');
+            painter.drawEdgesByDirection(direction, input.value, TILESIZE);
         });
     }
 };
@@ -61,7 +63,7 @@ _.each(edgeColorInput, function(input) {
     var direction = Direction[input.id];
     input.addEventListener('change', function(e) {
         if (drawEdgesCheckbox.checked) {
-            painter.drawEdges(input.value || '#000');
+            painter.drawEdges(input.value, TILESIZE);
         }
     });
 });

@@ -15,7 +15,7 @@ var TectonicsPainter = (function () {
         this.drawEdges = function (color, tilesize) {
             _.each(self.tectonics.plates, function (plate) {
                 plate.forEachEdge(function (point) {
-                    self.drawPoint(point, color || "#000", tilesize);
+                    self.drawPoint(point, color, tilesize);
                 });
             });
         };
@@ -54,8 +54,8 @@ var TectonicsPainter = (function () {
 
     return {
         _class: _TectonicsPainter,
-        new: function (tectonics, canvas, tilesize) {
-            return new _TectonicsPainter(tectonics, canvas, tilesize);
+        new: function (canvas) {
+            return new _TectonicsPainter(canvas);
         }
     };
 })();

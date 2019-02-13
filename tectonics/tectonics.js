@@ -20,7 +20,6 @@ var TectonicsMap = (function() {
                 plate.region.startAt(point);
                 self.plates.push(plate);
             });
-            self.buildPlates();
         };
 
         this.getPlateById = function (id) {
