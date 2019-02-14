@@ -79,9 +79,7 @@ var Plate = (function() {
         this.direction = Direction.randomCardinal();
 
         this.forEachEdge = function(callback) {
-            self.region.edges(function(point) {
-                callback(point);
-            });
+            self.region.edges(callback);
         };
 
         this.forEachEdgeInDirection = function(direction, callback) {
