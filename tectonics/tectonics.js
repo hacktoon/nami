@@ -60,8 +60,6 @@ var TectonicsMap = (function() {
     };
 
     return {
-        _class: _TectonicsMap,
-
         new: function(size, totalPlates) {
             var tectonics = new _TectonicsMap(size, totalPlates);
             tectonics.initPlates();
@@ -94,7 +92,6 @@ var Plate = (function() {
     };
 
     return {
-        _class: _Plate,
         new: function(id) {
             return new _Plate(id);
         }
@@ -120,7 +117,6 @@ var PlateDeformation = (function() {
     };
 
     return {
-        _class: _PlateDeformation,
         new: function(target_plate) {
             return new _PlateDeformation(target_plate);
         }
