@@ -5,7 +5,7 @@ var MoisturePainter = (function () {
         this.ctx = canvas.getContext("2d");
 
         this.draw = function(moistureMap, tilesize){
-            self.ctx.globalAlpha = .7;
+            self.ctx.globalAlpha = .3;
 
             moistureMap.grid.forEach(function (value, point) {
                 var x = point.x * tilesize,

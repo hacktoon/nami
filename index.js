@@ -28,30 +28,33 @@ var getPlatesInput = function () {
 var createWorld = function(){
     var tilesize = getTileSizeInput();
     currentWorld = World.new(getRoughnessInput(), getPlatesInput());
-    viewCanvas.width = currentWorld.terrainMap.grid.width * tilesize;
-    viewCanvas.height = currentWorld.terrainMap.grid.height * tilesize;
     return currentWorld;
 };
 
 var terrainPainter = TerrainPainter.new(viewCanvas),
     tectonicsPainter = TectonicsPainter.new(viewCanvas);
-    // heatPainter = HeatPainter.new(viewCanvas),
-    // moisturePainter = MoisturePainter.new(viewCanvas);
+    heatPainter = HeatPainter.new(viewCanvas),
+    moisturePainter = MoisturePainter.new(viewCanvas);
 
 var draw = function() {
     var option = getViewInput(),
         tilesize = getTileSizeInput();
 
-    terrainPainter.draw(currentWorld.terrainMap, tilesize);
-    if (option == "tectonics") {
-        tectonicsPainter.draw(currentWorld.tectonicsMap, tilesize);
-    }
+    viewCanvas.width = currentWorld.terrainMap.grid.width * tilesize;
+    viewCanvas.height = currentWorld.terrainMap.grid.height * tilesize;
 
-    // if (option == "heat") {
-    //     heatPainter.draw(currentWorld.heatMap, tilesize);
-    // } else if (option == "moisture") {
-    //     moisturePainter.draw(currentWorld.moistureMap, tilesize);
-    // }
+    if (option == "tectonics") {
+        terrainPainter.drawBlackWhite(currentWorld.terrainMap, tilesize);
+        tectonicsPainter.draw(currentWorld.tectonicsMap, tilesize);
+    } else if (option == "heat") {
+        terrainPainter.drawBlackWhite(currentWorld.terrainMap, tilesize);
+        heatPainter.draw(currentWorld.heatMap, tilesize);
+    } else if (option == "moisture") {
+        terrainPainter.drawBlackWhite(currentWorld.terrainMap, tilesize);
+        moisturePainter.draw(currentWorld.moistureMap, tilesize);
+    } else {
+        terrainPainter.draw(currentWorld.terrainMap, tilesize);
+    }
 };
 
 var getCanvasMousePoint = function(e, viewCanvas){
@@ -77,14 +80,14 @@ viewCanvas.addEventListener('mousemove', function(e) {
         position = "(x = "+ point.x + ", y = " + point.y + ")",
         height = currentWorld.terrainMap.grid.get(point),
         heightText = " | Height: " + height,
-        // heat = currentWorld.heatMap.grid.get(point),
-        // heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
-        // moisture = currentWorld.moistureMap.grid.get(point),
-        // moistureText = " | Pluviosity: " + currentWorld.moistureMap.idMap[moisture].name,
+        heat = currentWorld.heatMap.grid.get(point),
+        heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
+        moisture = currentWorld.moistureMap.grid.get(point),
+        moistureText = " | Pluviosity: " + currentWorld.moistureMap.idMap[moisture].name,
         terrain = " | Terrain: " + currentWorld.terrainMap.idMap[height].name;
 
     infoText.innerHTML = position + heightText + terrain;
-    //infoText.innerHTML = position + heightText + terrain + heatText + moistureText;
+    infoText.innerHTML = position + heightText + terrain + heatText + moistureText;
 });
 
 viewCanvas.addEventListener('mouseout', function(e) {

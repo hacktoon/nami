@@ -23,8 +23,8 @@ var World = (function(){
 
         this.terrainMap = TerrainMap.new(size, roughness);
         this.tectonicsMap = TectonicsMap.new(size, plates);
-        // this.heatMap = HeatMap.new(size);
-        // this.moistureMap = MoistureMap.new(size, roughness/2);
+        this.heatMap = HeatMap.new(size);
+        this.moistureMap = MoistureMap.new(size, roughness/2);
 
         self.data = {
             water: 0,
@@ -35,8 +35,8 @@ var World = (function(){
     return {
         new: function (roughness, plates) {
             var world = new _World(roughness, plates);
-            world.tectonicsMap.buildPlates();
             WorldFilter.apply(world);
+            world.tectonicsMap.buildPlates();
             return world;
         }
     };

@@ -15,6 +15,17 @@ var TerrainPainter = (function () {
             });
         };
 
+        this.drawBlackWhite = function(terrainMap, tilesize){
+            terrainMap.grid.forEach(function (value, point) {
+                var x = point.x * tilesize,
+                    y = point.y * tilesize,
+                    terrain = terrainMap.idMap[Number(value)];
+
+                self.ctx.fillStyle = terrain.water ? "#FFF" : "#000";
+                self.ctx.fillRect(x, y, tilesize, tilesize);
+            });
+        };
+
     };
 
     return {

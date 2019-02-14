@@ -4,6 +4,7 @@
 * detect litorals
 * detect interior water tiles
 * detect litoral tiles
+* use sin() to add meandering to rivers
 
 ## IDEAS
 
