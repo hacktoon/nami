@@ -3,19 +3,19 @@ var HeatMap = (function(){
     var _Heat = function (size){
         var self = this,
             defaultValue = 0,
-            roughness = .1;
+            roughness = .15;
 
         this.size = size;
         this.grid = Grid.new(size, size, defaultValue);
-        this.idMap = {
-            1: { height: 15,  color: "white",  name: "Polar"},
-            2: { height: 60,  color: "blue",   name: "Temperate"},
-            3: { height: 96,  color: "yellow", name: "Subtropical"},
-            4: { height: 160, color: "red",    name: "Tropical"},
-            5: { height: 196, color: "yellow", name: "Subtropical"},
-            6: { height: 241, color: "blue",   name: "Temperate"},
-            7: { height: 256, color: "white",   name: "Polar", fixedHeight: true}
-        };
+        this.idMap = [
+            { height: 15,  color: "white",  name: "Polar"},
+            { height: 60,  color: "blue",   name: "Temperate"},
+            { height: 96,  color: "yellow", name: "Subtropical"},
+            { height: 160, color: "red",    name: "Tropical"},
+            { height: 196, color: "yellow", name: "Subtropical"},
+            { height: 241, color: "blue",   name: "Temperate"},
+            { height: 256, color: "white",  name: "Polar"}
+        ];
 
         this.build = function(){
             _.each(self.idMap, buildZones);
@@ -25,8 +25,9 @@ var HeatMap = (function(){
             var p1 = Point.new(0, zone.height),
                 p2 = Point.new(size - 1, zone.height),
                 setPoint = function(point) {
-                    if (zone.fixedHeight) {
-                        var point = Point.new(point.x, zone.height);
+                    // is bottom zone, start filling up from max Y
+                    if (code == self.idMap.length - 1) {
+                        point.y = zone.height;
                     }
                     fillColumn(point, code);
                 };
