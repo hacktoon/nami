@@ -14,7 +14,7 @@ var World = (function(){
         new: function (roughness, plates) {
             var world = new _World(roughness, plates);
             WorldFilter.apply(world);
-            world.tectonicsMap.buildPlates(world.terrainMap);
+            world.tectonicsMap.buildPlates();
             return world;
         }
     };

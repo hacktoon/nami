@@ -8,7 +8,6 @@ var TectonicsMap = (function() {
         this.grid = Grid.new(size, size);
         this.plates = [];
         this.plateIdMap = {};
-        this.edgeDeformationMap = {};
 
         this.initPlates = function() {
             var points = self.grid.randomPoints(totalPlates);
@@ -44,36 +43,6 @@ var TectonicsMap = (function() {
                     plate.region.grow(growOptions);
                 });
             }
-            deformEdges();
-        };
-
-        var deformEdges = function() {
-            var deformPlateEdges = function (plate) {
-                var deformation = PlateDeformation.new(plate);
-                plate.region.edges(function (edge) {
-                    var deformationRate = 0,
-                        plateDirectionMap = getNeighborPlates(edge);
-                    _.each(plateDirectionMap, function(otherPlate){
-                        deformationRate += deformation.between(otherPlate);
-                    });
-                    self.edgeDeformationMap[edge.hash()] = deformationRate;
-                });
-            };
-
-            var getNeighborPlates = function (point){
-                var neighborhood = PointNeighborhood.new(point),
-                    plates = {};
-                neighborhood.around(function (neighbor, direction) {
-                    var neighborValue = self.grid.get(neighbor);
-                    if (neighborValue == self.grid.get(point))
-                        return;
-                    var plate = self.getPlateById(neighborValue);
-                    plates[direction] = plate;
-                });
-                return plates;
-            };
-
-            self.forEachPlate(deformPlateEdges);
         };
 
         this.hasPointInEdges = function (point) {
@@ -110,7 +79,7 @@ var Plate = (function() {
         this.id = id;
         this.region = undefined;
         this.speed = _.sample([1, 2, 3]);
-        this.density = _.sample([1, 2]);
+        this.density = _.sample([1, 2, 2]);
         this.direction = Direction.randomCardinal();
 
         this.forEachEdge = function(callback) {
