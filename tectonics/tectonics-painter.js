@@ -42,12 +42,13 @@ var TectonicsPainter = (function () {
                     x = tilesize * point.x,
                     y = tilesize * point.y;
                 self.ctx.fillStyle = "black";
-                self.ctx.font = "20px Arial";
-                self.ctx.strokeStyle = "black";
-                self.ctx.lineWidth = 4;
-                self.ctx.strokeText(text, x, y);
-                self.ctx.fillStyle = "white";
-                self.ctx.fillText(text, x, y);
+                self.ctx.fillRect(x, y, tilesize, tilesize);
+                // self.ctx.font = "20px Arial";
+                // self.ctx.strokeStyle = "black";
+                // self.ctx.lineWidth = 4;
+                // self.ctx.strokeText(text, x, y);
+                // self.ctx.fillStyle = "white";
+                // self.ctx.fillText(text, x, y);
             });
         };
     };

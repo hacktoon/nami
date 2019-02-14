@@ -12,8 +12,6 @@ var viewCanvas = document.getElementById("world"),
 
 var TILESIZE = 3,
     SIZE = 256,
-    MAXPLATES = _.toNumber((SIZE * SIZE) / 4),
-    MAXGROWTHRATE = 20;
     tectonics = undefined,
     painter = undefined;
 
@@ -31,13 +29,13 @@ var getGrowOptions = function() {
 };
 
 var getTotalPlates = function() {
-    var value = _.clamp(totalPlatesInput.value, 1, MAXPLATES);
+    var value = Number(totalPlatesInput.value);
     totalPlatesInput.value = value;
     return value;
 };
 
 var getGrowthRate = function() {
-    var value = _.clamp(growthRateInput.value, 1, MAXGROWTHRATE);
+    var value = Number(growthRateInput.value);
     growthRateInput.value = value;
     return value;
 };
