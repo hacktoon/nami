@@ -82,6 +82,10 @@ var Plate = (function() {
             self.region.edges(callback);
         };
 
+        this.forEachSeed = function(callback) {
+            self.region.seeds(callback);
+        };
+
         this.forEachEdgeInDirection = function(direction, callback) {
             self.region.edgesByDirection(direction, function(point) {
                 callback(point);

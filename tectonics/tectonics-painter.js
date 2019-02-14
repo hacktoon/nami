@@ -12,15 +12,20 @@ var TectonicsPainter = (function () {
             self.ctx.fillRect(point.x * ts, point.y * ts, ts, ts);
         };
 
-        this.drawEdges = function (color, tilesize) {
+        this.drawEdges = function(color, tilesize) {
             _.each(self.tectonics.plates, function (plate) {
+                plate.forEachSeed(function (point) {
+                    self.drawPoint(point, "black", tilesize);
+                });
+            });
+            _.each(self.tectonics.plates, function(plate) {
                 plate.forEachEdge(function (point) {
                     self.drawPoint(point, color, tilesize);
                 });
             });
         };
 
-        this.drawEdgesByDirection = function (direction, color, tilesize) {
+        this.drawEdgesByDirection = function(direction, color, tilesize) {
             _.each(self.tectonics.plates, function (plate) {
                 plate.forEachEdgeInDirection(direction, function (point) {
                     self.drawPoint(point, color, tilesize);
