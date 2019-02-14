@@ -37,13 +37,13 @@ var TectonicsPainter = (function () {
         var drawLabel = function (tilesize){
             _.each(self.tectonics.plates, function (plate) {
                 var symbol = Direction.getSymbol(plate.direction),
-                    text = symbol + plate.speed +"S\n"+plate.density+"D",
+                    text = symbol + plate.speed +"S/"+plate.density+"D",
                     point = plate.region.startPoint,
                     x = tilesize * point.x,
                     y = tilesize * point.y;
                 self.ctx.fillStyle = "black";
                 self.ctx.fillRect(x, y, tilesize, tilesize);
-                self.ctx.font = "20px Arial";
+                self.ctx.font = "15px Arial";
                 self.ctx.strokeStyle = "black";
                 self.ctx.lineWidth = 4;
                 self.ctx.strokeText(text, x, y);

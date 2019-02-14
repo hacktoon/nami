@@ -2,8 +2,8 @@
 
 var TectonicsMap = (function() {
     var _TectonicsMap = function(size, totalPlates) {
-        var self = this;
-        var growthRate = 15;
+        var self = this,
+            growthRate = 15;
 
         this.grid = Grid.new(size, size);
         this.plates = [];
