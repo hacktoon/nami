@@ -10,15 +10,14 @@ var TectonicsMap = (function() {
         this.plateIdMap = {};
 
         this.initPlates = function() {
-            var points = self.grid.randomPoints(totalPlates);
-            _.each(points, function(point, plateId) {
+            var createPlate = function(point, plateId) {
                 var plate = Plate.new(plateId);
-
                 plate.region = GridFill.new(self.grid, plateId);
                 self.plateIdMap[plateId] = plate;
                 plate.region.startAt(point);
                 self.plates.push(plate);
-            });
+            };
+            GridPointDistribution(self.grid, totalPlates, createPlate);
         };
 
         this.getPlateById = function (id) {
