@@ -20,8 +20,6 @@ var TILESIZE = 3,
 var createTectonics = function() {
     tectonics = TectonicsMap.new(SIZE, getTotalPlates());
     painter = TectonicsPainter.new(viewCanvas);
-    viewCanvas.width = tectonics.grid.width * TILESIZE;
-    viewCanvas.height = tectonics.grid.height * TILESIZE;
 };
 
 var getGrowOptions = function() {
@@ -45,6 +43,9 @@ var getGrowthRate = function() {
 };
 
 var draw = function () {
+    viewCanvas.width = tectonics.grid.width * TILESIZE;
+    viewCanvas.height = tectonics.grid.height * TILESIZE;
+
     painter.draw(tectonics, TILESIZE);
     if (drawEdgesCheckbox.checked) {
         _.each(edgeColorInput, function (input) {

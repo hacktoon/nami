@@ -31,7 +31,7 @@ var TectonicsMap = (function() {
             var defaultOpts = { partial: true, times: growthRate, chance: true },
                 growOptions = _.defaultTo(growOptions, defaultOpts),
                 totalCompleted = 0,
-                completedMap = {},
+                completedMap = {};
 
             while (totalCompleted < self.plates.length) {
                 _.each(self.plates, function(plate) {
