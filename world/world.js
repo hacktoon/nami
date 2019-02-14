@@ -45,16 +45,6 @@ var World = (function(){
 
 
 var WorldFilter = (function(){
-    var normalizeHeight = function (world, rawHeight) {
-        var height = 1;
-        _.each(world.terrainMap.idMap, function(terrain, code){
-            if (rawHeight >= terrain.height) {
-                height = code;
-            }
-        });
-        return height;
-    };
-
     var smooth = function (grid, point) {
         var neighborhood = PointNeighborhood.new(point),
             neighborCount = 0,
@@ -72,7 +62,7 @@ var WorldFilter = (function(){
             height = 0;
         originalGrid.forEach(function (value, point) {
             height = smooth(originalGrid, point);
-            height = normalizeHeight(world, height);
+            height = world.terrainMap.getNormalizedHeight(height);
             heightMap.set(point, height);
         });
         world.terrainMap.grid = heightMap;
