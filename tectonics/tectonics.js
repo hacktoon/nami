@@ -34,8 +34,7 @@ var TectonicsMap = (function() {
             while (totalCompleted < self.plates.length) {
                 _.each(self.plates, function(plate) {
                     if (plate.region.isComplete()) {
-                        var plateCompleted = Boolean(completedMap[plate.id]);
-                        totalCompleted += plateCompleted ? 0 : 1;
+                        totalCompleted += completedMap[plate.id] ? 0 : 1;
                         completedMap[plate.id] = 1;
                         return;
                     }
@@ -78,7 +77,7 @@ var Plate = (function() {
         this.id = id;
         this.region = undefined;
         this.speed = _.sample([1, 2, 3]);
-        this.density = _.sample([1, 2, 2]);
+        this.density = _.sample([1, 1, 2, 2, 3]);
         this.direction = Direction.randomCardinal();
 
         this.forEachEdge = function(callback) {
