@@ -43,14 +43,7 @@ var getGrowthRate = function() {
 var draw = function () {
     viewCanvas.width = tectonics.grid.width * TILESIZE;
     viewCanvas.height = tectonics.grid.height * TILESIZE;
-
     painter.draw(tectonics, TILESIZE);
-    if (drawEdgesCheckbox.checked) {
-        _.each(edgeColorInput, function (input) {
-            var direction = Direction[input.id];
-            painter.drawEdgesByDirection(direction, input.value, TILESIZE);
-        });
-    }
 };
 
 var init = function () {

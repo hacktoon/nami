@@ -26,8 +26,8 @@ var TectonicsMap = (function() {
 
         /* Grow the plates until all them complete. */
         this.buildPlates = function (growOptions) {
-            var defaultOpts = { partial: true, times: growthRate, chance: true },
-                growOptions = _.defaultTo(growOptions, defaultOpts),
+            var defaultOpts = { partial: true, times: growthRate, chance: false },
+                growOptions = _.assign(defaultOpts, growOptions),
                 totalCompleted = 0,
                 completedMap = {};
 
