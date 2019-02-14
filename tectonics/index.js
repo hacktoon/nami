@@ -86,4 +86,4 @@ growButton.addEventListener('click', function() {
     draw();
 });
 
-init();
+generateButton.click();
