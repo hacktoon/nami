@@ -3,12 +3,12 @@
 var TectonicsMap = (function() {
     var _TectonicsMap = function(size, totalPlates) {
         var self = this;
+        var growthRate = 15;
 
         this.grid = Grid.new(size, size);
         this.plates = [];
         this.plateIdMap = {};
         this.edgeDeformationMap = {};
-        this.growthRate = 15;
 
         this.initPlates = function() {
             var points = self.grid.randomPoints(totalPlates);
@@ -28,9 +28,10 @@ var TectonicsMap = (function() {
 
         /* Grow the plates until all them complete. */
         this.buildPlates = function (growOptions) {
-            var totalCompleted = 0,
+            var defaultOpts = { partial: true, times: growthRate, chance: true },
+                growOptions = _.defaultTo(growOptions, defaultOpts),
+                totalCompleted = 0,
                 completedMap = {},
-                growOptions = growOptions || {partial: true, times: self.growthRate, chance: true};
 
             while (totalCompleted < self.plates.length) {
                 _.each(self.plates, function(plate) {
