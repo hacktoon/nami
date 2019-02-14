@@ -1,6 +1,6 @@
 
-var MoistureMap = (function(){
-    var _MoistureMap = function (size, roughness) {
+var RainMap = (function(){
+    var _RainMap = function (size, roughness) {
         var self = this;
         this.size = size;
 
@@ -14,8 +14,8 @@ var MoistureMap = (function(){
 
         this.build = function(){
             self.grid.forEach(function(rawHeight, point){
-                _.each(self.idMap, function(moisture, code){
-                    if (rawHeight >= moisture.height) {
+                _.each(self.idMap, function(rain, code){
+                    if (rawHeight >= rain.height) {
                         self.grid.set(point, Number(code));
                     }
                 });
@@ -25,10 +25,9 @@ var MoistureMap = (function(){
 
     return {
         new: function(size, roughness) {
-            var moisture = new _MoistureMap(size, roughness);
-            moisture.build();
-            return moisture;
+            var rain = new _RainMap(size, roughness);
+            rain.build();
+            return rain;
         }
     };
 })();
-

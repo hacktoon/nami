@@ -34,7 +34,7 @@ var createWorld = function(){
 var terrainPainter = TerrainPainter.new(viewCanvas),
     tectonicsPainter = TectonicsPainter.new(viewCanvas);
     heatPainter = HeatPainter.new(viewCanvas),
-    moisturePainter = MoisturePainter.new(viewCanvas);
+    rainPainter = RainPainter.new(viewCanvas);
 
 var draw = function() {
     var option = getViewInput(),
@@ -49,9 +49,9 @@ var draw = function() {
     } else if (option == "heat") {
         terrainPainter.drawBlackWhite(currentWorld.terrainMap, tilesize);
         heatPainter.draw(currentWorld.heatMap, tilesize);
-    } else if (option == "moisture") {
+    } else if (option == "rain") {
         terrainPainter.drawBlackWhite(currentWorld.terrainMap, tilesize);
-        moisturePainter.draw(currentWorld.moistureMap, tilesize);
+        rainPainter.draw(currentWorld.rainMap, tilesize);
     } else {
         terrainPainter.draw(currentWorld.terrainMap, tilesize);
     }
@@ -82,12 +82,12 @@ viewCanvas.addEventListener('mousemove', function(e) {
         heightText = " | Height: " + height,
         heat = currentWorld.heatMap.grid.get(point),
         heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
-        moisture = currentWorld.moistureMap.grid.get(point),
-        moistureText = " | Pluviosity: " + currentWorld.moistureMap.idMap[moisture].name,
+        rain = currentWorld.rainMap.grid.get(point),
+        rainText = " | Pluviosity: " + currentWorld.rainMap.idMap[rain].name,
         terrain = " | Terrain: " + currentWorld.terrainMap.idMap[height].name;
 
     infoText.innerHTML = position + heightText + terrain;
-    infoText.innerHTML = position + heightText + terrain + heatText + moistureText;
+    infoText.innerHTML = position + heightText + terrain + heatText + rainText;
 });
 
 viewCanvas.addEventListener('mouseout', function(e) {

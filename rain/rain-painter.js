@@ -1,18 +1,18 @@
 
-var MoisturePainter = (function () {
-    var _MoisturePainter = function (canvas) {
+var RainPainter = (function () {
+    var _RainPainter = function (canvas) {
         var self = this;
         this.ctx = canvas.getContext("2d");
 
-        this.draw = function(moistureMap, tilesize){
+        this.draw = function(rainMap, tilesize){
             self.ctx.globalAlpha = .3;
 
-            moistureMap.grid.forEach(function (value, point) {
+            rainMap.grid.forEach(function (value, point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize,
                     code = Number(value);
 
-                self.ctx.fillStyle = moistureMap.idMap[code].color;
+                self.ctx.fillStyle = rainMap.idMap[code].color;
                 self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };
@@ -20,9 +20,9 @@ var MoisturePainter = (function () {
     };
 
     return {
-        _class: _MoisturePainter,
+        _class: _RainPainter,
         new: function (canvas) {
-            return new _MoisturePainter(canvas);
+            return new _RainPainter(canvas);
         }
     };
 })();

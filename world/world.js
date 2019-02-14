@@ -24,7 +24,7 @@ var World = (function(){
         this.terrainMap = TerrainMap.new(size, roughness);
         this.tectonicsMap = TectonicsMap.new(size, plates);
         this.heatMap = HeatMap.new(size);
-        this.moistureMap = MoistureMap.new(size, roughness/2);
+        this.rainMap = RainMap.new(size, roughness/2);
 
         self.data = {
             water: 0,
