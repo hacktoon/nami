@@ -26,7 +26,6 @@ var getPlatesInput = function () {
 };
 
 var createWorld = function(){
-    var tilesize = getTileSizeInput();
     currentWorld = World.new(getRoughnessInput(), getPlatesInput());
     return currentWorld;
 };
