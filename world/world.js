@@ -31,20 +31,17 @@ var World = (function(){
                 self.setTile(point, tile);
             });
 
-            // Second pipeline step - smoothing and feature detection
+            // Second pipeline step - smoothing and area measure
             self.grid.forEach(function(tile, point){
-                //var neighbors = PointNeighborhood.new(point);
-                var height = WorldFilter.smoothPoint(self.grid, tile.height, point);
-                elevation = self.terrainMap.getNormalizedHeight(height);
-                tile.elevation = elevation;
+                var height = HeightFilter.smooth(self.grid, tile);
+                tile.terrain = self.terrainMap.getTerrainByHeight(height);
+                LandformDetector.measureAreas(self, tile);
             });
 
-            // height = self.terrainMap.getNormalizedHeight(height);
-            // if (self.terrainMap.isWater(height)) {
-            //     self.waterArea++;
-            // } else {
-            //     self.landArea++;
-            // }
+            // Third pipeline step - smoothing and feature detection
+            self.grid.forEach(function (tile, point) {
+
+            });
         };
     };
 
@@ -52,7 +49,7 @@ var World = (function(){
         new: function (size, roughness, totalPlates) {
             var world = new _World(size, roughness, totalPlates);
             world.build();
-            //WorldFilter.apply(world);
+            //HeightFilter.apply(world);
             //world.tectonicsMap.buildPlates(); // change to setPoint - add to other maps
             return world;
         }
@@ -69,9 +66,26 @@ var World = (function(){
 })();
 
 
-var WorldFilter = (function(){
-    var smoothPoint = function (grid, sum, point) {
-        var neighborhood = PointNeighborhood.new(point),
+var LandformDetector = (function () {
+    var measureAreas = function (world, tile) {
+        if (tile.terrain.isWater) {
+            world.waterArea++;
+        } else {
+            world.landArea++;
+        }
+    };
+
+    return {
+        measureAreas: measureAreas
+    };
+})();
+
+
+
+var HeightFilter = (function(){
+    var smooth = function (grid, tile) {
+        var neighborhood = PointNeighborhood.new(tile.point),
+            sum = tile.height,
             valueCount = 1;
         neighborhood.around(function (neighborTile) {
             sum += grid.get(neighborTile).height;
@@ -81,7 +95,7 @@ var WorldFilter = (function(){
     };
 
     return {
-        smoothPoint: smoothPoint
+        smooth: smooth
     };
 })();
 
@@ -93,8 +107,8 @@ var Tile = (function(){
         this.id = point.hash();
         this.point = point;
         this.height = 0;
-        this.elevation = 0;
-        this.plate = 0;
+        this.plate = undefined;
+        this.terrain = undefined;
         this.biome = undefined;
     };
 

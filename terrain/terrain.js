@@ -1,27 +1,32 @@
 
+var TerrainSpecParser = (function () {
+
+})();
+
+
 var TerrainMap = (function(){
     var _TerrainMap = function () {
         var self = this;
 
         this.idMap = [
-            { height: 0,   color: "#000056", name: "Abyssal water", water: true },
-            { height: 60,  color: "#1a3792", name: "Deep water",    water: true},
-            { height: 110, color: "#489CFF", name: "Shallow water", water: true},
-            { height: 130, color: "#0a5816", name: "Coast"    },
-            { height: 170, color: "#31771a", name: "Plain"    },
-            { height: 225, color: "#7ac85b", name: "Hill"     },
-            { height: 240, color: "#7d7553", name: "Mountain" },
-            { height: 254, color: "#FFF",    name: "Peak"     }
+            { height: 0,   color: "#000056", name: "Abyssal waters", isWater: true },
+            { height: 60,  color: "#1a3792", name: "Deep waters",    isWater: true},
+            { height: 110, color: "#489CFF", name: "Shallow waters", isWater: true},
+            { height: 130, color: "#0a5816", name: "Coastal plains"    },
+            { height: 170, color: "#31771a", name: "Plains"    },
+            { height: 225, color: "#7ac85b", name: "Hills"     },
+            { height: 240, color: "#7d7553", name: "Mountains" },
+            { height: 254, color: "#FFF",    name: "Peaks"     }
         ];
 
-        this.getNormalizedHeight = function(rawHeight){
-            var height = 0;
-            _.each(self.idMap, function (terrain, index) {
-                if (rawHeight >= terrain.height) {
-                    height = index;
+        this.getTerrainByHeight = function(height){
+            var terrain;
+            _.each(self.idMap, function (candidade) {
+                if (height >= candidade.height) {
+                    terrain = candidade;
                 }
             });
-            return height;
+            return terrain;
         };
     };
 

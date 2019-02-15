@@ -8,9 +8,9 @@ var TerrainPainter = (function () {
             world.grid.forEach(function (tile, point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize,
-                    code = Number(tile.elevation);
+                    code = Number(tile.terrain.height);
 
-                self.ctx.fillStyle = world.terrainMap.idMap[code].color;
+                self.ctx.fillStyle = tile.terrain.color;
                 self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };
@@ -18,10 +18,9 @@ var TerrainPainter = (function () {
         this.drawBlackWhite = function(world, tilesize){
             world.grid.forEach(function (tile, point) {
                 var x = point.x * tilesize,
-                    y = point.y * tilesize,
-                    terrain = world.terrainMap.idMap[Number(tile.elevation)];
+                    y = point.y * tilesize;
 
-                self.ctx.fillStyle = terrain.water ? "#FFF" : "#000";
+                self.ctx.fillStyle = tile.terrain.isWater ? "#FFF" : "#000";
                 self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };
