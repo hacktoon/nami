@@ -59,3 +59,23 @@ var WorldFilter = (function(){
     };
 
 })();
+
+
+var WorldTile = (function(){
+    var _WorldTile = function (id, point, height, plate, biome){
+        var self = this;
+
+        this.id = id;
+        this.point = point;
+        this.height = height;
+        this.plate = plate;
+        this.biome = biome;
+    };
+
+    return {
+        new: function (id, point, height, plate, biome) {
+            var tile = new _WorldTile(id, point, height, plate, biome);
+            return tile;
+        }
+    };
+})();
