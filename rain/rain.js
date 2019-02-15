@@ -4,7 +4,7 @@ var RainMap = (function(){
         var self = this;
         this.size = size;
 
-        this.grid = HeightMap(size, roughness);
+        this.heightMap = HeightMap.new(size, roughness);
         this.idMap = [
             {height: 0,   color: "red",       name: "Very dry"},
             {height: 30,  color: "coral",     name: "Dry"},
@@ -12,11 +12,12 @@ var RainMap = (function(){
             {height: 210, color: "blue",      name: "Very wet"}
         ];
 
-        this.build = function(){
-            self.grid.forEach(function(rawHeight, point){
+        this.build = function(callback){
+            self.heightMap.build(function (value, point) { })
+            self.heightMap.grid.forEach(function(rawHeight, point){
                 _.each(self.idMap, function(rain, code){
                     if (rawHeight >= rain.height) {
-                        self.grid.set(point, Number(code));
+                        self.heightMap.grid.set(point, Number(code));
                     }
                 });
             });

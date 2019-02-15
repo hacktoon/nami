@@ -1,13 +1,13 @@
 
 var World = (function(){
     var _World = function (roughness, plates){
-        var self = this,
-            size = 257;
+        var self = this;
+        this.size = 257;
 
-        this.terrainMap = TerrainMap.new(size, roughness);
-        this.tectonicsMap = TectonicsMap.new(size, plates);
-        this.heatMap = HeatMap.new(size);
-        this.rainMap = RainMap.new(size, roughness/2);
+        this.terrainMap = TerrainMap.new(this.size, roughness);
+        this.tectonicsMap = TectonicsMap.new(this.size, plates);
+        this.heatMap = HeatMap.new(this.size);
+        this.rainMap = RainMap.new(this.size, roughness/2);
     };
 
     return {
@@ -42,7 +42,7 @@ var WorldFilter = (function(){
     };
 
     var apply = function (world) {
-        var originalGrid = world.terrainMap.grid,
+        var originalGrid = world.terrainMap.heightMap.grid,
             newGrid = _.cloneDeep(originalGrid),
             height = 0;
         originalGrid.forEach(function (value, point) {
@@ -50,7 +50,7 @@ var WorldFilter = (function(){
             height = world.terrainMap.getNormalizedHeight(height);
             newGrid.set(point, height);
         });
-        world.terrainMap.grid = newGrid;
+        world.terrainMap.heightMap.grid = newGrid;
     };
 
     return {

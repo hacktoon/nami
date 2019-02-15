@@ -39,8 +39,8 @@ var draw = function() {
     var option = getViewInput(),
         tilesize = getTileSizeInput();
 
-    viewCanvas.width = currentWorld.terrainMap.grid.width * tilesize;
-    viewCanvas.height = currentWorld.terrainMap.grid.height * tilesize;
+    viewCanvas.width = currentWorld.size * tilesize;
+    viewCanvas.height = currentWorld.size * tilesize;
 
     if (option == "tectonics") {
         terrainPainter.drawBlackWhite(currentWorld.terrainMap, tilesize);
@@ -76,16 +76,15 @@ generateButton.addEventListener('click', function() {
 
 viewCanvas.addEventListener('mousemove', function(e) {
     var point = getCanvasMousePoint(e, viewCanvas),
-        position = "(x = "+ point.x + ", y = " + point.y + ")",
-        height = currentWorld.terrainMap.grid.get(point),
+        position = "("+ point.hash() + ")",
+        height = currentWorld.terrainMap.heightMap.grid.get(point),
         heightText = " | Height: " + height,
         heat = currentWorld.heatMap.grid.get(point),
         heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
-        rain = currentWorld.rainMap.grid.get(point),
+        rain = currentWorld.rainMap.heightMap.grid.get(point),
         rainText = " | Pluviosity: " + currentWorld.rainMap.idMap[rain].name,
         terrain = " | Terrain: " + currentWorld.terrainMap.idMap[height].name;
 
-    infoText.innerHTML = position + heightText + terrain;
     infoText.innerHTML = position + heightText + terrain + heatText + rainText;
 });
 

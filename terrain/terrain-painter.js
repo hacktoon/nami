@@ -5,7 +5,7 @@ var TerrainPainter = (function () {
         this.ctx = canvas.getContext("2d");
 
         this.draw = function(terrainMap, tilesize){
-            terrainMap.grid.forEach(function (value, point) {
+            terrainMap.heightMap.grid.forEach(function (value, point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize,
                     code = Number(value);
@@ -16,7 +16,7 @@ var TerrainPainter = (function () {
         };
 
         this.drawBlackWhite = function(terrainMap, tilesize){
-            terrainMap.grid.forEach(function (value, point) {
+            terrainMap.heightMap.grid.forEach(function (value, point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize,
                     terrain = terrainMap.idMap[Number(value)];
