@@ -2,8 +2,9 @@
 var World = (function(){
     var _World = function (roughness, plates){
         var self = this;
-        this.size = 257;
 
+        this.size = 257;
+        this.area = Math.pow(this.size, 2);
         this.terrainMap = TerrainMap.new(this.size, roughness);
         this.tectonicsMap = TectonicsMap.new(this.size, plates);
         this.heatMap = HeatMap.new(this.size);
