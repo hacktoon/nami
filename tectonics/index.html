@@ -8,14 +8,6 @@
         canvas {
             outline: solid 1px #DDD;
         }
-        .button-panel {
-            padding: 5px 0 10px;
-        }
-
-        #edgesColor,
-        .button-panel.edge-colors input {
-            width: 55px;
-        }
 
         #growthRate {
             width: 40px;
@@ -51,28 +43,6 @@
     </div>
 
     <canvas id="world"></canvas>
-
-    <div class="button-panel">
-        <label for="drawEdges">
-            <input type="checkbox" checked id="drawEdges" />
-            Draw edges
-        </label>
-    </div>
-    <div class="button-panel edge-colors">
-        <strong>Edges colors: </strong>
-        <label for="NORTH">North
-            <input type="text" maxlength="7" value="#000" id="NORTH" class="edgeColor" />
-        </label>
-        <label for="EAST">East
-            <input type="text" maxlength="7" value="black" id="EAST" class="edgeColor" />
-        </label>
-        <label for="SOUTH">South
-            <input type="text" maxlength="7" value="#000000" id="SOUTH" class="edgeColor" />
-        </label>
-        <label for="WEST">West
-            <input type="text" maxlength="7" value="#000" id="WEST" class="edgeColor" />
-        </label>
-    </div>
 
     <script src="../lib/lodash.min.js"></script>
     <script src="../lib/base.js"></script>

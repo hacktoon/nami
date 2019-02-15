@@ -25,14 +25,6 @@ var TectonicsPainter = (function () {
             });
         };
 
-        this.drawEdgesByDirection = function(direction, color, tilesize) {
-            _.each(self.tectonics.plates, function (plate) {
-                plate.forEachEdgeInDirection(direction, function (point) {
-                    self.drawPoint(point, color, tilesize);
-                });
-            });
-        };
-
         this.draw = function(tectonics, tilesize) {
             self.tectonics = tectonics;
             self.drawEdges("red", tilesize);

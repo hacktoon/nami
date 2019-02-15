@@ -3,8 +3,6 @@ var viewCanvas = document.getElementById("world"),
     generateButton = document.getElementById("generate"),
     resetButton = document.getElementById("reset"),
     growButton = document.getElementById("grow"),
-    drawEdgesCheckbox = document.getElementById("drawEdges"),
-    edgeColorInput = document.getElementsByClassName("edgeColor"),
     growthRateInput = document.getElementById("growthRate"),
     partialGrowCheckbox = document.getElementById("partialGrow"),
     growLotteryCheckbox = document.getElementById("growLottery"),
@@ -51,15 +49,6 @@ var init = function () {
     draw();
 };
 
-_.each(edgeColorInput, function(input) {
-    var direction = Direction[input.id];
-    input.addEventListener('change', function(e) {
-        if (drawEdgesCheckbox.checked) {
-            painter.drawEdges(input.value, TILESIZE);
-        }
-    });
-});
-
 generateButton.addEventListener('click', function() {
     createTectonics();
     tectonics.buildPlates(getGrowOptions());
@@ -67,7 +56,6 @@ generateButton.addEventListener('click', function() {
 });
 
 drawLabelsCheckbox.addEventListener('click', draw);
-drawEdgesCheckbox.addEventListener('click', draw);
 resetButton.addEventListener('click', init);
 
 growButton.addEventListener('click', function() {
