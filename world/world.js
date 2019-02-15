@@ -1,9 +1,9 @@
 
 var World = (function(){
-    var _World = function (roughness, plates){
+    var _World = function (size, roughness, plates){
         var self = this;
 
-        this.size = 257;
+        this.size = size;
         this.area = Math.pow(this.size, 2);
         this.grid = Grid.new(this.size, this.size);
         this.terrainMap = TerrainMap.new(this.size, roughness);

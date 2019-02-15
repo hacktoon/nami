@@ -26,7 +26,7 @@ var getPlatesInput = function () {
 };
 
 var createWorld = function(){
-    currentWorld = World.new(getRoughnessInput(), getPlatesInput());
+    currentWorld = World.new(257, getRoughnessInput(), getPlatesInput());
     return currentWorld;
 };
 
