@@ -6,6 +6,7 @@ var World = (function(){
         this.size = size;
         this.area = Math.pow(this.size, 2);
         this.grid = Grid.new(this.size, this.size);
+
         this.terrainMap = TerrainMap.new(this.size, roughness);
         this.tectonicsMap = TectonicsMap.new(this.size, plates);
         this.rainMap = RainMap.new(this.size, roughness/2);
@@ -24,12 +25,13 @@ var World = (function(){
             return world;
         }
         /**
-         * HeightMapCreation(function(point, value){
-         *      TerrainMap.setHeight(point, value)
-         * })
-         * .PlateDeformation(function(point, value){
-         *      TerrainMap.setPoint(point, value)
-         * })
+         HeightMapCreation([terrainMap, rainMap], function(point, value){
+              //map.setPoint(point, value) is called implicitly
+              world.addTile()
+         })
+         .PlateDeformation(function(point, value){
+              TerrainMap.setPoint(point, value)
+         })
          */
     };
 })();
