@@ -13,12 +13,10 @@ var TectonicsPainter = (function () {
         };
 
         this.drawEdges = function(color, tilesize) {
-            _.each(self.tectonics.plates, function (plate) {
+            self.tectonics.plates.forEach(function(plate) {
                 plate.forEachSeed(function (point) {
                     self.drawPoint(point, "black", tilesize);
                 });
-            });
-            _.each(self.tectonics.plates, function(plate) {
                 plate.forEachEdge(function (point) {
                     self.drawPoint(point, color, tilesize);
                 });
@@ -32,7 +30,7 @@ var TectonicsPainter = (function () {
         };
 
         var drawLabel = function (tilesize){
-            _.each(self.tectonics.plates, function (plate) {
+            self.tectonics.plates.forEach(function (plate) {
                 var symbol = Direction.getSymbol(plate.direction),
                     text = symbol + plate.speed +"S/"+plate.density+"D",
                     point = plate.region.startPoint,

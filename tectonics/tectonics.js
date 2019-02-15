@@ -31,7 +31,7 @@ var TectonicsMap = (function() {
                 completedMap = {};
 
             while (totalCompleted < self.plates.length) {
-                _.each(self.plates, function(plate) {
+                self.plates.forEach(function(plate) {
                     if (plate.region.isComplete()) {
                         totalCompleted += completedMap[plate.id] ? 0 : 1;
                         completedMap[plate.id] = 1;

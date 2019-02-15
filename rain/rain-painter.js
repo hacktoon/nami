@@ -7,7 +7,7 @@ var RainPainter = (function () {
         this.draw = function(rainMap, tilesize){
             self.ctx.globalAlpha = .3;
 
-            rainMap.grid.forEach(function (value, point) {
+            rainMap.heightMap.grid.forEach(function (value, point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize,
                     code = Number(value);

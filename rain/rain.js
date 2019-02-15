@@ -13,9 +13,9 @@ var RainMap = (function(){
         ];
 
         this.build = function(callback){
-            self.heightMap.build(function (value, point) { })
+            self.heightMap.build(function (value, point) { });
             self.heightMap.grid.forEach(function(rawHeight, point){
-                _.each(self.idMap, function(rain, code){
+                self.idMap.forEach(function(rain, code){
                     if (rawHeight >= rain.height) {
                         self.heightMap.grid.set(point, Number(code));
                     }

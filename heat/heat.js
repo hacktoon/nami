@@ -18,7 +18,7 @@ var HeatMap = (function(){
         ];
 
         this.build = function(){
-            _.each(self.idMap, buildZones);
+            self.idMap.forEach(buildZones);
         };
 
         var buildZones = function(zone, code){
