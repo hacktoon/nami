@@ -1,6 +1,6 @@
 
 var World = (function(){
-    var _World = function (size, roughness, plates){
+    var _World = function (size, roughness, totalPlates){
         var self = this;
 
         this.size = size;
@@ -8,7 +8,7 @@ var World = (function(){
         this.grid = Grid.new(this.size, this.size);
 
         this.terrainMap = TerrainMap.new(this.size, roughness);
-        this.tectonicsMap = TectonicsMap.new(this.size, plates);
+        this.tectonicsMap = TectonicsMap.new(this.size, totalPlates);
         this.rainMap = RainMap.new(this.size, roughness/2);
         this.heatMap = HeatMap.new(this.size);
     };
@@ -18,8 +18,8 @@ var World = (function(){
     };
 
     return {
-        new: function (roughness, plates) {
-            var world = new _World(roughness, plates);
+        new: function (size, roughness, totalPlates) {
+            var world = new _World(size, roughness, totalPlates);
             WorldFilter.apply(world);
             world.tectonicsMap.buildPlates(); // change to setPoint - add to other maps
             return world;
@@ -50,10 +50,9 @@ var WorldFilter = (function(){
 
     var apply = function (world) {
         var originalGrid = world.terrainMap.heightMap.grid,
-            newGrid = _.cloneDeep(originalGrid),
-            height = 0;
+            newGrid = Grid.new(world.size, world.size);
         originalGrid.forEach(function (value, point) {
-            height = smoothPoint(originalGrid, value, point);
+            var height = smoothPoint(originalGrid, value, point);
             height = world.terrainMap.getNormalizedHeight(height);
             newGrid.set(point, height);
         });
