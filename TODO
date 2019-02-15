@@ -1,18 +1,10 @@
 ## TODO
 
 * detect water/land regions
-* detect litorals
+* detect litoral tiles/beaches
 * detect interior water tiles
-* detect litoral tiles
-* use sin() to add meandering to rivers
-
-## IDEAS
-
-* use generated textures of plate-shaped forms to create plates
-    * generate random equidistant points
-    * put texture on top and get edge points in intersections, depending of what plate was chosen to be on top
-    * intersections can have many sizes, so use them as uplift points or similar
-    * use setInterval to continue generating random shapes
+* create rivers on height 2, set straight to sea
+    * use sin() to add meandering
 
 ## LINKS
 
