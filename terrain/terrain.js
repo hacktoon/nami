@@ -18,7 +18,6 @@ var TerrainMap = (function(){
 
         this.build = function(callback){
             self.heightMap.build(callback);
-            return self;
         };
 
         this.getNormalizedHeight = function(rawHeight){

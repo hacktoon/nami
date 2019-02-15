@@ -38,15 +38,14 @@ var World = (function(){
 
 
 var WorldFilter = (function(){
-    var smoothPoint = function (grid, point) {
+    var smoothPoint = function (grid, sum, point) {
         var neighborhood = PointNeighborhood.new(point),
-            neighborCount = 0,
-            sum = 0;
+            valueCount = 1;
         neighborhood.around(function (neighbor) {
             sum += grid.get(neighbor);
-            neighborCount++;
+            valueCount++;
         });
-        return Math.round(sum / neighborCount);
+        return Math.round(sum / valueCount);
     };
 
     var apply = function (world) {
@@ -54,7 +53,7 @@ var WorldFilter = (function(){
             newGrid = _.cloneDeep(originalGrid),
             height = 0;
         originalGrid.forEach(function (value, point) {
-            height = smoothPoint(originalGrid, point);
+            height = smoothPoint(originalGrid, value, point);
             height = world.terrainMap.getNormalizedHeight(height);
             newGrid.set(point, height);
         });
