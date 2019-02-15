@@ -43,16 +43,16 @@ var draw = function() {
     viewCanvas.height = currentWorld.size * tilesize;
 
     if (option == "tectonics") {
-        terrainPainter.drawBlackWhite(currentWorld.terrainMap, tilesize);
+        terrainPainter.drawBlackWhite(currentWorld, tilesize);
         tectonicsPainter.draw(currentWorld.tectonicsMap, tilesize);
     } else if (option == "heat") {
-        terrainPainter.drawBlackWhite(currentWorld.terrainMap, tilesize);
+        terrainPainter.drawBlackWhite(currentWorld, tilesize);
         heatPainter.draw(currentWorld.heatMap, tilesize);
     } else if (option == "rain") {
-        terrainPainter.drawBlackWhite(currentWorld.terrainMap, tilesize);
+        terrainPainter.drawBlackWhite(currentWorld, tilesize);
         rainPainter.draw(currentWorld.rainMap, tilesize);
     } else {
-        terrainPainter.draw(currentWorld.terrainMap, tilesize);
+        terrainPainter.draw(currentWorld, tilesize);
     }
 };
 
@@ -77,15 +77,16 @@ generateButton.addEventListener('click', function() {
 viewCanvas.addEventListener('mousemove', function(e) {
     var point = getCanvasMousePoint(e, viewCanvas),
         position = "("+ point.hash() + ")",
-        height = currentWorld.terrainMap.heightMap.grid.get(point),
-        heightText = " | Height: " + height,
-        heat = currentWorld.heatMap.grid.get(point),
-        heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
-        rain = currentWorld.rainMap.heightMap.grid.get(point),
-        rainText = " | Pluviosity: " + currentWorld.rainMap.idMap[rain].name,
-        terrain = " | Terrain: " + currentWorld.terrainMap.idMap[height].name;
+        elevation = currentWorld.grid.get(point).elevation,
+        heightText = " | Height: " + elevation,
+        // heat = currentWorld.heatMap.grid.get(point),
+        // heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
+        // rain = currentWorld.rainMap.heightMap.grid.get(point),
+        // rainText = " | Pluviosity: " + currentWorld.rainMap.idMap[rain].name,
+        terrain = " | Terrain: " + currentWorld.terrainMap.idMap[elevation].name;
 
-    infoText.innerHTML = position + heightText + terrain + heatText + rainText;
+    infoText.innerHTML = position + heightText + terrain;
+    //infoText.innerHTML = position + heightText + terrain + heatText + rainText;
 });
 
 viewCanvas.addEventListener('mouseout', function(e) {

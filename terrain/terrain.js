@@ -1,10 +1,8 @@
 
 var TerrainMap = (function(){
-    var _TerrainMap = function (size, roughness) {
+    var _TerrainMap = function () {
         var self = this;
 
-        this.size = size;
-        this.heightMap = HeightMap.new(size, roughness);
         this.idMap = [
             { height: 0,   color: "#000056", name: "Abyssal water", water: true },
             { height: 60,  color: "#1a3792", name: "Deep water",    water: true},
@@ -15,10 +13,6 @@ var TerrainMap = (function(){
             { height: 240, color: "#7d7553", name: "Mountain" },
             { height: 254, color: "#FFF",    name: "Peak"     }
         ];
-
-        this.build = function(callback){
-            self.heightMap.build(callback);
-        };
 
         this.getNormalizedHeight = function(rawHeight){
             var height = 0;
@@ -32,9 +26,8 @@ var TerrainMap = (function(){
     };
 
     return {
-        new: function(size, roughness) {
-            var terrain = new _TerrainMap(size, roughness);
-            terrain.build(function (value, point){  })
+        new: function() {
+            var terrain = new _TerrainMap();
             return terrain;
         }
     };

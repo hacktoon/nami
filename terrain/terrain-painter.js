@@ -4,22 +4,22 @@ var TerrainPainter = (function () {
         var self = this;
         this.ctx = canvas.getContext("2d");
 
-        this.draw = function(terrainMap, tilesize){
-            terrainMap.heightMap.grid.forEach(function (value, point) {
+        this.draw = function(world, tilesize){
+            world.grid.forEach(function (tile, point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize,
-                    code = Number(value);
+                    code = Number(tile.elevation);
 
-                self.ctx.fillStyle = terrainMap.idMap[code].color;
+                self.ctx.fillStyle = world.terrainMap.idMap[code].color;
                 self.ctx.fillRect(x, y, tilesize, tilesize);
             });
         };
 
-        this.drawBlackWhite = function(terrainMap, tilesize){
-            terrainMap.heightMap.grid.forEach(function (value, point) {
+        this.drawBlackWhite = function(world, tilesize){
+            world.grid.forEach(function (tile, point) {
                 var x = point.x * tilesize,
                     y = point.y * tilesize,
-                    terrain = terrainMap.idMap[Number(value)];
+                    terrain = world.terrainMap.idMap[Number(tile.elevation)];
 
                 self.ctx.fillStyle = terrain.water ? "#FFF" : "#000";
                 self.ctx.fillRect(x, y, tilesize, tilesize);
