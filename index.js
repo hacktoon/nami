@@ -76,9 +76,11 @@ generateButton.addEventListener('click', function() {
 
 viewCanvas.addEventListener('mousemove', function(e) {
     var point = getCanvasMousePoint(e, viewCanvas),
-        position = "("+ point.hash() + ")",
-        elevation = currentWorld.grid.get(point).elevation,
-        heightText = " | Height: " + elevation,
+        tile = currentWorld.grid.get(point),
+        position = "("+ tile.id + ")",
+        elevation = tile.elevation,
+        height = tile.height,
+        heightText = " - Elevation: "+height+" | Height: " + elevation,
         // heat = currentWorld.heatMap.grid.get(point),
         // heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
         // rain = currentWorld.rainMap.heightMap.grid.get(point),
