@@ -9,15 +9,14 @@ var TectonicsMap = (function() {
         this.plates = [];
         this.plateIdMap = {};
 
-        this.initPlates = function() {
-            var createPlate = function(point, plateId) {
+        this._construct = function() {
+            GridPointDistribution(self.grid, totalPlates, function (point, plateId) {
                 var plate = Plate.new(plateId);
                 plate.region = GridFill.new(self.grid, plateId);
                 self.plateIdMap[plateId] = plate;
                 plate.region.startAt(point);
                 self.plates.push(plate);
-            };
-            GridPointDistribution(self.grid, totalPlates, createPlate);
+            });
         };
 
         this.getPlateById = function (id) {
@@ -62,7 +61,7 @@ var TectonicsMap = (function() {
     return {
         new: function(size, totalPlates) {
             var tectonics = new _TectonicsMap(size, totalPlates);
-            tectonics.initPlates();
+            tectonics._construct();
             return tectonics;
         }
     };

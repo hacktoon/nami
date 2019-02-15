@@ -14,9 +14,17 @@ var World = (function(){
         new: function (roughness, plates) {
             var world = new _World(roughness, plates);
             WorldFilter.apply(world);
-            world.tectonicsMap.buildPlates();
+            world.tectonicsMap.buildPlates(); // change to setPoint - add to other maps
             return world;
         }
+        /**
+         * HeightMapCreation(function(point, value){
+         *      TerrainMap.setHeight(point, value)
+         * })
+         * .PlateDeformation(function(point, value){
+         *      TerrainMap.setPoint(point, value)
+         * })
+         */
     };
 })();
 
