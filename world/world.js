@@ -5,10 +5,15 @@ var World = (function(){
 
         this.size = 257;
         this.area = Math.pow(this.size, 2);
+        this.grid = Grid.new(this.size, this.size);
         this.terrainMap = TerrainMap.new(this.size, roughness);
         this.tectonicsMap = TectonicsMap.new(this.size, plates);
-        this.heatMap = HeatMap.new(this.size);
         this.rainMap = RainMap.new(this.size, roughness/2);
+        this.heatMap = HeatMap.new(this.size);
+    };
+
+    this.get = function(point) {
+        return self.grid.get(point);
     };
 
     return {
@@ -57,7 +62,6 @@ var WorldFilter = (function(){
     return {
         apply: apply
     };
-
 })();
 
 
