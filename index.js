@@ -75,16 +75,17 @@ generateButton.addEventListener('click', function() {
 });
 
 viewCanvas.addEventListener('mousemove', function(e) {
-    var point = getCanvasMousePoint(e, viewCanvas),
+    var waterPercentage = "Water: " + currentWorld.waterPercentage() + "%",
+        point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
-        position = "("+ tile.id + ")",
+        position = " | ("+ tile.id + ")",
         terrain = " | Terrain: " + tile.terrain.name;
         // heat = currentWorld.heatMap.grid.get(point),
         // heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
         // rain = currentWorld.rainMap.heightMap.grid.get(point),
         // rainText = " | Pluviosity: " + currentWorld.rainMap.idMap[rain].name,
 
-    infoText.innerHTML = position + terrain;
+    infoText.innerHTML = waterPercentage + position + terrain;
     //infoText.innerHTML = position + height + terrain + heatText + rainText;
 });
 

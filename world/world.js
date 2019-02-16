@@ -22,6 +22,11 @@ var World = (function(){
             return self.grid.set(point, tile);
         };
 
+        this.waterPercentage = function () {
+            var value = (self.waterArea * 100) / self.area
+            return Math.round(value);
+        };
+
         this.build = function() {
             var heightMap = HeightMap.new(size, roughness);
             // First pipeline step - create tiles through heightmap build
