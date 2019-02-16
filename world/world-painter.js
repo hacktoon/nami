@@ -1,21 +1,55 @@
 
+
 var WorldPainter = (function () {
     var _WorldPainter = function (canvas) {
         var self = this;
-        this.ctx = canvas.getContext("2d"),
+        this.ctx = canvas.getContext("2d");
 
-        this.draw = function(grid, tilesize){
+        this.draw = function (world, tilesize) {
+            world.grid.forEach(function (tile, point) {
+                var x = point.x * tilesize,
+                    y = point.y * tilesize;
+
+                self.ctx.fillStyle = tile.terrain.color;
+                self.ctx.fillRect(x, y, tilesize, tilesize);
+            });
+        };
+
+        this.drawBlackWhite = function (world, tilesize) {
+            world.grid.forEach(function (tile, point) {
+                var x = point.x * tilesize,
+                    y = point.y * tilesize;
+
+                self.ctx.fillStyle = tile.terrain.isWater ? "#FFF" : "#000";
+                self.ctx.fillRect(x, y, tilesize, tilesize);
+            });
+        };
+
+        this.drawBorders = function (world, tilesize) {
+            var previousIsWater = false;
+            world.grid.forEach(function (tile, point) {
+                var x = point.x * tilesize,
+                y = point.y * tilesize;
+
+                var color = "#FFF";
+                if (!tile.terrain.isWater && previousIsWater) {
+                    color = "#000";
+                }
+                previousIsWater = tile.terrain.isWater;
+                self.ctx.fillStyle = color;
+                self.ctx.fillRect(x, y, tilesize, tilesize);
+            });
         };
 
     };
 
     return {
-        _class: _WorldPainter,
         new: function (canvas) {
             return new _WorldPainter(canvas);
         }
     };
 })();
+
 
 
 

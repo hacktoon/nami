@@ -30,7 +30,7 @@ var createWorld = function(){
     return currentWorld;
 };
 
-var terrainPainter = TerrainPainter.new(viewCanvas),
+var worldPainter = WorldPainter.new(viewCanvas),
     tectonicsPainter = TectonicsPainter.new(viewCanvas);
     heatPainter = HeatPainter.new(viewCanvas),
     rainPainter = RainPainter.new(viewCanvas);
@@ -43,16 +43,16 @@ var draw = function() {
     viewCanvas.height = currentWorld.size * tilesize;
 
     if (option == "tectonics") {
-        terrainPainter.drawBlackWhite(currentWorld, tilesize);
+        worldPainter.drawBlackWhite(currentWorld, tilesize);
         tectonicsPainter.draw(currentWorld.tectonicsMap, tilesize);
     } else if (option == "heat") {
-        terrainPainter.drawBlackWhite(currentWorld, tilesize);
+        worldPainter.drawBlackWhite(currentWorld, tilesize);
         heatPainter.draw(currentWorld.heatMap, tilesize);
     } else if (option == "rain") {
-        terrainPainter.drawBlackWhite(currentWorld, tilesize);
+        worldPainter.drawBlackWhite(currentWorld, tilesize);
         rainPainter.draw(currentWorld.rainMap, tilesize);
     } else {
-        terrainPainter.draw(currentWorld, tilesize);
+        worldPainter.draw(currentWorld, tilesize);
     }
 };
 
