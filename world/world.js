@@ -44,8 +44,8 @@ var World = (function(){
 
             // Third pipeline step - plate tectonics. Reads all points
             PlateDeformation.deform(self, function (tile, point) {
-                TerrainFilter.setPoint(point, value)
-            })
+
+            });
 
             return self;
         };
@@ -56,6 +56,18 @@ var World = (function(){
             var world = new _World(size, roughness, totalPlates);
             return world.build();
         }
+    };
+})();
+
+
+var PlateDeformation = (function () {
+    var deform = function (world, callback) {
+        var tectonicsMap = TectonicsMap.new(world.size, world.totalPlates);
+        tectonicsMap.build({ callback: callback });
+    };
+
+    return {
+        deform: deform
     };
 })();
 
@@ -71,18 +83,6 @@ var LandformDetection = (function () {
 
     return {
         measureAreas: measureAreas
-    };
-})();
-
-
-var PlateDeformation = (function () {
-    var deform = function (world, tile, callback) {
-        var tectonicsMap = TectonicsMap.new(world.size, world.totalPlates);
-        tectonicsMap.build(callback);
-    };
-
-    return {
-        deform: deform
     };
 })();
 
