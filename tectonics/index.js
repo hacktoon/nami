@@ -51,7 +51,7 @@ var init = function () {
 
 generateButton.addEventListener('click', function() {
     createTectonics();
-    tectonics.buildPlates(getGrowOptions());
+    tectonics.build(getGrowOptions());
     draw();
 });
 

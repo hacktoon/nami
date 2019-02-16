@@ -6,10 +6,10 @@ var World = (function(){
         this.size = size;
         this.grid = Grid.new(size, size);
         this.area = Math.pow(size, 2);
+        this.totalPlates = totalPlates;
         this.waterArea = 0;
         this.landArea = 0;
 
-        //this.tectonicsMap = TectonicsMap.new(this.size, totalPlates);
         // this.rainMap = RainMap.new(this.size, roughness/2);
         // this.heatMap = HeatMap.new(this.size);
 
@@ -22,7 +22,7 @@ var World = (function(){
         };
 
         this.waterPercentage = function () {
-            var value = (self.waterArea * 100) / self.area
+            var value = (self.waterArea * 100) / self.area;
             return Math.round(value);
         };
 
@@ -39,27 +39,28 @@ var World = (function(){
             self.grid.forEach(function(tile, point){
                 var realHeight = HeightFilter.smooth(self.grid, tile);
                 tile.terrain = TerrainFilter.getTerrain(realHeight);
-                LandformDetector.measureAreas(self, tile);
+                LandformDetection.measureAreas(self, tile);
             });
 
-            // Third pipeline step - plate tectonics
-            // PlateDeformation(function (tile, point) {
-            //     TerrainFilter.setPoint(point, value)
-            // })
+            // Third pipeline step - plate tectonics. Reads all points
+            PlateDeformation.deform(self, function (tile, point) {
+                TerrainFilter.setPoint(point, value)
+            })
+
+            return self;
         };
     };
 
     return {
         new: function (size, roughness, totalPlates) {
             var world = new _World(size, roughness, totalPlates);
-            world.build();
-            return world;
+            return world.build();
         }
     };
 })();
 
 
-var LandformDetector = (function () {
+var LandformDetection = (function () {
     var measureAreas = function (world, tile) {
         if (tile.terrain.isWater) {
             world.waterArea++;
@@ -73,6 +74,17 @@ var LandformDetector = (function () {
     };
 })();
 
+
+var PlateDeformation = (function () {
+    var deform = function (world, tile, callback) {
+        var tectonicsMap = TectonicsMap.new(world.size, world.totalPlates);
+        tectonicsMap.build(callback);
+    };
+
+    return {
+        deform: deform
+    };
+})();
 
 
 var HeightFilter = (function(){
@@ -117,26 +129,5 @@ var TerrainFilter = (function () {
 
     return {
         getTerrain: getTerrain
-    };
-})();
-
-
-var Tile = (function(){
-    var _Tile = function (point){
-        var self = this;
-
-        this.id = point.hash();
-        this.point = point;
-        this.height = 0;
-        this.plate = undefined;
-        this.terrain = undefined;
-        this.biome = undefined;
-    };
-
-    return {
-        new: function (point) {
-            var tile = new _Tile(point);
-            return tile;
-        }
     };
 })();
