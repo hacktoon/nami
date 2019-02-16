@@ -1,12 +1,12 @@
 
 var World = (function(){
-    var _World = function (size, roughness, totalPlates){
+    var _World = function (size, roughness, numPlates){
         var self = this;
 
         this.size = size;
         this.grid = Grid.new(size, size);
         this.area = Math.pow(size, 2);
-        this.totalPlates = totalPlates;
+        this.numPlates = numPlates;
         this.waterArea = 0;
         this.landArea = 0;
 
@@ -43,21 +43,22 @@ var World = (function(){
             });
 
             // Third step - plate tectonics. Reads all points
-            c=0
-            PlateDeformation.deform(self, function (point, plate, isEdge) {
-                var tile = self.getTile(point);
-                tile.plate = plate;
-                tile.isPlateEdge = isEdge;
-                c++
-            });
-            log("visitas: ", c)
+            PlateDeformation.deform(self,
+                function iteratePoint(point, plate) {
+                    var tile = self.getTile(point);
+                    tile.plate = plate;
+                },
+                function detectEdge(point) {
+                    self.getTile(point).isPlateEdge = true;
+                }
+            );
             return self;
         };
     };
 
     return {
-        new: function (size, roughness, totalPlates) {
-            var world = new _World(size, roughness, totalPlates);
+        new: function (size, roughness, numPlates) {
+            var world = new _World(size, roughness, numPlates);
             return world.build();
         }
     };
@@ -65,9 +66,9 @@ var World = (function(){
 
 
 var PlateDeformation = (function () {
-    var deform = function (world, callback) {
-        var totalPlates = world.totalPlates;
-        var tectonics = TectonicsMap.new(world.size, totalPlates, callback);
+    var deform = function (world, callback, edgeCallback) {
+        var numPlates = world.numPlates;
+        var tectonics = TectonicsMap.new(world.size, numPlates, callback, edgeCallback);
         tectonics.build(15, true, true);
     };
 

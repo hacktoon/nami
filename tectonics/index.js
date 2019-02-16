@@ -1,5 +1,5 @@
 var viewCanvas = document.getElementById("world"),
-    totalPlatesInput = document.getElementById("totalPlates"),
+    numPlatesInput = document.getElementById("numPlates"),
     generateButton = document.getElementById("generate"),
     resetButton = document.getElementById("reset"),
     growButton = document.getElementById("grow"),
@@ -20,8 +20,8 @@ var createTectonics = function() {
 
 
 var getTotalPlates = function() {
-    var value = Number(totalPlatesInput.value);
-    totalPlatesInput.value = value;
+    var value = Number(numPlatesInput.value);
+    numPlatesInput.value = value;
     return value;
 };
 

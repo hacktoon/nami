@@ -78,13 +78,15 @@ viewCanvas.addEventListener('mousemove', function(e) {
         point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
         position = " | ("+ tile.id + ")",
+        plate = " | Plate " + tile.plate.id + ", moving ";
+        plate += Direction.getName(tile.plate.direction),
         terrain = " | Terrain: " + tile.terrain.name;
         // heat = currentWorld.heatMap.grid.get(point),
         // heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
         // rain = currentWorld.rainMap.heightMap.grid.get(point),
         // rainText = " | Pluviosity: " + currentWorld.rainMap.idMap[rain].name,
 
-    infoText.innerHTML = waterPercentage + position + terrain;
+    infoText.innerHTML = waterPercentage + position + terrain + plate;
     //infoText.innerHTML = position + height + terrain + heatText + rainText;
 });
 
