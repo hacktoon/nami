@@ -1,18 +1,22 @@
 
 
 var TectonicsMap = (function() {
-    var _TectonicsMap = function(size, totalPlates) {
+    var _TectonicsMap = function(size, totalPlates, callback) {
         var self = this,
-            growthRate = 15;
+            callback = _.defaultTo(callback, _.noop);
 
         this.grid = Grid.new(size, size);
         this.plates = [];
         this.plateIdMap = {};
 
         this._construct = function() {
+            var callback_wrapper = function(point, fillValue, isEdge) {
+                var plate = self.plateIdMap[fillValue];
+                callback(point, plate, isEdge);
+            };
             GridPointDistribution(self.grid, totalPlates, function (point, plateId) {
                 var plate = Plate.new(plateId);
-                plate.region = GridFill.new(self.grid, plateId);
+                plate.region = GridFill.new(self.grid, plateId, callback_wrapper);
                 self.plateIdMap[plateId] = plate;
                 plate.region.startAt(point);
                 self.plates.push(plate);
@@ -24,10 +28,8 @@ var TectonicsMap = (function() {
         };
 
         /* Grow the plates until all them complete. */
-        this.build = function (growOptions) {
-            var defaultOpts = { partial: true, times: growthRate, chance: false, callback: _.noop },
-                growOptions = _.assign(defaultOpts, growOptions),
-                totalCompleted = 0,
+        this.build = function (times, chance, isPartial) {
+            var totalCompleted = 0,
                 completedMap = {};
 
             while (totalCompleted < self.plates.length) {
@@ -37,7 +39,7 @@ var TectonicsMap = (function() {
                         completedMap[plate.id] = 1;
                         return;
                     }
-                    plate.region.grow(growOptions);
+                    plate.region.grow(times, chance, isPartial);
                 });
             }
         };
@@ -52,15 +54,13 @@ var TectonicsMap = (function() {
         };
 
         this.forEachPlate = function(callback) {
-            self.plates.forEach(function(plate) {
-                callback(plate);
-            });
+            self.plates.forEach(callback);
         };
     };
 
     return {
-        new: function(size, totalPlates) {
-            var tectonics = new _TectonicsMap(size, totalPlates);
+        new: function (size, totalPlates, callback) {
+            var tectonics = new _TectonicsMap(size, totalPlates, callback);
             tectonics._construct();
             return tectonics;
         }

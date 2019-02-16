@@ -18,13 +18,6 @@ var createTectonics = function() {
     painter = TectonicsPainter.new(viewCanvas);
 };
 
-var getGrowOptions = function() {
-    return {
-        partial: partialGrowCheckbox.checked,
-        times: getGrowthRate(),
-        chance: growLotteryCheckbox.checked
-    };
-};
 
 var getTotalPlates = function() {
     var value = Number(totalPlatesInput.value);
@@ -51,7 +44,10 @@ var init = function () {
 
 generateButton.addEventListener('click', function() {
     createTectonics();
-    tectonics.build(getGrowOptions());
+    var isPartial = partialGrowCheckbox.checked;
+    var times = getGrowthRate();
+    var chance = growLotteryCheckbox.checked;
+    tectonics.build(times, chance, isPartial);
     draw();
 });
 
@@ -59,8 +55,11 @@ drawLabelsCheckbox.addEventListener('click', draw);
 resetButton.addEventListener('click', init);
 
 growButton.addEventListener('click', function() {
+    var isPartial = partialGrowCheckbox.checked;
+    var times = getGrowthRate();
+    var chance = growLotteryCheckbox.checked;
     tectonics.forEachPlate(function(plate) {
-        plate.region.grow(getGrowOptions());
+        plate.region.grow(times, chance, isPartial);
     });
     draw();
 });

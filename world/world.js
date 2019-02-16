@@ -35,18 +35,22 @@ var World = (function(){
                 self.setTile(point, tile);
             });
 
-            // Second pipeline step - smoothing and area measure
+            // Second step - smoothing and area measure
             self.grid.forEach(function(tile, point){
                 var realHeight = HeightFilter.smooth(self.grid, tile);
                 tile.terrain = TerrainFilter.getTerrain(realHeight);
                 LandformDetection.measureAreas(self, tile);
             });
 
-            // Third pipeline step - plate tectonics. Reads all points
-            PlateDeformation.deform(self, function (tile, point) {
-
+            // Third step - plate tectonics. Reads all points
+            c=0
+            PlateDeformation.deform(self, function (point, plate, isEdge) {
+                var tile = self.getTile(point);
+                tile.plate = plate;
+                tile.isPlateEdge = isEdge;
+                c++
             });
-
+            log("visitas: ", c)
             return self;
         };
     };
@@ -62,8 +66,9 @@ var World = (function(){
 
 var PlateDeformation = (function () {
     var deform = function (world, callback) {
-        var tectonicsMap = TectonicsMap.new(world.size, world.totalPlates);
-        tectonicsMap.build({ callback: callback });
+        var totalPlates = world.totalPlates;
+        var tectonics = TectonicsMap.new(world.size, totalPlates, callback);
+        tectonics.build(15, true, true);
     };
 
     return {

@@ -27,11 +27,11 @@ var getPlatesInput = function () {
 
 var createWorld = function(){
     currentWorld = World.new(257, getRoughnessInput(), getPlatesInput());
+    currentWorld.tectonicsMap
     return currentWorld;
 };
 
 var worldPainter = WorldPainter.new(viewCanvas),
-    tectonicsPainter = TectonicsPainter.new(viewCanvas);
     heatPainter = HeatPainter.new(viewCanvas),
     rainPainter = RainPainter.new(viewCanvas);
 
@@ -43,8 +43,7 @@ var draw = function() {
     viewCanvas.height = currentWorld.size * tilesize;
 
     if (option == "tectonics") {
-        worldPainter.drawBlackWhite(currentWorld, tilesize);
-        tectonicsPainter.draw(currentWorld.tectonicsMap, tilesize);
+        worldPainter.drawTectonics(currentWorld, tilesize);
     } else if (option == "heat") {
         worldPainter.drawBlackWhite(currentWorld, tilesize);
         heatPainter.draw(currentWorld.heatMap, tilesize);

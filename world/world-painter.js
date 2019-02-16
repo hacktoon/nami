@@ -25,6 +25,20 @@ var WorldPainter = (function () {
             });
         };
 
+        this.drawTectonics = function (world, tilesize) {
+            world.grid.forEach(function (tile, point) {
+                var x = point.x * tilesize,
+                    y = point.y * tilesize;
+
+                if (tile.isPlateEdge) {
+                    self.ctx.fillStyle = "red";
+                } else {
+                    self.ctx.fillStyle = tile.terrain.color;
+                }
+                self.ctx.fillRect(x, y, tilesize, tilesize);
+            });
+        };
+
         this.drawBorders = function (world, tilesize) {
             var previousIsWater = false;
             world.grid.forEach(function (tile, point) {
