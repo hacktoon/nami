@@ -31,21 +31,21 @@ var World = (function(){
             // First pipeline step - create tiles through heightmap build
             heightMap.build(function(point, height){
                 var tile = Tile.new(point);
-                tile.height = height;
+                tile.realHeight = height;
                 self.setTile(point, tile);
             });
 
             // Second pipeline step - smoothing and area measure
             self.grid.forEach(function(tile, point){
-                var height = HeightFilter.smooth(self.grid, tile);
-                tile.terrain = TerrainFilter.getTerrain(height);
+                var realHeight = HeightFilter.smooth(self.grid, tile);
+                tile.terrain = TerrainFilter.getTerrain(realHeight);
                 LandformDetector.measureAreas(self, tile);
             });
 
             // Third pipeline step - plate tectonics
-            // self.tectonicsMap.build(function (tile, point) {
-
-            // });
+            // PlateDeformation(function (tile, point) {
+            //     TerrainFilter.setPoint(point, value)
+            // })
         };
     };
 
@@ -53,19 +53,8 @@ var World = (function(){
         new: function (size, roughness, totalPlates) {
             var world = new _World(size, roughness, totalPlates);
             world.build();
-            //HeightFilter.apply(world);
-            //world.tectonicsMap.buildPlates(); // change to setPoint - add to other maps
             return world;
         }
-        /**
-         HeightMapCreation([terrainMap, rainMap], function(point, value){
-              //map.setPoint(point, value) is called implicitly
-              world.addTile()
-         })
-         .PlateDeformation(function(point, value){
-              TerrainFilter.setPoint(point, value)
-         })
-         */
     };
 })();
 
@@ -89,10 +78,10 @@ var LandformDetector = (function () {
 var HeightFilter = (function(){
     var smooth = function (grid, tile) {
         var neighborhood = PointNeighborhood.new(tile.point),
-            sum = tile.height,
+            sum = tile.realHeight,
             valueCount = 1;
         neighborhood.around(function (neighborTile) {
-            sum += grid.get(neighborTile).height;
+            sum += grid.get(neighborTile).realHeight;
             valueCount++;
         });
         return Math.round(sum / valueCount);
