@@ -26,6 +26,18 @@ var World = (function(){
             return Math.round(value);
         };
 
+        this.raiseTerrain = function (point) {
+            var tile = self.getTile(point),
+                id = tile.terrain.id;
+            tile.terrain = TerrainFilter.getTerrainbyId(id + 1);
+        };
+
+        this.lowerTerrain = function (point) {
+            var tile = self.getTile(point),
+                id = tile.terrain.id;
+            tile.terrain = TerrainFilter.getTerrainbyId(id - 1);
+        };
+
         this.build = function() {
             var heightMap = HeightMap.new(size, roughness);
             // First pipeline step - create tiles through heightmap build
@@ -113,15 +125,20 @@ var HeightFilter = (function(){
 
 var TerrainFilter = (function () {
     var idMap = [
-        { height: 0, color: "#000056", name: "Abyssal waters", isWater: true },
-        { height: 60, color: "#1a3792", name: "Deep waters", isWater: true },
-        { height: 110, color: "#489CFF", name: "Shallow waters", isWater: true },
-        { height: 130, color: "#0a5816", name: "Coastal plains" },
-        { height: 170, color: "#31771a", name: "Plains" },
-        { height: 225, color: "#7ac85b", name: "Hills" },
-        { height: 240, color: "#7d7553", name: "Mountains" },
-        { height: 254, color: "#FFF", name: "Peaks" }
+        { id: 0, height: 0, color: "#000056", name: "Abyssal waters", isWater: true },
+        { id: 1, height: 60, color: "#1a3792", name: "Deep waters", isWater: true },
+        { id: 2, height: 110, color: "#489CFF", name: "Shallow waters", isWater: true },
+        { id: 3, height: 130, color: "#0a5816", name: "Coastal plains" },
+        { id: 4, height: 170, color: "#31771a", name: "Plains" },
+        { id: 5, height: 225, color: "#7ac85b", name: "Hills" },
+        { id: 6, height: 240, color: "#7d7553", name: "Mountains" },
+        { id: 7, height: 254, color: "#FFF", name: "Peaks" }
     ];
+
+    var getTerrainbyId = function (id) {
+        var id = _.clamp(id, 0, idMap.length-1);
+        return idMap[id];
+    };
 
     var getTerrain = function (height) {
         var terrain;
@@ -134,6 +151,7 @@ var TerrainFilter = (function () {
     };
 
     return {
-        getTerrain: getTerrain
+        getTerrain: getTerrain,
+        getTerrainbyId: getTerrainbyId
     };
 })();
