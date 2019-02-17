@@ -43,14 +43,14 @@ var World = (function(){
             // First pipeline step - create tiles through heightmap build
             heightMap.build(function(point, height){
                 var tile = Tile.new(point);
-                tile.rawHeight = height;
+                tile.height = height;
                 self.setTile(point, tile);
             });
 
             // Second step - smoothing and area measure
             self.grid.forEach(function(tile){
-                var rawHeight = HeightFilter.smooth(self.grid, tile);
-                tile.terrain = TerrainFilter.getTerrain(rawHeight);
+                var height = HeightFilter.smooth(self.grid, tile);
+                tile.terrain = TerrainFilter.getTerrain(height);
                 LandformDetection.measureAreas(self, tile);
             });
 
@@ -61,7 +61,8 @@ var World = (function(){
                     tile.plate = plate;
                 },
                 function detectEdge(point) {
-                    self.getTile(point).isPlateEdge = true;
+                    var tile = self.getTile(point);
+                    tile.isPlateEdge = true;
                 }
             );
             return self;
@@ -108,10 +109,10 @@ var LandformDetection = (function () {
 var HeightFilter = (function(){
     var smooth = function (grid, tile) {
         var neighborhood = PointNeighborhood.new(tile.point),
-            sum = tile.rawHeight,
+            sum = tile.height,
             valueCount = 1;
         neighborhood.around(function (neighborTile) {
-            sum += grid.get(neighborTile).rawHeight;
+            sum += grid.get(neighborTile).height;
             valueCount++;
         });
         return Math.round(sum / valueCount);
@@ -127,7 +128,7 @@ var TerrainFilter = (function () {
     var idMap = [
         { id: 0, height: 0, color: "#000056", name: "Abyssal waters", isWater: true },
         { id: 1, height: 60, color: "#1a3792", name: "Deep waters", isWater: true },
-        { id: 2, height: 110, color: "#489CFF", name: "Shallow waters", isWater: true },
+        { id: 2, height: 110, color: "#3379a6", name: "Shallow waters", isWater: true },
         { id: 3, height: 130, color: "#0a5816", name: "Coastal plains" },
         { id: 4, height: 170, color: "#31771a", name: "Plains" },
         { id: 5, height: 225, color: "#7ac85b", name: "Hills" },
