@@ -73,9 +73,15 @@ generateButton.addEventListener('click', function() {
     draw();
 });
 
+viewCanvas.addEventListener('click', function (e) {
+    var point = getCanvasMousePoint(e, viewCanvas);
+    currentWorld.lowerTerrain(point);
+    draw();
+});
+
 viewCanvas.addEventListener('mousemove', function(e) {
-    var waterPercentage = "Water: " + currentWorld.waterPercentage() + "%",
-        point = getCanvasMousePoint(e, viewCanvas),
+    var point = getCanvasMousePoint(e, viewCanvas),
+        waterPercentage = "Water: " + currentWorld.waterPercentage() + "%",
         tile = currentWorld.grid.get(point),
         position = " | ("+ tile.id + ")",
         terrain = " | Terrain: " + tile.terrain.name;
