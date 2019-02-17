@@ -127,13 +127,13 @@ var HeightFilter = (function(){
 var TerrainFilter = (function () {
     var idMap = [
         { id: 0, height: 0, color: "#000056", name: "Abyssal waters", isWater: true },
-        { id: 1, height: 60, color: "#1a3792", name: "Deep waters", isWater: true },
-        { id: 2, height: 110, color: "#3379a6", name: "Shallow waters", isWater: true },
-        { id: 3, height: 130, color: "#0a5816", name: "Coastal plains" },
-        { id: 4, height: 170, color: "#31771a", name: "Plains" },
-        { id: 5, height: 225, color: "#7ac85b", name: "Hills" },
-        { id: 6, height: 240, color: "#7d7553", name: "Mountains" },
-        { id: 7, height: 254, color: "#FFF", name: "Peaks" }
+        { id: 1, height: 80, color: "#1a3792", name: "Deep waters", isWater: true },
+        { id: 2, height: 120, color: "#3379a6", name: "Shallow waters", isWater: true },
+        { id: 3, height: 150, color: "#0a5816", name: "Coastal plains" },
+        { id: 4, height: 190, color: "#31771a", name: "Plains" },
+        { id: 5, height: 235, color: "#7ac85b", name: "Hills" },
+        { id: 6, height: 250, color: "#7d7553", name: "Mountains" },
+        { id: 7, height: 256, color: "#FFF", name: "Peaks" }
     ];
 
     var getTerrainbyId = function (id) {
