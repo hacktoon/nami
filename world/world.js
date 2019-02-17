@@ -59,6 +59,9 @@ var World = (function(){
                 function iteratePoint(point, plate) {
                     var tile = self.getTile(point);
                     tile.plate = plate;
+                    if (plate.density == 3) {
+                        self.lowerTerrain(point)
+                    }
                 },
                 function detectEdge(point) {
                     var tile = self.getTile(point);

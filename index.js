@@ -78,9 +78,10 @@ viewCanvas.addEventListener('mousemove', function(e) {
         point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
         position = " | ("+ tile.id + ")",
-        plate = " | Plate " + tile.plate.id + ", moving ";
-        plate += Direction.getName(tile.plate.direction),
         terrain = " | Terrain: " + tile.terrain.name;
+    var plate = " | Plate " + tile.plate.id + " Density ";
+    plate += tile.plate.density + ", moving ";
+    plate += Direction.getName(tile.plate.direction);
         // heat = currentWorld.heatMap.grid.get(point),
         // heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
         // rain = currentWorld.rainMap.heightMap.grid.get(point),
