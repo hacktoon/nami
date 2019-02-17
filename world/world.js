@@ -31,14 +31,14 @@ var World = (function(){
             // First pipeline step - create tiles through heightmap build
             heightMap.build(function(point, height){
                 var tile = Tile.new(point);
-                tile.realHeight = height;
+                tile.rawHeight = height;
                 self.setTile(point, tile);
             });
 
             // Second step - smoothing and area measure
-            self.grid.forEach(function(tile, point){
-                var realHeight = HeightFilter.smooth(self.grid, tile);
-                tile.terrain = TerrainFilter.getTerrain(realHeight);
+            self.grid.forEach(function(tile){
+                var rawHeight = HeightFilter.smooth(self.grid, tile);
+                tile.terrain = TerrainFilter.getTerrain(rawHeight);
                 LandformDetection.measureAreas(self, tile);
             });
 
@@ -96,10 +96,10 @@ var LandformDetection = (function () {
 var HeightFilter = (function(){
     var smooth = function (grid, tile) {
         var neighborhood = PointNeighborhood.new(tile.point),
-            sum = tile.realHeight,
+            sum = tile.rawHeight,
             valueCount = 1;
         neighborhood.around(function (neighborTile) {
-            sum += grid.get(neighborTile).realHeight;
+            sum += grid.get(neighborTile).rawHeight;
             valueCount++;
         });
         return Math.round(sum / valueCount);
