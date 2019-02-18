@@ -80,7 +80,7 @@ var World = (function(){
 
 var PlateDeformation = (function () {
     var deform = function (world) {
-        var tectonics = TectonicsMap.new(world.size, world.numPlates);
+        var tectonics = TectonicsMap.new(world.size);
         tectonics.onPlatePoint(function(point, plate) {
             var tile = world.getTile(point);
             tile.plate = plate;
@@ -92,6 +92,7 @@ var PlateDeformation = (function () {
             var tile = world.getTile(point);
             tile.isPlateEdge = true;
         });
+        tectonics.initPlates(world.numPlates);
         tectonics.build(15, true, true);
     };
 

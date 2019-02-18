@@ -8,14 +8,14 @@ var viewCanvas = document.getElementById("world"),
     growLotteryCheckbox = document.getElementById("growLottery"),
     drawLabelsCheckbox = document.getElementById("drawLabels");
 
-var TILESIZE = 3,
+var TILESIZE = 2,
     SIZE = 256,
     tectonics = undefined,
-    painter = undefined;
+    painter = TectonicsPainter.new(viewCanvas);
 
 var createTectonics = function() {
-    tectonics = TectonicsMap.new(SIZE, getTotalPlates());
-    painter = TectonicsPainter.new(viewCanvas);
+    tectonics = TectonicsMap.new(SIZE);
+    tectonics.initPlates(getTotalPlates());
 };
 
 

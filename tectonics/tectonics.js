@@ -1,7 +1,7 @@
 
 
 var TectonicsMap = (function() {
-    var _TectonicsMap = function (size, numPlates) {
+    var _TectonicsMap = function (size) {
         var self = this;
 
         this.grid = Grid.new(size, size);
@@ -32,7 +32,6 @@ var TectonicsMap = (function() {
             var totalCompleted = 0,
                 completedMap = {};
 
-            initPlates();
             while (totalCompleted < self.plates.length) {
                 self.plates.forEach(function(plate) {
                     if (plate.region.isComplete()) {
@@ -45,12 +44,13 @@ var TectonicsMap = (function() {
             }
         };
 
-        var initPlates = function() {
+        this.initPlates = function(numPlates) {
             GridPointDistribution(self.grid, numPlates, function (point, plateId) {
                 var plate = Plate.new(plateId);
-                plate.region = GridFill.new(self.grid, plateId);
-                plate.region.onPointFill(self.onPlatePointCallback);
-                plate.region.onEdgeDetect(self.onPlateEdgeCallback);
+                var gridFill = GridFill.new(self.grid, plateId);
+                gridFill.onPointFill(self.onPlatePointCallback);
+                gridFill.onEdgeDetect(self.onPlateEdgeCallback);
+                plate.region = gridFill;
                 self.plateIdMap[plateId] = plate;
                 plate.region.startAt(point);
                 self.plates.push(plate);
@@ -63,8 +63,8 @@ var TectonicsMap = (function() {
     };
 
     return {
-        new: function (size, numPlates) {
-            return new _TectonicsMap(size, numPlates);
+        new: function (size) {
+            return new _TectonicsMap(size);
         }
     };
 })();
