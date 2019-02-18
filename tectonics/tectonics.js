@@ -1,27 +1,26 @@
 
 
 var TectonicsMap = (function() {
-    var _TectonicsMap = function (size, numPlates, callback, edgeCallback) {
-        var self = this,
-            callback = _.defaultTo(callback, _.noop),
-            edgeCallback = _.defaultTo(edgeCallback, _.noop);
+    var _TectonicsMap = function (size, numPlates) {
+        var self = this;
 
         this.grid = Grid.new(size, size);
         this.plates = [];
         this.plateIdMap = {};
+        this.onPlatePointCallback = _.noop
+        this.onPlateEdgeCallback = _.noop
 
-        this._construct = function() {
-            var callback_wrapper = function(point, fillValue, isEdge) {
+        this.onPlatePoint = function (callback) {
+            self.onPlatePointCallback = function(point, fillValue) {
                 var plate = self.plateIdMap[fillValue];
-                callback(point, plate, isEdge);
+                callback(point, plate);
             };
-            GridPointDistribution(self.grid, numPlates, function (point, plateId) {
-                var plate = Plate.new(plateId);
-                plate.region = GridFill.new(self.grid, plateId, callback_wrapper, edgeCallback);
-                self.plateIdMap[plateId] = plate;
-                plate.region.startAt(point);
-                self.plates.push(plate);
-            });
+        };
+
+        this.onPlateEdge = function (callback) {
+            self.onPlateEdgeCallback = function(point) {
+                callback(point);
+            };
         };
 
         this.getPlateById = function (id) {
@@ -33,6 +32,7 @@ var TectonicsMap = (function() {
             var totalCompleted = 0,
                 completedMap = {};
 
+            initPlates();
             while (totalCompleted < self.plates.length) {
                 self.plates.forEach(function(plate) {
                     if (plate.region.isComplete()) {
@@ -45,13 +45,16 @@ var TectonicsMap = (function() {
             }
         };
 
-        this.hasPointInEdges = function (point) {
-            var key = point.hash();
-            return _.has(self.edgeDeformationMap, key);
-        };
-
-        this.getDeformation = function (point) {
-            return self.edgeDeformationMap[point.hash()];
+        var initPlates = function() {
+            GridPointDistribution(self.grid, numPlates, function (point, plateId) {
+                var plate = Plate.new(plateId);
+                plate.region = GridFill.new(self.grid, plateId);
+                plate.region.onPointFill(self.onPlatePointCallback);
+                plate.region.onEdgeDetect(self.onPlateEdgeCallback);
+                self.plateIdMap[plateId] = plate;
+                plate.region.startAt(point);
+                self.plates.push(plate);
+            });
         };
 
         this.forEachPlate = function(callback) {
@@ -60,10 +63,8 @@ var TectonicsMap = (function() {
     };
 
     return {
-        new: function (size, numPlates, callback, edgeCallback) {
-            var tectonics = new _TectonicsMap(size, numPlates, callback, edgeCallback);
-            tectonics._construct();
-            return tectonics;
+        new: function (size, numPlates) {
+            return new _TectonicsMap(size, numPlates);
         }
     };
 })();
