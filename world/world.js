@@ -23,19 +23,27 @@ var World = (function(){
 
         this.waterPercentage = function () {
             var value = (self.waterArea * 100) / self.area;
-            return Math.round(value);
+            return value.toFixed(1);
+        };
+
+        this.updateAreaMeasure = function (oldTerrain, newTerrain) {
+            if (oldTerrain.isWater === newTerrain.isWater) return;
+            self.waterArea += newTerrain.isWater ?  1 : -1;
+            self.landArea  += newTerrain.isWater ? -1 :  1;
         };
 
         this.raiseTerrain = function (point) {
             var tile = self.getTile(point),
-                id = tile.terrain.id;
-            tile.terrain = TerrainFilter.getTerrainbyId(id + 1);
+                oldTerrain = tile.terrain;
+            tile.terrain = TerrainFilter.getTerrainbyId(oldTerrain.id + 1);
+            self.updateAreaMeasure(oldTerrain, tile.terrain);
         };
 
         this.lowerTerrain = function (point) {
             var tile = self.getTile(point),
-                id = tile.terrain.id;
-            tile.terrain = TerrainFilter.getTerrainbyId(id - 1);
+                oldTerrain = tile.terrain;
+            tile.terrain = TerrainFilter.getTerrainbyId(oldTerrain.id - 1);
+            self.updateAreaMeasure(oldTerrain, tile.terrain);
         };
 
         this.build = function() {
