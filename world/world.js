@@ -1,39 +1,4 @@
 
-var WorldBuilder = (function(){
-    var build = function(size, roughness, numPlates) {
-        var world = new World(size);
-
-        var heightMap = HeightMap.new(size, roughness),
-            deepestPoints = new PointMap();
-        // First pipeline step - create tiles through heightmap build
-        heightMap.build(function(point, height){
-            var tile = Tile.new(point);
-            tile.height = height;
-            world.setTile(point, tile);
-        });
-
-        // Second step - smoothing and area measure
-        world.grid.forEach(function(tile){
-            var height = HeightFilter.smooth(world.grid, tile);
-            tile.terrain = Terrain.getTerrain(height);
-            if (Terrain.isDeepest(tile.terrain)) {
-                deepestPoints.add(tile.point);
-            }
-            LandformDetection.measureAreas(world, tile);
-        });
-
-        LandformDetection.detectWaterBodies(world, deepestPoints);
-
-        // Third step - plate tectonics. Reads all points
-        TectonicsBuilder(world, numPlates);
-
-        return world;
-    };
-
-    return { build: build }
-})();
-
-
 var World = function (size){
     var self = this;
 
@@ -87,6 +52,41 @@ var World = function (size){
 };
 
 
+var WorldBuilder = (function(){
+    var build = function(size, roughness, numPlates) {
+        var world = new World(size);
+
+        var heightMap = HeightMap.new(size, roughness),
+            deepestPoints = new PointMap();
+        // First pipeline step - create tiles through heightmap build
+        heightMap.build(function(point, height){
+            var tile = Tile.new(point);
+            tile.height = height;
+            world.setTile(point, tile);
+        });
+
+        // Second step - smoothing and area measure
+        world.grid.forEach(function(tile){
+            var height = HeightFilter.smooth(world.grid, tile);
+            tile.terrain = Terrain.getTerrain(height);
+            if (Terrain.isDeepest(tile.terrain)) {
+                deepestPoints.add(tile.point);
+            }
+            LandformDetection.measureAreas(world, tile);
+        });
+
+        LandformDetection.detectWaterBodies(world, deepestPoints);
+
+        // Third step - plate tectonics. Reads all points
+        TectonicsBuilder(world, numPlates);
+
+        return world;
+    };
+
+    return { build: build }
+})();
+
+
 var LandformDetection = (function () {
     var measureAreas = function (world, tile) {
         if (tile.terrain.isWater) {
@@ -118,7 +118,7 @@ var HeightFilter = (function(){
         var neighborhood = PointNeighborhood.new(tile.point),
             sum = tile.height,
             valueCount = 1;
-        neighborhood.around(function (neighborTile) {
+        neighborhood.adjacent(function (neighborTile) {
             sum += grid.get(neighborTile).height;
             valueCount++;
         });

@@ -9,12 +9,8 @@ var TectonicsBuilder = function (world, numPlates) {
     map.onPlatePoint(function (point, plate) {
         var tile = world.getTile(point);
         tile.plate = plate;
-        if (plate.density == 3) {
-            world.lowerTerrain(point)
-            world.lowerTerrain(point)
-            world.lowerTerrain(point)
-        }
     });
+
     map.onPlateEdge(function (point, plate) {
         var tile = world.getTile(point);
         tile.isPlateEdge = true;
