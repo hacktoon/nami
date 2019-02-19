@@ -11,6 +11,8 @@ var TectonicsBuilder = function (world) {
         tile.plate = plate;
         if (plate.density == 3) {
             world.lowerTerrain(point)
+            world.lowerTerrain(point)
+            world.lowerTerrain(point)
         }
     });
     map.onPlateEdge(function (point, plate) {

@@ -48,7 +48,7 @@ var World = (function(){
 
         this.build = function() {
             var heightMap = HeightMap.new(size, roughness),
-                deepestPoints = PointMap.new();
+                deepestPoints = new PointMap();
             // First pipeline step - create tiles through heightmap build
             heightMap.build(function(point, height){
                 var tile = Tile.new(point);
