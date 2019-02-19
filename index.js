@@ -26,8 +26,7 @@ var getPlatesInput = function () {
 };
 
 var createWorld = function(){
-    currentWorld = World.new(257, getRoughnessInput(), getPlatesInput());
-    currentWorld.tectonicsMap
+    currentWorld = WorldBuilder.build(257, getRoughnessInput(), getPlatesInput());
     return currentWorld;
 };
 

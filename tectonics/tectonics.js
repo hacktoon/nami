@@ -1,5 +1,5 @@
 
-var TectonicsBuilder = function (world) {
+var TectonicsBuilder = function (world, numPlates) {
     var self = this,
         map = new TectonicsMap(world.size),
         growthRate = 15,
@@ -19,7 +19,7 @@ var TectonicsBuilder = function (world) {
         var tile = world.getTile(point);
         tile.isPlateEdge = true;
     });
-    map.initPlates(world.numPlates);
+    map.initPlates(numPlates);
     map.build(growthRate, chanceToGrow, partialGrow);
 
     return map;

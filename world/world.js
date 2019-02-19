@@ -1,87 +1,90 @@
 
-var World = (function(){
-    var _World = function (size, roughness, numPlates){
-        var self = this;
+var WorldBuilder = (function(){
+    var build = function(size, roughness, numPlates) {
+        var world = new World(size);
 
-        this.size = size;
-        this.grid = Grid.new(size, size);
-        this.area = Math.pow(size, 2);
-        this.numPlates = numPlates;
-        this.waterArea = 0;
-        this.landArea = 0;
+        var heightMap = HeightMap.new(size, roughness),
+            deepestPoints = new PointMap();
+        // First pipeline step - create tiles through heightmap build
+        heightMap.build(function(point, height){
+            var tile = Tile.new(point);
+            tile.height = height;
+            world.setTile(point, tile);
+        });
 
-        // this.rainMap = RainMap.new(this.size, roughness/2);
-        // this.heatMap = HeatMap.new(this.size);
+        // Second step - smoothing and area measure
+        world.grid.forEach(function(tile){
+            var height = HeightFilter.smooth(world.grid, tile);
+            tile.terrain = Terrain.getTerrain(height);
+            if (Terrain.isDeepest(tile.terrain)) {
+                deepestPoints.add(tile.point);
+            }
+            LandformDetection.measureAreas(world, tile);
+        });
 
-        this.getTile = function(point) {
-            return self.grid.get(point);
-        };
+        LandformDetection.detectWaterBodies(world, deepestPoints);
 
-        this.setTile = function(point, tile) {
-            return self.grid.set(point, tile);
-        };
+        // Third step - plate tectonics. Reads all points
+        TectonicsBuilder(world, numPlates);
 
-        this.waterPercentage = function () {
-            var value = (self.waterArea * 100) / self.area;
-            return value.toFixed(1);
-        };
-
-        this.updateAreaMeasure = function (oldTerrain, newTerrain) {
-            if (oldTerrain.isWater === newTerrain.isWater) return;
-            self.waterArea += newTerrain.isWater ?  1 : -1;
-            self.landArea  += newTerrain.isWater ? -1 :  1;
-        };
-
-        this.raiseTerrain = function (point) {
-            var tile = self.getTile(point),
-                oldTerrain = tile.terrain;
-            tile.terrain = Terrain.getTerrainbyId(oldTerrain.id + 1);
-            self.updateAreaMeasure(oldTerrain, tile.terrain);
-        };
-
-        this.lowerTerrain = function (point) {
-            var tile = self.getTile(point),
-                oldTerrain = tile.terrain;
-            tile.terrain = Terrain.getTerrainbyId(oldTerrain.id - 1);
-            self.updateAreaMeasure(oldTerrain, tile.terrain);
-        };
-
-        this.build = function() {
-            var heightMap = HeightMap.new(size, roughness),
-                deepestPoints = new PointMap();
-            // First pipeline step - create tiles through heightmap build
-            heightMap.build(function(point, height){
-                var tile = Tile.new(point);
-                tile.height = height;
-                self.setTile(point, tile);
-            });
-
-            // Second step - smoothing and area measure
-            self.grid.forEach(function(tile){
-                var height = HeightFilter.smooth(self.grid, tile);
-                tile.terrain = Terrain.getTerrain(height);
-                if (Terrain.isDeepest(tile.terrain)) {
-                    deepestPoints.add(tile.point);
-                }
-                LandformDetection.measureAreas(self, tile);
-            });
-
-            LandformDetection.detectWaterBodies(self, deepestPoints);
-
-            // Third step - plate tectonics. Reads all points
-            TectonicsBuilder(self);
-
-            return self;
-        };
+        return world;
     };
 
-    return {
-        new: function (size, roughness, numPlates) {
-            var world = new _World(size, roughness, numPlates);
-            return world.build();
-        }
-    };
+    return { build: build }
 })();
+
+
+var World = function (size){
+    var self = this;
+
+    // stable attributes
+    this.size = size;
+    this.area = Math.pow(size, 2);
+    this.geo = {};
+    this.bio = {};
+    this.climate = {};
+
+    this.grid = Grid.new(size, size);
+
+    this.waterArea = 0;
+    this.landArea = 0;
+
+    // this.rainMap = RainMap.new(this.size, roughness/2);
+    // this.heatMap = HeatMap.new(this.size);
+
+    this.getTile = function(point) {
+        return self.grid.get(point);
+    };
+
+    this.setTile = function(point, tile) {
+        return self.grid.set(point, tile);
+    };
+
+    this.waterPercentage = function () {
+        var value = (self.waterArea * 100) / self.area;
+        return value.toFixed(1);
+    };
+
+    this.updateAreaMeasure = function (oldTerrain, newTerrain) {
+        if (oldTerrain.isWater === newTerrain.isWater) return;
+        self.waterArea += newTerrain.isWater ?  1 : -1;
+        self.landArea  += newTerrain.isWater ? -1 :  1;
+    };
+
+    this.raiseTerrain = function (point) {
+        var tile = self.getTile(point),
+            oldTerrain = tile.terrain;
+        tile.terrain = Terrain.getTerrainbyId(oldTerrain.id + 1);
+        self.updateAreaMeasure(oldTerrain, tile.terrain);
+    };
+
+    this.lowerTerrain = function (point) {
+        var tile = self.getTile(point),
+            oldTerrain = tile.terrain;
+        tile.terrain = Terrain.getTerrainbyId(oldTerrain.id - 1);
+        self.updateAreaMeasure(oldTerrain, tile.terrain);
+    };
+};
 
 
 var LandformDetection = (function () {
