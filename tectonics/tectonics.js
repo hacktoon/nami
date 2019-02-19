@@ -96,7 +96,7 @@ var TectonicsMap = (function() {
                     return value === originalValue;
                 };
 
-                plate.region = GridFill.new(startPoint, onFill, isFillable);
+                plate.region = new GridFill(startPoint, onFill, isFillable);
                 self.plateIdMap[plateId] = plate;
                 self.plates.push(plate);
             };
