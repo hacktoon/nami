@@ -59,7 +59,9 @@ growButton.addEventListener('click', function() {
     var times = getGrowthRate();
     var chance = growLotteryCheckbox.checked;
     tectonics.forEachPlate(function(plate) {
-        plate.region.grow(times, chance, isPartial);
+        if (chance && _.sample([true, false]))
+            return;
+        plate.region.grow(times, isPartial);
     });
     draw();
 });

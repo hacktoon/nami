@@ -30,7 +30,8 @@ var TectonicsMap = (function() {
         /* Grow the plates until all them complete. */
         this.build = function (times, chance, isPartial) {
             var totalCompleted = 0,
-                completedMap = {};
+                completedMap = {},
+                chance = _.defaultTo(chance, false);
 
             while (totalCompleted < self.plates.length) {
                 self.plates.forEach(function(plate) {
@@ -39,7 +40,10 @@ var TectonicsMap = (function() {
                         completedMap[plate.id] = 1;
                         return;
                     }
-                    plate.region.grow(times, chance, isPartial);
+                    if (chance && _.sample([true, false]))
+                        return;
+
+                    plate.region.grow(times, isPartial);
                 });
             }
         };
