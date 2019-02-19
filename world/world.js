@@ -35,19 +35,20 @@ var World = (function(){
         this.raiseTerrain = function (point) {
             var tile = self.getTile(point),
                 oldTerrain = tile.terrain;
-            tile.terrain = TerrainFilter.getTerrainbyId(oldTerrain.id + 1);
+            tile.terrain = Terrain.getTerrainbyId(oldTerrain.id + 1);
             self.updateAreaMeasure(oldTerrain, tile.terrain);
         };
 
         this.lowerTerrain = function (point) {
             var tile = self.getTile(point),
                 oldTerrain = tile.terrain;
-            tile.terrain = TerrainFilter.getTerrainbyId(oldTerrain.id - 1);
+            tile.terrain = Terrain.getTerrainbyId(oldTerrain.id - 1);
             self.updateAreaMeasure(oldTerrain, tile.terrain);
         };
 
         this.build = function() {
-            var heightMap = HeightMap.new(size, roughness);
+            var heightMap = HeightMap.new(size, roughness),
+                deepestPoints = PointMap.new();
             // First pipeline step - create tiles through heightmap build
             heightMap.build(function(point, height){
                 var tile = Tile.new(point);
@@ -58,9 +59,14 @@ var World = (function(){
             // Second step - smoothing and area measure
             self.grid.forEach(function(tile){
                 var height = HeightFilter.smooth(self.grid, tile);
-                tile.terrain = TerrainFilter.getTerrain(height);
+                tile.terrain = Terrain.getTerrain(height);
+                if (Terrain.isDeepest(tile.terrain)) {
+                    deepestPoints.add(tile.point);
+                }
                 LandformDetection.measureAreas(self, tile);
             });
+
+            LandformDetection.detectWaterBodies(self, deepestPoints);
 
             // Third step - plate tectonics. Reads all points
             TectonicsBuilder(self);
@@ -87,8 +93,19 @@ var LandformDetection = (function () {
         }
     };
 
+    var detectWaterBodies = function (world, deepestPoints) {
+        var body = detectWaterBody(_.sample(deepestPoints));
+
+    };
+
+    var detectWaterBody = function (point, deepestPoints) {
+
+
+    };
+
     return {
-        measureAreas: measureAreas
+        measureAreas: measureAreas,
+        detectWaterBodies: detectWaterBodies
     };
 })();
 
@@ -111,7 +128,7 @@ var HeightFilter = (function(){
 })();
 
 
-var TerrainFilter = (function () {
+var Terrain = (function () {
     var idMap = [
         { id: 0, height: 0, color: "#000056", name: "Abyssal waters", isWater: true },
         { id: 1, height: 80, color: "#1a3792", name: "Deep waters", isWater: true },
@@ -122,6 +139,10 @@ var TerrainFilter = (function () {
         { id: 6, height: 250, color: "#7d7553", name: "Mountains" },
         { id: 7, height: 256, color: "#FFF", name: "Peaks" }
     ];
+
+    var isDeepest = function (terrain) {
+        return terrain.id === idMap[0].id;
+    };
 
     var getTerrainbyId = function (id) {
         var id = _.clamp(id, 0, idMap.length-1);
@@ -140,6 +161,7 @@ var TerrainFilter = (function () {
 
     return {
         getTerrain: getTerrain,
+        isDeepest: isDeepest,
         getTerrainbyId: getTerrainbyId
     };
 })();
