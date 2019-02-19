@@ -1,4 +1,28 @@
 
+var TectonicsBuilder = function (world) {
+    var self = this,
+        map = TectonicsMap.new(world.size),
+        growthRate = 15,
+        chanceToGrow = true,
+        partialGrow = true;
+
+    map.onPlatePoint(function (point, plate) {
+        var tile = world.getTile(point);
+        tile.plate = plate;
+        if (plate.density == 3) {
+            world.lowerTerrain(point)
+        }
+    });
+    map.onPlateEdge(function (point, plate) {
+        var tile = world.getTile(point);
+        tile.isPlateEdge = true;
+    });
+    map.initPlates(world.numPlates);
+    map.build(growthRate, chanceToGrow, partialGrow);
+
+    return map;
+};
+
 
 var TectonicsMap = (function() {
     var _TectonicsMap = function (size) {

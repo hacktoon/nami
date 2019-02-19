@@ -63,7 +63,7 @@ var World = (function(){
             });
 
             // Third step - plate tectonics. Reads all points
-            PlateDeformation.deform(self);
+            TectonicsBuilder(self);
 
             return self;
         };
@@ -74,30 +74,6 @@ var World = (function(){
             var world = new _World(size, roughness, numPlates);
             return world.build();
         }
-    };
-})();
-
-
-var PlateDeformation = (function () {
-    var deform = function (world) {
-        var tectonics = TectonicsMap.new(world.size);
-        tectonics.onPlatePoint(function(point, plate) {
-            var tile = world.getTile(point);
-            tile.plate = plate;
-            if (plate.density == 3) {
-                world.lowerTerrain(point)
-            }
-        });
-        tectonics.onPlateEdge(function(point, plate) {
-            var tile = world.getTile(point);
-            tile.isPlateEdge = true;
-        });
-        tectonics.initPlates(world.numPlates);
-        tectonics.build(15, true, true);
-    };
-
-    return {
-        deform: deform
     };
 })();
 
