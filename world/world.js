@@ -53,27 +53,29 @@ var World = function (size){
 
 
 var WorldBuilder = (function(){
-    var build = function(size, roughness, numPlates) {
-        var world = new World(size);
-
-        var heightMap = HeightMap.new(size, roughness),
-            deepestPoints = new PointMap();
-        // First pipeline step - create tiles through heightmap build
+    function buildHeightmap(world, roughness) {
+        var heightMap = HeightMap.new(world.size, roughness)
         heightMap.build(function(point, height){
             var tile = Tile.new(point);
             tile.height = height;
+            tile.terrain = Terrain.getTerrain(height);
+            LandformDetection.measureAreas(world, tile);
             world.setTile(point, tile);
         });
+    };
 
-        // Second step - smoothing and area measure
+    function build(size, roughness, numPlates) {
+        var world = new World(size);
+        var deepestPoints = new PointMap();
+
+        buildHeightmap(world, roughness);
+
+        // Second step - area measure
         world.grid.forEach(function(tile){
-            tile.terrain = Terrain.getTerrain(tile.height);
             if (Terrain.isDeepest(tile.terrain)) {
                 deepestPoints.add(tile.point);
             }
-            LandformDetection.measureAreas(world, tile);
         });
-
         LandformDetection.detectWaterBodies(world, deepestPoints);
 
         // Third step - plate tectonics. Reads all points
@@ -136,10 +138,10 @@ var Terrain = (function () {
         { id: 1, height: 80, color: "#1a3792", name: "Deep waters", isWater: true },
         { id: 2, height: 120, color: "#3379a6", name: "Shallow waters", isWater: true },
         { id: 3, height: 150, color: "#0a5816", name: "Coastal plains" },
-        { id: 4, height: 190, color: "#31771a", name: "Plains" },
-        { id: 5, height: 235, color: "#7ac85b", name: "Hills" },
+        { id: 4, height: 200, color: "#31771a", name: "Plains" },
+        { id: 5, height: 240, color: "#7ac85b", name: "Hills" },
         { id: 6, height: 250, color: "#7d7553", name: "Mountains" },
-        { id: 7, height: 256, color: "#FFF", name: "Peaks" }
+        { id: 7, height: 257, color: "#EEE", name: "Peaks" }
     ];
 
     var isDeepest = function (terrain) {
