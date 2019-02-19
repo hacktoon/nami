@@ -67,8 +67,7 @@ var WorldBuilder = (function(){
 
         // Second step - smoothing and area measure
         world.grid.forEach(function(tile){
-            var height = HeightFilter.smooth(world.grid, tile);
-            tile.terrain = Terrain.getTerrain(height);
+            tile.terrain = Terrain.getTerrain(tile.height);
             if (Terrain.isDeepest(tile.terrain)) {
                 deepestPoints.add(tile.point);
             }
