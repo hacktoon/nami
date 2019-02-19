@@ -93,7 +93,7 @@ var PlateDeformation = (function () {
             tile.isPlateEdge = true;
         });
         tectonics.initPlates(world.numPlates);
-        tectonics.build(10, false, true);
+        tectonics.build(15, true, true);
     };
 
     return {
