@@ -1,7 +1,7 @@
 
 var TectonicsBuilder = function (world) {
     var self = this,
-        map = TectonicsMap.new(world.size),
+        map = new TectonicsMap(world.size),
         growthRate = 15,
         chanceToGrow = true,
         partialGrow = true;
@@ -26,117 +26,103 @@ var TectonicsBuilder = function (world) {
 };
 
 
-var TectonicsMap = (function() {
-    var _TectonicsMap = function (size) {
-        var self = this;
+var TectonicsMap = function (size) {
+    var self = this;
 
-        this.grid = Grid.new(size, size);
-        this.plates = [];
-        this.plateIdMap = {};
-        this.onFillCallback = _.noop
-        this.onPlateEdgeCallback = _.noop
+    this.grid = Grid.new(size, size);
+    this.plates = [];
+    this.plateIdMap = {};
+    this.onFillCallback = _.noop
+    this.onPlateEdgeCallback = _.noop
 
-        this.onPlatePoint = function (callback) {
-            self.onFillCallback = function(point, fillValue) {
-                var plate = self.plateIdMap[fillValue];
-                callback(point, plate);
-            };
-        };
-
-        this.onPlateEdge = function (callback) {
-            self.onPlateEdgeCallback = function(point) {
-                callback(point);
-            };
-        };
-
-        this.getPlateById = function (id) {
-            return self.plateIdMap[id];
-        };
-
-        /* Grow the plates until all them complete. */
-        this.build = function (times, chance, isPartial) {
-            var totalCompleted = 0,
-                completedMap = {},
-                chance = _.defaultTo(chance, false);
-
-            while (totalCompleted < self.plates.length) {
-                self.plates.forEach(function(plate) {
-                    if (plate.region.isComplete()) {
-                        totalCompleted += completedMap[plate.id] ? 0 : 1;
-                        completedMap[plate.id] = 1;
-                        return;
-                    }
-                    if (chance && _.sample([true, false]))
-                        return;
-                    if (isPartial) {
-                        plate.region.growPartial(times);
-                    } else {
-                        plate.region.grow(times);
-                    }
-                });
-            }
-        };
-
-        this.initPlates = function(numPlates) {
-            var eachPoint = function (startPoint, plateId) {
-                var plate = Plate.new(plateId),
-                    originalValue = self.grid.get(startPoint);
-
-                function onFill(point){
-                    self.grid.set(point, plateId);
-                    self.onFillCallback(point, plateId);
-                };
-
-                function isFillable(point, refPoint){
-                    var value = self.grid.get(point);
-                    if (value != plateId && value != originalValue){
-                        plate.edges.push(refPoint);
-                        self.onPlateEdgeCallback(refPoint, point, value);
-                    }
-                    return value === originalValue;
-                };
-
-                plate.region = new GridFill(startPoint, onFill, isFillable);
-                self.plateIdMap[plateId] = plate;
-                self.plates.push(plate);
-            };
-            GridPointDistribution(self.grid, numPlates, eachPoint);
+    this.onPlatePoint = function (callback) {
+        self.onFillCallback = function(point, fillValue) {
+            var plate = self.plateIdMap[fillValue];
+            callback(point, plate);
         };
     };
 
-    return {
-        new: function (size) {
-            return new _TectonicsMap(size);
+    this.onPlateEdge = function (callback) {
+        self.onPlateEdgeCallback = function(point) {
+            callback(point);
+        };
+    };
+
+    this.getPlateById = function (id) {
+        return self.plateIdMap[id];
+    };
+
+    /* Grow the plates until all them complete. */
+    this.build = function (times, chance, isPartial) {
+        var totalCompleted = 0,
+            completedMap = {},
+            chance = _.defaultTo(chance, false);
+
+        while (totalCompleted < self.plates.length) {
+            self.plates.forEach(function(plate) {
+                if (plate.region.isComplete()) {
+                    totalCompleted += completedMap[plate.id] ? 0 : 1;
+                    completedMap[plate.id] = 1;
+                    return;
+                }
+                if (chance && _.sample([true, false]))
+                    return;
+                if (isPartial) {
+                    plate.region.growPartial(times);
+                } else {
+                    plate.region.grow(times);
+                }
+            });
         }
     };
-})();
 
+    this.initPlates = function(numPlates) {
+        var eachPoint = function (startPoint, plateId) {
+            var plate = new Plate(plateId),
+                originalValue = self.grid.get(startPoint);
 
-var Plate = (function() {
-    var _Plate = function(id) {
-        var self = this;
-        this.id = id;
-        this.region = undefined;
-        this.speed = _.sample([1, 2, 3]);
-        this.density = _.sample([1, 1, 2, 2, 3]);
-        this.direction = Direction.randomCardinal();
-        this.edges = [];
+            function onFill(point){
+                self.grid.set(point, plateId);
+                self.onFillCallback(point, plateId);
+            };
 
-        this.forEachEdge = function(callback) {
-            self.edges.forEach(callback);
+            function isFillable(point, refPoint){
+                var value = self.grid.get(point);
+                if (value != plateId && value != originalValue){
+                    plate.edges.push(refPoint);
+                    self.onPlateEdgeCallback(refPoint, point, value);
+                }
+                return value === originalValue;
+            };
+
+            plate.region = new GridFill(startPoint, onFill, isFillable);
+            self.plateIdMap[plateId] = plate;
+            self.plates.push(plate);
         };
+        GridPointDistribution(self.grid, numPlates, eachPoint);
+    };
+};
 
-        this.forEachSeed = function(callback) {
-            self.region.seeds.each(callback);
-        };
+
+var Plate = function(id) {
+    var self = this;
+
+    this.id = id;
+    this.name = NameGenerator.createLandMassName();
+    this.region = undefined;
+    this.speed = _.sample([1, 2, 3]);
+    this.density = _.sample([1, 1, 2, 2, 3]);
+    this.direction = Direction.randomCardinal();
+    this.edges = [];
+
+    this.forEachEdge = function(callback) {
+        self.edges.forEach(callback);
     };
 
-    return {
-        new: function(id) {
-            return new _Plate(id);
-        }
+    this.forEachSeed = function(callback) {
+        self.region.seeds.each(callback);
     };
-})();
+};
 
 
 var PlateDeformation = (function() {
