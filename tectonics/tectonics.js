@@ -5,15 +5,16 @@ var TectonicsBuilder = function (world, numPlates) {
         chanceToGrow = true,
         partialGrow = true;
 
-    map.onPlatePoint(function (point, plate) {
+    map.onPlatePoint(function (point, plate, step) {
         var tile = world.getTile(point);
         tile.plate = plate;
         if (plate.isDenser()){
-            world.lowerTerrain(point, 120);
+            var h =  world.getTile(point).height
+            world.lowerTerrain(point, h/2);
         }
     });
 
-    map.onPlateEdgeDetect(function (point, plate) {
+    map.onPlateEdgeDetect(function (point, plate, step) {
         var tile = world.getTile(point);
         tile.isPlateEdge = true;
         world.raiseTerrain(point, _.random(10, 50));
@@ -36,17 +37,17 @@ var Tectonics = function (size) {
     this.onPlateEdgeCallback = _.noop
 
     this.onPlatePoint = function (callback) {
-        self.onFillCallback = function(point, fillValue) {
+        self.onFillCallback = function(point, fillValue, step) {
             var plate = self.plateIdMap[fillValue];
-            callback(point, plate);
+            callback(point, plate, step);
         };
     };
 
     this.onPlateEdgeDetect = function (callback) {
-        self.onPlateEdgeCallback = function(edge, outerEdge) {
+        self.onPlateEdgeCallback = function(edge, outerEdge, step) {
             var plate = self.getPlateByPoint(edge);
             var otherPlate = self.getPlateByPoint(outerEdge);
-            callback(edge);
+            callback(edge, outerEdge, step);
         };
     };
 
@@ -88,16 +89,16 @@ var Tectonics = function (size) {
             var plate = new Plate(plateId),
                 originalValue = self.grid.get(startPoint);
 
-            function onFill(neighbor){
+            function onFill(neighbor, point, step){
                 self.grid.set(neighbor, plateId);
-                self.onFillCallback(neighbor, plateId);
+                self.onFillCallback(neighbor, plateId, step);
             };
 
-            function isFillable(neighbor, point){
+            function isFillable(neighbor, point, step){
                 var neighborValue = self.grid.get(neighbor);
                 if (neighborValue != plateId && neighborValue != originalValue){
                     plate.edges.push(point);
-                    self.onPlateEdgeCallback(point, neighbor);
+                    self.onPlateEdgeCallback(point, neighbor, step);
                     return false;
                 }
                 return neighborValue === originalValue;
