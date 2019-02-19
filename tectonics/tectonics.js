@@ -8,9 +8,12 @@ var TectonicsBuilder = function (world, numPlates) {
     map.onPlatePoint(function (point, plate) {
         var tile = world.getTile(point);
         tile.plate = plate;
+        if (plate.isDenser()){
+            world.lowerTerrain(point, 120);
+        }
     });
 
-    map.onPlateEdge(function (point, plate) {
+    map.onPlateEdgeDetect(function (point, plate) {
         var tile = world.getTile(point);
         tile.isPlateEdge = true;
         world.raiseTerrain(point, _.random(10, 50));
@@ -39,7 +42,7 @@ var Tectonics = function (size) {
         };
     };
 
-    this.onPlateEdge = function (callback) {
+    this.onPlateEdgeDetect = function (callback) {
         self.onPlateEdgeCallback = function(edge, outerEdge) {
             var plate = self.getPlateByPoint(edge);
             var otherPlate = self.getPlateByPoint(outerEdge);
@@ -119,6 +122,10 @@ var Plate = function(id) {
     this.density = _.sample([1, 1, 2, 2, 3]);
     this.direction = Direction.randomCardinal();
     this.edges = [];
+
+    this.isDenser = function() {
+        return self.density === 3;
+    };
 
     this.forEachEdge = function(callback) {
         self.edges.forEach(callback);

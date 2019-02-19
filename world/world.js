@@ -72,7 +72,8 @@ var WorldBuilder = (function(){
 
         buildHeightmap(world, roughness);
         TectonicsBuilder(world, numPlates);
-        smooth(world);
+        // detect waterbodies, landforms, create oceans
+        smooth(world); // measure land/area
 
         return world;
     };
@@ -108,7 +109,7 @@ var Terrain = (function () {
         { id: 3, height: 150, color: "#0a5816", name: "Coastal plains" },
         { id: 4, height: 190, color: "#31771a", name: "Plains" },
         { id: 5, height: 240, color: "#6f942b", name: "Hills" },
-        { id: 6, height: 257, color: "#d5cab4", name: "Mountains" }
+        { id: 6, height: 255, color: "#d5cab4", name: "Mountains" }
     ];
 
     var isDeepest = function (terrain) {
