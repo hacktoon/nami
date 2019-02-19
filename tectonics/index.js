@@ -14,7 +14,7 @@ var TILESIZE = 2,
     painter = TectonicsPainter.new(viewCanvas);
 
 var createTectonics = function() {
-    tectonics = new TectonicsMap(SIZE);
+    tectonics = new Tectonics(SIZE);
     tectonics.initPlates(getTotalPlates());
 };
 

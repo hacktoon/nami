@@ -1,7 +1,6 @@
 
 var TectonicsBuilder = function (world, numPlates) {
-    var self = this,
-        map = new TectonicsMap(world.size),
+    var map = new Tectonics(world.size),
         growthRate = 15,
         chanceToGrow = true,
         partialGrow = true;
@@ -15,6 +14,7 @@ var TectonicsBuilder = function (world, numPlates) {
         var tile = world.getTile(point);
         tile.isPlateEdge = true;
     });
+
     map.initPlates(numPlates);
     map.build(growthRate, chanceToGrow, partialGrow);
 
@@ -22,7 +22,7 @@ var TectonicsBuilder = function (world, numPlates) {
 };
 
 
-var TectonicsMap = function (size) {
+var Tectonics = function (size) {
     var self = this;
 
     this.grid = Grid.new(size, size);
@@ -39,13 +39,20 @@ var TectonicsMap = function (size) {
     };
 
     this.onPlateEdge = function (callback) {
-        self.onPlateEdgeCallback = function(point) {
-            callback(point);
+        self.onPlateEdgeCallback = function(edge, outerEdge) {
+            var plate = self.getPlateByPoint(edge);
+            var otherPlate = self.getPlateByPoint(outerEdge);
+            callback(edge);
         };
     };
 
     this.getPlateById = function (id) {
         return self.plateIdMap[id];
+    };
+
+    this.getPlateByPoint = function (point) {
+        var id = self.grid.get(point);
+        return self.getPlateById(id);
     };
 
     /* Grow the plates until all them complete. */
@@ -73,22 +80,23 @@ var TectonicsMap = function (size) {
     };
 
     this.initPlates = function(numPlates) {
-        var eachPoint = function (startPoint, plateId) {
+        function eachPoint(startPoint, plateId) {
             var plate = new Plate(plateId),
                 originalValue = self.grid.get(startPoint);
 
-            function onFill(point){
-                self.grid.set(point, plateId);
-                self.onFillCallback(point, plateId);
+            function onFill(neighbor){
+                self.grid.set(neighbor, plateId);
+                self.onFillCallback(neighbor, plateId);
             };
 
-            function isFillable(point, refPoint){
-                var value = self.grid.get(point);
-                if (value != plateId && value != originalValue){
-                    plate.edges.push(refPoint);
-                    self.onPlateEdgeCallback(refPoint, point, value);
+            function isFillable(neighbor, point){
+                var neighborValue = self.grid.get(neighbor);
+                if (neighborValue != plateId && neighborValue != originalValue){
+                    plate.edges.push(point);
+                    self.onPlateEdgeCallback(point, neighbor);
+                    return false;
                 }
-                return value === originalValue;
+                return neighborValue === originalValue;
             };
 
             plate.region = new GridFill(startPoint, onFill, isFillable);
