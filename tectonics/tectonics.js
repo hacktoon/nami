@@ -33,11 +33,11 @@ var TectonicsMap = (function() {
         this.grid = Grid.new(size, size);
         this.plates = [];
         this.plateIdMap = {};
-        this.onPlatePointCallback = _.noop
+        this.onFillCallback = _.noop
         this.onPlateEdgeCallback = _.noop
 
         this.onPlatePoint = function (callback) {
-            self.onPlatePointCallback = function(point, fillValue) {
+            self.onFillCallback = function(point, fillValue) {
                 var plate = self.plateIdMap[fillValue];
                 callback(point, plate);
             };
@@ -68,27 +68,39 @@ var TectonicsMap = (function() {
                     }
                     if (chance && _.sample([true, false]))
                         return;
-
-                    plate.region.grow(times, isPartial);
+                    if (isPartial) {
+                        plate.region.growPartial(times);
+                    } else {
+                        plate.region.grow(times);
+                    }
                 });
             }
         };
 
         this.initPlates = function(numPlates) {
-            GridPointDistribution(self.grid, numPlates, function (point, plateId) {
-                var plate = Plate.new(plateId);
-                var gridFill = GridFill.new(self.grid, plateId);
-                gridFill.onPointFill(self.onPlatePointCallback);
-                gridFill.onEdgeDetect(self.onPlateEdgeCallback);
-                plate.region = gridFill;
-                self.plateIdMap[plateId] = plate;
-                plate.region.startAt(point);
-                self.plates.push(plate);
-            });
-        };
+            var eachPoint = function (startPoint, plateId) {
+                var plate = Plate.new(plateId),
+                    originalValue = self.grid.get(startPoint);
 
-        this.forEachPlate = function(callback) {
-            self.plates.forEach(callback);
+                function onFill(point){
+                    self.grid.set(point, plateId);
+                    self.onFillCallback(point, plateId);
+                };
+
+                function isFillable(point, refPoint){
+                    var value = self.grid.get(point);
+                    if (value != plateId && value != originalValue){
+                        plate.edges.push(refPoint);
+                        self.onPlateEdgeCallback(refPoint, point, value);
+                    }
+                    return value === originalValue;
+                };
+
+                plate.region = GridFill.new(startPoint, onFill, isFillable);
+                self.plateIdMap[plateId] = plate;
+                self.plates.push(plate);
+            };
+            GridPointDistribution(self.grid, numPlates, eachPoint);
         };
     };
 
@@ -108,13 +120,14 @@ var Plate = (function() {
         this.speed = _.sample([1, 2, 3]);
         this.density = _.sample([1, 1, 2, 2, 3]);
         this.direction = Direction.randomCardinal();
+        this.edges = [];
 
         this.forEachEdge = function(callback) {
-            self.region.edges(callback);
+            self.edges.forEach(callback);
         };
 
         this.forEachSeed = function(callback) {
-            self.region.seeds(callback);
+            self.region.seeds.each(callback);
         };
     };
 

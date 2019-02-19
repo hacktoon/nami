@@ -58,10 +58,14 @@ growButton.addEventListener('click', function() {
     var isPartial = partialGrowCheckbox.checked;
     var times = getGrowthRate();
     var chance = growLotteryCheckbox.checked;
-    tectonics.forEachPlate(function(plate) {
+    tectonics.plates.forEach(function(plate) {
         if (chance && _.sample([true, false]))
             return;
-        plate.region.grow(times, isPartial);
+        if (isPartial){
+            plate.region.growPartial(times);
+        } else {
+            plate.region.grow(times);
+        }
     });
     draw();
 });
