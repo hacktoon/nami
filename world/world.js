@@ -36,18 +36,16 @@ var World = function (size){
         self.landArea  += newTerrain.isWater ? -1 :  1;
     };
 
-    this.raiseTerrain = function (point) {
-        var tile = self.getTile(point),
-            oldTerrain = tile.terrain;
-        tile.terrain = Terrain.getTerrainbyId(oldTerrain.id + 1);
-        self.updateAreaMeasure(oldTerrain, tile.terrain);
+    this.raiseTerrain = function (point, value) {
+        var tile = self.grid.get(point);
+        var value = tile.height + value;
+        tile.height = value;
     };
 
-    this.lowerTerrain = function (point) {
-        var tile = self.getTile(point),
-            oldTerrain = tile.terrain;
-        tile.terrain = Terrain.getTerrainbyId(oldTerrain.id - 1);
-        self.updateAreaMeasure(oldTerrain, tile.terrain);
+    this.lowerTerrain = function (point, value) {
+        var tile = self.grid.get(point);
+        var value = tile.height - value;
+        tile.height = value < 0 ? 0 : value;
     };
 };
 
@@ -58,32 +56,48 @@ var WorldBuilder = (function(){
         heightMap.build(function(point, height){
             var tile = Tile.new(point);
             tile.height = height;
-            tile.terrain = Terrain.getTerrain(height);
             world.setTile(point, tile);
+        });
+    };
+
+    function smooth(world) {
+        world.grid.forEach(function(tile){
+            var height = HeightFilter.smooth(world.grid, tile);
+            tile.terrain = Terrain.getTerrain(height);
         });
     };
 
     function build(size, roughness, numPlates) {
         var world = new World(size);
-        var deepestPoints = new PointMap();
 
         buildHeightmap(world, roughness);
-
-        // Second step - area measure
-        world.grid.forEach(function(tile){
-            if (Terrain.isDeepest(tile.terrain)) {
-                deepestPoints.add(tile.point);
-            }
-        });
-
-        // Third step - plate tectonics. Reads all points
         TectonicsBuilder(world, numPlates);
+        smooth(world);
 
         return world;
     };
 
     return { build: build }
 })();
+
+
+var HeightFilter = (function(){
+    var smooth = function (grid, tile) {
+        var neighborhood = PointNeighborhood.new(tile.point),
+            sum = tile.height,
+            valueCount = 1;
+        neighborhood.adjacent(function (neighborTile) {
+            sum += grid.get(neighborTile).height;
+            valueCount++;
+        });
+        return Math.round(sum / valueCount);
+    };
+
+    return {
+        smooth: smooth
+    };
+})();
+
 
 
 var Terrain = (function () {

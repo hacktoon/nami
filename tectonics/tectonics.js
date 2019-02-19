@@ -13,6 +13,7 @@ var TectonicsBuilder = function (world, numPlates) {
     map.onPlateEdge(function (point, plate) {
         var tile = world.getTile(point);
         tile.isPlateEdge = true;
+        world.raiseTerrain(point, _.random(10, 50));
     });
 
     map.initPlates(numPlates);
