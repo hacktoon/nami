@@ -74,13 +74,13 @@ generateButton.addEventListener('click', () => {
     draw();
 });
 
-viewCanvas.addEventListener('click', (e) => {
+viewCanvas.addEventListener('click', e => {
     var point = getCanvasMousePoint(e, viewCanvas);
     currentWorld.lowerTerrain(point);
     draw();
 });
 
-viewCanvas.addEventListener('mousemove', (e) => {
+viewCanvas.addEventListener('mousemove', e => {
     var point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
         position = " | ("+ tile.id + ")",

@@ -1,53 +1,51 @@
 
-var World = function (size){
-    var self = this;
+class World {
+    constructor(size) {
+        this.size = size
+        this.area = Math.pow(size, 2)
+        this.geo = {}
+        this.bio = {}
+        this.climate = {}
 
-    // stable attributes
-    this.size = size;
-    this.area = Math.pow(size, 2);
-    this.geo = {};
-    this.bio = {};
-    this.climate = {};
+        this.grid = new Grid(size, size)
 
-    this.grid = new Grid(size, size);
+        this.waterArea = 0
+        this.landArea = 0
 
-    this.waterArea = 0;
-    this.landArea = 0;
+        // this.rainMap = new RainMap(this.size, roughness/2)
+        // this.heatMap = new HeatMap(this.size)
+    }
 
-    // this.rainMap = RainMap.new(this.size, roughness/2);
-    // this.heatMap = HeatMap.new(this.size);
+    getTile (point) {
+        return this.grid.get(point)
+    }
 
-    this.getTile = function(point) {
-        return self.grid.get(point);
-    };
+    setTile (point, tile) {
+        return this.grid.set(point, tile)
+    }
 
-    this.setTile = function(point, tile) {
-        return self.grid.set(point, tile);
-    };
+    waterPercentage () {
+        let value = (this.waterArea * 100) / this.area
+        return value.toFixed(1)
+    }
 
-    this.waterPercentage = function () {
-        var value = (self.waterArea * 100) / self.area;
-        return value.toFixed(1);
-    };
+    updateAreaMeasure (oldTerrain, newTerrain) {
+        if (oldTerrain.isWater === newTerrain.isWater) return
+        this.waterArea += newTerrain.isWater ?  1 : -1
+        this.landArea  += newTerrain.isWater ? -1 :  1
+    }
 
-    this.updateAreaMeasure = function (oldTerrain, newTerrain) {
-        if (oldTerrain.isWater === newTerrain.isWater) return;
-        self.waterArea += newTerrain.isWater ?  1 : -1;
-        self.landArea  += newTerrain.isWater ? -1 :  1;
-    };
+    raiseTerrain (point, value) {
+        let tile = this.grid.get(point)
+        tile.height = tile.height + value
+    }
 
-    this.raiseTerrain = function (point, value) {
-        var tile = self.grid.get(point);
-        var value = tile.height + value;
-        tile.height = value;
-    };
-
-    this.lowerTerrain = function (point, value) {
-        var tile = self.grid.get(point);
-        var value = tile.height - value;
-        tile.height = value < 0 ? 0 : value;
-    };
-};
+    lowerTerrain (point, value) {
+        let tile = this.grid.get(point)
+        value = tile.height - value
+        tile.height = value < 0 ? 0 : value
+    }
+}
 
 
 var WorldBuilder = (function(){
