@@ -52,12 +52,11 @@ var World = function (size){
 
 var WorldBuilder = (function(){
     function buildHeightmap(world, roughness) {
-        var heightMap = HeightMap.new(world.size, roughness)
-        heightMap.build(function(point, height){
+        var heightMap = new HeightMap(world.size, roughness, (point, height) => {
             var tile = new Tile(point);
             tile.height = height;
             world.setTile(point, tile);
-        });
+        })
     };
 
     function smooth(world) {
@@ -84,7 +83,7 @@ var WorldBuilder = (function(){
 
 var HeightFilter = (function(){
     var smooth = function (grid, tile) {
-        var neighborhood = PointNeighborhood.new(tile.point),
+        var neighborhood = new PointNeighborhood(tile.point),
             sum = tile.height,
             valueCount = 1;
         neighborhood.adjacent(function (neighborTile) {

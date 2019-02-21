@@ -40,7 +40,7 @@ var step = function(grid) {
     var new_grid = new Grid(grid.width, grid.height, 0);
 
     grid.forEach(function(value, point) {
-        var neighborhood = PointNeighborhood.new(point),
+        var neighborhood = new PointNeighborhood(point),
             neighbours =
             count_one = count_zero = 0;
 

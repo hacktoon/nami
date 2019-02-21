@@ -6,7 +6,7 @@ class Point {
     }
 
     hash () {
-        return `{this.x},{this.y}`
+        return `${this.x},${this.y}`
     }
 
     static from (string) {
@@ -30,52 +30,52 @@ class Point {
 }
 
 
-var PointNeighborhood = (function () {
-    var adjacent = {},
-        diagonal = {};
-
-    adjacent[Direction.NORTH] = { x: 0, y: -1 };
-    adjacent[Direction.SOUTH] = { x: 0, y: 1 };
-    adjacent[Direction.EAST] = { x: 1, y: 0 };
-    adjacent[Direction.WEST] = { x: -1, y: 0 };
-
-    diagonal[Direction.NORTHEAST] = { x: 1, y: 1 };
-    diagonal[Direction.NORTHWEST] = { x: -1, y: 1 };
-    diagonal[Direction.SOUTHEAST] = { x: 1, y: -1 };
-    diagonal[Direction.SOUTHWEST] = { x: -1, y: -1 };
-
-    var directions = {
-        adjacent: adjacent,
-        diagonal: diagonal,
-        around: _.extend({}, adjacent, diagonal)
-    };
-
-    var _PointNeighborhood = function (referencePoint) {
+class PointNeighborhood {
+    constructor (referencePoint) {
         this.referencePoint = referencePoint;
 
-        this.adjacent = function (callback) {
-            return getNeighbors(directions.adjacent, referencePoint, callback);
-        };
+        const adjacent = {},
+              diagonal = {}
 
-        this.diagonal = function (callback) {
-            return getNeighbors(directions.diagonal, referencePoint, callback);
-        };
+        adjacent[Direction.NORTH] = { x: 0, y: -1 }
+        adjacent[Direction.SOUTH] = { x: 0, y: 1 }
+        adjacent[Direction.EAST] = { x: 1, y: 0 }
+        adjacent[Direction.WEST] = { x: -1, y: 0 }
 
-        this.around = function (callback) {
-            return getNeighbors(directions.around, referencePoint, callback);
-        };
+        diagonal[Direction.NORTHEAST] = { x: 1, y: 1 }
+        diagonal[Direction.NORTHWEST] = { x: -1, y: 1 }
+        diagonal[Direction.SOUTHEAST] = { x: 1, y: -1 }
+        diagonal[Direction.SOUTHWEST] = { x: -1, y: -1 }
 
-        this.atDirection = function (direction) {
-            var around = directions.around;
-            return createPoint(referencePoint, around[direction]);
-        };
-    };
+        this.directions = {
+            adjacent: adjacent,
+            diagonal: diagonal,
+            around: _.extend({}, adjacent, diagonal)
+        }
+    }
 
-    var getNeighbors = function (neighborType, referencePoint, callback) {
-        var neighbors = [];
+    adjacent (callback) {
+        return this.getNeighbors(this.directions.adjacent, callback);
+    }
 
-        _.each(neighborType, function (neighbor, direction) {
-            var point = createPoint(referencePoint, neighbor);
+    diagonal (callback) {
+        return this.getNeighbors(this.directions.diagonal, callback);
+    }
+
+    around (callback) {
+        return this.getNeighbors(this.directions.around, callback);
+    }
+
+    atDirection (direction) {
+        var around = this.directions.around;
+        return this.createPoint(around[direction]);
+    }
+
+    getNeighbors (neighborType, callback) {
+        let neighbors = [];
+
+        _.each(neighborType, (neighbor, direction) => {
+            let point = this.createPoint(neighbor);
 
             neighbors.push({ point: point, direction: direction });
             if (_.isFunction(callback)) {
@@ -83,51 +83,48 @@ var PointNeighborhood = (function () {
             }
         });
         return neighbors;
-    };
-
-    var createPoint = function (point1, point2) {
-        return new Point(point1.x + point2.x, point1.y + point2.y);
-    };
-
-    return {
-        new: function (referencePoint) {
-            return new _PointNeighborhood(referencePoint);
-        }
-    };
-})();
-
-
-var PointMap = function (point) {
-    this._map = {};
-    this._size = 0;
-
-    this.add = function (point) {
-        this._map[point.hash()] = point;
-        this._size++;
-    };
-
-    this.has = function (point) {
-        return _.has(this._map, point.hash());
-    };
-
-    this.get = function (hash) {
-        return this._map[hash];
-    };
-
-    this.remove = function (point) {
-        delete this._map[point.hash()];
-        this._size--;
-    };
-
-    this.size = function () {
-        return this._size;
-    };
-
-    this.each = function (callback) {
-        _.each(this._map, callback);
-    };
-
-    if (point) {
-        this.add(point);
     }
-};
+
+    createPoint (neighbor) {
+        let x = this.referencePoint.x + neighbor.x,
+            y = this.referencePoint.y + neighbor.y
+        return new Point(x, y);
+    }
+}
+
+
+class PointMap {
+    constructor (point) {
+        this._map = {}
+        this._size = 0;
+        if (point) {
+            this.add(point)
+        }
+    }
+
+    add (point) {
+        this._map[point.hash()] = point
+        this._size++
+    }
+
+    has (point) {
+        return _.has(this._map, point.hash())
+    }
+
+    get (hash) {
+        return this._map[hash]
+    }
+
+    remove (point) {
+        delete this._map[point.hash()]
+        this._size--
+    }
+
+    size () {
+        return this._size
+    }
+
+    each (callback) {
+        _.each(this._map, pt => callback(pt))
+    }
+}

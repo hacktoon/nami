@@ -65,11 +65,8 @@ var WorldPainter = (function () {
 })();
 
 
-
-
-
 var isBeach = function (point) {
-    var neighbors = PointNeighborhood.new(point),
+    var neighbors = new PointNeighborhood(point),
         found = false;
     neighbors.adjacent(function (neighbor) {
         var isLand = grid.get(point) > world.seaLevel;

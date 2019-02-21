@@ -155,7 +155,7 @@ class GridFill {
     }
 
     growNeighbors (referencePoint, isPartial) {
-        PointNeighborhood.new(referencePoint)
+        new PointNeighborhood(referencePoint)
         .adjacent(neighbor => {
             if (!this.isFillable(neighbor, referencePoint, this.step)) return;
 

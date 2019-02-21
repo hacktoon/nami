@@ -1,101 +1,92 @@
 
-var HeightMap = (function(){
-    var _HeightMap = function (size, roughness){
-        var self = this;
+class HeightMap {
+    constructor (size, roughness, callback) {
+        this.size = size
         this.grid = new Grid(size, size, 0);
         this.callback = _.noop
+        this.callback = callback;
+        this.setInitialPoints();
 
-        this.build = function (callback){
-            self.callback = callback;
-            setInitialPoints();
+        for(let midSize = size - 1; midSize/2 >= 1; midSize /= 2){
+            let half = midSize / 2,
+                scale = roughness * midSize;
 
-            for(var midSize = size - 1; midSize/2 >= 1; midSize /= 2){
-                var half = midSize / 2,
-                    scale = roughness * midSize;
-
-                for (var y = half; y < size-1; y += midSize) {
-                    for (var x = half; x < size-1; x += midSize) {
-                        var variance = _.random(-scale, scale),
-                            point = new Point(x, y);
-                        square(point, half, variance);
-                    }
-                }
-
-                for (var y = 0; y <= size-1; y += half) {
-                    for (var x = (y + half) % midSize; x <= size-1; x += midSize) {
-                        var variance = _.random(-scale, scale),
-                            point = new Point(x, y);
-                        diamond(point, half, variance);
-                    }
+            for (let y = half; y < size-1; y += midSize) {
+                for (let x = half; x < size-1; x += midSize) {
+                    let variance = _.random(-scale, scale),
+                        point = new Point(x, y)
+                    this.square(point, half, variance)
                 }
             }
-            delete this.grid;
-        };
 
-        var setInitialPoints = function () {
-            var maxIndex = size - 1;
-            var rand = function () { return _.random(0, size); }
-            setPoint(new Point(0, 0), rand());
-            setPoint(new Point(maxIndex, 0), rand());
-            setPoint(new Point(0, maxIndex), rand());
-            setPoint(new Point(maxIndex, maxIndex), rand());
-        };
-
-        var diamond = function (point, midSize, offset) {
-            var x = point.x,
-                y = point.y,
-                average = averagePoints([
-                    new Point(x, y - midSize),      // top
-                    new Point(x + midSize, y),      // right
-                    new Point(x, y + midSize),      // bottom
-                    new Point(x - midSize, y)       // left
-                ]);
-            setPoint(point, average + offset);
-        };
-
-        var square = function (point, midSize, offset) {
-            var x = point.x,
-                y = point.y,
-                average = averagePoints([
-                    new Point(x - midSize, y - midSize),   // upper left
-                    new Point(x + midSize, y - midSize),   // upper right
-                    new Point(x + midSize, y + midSize),   // lower right
-                    new Point(x - midSize, y + midSize)    // lower left
-                ]);
-            setPoint(point, average + offset);
-        };
-
-        var setPoint = function (point, height) {
-            var height = _.clamp(height, 0, size);
-            if (self.grid.isEdge(point)) {
-                var oppositeEdge = self.grid.oppositeEdge(point);
-                self.grid.set(oppositeEdge, height);
+            for (let y = 0; y <= size-1; y += half) {
+                for (let x = (y + half) % midSize; x <= size-1; x += midSize) {
+                    let variance = _.random(-scale, scale),
+                        point = new Point(x, y)
+                    this.diamond(point, half, variance)
+                }
             }
-            self.grid.set(point, height);
-            self.callback(point, height);
-        };
+        }
+        delete this.grid;
+    }
 
-        var averagePoints = function(points) {
-            var values = points.map((pt) => self.grid.get(pt));
-            values.sort(function (a, b) { return a - b; })
-            if (values.length % 2 == 0) {
-                var midIndex = (values.length) / 2;
-                var first = values[midIndex - 1];
-                var second = values[midIndex]
-                return Math.round((first + second) / 2);
-            } else {
-                var index = Math.floor(values.length / 2);
-                return values[index];
-            }
-        };
+    setInitialPoints () {
+        let maxIndex = this.size - 1;
+        let rand = () => _.random(0, this.size)
+        this.setPoint(new Point(0, 0), rand());
+        this.setPoint(new Point(maxIndex, 0), rand());
+        this.setPoint(new Point(0, maxIndex), rand());
+        this.setPoint(new Point(maxIndex, maxIndex), rand());
+    }
+
+    diamond (point, midSize, offset) {
+        let x = point.x,
+            y = point.y,
+            average = this.averagePoints([
+                new Point(x, y - midSize),      // top
+                new Point(x + midSize, y),      // right
+                new Point(x, y + midSize),      // bottom
+                new Point(x - midSize, y)       // left
+            ])
+        this.setPoint(point, average + offset)
+    }
+
+    square (point, midSize, offset) {
+        var x = point.x,
+            y = point.y,
+            average = this.averagePoints([
+                new Point(x - midSize, y - midSize),   // upper left
+                new Point(x + midSize, y - midSize),   // upper right
+                new Point(x + midSize, y + midSize),   // lower right
+                new Point(x - midSize, y + midSize)    // lower left
+            ]);
+        this.setPoint(point, average + offset);
     };
 
-    return {
-        new: function (size, roughness) {
-            return new _HeightMap(size, roughness);
+    setPoint (point, height) {
+        height = _.clamp(height, 0, this.size)
+        if (this.grid.isEdge(point)) {
+            let oppositeEdge = this.grid.oppositeEdge(point)
+            this.grid.set(oppositeEdge, height);
+        }
+        this.grid.set(point, height)
+        this.callback(point, height)
+    }
+
+    averagePoints (points) {
+        let values = points.map(pt => this.grid.get(pt));
+        values.sort((a, b) => a - b)
+        if (values.length % 2 == 0) {
+            let midIndex = (values.length) / 2
+            let first = values[midIndex - 1]
+            let second = values[midIndex]
+            return Math.round((first + second) / 2)
+        } else {
+            let index = Math.floor(values.length / 2)
+            return values[index];
         }
     }
-})();
+}
 
 
 var MidpointDisplacement = function (p1, p2, maxSize, roughness, callback) {
