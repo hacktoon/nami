@@ -1,68 +1,60 @@
 
 
-var WorldPainter = (function () {
-    var _WorldPainter = function (canvas) {
-        var self = this;
-        this.ctx = canvas.getContext("2d");
+class WorldPainter {
+    constructor (canvas) {
+        this.ctx = canvas.getContext("2d")
+    }
 
-        this.draw = function (world, tilesize) {
-            world.grid.forEach(function (tile, point) {
-                var x = point.x * tilesize,
-                    y = point.y * tilesize;
+    draw (world, tilesize) {
+        world.grid.forEach((tile, point) => {
+            let x = point.x * tilesize,
+                y = point.y * tilesize
 
-                self.ctx.fillStyle = tile.terrain.color;
-                self.ctx.fillRect(x, y, tilesize, tilesize);
-            });
-        };
+            this.ctx.fillStyle = tile.terrain.color
+            this.ctx.fillRect(x, y, tilesize, tilesize)
+        })
+    }
 
-        this.drawBlackWhite = function (world, tilesize) {
-            world.grid.forEach(function (tile, point) {
-                var x = point.x * tilesize,
-                    y = point.y * tilesize;
+    drawBlackWhite (world, tilesize) {
+        world.grid.forEach((tile, point) => {
+            let x = point.x * tilesize,
+                y = point.y * tilesize
 
-                self.ctx.fillStyle = tile.terrain.isWater ? "#FFF" : "#000";
-                self.ctx.fillRect(x, y, tilesize, tilesize);
-            });
-        };
+            this.ctx.fillStyle = tile.terrain.isWater ? "#FFF" : "#000"
+            this.ctx.fillRect(x, y, tilesize, tilesize)
+        })
+    }
 
-        this.drawTectonics = function (world, tilesize) {
-            world.grid.forEach(function (tile, point) {
-                var x = point.x * tilesize,
-                    y = point.y * tilesize;
+    drawTectonics (world, tilesize) {
+        world.grid.forEach((tile, point) => {
+            let x = point.x * tilesize,
+                y = point.y * tilesize
 
-                if (tile.isPlateEdge) {
-                    self.ctx.fillStyle = "red";
-                } else {
-                    self.ctx.fillStyle = tile.terrain.color;
-                }
-                self.ctx.fillRect(x, y, tilesize, tilesize);
-            });
-        };
+            if (tile.isPlateEdge) {
+                this.ctx.fillStyle = "red"
+            } else {
+                this.ctx.fillStyle = tile.terrain.color
+            }
+            this.ctx.fillRect(x, y, tilesize, tilesize)
+        })
+    }
 
-        this.drawBorders = function (world, tilesize) {
-            var previousIsWater = false;
-            world.grid.forEach(function (tile, point) {
-                var x = point.x * tilesize,
-                y = point.y * tilesize;
+    drawBorders (world, tilesize) {
+        let previousIsWater = false
+        world.grid.forEach((tile, point) => {
+            let x = point.x * tilesize,
+            y = point.y * tilesize
 
-                var color = "#FFF";
-                if (!tile.terrain.isWater && previousIsWater) {
-                    color = "#000";
-                }
-                previousIsWater = tile.terrain.isWater;
-                self.ctx.fillStyle = color;
-                self.ctx.fillRect(x, y, tilesize, tilesize);
-            });
-        };
-
-    };
-
-    return {
-        new: function (canvas) {
-            return new _WorldPainter(canvas);
-        }
-    };
-})();
+            let color = "#FFF"
+            if (!tile.terrain.isWater && previousIsWater) {
+                color = "#000"
+            }
+            previousIsWater = tile.terrain.isWater
+            this.ctx.fillStyle = color
+            this.ctx.fillRect(x, y, tilesize, tilesize)
+        })
+    }
+}
 
 
 var isBeach = function (point) {

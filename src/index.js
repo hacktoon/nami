@@ -32,7 +32,7 @@ var createWorld = () => {
     return currentWorld;
 };
 
-var worldPainter = WorldPainter.new(viewCanvas),
+var worldPainter = new WorldPainter(viewCanvas),
     heatPainter = HeatPainter.new(viewCanvas),
     rainPainter = RainPainter.new(viewCanvas);
 
