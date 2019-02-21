@@ -20,7 +20,7 @@ canvas.height = GRID_HEIGHT * TILESIZE;
 var shuffleGrid = function(grid, values){
     for(var y = 0; y < grid.height; y++){
         for(var x = 0; x < grid.width; x++){
-            grid.set(Point.new(x, y), _.sample(values));
+            grid.set(new Point(x, y), _.sample(values));
         }
     }
 };

@@ -1,37 +1,33 @@
 
-var Point = (function () {
-    var _Point = function (x, y) {
-        this.x = x;
-        this.y = y;
+class Point {
+    constructor (x, y) {
+        this.x = x
+        this.y = y
+    }
 
-        this.hash = function () {
-            return x + ',' + y;
-        };
-    };
+    hash () {
+        return `{this.x},{this.y}`
+    }
 
-    return {
-        new: function (x, y) {
-            return new _Point(x, y);
-        },
-        from: function (string) {
-            var bits = string.replace(' ', '').split(','),
-                x = _.parseInt(bits[0]),
-                y = _.parseInt(bits[1]);
+    static from (string) {
+        let bits = string.replace(' ', '').split(','),
+            x = _.parseInt(bits[0]),
+            y = _.parseInt(bits[1]);
+        return new Point(x, y)
+    }
 
-            return Point.new(x, y);
-        },
-        euclidianDistance: function (point1, point2) {
-            var deltaX = Math.pow(point2.x - point1.x, 2),
-                deltaY = Math.pow(point2.y - point1.y, 2);
-            return Math.sqrt(deltaX + deltaY);
-        },
-        manhattanDistance: function (point1, point2) {
-            var deltaX = Math.abs(point2.x - point1.x),
-                deltaY = Math.abs(point2.y - point1.y);
-            return deltaX + deltaY;
-        }
-    };
-})();
+    static euclidianDistance (point1, point2) {
+        let deltaX = Math.pow(point2.x - point1.x, 2),
+            deltaY = Math.pow(point2.y - point1.y, 2)
+        return Math.sqrt(deltaX + deltaY)
+    }
+
+    static manhattanDistance (point1, point2) {
+        let deltaX = Math.abs(point2.x - point1.x),
+            deltaY = Math.abs(point2.y - point1.y)
+        return deltaX + deltaY
+    }
+}
 
 
 var PointNeighborhood = (function () {
@@ -90,7 +86,7 @@ var PointNeighborhood = (function () {
     };
 
     var createPoint = function (point1, point2) {
-        return Point.new(point1.x + point2.x, point1.y + point2.y);
+        return new Point(point1.x + point2.x, point1.y + point2.y);
     };
 
     return {

@@ -54,7 +54,7 @@ var WorldBuilder = (function(){
     function buildHeightmap(world, roughness) {
         var heightMap = HeightMap.new(world.size, roughness)
         heightMap.build(function(point, height){
-            var tile = Tile.new(point);
+            var tile = new Tile(point);
             tile.height = height;
             world.setTile(point, tile);
         });

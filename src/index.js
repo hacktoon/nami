@@ -62,7 +62,7 @@ var getCanvasMousePoint = (e, viewCanvas) => {
         mouseY = e.clientY - viewCanvas.offsetTop + scrollOffset,
         x = _.parseInt(mouseX / getTileSizeInput()),
         y = _.parseInt(mouseY / getTileSizeInput());
-    return Point.new(x, y);
+    return new Point(x, y);
 };
 
 /************ EVENT HANDLING *************************/

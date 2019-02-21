@@ -1,7 +1,5 @@
-var Tile = (function () {
-    var _Tile = function (point) {
-        var self = this;
-
+class Tile {
+    constructor (point) {
         this.id = point.hash();
         this.point = point;
         this.height = 0;
@@ -10,12 +8,5 @@ var Tile = (function () {
         this.biome = undefined;
 
         this.isPlateEdge = false;
-    };
-
-    return {
-        new: function (point) {
-            var tile = new _Tile(point);
-            return tile;
-        }
-    };
-})();
+    }
+};

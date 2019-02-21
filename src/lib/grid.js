@@ -30,13 +30,13 @@ class Grid {
         if (y >= this.height){ y %= this.height; }
         if (x < 0){ x = this.width - 1 - Math.abs(x+1) % this.width; }
         if (y < 0){ y = this.height - 1 - Math.abs(y+1) % this.height; }
-        return Point.new(x, y);
+        return new Point(x, y);
     }
 
     forEach (callback) {
         for(var y = 0; y < this.height; y++){
             for(var x = 0; x < this.width; x++){
-                var point = Point.new(x, y),
+                var point = new Point(x, y),
                     value = this.get(point);
                 callback(value, point);
             }
@@ -60,7 +60,7 @@ class Grid {
         if (point.x === this.width - 1) { x = 0; }
         if (point.y === 0) { y = this.height - 1; }
         if (point.y === this.height - 1) { y = 0; }
-        return Point.new(x, y);
+        return new Point(x, y);
     }
 }
 
@@ -86,7 +86,7 @@ class GridPointDistribution {
     createRandomPoint () {
         let x = _.random(this.grid.width-1),
             y = _.random(this.grid.height-1);
-        return Point.new(x, y);
+        return new Point(x, y);
     }
 
     each (callback) {

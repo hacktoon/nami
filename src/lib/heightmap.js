@@ -16,7 +16,7 @@ var HeightMap = (function(){
                 for (var y = half; y < size-1; y += midSize) {
                     for (var x = half; x < size-1; x += midSize) {
                         var variance = _.random(-scale, scale),
-                            point = Point.new(x, y);
+                            point = new Point(x, y);
                         square(point, half, variance);
                     }
                 }
@@ -24,7 +24,7 @@ var HeightMap = (function(){
                 for (var y = 0; y <= size-1; y += half) {
                     for (var x = (y + half) % midSize; x <= size-1; x += midSize) {
                         var variance = _.random(-scale, scale),
-                            point = Point.new(x, y);
+                            point = new Point(x, y);
                         diamond(point, half, variance);
                     }
                 }
@@ -35,20 +35,20 @@ var HeightMap = (function(){
         var setInitialPoints = function () {
             var maxIndex = size - 1;
             var rand = function () { return _.random(0, size); }
-            setPoint(Point.new(0, 0), rand());
-            setPoint(Point.new(maxIndex, 0), rand());
-            setPoint(Point.new(0, maxIndex), rand());
-            setPoint(Point.new(maxIndex, maxIndex), rand());
+            setPoint(new Point(0, 0), rand());
+            setPoint(new Point(maxIndex, 0), rand());
+            setPoint(new Point(0, maxIndex), rand());
+            setPoint(new Point(maxIndex, maxIndex), rand());
         };
 
         var diamond = function (point, midSize, offset) {
             var x = point.x,
                 y = point.y,
                 average = averagePoints([
-                    Point.new(x, y - midSize),      // top
-                    Point.new(x + midSize, y),      // right
-                    Point.new(x, y + midSize),      // bottom
-                    Point.new(x - midSize, y)       // left
+                    new Point(x, y - midSize),      // top
+                    new Point(x + midSize, y),      // right
+                    new Point(x, y + midSize),      // bottom
+                    new Point(x - midSize, y)       // left
                 ]);
             setPoint(point, average + offset);
         };
@@ -57,10 +57,10 @@ var HeightMap = (function(){
             var x = point.x,
                 y = point.y,
                 average = averagePoints([
-                    Point.new(x - midSize, y - midSize),   // upper left
-                    Point.new(x + midSize, y - midSize),   // upper right
-                    Point.new(x + midSize, y + midSize),   // lower right
-                    Point.new(x - midSize, y + midSize)    // lower left
+                    new Point(x - midSize, y - midSize),   // upper left
+                    new Point(x + midSize, y - midSize),   // upper right
+                    new Point(x + midSize, y + midSize),   // lower right
+                    new Point(x - midSize, y + midSize)    // lower left
                 ]);
             setPoint(point, average + offset);
         };
@@ -108,7 +108,7 @@ var MidpointDisplacement = function (p1, p2, maxSize, roughness, callback) {
         var x = Math.floor((p1.x + p2.x) / 2),
             y = (p1.y + p2.y) / 2 + _.random(-displacement, displacement);
         y = _.clamp(Math.round(y), 0, maxSize - 1);
-        return Point.new(x, y);
+        return new Point(x, y);
     };
 
     var midpoint = function (p1, p2, size) {
