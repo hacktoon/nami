@@ -1,0 +1,30 @@
+{
+  "name": "nami",
+  "version": "0.1.0",
+  "description": "A world generator",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hacktoon/nami.git"
+  },
+  "author": "Karlisson Bezerra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hacktoon/nami/issues"
+  },
+  "homepage": "https://github.com/hacktoon/nami#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/preset-env": "^7.3.1"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.2.5"
+  }
+}

@@ -1,3 +1,5 @@
+window.log = console.log.bind(console);
+
 var viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
@@ -8,24 +10,24 @@ var viewCanvas = document.getElementById("viewCanvas"),
 
 var currentWorld;
 
-var getViewInput = function () {
+var getViewInput = () => {
     var option = viewInput.options[viewInput.selectedIndex];
     return option.value;
 };
 
-var getTileSizeInput = function(){
+var getTileSizeInput = () => {
     return Number(tilesizeInput.value)
 };
 
-var getRoughnessInput = function(){
+var getRoughnessInput = () => {
     return Number(roughnessInput.value)
 };
 
-var getPlatesInput = function () {
+var getPlatesInput = () => {
     return Number(platesInput.value)
 };
 
-var createWorld = function(){
+var createWorld = () => {
     currentWorld = WorldBuilder.build(257, getRoughnessInput(), getPlatesInput());
     return currentWorld;
 };
@@ -34,7 +36,7 @@ var worldPainter = WorldPainter.new(viewCanvas),
     heatPainter = HeatPainter.new(viewCanvas),
     rainPainter = RainPainter.new(viewCanvas);
 
-var draw = function() {
+var draw = () =>  {
     var option = getViewInput(),
         tilesize = getTileSizeInput();
 
@@ -54,7 +56,7 @@ var draw = function() {
     }
 };
 
-var getCanvasMousePoint = function(e, viewCanvas){
+var getCanvasMousePoint = (e, viewCanvas) => {
     var scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
         mouseX = e.clientX - viewCanvas.offsetLeft,
         mouseY = e.clientY - viewCanvas.offsetTop + scrollOffset,
@@ -67,18 +69,18 @@ var getCanvasMousePoint = function(e, viewCanvas){
 
 viewInput.addEventListener('change', draw);
 
-generateButton.addEventListener('click', function() {
+generateButton.addEventListener('click', () => {
     createWorld();
     draw();
 });
 
-viewCanvas.addEventListener('click', function (e) {
+viewCanvas.addEventListener('click', (e) => {
     var point = getCanvasMousePoint(e, viewCanvas);
     currentWorld.lowerTerrain(point);
     draw();
 });
 
-viewCanvas.addEventListener('mousemove', function(e) {
+viewCanvas.addEventListener('mousemove', (e) => {
     var point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
         position = " | ("+ tile.id + ")",
@@ -95,7 +97,7 @@ viewCanvas.addEventListener('mousemove', function(e) {
     //infoText.innerHTML = position + height + terrain + heatText + rainText;
 });
 
-viewCanvas.addEventListener('mouseout', function(e) {
+viewCanvas.addEventListener('mouseout', () => {
     infoText.innerHTML = infoText.title;
 });
 
