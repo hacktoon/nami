@@ -109,63 +109,62 @@ class GridPointDistribution {
 }
 
 
-var GridFill = function (point, onFill, isFillable) {
-    var onFill = _.defaultTo(onFill, _.noop);
-    var isFillable = _.defaultTo(isFillable, _.stubTrue);
-    var self = this;
+class GridFill {
+    constructor (point, onFill, isFillable) {
+        this.onFill = _.defaultTo(onFill, _.noop);
+        this.isFillable = _.defaultTo(isFillable, _.stubTrue);
+        this.step = 0;
+        this.seeds = new PointMap(point);
+        this.startPoint = point;
+    }
 
-    this.step = 0;
-    this.seeds = new PointMap(point);
-    this.startPoint = point;
-
-    this.isComplete = function (times) {
-        var noSeeds = self.seeds.size() === 0,
+    isComplete (times) {
+        let noSeeds = this.seeds.size() === 0,
             timesEnded = _.isNumber(times) && times <= 0;
         return noSeeds || timesEnded;
-    };
+    }
 
-    this.fill = function () {
-        while (!self.isComplete()) {
-            self.grow();
+    fill () {
+        while (!this.isComplete()) {
+            this.grow()
         }
-    };
+    }
 
-    this.grow = function (times) {
-        grow(times, false);
-    };
+    grow (times) {
+        this._grow(times, false)
+    }
 
-    this.growPartial = function (times) {
-        grow(times, true);
-    };
+    growPartial (times) {
+        this._grow(times, true)
+    }
 
-    var grow = function (times, isPartial) {
-        var times = _.defaultTo(times, 1);
-        var currentSeeds = self.seeds;
+    _grow (times, isPartial) {
+        times = _.defaultTo(times, 1)
 
-        if (self.isComplete(times)) return;
+        if (this.isComplete(times)) return
 
-        self.seeds = new PointMap();
-        currentSeeds.each(function (point) {
-            growNeighbors(point, isPartial);
-        });
+        let currentSeeds = this.seeds
+        this.seeds = new PointMap()
+        currentSeeds.each(point => {
+            this.growNeighbors(point, isPartial)
+        })
         if (times > 1) {
-            var grow = isPartial ? self.growPartial : self.grow;
-            grow(times - 1);
+            this._grow(times - 1, isPartial)
         }
-        self.step++;
-    };
+        this.step++;
+    }
 
-    var growNeighbors = function (referencePoint, isPartial) {
+    growNeighbors (referencePoint, isPartial) {
         PointNeighborhood.new(referencePoint)
-        .adjacent(function (neighbor) {
-            if (!isFillable(neighbor, referencePoint, self.step)) return;
+        .adjacent(neighbor => {
+            if (!this.isFillable(neighbor, referencePoint, this.step)) return;
 
             if (isPartial && _.sample([true, false])) {
-                self.seeds.add(referencePoint);
+                this.seeds.add(referencePoint);
             } else {
-                self.seeds.add(neighbor);
-                onFill(neighbor, referencePoint, self.step);
+                this.seeds.add(neighbor);
+                this.onFill(neighbor, referencePoint, this.step);
             }
         });
-    };
+    }
 };
