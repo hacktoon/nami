@@ -30,7 +30,7 @@ var TectonicsBuilder = function (world, numPlates) {
 var Tectonics = function (size) {
     var self = this;
 
-    this.grid = Grid.new(size, size);
+    this.grid = new Grid(size, size);
     this.plates = [];
     this.plateIdMap = {};
     this.onFillCallback = _.noop

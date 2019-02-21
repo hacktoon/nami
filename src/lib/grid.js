@@ -1,82 +1,68 @@
 
-
-var Grid = (function(){
-    var _Grid = function(width, height){
-        var self = this;
-
+class Grid {
+    constructor(width, height, defaultValue) {
         this.width = width;
         this.height = height;
         this.matrix = [];
 
-
-        this.build = function(default_value){
-            for(var y = 0; y < self.height; y++) {
-                self.matrix.push([]);
-                for(var x = 0; x < self.width; x++){
-                    self.matrix[y].push(default_value);
-                }
+        for(var y = 0; y < this.height; y++) {
+            this.matrix.push([]);
+            for(var x = 0; x < this.width; x++){
+                this.matrix[y].push(defaultValue);
             }
-        };
-
-        this.wrap = function(point){
-            var x = point.x,
-                y = point.y;
-            if (x >= self.width){ x %= self.width; }
-            if (y >= self.height){ y %= self.height; }
-            if (x < 0){ x = self.width - 1 - Math.abs(x+1) % self.width; }
-            if (y < 0){ y = self.height - 1 - Math.abs(y+1) % self.height; }
-            return Point.new(x, y);
-        };
-
-        this.get = function(point){
-            var point = self.wrap(point);
-            return self.matrix[point.y][point.x];
-        };
-
-        this.set = function(point, value){
-            var point = self.wrap(point);
-            self.matrix[point.y][point.x] = value;
-        };
-
-        this.forEach = function(callback){
-            for(var y = 0; y < self.height; y++){
-                for(var x = 0; x < self.width; x++){
-                    var point = Point.new(x, y),
-                        value = self.get(point);
-                    callback(value, point);
-                }
-            }
-        };
-
-        this.isEdge = function(point){
-            var isTopLeft = point.x === 0 || point.y === 0,
-                isBottomRight = point.x === self.width - 1 ||
-                                point.y === self.height - 1;
-            return isTopLeft || isBottomRight;
-        };
-
-        this.oppositeEdge = function(point){
-            var x = point.x,
-                y = point.y;
-            if (! self.isEdge(point)) {
-                throw new RangeError("Point not in edge");
-            }
-            if (point.x === 0) { x = self.width - 1; }
-            if (point.x === self.width - 1) { x = 0; }
-            if (point.y === 0) { y = self.height - 1; }
-            if (point.y === self.height - 1) { y = 0; }
-            return Point.new(x, y);
-        };
-    };
-
-    return {
-        new: function(width, height, default_value) {
-            var grid = new _Grid(width, height);
-            grid.build(default_value);
-            return grid;
         }
-    };
-})();
+    }
+
+    get (point) {
+        let p = this.wrap(point);
+        return this.matrix[p.y][p.x];
+    }
+
+    set (point, value) {
+        let p = this.wrap(point);
+        this.matrix[p.y][p.x] = value;
+    }
+
+    wrap (point) {
+        let x = point.x,
+            y = point.y;
+        if (x >= this.width){ x %= this.width; }
+        if (y >= this.height){ y %= this.height; }
+        if (x < 0){ x = this.width - 1 - Math.abs(x+1) % this.width; }
+        if (y < 0){ y = this.height - 1 - Math.abs(y+1) % this.height; }
+        return Point.new(x, y);
+    }
+
+    forEach (callback) {
+        for(var y = 0; y < this.height; y++){
+            for(var x = 0; x < this.width; x++){
+                var point = Point.new(x, y),
+                    value = this.get(point);
+                callback(value, point);
+            }
+        }
+    }
+
+    isEdge (point) {
+        var isTopLeft = point.x === 0 || point.y === 0,
+            isBottomRight = point.x === this.width - 1 ||
+                            point.y === this.height - 1;
+        return isTopLeft || isBottomRight;
+    }
+
+    oppositeEdge (point) {
+        var x = point.x,
+            y = point.y;
+        if (! this.isEdge(point)) {
+            throw new RangeError("Point not in edge");
+        }
+        if (point.x === 0) { x = this.width - 1; }
+        if (point.x === this.width - 1) { x = 0; }
+        if (point.y === 0) { y = this.height - 1; }
+        if (point.y === this.height - 1) { y = 0; }
+        return Point.new(x, y);
+    }
+}
 
 
 var GridPointDistribution = function(grid, numPoints, callback){

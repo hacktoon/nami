@@ -9,7 +9,7 @@ var World = function (size){
     this.bio = {};
     this.climate = {};
 
-    this.grid = Grid.new(size, size);
+    this.grid = new Grid(size, size);
 
     this.waterArea = 0;
     this.landArea = 0;

@@ -2,7 +2,7 @@
 var HeightMap = (function(){
     var _HeightMap = function (size, roughness){
         var self = this;
-        this.grid = Grid.new(size, size);
+        this.grid = new Grid(size, size, 0);
         this.callback = _.noop
 
         this.build = function (callback){
@@ -76,7 +76,7 @@ var HeightMap = (function(){
         };
 
         var averagePoints = function(points) {
-            var values = points.map(self.grid.get);
+            var values = points.map((pt) => self.grid.get(pt));
             values.sort(function (a, b) { return a - b; })
             if (values.length % 2 == 0) {
                 var midIndex = (values.length) / 2;

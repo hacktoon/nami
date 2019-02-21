@@ -6,7 +6,7 @@ var HeatMap = (function(){
             roughness = .15;
 
         this.size = size;
-        this.grid = Grid.new(size, size, defaultValue);
+        this.grid = new Grid(size, size, defaultValue);
         this.idMap = [
             { height: 15,  color: "white",  name: "Polar"},
             { height: 60,  color: "blue",   name: "Temperate"},

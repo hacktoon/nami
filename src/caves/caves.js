@@ -11,7 +11,7 @@ var canvas = document.getElementById('canvas'),
     runButton = document.getElementById('run');
 
 var ctx = canvas.getContext('2d'),
-    grid = Grid.new(GRID_WIDTH, GRID_HEIGHT, 0);
+    grid = new Grid(GRID_WIDTH, GRID_HEIGHT, 0);
 
 canvas.width = GRID_WIDTH * TILESIZE;
 canvas.height = GRID_HEIGHT * TILESIZE;
@@ -37,7 +37,7 @@ var run = function(grid) {
 
 
 var step = function(grid) {
-    var new_grid = Grid.new(grid.width, grid.height, 0);
+    var new_grid = new Grid(grid.width, grid.height, 0);
 
     grid.forEach(function(value, point) {
         var neighborhood = PointNeighborhood.new(point),
