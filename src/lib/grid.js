@@ -65,47 +65,48 @@ class Grid {
 }
 
 
-var GridPointDistribution = function(grid, numPoints, callback){
-    var pointsToCreate = _.defaultTo(numPoints, 1),
-        maxTries = grid.width * 2,
-        chosenPoints = {};
+class GridPointDistribution {
+    constructor (grid, numPoints) {
+        this.grid = grid;
+        this.numPoints = _.defaultTo(numPoints, 1);
+        this.maxTries = grid.width * 2;
+        this.chosenPoints = {};
+    }
 
-    var hasMinimumDistance = function(point, numPoints){
-        var minDistance = (grid.width * 2) / numPoints;
-        for(var key in chosenPoints){
-            var refPoint = chosenPoints[key];
-            var distance = Point.manhattanDistance(point, refPoint);
+    hasMinimumDistance (point) {
+        let minDistance = (this.grid.width * 2) / this.numPoints;
+        for(let key in this.chosenPoints){
+            let refPoint = this.chosenPoints[key];
+            let distance = Point.manhattanDistance(point, refPoint);
             if (distance < minDistance) return false;
-        };
-        return true;
-    };
-
-    var createRandomPoint = function() {
-        var x = _.random(grid.width-1),
-            y = _.random(grid.height-1);
-        return Point.new(x, y);
-    };
-
-    var addPoint = function(point) {
-        chosenPoints[point.hash()] = point;
-        callback(point, pointsToCreate--);
-    };
-
-    addPoint(createRandomPoint()); // add first point
-
-    while(true){
-        if (pointsToCreate == 0 || maxTries-- == 0) break;
-        var point = createRandomPoint(),
-            hash = point.hash(),
-            isMinDistance = hasMinimumDistance(point, numPoints);
-        if (_.isUndefined(chosenPoints[hash]) && isMinDistance){
-            addPoint(point);
         }
-    };
+        return true;
+    }
 
-    return chosenPoints;
-};
+    createRandomPoint () {
+        let x = _.random(this.grid.width-1),
+            y = _.random(this.grid.height-1);
+        return Point.new(x, y);
+    }
 
+    each (callback) {
+        const addPoint = (point) => {
+            this.chosenPoints[point.hash()] = point;
+            callback(point, this.numPoints--);
+        }
+        addPoint(this.createRandomPoint());
+        while(true){
+            if (this.numPoints == 0 || this.maxTries-- == 0) break;
+            let point = this.createRandomPoint(),
+                hash = point.hash(),
+                isMinDistance = this.hasMinimumDistance(point);
+            if (_.isUndefined(this.chosenPoints[hash]) && isMinDistance){
+                addPoint(point);
+            }
+        };
+        return this.chosenPoints;
+    }
+}
 
 
 var GridFill = function (point, onFill, isFillable) {

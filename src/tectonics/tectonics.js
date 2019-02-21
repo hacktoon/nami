@@ -108,7 +108,7 @@ var Tectonics = function (size) {
             self.plateIdMap[plateId] = plate;
             self.plates.push(plate);
         };
-        GridPointDistribution(self.grid, numPlates, eachPoint);
+        new GridPointDistribution(self.grid, numPlates).each(eachPoint);
     };
 };
 
