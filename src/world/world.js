@@ -48,35 +48,33 @@ class World {
 }
 
 
-var WorldBuilder = (function(){
-    function buildHeightmap(world, roughness) {
-        var heightMap = new HeightMap(world.size, roughness, (point, height) => {
-            var tile = new Tile(point);
-            tile.height = height;
-            world.setTile(point, tile);
+class WorldBuilder {
+    static buildHeightmap(world, roughness) {
+        new HeightMap(world.size, roughness, (point, height) => {
+            let tile = new Tile(point)
+            tile.height = height
+            world.setTile(point, tile)
         })
-    };
+    }
 
-    function smooth(world) {
+    static smooth(world) {
         world.grid.forEach(function(tile){
-            var height = HeightFilter.smooth(world.grid, tile);
-            tile.terrain = Terrain.getTerrain(height);
-        });
-    };
+            let height = HeightFilter.smooth(world.grid, tile)
+            tile.terrain = Terrain.getTerrain(height)
+        })
+    }
 
-    function build(size, roughness, numPlates) {
-        var world = new World(size);
+    static build(size, roughness, numPlates) {
+        let world = new World(size)
 
-        buildHeightmap(world, roughness);
+        WorldBuilder.buildHeightmap(world, roughness)
         TectonicsBuilder.build(world, numPlates)
         // detect waterbodies, landforms, create oceans
-        smooth(world); // measure land/area
+        WorldBuilder.smooth(world) // measure land/area
 
-        return world;
-    };
-
-    return { build: build }
-})();
+        return world
+    }
+}
 
 
 var HeightFilter = (function(){

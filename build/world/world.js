@@ -64,40 +64,44 @@ function () {
   return World;
 }();
 
-var WorldBuilder = function () {
-  function buildHeightmap(world, roughness) {
-    var heightMap = new HeightMap(world.size, roughness, function (point, height) {
-      var tile = new Tile(point);
-      tile.height = height;
-      world.setTile(point, tile);
-    });
+var WorldBuilder =
+/*#__PURE__*/
+function () {
+  function WorldBuilder() {
+    _classCallCheck(this, WorldBuilder);
   }
 
-  ;
+  _createClass(WorldBuilder, null, [{
+    key: "buildHeightmap",
+    value: function buildHeightmap(world, roughness) {
+      new HeightMap(world.size, roughness, function (point, height) {
+        var tile = new Tile(point);
+        tile.height = height;
+        world.setTile(point, tile);
+      });
+    }
+  }, {
+    key: "smooth",
+    value: function smooth(world) {
+      world.grid.forEach(function (tile) {
+        var height = HeightFilter.smooth(world.grid, tile);
+        tile.terrain = Terrain.getTerrain(height);
+      });
+    }
+  }, {
+    key: "build",
+    value: function build(size, roughness, numPlates) {
+      var world = new World(size);
+      WorldBuilder.buildHeightmap(world, roughness);
+      TectonicsBuilder.build(world, numPlates); // detect waterbodies, landforms, create oceans
 
-  function smooth(world) {
-    world.grid.forEach(function (tile) {
-      var height = HeightFilter.smooth(world.grid, tile);
-      tile.terrain = Terrain.getTerrain(height);
-    });
-  }
+      WorldBuilder.smooth(world); // measure land/area
 
-  ;
+      return world;
+    }
+  }]);
 
-  function build(size, roughness, numPlates) {
-    var world = new World(size);
-    buildHeightmap(world, roughness);
-    TectonicsBuilder.build(world, numPlates); // detect waterbodies, landforms, create oceans
-
-    smooth(world); // measure land/area
-
-    return world;
-  }
-
-  ;
-  return {
-    build: build
-  };
+  return WorldBuilder;
 }();
 
 var HeightFilter = function () {
