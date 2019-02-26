@@ -66,21 +66,10 @@ class Grid {
 
 
 class GridPointDistribution {
-    constructor (grid, numPoints) {
+    constructor (grid, numPoints = 1) {
         this.grid = grid
-        this.numPoints = _.defaultTo(numPoints, 1)
-        this.maxTries = grid.width * 2
-        this.chosenPoints = {}
-    }
-
-    hasMinimumDistance (point) {
-        let minDistance = (this.grid.width * 2) / this.numPoints
-        for(let key in this.chosenPoints){
-            let refPoint = this.chosenPoints[key]
-            let distance = Point.manhattanDistance(point, refPoint)
-            if (distance < minDistance) return false
-        }
-        return true
+        this.numPoints = numPoints
+        this.chosenPoints = new PointMap()
     }
 
     createRandomPoint () {
@@ -90,22 +79,14 @@ class GridPointDistribution {
     }
 
     each (callback) {
-        const addPoint = (point) => {
-            this.chosenPoints[point.hash()] = point
-            callback(point, this.numPoints--)
+        let count = 0
+        while(count < this.numPoints) {
+            let point = this.createRandomPoint()
+            if (this.chosenPoints.has(point))
+                continue
+            this.chosenPoints.add(point)
+            callback(point, count++)
         }
-        addPoint(this.createRandomPoint())
-        while(true){
-            if (this.numPoints == 0 || this.maxTries-- == 0)
-                break
-            let point = this.createRandomPoint(),
-                hash = point.hash(),
-                isMinDistance = this.hasMinimumDistance(point)
-            if (_.isUndefined(this.chosenPoints[hash]) && isMinDistance){
-                addPoint(point)
-            }
-        };
-        return this.chosenPoints
     }
 }
 

@@ -115,29 +115,17 @@ function () {
 var GridPointDistribution =
 /*#__PURE__*/
 function () {
-  function GridPointDistribution(grid, numPoints) {
+  function GridPointDistribution(grid) {
+    var numPoints = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+
     _classCallCheck(this, GridPointDistribution);
 
     this.grid = grid;
-    this.numPoints = _.defaultTo(numPoints, 1);
-    this.maxTries = grid.width * 2;
-    this.chosenPoints = {};
+    this.numPoints = numPoints;
+    this.chosenPoints = new PointMap();
   }
 
   _createClass(GridPointDistribution, [{
-    key: "hasMinimumDistance",
-    value: function hasMinimumDistance(point) {
-      var minDistance = this.grid.width * 2 / this.numPoints;
-
-      for (var key in this.chosenPoints) {
-        var refPoint = this.chosenPoints[key];
-        var distance = Point.manhattanDistance(point, refPoint);
-        if (distance < minDistance) return false;
-      }
-
-      return true;
-    }
-  }, {
     key: "createRandomPoint",
     value: function createRandomPoint() {
       var x = _.random(this.grid.width - 1),
@@ -148,28 +136,14 @@ function () {
   }, {
     key: "each",
     value: function each(callback) {
-      var _this = this;
+      var count = 0;
 
-      var addPoint = function addPoint(point) {
-        _this.chosenPoints[point.hash()] = point;
-        callback(point, _this.numPoints--);
-      };
-
-      addPoint(this.createRandomPoint());
-
-      while (true) {
-        if (this.numPoints == 0 || this.maxTries-- == 0) break;
-        var point = this.createRandomPoint(),
-            hash = point.hash(),
-            isMinDistance = this.hasMinimumDistance(point);
-
-        if (_.isUndefined(this.chosenPoints[hash]) && isMinDistance) {
-          addPoint(point);
-        }
+      while (count < this.numPoints) {
+        var point = this.createRandomPoint();
+        if (this.chosenPoints.has(point)) continue;
+        this.chosenPoints.add(point);
+        callback(point, count++);
       }
-
-      ;
-      return this.chosenPoints;
     }
   }]);
 
@@ -216,14 +190,14 @@ function () {
   }, {
     key: "_grow",
     value: function _grow(times, isPartial) {
-      var _this2 = this;
+      var _this = this;
 
       times = _.defaultTo(times, 1);
       if (this.isComplete(times)) return;
       var currentSeeds = this.seeds;
       this.seeds = new PointMap();
       currentSeeds.each(function (point) {
-        _this2.growNeighbors(point, isPartial);
+        _this.growNeighbors(point, isPartial);
       });
 
       if (times > 1) {
@@ -235,17 +209,17 @@ function () {
   }, {
     key: "growNeighbors",
     value: function growNeighbors(referencePoint, isPartial) {
-      var _this3 = this;
+      var _this2 = this;
 
       new PointNeighborhood(referencePoint).adjacent(function (neighbor) {
-        if (!_this3.isFillable(neighbor, referencePoint, _this3.step)) return;
+        if (!_this2.isFillable(neighbor, referencePoint, _this2.step)) return;
 
         if (isPartial && _.sample([true, false])) {
-          _this3.seeds.add(referencePoint);
+          _this2.seeds.add(referencePoint);
         } else {
-          _this3.seeds.add(neighbor);
+          _this2.seeds.add(neighbor);
 
-          _this3.onFill(neighbor, referencePoint, _this3.step);
+          _this2.onFill(neighbor, referencePoint, _this2.step);
         }
       });
     }
