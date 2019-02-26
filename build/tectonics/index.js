@@ -12,11 +12,11 @@ var viewCanvas = document.getElementById("world"),
 var TILESIZE = 2,
     SIZE = 256,
     tectonics = undefined,
-    painter = TectonicsPainter.new(viewCanvas);
+    painter = new TectonicsPainter(viewCanvas);
 
 var createTectonics = function createTectonics() {
-  tectonics = new Tectonics(SIZE);
-  tectonics.initPlates(getTotalPlates());
+  tectonics = new Tectonics(SIZE, getTotalPlates());
+  tectonics.initPlates();
 };
 
 var getTotalPlates = function getTotalPlates() {

@@ -253,5 +253,3 @@ function () {
 
   return GridFill;
 }();
-
-;

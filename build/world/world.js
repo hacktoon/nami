@@ -87,7 +87,7 @@ var WorldBuilder = function () {
   function build(size, roughness, numPlates) {
     var world = new World(size);
     buildHeightmap(world, roughness);
-    TectonicsBuilder(world, numPlates); // detect waterbodies, landforms, create oceans
+    TectonicsBuilder.build(world, numPlates); // detect waterbodies, landforms, create oceans
 
     smooth(world); // measure land/area
 

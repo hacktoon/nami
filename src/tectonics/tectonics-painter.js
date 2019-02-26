@@ -1,57 +1,49 @@
 
-var TectonicsPainter = (function () {
-    var _TectonicsPainter = function (canvas) {
-        var self = this;
-        this.ctx = canvas.getContext("2d");
-        this.tectonics = undefined;
+class TectonicsPainter {
+    constructor (canvas) {
+        this.ctx = canvas.getContext("2d")
+        this.tectonics = undefined
+    }
 
-        this.drawPoint = function (point, color, tilesize) {
-            var point = self.tectonics.grid.wrap(point),
-                ts = tilesize;
-            self.ctx.fillStyle = color;
-            self.ctx.fillRect(point.x * ts, point.y * ts, ts, ts);
-        };
+    drawPoint (point, color, tilesize) {
+        let ts = tilesize
+        point = this.tectonics.grid.wrap(point)
+        this.ctx.fillStyle = color
+        this.ctx.fillRect(point.x * ts, point.y * ts, ts, ts)
+    }
 
-        this.drawEdges = function (tectonics, color, tilesize) {
-            tectonics.plates.forEach(function(plate) {
-                plate.forEachSeed(function (point) {
-                    self.drawPoint(point, "red", tilesize);
-                });
-                plate.forEachEdge(function (point) {
-                    self.drawPoint(point, color, tilesize);
-                });
-            });
-        };
+    drawEdges (tectonics, color, tilesize) {
+        tectonics.plates.forEach(plate => {
+            plate.forEachSeed(point => {
+                this.drawPoint(point, "red", tilesize)
+            })
+            plate.forEachEdge(point => {
+                this.drawPoint(point, color, tilesize)
+            })
+        })
+    }
 
-        this.draw = function(tectonics, tilesize) {
-            self.tectonics = tectonics;
-            self.drawEdges(tectonics, "black", tilesize);
-            drawLabel(tilesize);
-        };
+    draw (tectonics, tilesize) {
+        this.tectonics = tectonics
+        this.drawEdges(tectonics, "black", tilesize)
+        this.drawLabel(tilesize)
+    }
 
-        var drawLabel = function (tilesize){
-            self.tectonics.plates.forEach(function (plate) {
-                var symbol = Direction.getSymbol(plate.direction),
-                    text = symbol + plate.speed +"S/"+plate.density+"D",
-                    point = plate.region.startPoint,
-                    x = tilesize * point.x,
-                    y = tilesize * point.y;
-                self.ctx.fillStyle = "black";
-                self.ctx.fillRect(x, y, tilesize, tilesize);
-                self.ctx.font = "15px Arial";
-                self.ctx.strokeStyle = "black";
-                self.ctx.lineWidth = 4;
-                self.ctx.strokeText(text, x, y);
-                self.ctx.fillStyle = "white";
-                self.ctx.fillText(text, x, y);
-            });
-        };
-    };
-
-    return {
-        _class: _TectonicsPainter,
-        new: function (canvas) {
-            return new _TectonicsPainter(canvas);
-        }
-    };
-})();
+    drawLabel (tilesize){
+        this.tectonics.plates.forEach(plate => {
+            let symbol = Direction.getSymbol(plate.direction),
+                text = symbol + plate.speed +"S/"+plate.density+"D",
+                point = plate.region.startPoint,
+                x = tilesize * point.x,
+                y = tilesize * point.y
+            this.ctx.fillStyle = "black"
+            this.ctx.fillRect(x, y, tilesize, tilesize)
+            this.ctx.font = "15px Arial"
+            this.ctx.strokeStyle = "black"
+            this.ctx.lineWidth = 4
+            this.ctx.strokeText(text, x, y)
+            this.ctx.fillStyle = "white"
+            this.ctx.fillText(text, x, y)
+        })
+    }
+}
