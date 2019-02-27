@@ -166,3 +166,52 @@ var NumberInterpolation = function NumberInterpolation(from, to, totalItems) {
   numbers.push(to);
   return numbers;
 };
+
+var HashMap =
+/*#__PURE__*/
+function () {
+  function HashMap() {
+    _classCallCheck(this, HashMap);
+
+    this._map = {};
+    this._size = 0;
+  }
+
+  _createClass(HashMap, [{
+    key: "add",
+    value: function add(obj) {
+      this._map[obj.hash()] = obj;
+      this._size++;
+    }
+  }, {
+    key: "has",
+    value: function has(obj) {
+      return _.has(this._map, obj.hash());
+    }
+  }, {
+    key: "get",
+    value: function get(hash) {
+      return this._map[hash];
+    }
+  }, {
+    key: "remove",
+    value: function remove(obj) {
+      delete this._map[obj.hash()];
+      this._size--;
+    }
+  }, {
+    key: "size",
+    value: function size() {
+      return this._size;
+    }
+  }, {
+    key: "each",
+    value: function each(callback) {
+      _.each(this._map, function (obj) {
+        return callback(obj);
+      });
+    }
+  }]);
+
+  return HashMap;
+}();

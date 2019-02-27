@@ -122,7 +122,7 @@ function () {
 
     this.grid = grid;
     this.numPoints = numPoints;
-    this.chosenPoints = new PointMap();
+    this.chosenPoints = new HashMap();
   }
 
   _createClass(GridPointDistribution, [{
@@ -159,8 +159,9 @@ function () {
     this.onFill = _.defaultTo(onFill, _.noop);
     this.isFillable = _.defaultTo(isFillable, _.stubTrue);
     this.step = 0;
-    this.seeds = new PointMap(point);
+    this.seeds = new HashMap();
     this.startPoint = point;
+    this.seeds.add(point);
   }
 
   _createClass(GridFill, [{
@@ -195,7 +196,7 @@ function () {
       times = _.defaultTo(times, 1);
       if (this.isComplete(times)) return;
       var currentSeeds = this.seeds;
-      this.seeds = new PointMap();
+      this.seeds = new HashMap();
       currentSeeds.each(function (point) {
         _this.growNeighbors(point, isPartial);
       });

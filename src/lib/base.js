@@ -96,3 +96,37 @@ var NumberInterpolation = function(from, to, totalItems){
 
     return numbers;
 };
+
+
+class HashMap {
+    constructor() {
+        this._map = {}
+        this._size = 0;
+    }
+
+    add(obj) {
+        this._map[obj.hash()] = obj
+        this._size++
+    }
+
+    has(obj) {
+        return _.has(this._map, obj.hash())
+    }
+
+    get(hash) {
+        return this._map[hash]
+    }
+
+    remove(obj) {
+        delete this._map[obj.hash()]
+        this._size--
+    }
+
+    size() {
+        return this._size
+    }
+
+    each(callback) {
+        _.each(this._map, obj => callback(obj))
+    }
+}

@@ -69,7 +69,7 @@ class GridPointDistribution {
     constructor (grid, numPoints = 1) {
         this.grid = grid
         this.numPoints = numPoints
-        this.chosenPoints = new PointMap()
+        this.chosenPoints = new HashMap()
     }
 
     createRandomPoint () {
@@ -96,8 +96,10 @@ class GridFill {
         this.onFill = _.defaultTo(onFill, _.noop)
         this.isFillable = _.defaultTo(isFillable, _.stubTrue)
         this.step = 0
-        this.seeds = new PointMap(point)
+        this.seeds = new HashMap()
         this.startPoint = point
+
+        this.seeds.add(point)
     }
 
     isComplete (times) {
@@ -126,7 +128,7 @@ class GridFill {
         if (this.isComplete(times)) return
 
         let currentSeeds = this.seeds
-        this.seeds = new PointMap()
+        this.seeds = new HashMap()
         currentSeeds.each(point => {
             this.growNeighbors(point, isPartial)
         })
