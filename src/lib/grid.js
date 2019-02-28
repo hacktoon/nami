@@ -132,16 +132,17 @@ class GridFill {
         currentSeeds.each(point => {
             this.growNeighbors(point, isPartial)
         })
+        this.step++
         if (times > 1) {
             this._grow(times - 1, isPartial)
         }
-        this.step++
     }
 
     growNeighbors (referencePoint, isPartial) {
         new PointNeighborhood(referencePoint)
-        .adjacent(neighbor => {
-            if (!this.isFillable(neighbor, referencePoint, this.step)) return
+        .adjacent((neighbor, direction) => {
+            if (!this.isFillable(neighbor, referencePoint, direction, this.step))
+                return
 
             if (isPartial && _.sample([true, false])) {
                 this.seeds.add(referencePoint)
@@ -150,5 +151,65 @@ class GridFill {
                 this.onFill(neighbor, referencePoint, this.step)
             }
         })
+    }
+}
+
+
+
+class MultiGridFill {
+    constructor(size, totalPoints) {
+        this.size = size
+        this.growthRate = 20
+        this.grid = new Grid(size, size)
+        this.gridFillMap = {}
+        this._constructPoints(totalPoints)
+    }
+
+    _constructPoints(totalPoints) {
+        const buildGridFill = (startPoint, value) => {
+            const onFill = this._constructOnFill(value)
+            const isFillable = this._constructIsFillable(value, startPoint)
+            this.gridFillMap[plateId] = new GridFill(startPoint, onFill, isFillable)
+        }
+        new GridPointDistribution(this.grid, totalPoints)
+            .each(buildGridFill)
+    }
+
+    _constructOnFill(value) {
+        return point => this.grid.set(point, value)
+    }
+
+    _constructIsFillable(value, startPoint) {
+        let originalValue = this.grid.get(startPoint)
+        const callback = (neighbor, point) => {
+            var neighborValue = this.grid.get(neighbor)
+            if (isEdge(neighborValue, originalValue)) {
+                return false
+            }
+            return neighborValue === originalValue
+        }
+        const isEdge = (neighborValue, originalValue) => {
+            return neighborValue != value && neighborValue != originalValue
+        }
+        return callback
+    }
+
+    /* Grow the grid fills until all them complete. */
+    build() {
+        let fillableKeys = _.keys(this.gridFillMap)
+
+        while (fillableKeys.length > 0) {
+            _.each(fillableKeys, key => {
+                if (_.sample([true, false]))
+                    return
+                let gridFill = this.gridFillMap[key]
+                if (gridFill.isComplete()) {
+                    delete this.gridFillMap[key]
+                    return
+                }
+                gridFill.growPartial(this.growthRate)
+            })
+            fillableKeys = _.keys(this.gridFillMap)
+        }
     }
 }

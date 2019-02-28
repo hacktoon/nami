@@ -4,7 +4,6 @@ var viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
-    platesInput = document.getElementById("platesInput"),
     viewInput = document.getElementById('viewInput'),
     infoText = document.getElementById("infoText");
 
@@ -23,12 +22,8 @@ var getRoughnessInput = () => {
     return Number(roughnessInput.value)
 };
 
-var getPlatesInput = () => {
-    return Number(platesInput.value)
-};
-
 var createWorld = () => {
-    currentWorld = WorldBuilder.build(257, getRoughnessInput(), getPlatesInput());
+    currentWorld = WorldBuilder.build(257, getRoughnessInput());
     return currentWorld;
 };
 
@@ -76,7 +71,7 @@ generateButton.addEventListener('click', () => {
 
 viewCanvas.addEventListener('click', e => {
     var point = getCanvasMousePoint(e, viewCanvas);
-    currentWorld.lowerTerrain(point);
+    currentWorld.raiseTerrain2(point);
     draw();
 });
 
@@ -84,16 +79,13 @@ viewCanvas.addEventListener('mousemove', e => {
     var point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
         position = " | ("+ tile.id + ")",
-        terrain = " | Terrain: " + tile.terrain.name;
-    var plate = " | Plate: <b>" + tile.plate.name + "</b>, Density = ";
-    plate += tile.plate.density + ", moving ";
-    plate += Direction.getName(tile.plate.direction);
+        terrain = " | Terrain: " + tile.terrain.name
         // heat = currentWorld.heatMap.grid.get(point),
         // heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
         // rain = currentWorld.rainMap.heightMap.grid.get(point),
         // rainText = " | Pluviosity: " + currentWorld.rainMap.idMap[rain].name,
 
-    infoText.innerHTML = position + terrain + plate;
+    infoText.innerHTML = position + terrain;
     //infoText.innerHTML = position + height + terrain + heatText + rainText;
 });
 

@@ -1,8 +1,8 @@
 
 const DirectionNameMap = {
-    NORTH:     { code: 1,  symbol: "\u25B2" },
+    NORTH:     { code: -1,  symbol: "\u25B2" },
     EAST:      { code: 2,  symbol: "\u25B6" },
-    SOUTH:     { code: -1, symbol: "\u25BC" },
+    SOUTH:     { code: 1, symbol: "\u25BC" },
     WEST:      { code: -2, symbol: "\u25C0" },
     NORTHEAST: { code: 3,  symbol: "\u25E5" },
     NORTHWEST: { code: 4,  symbol: "\u25E4" },
@@ -38,24 +38,8 @@ class Direction {
         return DirectionIdMap[code].symbol;
     }
 
-    static isDivergent (dir1, dir2) {
-        if (Math.abs(dir1) != Math.abs(dir2)) {
-            return false;
-        }
-        if (dir1 < 0 && dir2 > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    static isConvergent (dir1, dir2) {
-        if (Math.abs(dir1) != Math.abs(dir2)) {
-            return false;
-        }
-        if (dir1 > 0 && dir2 < 0) {
-            return true;
-        }
-        return false;
+    static isOpposite (dir1, dir2) {
+        return dir1 * -1 == dir2
     }
 
     static random () {

@@ -45,6 +45,36 @@ class World {
         value = tile.height - value
         tile.height = value < 0 ? 0 : value
     }
+
+    raiseTerrain2 (startPoint) {
+        let terrain = this.grid.get(startPoint).terrain
+        let currentlevel = terrain.id
+        let growthRates = [8, 4, 2]
+
+        if(! Terrain.isHighest(terrain)) {
+            currentlevel++
+        }
+        _.times(growthRates.length, count => {
+            new GridFill(startPoint, (point) => {
+                let tile = this.grid.get(point)
+                if (tile.terrain.id + 1 == currentlevel)
+                    tile.terrain = Terrain.getTerrainById(currentlevel)
+            }).growPartial(growthRates[count])
+            currentlevel--
+        })
+    }
+
+    lowerTerrain2 (startPoint) {
+        let map = new HashMap()
+        let level = this.grid.get(startPoint).terrain.id
+        let fill = new GridFill(startPoint, (neighbor, point, step) => {
+            if (map.has(neighbor)) return
+            map.add(neighbor)
+            let tile = this.grid.get(neighbor)
+            tile.terrain = Terrain.getTerrainById(level-1)
+        })
+        fill.growPartial(3)
+    }
 }
 
 
@@ -53,6 +83,7 @@ class WorldBuilder {
         new HeightMap(world.size, roughness, (point, height) => {
             let tile = new Tile(point)
             tile.height = height
+            tile.terrain = Terrain.getTerrain(height)
             world.setTile(point, tile)
         })
     }
@@ -64,13 +95,12 @@ class WorldBuilder {
         })
     }
 
-    static build(size, roughness, numPlates) {
+    static build(size, roughness) {
         let world = new World(size)
 
         WorldBuilder.buildHeightmap(world, roughness)
-        TectonicsBuilder.build(world, numPlates)
-        // detect waterbodies, landforms, create oceans
         WorldBuilder.smooth(world) // measure land/area
+        // detect waterbodies, landforms, create oceans
 
         return world
     }
@@ -82,7 +112,8 @@ var HeightFilter = (function(){
         var neighborhood = new PointNeighborhood(tile.point),
             sum = tile.height,
             valueCount = 1;
-        neighborhood.adjacent(function (neighborTile) {
+        //let f = _.sample([true, false]) ?  : neighborhood.adjacent
+        neighborhood.adjacent(neighborTile => {
             sum += grid.get(neighborTile).height;
             valueCount++;
         });
@@ -111,7 +142,15 @@ var Terrain = (function () {
         return terrain.id === idMap[0].id;
     };
 
-    var getTerrainbyId = function (id) {
+    var isHighest = function (terrain) {
+        return terrain.id === getHighest()
+    };
+
+    var getHighest = function () {
+        return _.last(idMap).id
+    };
+
+    var getTerrainById = function (id) {
         var id = _.clamp(id, 0, idMap.length-1);
         return idMap[id];
     };
@@ -129,6 +168,8 @@ var Terrain = (function () {
     return {
         getTerrain: getTerrain,
         isDeepest: isDeepest,
-        getTerrainbyId: getTerrainbyId
+        isHighest: isHighest,
+        getHighest: getHighest,
+        getTerrainById: getTerrainById
     };
 })();
