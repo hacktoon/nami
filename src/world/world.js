@@ -83,13 +83,12 @@ class WorldBuilder {
         new HeightMap(world.size, roughness, (point, height) => {
             let tile = new Tile(point)
             tile.height = height
-            tile.terrain = Terrain.getTerrain(height)
             world.setTile(point, tile)
         })
     }
 
     static smooth(world) {
-        world.grid.forEach(function(tile){
+        world.grid.forEach(tile => {
             let height = HeightFilter.smooth(world.grid, tile)
             tile.terrain = Terrain.getTerrain(height)
         })
@@ -107,23 +106,18 @@ class WorldBuilder {
 }
 
 
-var HeightFilter = (function(){
-    var smooth = function (grid, tile) {
-        var neighborhood = new PointNeighborhood(tile.point),
-            sum = tile.height,
-            valueCount = 1;
-        //let f = _.sample([true, false]) ?  : neighborhood.adjacent
+class HeightFilter {
+    static smooth (grid, tile) {
+        let neighborhood = new PointNeighborhood(tile.point)
+        let sum = tile.height
+        let valueCount = 1
         neighborhood.adjacent(neighborTile => {
             sum += grid.get(neighborTile).height;
             valueCount++;
         });
         return Math.round(sum / valueCount);
-    };
-
-    return {
-        smooth: smooth
-    };
-})();
+    }
+}
 
 
 
