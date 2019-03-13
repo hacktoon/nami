@@ -47,12 +47,12 @@ class Terrain {
     get isWater () { return Boolean(this.terrain.isWater) }
     get isLand () { return !this.isWater }
 
-    raise () {
-        this.terrain = TerrainMap.get(this.id + 1)
+    raise (amount=1) {
+        this.terrain = TerrainMap.get(this.id + amount)
     }
 
-    lower () {
-        this.terrain = TerrainMap.get(this.id - 1)
+    lower (amount=1) {
+        this.terrain = TerrainMap.get(this.id - amount)
     }
 
     isLower (terrain) {

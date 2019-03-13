@@ -56,11 +56,19 @@ class World {
 
 
 class WorldBuilder {
-    static buildHeightmap(world, roughness) {
+    static buildHeightMap(world, roughness) {
         new HeightMap(world.size, roughness, (point, height) => {
             let tile = new Tile(point)
             tile.terrain = new Terrain(height)
             world.setTile(point, tile)
+        })
+    }
+
+    static buildHeightMaskMap(world, roughness) {
+        new HeightMap(world.size, roughness, (point, height) => {
+            if (height > 228) {
+                world.getTile(point).terrain.lower(2)
+            }
         })
     }
 
@@ -74,8 +82,9 @@ class WorldBuilder {
     static build(size, roughness) {
         let world = new World(size)
 
-        WorldBuilder.buildHeightmap(world, roughness)
+        WorldBuilder.buildHeightMap(world, roughness)
         //WorldBuilder.smooth(world) // measure land/area
+        WorldBuilder.buildHeightMaskMap(world, roughness)
         // detect waterbodies, landforms, create oceans
 
         return world
