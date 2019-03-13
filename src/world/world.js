@@ -57,8 +57,8 @@ class World {
 
 class WorldGeo {
     constructor () {
-        this.lowestPoints = new HashMap()
-        this.highestPoints = new HashMap()
+        this.lowestPoints = []
+        this.highestPoints = []
     }
 }
 
@@ -75,15 +75,16 @@ class WorldBuilder {
     static processTerrain(world, roughness) {
         new HeightMap(world.size, roughness, (point, height) => {
             let tile = world.getTile(point)
-            if (height > 228) {
-                tile.terrain.lower(2)
+            if (height > 200) {
+                tile.terrain.lower(1)
             }
             if (tile.terrain.isLowest())
-                world.geo.lowestPoints.add(point)
+                world.geo.lowestPoints.push(point)
             if (tile.terrain.isHighest())
-                world.geo.highestPoints.add(point)
+                world.geo.highestPoints.push(point)
 
-            //g = new GridFill(new Point(22, 60), p=>{ worldPainter.drawPoint(p, "red") }, p=> { return currentWorld.getTile(p).terrain.isWater } )
+            //point = _.sample(currentWorld.geo.lowestPoints)
+            //g = new GridFill(257, point, p=>{ worldPainter.drawPoint(p, "red") }, p=> { return currentWorld.getTile(p).terrain.isWater } )
         })
     }
 
@@ -110,4 +111,3 @@ class HeightFilter {
         return Math.round(sum / valueCount);
     }
 }
-

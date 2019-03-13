@@ -36,9 +36,7 @@ const draw = () =>  {
     viewCanvas.width = currentWorld.size * tilesize;
     viewCanvas.height = currentWorld.size * tilesize;
 
-    if (option == "tectonics") {
-        worldPainter.drawTectonics()
-    } else if (option == "heat") {
+    if (option == "heat") {
         worldPainter.drawBlackWhite()
         heatPainter.draw(currentWorld.heatMap, tilesize)
     } else if (option == "rain") {
