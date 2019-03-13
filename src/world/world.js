@@ -67,7 +67,7 @@ class WorldBuilder {
     static smooth(world) {
         world.grid.forEach(tile => {
             let height = HeightFilter.smooth(world.grid, tile)
-            tile.terrain = Terrain.getTerrain(height)
+            tile.terrain = new Terrain(height)
         })
     }
 
@@ -96,51 +96,3 @@ class HeightFilter {
     }
 }
 
-
-
-var Terrain = (function () {
-    var idMap = [
-        { id: 0, height: 0, color: "#000056", name: "Abyssal waters", isWater: true },
-        { id: 1, height: 80, color: "#1a3792", name: "Deep waters", isWater: true },
-        { id: 2, height: 120, color: "#3379a6", name: "Shallow waters", isWater: true },
-        { id: 3, height: 150, color: "#0a5816", name: "Coastal plains" },
-        { id: 4, height: 190, color: "#31771a", name: "Plains" },
-        { id: 5, height: 240, color: "#6f942b", name: "Hills" },
-        { id: 6, height: 255, color: "#d5cab4", name: "Mountains" }
-    ];
-
-    var isDeepest = function (terrain) {
-        return terrain.id === idMap[0].id;
-    };
-
-    var isHighest = function (terrain) {
-        return terrain.id === getHighest()
-    };
-
-    var getHighest = function () {
-        return _.last(idMap).id
-    };
-
-    var getTerrainById = function (id) {
-        var id = _.clamp(id, 0, idMap.length-1);
-        return idMap[id];
-    };
-
-    var getTerrain = function (height) {
-        var terrain;
-        _.each(idMap, function (candidade) {
-            if (height >= candidade.height) {
-                terrain = candidade;
-            }
-        });
-        return terrain;
-    };
-
-    return {
-        getTerrain: getTerrain,
-        isDeepest: isDeepest,
-        isHighest: isHighest,
-        getHighest: getHighest,
-        getTerrainById: getTerrainById
-    };
-})();
