@@ -3,7 +3,7 @@ class World {
     constructor(size) {
         this.size = size
         this.area = Math.pow(size, 2)
-        this.geo = {}
+        this.geo = new WorldGeo()
         this.bio = {}
         this.climate = {}
 
@@ -55,8 +55,16 @@ class World {
 }
 
 
+class WorldGeo {
+    constructor () {
+        this.lowestPoints = new HashMap()
+        this.highestPoints = new HashMap()
+    }
+}
+
+
 class WorldBuilder {
-    static buildHeightMap(world, roughness) {
+    static buildTerrain(world, roughness) {
         new HeightMap(world.size, roughness, (point, height) => {
             let tile = new Tile(point)
             tile.terrain = new Terrain(height)
@@ -64,28 +72,24 @@ class WorldBuilder {
         })
     }
 
-    static buildHeightMaskMap(world, roughness) {
+    static processTerrain(world, roughness) {
         new HeightMap(world.size, roughness, (point, height) => {
+            let tile = world.getTile(point)
             if (height > 228) {
-                world.getTile(point).terrain.lower(2)
+                tile.terrain.lower(2)
             }
-        })
-    }
-
-    static smooth(world) {
-        world.grid.forEach(tile => {
-            let height = HeightFilter.smooth(world.grid, tile)
-            tile.terrain = new Terrain(height)
+            if (tile.terrain.isLowest())
+                world.geo.lowestPoints.add(point)
+            if (tile.terrain.isHighest())
+                world.geo.highestPoints.add(point)
         })
     }
 
     static build(size, roughness) {
         let world = new World(size)
 
-        WorldBuilder.buildHeightMap(world, roughness)
-        //WorldBuilder.smooth(world) // measure land/area
-        WorldBuilder.buildHeightMaskMap(world, roughness)
-        // detect waterbodies, landforms, create oceans
+        WorldBuilder.buildTerrain(world, roughness)
+        WorldBuilder.processTerrain(world, roughness)
 
         return world
     }

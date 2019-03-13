@@ -98,14 +98,13 @@ class GridFill {
         this.step = 0
         this.seeds = new HashMap()
         this.startPoint = point
+        this.filledPoints = new HashMap()
 
         this.seeds.add(point)
     }
 
-    isComplete (times) {
-        let noSeeds = this.seeds.size() === 0,
-            timesEnded = _.isNumber(times) && times <= 0
-        return noSeeds || timesEnded
+    isComplete () {
+        return this.seeds.size() === 0
     }
 
     fill () {
@@ -122,15 +121,14 @@ class GridFill {
         this._grow(times, true)
     }
 
-    _grow (times, isPartial) {
-        times = _.defaultTo(times, 1)
-
-        if (this.isComplete(times)) return
+    _grow (times=1, isPartial) {
+        if (this.isComplete())
+            return
 
         let currentSeeds = this.seeds
         this.seeds = new HashMap()
         currentSeeds.each(point => {
-            this.growNeighbors(point, isPartial)
+            this.fillNeighbors(point, isPartial)
         })
         this.step++
         if (times > 1) {
@@ -138,9 +136,11 @@ class GridFill {
         }
     }
 
-    growNeighbors (referencePoint, isPartial) {
+    fillNeighbors (referencePoint, isPartial) {
         new PointNeighborhood(referencePoint)
         .adjacent((neighbor, direction) => {
+            if (this.filledPoints.has(neighbor))
+                return
             if (!this.isFillable(neighbor, referencePoint, direction, this.step))
                 return
 
@@ -148,6 +148,7 @@ class GridFill {
                 this.seeds.add(referencePoint)
             } else {
                 this.seeds.add(neighbor)
+                this.filledPoints.add(neighbor)
                 this.onFill(neighbor, referencePoint, this.step)
             }
         })
