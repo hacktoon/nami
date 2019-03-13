@@ -62,18 +62,17 @@ var getCanvasMousePoint = (e, viewCanvas) => {
 
 /************ EVENT HANDLING *************************/
 
-viewInput.addEventListener('change', draw);
+viewInput.addEventListener('change', draw)
 
 generateButton.addEventListener('click', () => {
-    createWorld();
-    draw();
-});
+    createWorld()
+    draw()
+})
 
 viewCanvas.addEventListener('click', e => {
-    var point = getCanvasMousePoint(e, viewCanvas);
-    currentWorld.raiseTerrain2(point);
-    draw();
-});
+    // var point = getCanvasMousePoint(e, viewCanvas)
+    // draw()
+})
 
 viewCanvas.addEventListener('mousemove', e => {
     var point = getCanvasMousePoint(e, viewCanvas),
@@ -85,12 +84,12 @@ viewCanvas.addEventListener('mousemove', e => {
         // rain = currentWorld.rainMap.heightMap.grid.get(point),
         // rainText = " | Pluviosity: " + currentWorld.rainMap.idMap[rain].name,
 
-    infoText.innerHTML = position + terrain;
+    infoText.innerHTML = position + terrain
     //infoText.innerHTML = position + height + terrain + heatText + rainText;
-});
+})
 
 viewCanvas.addEventListener('mouseout', () => {
-    infoText.innerHTML = infoText.title;
-});
+    infoText.innerHTML = infoText.title
+})
 
-generateButton.click();
+generateButton.click()

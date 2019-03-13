@@ -35,46 +35,23 @@ class World {
         this.landArea  += newTerrain.isWater ? -1 :  1
     }
 
-    raiseTerrain (point, value) {
-        let tile = this.grid.get(point)
-        tile.height = tile.height + value
-    }
+    // raiseTerrain (startPoint) {
+    //     let terrain = this.grid.get(startPoint).terrain
+    //     let currentlevel = terrain.id
+    //     let growthRates = [8, 4, 2]
 
-    lowerTerrain (point, value) {
-        let tile = this.grid.get(point)
-        value = tile.height - value
-        tile.height = value < 0 ? 0 : value
-    }
-
-    raiseTerrain2 (startPoint) {
-        let terrain = this.grid.get(startPoint).terrain
-        let currentlevel = terrain.id
-        let growthRates = [8, 4, 2]
-
-        if(! Terrain.isHighest(terrain)) {
-            currentlevel++
-        }
-        _.times(growthRates.length, count => {
-            new GridFill(startPoint, (point) => {
-                let tile = this.grid.get(point)
-                if (tile.terrain.id + 1 == currentlevel)
-                    tile.terrain = Terrain.getTerrainById(currentlevel)
-            }).growPartial(growthRates[count])
-            currentlevel--
-        })
-    }
-
-    lowerTerrain2 (startPoint) {
-        let map = new HashMap()
-        let level = this.grid.get(startPoint).terrain.id
-        let fill = new GridFill(startPoint, (neighbor, point, step) => {
-            if (map.has(neighbor)) return
-            map.add(neighbor)
-            let tile = this.grid.get(neighbor)
-            tile.terrain = Terrain.getTerrainById(level-1)
-        })
-        fill.growPartial(3)
-    }
+    //     if(! Terrain.isHighest(terrain)) {
+    //         currentlevel++
+    //     }
+    //     _.times(growthRates.length, count => {
+    //         new GridFill(startPoint, (point) => {
+    //             let tile = this.grid.get(point)
+    //             if (tile.terrain.id + 1 == currentlevel)
+    //                 tile.terrain = Terrain.getTerrainById(currentlevel)
+    //         }).growPartial(growthRates[count])
+    //         currentlevel--
+    //     })
+    // }
 }
 
 
