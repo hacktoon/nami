@@ -82,6 +82,8 @@ class WorldBuilder {
                 world.geo.lowestPoints.add(point)
             if (tile.terrain.isHighest())
                 world.geo.highestPoints.add(point)
+
+            //g = new GridFill(new Point(22, 60), p=>{ worldPainter.drawPoint(p, "red") }, p=> { return currentWorld.getTile(p).terrain.isWater } )
         })
     }
 

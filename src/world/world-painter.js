@@ -1,60 +1,29 @@
 
 class WorldPainter {
-    constructor (canvas) {
+    constructor (world, canvas, tilesize) {
+        this.world = world
+        this.tilesize = tilesize
         this.ctx = canvas.getContext("2d")
     }
 
-    draw (world, tilesize) {
-        world.grid.forEach((tile, point) => {
-            this.drawPoint(point, tilesize, tile.terrain.color)
+    draw () {
+        this.world.grid.forEach((tile, point) => {
+            this.drawPoint(point, tile.terrain.color)
         })
     }
 
-    drawPoint (point, tilesize, color) {
-        let x = point.x * tilesize,
-            y = point.y * tilesize
+    drawPoint (point, color) {
+        let x = point.x * this.tilesize,
+            y = point.y * this.tilesize
 
         this.ctx.fillStyle = color
-        this.ctx.fillRect(x, y, tilesize, tilesize)
+        this.ctx.fillRect(x, y, this.tilesize, this.tilesize)
     }
 
-    drawBlackWhite (world, tilesize) {
-        world.grid.forEach((tile, point) => {
-            let x = point.x * tilesize,
-                y = point.y * tilesize
-
-            this.ctx.fillStyle = tile.terrain.isWater ? "#FFF" : "#000"
-            this.ctx.fillRect(x, y, tilesize, tilesize)
-        })
-    }
-
-    drawTectonics (world, tilesize) {
-        world.grid.forEach((tile, point) => {
-            let x = point.x * tilesize,
-                y = point.y * tilesize
-
-            if (tile.isPlateEdge) {
-                this.ctx.fillStyle = "red"
-            } else {
-                this.ctx.fillStyle = tile.terrain.color
-            }
-            this.ctx.fillRect(x, y, tilesize, tilesize)
-        })
-    }
-
-    drawBorders (world, tilesize) {
-        let previousIsWater = false
-        world.grid.forEach((tile, point) => {
-            let x = point.x * tilesize,
-            y = point.y * tilesize
-
-            let color = "#FFF"
-            if (!tile.terrain.isWater && previousIsWater) {
-                color = "#000"
-            }
-            previousIsWater = tile.terrain.isWater
-            this.ctx.fillStyle = color
-            this.ctx.fillRect(x, y, tilesize, tilesize)
+    drawBlackWhite () {
+        this.world.grid.forEach((tile, point) => {
+            let color = tile.terrain.isWater ? "#FFF" : "#000"
+            this.drawPoint(point, color)
         })
     }
 }

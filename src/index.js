@@ -1,58 +1,56 @@
 window.log = console.log.bind(console);
 
-var viewCanvas = document.getElementById("viewCanvas"),
+let viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
     tilesizeInput = document.getElementById("tilesizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
     viewInput = document.getElementById('viewInput'),
     infoText = document.getElementById("infoText");
 
-var currentWorld;
+let currentWorld, worldPainter
 
-var getViewInput = () => {
-    var option = viewInput.options[viewInput.selectedIndex];
+const getViewInput = () => {
+    let option = viewInput.options[viewInput.selectedIndex];
     return option.value;
 };
 
-var getTileSizeInput = () => {
+const getTileSizeInput = () => {
     return Number(tilesizeInput.value)
 };
 
-var getRoughnessInput = () => {
+const getRoughnessInput = () => {
     return Number(roughnessInput.value)
 };
 
-var createWorld = () => {
-    currentWorld = WorldBuilder.build(257, getRoughnessInput());
-    return currentWorld;
-};
+const createWorld = () => {
+    let tilesize = getTileSizeInput()
+    currentWorld = WorldBuilder.build(257, getRoughnessInput())
+    worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
+    return currentWorld
+}
 
-var worldPainter = new WorldPainter(viewCanvas),
-    heatPainter = HeatPainter.new(viewCanvas),
-    rainPainter = RainPainter.new(viewCanvas);
-
-var draw = () =>  {
-    var option = getViewInput(),
-        tilesize = getTileSizeInput();
+const draw = () =>  {
+    let option = getViewInput(),
+        tilesize = getTileSizeInput()
 
     viewCanvas.width = currentWorld.size * tilesize;
     viewCanvas.height = currentWorld.size * tilesize;
 
     if (option == "tectonics") {
-        worldPainter.drawTectonics(currentWorld, tilesize);
+        worldPainter.drawTectonics()
     } else if (option == "heat") {
-        worldPainter.drawBlackWhite(currentWorld, tilesize);
-        heatPainter.draw(currentWorld.heatMap, tilesize);
+        worldPainter.drawBlackWhite()
+        heatPainter.draw(currentWorld.heatMap, tilesize)
     } else if (option == "rain") {
-        worldPainter.drawBlackWhite(currentWorld, tilesize);
-        rainPainter.draw(currentWorld.rainMap, tilesize);
+        worldPainter.drawBlackWhite()
+        rainPainter.draw(currentWorld.rainMap, tilesize)
     } else {
-        worldPainter.draw(currentWorld, tilesize);
+        worldPainter.draw()
     }
 };
 
-var getCanvasMousePoint = (e, viewCanvas) => {
-    var scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
+const getCanvasMousePoint = (e, viewCanvas) => {
+    let scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
         mouseX = e.clientX - viewCanvas.offsetLeft,
         mouseY = e.clientY - viewCanvas.offsetTop + scrollOffset,
         x = _.parseInt(mouseX / getTileSizeInput()),
@@ -70,12 +68,12 @@ generateButton.addEventListener('click', () => {
 })
 
 viewCanvas.addEventListener('click', e => {
-    // var point = getCanvasMousePoint(e, viewCanvas)
+    // let point = getCanvasMousePoint(e, viewCanvas)
     // draw()
 })
 
 viewCanvas.addEventListener('mousemove', e => {
-    var point = getCanvasMousePoint(e, viewCanvas),
+    let point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
         position = "("+ tile.id + ")",
         terrain = " | Terrain: " + tile.terrain.name
