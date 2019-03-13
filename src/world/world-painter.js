@@ -6,12 +6,16 @@ class WorldPainter {
 
     draw (world, tilesize) {
         world.grid.forEach((tile, point) => {
-            let x = point.x * tilesize,
-                y = point.y * tilesize
-
-            this.ctx.fillStyle = tile.terrain.color
-            this.ctx.fillRect(x, y, tilesize, tilesize)
+            this.drawPoint(point, tilesize, tile.terrain.color)
         })
+    }
+
+    drawPoint (point, tilesize, color) {
+        let x = point.x * tilesize,
+            y = point.y * tilesize
+
+        this.ctx.fillStyle = color
+        this.ctx.fillRect(x, y, tilesize, tilesize)
     }
 
     drawBlackWhite (world, tilesize) {
