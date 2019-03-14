@@ -65,27 +65,29 @@ class WorldGeo {
 
 class WorldBuilder {
     static buildTerrain(world, roughness) {
-        new HeightMap(world.size, roughness, (point, height) => {
-            let tile = new Tile(point)
-            tile.terrain = new Terrain(height)
-            world.setTile(point, tile)
-        })
-    }
+        let maskGrid = new HeightMap(world.size, roughness).grid
 
-    static processTerrain(world, roughness) {
         new HeightMap(world.size, roughness, (point, height) => {
-            let tile = world.getTile(point)
-            if (height > 200) {
+            let maskHeight = maskGrid.get(point)
+            let tile = new Tile(point)
+
+            tile.terrain = new Terrain(height)
+            if (maskHeight > world.size/2) {
                 tile.terrain.lower(1)
             }
+
             if (tile.terrain.isLowest())
                 world.geo.lowestPoints.push(point)
             if (tile.terrain.isHighest())
                 world.geo.highestPoints.push(point)
 
-            //point = _.sample(currentWorld.geo.lowestPoints)
-            //g = new GridFill(257, point, p=>{ worldPainter.drawPoint(p, "red") }, p=> { return currentWorld.getTile(p).terrain.isWater } )
+            world.setTile(point, tile)
         })
+    }
+
+    static processTerrain(world, roughness) {
+        //point = _.sample(currentWorld.geo.lowestPoints)
+            //g = new GridFill(257, point, p=>{ worldPainter.drawPoint(p, "red") }, p=> { return currentWorld.getTile(p).terrain.isWater } )
     }
 
     static build(size, roughness) {

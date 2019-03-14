@@ -1,10 +1,9 @@
 
 class HeightMap {
-    constructor (size, roughness, callback) {
-        this.size = size
+    constructor(size, roughness, callback = _.noop) {
         this.grid = new Grid(size, size, 0);
-        this.callback = _.noop
-        this.callback = callback;
+        this.callback = callback
+        this.size = size
         this.setInitialPoints();
 
         for(let midSize = size - 1; midSize/2 >= 1; midSize /= 2){
@@ -27,7 +26,6 @@ class HeightMap {
                 }
             }
         }
-        delete this.grid;
     }
 
     setInitialPoints () {
