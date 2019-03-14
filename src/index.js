@@ -24,24 +24,23 @@ const getRoughnessInput = () => {
 
 const createWorld = () => {
     let tilesize = getTileSizeInput()
-    currentWorld = WorldBuilder.build(257, getRoughnessInput())
+    let worldBuilder = new WorldBuilder(257, getRoughnessInput())
+    currentWorld = worldBuilder.world
     worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
     return currentWorld
 }
 
 const draw = () =>  {
-    let option = getViewInput(),
+    let view = getViewInput(),
         tilesize = getTileSizeInput()
 
     viewCanvas.width = currentWorld.size * tilesize;
     viewCanvas.height = currentWorld.size * tilesize;
 
-    if (option == "heat") {
+    if (view == "heat") {
         worldPainter.drawBlackWhite()
-        heatPainter.draw(currentWorld.heatMap, tilesize)
-    } else if (option == "rain") {
+    } else if (view == "rain") {
         worldPainter.drawBlackWhite()
-        rainPainter.draw(currentWorld.rainMap, tilesize)
     } else {
         worldPainter.draw()
     }

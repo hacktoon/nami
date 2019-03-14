@@ -9,9 +9,6 @@ class World {
 
         this.grid = new Grid(size, size)
 
-        this.waterArea = 0
-        this.landArea = 0
-
         // this.rainMap = new RainMap(this.size, roughness/2)
         // this.heatMap = new HeatMap(this.size)
     }
@@ -22,17 +19,6 @@ class World {
 
     setTile (point, tile) {
         return this.grid.set(point, tile)
-    }
-
-    waterPercentage () {
-        let value = (this.waterArea * 100) / this.area
-        return value.toFixed(1)
-    }
-
-    updateAreaMeasure (oldTerrain, newTerrain) {
-        if (oldTerrain.isWater === newTerrain.isWater) return
-        this.waterArea += newTerrain.isWater ?  1 : -1
-        this.landArea  += newTerrain.isWater ? -1 :  1
     }
 
     // raiseTerrain (startPoint) {
@@ -57,59 +43,12 @@ class World {
 
 class WorldGeo {
     constructor () {
-        this.lowestPoints = []
-        this.highestPoints = []
-    }
-}
-
-
-class WorldBuilder {
-    static buildTerrain(world, roughness) {
-        let maskGrid = new HeightMap(world.size, roughness).grid
-
-        new HeightMap(world.size, roughness, (point, height) => {
-            let maskHeight = maskGrid.get(point)
-            let tile = new Tile(point)
-
-            tile.terrain = new Terrain(height)
-            if (maskHeight > world.size/2) {
-                tile.terrain.lower(1)
-            }
-
-            if (tile.terrain.isLowest())
-                world.geo.lowestPoints.push(point)
-            if (tile.terrain.isHighest())
-                world.geo.highestPoints.push(point)
-
-            world.setTile(point, tile)
-        })
+        this.totalWaterPoints = 0
+        this.totalLandPoints = 0
     }
 
-    static processTerrain(world, roughness) {
-        //point = _.sample(currentWorld.geo.lowestPoints)
-            //g = new GridFill(257, point, p=>{ worldPainter.drawPoint(p, "red") }, p=> { return currentWorld.getTile(p).terrain.isWater } )
-    }
-
-    static build(size, roughness) {
-        let world = new World(size)
-
-        WorldBuilder.buildTerrain(world, roughness)
-        WorldBuilder.processTerrain(world, roughness)
-
-        return world
-    }
-}
-
-
-class HeightFilter {
-    static smooth (grid, tile) {
-        let neighborhood = new PointNeighborhood(tile.point)
-        let sum = tile.height
-        let valueCount = 1
-        neighborhood.adjacent(neighborTile => {
-            sum += grid.get(neighborTile).height;
-            valueCount++;
-        });
-        return Math.round(sum / valueCount);
+    get waterPercentage() {
+        let value = (this.totalWaterPoints * 100) / this.area
+        return value.toFixed(1)
     }
 }
