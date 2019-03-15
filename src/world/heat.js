@@ -63,6 +63,22 @@ class HeatMap {
     static getColdest() {
         return HeatMap.get(0)
     }
+
+    static isPolar(heat) {
+        return heat.temp == 0
+    }
+
+    static isTemperate(heat) {
+        return heat.temp == 1
+    }
+
+    static isSubtropical(heat) {
+        return heat.temp == 2
+    }
+
+    static isTropical(heat) {
+        return heat.temp == 3
+    }
 }
 
 
@@ -75,4 +91,9 @@ class Heat {
     get y() { return this.heat.y }
     get name() { return this.heat.name }
     get color() { return this.heat.color }
+
+    get isPolar() { return HeatMap.isPolar(this.heat) }
+    get isTemperate() { return HeatMap.isTemperate(this.heat) }
+    get isSubtropical() { return HeatMap.isSubtropical(this.heat) }
+    get isTropical() { return HeatMap.isTropical(this.heat) }
 }

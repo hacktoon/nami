@@ -2,10 +2,10 @@
 class RainMap {
     static get (id=null) {
         const _map = [
-            { id: 0, height: 0,   color: "red",       name: "Very dry" },
-            { id: 1, height: 30,  color: "coral",     name: "Dry" },
-            { id: 2, height: 90,  color: "lightblue", name: "Wet" },
-            { id: 3, height: 210, color: "blue",      name: "Very wet" }
+            { id: 0, height: 0, color: "#19FFFF",       name: "Very dry" },
+            { id: 1, height: 30, color: "#00D5FF",     name: "Dry" },
+            { id: 2, height: 90, color: "#00AAFF", name: "Wet" },
+            { id: 3, height: 210, color: "#0080FF",      name: "Very wet" }
         ]
         if (_.isNumber(id)) {
             let index = _.clamp(id, 0, _map.length-1)

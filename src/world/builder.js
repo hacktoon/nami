@@ -5,42 +5,56 @@ class WorldBuilder {
         this.waterPoints = new HashMap()
         this.landPoints = new HashMap()
         this.highestPoints = new HashMap()
+        this.maskHeightmap = new HeightMap(size, roughness).grid
+        this.rainHeightmap = new HeightMap(size, roughness).grid
+        this.heatHeightmap = new HeatHeightMap(size).grid
+
         this._build(roughness)
     }
 
     _build(roughness) {
-        let maskHeightmap = new HeightMap(this.world.size, roughness).grid
-        let rainHeightmap = new HeightMap(this.world.size, roughness).grid
-        let heatHeightmap = new HeatHeightMap(this.world.size).grid
-
         new HeightMap(this.world.size, roughness, (point, height) => {
-            let maskHeight = maskHeightmap.get(point)
-            let tile = new Tile(point)
+            let tile = this._buildTile(point, height)
 
-            this.world.setTile(point, tile)
-            tile.terrain = new Terrain(height)
-            tile.rain = new Rain(rainHeightmap.get(point))
-            tile.heat = new Heat(heatHeightmap.get(point))
-
-            this._lowerTile(maskHeight, tile)
-            this._measureTerrain(point, tile)
+            this._filterRainByHeat(tile)
+            this._applyTerrainMask(tile)
+            this._measureTerrain(tile)
         })
         this._process()
     }
 
-    _lowerTile(maskHeight, tile) {
+    _buildTile(point, height) {
+        let tile = new Tile(point)
+        this.world.setTile(point, tile)
+        tile.terrain = new Terrain(height)
+        tile.heat = new Heat(this.heatHeightmap.get(point))
+        tile.rain = new Rain(this.rainHeightmap.get(point))
+        return tile
+    }
+
+    _applyTerrainMask(tile) {
+        let maskHeight = this.maskHeightmap.get(tile.point)
         if (maskHeight > this.world.size / 2) {
             tile.terrain.lower(1)
         }
     }
 
-    _measureTerrain(point, tile) {
+    _filterRainByHeat(tile) {
+        if (tile.heat.isPolar)
+            tile.rain.lower(1)
+        if (tile.heat.isSubtropical)
+            tile.rain.lower(1)
+        if (tile.heat.isTropical)
+            tile.rain.raise(1)
+    }
+
+    _measureTerrain(tile) {
         if (tile.terrain.isWater) {
-            this.waterPoints.add(point)
+            this.waterPoints.add(tile.point)
         } else {
-            this.landPoints.add(point)
+            this.landPoints.add(tile.point)
             if (tile.terrain.isHighest()) {
-                this.highestPoints.add(point)
+                this.highestPoints.add(tile.point)
             }
         }
     }
