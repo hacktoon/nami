@@ -1,5 +1,10 @@
+import _ from 'lodash'
 
-class Grid {
+import {Point} from './point'
+import {HashMap} from './base'
+
+
+export class Grid {
     constructor(width, height, defaultValue) {
         this.width = width
         this.height = height
@@ -91,7 +96,7 @@ class GridPointDistribution {
 }
 
 
-class GridFill {
+export class GridFill {
     constructor (size, point, onFill=_.noop, isFillable=_.stubTrue) {
         this.grid = new Grid(size, size)
         this.filledPoints = new HashMap()

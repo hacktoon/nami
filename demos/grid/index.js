@@ -1,3 +1,6 @@
+import _ from 'lodash'
+
+
 let viewCanvas = document.getElementById("world"),
     numPlatesInput = document.getElementById("numPlates"),
     generateButton = document.getElementById("generate"),

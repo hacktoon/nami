@@ -1,5 +1,10 @@
+import _ from 'lodash'
 
-class HeightMap {
+import {Grid} from './grid'
+import {Point} from './point'
+
+
+export class HeightMap {
     constructor(size, roughness, callback = _.noop) {
         this.grid = new Grid(size, size, 0);
         this.callback = callback
@@ -87,7 +92,7 @@ class HeightMap {
 }
 
 
-var MidpointDisplacement = function (p1, p2, maxSize, roughness, callback) {
+export function MidpointDisplacement(p1, p2, maxSize, roughness, callback) {
     var points = Array(size),
         size = maxSize - 1,
         displacement = roughness * (size / 2);

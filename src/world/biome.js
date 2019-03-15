@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 
 class BiomeMap {
     static get (id=null) {
@@ -25,7 +27,7 @@ class BiomeMap {
 }
 
 
-class Biome {
+export class Biome {
     constructor () {
         const _map = BiomeMap.get()
     }
@@ -33,6 +35,4 @@ class Biome {
     get id () { return this.biome.id }
     get name () { return this.biome.name }
     get color () { return this.biome.color }
-
-
 }

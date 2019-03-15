@@ -1,4 +1,4 @@
-class Tile {
+export default class Tile {
     constructor (point) {
         this.id = point.hash();
         this.point = point;

@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 
 class RainMap {
     static get (id=null) {
@@ -24,7 +26,7 @@ class RainMap {
 }
 
 
-class Rain {
+export default class Rain {
     constructor (height) {
         const _map = RainMap.get()
         for(let i = 0; i < _map.length; i++) {

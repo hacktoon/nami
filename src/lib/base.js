@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 
 const DirectionNameMap = {
     NORTH:     { code: -1,  symbol: "\u25B2" },
@@ -20,7 +22,7 @@ const DirectionIdMap = (() => {
 })();
 
 
-class Direction {
+export class Direction {
     static get NORTH () { return DirectionNameMap.NORTH.code }
     static get EAST () { return DirectionNameMap.EAST.code }
     static get SOUTH () { return DirectionNameMap.SOUTH.code }
@@ -82,7 +84,7 @@ var NumberInterpolation = function(from, to, totalItems){
 };
 
 
-class HashMap {
+export class HashMap {
     constructor() {
         this._map = {}
         this._size = 0;

@@ -1,5 +1,7 @@
+import _ from 'lodash'
 
-class Point {
+
+export class Point {
     constructor (x, y) {
         this.x = x
         this.y = y
@@ -30,7 +32,7 @@ class Point {
 }
 
 
-class PointNeighborhood {
+export class PointNeighborhood {
     constructor (referencePoint) {
         this.referencePoint = referencePoint;
 

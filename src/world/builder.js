@@ -1,5 +1,16 @@
+import _ from 'lodash'
 
-class WorldBuilder {
+import {HashMap} from '../lib/base'
+import {HeightMap} from '../lib/heightmap'
+import Tile from '../lib/tile'
+
+import World from './world'
+import Terrain from './terrain'
+import Rain from './rain'
+import Heat, {HeatHeightMap} from './heat'
+
+
+export default class WorldBuilder {
     constructor(size, roughness) {
         this.size = size
         this.roughness = roughness
@@ -92,15 +103,15 @@ class WorldBuilder {
 }
 
 
-class HeightFilter {
-    static smooth(grid, tile) {
-        let neighborhood = new PointNeighborhood(tile.point)
-        let sum = tile.height
-        let valueCount = 1
-        neighborhood.adjacent(neighborTile => {
-            sum += grid.get(neighborTile).height;
-            valueCount++;
-        });
-        return Math.round(sum / valueCount);
-    }
-}
+// class HeightFilter {
+//     static smooth(grid, tile) {
+//         let neighborhood = new PointNeighborhood(tile.point)
+//         let sum = tile.height
+//         let valueCount = 1
+//         neighborhood.adjacent(neighborTile => {
+//             sum += grid.get(neighborTile).height;
+//             valueCount++;
+//         });
+//         return Math.round(sum / valueCount);
+//     }
+// }

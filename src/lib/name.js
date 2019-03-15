@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 const personNames = {
     first: [
         "Joe", "Mary", "Zoe", "La", "Bo", "Jack", "Zedd", "Will", "Bill", "Hassam", "Jen", "Eva", "Adam", "Moe", "Liz", "Walter", "John", "Mick", "Ana", "Luci", "Ceci", "Fran", "Carol", "James", "Eric", "Cesar", "Rudi", "May", "Laila", "Vic", "Albert", "Steve", "Jane", "Sara","Vivi", "Liane", "Ada", "Cindy", "Amora", "Bea", "Isobel", "Iane", "Hector", "Mandy", "Amanda", "Bob", "Liv", "Licia", "Obi", "Dave", "Pat", "Ani", "Bel"
@@ -19,7 +21,7 @@ const landMassNames = {
 }
 
 
-class NameGenerator {
+export class NameGenerator {
     static createLandMassName () {
         return _.sample(landMassNames.first) + _.sample(landMassNames.last)
     }

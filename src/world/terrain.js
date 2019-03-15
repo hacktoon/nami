@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 
 class TerrainMap {
     static get (id=null) {
@@ -27,7 +29,7 @@ class TerrainMap {
 }
 
 
-class Terrain {
+export default class Terrain {
     constructor (height) {
         const _map = TerrainMap.get()
         for(let i = 0; i < _map.length; i++) {

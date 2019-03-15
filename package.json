@@ -7,7 +7,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "parcel src/index.html -d build",
+    "build": "parcel build src/index.html -d build"
   },
   "repository": {
     "type": "git",
@@ -19,12 +20,11 @@
     "url": "https://github.com/hacktoon/nami/issues"
   },
   "homepage": "https://github.com/hacktoon/nami#readme",
-  "devDependencies": {
+  "dependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.3",
-    "@babel/preset-env": "^7.3.1"
-  },
-  "dependencies": {
-    "@babel/polyfill": "^7.2.5"
+    "@babel/preset-env": "^7.3.1",
+    "lodash": "^4.17.11",
+    "parcel-bundler": "^1.12.2"
   }
 }

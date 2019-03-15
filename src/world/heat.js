@@ -1,6 +1,11 @@
+import _ from 'lodash'
+
+import {Grid} from '../lib/grid'
+import {MidpointDisplacement} from '../lib/heightmap'
+import {Point} from '../lib/point'
 
 
-class HeatHeightMap {
+export class HeatHeightMap {
     constructor(size, roughness=.17) {
         this.nullId1
         this.grid = new Grid(size, size, this.nullId)
@@ -87,7 +92,7 @@ class HeatMap {
 }
 
 
-class Heat {
+export default class Heat {
     constructor(id) {
         this.heat = HeatMap.get(id)
     }

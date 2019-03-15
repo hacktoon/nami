@@ -1,3 +1,9 @@
+import _ from 'lodash'
+
+import WorldBuilder from './world/builder'
+import WorldPainter from './world/painter'
+import {Point} from './lib/point'
+
 window.log = console.log.bind(console);
 
 let viewCanvas = document.getElementById("viewCanvas"),
