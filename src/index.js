@@ -73,14 +73,11 @@ viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
         position = "("+ tile.id + ")",
-        terrain = " | Terrain: " + tile.terrain.name
-        // heat = currentWorld.heatMap.grid.get(point),
-        // heatText = " | Temp.: " + currentWorld.heatMap.idMap[heat].name,
-        // rain = currentWorld.rainMap.heightMap.grid.get(point),
-        // rainText = " | Pluviosity: " + currentWorld.rainMap.idMap[rain].name,
+        terrain = " | Terrain: " + tile.terrain.name,
+        heat = " | " + tile.heat.name,
+        rain = " | " + tile.rain.name
 
-    infoText.innerHTML = position + terrain
-    //infoText.innerHTML = position + height + terrain + heatText + rainText;
+    infoText.innerHTML = position + terrain + heat + rain
 })
 
 viewCanvas.addEventListener('mouseout', () => {
