@@ -15,11 +15,11 @@ class RainMap {
     }
 
     static getHighest () {
-        return _.last(RainMap.get()).id
+        return _.last(RainMap.get())
     }
 
     static getLowest () {
-        return _.first(RainMap.get()).id
+        return _.first(RainMap.get())
     }
 }
 

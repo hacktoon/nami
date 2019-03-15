@@ -18,11 +18,11 @@ class TerrainMap {
     }
 
     static getHighest () {
-        return _.last(TerrainMap.get()).id
+        return _.last(TerrainMap.get())
     }
 
     static getLowest () {
-        return _.first(TerrainMap.get()).id
+        return _.first(TerrainMap.get())
     }
 }
 
@@ -48,26 +48,26 @@ class Terrain {
     get isLand () { return !this.isWater }
 
     raise (amount=1) {
-        this.terrain = TerrainMap.get(this.id + amount)
+        this.terrain = TerrainMap.get(this.terrain.id + amount)
     }
 
     lower (amount=1) {
-        this.terrain = TerrainMap.get(this.id - amount)
+        this.terrain = TerrainMap.get(this.terrain.id - amount)
     }
 
     isLower (terrain) {
-        return this.id < terrain.id
+        return this.terrain.id < terrain.id
     }
 
     isHigher (terrain) {
-        return this.id > terrain.id
+        return this.terrain.id > terrain.id
     }
 
     isLowest () {
-        return this.id === TerrainMap.getLowest()
+        return this.terrain.id === TerrainMap.getLowest().id
     }
 
     isHighest () {
-        return this.id === TerrainMap.getHighest()
+        return this.terrain.id === TerrainMap.getHighest().id
     }
 }

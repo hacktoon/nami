@@ -6,7 +6,6 @@ class WorldBuilder {
         this.landPoints = new HashMap()
         this.highestPoints = new HashMap()
         this._build(roughness)
-
     }
 
     _build(roughness) {
@@ -18,17 +17,21 @@ class WorldBuilder {
             let maskHeight = maskHeightmap.get(point)
             let tile = new Tile(point)
 
+            this.world.setTile(point, tile)
             tile.terrain = new Terrain(height)
             tile.rain = new Rain(rainHeightmap.get(point))
             tile.heat = new Heat(heatHeightmap.get(point))
 
-            if (maskHeight > this.world.size / 2) {
-                tile.terrain.lower(1)
-            }
+            this._lowerTile(maskHeight, tile)
             this._measureTerrain(point, tile)
-            this.world.setTile(point, tile)
         })
-        this._processTerrain()
+        this._process()
+    }
+
+    _lowerTile(maskHeight, tile) {
+        if (maskHeight > this.world.size / 2) {
+            tile.terrain.lower(1)
+        }
     }
 
     _measureTerrain(point, tile) {
@@ -42,7 +45,15 @@ class WorldBuilder {
         }
     }
 
-    _processTerrain() {
+    _process() {
+        // if (tile.terrain.isHighest()) {
+        //     if (maskHeight < 5 && _.sample([true, false])) {
+        //         this.world.geo.riverSourcePoints.add(point)
+        //     } else if (maskHeight > 125 && _.sample([true, false])) {
+        //         this.world.geo.volcanoPoints.add(point)
+        //     }
+        // }
+
         this._buildRivers()
 
         this.world.geo.totalWaterPoints = this.waterPoints.size()
