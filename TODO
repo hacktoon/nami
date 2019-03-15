@@ -2,10 +2,5 @@
 
 * detect water/land regions
 * detect litoral tiles/beaches
-* detect interior water tiles
 * create rivers on height 2, set straight to sea
     * use sin() to add meandering
-
-## LINKS
-
-* https://sote.miraheze.org/wiki/Tectonics

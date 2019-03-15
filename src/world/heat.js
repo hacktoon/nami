@@ -7,7 +7,7 @@ import {Point} from '../lib/point'
 
 export class HeatHeightMap {
     constructor(size, roughness=.17) {
-        this.nullId1
+        this.nullId = -1
         this.grid = new Grid(size, size, this.nullId)
         this.roughness = roughness
         this.size = size

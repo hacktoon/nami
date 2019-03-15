@@ -10,9 +10,9 @@ export class Grid {
         this.height = height
         this.matrix = []
 
-        for(var y = 0; y < this.height; y++) {
+        for(let y = 0; y < this.height; y++) {
             this.matrix.push([])
-            for(var x = 0; x < this.width; x++){
+            for(let x = 0; x < this.width; x++){
                 this.matrix[y].push(defaultValue)
             }
         }
@@ -39,9 +39,9 @@ export class Grid {
     }
 
     forEach (callback) {
-        for(var y = 0; y < this.height; y++){
-            for(var x = 0; x < this.width; x++){
-                var point = new Point(x, y),
+        for(let y = 0; y < this.height; y++){
+            for(let x = 0; x < this.width; x++){
+                let point = new Point(x, y),
                     value = this.get(point)
                 callback(value, point)
             }
@@ -49,14 +49,14 @@ export class Grid {
     }
 
     isEdge (point) {
-        var isTopLeft = point.x === 0 || point.y === 0,
+        let isTopLeft = point.x === 0 || point.y === 0,
             isBottomRight = point.x === this.width - 1 ||
                             point.y === this.height - 1
         return isTopLeft || isBottomRight
     }
 
     oppositeEdge (point) {
-        var x = point.x,
+        let x = point.x,
             y = point.y
         if (! this.isEdge(point)) {
             throw new RangeError("Point not in edge")

@@ -13,8 +13,6 @@ let viewCanvas = document.getElementById("viewCanvas"),
     viewInput = document.getElementById('viewInput'),
     infoText = document.getElementById("infoText");
 
-let currentWorld, worldPainter
-
 const getViewInput = () => {
     let option = viewInput.options[viewInput.selectedIndex];
     return option.value;
@@ -31,8 +29,8 @@ const getRoughnessInput = () => {
 const createWorld = () => {
     let tilesize = getTileSizeInput()
     let worldBuilder = new WorldBuilder(257, getRoughnessInput())
-    currentWorld = worldBuilder.world
-    worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
+    window.currentWorld = worldBuilder.world
+    window.worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
     return currentWorld
 }
 
