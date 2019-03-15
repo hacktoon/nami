@@ -1,6 +1,8 @@
 
 class WorldBuilder {
     constructor(size, roughness) {
+        this.size = size
+        this.roughness = roughness
         this.world = new World(size)
         this.waterPoints = new HashMap()
         this.landPoints = new HashMap()
@@ -9,23 +11,24 @@ class WorldBuilder {
         this.rainHeightmap = new HeightMap(size, roughness).grid
         this.heatHeightmap = new HeatHeightMap(size).grid
 
-        this._build(roughness)
+        this._build()
     }
 
-    _build(roughness) {
-        new HeightMap(this.world.size, roughness, (point, height) => {
+    _build() {
+        new HeightMap(this.size, this.roughness, (point, height) => {
             let tile = this._buildTile(point, height)
 
             this._filterRainByHeat(tile)
             this._applyTerrainMask(tile)
             this._measureTerrain(tile)
+
+            this.world.setTile(point, tile)
         })
         this._process()
     }
 
     _buildTile(point, height) {
         let tile = new Tile(point)
-        this.world.setTile(point, tile)
         tile.terrain = new Terrain(height)
         tile.heat = new Heat(this.heatHeightmap.get(point))
         tile.rain = new Rain(this.rainHeightmap.get(point))
@@ -34,18 +37,18 @@ class WorldBuilder {
 
     _applyTerrainMask(tile) {
         let maskHeight = this.maskHeightmap.get(tile.point)
-        if (maskHeight > this.world.size / 2) {
+        if (maskHeight > this.size / 2) {
             tile.terrain.lower(1)
         }
     }
 
     _filterRainByHeat(tile) {
         if (tile.heat.isPolar)
-            tile.rain.lower(1)
+            tile.rain.lower(3)
         if (tile.heat.isSubtropical)
             tile.rain.lower(1)
         if (tile.heat.isTropical)
-            tile.rain.raise(1)
+            tile.rain.raise(2)
     }
 
     _measureTerrain(tile) {
