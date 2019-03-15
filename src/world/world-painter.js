@@ -26,6 +26,18 @@ class WorldPainter {
             this.drawPoint(point, color)
         })
     }
+
+    drawHeat() {
+        this.world.grid.forEach((tile, point) => {
+            this.drawPoint(point, tile.heat.color)
+        })
+    }
+
+    drawRain() {
+        this.world.grid.forEach((tile, point) => {
+            this.drawPoint(point, tile.rain.color)
+        })
+    }
 }
 
 

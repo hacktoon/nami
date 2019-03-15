@@ -5,28 +5,33 @@ class WorldBuilder {
         this.waterPoints = new HashMap()
         this.landPoints = new HashMap()
         this.highestPoints = new HashMap()
-        this._buildTerrain(roughness)
-        this._processTerrain()
+        this._build(roughness)
+
     }
 
-    _buildTerrain(roughness) {
-        let maskGrid = new HeightMap(this.world.size, roughness).grid
+    _build(roughness) {
+        let maskHeightmap = new HeightMap(this.world.size, roughness).grid
+        let rainHeightmap = new HeightMap(this.world.size, roughness).grid
+        let heatHeightmap = new HeatHeightMap(this.world.size).grid
 
         new HeightMap(this.world.size, roughness, (point, height) => {
-            let maskHeight = maskGrid.get(point)
+            let maskHeight = maskHeightmap.get(point)
             let tile = new Tile(point)
 
             tile.terrain = new Terrain(height)
+            tile.rain = new Rain(rainHeightmap.get(point))
+            tile.heat = new Heat(heatHeightmap.get(point))
+
             if (maskHeight > this.world.size / 2) {
                 tile.terrain.lower(1)
-                //tile.heat.raise(1)
             }
-            this._measureTerrain(tile, point)
+            this._measureTerrain(point, tile)
             this.world.setTile(point, tile)
         })
+        this._processTerrain()
     }
 
-    _measureTerrain(tile, point) {
+    _measureTerrain(point, tile) {
         if (tile.terrain.isWater) {
             this.waterPoints.add(point)
         } else {

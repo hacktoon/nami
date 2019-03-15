@@ -38,9 +38,9 @@ const draw = () =>  {
     viewCanvas.height = currentWorld.size * tilesize;
 
     if (view == "heat") {
-        worldPainter.drawBlackWhite()
+        worldPainter.drawHeat()
     } else if (view == "rain") {
-        worldPainter.drawBlackWhite()
+        worldPainter.drawRain()
     } else {
         worldPainter.draw()
     }
