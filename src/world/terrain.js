@@ -63,11 +63,11 @@ class Terrain {
         return this.terrain.id > terrain.id
     }
 
-    isLowest () {
+    get isLowest () {
         return this.terrain.id === TerrainMap.getLowest().id
     }
 
-    isHighest () {
+    get isHighest () {
         return this.terrain.id === TerrainMap.getHighest().id
     }
 }

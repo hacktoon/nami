@@ -56,6 +56,11 @@ class HeatMap {
         return _map
     }
 
+    static getByTemp(temp) {
+        let newTemp = _.clamp(temp, 0, 3)
+        return HeatMap.get(newTemp)
+    }
+
     static getHottest() {
         return HeatMap.get(3)
     }
@@ -96,4 +101,12 @@ class Heat {
     get isTemperate() { return HeatMap.isTemperate(this.heat) }
     get isSubtropical() { return HeatMap.isSubtropical(this.heat) }
     get isTropical() { return HeatMap.isTropical(this.heat) }
+
+    raise(amount = 1) {
+        this.heat = HeatMap.getByTemp(this.heat.temp + amount)
+    }
+
+    lower(amount = 1) {
+        this.heat = HeatMap.getByTemp(this.heat.temp - amount)
+    }
 }

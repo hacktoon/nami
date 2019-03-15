@@ -18,10 +18,10 @@ class WorldBuilder {
         new HeightMap(this.size, this.roughness, (point, height) => {
             let tile = this._buildTile(point, height)
 
-            this._filterRainByHeat(tile)
             this._applyTerrainMask(tile)
-            this._measureTerrain(tile)
+            this._applyClimateMask(tile)
 
+            this._measureTerrain(tile)
             this.world.setTile(point, tile)
         })
         this._process()
@@ -42,7 +42,9 @@ class WorldBuilder {
         }
     }
 
-    _filterRainByHeat(tile) {
+    _applyClimateMask(tile) {
+        if (tile.terrain.isHighest)
+            tile.heat.lower(2)
         if (tile.heat.isPolar)
             tile.rain.lower(3)
         if (tile.heat.isSubtropical)
@@ -56,7 +58,7 @@ class WorldBuilder {
             this.waterPoints.add(tile.point)
         } else {
             this.landPoints.add(tile.point)
-            if (tile.terrain.isHighest()) {
+            if (tile.terrain.isHighest) {
                 this.highestPoints.add(tile.point)
             }
         }
