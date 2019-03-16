@@ -24,34 +24,20 @@ export default class WorldBuilder {
     }
 
     build() {
-        const _buildTerrain = (point, height) => {
+        const _buildTile = (point, height) => {
             let tile = this.world.getTile(point)
 
-            tile.elevation = new Elevation(height)
-            tile.heat = new Heat(this.heatHeightmap.get(point))
-            tile.rain = new Rain(this.rainHeightmap.get(point))
-
-            _applyElevationMask(point, tile)
-            _applyClimateMask(point, tile)
-            _measureElevation(point, tile)
+            _setElevation(point, tile, height)
+            _setClimate(point, tile)
         }
 
-        const _applyElevationMask = (point, tile) => {
+        const _setElevation = (point, tile, height) => {
+            tile.elevation = new Elevation(height)
             let maskHeight = this.maskHeightmap.get(point)
             if (maskHeight > this.size / 2) {
                 tile.elevation.lower(1)
             }
-        }
-
-        const _applyClimateMask = (point, tile) => {
-            if (tile.elevation.isHighest)
-                tile.heat.lower(2)
-            if (tile.heat.isPolar)
-                tile.rain.lower(3)
-            if (tile.heat.isSubtropical)
-                tile.rain.lower(1)
-            if (tile.heat.isTropical)
-                tile.rain.raise(2)
+            _measureElevation(point, tile)
         }
 
         const _measureElevation = (point, tile) => {
@@ -65,7 +51,21 @@ export default class WorldBuilder {
             }
         }
 
-        new HeightMap(this.size, this.roughness, _buildTerrain)
+        const _setClimate = (point, tile) => {
+            tile.heat = new Heat(this.heatHeightmap.get(point))
+            tile.rain = new Rain(this.rainHeightmap.get(point))
+
+            if (tile.elevation.isHighest)
+                tile.heat.lower(2)
+            if (tile.heat.isPolar)
+                tile.rain.lower(3)
+            if (tile.heat.isSubtropical)
+                tile.rain.lower(1)
+            if (tile.heat.isTropical)
+                tile.rain.raise(2)
+        }
+
+        new HeightMap(this.size, this.roughness, _buildTile)
 
         this._process()
 
