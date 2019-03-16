@@ -1,3 +1,4 @@
+import Tile from '../lib/tile'
 import {HashMap} from '../lib/base'
 import {Grid} from '../lib/grid'
 
@@ -10,7 +11,11 @@ export default class World {
         this.bio = {}
         this.climate = {}
 
-        this.grid = new Grid(size, size)
+        this.grid = new Grid(size, size, () => new Tile())
+    }
+
+    _buildTile () {
+        return new Tile()
     }
 
     getTile (point) {

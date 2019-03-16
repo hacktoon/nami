@@ -2,12 +2,12 @@ import _ from 'lodash'
 
 import {HashMap} from '../lib/base'
 import {HeightMap} from '../lib/heightmap'
-import Tile from '../lib/tile'
 
 import World from './world'
 import Elevation from './elevation'
 import Rain from './rain'
 import Heat, {HeatHeightMap} from './heat'
+import Tile from '../lib/tile'
 
 
 export default class WorldBuilder {
@@ -21,58 +21,55 @@ export default class WorldBuilder {
         this.maskHeightmap = new HeightMap(size, roughness).grid
         this.rainHeightmap = new HeightMap(size, roughness).grid
         this.heatHeightmap = new HeatHeightMap(size).grid
-
-        this._build()
     }
 
-    _build() {
-        new HeightMap(this.size, this.roughness, (point, height) => {
-            let tile = this._buildTile(point, height)
+    build() {
+        const _buildTerrain = (point, height) => {
+            let tile = this.world.getTile(point)
 
-            this._applyElevationMask(tile)
-            this._applyClimateMask(tile)
+            tile.elevation = new Elevation(height)
+            tile.heat = new Heat(this.heatHeightmap.get(point))
+            tile.rain = new Rain(this.rainHeightmap.get(point))
 
-            this._measureElevation(tile)
-            this.world.setTile(point, tile)
-        })
-        this._process()
-    }
-
-    _buildTile(point, height) {
-        let tile = new Tile(point)
-        tile.elevation = new Elevation(height)
-        tile.heat = new Heat(this.heatHeightmap.get(point))
-        tile.rain = new Rain(this.rainHeightmap.get(point))
-        return tile
-    }
-
-    _applyElevationMask(tile) {
-        let maskHeight = this.maskHeightmap.get(tile.point)
-        if (maskHeight > this.size / 2) {
-            tile.elevation.lower(1)
+            _applyElevationMask(point, tile)
+            _applyClimateMask(point, tile)
+            _measureElevation(point, tile)
         }
-    }
 
-    _applyClimateMask(tile) {
-        if (tile.elevation.isHighest)
-            tile.heat.lower(2)
-        if (tile.heat.isPolar)
-            tile.rain.lower(3)
-        if (tile.heat.isSubtropical)
-            tile.rain.lower(1)
-        if (tile.heat.isTropical)
-            tile.rain.raise(2)
-    }
-
-    _measureElevation(tile) {
-        if (tile.elevation.isWater) {
-            this.waterPoints.add(tile.point)
-        } else {
-            this.landPoints.add(tile.point)
-            if (tile.elevation.isHighest) {
-                this.highestPoints.add(tile.point)
+        const _applyElevationMask = (point, tile) => {
+            let maskHeight = this.maskHeightmap.get(point)
+            if (maskHeight > this.size / 2) {
+                tile.elevation.lower(1)
             }
         }
+
+        const _applyClimateMask = (point, tile) => {
+            if (tile.elevation.isHighest)
+                tile.heat.lower(2)
+            if (tile.heat.isPolar)
+                tile.rain.lower(3)
+            if (tile.heat.isSubtropical)
+                tile.rain.lower(1)
+            if (tile.heat.isTropical)
+                tile.rain.raise(2)
+        }
+
+        const _measureElevation = (point, tile) => {
+            if (tile.elevation.isWater) {
+                this.waterPoints.add(point)
+            } else {
+                this.landPoints.add(point)
+                if (tile.elevation.isHighest) {
+                    this.highestPoints.add(point)
+                }
+            }
+        }
+
+        new HeightMap(this.size, this.roughness, _buildTerrain)
+
+        this._process()
+
+        return this.world
     }
 
     _process() {
@@ -105,7 +102,7 @@ export default class WorldBuilder {
 
 // class HeightFilter {
 //     static smooth(grid, tile) {
-//         let neighborhood = new PointNeighborhood(tile.point)
+//         let neighborhood = new PointNeighborhood(point)
 //         let sum = tile.height
 //         let valueCount = 1
 //         neighborhood.adjacent(neighborTile => {

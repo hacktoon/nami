@@ -13,7 +13,11 @@ export class Grid {
         for(let y = 0; y < this.height; y++) {
             this.matrix.push([])
             for(let x = 0; x < this.width; x++){
-                this.matrix[y].push(defaultValue)
+                let value = defaultValue
+                if (_.isFunction(defaultValue)) {
+                    value = defaultValue()
+                }
+                this.matrix[y].push(value)
             }
         }
     }
