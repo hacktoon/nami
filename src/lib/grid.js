@@ -128,6 +128,3 @@ export class GridFill {
         this.onFill(point, this.step)
     }
 }
-
-window.GridFill = GridFill
-window.Point = Point

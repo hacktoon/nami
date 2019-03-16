@@ -7,7 +7,7 @@ import World from './world'
 import Elevation from './elevation'
 import Rain from './rain'
 import Heat, {HeatHeightMap} from './heat'
-import { GridFill } from '../lib/grid';
+import { GridFill } from '../lib/grid'
 
 
 export default class WorldBuilder {
@@ -61,46 +61,29 @@ export default class WorldBuilder {
 
     _process() {
         let waterPoints = new HashMap()
+        let waterBodies = []
 
-        // if (tile.elevation.isHighest()) {
-        //     if (maskHeight < 5 && _.sample([true, false])) {
-        //         this.world.geo.riverSourcePoints.add(point)
-        //     } else if (maskHeight > 125 && _.sample([true, false])) {
-        //         this.world.geo.volcanoPoints.add(point)
-        //     }
-        // }
-
-        //this._buildRivers()
-
-        // this.world.geo.totalWaterPoints = this.waterPoints.length
-        // this.world.geo.totalLandPoints = this.landPoints.length
-
-        // })
-
-
-        const _buildWaterBody = (tile, point) => {
-            if (tile.elevation.isLand || waterPoints.has(point))
-                return
-            waterPoints.add(point)
-
+        const _buildWaterBody = point => {
             const onFill = point => {
                 waterPoints.add(point)
             }
-            const isFillable = (tile, point) => {
+            const isFillable = point => {
+                let tile = this.world.getTile(point)
                 return tile.elevation.isWater && ! waterPoints.has(point)
             }
-            //new GridFill(point, onFill, isFillable).fill()
+
+            if (isFillable(point)) {
+                let gridFill = new GridFill(this.world.grid, point, onFill, isFillable)
+                gridFill.fill()
+                waterBodies.push(gridFill.filledPoints.size())
+            }
         }
 
         this.world.grid.forEach((tile, point) => {
-            _buildWaterBody(tile, point)
+            _buildWaterBody(point)
         })
 
         return this.world
-    }
-
-    _buildRivers() {
-
     }
 }
 

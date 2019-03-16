@@ -29,8 +29,11 @@ const getRoughnessInput = () => {
 const createWorld = () => {
     let tilesize = getTileSizeInput()
     let worldBuilder = new WorldBuilder(257, getRoughnessInput())
-    window.currentWorld = worldBuilder.build()
-    window.worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
+    let currentWorld = worldBuilder.build()
+    let worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
+
+    window.currentWorld = currentWorld
+    window.worldPainter = worldPainter
     return currentWorld
 }
 
