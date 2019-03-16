@@ -15,8 +15,8 @@ export default class WorldBuilder {
         this.size = size
         this.roughness = roughness
         this.world = new World(size)
-        this.waterPoints = new HashMap()
-        this.landPoints = new HashMap()
+        this.waterPoints = []
+        this.landPoints = []
         this.highestPoints = new HashMap()
         this.maskHeightmap = new HeightMap(size, roughness).grid
         this.rainHeightmap = new HeightMap(size, roughness).grid
@@ -43,9 +43,9 @@ export default class WorldBuilder {
 
         const _measureElevation = (point, tile) => {
             if (tile.elevation.isWater) {
-                this.waterPoints.add(point)
+                this.waterPoints.push(point)
             } else {
-                this.landPoints.add(point)
+                this.landPoints.push(point)
                 if (tile.elevation.isHighest) {
                     this.highestPoints.add(point)
                 }
@@ -68,12 +68,14 @@ export default class WorldBuilder {
 
         new HeightMap(this.size, this.roughness, _buildTile)
 
-        this._process()
+        this.world.grid.forEach((tile, point) => {
+            this._processTile(tile, point)
+        })
 
         return this.world
     }
 
-    _process() {
+    _processTile(tile, point) {
         // if (tile.elevation.isHighest()) {
         //     if (maskHeight < 5 && _.sample([true, false])) {
         //         this.world.geo.riverSourcePoints.add(point)
@@ -84,15 +86,15 @@ export default class WorldBuilder {
 
         this._buildRivers()
 
-        this.world.geo.totalWaterPoints = this.waterPoints.size()
-        this.world.geo.totalLandPoints = this.landPoints.size()
+        this.world.geo.totalWaterPoints = this.waterPoints.length
+        this.world.geo.totalLandPoints = this.landPoints.length
 
         // this.world.grid.forEach((tile, point) => {
         //     // measure elevation props
 
         // })
-        //point = _.sample(currentWorld.geo.lowestPoints)
-        //g = new GridFill(257, point, p=>{ worldPainter.drawPoint(p, "red") }, p=> { return currentWorld.getTile(p).elevation.isWater } )
+
+        return this.world
     }
 
     _buildRivers() {
