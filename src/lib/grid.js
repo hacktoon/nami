@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
-import {Point} from './point'
-import {HashMap} from './base'
+import { Point, PointNeighborhood } from './point'
+import { HashMap } from './base'
 
 
 export class Grid {
@@ -75,29 +75,30 @@ export class Grid {
 
 
 export class GridFill {
-    constructor (point, onFill=_.noop, isFillable=_.stubTrue) {
+    constructor (grid, startPoint, onFill=_.noop, isFillable=_.stubTrue) {
         this.filledPoints = new HashMap()
+        this.grid = grid
         this.seeds = []
         this.isFillable = isFillable
-        this.startPoint = point
+        this.startPoint = startPoint
         this.onFill = onFill
         this.step = 0
 
-        this.fillPoint(point)
+        this.fillPoint(startPoint)
     }
 
-    isComplete () {
+    get isComplete () {
         return this.seeds.length === 0
     }
 
     fill () {
-        while (!this.isComplete()) {
+        while (!this.isComplete) {
             this.stepFill()
         }
     }
 
     stepFill (times=1) {
-        if (this.isComplete())
+        if (this.isComplete)
             return
         let currentSeeds = this.seeds
         this.seeds = []
@@ -113,11 +114,11 @@ export class GridFill {
     fillNeighborPoints (referencePoint) {
         new PointNeighborhood(referencePoint)
         .adjacent((neighbor, direction) => {
-            if (this.filledPoints.has(neighbor))
+            let point = this.grid.wrap(neighbor)
+            if (this.filledPoints.has(point))
                 return
-            if (!this.isFillable(neighbor, referencePoint, direction, this.step))
-                return
-            this.fillPoint(neighbor)
+            if (this.isFillable(point, referencePoint, direction, this.step))
+                this.fillPoint(point)
         })
     }
 
@@ -127,3 +128,6 @@ export class GridFill {
         this.onFill(point, this.step)
     }
 }
+
+window.GridFill = GridFill
+window.Point = Point

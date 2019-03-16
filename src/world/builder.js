@@ -15,8 +15,6 @@ export default class WorldBuilder {
         this.size = size
         this.roughness = roughness
         this.world = new World(size)
-        this.waterPoints = new HashMap()
-        this.landPoints = new HashMap()
         this.highestPoints = new HashMap()
         this.maskHeightmap = new HeightMap(size, roughness).grid
         this.rainHeightmap = new HeightMap(size, roughness).grid
@@ -37,18 +35,6 @@ export default class WorldBuilder {
             tile.elevation = new Elevation(height)
             if (maskElevation.isLand) {
                 tile.elevation.lower(1)
-            }
-            _measureElevation(point, tile)
-        }
-
-        const _measureElevation = (point, tile) => {
-            if (tile.elevation.isWater) {
-                this.waterPoints.add(point)
-            } else {
-                this.landPoints.add(point)
-                if (tile.elevation.isHighest) {
-                    this.highestPoints.add(point)
-                }
             }
         }
 
@@ -74,6 +60,7 @@ export default class WorldBuilder {
     }
 
     _process() {
+        let waterPoints = new HashMap()
 
         // if (tile.elevation.isHighest()) {
         //     if (maskHeight < 5 && _.sample([true, false])) {
@@ -90,29 +77,24 @@ export default class WorldBuilder {
 
         // })
 
-        const _buildWaterBodies = () => {
-            // while(this.waterPoints.size()) {
-            //     let point = this.waterPoints
-            //     _buildWaterBody(point)
-            // }
+
+        const _buildWaterBody = (tile, point) => {
+            if (tile.elevation.isLand || waterPoints.has(point))
+                return
+            waterPoints.add(point)
+
+            const onFill = point => {
+                waterPoints.add(point)
+            }
+            const isFillable = (tile, point) => {
+                return tile.elevation.isWater && ! waterPoints.has(point)
+            }
+            //new GridFill(point, onFill, isFillable).fill()
         }
 
-        const _buildWaterBody = startPoint => {
-            // const onFill = point => {
-            //     this.waterPoints.pop()
-            // }
-            // const isFillable = point => {
-            //     let tile = this.world.getTile(point)
-            //     return tile.elevation.isWater
-            // }
-            // new GridFill(startPoint, onFill, isFillable).fill()
-        }
-
-        _buildWaterBodies()
-
-        // this.world.grid.forEach((tile, point) => {
-
-        // })
+        this.world.grid.forEach((tile, point) => {
+            _buildWaterBody(tile, point)
+        })
 
         return this.world
     }

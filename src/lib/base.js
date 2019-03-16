@@ -91,6 +91,8 @@ export class HashMap {
     }
 
     add(obj) {
+        if (this.has(obj))
+            return
         this._map[obj.hash()] = obj
         this._size++
     }
@@ -99,8 +101,8 @@ export class HashMap {
         return _.has(this._map, obj.hash())
     }
 
-    get(hash) {
-        return this._map[hash]
+    get(obj) {
+        return this._map[obj.hash()]
     }
 
     remove(obj) {

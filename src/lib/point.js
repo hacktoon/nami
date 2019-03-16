@@ -1,5 +1,7 @@
 import _ from 'lodash'
 
+import { Direction } from './base'
+
 
 export class Point {
     constructor (x, y) {
