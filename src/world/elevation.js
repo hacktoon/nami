@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 
-class TerrainMap {
+class ElevationMap {
     static get (id=null) {
         const _map = [
             { id: 0, height: 0,   color: "#000056", name: "Abyssal waters", isWater: true },
@@ -20,56 +20,56 @@ class TerrainMap {
     }
 
     static getHighest () {
-        return _.last(TerrainMap.get())
+        return _.last(ElevationMap.get())
     }
 
     static getLowest () {
-        return _.first(TerrainMap.get())
+        return _.first(ElevationMap.get())
     }
 }
 
 
-export default class Terrain {
+export default class Elevation {
     constructor (height) {
-        const _map = TerrainMap.get()
+        const _map = ElevationMap.get()
         for(let i = 0; i < _map.length; i++) {
-            let terrainData = _map[i]
-            if (height >= terrainData.height) {
-                this.terrain = terrainData
+            let elevationData = _map[i]
+            if (height >= elevationData.height) {
+                this.elevation = elevationData
             } else {
                 break
             }
         }
     }
 
-    get id () { return this.terrain.id }
-    get name () { return this.terrain.name }
-    get height () { return this.terrain.height }
-    get color () { return this.terrain.color }
-    get isWater () { return Boolean(this.terrain.isWater) }
+    get id () { return this.elevation.id }
+    get name () { return this.elevation.name }
+    get height () { return this.elevation.height }
+    get color () { return this.elevation.color }
+    get isWater () { return Boolean(this.elevation.isWater) }
     get isLand () { return !this.isWater }
 
     raise (amount=1) {
-        this.terrain = TerrainMap.get(this.terrain.id + amount)
+        this.elevation = ElevationMap.get(this.elevation.id + amount)
     }
 
     lower (amount=1) {
-        this.terrain = TerrainMap.get(this.terrain.id - amount)
+        this.elevation = ElevationMap.get(this.elevation.id - amount)
     }
 
-    isLower (terrain) {
-        return this.terrain.id < terrain.id
+    isLower (elevation) {
+        return this.elevation.id < elevation.id
     }
 
-    isHigher (terrain) {
-        return this.terrain.id > terrain.id
+    isHigher (elevation) {
+        return this.elevation.id > elevation.id
     }
 
     get isLowest () {
-        return this.terrain.id === TerrainMap.getLowest().id
+        return this.elevation.id === ElevationMap.getLowest().id
     }
 
     get isHighest () {
-        return this.terrain.id === TerrainMap.getHighest().id
+        return this.elevation.id === ElevationMap.getHighest().id
     }
 }

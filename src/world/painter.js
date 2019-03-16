@@ -8,7 +8,7 @@ export default class WorldPainter {
 
     draw () {
         this.world.grid.forEach((tile, point) => {
-            let color = tile.terrain.color
+            let color = tile.elevation.color
             if (this.world.geo.volcanoPoints.has(point)) {
                 color = "red"
             } else if (this.world.geo.riverSourcePoints.has(point)){
@@ -28,7 +28,7 @@ export default class WorldPainter {
 
     drawBlackWhite () {
         this.world.grid.forEach((tile, point) => {
-            let color = tile.terrain.isWater ? "#FFF" : "#000"
+            let color = tile.elevation.isWater ? "#FFF" : "#000"
             this.drawPoint(point, color)
         })
     }

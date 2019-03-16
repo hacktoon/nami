@@ -5,7 +5,7 @@ import {HeightMap} from '../lib/heightmap'
 import Tile from '../lib/tile'
 
 import World from './world'
-import Terrain from './terrain'
+import Elevation from './elevation'
 import Rain from './rain'
 import Heat, {HeatHeightMap} from './heat'
 
@@ -29,10 +29,10 @@ export default class WorldBuilder {
         new HeightMap(this.size, this.roughness, (point, height) => {
             let tile = this._buildTile(point, height)
 
-            this._applyTerrainMask(tile)
+            this._applyElevationMask(tile)
             this._applyClimateMask(tile)
 
-            this._measureTerrain(tile)
+            this._measureElevation(tile)
             this.world.setTile(point, tile)
         })
         this._process()
@@ -40,21 +40,21 @@ export default class WorldBuilder {
 
     _buildTile(point, height) {
         let tile = new Tile(point)
-        tile.terrain = new Terrain(height)
+        tile.elevation = new Elevation(height)
         tile.heat = new Heat(this.heatHeightmap.get(point))
         tile.rain = new Rain(this.rainHeightmap.get(point))
         return tile
     }
 
-    _applyTerrainMask(tile) {
+    _applyElevationMask(tile) {
         let maskHeight = this.maskHeightmap.get(tile.point)
         if (maskHeight > this.size / 2) {
-            tile.terrain.lower(1)
+            tile.elevation.lower(1)
         }
     }
 
     _applyClimateMask(tile) {
-        if (tile.terrain.isHighest)
+        if (tile.elevation.isHighest)
             tile.heat.lower(2)
         if (tile.heat.isPolar)
             tile.rain.lower(3)
@@ -64,19 +64,19 @@ export default class WorldBuilder {
             tile.rain.raise(2)
     }
 
-    _measureTerrain(tile) {
-        if (tile.terrain.isWater) {
+    _measureElevation(tile) {
+        if (tile.elevation.isWater) {
             this.waterPoints.add(tile.point)
         } else {
             this.landPoints.add(tile.point)
-            if (tile.terrain.isHighest) {
+            if (tile.elevation.isHighest) {
                 this.highestPoints.add(tile.point)
             }
         }
     }
 
     _process() {
-        // if (tile.terrain.isHighest()) {
+        // if (tile.elevation.isHighest()) {
         //     if (maskHeight < 5 && _.sample([true, false])) {
         //         this.world.geo.riverSourcePoints.add(point)
         //     } else if (maskHeight > 125 && _.sample([true, false])) {
@@ -90,11 +90,11 @@ export default class WorldBuilder {
         this.world.geo.totalLandPoints = this.landPoints.size()
 
         // this.world.grid.forEach((tile, point) => {
-        //     // measure terrain props
+        //     // measure elevation props
 
         // })
         //point = _.sample(currentWorld.geo.lowestPoints)
-        //g = new GridFill(257, point, p=>{ worldPainter.drawPoint(p, "red") }, p=> { return currentWorld.getTile(p).terrain.isWater } )
+        //g = new GridFill(257, point, p=>{ worldPainter.drawPoint(p, "red") }, p=> { return currentWorld.getTile(p).elevation.isWater } )
     }
 
     _buildRivers() {

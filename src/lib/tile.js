@@ -4,7 +4,7 @@ export default class Tile {
         this.point = point;
         this.heat = undefined;
         this.rain = undefined;
-        this.terrain = undefined;
+        this.elevation = undefined;
         this.biome = undefined;
     }
 };
