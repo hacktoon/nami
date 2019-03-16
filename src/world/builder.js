@@ -7,7 +7,7 @@ import World from './world'
 import Elevation from './elevation'
 import Rain from './rain'
 import Heat, {HeatHeightMap} from './heat'
-import Tile from '../lib/tile'
+import { GridFill } from '../lib/grid';
 
 
 export default class WorldBuilder {
@@ -15,8 +15,8 @@ export default class WorldBuilder {
         this.size = size
         this.roughness = roughness
         this.world = new World(size)
-        this.waterPoints = []
-        this.landPoints = []
+        this.waterPoints = new HashMap()
+        this.landPoints = new HashMap()
         this.highestPoints = new HashMap()
         this.maskHeightmap = new HeightMap(size, roughness).grid
         this.rainHeightmap = new HeightMap(size, roughness).grid
@@ -43,9 +43,9 @@ export default class WorldBuilder {
 
         const _measureElevation = (point, tile) => {
             if (tile.elevation.isWater) {
-                this.waterPoints.push(point)
+                this.waterPoints.add(point)
             } else {
-                this.landPoints.push(point)
+                this.landPoints.add(point)
                 if (tile.elevation.isHighest) {
                     this.highestPoints.add(point)
                 }
@@ -68,14 +68,13 @@ export default class WorldBuilder {
 
         new HeightMap(this.size, this.roughness, _buildTile)
 
-        this.world.grid.forEach((tile, point) => {
-            this._processTile(tile, point)
-        })
+        this._process()
 
         return this.world
     }
 
-    _processTile(tile, point) {
+    _process() {
+
         // if (tile.elevation.isHighest()) {
         //     if (maskHeight < 5 && _.sample([true, false])) {
         //         this.world.geo.riverSourcePoints.add(point)
@@ -84,13 +83,34 @@ export default class WorldBuilder {
         //     }
         // }
 
-        this._buildRivers()
+        //this._buildRivers()
 
-        this.world.geo.totalWaterPoints = this.waterPoints.length
-        this.world.geo.totalLandPoints = this.landPoints.length
+        // this.world.geo.totalWaterPoints = this.waterPoints.length
+        // this.world.geo.totalLandPoints = this.landPoints.length
+
+        // })
+
+        const _buildWaterBodies = () => {
+            // while(this.waterPoints.size()) {
+            //     let point = this.waterPoints
+            //     _buildWaterBody(point)
+            // }
+        }
+
+        const _buildWaterBody = startPoint => {
+            // const onFill = point => {
+            //     this.waterPoints.pop()
+            // }
+            // const isFillable = point => {
+            //     let tile = this.world.getTile(point)
+            //     return tile.elevation.isWater
+            // }
+            // new GridFill(startPoint, onFill, isFillable).fill()
+        }
+
+        _buildWaterBodies()
 
         // this.world.grid.forEach((tile, point) => {
-        //     // measure elevation props
 
         // })
 

@@ -74,35 +74,8 @@ export class Grid {
 }
 
 
-class GridPointDistribution {
-    constructor (grid, numPoints = 1) {
-        this.grid = grid
-        this.numPoints = numPoints
-        this.chosenPoints = new HashMap()
-    }
-
-    createRandomPoint () {
-        let x = _.random(this.grid.width-1),
-            y = _.random(this.grid.height-1)
-        return new Point(x, y)
-    }
-
-    each (callback) {
-        let count = 0
-        while(count < this.numPoints) {
-            let point = this.createRandomPoint()
-            if (this.chosenPoints.has(point))
-                continue
-            this.chosenPoints.add(point)
-            callback(point, count++)
-        }
-    }
-}
-
-
 export class GridFill {
-    constructor (size, point, onFill=_.noop, isFillable=_.stubTrue) {
-        this.grid = new Grid(size, size)
+    constructor (point, onFill=_.noop, isFillable=_.stubTrue) {
         this.filledPoints = new HashMap()
         this.seeds = []
         this.isFillable = isFillable
@@ -140,7 +113,6 @@ export class GridFill {
     fillNeighborPoints (referencePoint) {
         new PointNeighborhood(referencePoint)
         .adjacent((neighbor, direction) => {
-            neighbor = this.grid.wrap(neighbor)
             if (this.filledPoints.has(neighbor))
                 return
             if (!this.isFillable(neighbor, referencePoint, direction, this.step))
