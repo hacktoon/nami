@@ -32,9 +32,10 @@ export default class WorldBuilder {
         }
 
         const _setElevation = (point, tile, height) => {
+            let maskElevation = new Elevation(this.maskHeightmap.get(point))
+
             tile.elevation = new Elevation(height)
-            let maskHeight = this.maskHeightmap.get(point)
-            if (maskHeight > this.size / 2) {
+            if (maskElevation.isLand) {
                 tile.elevation.lower(1)
             }
             _measureElevation(point, tile)
