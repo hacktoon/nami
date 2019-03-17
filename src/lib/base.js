@@ -118,3 +118,9 @@ export class HashMap {
         _.each(this._map, obj => callback(obj))
     }
 }
+
+
+export function getChance(percentage) {
+    let value = _.random(0, 100)
+    return value <= percentage
+}

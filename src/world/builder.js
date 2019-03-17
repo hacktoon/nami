@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-import { HashMap } from '../lib/base'
+import { HashMap, getChance } from '../lib/base'
 import { HeightMap } from '../lib/heightmap'
 import { PointNeighborhood } from '../lib/point'
 import { GridFill } from '../lib/grid'
@@ -34,7 +34,7 @@ export default class WorldBuilder {
             let maskElevation = new Elevation(this.maskHeightmap.get(point))
 
             tile.elevation = new Elevation(height)
-            if (maskElevation.isLand && tile.elevation.isLand) {
+            if (maskElevation.isLand) {
                 tile.elevation.lower()
             }
         }
@@ -80,6 +80,9 @@ export default class WorldBuilder {
 
         this.world.grid.forEach((tile, point) => {
             let neighborhood = new PointNeighborhood(point)
+            neighborhood.adjacent(neighborPoint => {
+
+            })
             _buildWaterBody(point)
         })
 
