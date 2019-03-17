@@ -64,9 +64,7 @@ export default class WorldBuilder {
         let waterBodies = []
 
         const _buildWaterBody = point => {
-            const onFill = point => {
-                waterPoints.add(point)
-            }
+            const onFill = point => waterPoints.add(point)
             const isFillable = point => {
                 let tile = this.world.getTile(point)
                 return tile.elevation.isWater && ! waterPoints.has(point)

@@ -9,10 +9,8 @@ export default class WorldPainter {
     draw () {
         this.world.grid.forEach((tile, point) => {
             let color = tile.elevation.color
-            if (this.world.geo.volcanoPoints.has(point)) {
-                color = "red"
-            } else if (this.world.geo.riverSourcePoints.has(point)){
-                color = "blue"
+            if (tile.isRiverSource){
+                color = "purple"
             }
             this.drawPoint(point, color)
         })
