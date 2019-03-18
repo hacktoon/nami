@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+      <title>Scanline</title>
+
+      <style type="text/css">
+        canvas {
+            outline: solid 1px #CCC;
+        }
+        .button-panel {
+            margin-bottom: 10px;
+        }
+      </style>
+  </head>
+
+  <body>
+    <div class="button-panel">
+        <label for="wallMode">Wall mode
+            <input type="checkbox" id="wallMode" checked />
+        </label>
+        <button id="clearFill">Clear fill</button>
+        <button id="reset">Reset</button>
+    </div>
+
+    <canvas id="grid"></canvas>
+
+    <script src="index.js"></script>
+  </body>
+</html>
