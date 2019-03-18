@@ -80,7 +80,7 @@ viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
         position = "("+ point.hash() + ")",
-        elevation = " | Elevation: " + tile.elevation.name,
+        elevation = ` | Elevation: ${tile.elevation.height}`,
         heat = " | " + tile.heat.name,
         rain = " | " + tile.rain.name
 
