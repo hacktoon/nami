@@ -128,3 +128,38 @@ export class GridFill {
         this.onFill(point, this.step)
     }
 }
+
+
+export class ScanlineFill {
+    constructor (grid, startPoint, onFill=_.noop, isFillable=_.stubTrue) {
+        this.filledPoints = new HashMap()
+        this.grid = grid
+        this.seeds = []
+        this.isFillable = isFillable
+        this.startPoint = startPoint
+        this.onFill = onFill
+        this.step = 0
+
+        this.fillPoint(startPoint)
+    }
+
+    get isComplete () {
+        return this.seeds.length === 0
+    }
+
+    fill () {
+        while (!this.isComplete) {
+            this.stepFill()
+        }
+    }
+
+    stepFill () {
+
+    }
+
+    fillPoint (point) {
+        this.seeds.push(point)
+        this.filledPoints.add(point)
+        this.onFill(point, this.step)
+    }
+}
