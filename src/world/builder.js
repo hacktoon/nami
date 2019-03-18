@@ -34,7 +34,7 @@ export default class WorldBuilder {
             let maskElevation = new Elevation(this.maskHeightmap.get(point))
 
             tile.elevation = new Elevation(height)
-            if (maskElevation.isLand) {
+            if (maskElevation.isAboveSeaLevel) {
                 tile.elevation.lower()
             }
         }
@@ -55,7 +55,7 @@ export default class WorldBuilder {
 
         new HeightMap(this.size, this.roughness, _buildTile)
 
-        this._process()
+        //this._process()
 
         return this.world
     }
@@ -68,7 +68,7 @@ export default class WorldBuilder {
             const onFill = point => waterPoints.add(point)
             const isFillable = point => {
                 let tile = this.world.getTile(point)
-                return tile.elevation.isWater && ! waterPoints.has(point)
+                return tile.elevation.isBelowSeaLevel && ! waterPoints.has(point)
             }
 
             if (isFillable(point)) {
@@ -79,10 +79,6 @@ export default class WorldBuilder {
         }
 
         this.world.grid.forEach((tile, point) => {
-            let neighborhood = new PointNeighborhood(point)
-            neighborhood.adjacent(neighborPoint => {
-
-            })
             _buildWaterBody(point)
         })
 

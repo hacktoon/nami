@@ -4,13 +4,13 @@ import _ from 'lodash'
 class ElevationMap {
     static get (id=null) {
         const _map = [
-            { id: 0, height: 0,   color: "#000056", name: "Abyssal waters", isWater: true },
-            { id: 1, height: 80,  color: "#1a3792", name: "Deep waters",    isWater: true },
-            { id: 2, height: 120, color: "#3379a6", name: "Shallow waters", isWater: true },
-            { id: 3, height: 150, color: "#0a5816", name: "Coastal plains" },
-            { id: 4, height: 190, color: "#31771a", name: "Plains" },
-            { id: 5, height: 240, color: "#6f942b", name: "Hills" },
-            { id: 6, height: 255, color: "#d5cab4", name: "Mountains" }
+            { id: 0, height: 0,   color: "#000056", name: "-3", isBelowSeaLevel: true },
+            { id: 1, height: 80,  color: "#1a3792", name: "-2", isBelowSeaLevel: true },
+            { id: 2, height: 120, color: "#3379a6", name: "-1", isBelowSeaLevel: true },
+            { id: 3, height: 150, color: "#0a5816", name: "0" },
+            { id: 4, height: 190, color: "#31771a", name: "1" },
+            { id: 5, height: 240, color: "#6f942b", name: "2" },
+            { id: 6, height: 255, color: "#d5cab4", name: "3" }
         ]
         if (_.isNumber(id)) {
             let index = _.clamp(id, 0, _map.length-1)
@@ -46,8 +46,8 @@ export default class Elevation {
     get name () { return this.elevation.name }
     get height () { return this.elevation.height }
     get color () { return this.elevation.color }
-    get isWater () { return Boolean(this.elevation.isWater) }
-    get isLand () { return !this.isWater }
+    get isBelowSeaLevel () { return Boolean(this.elevation.isBelowSeaLevel) }
+    get isAboveSeaLevel () { return !this.isBelowSeaLevel }
 
     raise (amount=1) {
         this.elevation = ElevationMap.get(this.elevation.id + amount)
