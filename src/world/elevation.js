@@ -32,8 +32,7 @@ class ElevationMap {
 export default class Elevation {
     constructor (height) {
         const _map = ElevationMap.get()
-        for(let i = 0; i < _map.length; i++) {
-            let elevationData = _map[i]
+        for(let elevationData of _map) {
             if (height >= elevationData.height) {
                 this.elevation = elevationData
             } else {
