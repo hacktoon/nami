@@ -11,12 +11,12 @@ const stepButton = document.getElementById("step")
 const TILESIZE = 20
 const SIZE = 30
 
-const NULL_VALUE = 0
+const EMPTY_VALUE = 0
 const FILL_VALUE = 1
 const WALL_VALUE = 2
 
 const colorMap = {
-    [NULL_VALUE]: "white",
+    [EMPTY_VALUE]: "white",
     [FILL_VALUE]: "lightblue",
     [WALL_VALUE]: "black"
 }
@@ -41,7 +41,7 @@ const drawPoint = (point, color) => {
 }
 
 const init = () => {
-    grid = new Grid(SIZE, SIZE, () => getChance(5) ? WALL_VALUE : NULL_VALUE )
+    grid = new Grid(SIZE, SIZE, () => getChance(15) ? WALL_VALUE : EMPTY_VALUE )
     draw()
 }
 
@@ -55,18 +55,14 @@ const getCanvasMousePoint = (e, viewCanvas) => {
 }
 
 const createFloodFill = startPoint => {
-    const onFill = point => {
-        grid.set(point, FILL_VALUE)
-    }
-    const isFillable = point => grid.get(point) == NULL_VALUE
+    const onFill = point => grid.set(point, FILL_VALUE)
+    const isFillable = point => grid.get(point) == EMPTY_VALUE
     return new FloodFill(grid, startPoint, onFill, isFillable)
 }
 
 const createScanlineFill = startPoint => {
-    const onFill = point => {
-        grid.set(point, FILL_VALUE)
-    }
-    const isFillable = point => grid.get(point) == NULL_VALUE
+    const onFill = point => grid.set(point, FILL_VALUE)
+    const isFillable = point => grid.get(point) == EMPTY_VALUE
     return new ScanlineFill(grid, startPoint, onFill, isFillable)
 }
 
