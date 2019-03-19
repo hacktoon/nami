@@ -7,6 +7,7 @@ import {Point} from '../../lib/point'
 const viewCanvas = document.getElementById("grid")
 const ctx = viewCanvas.getContext('2d')
 const wallModeCheckbox = document.getElementById("wallMode")
+const infoText = document.getElementById("infoText")
 const stepButton = document.getElementById("step")
 const TILESIZE = 20
 const SIZE = 30
@@ -64,7 +65,10 @@ const createFloodFill = startPoint => {
 }
 
 const createScanlineFill = startPoint => {
-    const onFill = point => grid.set(point, FILL_VALUE)
+    const onFill = point => {
+        grid.set(point, FILL_VALUE)
+        draw()
+    }
     const isFillable = point => grid.get(point) == EMPTY_VALUE
     return new ScanlineFill(grid, startPoint, onFill, isFillable)
 }
@@ -74,17 +78,23 @@ viewCanvas.addEventListener('click', e => {
     if (wallModeCheckbox.checked) {
         grid.set(point, WALL_VALUE)
     } else {
-        window.filler = filler = createFloodFill(point)
+        filler = createScanlineFill(point)
+        let p = filler.detectLineRange(filler.startPoint)
+        console.log(p)
     }
     draw()
+})
+
+viewCanvas.addEventListener('mousemove', e => {
+    let point = getCanvasMousePoint(e, viewCanvas)
+    infoText.innerHTML = "("+ point.hash() + ")"
 })
 
 stepButton.addEventListener('click', e => {
     if (filler.isComplete) {
         console.log("Fill completed")
     } else {
-        draw()
-        filler.stepFill()
+        //draw()
     }
 })
 

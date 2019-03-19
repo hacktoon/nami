@@ -138,9 +138,6 @@ export class ScanlineFill {
         this.isFillable = isFillable
         this.startPoint = startPoint
         this.onFill = onFill
-        this.step = 0
-
-        this.fillPoint(startPoint)
     }
 
     get isComplete () {
@@ -153,13 +150,23 @@ export class ScanlineFill {
         }
     }
 
-    stepFill () {
+    getLeftPoint(currentPoint) {
+        return new Point(currentPoint.x - 1, currentPoint.y)
+    }
 
+    detectLineRange(startPoint) {
+        let currentPoint = startPoint
+        let nextPoint = this.getLeftPoint(currentPoint)
+        while(this.isFillable(nextPoint) && nextPoint.x >= 0) {
+            currentPoint = nextPoint
+            nextPoint = this.getLeftPoint(nextPoint)
+        }
+        return currentPoint
     }
 
     fillPoint (point) {
         this.seeds.push(point)
         this.filledPoints.add(point)
-        this.onFill(point, this.step)
+        this.onFill(point)
     }
 }
