@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {Grid, ScanlineFill, GridFill} from '../../lib/grid'
+import {Grid, ScanlineFill, FloodFill} from '../../lib/grid'
 import {getChance} from '../../lib/base'
 import {Point} from '../../lib/point'
 
@@ -54,12 +54,20 @@ const getCanvasMousePoint = (e, viewCanvas) => {
     return new Point(x, y)
 }
 
-const createGridFill = startPoint => {
+const createFloodFill = startPoint => {
     const onFill = point => {
         grid.set(point, FILL_VALUE)
     }
     const isFillable = point => grid.get(point) == NULL_VALUE
-    return new GridFill(grid, startPoint, onFill, isFillable)
+    return new FloodFill(grid, startPoint, onFill, isFillable)
+}
+
+const createScanlineFill = startPoint => {
+    const onFill = point => {
+        grid.set(point, FILL_VALUE)
+    }
+    const isFillable = point => grid.get(point) == NULL_VALUE
+    return new ScanlineFill(grid, startPoint, onFill, isFillable)
 }
 
 viewCanvas.addEventListener('click', e => {
@@ -67,7 +75,7 @@ viewCanvas.addEventListener('click', e => {
     if (wallModeCheckbox.checked) {
         grid.set(point, WALL_VALUE)
     } else {
-        window.filler = filler = createGridFill(point)
+        window.filler = filler = createFloodFill(point)
     }
     draw()
 })

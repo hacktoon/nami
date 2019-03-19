@@ -74,7 +74,7 @@ export class Grid {
 }
 
 
-export class GridFill {
+export class FloodFill {
     constructor (grid, startPoint, onFill=_.noop, isFillable=_.stubTrue) {
         this.filledPoints = new HashMap()
         this.grid = grid
