@@ -7,11 +7,12 @@ import {Point} from '../../lib/point'
 const viewCanvas = document.getElementById("grid")
 const ctx = viewCanvas.getContext('2d')
 const wallModeCheckbox = document.getElementById("wallMode")
+const algorithmSelect = document.getElementById("algorithm")
 const infoText = document.getElementById("infoText")
 const stepButton = document.getElementById("step")
 const fillButton = document.getElementById("fill")
-const TILESIZE = 20
-const SIZE = 30
+const TILESIZE = 2
+const SIZE = 256
 
 const EMPTY_VALUE = 0
 const FILL_VALUE = 1
@@ -71,12 +72,19 @@ const createScanlineFill = startPoint => {
     return new ScanlineFill(grid, startPoint, onFill, isFillable)
 }
 
+const getAlgorithm = () => {
+    return algorithmSelect.options[algorithmSelect.selectedIndex].value
+}
+
 viewCanvas.addEventListener('click', e => {
     let point = getCanvasMousePoint(e, viewCanvas)
     if (wallModeCheckbox.checked) {
         grid.set(point, WALL_VALUE)
     } else {
-        filler = createScanlineFill(point)
+        if (getAlgorithm() == "flood")
+            filler = createFloodFill(point)
+        else
+            filler = createScanlineFill(point)
     }
     draw()
 })

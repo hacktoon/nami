@@ -139,7 +139,7 @@ export class ScanlineFill {
         this.isFillable = isFillable
 
         let point = this.detectRangeStart(startPoint)
-        this.rangeQueue.push({point, above: true, below: true})
+        this.createRange(point)
     }
 
     detectRangeStart(point) {
@@ -174,12 +174,16 @@ export class ScanlineFill {
         }
     }
 
+    createRange(point) {
+        this.rangeQueue.push({point, above: true, below: true})
+    }
+
     detectRangeAbove(referencePoint, referenceRange) {
         let pointAbove = Point.atNorth(referencePoint)
         if (this.isFillable(pointAbove)) {
             if (referenceRange.above) {
                 let startPoint = this.detectRangeStart(pointAbove)
-                this.rangeQueue.push({point: startPoint, above: true, below: true})
+                this.createRange(startPoint)
                 referenceRange.above = false
             }
         } else {
@@ -192,7 +196,7 @@ export class ScanlineFill {
         if (this.isFillable(pointBelow)) {
             if (referenceRange.below) {
                 let startPoint = this.detectRangeStart(pointBelow)
-                this.rangeQueue.push({point: startPoint, above: true, below: true})
+                this.createRange(startPoint)
                 referenceRange.below = false
             }
         } else {
