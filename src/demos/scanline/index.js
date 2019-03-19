@@ -55,7 +55,10 @@ const getCanvasMousePoint = (e, viewCanvas) => {
 }
 
 const createFloodFill = startPoint => {
-    const onFill = point => grid.set(point, FILL_VALUE)
+    const onFill = point => {
+        grid.set(point, FILL_VALUE)
+        drawPoint(point, "yellow")
+    }
     const isFillable = point => grid.get(point) == EMPTY_VALUE
     return new FloodFill(grid, startPoint, onFill, isFillable)
 }
@@ -80,8 +83,8 @@ stepButton.addEventListener('click', e => {
     if (filler.isComplete) {
         console.log("Fill completed")
     } else {
-        filler.stepFill()
         draw()
+        filler.stepFill()
     }
 })
 
