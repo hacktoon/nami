@@ -79,8 +79,7 @@ viewCanvas.addEventListener('click', e => {
         grid.set(point, WALL_VALUE)
     } else {
         filler = createScanlineFill(point)
-        let p = filler.detectLineRange(filler.startPoint)
-        console.log(p)
+        console.log(filler.rangeQueue)
     }
     draw()
 })

@@ -134,27 +134,16 @@ export class ScanlineFill {
     constructor (grid, startPoint, onFill=_.noop, isFillable=_.stubTrue) {
         this.filledPoints = new HashMap()
         this.grid = grid
-        this.seeds = []
+        this.rangeQueue = []
         this.isFillable = isFillable
         this.startPoint = startPoint
         this.onFill = onFill
+
+        let point = this.detectSegmentStart(startPoint)
+        this.rangeQueue.push({point, above: true, below: true})
     }
 
-    get isComplete () {
-        return this.seeds.length === 0
-    }
-
-    fill () {
-        while (!this.isComplete) {
-            this.stepFill()
-        }
-    }
-
-    getLeftPoint(currentPoint) {
-        return new Point(currentPoint.x - 1, currentPoint.y)
-    }
-
-    detectLineRange(startPoint) {
+    detectSegmentStart(startPoint) {
         let currentPoint = startPoint
         let nextPoint = this.getLeftPoint(currentPoint)
         while(this.isFillable(nextPoint) && nextPoint.x >= 0) {
@@ -164,8 +153,29 @@ export class ScanlineFill {
         return currentPoint
     }
 
+    get isComplete () {
+        return this.lines.length === 0
+    }
+
+    fill () {
+        while (!this.isComplete) {
+            this.stepFill()
+        }
+    }
+
+    getLeftPoint(point) {
+        return new Point(point.x - 1, point.y)
+    }
+
+    getRightPoint(point) {
+        return new Point(point.x + 1, point.y)
+    }
+
+    fillSegment(segment) {
+
+    }
+
     fillPoint (point) {
-        this.seeds.push(point)
         this.filledPoints.add(point)
         this.onFill(point)
     }
