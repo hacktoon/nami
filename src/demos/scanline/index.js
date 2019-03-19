@@ -9,6 +9,7 @@ const ctx = viewCanvas.getContext('2d')
 const wallModeCheckbox = document.getElementById("wallMode")
 const infoText = document.getElementById("infoText")
 const stepButton = document.getElementById("step")
+const fillButton = document.getElementById("fill")
 const TILESIZE = 20
 const SIZE = 30
 
@@ -97,6 +98,11 @@ stepButton.addEventListener('click', e => {
         filler.stepFill()
         draw()
     }
+})
+
+fillButton.addEventListener('click', e => {
+    filler.fill()
+    draw()
 })
 
 init()

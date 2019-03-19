@@ -142,8 +142,8 @@ export class ScanlineFill {
         this.rangeQueue.push({point, above: true, below: true})
     }
 
-    detectRangeStart(startPoint) {
-        let currentPoint = startPoint
+    detectRangeStart(point) {
+        let currentPoint = point
         let nextPoint = Point.atWest(currentPoint)
         while(this.isFillable(nextPoint) && nextPoint.x >= 0) {
             currentPoint = nextPoint
@@ -169,7 +169,7 @@ export class ScanlineFill {
         while(this.isFillable(point)) {
             this.fillPoint(point)
             this.detectRangeAbove(point, range)
-            //this.detectRangeBelow(point, range.below)
+            this.detectRangeBelow(point, range)
             point = Point.atEast(point)
         }
     }
@@ -179,7 +179,7 @@ export class ScanlineFill {
         if (this.isFillable(pointAbove)) {
             if (referenceRange.above) {
                 let startPoint = this.detectRangeStart(pointAbove)
-                this.rangeQueue.push({point: startPoint, above: true, below: false})
+                this.rangeQueue.push({point: startPoint, above: true, below: true})
                 referenceRange.above = false
             }
         } else {
@@ -187,8 +187,17 @@ export class ScanlineFill {
         }
     }
 
-    detectRangeBelow(point) {
-
+    detectRangeBelow(referencePoint, referenceRange) {
+        let pointBelow = Point.atSouth(referencePoint)
+        if (this.isFillable(pointBelow)) {
+            if (referenceRange.below) {
+                let startPoint = this.detectRangeStart(pointBelow)
+                this.rangeQueue.push({point: startPoint, above: true, below: true})
+                referenceRange.below = false
+            }
+        } else {
+            referenceRange.below = true
+        }
     }
 
     fillPoint (point) {
