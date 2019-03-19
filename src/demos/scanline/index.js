@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {Grid, ScanlineFill} from '../../lib/grid'
+import {Grid, ScanlineFill, GridFill} from '../../lib/grid'
 import {getChance} from '../../lib/base'
 import {Point} from '../../lib/point'
 
@@ -7,6 +7,7 @@ import {Point} from '../../lib/point'
 const viewCanvas = document.getElementById("grid")
 const ctx = viewCanvas.getContext('2d')
 const wallModeCheckbox = document.getElementById("wallMode")
+const stepButton = document.getElementById("step")
 const TILESIZE = 20
 const SIZE = 30
 
@@ -21,6 +22,7 @@ const colorMap = {
 }
 
 let grid
+let filler
 
 const draw = () => {
     viewCanvas.width = viewCanvas.height = SIZE * TILESIZE
@@ -39,7 +41,7 @@ const drawPoint = (point, color) => {
 }
 
 const init = () => {
-    grid = new Grid(SIZE, SIZE, () => getChance(5) ? FILL_VALUE : 0 )
+    grid = new Grid(SIZE, SIZE, () => getChance(5) ? WALL_VALUE : NULL_VALUE )
     draw()
 }
 
@@ -52,14 +54,31 @@ const getCanvasMousePoint = (e, viewCanvas) => {
     return new Point(x, y)
 }
 
+const createGridFill = startPoint => {
+    const onFill = point => {
+        grid.set(point, FILL_VALUE)
+    }
+    const isFillable = point => grid.get(point) == NULL_VALUE
+    return new GridFill(grid, startPoint, onFill, isFillable)
+}
+
 viewCanvas.addEventListener('click', e => {
     let point = getCanvasMousePoint(e, viewCanvas)
-    let value = FILL_VALUE
     if (wallModeCheckbox.checked) {
-        value = WALL_VALUE
+        grid.set(point, WALL_VALUE)
+    } else {
+        window.filler = filler = createGridFill(point)
     }
-    grid.set(point, value)
     draw()
+})
+
+stepButton.addEventListener('click', e => {
+    if (filler.isComplete) {
+        console.log("Fill completed")
+    } else {
+        filler.stepFill()
+        draw()
+    }
 })
 
 init()
