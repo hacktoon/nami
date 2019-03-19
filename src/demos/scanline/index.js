@@ -65,11 +65,12 @@ const createFloodFill = startPoint => {
 }
 
 const createScanlineFill = startPoint => {
-    const onFill = point => {
-        grid.set(point, FILL_VALUE)
-        draw()
+    const onFill = point => grid.set(point, FILL_VALUE)
+    const isFillable = point => {
+        const inside = point.x >= 0 && point.x < grid.width
+        const empty = grid.get(point) == EMPTY_VALUE
+        return inside && empty
     }
-    const isFillable = point => grid.get(point) == EMPTY_VALUE
     return new ScanlineFill(grid, startPoint, onFill, isFillable)
 }
 
@@ -79,7 +80,6 @@ viewCanvas.addEventListener('click', e => {
         grid.set(point, WALL_VALUE)
     } else {
         filler = createScanlineFill(point)
-        console.log(filler.rangeQueue)
     }
     draw()
 })
@@ -93,7 +93,8 @@ stepButton.addEventListener('click', e => {
     if (filler.isComplete) {
         console.log("Fill completed")
     } else {
-        //draw()
+        filler.stepFill()
+        draw()
     }
 })
 

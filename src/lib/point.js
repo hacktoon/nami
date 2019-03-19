@@ -13,11 +13,20 @@ export class Point {
         return `${this.x},${this.y}`
     }
 
-    static from (string) {
-        let bits = string.replace(' ', '').split(','),
-            x = _.parseInt(bits[0]),
-            y = _.parseInt(bits[1]);
-        return new Point(x, y)
+    static atNorth(point) {
+        return new Point(point.x, point.y - 1)
+    }
+
+    static atSouth(point) {
+        return new Point(point.x, point.y + 1)
+    }
+
+    static atEast(point) {
+        return new Point(point.x + 1, point.y)
+    }
+
+    static atWest(point) {
+        return new Point(point.x - 1, point.y)
     }
 
     static euclidianDistance (point1, point2) {
@@ -68,11 +77,6 @@ export class PointNeighborhood {
 
     around (callback) {
         return this.getNeighbors(this.directions.around, callback);
-    }
-
-    atDirection (direction) {
-        var around = this.directions.around;
-        return this.createPoint(around[direction]);
     }
 
     getNeighbors (neighborType, callback) {
