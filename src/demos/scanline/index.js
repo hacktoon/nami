@@ -67,9 +67,10 @@ const createFloodFill = startPoint => {
 const createScanlineFill = startPoint => {
     const onFill = point => grid.set(point, FILL_VALUE)
     const isFillable = point => {
-        const inside = point.x >= 0 && point.x < grid.width
+        const xLimit = point.x >= 0 && point.x < grid.width
+        const yLimit = point.y >= 0 && point.y < grid.height
         const empty = grid.get(point) == EMPTY_VALUE
-        return inside && empty
+        return xLimit && yLimit && empty
     }
     return new ScanlineFill(grid, startPoint, onFill, isFillable)
 }

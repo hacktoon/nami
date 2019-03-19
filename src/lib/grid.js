@@ -165,6 +165,7 @@ export class ScanlineFill {
     stepFill() {
         let range = this.rangeQueue.pop()
         let point = range.point
+
         while(this.isFillable(point)) {
             this.fillPoint(point)
             this.detectRangeAbove(point, range)
