@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import {Grid, ScanlineFill} from '../../lib/grid'
+import {getChance} from '../../lib/base'
 import {Point} from '../../lib/point'
 
 
@@ -9,15 +10,19 @@ const wallModeCheckbox = document.getElementById("wallMode")
 const TILESIZE = 20
 const SIZE = 30
 
+const NULL_VALUE = 0
+const FILL_VALUE = 1
+const WALL_VALUE = 2
+
 const colorMap = {
-    0: "white",
-    1: "lightblue",
-    2: "black"
+    [NULL_VALUE]: "white",
+    [FILL_VALUE]: "lightblue",
+    [WALL_VALUE]: "black"
 }
 
 let grid
 
-const draw = (grid) => {
+const draw = () => {
     viewCanvas.width = viewCanvas.height = SIZE * TILESIZE
     grid.forEach((value, point) => {
         let color = colorMap[value]
@@ -34,8 +39,8 @@ const drawPoint = (point, color) => {
 }
 
 const init = () => {
-    grid = new Grid(SIZE, SIZE, 0)
-    draw(grid)
+    grid = new Grid(SIZE, SIZE, () => getChance(5) ? FILL_VALUE : 0 )
+    draw()
 }
 
 const getCanvasMousePoint = (e, viewCanvas) => {
@@ -49,10 +54,12 @@ const getCanvasMousePoint = (e, viewCanvas) => {
 
 viewCanvas.addEventListener('click', e => {
     let point = getCanvasMousePoint(e, viewCanvas)
+    let value = FILL_VALUE
     if (wallModeCheckbox.checked) {
-        grid.set(point, 2)
-        draw(grid)
+        value = WALL_VALUE
     }
+    grid.set(point, value)
+    draw()
 })
 
 init()
