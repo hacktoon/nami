@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "parcel src/index.html -d build",
-    "scanline": "parcel src/demos/scanline/index.html -d build",
+    "scanline": "parcel src/demos/flood-fill/index.html -d build",
     "build": "parcel build src/index.html -d build"
   },
   "repository": {
