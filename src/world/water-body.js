@@ -8,7 +8,6 @@ const waterBodyTable = [
 
 export default class WaterBody {
     constructor() {
-        this.
     }
 
     get id() { return this.waterBody.id }

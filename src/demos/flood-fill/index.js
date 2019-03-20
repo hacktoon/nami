@@ -55,11 +55,12 @@ const draw = () => {
 }
 
 const drawPoint = (point, color) => {
-    let x = point.x * getTileSize(),
-        y = point.y * getTileSize()
+    let tilesize = getTileSize()
+    let x = point.x * tilesize
+    let y = point.y * tilesize
 
     ctx.fillStyle = color
-    ctx.fillRect(x, y, getTileSize(), getTileSize())
+    ctx.fillRect(x, y, tilesize, tilesize)
 }
 
 const createGrid = () => {
