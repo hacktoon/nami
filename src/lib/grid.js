@@ -76,7 +76,6 @@ export class Grid {
 
 export class FloodFill {
     constructor (grid, startPoint, onFill=_.noop, isFillable=_.stubTrue) {
-        this.filledPoints = new HashMap()
         this.grid = grid
         this.seeds = []
         this.isFillable = isFillable
@@ -115,8 +114,6 @@ export class FloodFill {
         new PointNeighborhood(referencePoint)
         .adjacent((neighbor, direction) => {
             let point = this.grid.wrap(neighbor)
-            if (this.filledPoints.has(point))
-                return
             if (this.isFillable(point, referencePoint, direction, this.step))
                 this.fillPoint(point)
         })
@@ -124,7 +121,6 @@ export class FloodFill {
 
     fillPoint (point) {
         this.seeds.push(point)
-        this.filledPoints.add(point)
         this.onFill(point, this.step)
     }
 }
