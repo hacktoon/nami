@@ -170,15 +170,18 @@ export class ScanlineFill {
 
         this.rangeQueue = []
         while(ranges.length) {
-            let range = ranges.pop()
-            let point = range.point
+            this.fillRange(ranges.pop())
+        }
+    }
 
-            while(this.isFillable(point)) {
-                this.fillPoint(point)
-                this.detectRangeAbove(point, range)
-                this.detectRangeBelow(point, range)
-                point = Point.atEast(point)
-            }
+    fillRange(range) {
+        let point = range.point
+
+        while(this.isFillable(point)) {
+            this.fillPoint(point)
+            this.detectRangeAbove(point, range)
+            this.detectRangeBelow(point, range)
+            point = Point.atEast(point)
         }
     }
 
