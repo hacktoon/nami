@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { HashMap, getChance } from '../lib/base'
 import { HeightMap } from '../lib/heightmap'
 import { PointNeighborhood } from '../lib/point'
-import { GridFill } from '../lib/grid'
+import { ScanlineFill, Grid } from '../lib/grid'
 
 import World from './world'
 import Elevation from './elevation'
@@ -61,20 +61,19 @@ export default class WorldBuilder {
     }
 
     _process() {
-        let waterPoints = new HashMap()
-        let waterBodies = []
+        let waterBodyId = 1
+        let waterBodiesGrid = new Grid(this.world.size, this.world.size, 0)
 
         const _buildWaterBody = point => {
-            const onFill = point => waterPoints.add(point)
+            const onFill = point => waterBodiesGrid.set(point, waterBodyId)
             const isFillable = point => {
                 let tile = this.world.getTile(point)
-                return tile.elevation.isBelowSeaLevel && ! waterPoints.has(point)
+                return tile.elevation.isBelowSeaLevel && waterBodiesGrid.get(point) === 0
             }
 
             if (isFillable(point)) {
-                let gridFill = new GridFill(this.world.grid, point, onFill, isFillable)
-                gridFill.fill()
-                waterBodies.push(gridFill.filledPoints.size())
+                new ScanlineFill(this.world.grid, point, onFill, isFillable).fill()
+                waterBodyId++
             }
         }
 

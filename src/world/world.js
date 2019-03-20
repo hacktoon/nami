@@ -6,7 +6,7 @@ import {Grid} from '../lib/grid'
 export default class World {
     constructor(size) {
         this.size = size
-        this.area = Math.pow(size, 2)
+        this.area = size * size
         this.geo = new WorldGeo()
         this.bio = {}
         this.climate = {}
