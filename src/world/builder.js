@@ -4,9 +4,9 @@ import { HeightMap } from '../lib/heightmap'
 
 import World from './world'
 import { HydrographyBuilder } from './geo/hydro'
-import Elevation from './elevation'
-import Heat, {HeatHeightMap} from './heat'
-import Rain from './rain'
+import Elevation from './geo/elevation'
+import Heat, {HeatHeightMap} from './climate/heat'
+import Rain from './climate/rain'
 
 
 export default class WorldBuilder {
