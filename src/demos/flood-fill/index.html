@@ -16,13 +16,24 @@
 
   <body>
     <div class="button-panel">
+      <label for="tileSize">Tile size
+        <input type="number" id="tileSize" value="20" />
+      </label>
+
+      <label for="gridSize">Grid size
+        <input type="number" id="gridSize" value="30" />
+      </label>
+      <button id="createGrid">Create grid</button>
+    </div>
+
+    <div class="button-panel">
         <label for="wallMode">Wall mode
             <input type="checkbox" id="wallMode" />
         </label>
         <select id="algorithm">
             <option value="flood">Flood Fill</option>
             <option value="scanline">Scanline Fill</option>
-        </label>
+        </select>
         <button id="step">Step</button>
         <button id="fill">Fill</button>
     </div>

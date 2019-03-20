@@ -138,28 +138,35 @@ export class ScanlineFill {
         this.onFill = onFill
         this.isFillable = isFillable
 
-        let point = this.detectRangeStart(startPoint)
-        this.createRange(point)
+        this.createRange(startPoint)
+    }
+
+    createRange(point) {
+        this.rangeQueue.push({
+            point: this.detectRangeStart(point),
+            canCheckAbove: true,
+            canCheckBelow: true
+        })
     }
 
     detectRangeStart(point) {
         let currentPoint = point
         let nextPoint = Point.atWest(currentPoint)
-        while(this.isFillable(nextPoint) && nextPoint.x >= 0) {
+        while (this.isFillable(nextPoint) && nextPoint.x >= 0) {
             currentPoint = nextPoint
             nextPoint = Point.atWest(nextPoint)
         }
         return currentPoint
     }
 
-    get isComplete () {
-        return this.rangeQueue.length === 0
-    }
-
     fill () {
-        while (!this.isComplete) {
+        while (! this.isComplete) {
             this.stepFill()
         }
+    }
+
+    get isComplete() {
+        return this.rangeQueue.length === 0
     }
 
     stepFill() {
@@ -179,20 +186,11 @@ export class ScanlineFill {
         }
     }
 
-    createRange(point) {
-        this.rangeQueue.push({
-            point,
-            canCheckAbove: true,
-            canCheckBelow: true
-        })
-    }
-
     detectRangeAbove(referencePoint, referenceRange) {
         let pointAbove = Point.atNorth(referencePoint)
         if (this.isFillable(pointAbove)) {
             if (referenceRange.canCheckAbove) {
-                let startPoint = this.detectRangeStart(pointAbove)
-                this.createRange(startPoint)
+                this.createRange(pointAbove)
                 referenceRange.canCheckAbove = false
             }
         } else {
@@ -204,8 +202,7 @@ export class ScanlineFill {
         let pointBelow = Point.atSouth(referencePoint)
         if (this.isFillable(pointBelow)) {
             if (referenceRange.canCheckBelow) {
-                let startPoint = this.detectRangeStart(pointBelow)
-                this.createRange(startPoint)
+                this.createRange(pointBelow)
                 referenceRange.canCheckBelow = false
             }
         } else {

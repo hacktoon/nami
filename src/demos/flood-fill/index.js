@@ -4,15 +4,19 @@ import {getChance} from '../../lib/base'
 import {Point} from '../../lib/point'
 
 
+let grid
+let filler
+
 const viewCanvas = document.getElementById("grid")
 const ctx = viewCanvas.getContext('2d')
 const wallModeCheckbox = document.getElementById("wallMode")
 const algorithmSelect = document.getElementById("algorithm")
+const tileSizeInput = document.getElementById("tileSize")
+const gridSizeInput = document.getElementById("gridSize")
 const infoText = document.getElementById("infoText")
+const createGridButton = document.getElementById("createGrid")
 const stepButton = document.getElementById("step")
 const fillButton = document.getElementById("fill")
-const TILESIZE = 2
-const SIZE = 256
 
 const EMPTY_VALUE = 0
 const FILL_VALUE = 1
@@ -22,39 +26,6 @@ const colorMap = {
     [EMPTY_VALUE]: "white",
     [FILL_VALUE]: "lightblue",
     [WALL_VALUE]: "black"
-}
-
-let grid
-let filler
-
-const draw = () => {
-    viewCanvas.width = viewCanvas.height = SIZE * TILESIZE
-    grid.forEach((value, point) => {
-        let color = colorMap[value]
-        drawPoint(point, color)
-    })
-}
-
-const drawPoint = (point, color) => {
-    let x = point.x * TILESIZE,
-        y = point.y * TILESIZE
-
-    ctx.fillStyle = color
-    ctx.fillRect(x, y, TILESIZE, TILESIZE)
-}
-
-const init = () => {
-    grid = new Grid(SIZE, SIZE, () => getChance(15) ? WALL_VALUE : EMPTY_VALUE )
-    draw()
-}
-
-const getCanvasMousePoint = (e, viewCanvas) => {
-    let scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
-        mouseX = e.clientX - viewCanvas.offsetLeft,
-        mouseY = e.clientY - viewCanvas.offsetTop + scrollOffset,
-        x = _.parseInt(mouseX / TILESIZE),
-        y = _.parseInt(mouseY / TILESIZE)
-    return new Point(x, y)
 }
 
 const createFloodFill = startPoint => {
@@ -72,28 +43,75 @@ const createScanlineFill = startPoint => {
     return new ScanlineFill(grid, startPoint, onFill, isFillable)
 }
 
-const getAlgorithm = () => {
-    return algorithmSelect.options[algorithmSelect.selectedIndex].value
+const getTileSize = () => Number(tileSizeInput.value) || 20
+const getGridSize = () => Number(gridSizeInput.value) || 10
+
+const draw = () => {
+    viewCanvas.width = viewCanvas.height = getGridSize() * getTileSize()
+    grid.forEach((value, point) => {
+        let color = colorMap[value]
+        drawPoint(point, color)
+    })
+}
+
+const drawPoint = (point, color) => {
+    let x = point.x * getTileSize(),
+        y = point.y * getTileSize()
+
+    ctx.fillStyle = color
+    ctx.fillRect(x, y, getTileSize(), getTileSize())
+}
+
+const createGrid = () => {
+    let size = getGridSize()
+    grid = new Grid(size, size, () => {
+        return getChance(15) ? WALL_VALUE : EMPTY_VALUE
+    })
+}
+
+const init = () => {
+    createGrid()
+    draw()
+}
+
+const getCanvasMousePoint = (e, viewCanvas) => {
+    let scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
+        mouseX = e.clientX - viewCanvas.offsetLeft,
+        mouseY = e.clientY - viewCanvas.offsetTop + scrollOffset,
+        x = _.parseInt(mouseX / getTileSize()),
+        y = _.parseInt(mouseY / getTileSize())
+    return new Point(x, y)
+}
+
+
+const getFillObject = point => {
+    let id = algorithmSelect.options[algorithmSelect.selectedIndex].value
+    let createFill = {
+        "flood": createFloodFill,
+        "scanline": createScanlineFill
+    }[id]
+
+    return createFill(point)
 }
 
 viewCanvas.addEventListener('click', e => {
     let point = getCanvasMousePoint(e, viewCanvas)
     if (wallModeCheckbox.checked) {
         grid.set(point, WALL_VALUE)
+        draw()
     } else {
-        if (getAlgorithm() == "flood")
-            filler = createFloodFill(point)
-        else
-            filler = createScanlineFill(point)
+        filler = getFillObject(point)
+        draw()
         drawPoint(point, "yellow")
     }
-    draw()
 })
 
 viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas)
     infoText.innerHTML = "("+ point.hash() + ")"
 })
+
+createGridButton.addEventListener('click', init)
 
 stepButton.addEventListener('click', e => {
     if (! filler.isComplete) {
