@@ -163,44 +163,53 @@ export class ScanlineFill {
     }
 
     stepFill() {
-        let range = this.rangeQueue.pop()
-        let point = range.point
+        let ranges = this.rangeQueue
 
-        while(this.isFillable(point)) {
-            this.fillPoint(point)
-            this.detectRangeAbove(point, range)
-            this.detectRangeBelow(point, range)
-            point = Point.atEast(point)
+        this.rangeQueue = []
+        while(ranges.length) {
+            let range = ranges.pop()
+            let point = range.point
+
+            while(this.isFillable(point)) {
+                this.fillPoint(point)
+                this.detectRangeAbove(point, range)
+                this.detectRangeBelow(point, range)
+                point = Point.atEast(point)
+            }
         }
     }
 
     createRange(point) {
-        this.rangeQueue.push({point, above: true, below: true})
+        this.rangeQueue.push({
+            point,
+            canCheckAbove: true,
+            canCheckBelow: true
+        })
     }
 
     detectRangeAbove(referencePoint, referenceRange) {
         let pointAbove = Point.atNorth(referencePoint)
         if (this.isFillable(pointAbove)) {
-            if (referenceRange.above) {
+            if (referenceRange.canCheckAbove) {
                 let startPoint = this.detectRangeStart(pointAbove)
                 this.createRange(startPoint)
-                referenceRange.above = false
+                referenceRange.canCheckAbove = false
             }
         } else {
-            referenceRange.above = true
+            referenceRange.canCheckAbove = true
         }
     }
 
     detectRangeBelow(referencePoint, referenceRange) {
         let pointBelow = Point.atSouth(referencePoint)
         if (this.isFillable(pointBelow)) {
-            if (referenceRange.below) {
+            if (referenceRange.canCheckBelow) {
                 let startPoint = this.detectRangeStart(pointBelow)
                 this.createRange(startPoint)
-                referenceRange.below = false
+                referenceRange.canCheckBelow = false
             }
         } else {
-            referenceRange.below = true
+            referenceRange.canCheckBelow = true
         }
     }
 
