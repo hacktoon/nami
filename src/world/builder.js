@@ -1,14 +1,12 @@
 import _ from 'lodash'
 
-import { HashMap, getChance } from '../lib/base'
 import { HeightMap } from '../lib/heightmap'
-import { PointNeighborhood } from '../lib/point'
-import { ScanlineFill, Grid } from '../lib/grid'
 
 import World from './world'
+import { HydrographyBuilder } from './geo/hydro'
 import Elevation from './elevation'
-import Rain from './rain'
 import Heat, {HeatHeightMap} from './heat'
+import Rain from './rain'
 
 
 export default class WorldBuilder {
@@ -16,21 +14,22 @@ export default class WorldBuilder {
         this.size = size
         this.roughness = roughness
         this.world = new World(size)
-        this.highestPoints = new HashMap()
         this.maskHeightmap = new HeightMap(size, roughness).grid
         this.rainHeightmap = new HeightMap(size, roughness).grid
         this.heatHeightmap = new HeatHeightMap(size).grid
+
+        this.hydrographyBuilder = new HydrographyBuilder(this.world)
     }
 
     build() {
-        const _buildTile = (point, height) => {
+        const buildTile = (point, height) => {
             let tile = this.world.getTile(point)
 
-            _setElevation(point, tile, height)
-            _setClimate(point, tile)
+            setElevation(point, tile, height)
+            setClimate(point, tile)
         }
 
-        const _setElevation = (point, tile, height) => {
+        const setElevation = (point, tile, height) => {
             let maskElevation = new Elevation(this.maskHeightmap.get(point))
 
             tile.elevation = new Elevation(height)
@@ -39,7 +38,7 @@ export default class WorldBuilder {
             }
         }
 
-        const _setClimate = (point, tile) => {
+        const setClimate = (point, tile) => {
             tile.heat = new Heat(this.heatHeightmap.get(point))
             tile.rain = new Rain(this.rainHeightmap.get(point))
 
@@ -53,32 +52,15 @@ export default class WorldBuilder {
                 tile.rain.raise(2)
         }
 
-        new HeightMap(this.size, this.roughness, _buildTile)
-
+        new HeightMap(this.size, this.roughness, buildTile)
         //this._process()
 
         return this.world
     }
 
     _process() {
-        let waterBodyId = 1
-        let waterBodiesGrid = new Grid(this.world.size, this.world.size, 0)
-
-        const _buildWaterBody = point => {
-            const onFill = point => waterBodiesGrid.set(point, waterBodyId)
-            const isFillable = point => {
-                let tile = this.world.getTile(point)
-                return tile.elevation.isBelowSeaLevel && waterBodiesGrid.get(point) === 0
-            }
-
-            if (isFillable(point)) {
-                new ScanlineFill(this.world.grid, point, onFill, isFillable).fill()
-                waterBodyId++
-            }
-        }
-
         this.world.grid.forEach((tile, point) => {
-            _buildWaterBody(point)
+            //this.hydrographyBuilder.detectWaterBody(point)
         })
 
         return this.world
