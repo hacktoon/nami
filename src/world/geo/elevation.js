@@ -4,8 +4,6 @@ import { Grid } from '../../lib/grid';
 import { HeightMap } from '../../lib/heightmap'
 
 
-const DEFAULT_ID = 0
-
 const ELEVATION_TABLE = [
     { id: 0, height: 0,   color: "#000056", value: 0 },
     { id: 1, height: 80,  color: "#1a3792", value: 1 },
@@ -65,7 +63,7 @@ export class Elevation {
 
 export class ElevationMap {
     constructor(size, roughness) {
-        this.grid = new Grid(size, size, DEFAULT_ID)
+        this.grid = new Grid(size, size)
         this.gridMask = new HeightMap(size, roughness).grid
 
         new HeightMap(size, roughness, (point, height) => {
@@ -90,7 +88,7 @@ export class ElevationMap {
     }
 
     getElevationByHeight(height) {
-        let id = DEFAULT_ID
+        let id
         for (let elevationData of ELEVATION_TABLE) {
             if (height >= elevationData.height) {
                 id = elevationData.id

@@ -4,8 +4,6 @@ import { Grid } from '../../lib/grid';
 import { HeightMap } from '../../lib/heightmap'
 
 
-const DEFAULT_ID = 0
-
 const RAIN_TABLE = [
     { id: 0, height: 0, color: "#19FFFF", name: "Very dry" },
     { id: 1, height: 30, color: "#00D5FF", name: "Dry" },
@@ -55,7 +53,7 @@ class Rain {
 
 export class RainMap {
     constructor(size, roughness) {
-        this.grid = new Grid(size, size, DEFAULT_ID)
+        this.grid = new Grid(size, size)
 
         new HeightMap(size, roughness, (point, height) => {
             let rain = this.buildRain(height)
@@ -68,7 +66,7 @@ export class RainMap {
     }
 
     buildRain(height) {
-        let id = DEFAULT_ID
+        let id
         for (let reference of RAIN_TABLE) {
             if (height >= reference.height) {
                 id = reference.id
