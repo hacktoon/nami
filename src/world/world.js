@@ -3,6 +3,7 @@ import {HashMap} from '../lib/base'
 import {Grid} from '../lib/grid'
 
 
+// move to world/
 export default class World {
     constructor(size) {
         this.size = size
@@ -12,6 +13,12 @@ export default class World {
         this.climate = {}
 
         this.grid = new Grid(size, size, () => new Tile())
+    }
+
+    forEach(callback) {
+        this.grid.forEach((tile, point) => {
+            callback(tile, point)
+        })
     }
 
     _buildTile () {

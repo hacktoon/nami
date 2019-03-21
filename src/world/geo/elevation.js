@@ -4,7 +4,7 @@ import { Grid } from '../../lib/grid';
 import { HeightMap } from '../../lib/heightmap'
 
 
-const DEFAULT_ELEVATION = 0
+const DEFAULT_ELEVATION_ID = 0
 
 const ELEVATION_TABLE = [
     { id: 0, height: 0,   color: "#000056", value: 0 },
@@ -16,51 +16,49 @@ const ELEVATION_TABLE = [
     { id: 6, height: 255, color: "#d5cab4", value: 6 }
 ]
 
-
+// remove export
 export class Elevation {
-    constructor (height) {
-        for(let elevationData of ELEVATION_TABLE) {
-            if (height >= elevationData.height) {
-                this.elevation = elevationData
-            } else {
-                break
-            }
-        }
+    constructor(id) {
+        this.data = ELEVATION_TABLE[id]
     }
 
-    get id () { return this.elevation.id }
-    get height () { return this.elevation.height }
-    get value () { return this.elevation.value }
-    get color () { return this.elevation.color }
-    get isBelowSeaLevel () { return this.elevation.value < 3 }
-    get isAboveSeaLevel () { return this.elevation.value >= 3 }
+    get id() { return this.data.id }
+    get height () { return this.data.height }
+    get value () { return this.data.value }
+    get color () { return this.data.color }
+    get isBelowSeaLevel () { return this.data.value < 3 } // remove
+    get isAboveSeaLevel() { return this.data.value >= 3 } // remove
+    get isMiddle () {
+        let middle = Math.floor(ELEVATION_TABLE.length / 2)
+        return this.data.value == middle
+    }
 
     raise (amount=1) {
-        let raisedIndex = this.elevation.id + amount
-        let index = _.clamp(raisedIndex, 0, ELEVATION_TABLE.length-1)
-        this.elevation = ELEVATION_TABLE[index]
+        let raisedIndex = this.data.id + amount
+        let id = _.clamp(raisedIndex, 0, ELEVATION_TABLE.length-1)
+        this.data = ELEVATION_TABLE[id]
     }
 
     lower (amount=1) {
-        let loweredIndex = this.elevation.id - amount
-        let index = _.clamp(loweredIndex, 0, ELEVATION_TABLE.length-1)
-        this.elevation = ELEVATION_TABLE[index]
+        let loweredIndex = this.data.id - amount
+        let id = _.clamp(loweredIndex, 0, ELEVATION_TABLE.length-1)
+        this.data = ELEVATION_TABLE[id]
     }
 
-    isLower (elevation) {
-        return this.elevation.id < elevation.id
+    isLower (elevation, amount=undefined) {
+        return this.data.id < elevation.id
     }
 
-    isHigher (elevation) {
-        return this.elevation.id > elevation.id
+    isHigher(elevation, amount=undefined) {
+        return this.data.id > elevation.id
     }
 
     get isLowest () {
-        return this.elevation.id === _.first(ELEVATION_TABLE).id
+        return this.data.id == _.first(ELEVATION_TABLE).id
     }
 
     get isHighest () {
-        return this.elevation.id === _.last(ELEVATION_TABLE).id
+        return this.data.id == _.last(ELEVATION_TABLE).id
     }
 }
 
@@ -69,34 +67,39 @@ export class ElevationMap {
     constructor(size, roughness) {
         this.size = size
         this.roughness = roughness
-        this.grid = new Grid(size, size, DEFAULT_ELEVATION)
+        this.grid = new Grid(size, size, DEFAULT_ELEVATION_ID)
         this.gridMask = new HeightMap(size, roughness).grid
 
         new HeightMap(this.size, this.roughness, (point, height) => {
-            let elevation = this.buildElevation(height)
+            let elevation = this.buildElevation(point, height)
             this.grid.set(point, elevation)
         })
     }
 
-    buildElevation(point, height) {
-        let maskElevation = new Elevation(this.gridMask.get(point))
+    get(point) {
+        return this.grid.get(point)
+    }
 
-        this.getElevationByHeight(height)
-        elevation = new Elevation()
-        if (maskElevation.isAboveSeaLevel) {
+    buildElevation(point, height) {
+        let maskHeight = this.gridMask.get(point)
+        let maskElevation = this.getElevationByHeight(maskHeight)
+        let elevation = this.getElevationByHeight(height)
+
+        if (maskElevation.isMiddle) {
             elevation.lower()
         }
+        return elevation
     }
 
     getElevationByHeight(height) {
-        let elevation = DEFAULT_ELEVATION
+        let id = DEFAULT_ELEVATION_ID
         for (let elevationData of ELEVATION_TABLE) {
             if (height >= elevationData.height) {
-                elevation = elevationData.value
+                id = elevationData.id
             } else {
                 break
             }
         }
-        return elevation
+        return new Elevation(id)
     }
 }

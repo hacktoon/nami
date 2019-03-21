@@ -11,34 +11,16 @@ import Rain from './climate/rain'
 
 export default class WorldBuilder {
     constructor(size, roughness) {
-        this.size = size
-        this.roughness = roughness
         this.world = new World(size)
-        this.maskHeightmap = new HeightMap(size, roughness).grid
+
+        this.elevationMap = new ElevationMap(size, roughness)
         this.rainHeightmap = new HeightMap(size, roughness).grid
-        //this.elevationMap = new ElevationMap(size, roughness)
         this.heatHeightmap = new HeatHeightMap(size).grid
 
-        this.waterBodyMap = new WaterBodyMap(this.world)
+        //this.waterBodyMap = new WaterBodyMap(this.world)
     }
 
     build() {
-        const buildTile = (point, height) => {
-            let tile = this.world.getTile(point)
-
-            setElevation(point, tile, height)
-            setClimate(point, tile)
-        }
-
-        const setElevation = (point, tile, height) => {
-            let maskElevation = new Elevation(this.maskHeightmap.get(point))
-
-            tile.elevation = new Elevation(height)
-            if (maskElevation.isAboveSeaLevel) {
-                tile.elevation.lower()
-            }
-        }
-
         const setClimate = (point, tile) => {
             tile.heat = new Heat(this.heatHeightmap.get(point))
             tile.rain = new Rain(this.rainHeightmap.get(point))
@@ -53,8 +35,13 @@ export default class WorldBuilder {
                 tile.rain.raise(2)
         }
 
-        new HeightMap(this.size, this.roughness, buildTile)
-        this._process()
+        this.world.forEach((tile, point) => {
+            tile.elevation = this.elevationMap.get(point)
+
+            setClimate(point, tile)
+        })
+
+        //this._process()
 
         return this.world
     }
