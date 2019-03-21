@@ -20,13 +20,25 @@ const landMassNames = {
     ]
 }
 
+const oceanNames = [
+    "Ashu", "Indran", "Atlass", "Amon", "Aru", "Andia", "Barion", "Ebo", "Mu", "Valis", "Omer"
+]
 
-export class NameGenerator {
+const seaNames = [
+    "Hexamaris"
+]
+
+
+export class Name {
     static createLandMassName () {
         return _.sample(landMassNames.first) + _.sample(landMassNames.last)
     }
 
     static createPersonName () {
         return _.sample(personNames.first) +" "+ _.sample(personNames.last)
+    }
+
+    static createOceanName() {
+        return _.sample(oceanNames)
     }
 }

@@ -1,7 +1,6 @@
 import _ from 'lodash'
 
 import { Point, PointNeighborhood } from './point'
-import { HashMap } from './base'
 
 
 export class Grid {

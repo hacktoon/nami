@@ -32,8 +32,11 @@ class WorldGeo {
     constructor () {
         this.totalWaterPoints = 0
         this.totalLandPoints = 0
-        this.volcanoPoints = new HashMap()
-        this.riverSourcePoints = new HashMap()
+        this.volcanoes = []
+        this.riverSources = []
+        this.seas = []
+        this.lakes = []
+        this.oceans = []
     }
 
     get waterPercentage() {

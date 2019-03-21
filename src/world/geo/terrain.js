@@ -15,8 +15,8 @@ class TerrainMap {
             { id: 8, color: "", name: "Forest" },
             { id: 9, color: "", name: "Mangrove" },
             { id: 10, color: "", name: "Jungle" },
-            { id: 12, color: "", name: "Shrubland" },
-            { id: 13, color: "", name: "Desert" }
+            { id: 11, color: "", name: "Shrubland" },
+            { id: 12, color: "", name: "Desert" }
         ]
         if (_.isNumber(id)) {
             let index = _.clamp(id, 0, _map.length-1)

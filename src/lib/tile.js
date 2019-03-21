@@ -5,5 +5,6 @@ export default class Tile {
         this.elevation = undefined
         this.biome = undefined
         this.isRiverSource = false
+        this.lastState = undefined
     }
 }

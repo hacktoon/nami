@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { HeightMap } from '../lib/heightmap'
 
 import World from './world'
-import { HydrographyBuilder } from './geo/hydro'
+import { WaterBodyMap } from './geo/waterbody'
 import Elevation from './geo/elevation'
 import Heat, {HeatHeightMap} from './climate/heat'
 import Rain from './climate/rain'
@@ -18,7 +18,7 @@ export default class WorldBuilder {
         this.rainHeightmap = new HeightMap(size, roughness).grid
         this.heatHeightmap = new HeatHeightMap(size).grid
 
-        this.hydrographyBuilder = new HydrographyBuilder(this.world)
+        this.waterBodyMap = new WaterBodyMap(this.world)
     }
 
     build() {
@@ -53,14 +53,14 @@ export default class WorldBuilder {
         }
 
         new HeightMap(this.size, this.roughness, buildTile)
-        //this._process()
+        this._process()
 
         return this.world
     }
 
     _process() {
         this.world.grid.forEach((tile, point) => {
-            //this.hydrographyBuilder.detectWaterBody(point)
+            this.waterBodyMap.detectWaterBody(point)
         })
 
         return this.world
