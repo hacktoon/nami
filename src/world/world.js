@@ -1,9 +1,7 @@
 import Tile from '../lib/tile'
-import {HashMap} from '../lib/base'
 import {Grid} from '../lib/grid'
 
 
-// move to world/
 export default class World {
     constructor(size) {
         this.size = size
