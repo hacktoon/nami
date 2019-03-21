@@ -4,7 +4,7 @@ import { HeightMap } from '../lib/heightmap'
 
 import World from './world'
 import { WaterBodyMap } from './geo/waterbody'
-import Elevation from './geo/elevation'
+import { Elevation, ElevationMap } from './geo/elevation'
 import Heat, {HeatHeightMap} from './climate/heat'
 import Rain from './climate/rain'
 
@@ -16,6 +16,7 @@ export default class WorldBuilder {
         this.world = new World(size)
         this.maskHeightmap = new HeightMap(size, roughness).grid
         this.rainHeightmap = new HeightMap(size, roughness).grid
+        //this.elevationMap = new ElevationMap(size, roughness)
         this.heatHeightmap = new HeatHeightMap(size).grid
 
         this.waterBodyMap = new WaterBodyMap(this.world)
