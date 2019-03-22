@@ -4,8 +4,8 @@ import { HeightMap } from '../lib/heightmap'
 
 import World from './world'
 import { WaterBodyMap } from './geo/waterbody'
-import { Elevation, ElevationMap } from './geo/elevation'
-import Heat, {HeatHeightMap} from './climate/heat'
+import { ElevationMap } from './geo/elevation'
+import { HeatMap } from './climate/heat'
 import { RainMap } from './climate/rain'
 
 
@@ -15,16 +15,13 @@ export default class WorldBuilder {
 
         this.elevationMap = new ElevationMap(size, roughness)
         this.rainMap = new RainMap(size, roughness)
-        this.heatHeightmap = new HeatHeightMap(size).grid
+        this.heatMap = new HeatMap(size, .17)
 
         //this.waterBodyMap = new WaterBodyMap(this.world)
     }
 
     build() {
         const setClimate = (point, tile) => {
-            tile.heat = new Heat(this.heatHeightmap.get(point))
-
-
             if (tile.elevation.isHighest)
                 tile.heat.lower(2)
             if (tile.heat.isPolar)
@@ -38,6 +35,7 @@ export default class WorldBuilder {
         this.world.forEach((tile, point) => {
             tile.elevation = this.elevationMap.get(point)
             tile.rain = this.rainMap.get(point)
+            tile.heat = this.heatMap.get(point)
 
             //setClimate(point, tile)
         })
