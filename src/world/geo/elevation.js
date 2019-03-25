@@ -21,7 +21,6 @@ export class Elevation {
     }
 
     get id() { return this.data.id }
-    get height () { return this.data.height }
     get value () { return this.data.value }
     get color () { return this.data.color }
     get isBelowSeaLevel () { return this.data.value < 3 } // remove
@@ -32,22 +31,22 @@ export class Elevation {
     }
 
     raise (amount=1) {
-        let raisedIndex = this.data.id + amount
-        let id = _.clamp(raisedIndex, 0, ELEVATION_TABLE.length-1)
+        let newId = this.data.id + amount
+        let id = _.clamp(newId, 0, ELEVATION_TABLE.length-1)
         this.data = ELEVATION_TABLE[id]
     }
 
     lower (amount=1) {
-        let loweredIndex = this.data.id - amount
-        let id = _.clamp(loweredIndex, 0, ELEVATION_TABLE.length-1)
+        let newId = this.data.id - amount
+        let id = _.clamp(newId, 0, ELEVATION_TABLE.length-1)
         this.data = ELEVATION_TABLE[id]
     }
 
-    isLower (elevation, amount=undefined) {
+    isLower (elevation) {
         return this.data.id < elevation.id
     }
 
-    isHigher(elevation, amount=undefined) {
+    isHigher(elevation) {
         return this.data.id > elevation.id
     }
 

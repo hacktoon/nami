@@ -6,47 +6,64 @@ const EMPTY_VALUE = 0
 
 export class WaterBodyMap {
     constructor(world) {
-        this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
-        this.waterBodyId = 1
         this.world = world
+        this.idMap = {}
+        this.waterBodyCounter = 1
+        this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
+        this.minOceanArea = world.area / 10
+        this.minSeaArea = world.area / 50
+
+        this.build()
     }
 
-    detectWaterBody(point) {
+    get(point) {
+        return this.grid.get(point)
+    }
+
+    build() {
+        this.world.forEach((tile, point) => {
+            this._detectWaterBody(point)
+        })
+    }
+
+    _detectWaterBody(startPoint) {
+        let tileCount = 0
         const isFillable = point => {
             let tile = this.world.getTile(point)
-            let isEmpty = this.grid.get(point) === EMPTY_VALUE
+            let isEmpty = this.grid.get(point) == EMPTY_VALUE
             return tile.elevation.isBelowSeaLevel && isEmpty
         }
-
-        if (isFillable(point)) {
-            let tileCount = 0
-            const onFill = point => {
-                this.grid.set(point, this.waterBodyId)
-                tileCount++
-            }
-
-            new ScanlineFill(this.world.grid, point, onFill, isFillable).fill()
-            this.buildWaterBody(this.waterBodyId, tileCount)
-            this.waterBodyId++
+        const onFill = point => {
+            this.grid.set(point, this.waterBodyCounter)
+            tileCount++
         }
+
+        new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
+        this._buildWaterBody(this.waterBodyCounter, tileCount)
     }
 
-    buildWaterBody(id, tileCount) {
-        if (this.isOcean(tileCount)) {
-            return new Ocean(id, Name.createOceanName(), tileCount)
-        } else if (this.isSea(tileCount)) {
-            return new Sea(id, "Sea " + id, tileCount)
+    _buildWaterBody(id, tileCount) {
+        let waterBody
+
+        if (tileCount == 0)
+            return
+        if (this._isOcean(tileCount)) {
+            waterBody = new Ocean(id, Name.createOceanName(), tileCount)
+        } else if (this._isSea(tileCount)) {
+            waterBody = new Sea(id, "Sea " + id, tileCount)
         } else {
-            return new Lake(id, "Lake " + id, tileCount)
+            waterBody = new Lake(id, "Lake " + id, tileCount)
         }
+        this.idMap[id] = waterBody
+        this.waterBodyCounter++
     }
 
-    isOcean(tileCount) {
-        return tileCount > this.world.area / 6
+    _isOcean(tileCount) {
+        return tileCount > this.minOceanArea
     }
 
-    isSea(tileCount) {
-        return !this.isOcean(tileCount) && tileCount > this.world.area / 10
+    _isSea(tileCount) {
+        return !this._isOcean(tileCount) && tileCount > this.minSeaArea
     }
 }
 
