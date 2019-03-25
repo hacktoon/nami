@@ -37,9 +37,9 @@ export default class WorldPainter {
         })
     }
 
-    drawRain() {
+    drawMoisture() {
         this.world.grid.forEach((tile, point) => {
-            this.drawPoint(point, tile.rain.color)
+            this.drawPoint(point, tile.moisture.color)
         })
     }
 }

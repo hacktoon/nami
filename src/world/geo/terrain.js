@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 
-class TerrainMap {
+class TermoistureMap {
     static get (id=null) {
         const _map = [
             { id: 0, color: "", name: "Ocean" },
@@ -27,12 +27,12 @@ class TerrainMap {
 }
 
 
-export class Terrain {
+export class Termoisture {
     constructor () {
-        const _map = TerrainMap.get()
+        const _map = TermoistureMap.get()
     }
 
-    get id () { return this.terrain.id }
-    get name () { return this.terrain.name }
-    get color () { return this.terrain.color }
+    get id () { return this.termoisture.id }
+    get name () { return this.termoisture.name }
+    get color () { return this.termoisture.color }
 }

@@ -4,7 +4,7 @@ import { Grid } from '../../lib/grid';
 import { HeightMap } from '../../lib/heightmap'
 
 
-const RAIN_TABLE = [
+const MOISTURE_TABLE = [
     { id: 0, height: 0, color: "#19FFFF", name: "Very dry" },
     { id: 1, height: 30, color: "#00D5FF", name: "Dry" },
     { id: 2, height: 90, color: "#00AAFF", name: "Wet" },
@@ -12,9 +12,9 @@ const RAIN_TABLE = [
 ]
 
 
-class Rain {
+class Moisture {
     constructor(id) {
-        this.data = RAIN_TABLE[id]
+        this.data = MOISTURE_TABLE[id]
     }
 
     get id () { return this.data.id }
@@ -23,41 +23,41 @@ class Rain {
 
     raise(amount = 1) {
         let raisedIndex = this.data.id + amount
-        let id = _.clamp(raisedIndex, 0, RAIN_TABLE.length - 1)
-        this.data = RAIN_TABLE[id]
+        let id = _.clamp(raisedIndex, 0, MOISTURE_TABLE.length - 1)
+        this.data = MOISTURE_TABLE[id]
     }
 
     lower(amount = 1) {
         let loweredIndex = this.data.id - amount
-        let id = _.clamp(loweredIndex, 0, RAIN_TABLE.length - 1)
-        this.data = RAIN_TABLE[id]
+        let id = _.clamp(loweredIndex, 0, MOISTURE_TABLE.length - 1)
+        this.data = MOISTURE_TABLE[id]
     }
 
-    isLower (rain) {
-        return this.data.id < rain.id
+    isLower (moisture) {
+        return this.data.id < moisture.id
     }
 
-    isHigher (rain) {
-        return this.data.id > rain.id
+    isHigher (moisture) {
+        return this.data.id > moisture.id
     }
 
     isLowest () {
-        return this.data.id == _.first(RAIN_TABLE).id
+        return this.data.id == _.first(MOISTURE_TABLE).id
     }
 
     isHighest () {
-        return this.data.id == _.last(RAIN_TABLE).id
+        return this.data.id == _.last(MOISTURE_TABLE).id
     }
 }
 
 
-export class RainMap {
+export class MoistureMap {
     constructor(size, roughness) {
         this.grid = new Grid(size, size)
 
         new HeightMap(size, roughness, (point, height) => {
-            let rain = this.buildRain(height)
-            this.grid.set(point, rain)
+            let moisture = this.buildMoisture(height)
+            this.grid.set(point, moisture)
         })
     }
 
@@ -65,15 +65,15 @@ export class RainMap {
         return this.grid.get(point)
     }
 
-    buildRain(height) {
+    buildMoisture(height) {
         let id
-        for (let reference of RAIN_TABLE) {
+        for (let reference of MOISTURE_TABLE) {
             if (height >= reference.height) {
                 id = reference.id
             } else {
                 break
             }
         }
-        return new Rain(id)
+        return new Moisture(id)
     }
 }

@@ -19,10 +19,6 @@ export default class World {
         })
     }
 
-    _buildTile () {
-        return new Tile()
-    }
-
     getTile (point) {
         return this.grid.get(point)
     }

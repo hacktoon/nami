@@ -46,8 +46,8 @@ const draw = () =>  {
 
     if (view == "heat") {
         worldPainter.drawHeat()
-    } else if (view == "rain") {
-        worldPainter.drawRain()
+    } else if (view == "moisture") {
+        worldPainter.drawMoisture()
     } else {
         worldPainter.draw()
     }
@@ -82,9 +82,9 @@ viewCanvas.addEventListener('mousemove', e => {
         position = "("+ point.hash() + ")",
         elevation = ` | Elevation: ${tile.elevation.value}t`,
         heat = " | " + tile.heat.name,
-        rain = " | " + tile.rain.name
+        moisture = " | " + tile.moisture.name
 
-    infoText.innerHTML = position + elevation + heat + rain
+    infoText.innerHTML = position + elevation + heat + moisture
 })
 
 viewCanvas.addEventListener('mouseout', () => {
