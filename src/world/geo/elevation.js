@@ -4,6 +4,8 @@ import { Grid } from '../../lib/grid';
 import { HeightMap } from '../../lib/heightmap'
 
 
+
+const RIVER_ELEVATION = 5
 const ELEVATION_TABLE = [
     { id: 0, height: 0,   color: "#000056", value: 0 },
     { id: 1, height: 80,  color: "#1a3792", value: 1 },
@@ -14,10 +16,11 @@ const ELEVATION_TABLE = [
     { id: 6, height: 254, color: "#d5cab4", value: 6 }
 ]
 
-// remove export
-export class Elevation {
-    constructor(id) {
+
+class Elevation {
+    constructor(id, baseHeight) {
         this.data = ELEVATION_TABLE[id]
+        this.baseHeight = baseHeight
     }
 
     get id() { return this.data.id }
@@ -58,12 +61,16 @@ export class Elevation {
         return this.data.id > elevation.id
     }
 
-    get isLowest () {
+    get isLowest() {
         return this.data.id == _.first(ELEVATION_TABLE).id
     }
 
-    get isHighest () {
+    get isHighest() {
         return this.data.id == _.last(ELEVATION_TABLE).id
+    }
+
+    get isRiverPossible() {
+        return this.data.id == RIVER_ELEVATION
     }
 }
 
@@ -85,7 +92,7 @@ export class ElevationMap {
 
     buildElevation(point, height) {
         let id = this.getElevationId(height)
-        let elevation = new Elevation(id)
+        let elevation = new Elevation(id, height)
         let maskElevation = this.buildMaskElevation(point)
 
         return this.filterElevation(elevation, maskElevation)

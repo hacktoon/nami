@@ -28,6 +28,10 @@ const seaNames = [
     "Hexamaris"
 ]
 
+const riverNames = [
+    "Mandrian", "Inu", "Assad", "Io", "Asten", "Miran", "Basum"
+]
+
 
 export class Name {
     static createLandMassName () {
@@ -40,5 +44,9 @@ export class Name {
 
     static createWaterBodyName() {
         return _.sample(oceanNames)
+    }
+
+    static createRiverName() {
+        return _.sample(riverNames)
     }
 }

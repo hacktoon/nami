@@ -19,12 +19,16 @@ export default class World {
         })
     }
 
-    getTile (point) {
+    get(point) {
         return this.grid.get(point)
     }
 
-    setTile (point, tile) {
+    set (point, tile) {
         return this.grid.set(point, tile)
+    }
+
+    getHeight(point) {
+        return this.grid.get(point).elevation.baseHeight
     }
 }
 

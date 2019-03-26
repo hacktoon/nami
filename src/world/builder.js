@@ -5,6 +5,7 @@ import { WaterBodyMap } from './geo/waterbody'
 import { ElevationMap } from './geo/elevation'
 import { HeatMap } from './climate/heat'
 import { MoistureMap } from './climate/moisture'
+import { PointNeighborhood } from '../lib/point';
 
 
 export default class WorldBuilder {
@@ -41,7 +42,8 @@ export default class WorldBuilder {
 
     _detectSurface() {
         this.world.forEach((tile, point) => {
-            this.waterBodyMap.detectWaterBody(point)
+            let neighbors = new PointNeighborhood(point)
+            this.waterBodyMap.detect(point, neighbors)
         })
     }
 }
