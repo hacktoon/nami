@@ -20,10 +20,6 @@ export default class WorldPainter {
         let x = point.x * this.tilesize,
             y = point.y * this.tilesize
 
-        // if (this.world.getTile(point).debug) { color = "red" }
-        // if (this.world.getTile(point).debug2) { color = "yellow" }
-        if (this.world.getTile(point).isVolcano) { color = 'red' }
-        if (this.world.getTile(point).isSwamp) { color = 'lightseagreen' }
         this.ctx.fillStyle = color
         this.ctx.fillRect(x, y, this.tilesize, this.tilesize)
     }

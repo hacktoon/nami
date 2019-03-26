@@ -1,6 +1,7 @@
 import { ScanlineFill, Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
 
+
 const EMPTY_VALUE = 0
 const OCEAN = 0
 const SEA = 1
@@ -10,14 +11,16 @@ const LAKE = 2
 export class WaterBodyMap {
     constructor(world) {
         this.world = world
-        this.waterBodyCounter = 1
+        this.nextId = 1
         this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
+        this.idMap = {}
         this.minOceanArea = world.area / 10
         this.minSeaArea = world.area / 50
     }
 
     get(point) {
-        return this.grid.get(point)
+        let id = this.grid.get(point)
+        return this.idMap[id]
     }
 
     detectWaterBody(startPoint) {
@@ -28,13 +31,13 @@ export class WaterBodyMap {
             return tile.elevation.isBelowSeaLevel && isEmpty
         }
         const onFill = point => {
-            this.grid.set(point, this.waterBodyCounter)
+            this.grid.set(point, this.nextId)
             tileCount++
         }
 
         if (!isFillable(startPoint)) return
         new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
-        return this._buildWaterBody(this.waterBodyCounter, startPoint, tileCount)
+        return this._buildWaterBody(this.nextId++, startPoint, tileCount)
     }
 
     _buildWaterBody(id, point, tileCount) {
@@ -48,8 +51,9 @@ export class WaterBodyMap {
         } else if (this._isSeaType(tileCount)) {
             type = SEA
         }
-        this.waterBodyCounter++
-        return new WaterBody(id, type, name, point, tileCount)
+        let waterBody = new WaterBody(id, type, name, point, tileCount)
+        this.idMap[id] = waterBody
+        return waterBody
     }
 
     _isOceanType(tileCount) {

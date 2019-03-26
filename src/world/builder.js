@@ -5,17 +5,11 @@ import { WaterBodyMap } from './geo/waterbody'
 import { ElevationMap } from './geo/elevation'
 import { HeatMap } from './climate/heat'
 import { MoistureMap } from './climate/moisture'
-import { getChance } from '../lib/base';
-
-
-const VOLCANO_CHANCE = 0.008
-const SWAMP_CHANCE = 0.2
 
 
 export default class WorldBuilder {
     constructor(size, roughness) {
         this.world = new World(size)
-
         this.elevationMap = new ElevationMap(size, roughness)
         this.moistureMap = new MoistureMap(size, roughness)
         this.heatMap = new HeatMap(size, .17)
@@ -46,22 +40,8 @@ export default class WorldBuilder {
     }
 
     _detectSurface() {
-        let refusedWaterBodies = []
-        let volcanoSeeds = []
-        let riverSources = []
-
-        const filterSurface = (tile, waterBody) => {
-            if (waterBody && waterBody.area <= 3 && getChance(SWAMP_CHANCE)) {
-                tile.isSwamp = true
-            }
-            if (tile.elevation.isHighest && getChance(VOLCANO_CHANCE)) {
-                tile.isVolcano = true
-            }
-        }
-
         this.world.forEach((tile, point) => {
-            let waterBody = this.waterBodyMap.detectWaterBody(point)
-            filterSurface(tile, waterBody)
+            this.waterBodyMap.detectWaterBody(point)
         })
     }
 }
