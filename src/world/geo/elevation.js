@@ -42,6 +42,14 @@ export class Elevation {
         this.data = ELEVATION_TABLE[id]
     }
 
+    level(newId) {
+        let oldId = this.data.id
+        let id = _.clamp(newId, 0, ELEVATION_TABLE.length - 1)
+        if (oldId > id) {
+            this.data = ELEVATION_TABLE[id]
+        }
+    }
+
     isLower (elevation) {
         return this.data.id < elevation.id
     }
@@ -76,18 +84,15 @@ export class ElevationMap {
     }
 
     buildElevation(point, height) {
-        let maskHeight = this.gridMask.get(point)
-        let maskElevation = this.getElevationByHeight(maskHeight)
-        let elevation = this.getElevationByHeight(height)
+        let id = this.getElevationId(height)
+        let elevation = new Elevation(id)
+        let maskElevation = this.buildMaskElevation(point)
 
-        if (maskElevation.isMiddle) {
-            elevation.lower()
-        }
-        return elevation
+        return this.filterElevation(elevation, maskElevation)
     }
 
-    getElevationByHeight(height) {
-        let id
+    getElevationId(height) {
+        let id = 0
         for (let elevationData of ELEVATION_TABLE) {
             if (height >= elevationData.height) {
                 id = elevationData.id
@@ -95,6 +100,26 @@ export class ElevationMap {
                 break
             }
         }
+        return id
+    }
+
+    buildMaskElevation(point) {
+        let height = this.gridMask.get(point)
+        let id = this.getElevationId(height)
         return new Elevation(id)
+    }
+
+    filterElevation(elevation, maskElevation) {
+        if (maskElevation.isMiddle) {
+            elevation.lower()
+        }
+        if (maskElevation.id > 5) {
+            elevation.level(4)
+        }
+        if (maskElevation.id == 0) {
+            elevation.level(5)
+        }
+
+        return elevation
     }
 }
