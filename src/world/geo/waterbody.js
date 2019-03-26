@@ -2,6 +2,9 @@ import { ScanlineFill, Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
 
 const EMPTY_VALUE = 0
+const OCEAN = 0
+const SEA = 1
+const LAKE = 2
 
 
 export class WaterBodyMap {
@@ -12,21 +15,13 @@ export class WaterBodyMap {
         this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
         this.minOceanArea = world.area / 10
         this.minSeaArea = world.area / 50
-
-        this.build()
     }
 
     get(point) {
         return this.grid.get(point)
     }
 
-    build() {
-        this.world.forEach((tile, point) => {
-            this._detectWaterBody(point)
-        })
-    }
-
-    _detectWaterBody(startPoint) {
+    detectWaterBody(startPoint) {
         let tileCount = 0
         const isFillable = point => {
             let tile = this.world.getTile(point)
@@ -38,45 +33,45 @@ export class WaterBodyMap {
             tileCount++
         }
 
+        if (!isFillable(startPoint)) return
         new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
-        this._buildWaterBody(this.waterBodyCounter, tileCount)
+        this._buildWaterBody(this.waterBodyCounter, startPoint, tileCount)
     }
 
     _buildWaterBody(id, tileCount) {
-        let waterBody
+        if (tileCount == 0) return
 
-        if (tileCount == 0)
-            return
-        if (this._isOcean(tileCount)) {
-            waterBody = new Ocean(id, Name.createOceanName(), tileCount)
-        } else if (this._isSea(tileCount)) {
-            waterBody = new Sea(id, "Sea " + id, tileCount)
-        } else {
-            waterBody = new Lake(id, "Lake " + id, tileCount)
+        let name = Name.createWaterBodyName()
+        let type = LAKE
+
+        if (this._isOceanType(tileCount)) {
+            type = OCEAN
+        } else if (this._isSeaType(tileCount)) {
+            type = SEA
         }
-        this.idMap[id] = waterBody
+        this.idMap[id] = new WaterBody(id, type, name, tileCount)
         this.waterBodyCounter++
     }
 
-    _isOcean(tileCount) {
+    _isOceanType(tileCount) {
         return tileCount > this.minOceanArea
     }
 
-    _isSea(tileCount) {
-        return !this._isOcean(tileCount) && tileCount > this.minSeaArea
+    _isSeaType(tileCount) {
+        return !this._isOceanType(tileCount) && tileCount > this.minSeaArea
     }
 }
 
 
 class WaterBody {
-    constructor(id, name, area) {
+    constructor(id, type, name, area) {
         this.id = id
         this.name = name
         this.area = area
+        this.type = type
     }
+
+    get isOcean() { return this.type == OCEAN }
+    get isSea() { return this.type == SEA }
+    get isLake() { return this.type == LAKE }
 }
-
-
-class Ocean extends WaterBody { }
-class Sea extends WaterBody { }
-class Lake extends WaterBody { }

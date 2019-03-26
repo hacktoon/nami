@@ -14,6 +14,7 @@ export default class WorldBuilder {
         this.elevationMap = new ElevationMap(size, roughness)
         this.moistureMap = new MoistureMap(size, roughness)
         this.heatMap = new HeatMap(size, roughness=.17)
+        this.waterBodyMap = new WaterBodyMap(this.world)
     }
 
     build() {
@@ -24,7 +25,7 @@ export default class WorldBuilder {
             this.filterClimate(tile)
         })
 
-        this._process()
+        this._detectSurface()
         return this.world
     }
 
@@ -39,8 +40,9 @@ export default class WorldBuilder {
             tile.moisture.raise(2)
     }
 
-    _process() {
-        this.waterBodyMap = new WaterBodyMap(this.world)
-
+    _detectSurface() {
+        this.world.forEach((tile, point) => {
+            this.waterBodyMap.detectWaterBody(point)
+        })
     }
 }

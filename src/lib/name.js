@@ -38,7 +38,7 @@ export class Name {
         return _.sample(personNames.first) +" "+ _.sample(personNames.last)
     }
 
-    static createOceanName() {
+    static createWaterBodyName() {
         return _.sample(oceanNames)
     }
 }
