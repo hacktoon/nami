@@ -80,4 +80,3 @@ class WaterBody {
 class Ocean extends WaterBody { }
 class Sea extends WaterBody { }
 class Lake extends WaterBody { }
-class River extends WaterBody { }
