@@ -22,6 +22,8 @@ export default class WorldPainter {
 
         // if (this.world.getTile(point).debug) { color = "red" }
         // if (this.world.getTile(point).debug2) { color = "yellow" }
+        if (this.world.getTile(point).isVolcano) { color = 'red' }
+        if (this.world.getTile(point).isSwamp) { color = 'lightseagreen' }
         this.ctx.fillStyle = color
         this.ctx.fillRect(x, y, this.tilesize, this.tilesize)
     }

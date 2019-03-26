@@ -121,6 +121,7 @@ export class HashMap {
 
 
 export function getChance(percentage) {
-    let value = _.random(0, 100)
+    window._ = _
+    let value = _.random(1.0, true)
     return value <= percentage
 }

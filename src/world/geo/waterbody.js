@@ -10,7 +10,6 @@ const LAKE = 2
 export class WaterBodyMap {
     constructor(world) {
         this.world = world
-        this.idMap = {}
         this.waterBodyCounter = 1
         this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
         this.minOceanArea = world.area / 10
@@ -35,10 +34,10 @@ export class WaterBodyMap {
 
         if (!isFillable(startPoint)) return
         new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
-        this._buildWaterBody(this.waterBodyCounter, startPoint, tileCount)
+        return this._buildWaterBody(this.waterBodyCounter, startPoint, tileCount)
     }
 
-    _buildWaterBody(id, tileCount) {
+    _buildWaterBody(id, point, tileCount) {
         if (tileCount == 0) return
 
         let name = Name.createWaterBodyName()
@@ -49,8 +48,8 @@ export class WaterBodyMap {
         } else if (this._isSeaType(tileCount)) {
             type = SEA
         }
-        this.idMap[id] = new WaterBody(id, type, name, tileCount)
         this.waterBodyCounter++
+        return new WaterBody(id, type, name, point, tileCount)
     }
 
     _isOceanType(tileCount) {
@@ -64,11 +63,12 @@ export class WaterBodyMap {
 
 
 class WaterBody {
-    constructor(id, type, name, area) {
+    constructor(id, type, name, point, area) {
         this.id = id
         this.name = name
-        this.area = area
         this.type = type
+        this.area = area
+        this.point = point
     }
 
     get isOcean() { return this.type == OCEAN }

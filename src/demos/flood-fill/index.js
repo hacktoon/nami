@@ -66,7 +66,7 @@ const drawPoint = (point, color) => {
 const createGrid = () => {
     let size = getGridSize()
     grid = new Grid(size, size, () => {
-        return getChance(1) ? WALL_VALUE : EMPTY_VALUE
+        return getChance(0.5) ? WALL_VALUE : EMPTY_VALUE
     })
 }
 

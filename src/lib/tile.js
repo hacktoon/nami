@@ -7,6 +7,7 @@ export default class Tile {
         this.isAboveSeaLevel = true
         this.isUnderwater = false
         this.isRiverSource = false
+        this.isVolcano = false
         this.lastState = undefined
     }
 }
