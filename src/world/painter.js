@@ -12,7 +12,7 @@ export default class WorldPainter {
             this.drawPoint(point, color)
             if (this.world.get(point).river) {
                 this.ctx.globalAlpha = .5
-                color = "red"
+                color = "darkblue"
                 this.drawPoint(point, color)
                 this.ctx.globalAlpha = 1
             }

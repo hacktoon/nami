@@ -68,42 +68,57 @@ export class RiverMap {
         this.world.get(point).river = true
         let meanderRate = _.random(5, 20)
         while(true) {
-            point = this._getNextRiverPoint(point, meanderRate, direction)
-            let waterbody = this.waterbodyMap.get(point)
+            point = this._getNextRiverPoint(id, point, meanderRate, direction)
             let isRiver = this.grid.get(point) != EMPTY_VALUE
-            let isWaterbody = Boolean(waterbody)
+            let isWaterbody = Boolean(this.waterbodyMap.get(point))
             if (isRiver || isWaterbody)
                 break
             this._setRiverPoint(id, point)
         }
     }
 
-    _getNextRiverPoint(point, meanderRate, direction) {
+    _getNextRiverPoint(id, point, meanderRate, direction) {
         let nextPoint = Point.at(point, direction)
         if (Direction.isHorizontal(direction)) {
             let variance = this._getMeanderVariance(nextPoint.x, meanderRate)
-            nextPoint.y = point.y + Math.round(variance)
+            nextPoint.y = point.y + variance
         }
         if (Direction.isVertical(direction)) {
             let variance = this._getMeanderVariance(nextPoint.y, meanderRate)
-            nextPoint.x = point.x + Math.round(variance)
+            nextPoint.x = point.x + variance
         }
-        this._buildIntermediaryPoints(point, nextPoint)
+        this._buildIntermediaryPoints(id, point, nextPoint)
         return nextPoint
     }
 
     _getMeanderVariance(coordinate, rate) {
-        return Math.sin(coordinate / rate)
-               + Math.sin(coordinate * _.random(1, 10))
+        let sineVariance = Math.sin(coordinate * _.random(1, 10))
+        let variance = Math.sin(coordinate / rate) + sineVariance
+        return Math.round(variance)
     }
 
-    _buildIntermediaryPoints(source, target) {
+    _buildIntermediaryPoints(id, source, target) {
+        while (! source.isNeighbor(target)) {
+            let point
 
+            if (source.x < target.x) point = Point.atEast(source)
+            if (source.x > target.x) point = Point.atWest(source)
+            if (source.y < target.y) point = Point.atSouth(source)
+            if (source.y > target.y) point = Point.atNorth(source)
+
+            source = point
+            this._setRiverPoint(id, point)
+        }
     }
 
     _setRiverPoint(id, point) {
+        this._digMargins(point)
         this.grid.set(point, id)
         this.world.get(point).river = true
+    }
+
+    _digMargins(point) {
+        let neighbors = new PointNeighbors(point)
     }
 }
 

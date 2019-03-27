@@ -9,6 +9,12 @@ export class Point {
         this.y = y
     }
 
+    isNeighbor(point) {
+        let x = Math.abs(this.x - point.x)
+        let y = Math.abs(this.y - point.y)
+        return (x == 1 && y == 0) || (x == 0 && y == 1)
+    }
+
     hash () {
         return `${this.x},${this.y}`
     }

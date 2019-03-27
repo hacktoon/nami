@@ -1,5 +1,6 @@
 export default class Tile {
     constructor () {
+        this.placeName = ""
         this.heat = undefined
         this.moisture = undefined
         this.elevation = undefined
