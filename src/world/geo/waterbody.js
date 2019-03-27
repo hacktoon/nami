@@ -1,16 +1,13 @@
 import _ from 'lodash'
+
 import { ScanlineFill, Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
-import { getChance, Direction } from '../../lib/base';
-import { PointNeighbors, Point } from '../../lib/point';
 
 
-const RIVER_CHANCE = 0.15
 const EMPTY_VALUE = 0
 const OCEAN = 0
 const SEA = 1
 const LAKE = 2
-const RIVER = 2
 
 
 export class WaterbodyMap {
@@ -30,7 +27,7 @@ export class WaterbodyMap {
     }
 
     /* Detect oceans, seas and lakes */
-    detectWaterBody(startPoint, neighbors) {
+    detect(startPoint) {
         let tileCount = 0
         const isFillable = point => {
             let tile = this.world.get(point)
@@ -44,15 +41,12 @@ export class WaterbodyMap {
 
         if (isFillable(startPoint)) {
             new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
-            this._buildContainedWaterBody(this.nextId++, startPoint, tileCount)
+            this._buildWaterBody(this.nextId++, startPoint, tileCount)
             return
         }
-
-        if (this._isRiverSource(startPoint, neighbors))
-            this.riverSources.push(startPoint)
     }
 
-    _buildContainedWaterBody(id, point, tileCount) {
+    _buildWaterBody(id, point, tileCount) {
         if (tileCount == 0) return
 
         let name = Name.createWaterBodyName()
@@ -74,76 +68,6 @@ export class WaterbodyMap {
     _isSeaType(tileCount) {
         return !this._isOceanType(tileCount) && tileCount >= this.minSeaArea
     }
-
-    _isRiverSource(point, neighbors) {
-        let tile = this.world.get(point)
-        let isElevated = tile.elevation.isRiverPossible
-        let isWetEnough = tile.moisture.isRiverPossible
-        let isValid = this._isValidRiverSource(neighbors)
-        let chance = getChance(RIVER_CHANCE)
-
-        return chance && isElevated && isValid && isWetEnough
-    }
-
-    _isValidRiverSource(neighbors) {
-        let mountains = 0
-        let isolated = true
-        neighbors.adjacent(point => {
-            let tile = this.world.get(point)
-            if (this.grid.get(point) != EMPTY_VALUE) {
-                isolated = false
-            }
-            if (tile.elevation.isHighest) {
-                mountains++
-            }
-        })
-        return isolated && (mountains == 2 || mountains == 3)
-    }
-
-    buildRiver(point) {
-        let id = this.nextId++
-        let name = Name.createRiverName()
-        let waterBody = new WaterBody(id, RIVER, name, point, 1)
-        this.grid.set(point, id)
-        this.idMap[id] = waterBody
-        this._flowRiver(id, point)
-    }
-
-    _flowRiver(id, point) {
-        let direction = Direction.randomCardinal()
-        let points = [point]
-
-        this.world.get(point).river = true
-        let meanderRate = _.random(5, 20)
-        while(true) {
-            point = this._getNextRiverPoint(point, meanderRate, direction)
-            if (this.grid.get(point) != EMPTY_VALUE)
-                break
-            this.grid.set(point, id)
-            this.world.get(point).river = true
-        }
-    }
-
-    _getNextRiverPoint(point, meanderRate, direction) {
-        let nextPoint = Point.at(point, direction)
-        let x, y
-        if (Direction.isHorizontal(direction)) {
-            x = nextPoint.x
-            let variance = this._getMeanderVariance(x, meanderRate)
-            y = point.y + Math.round(variance)
-        }
-        if (Direction.isVertical(direction)) {
-            y = nextPoint.y
-            let variance = this._getMeanderVariance(y, meanderRate)
-            x = point.x + Math.round(variance)
-        }
-        return new Point(x, y)
-    }
-
-    _getMeanderVariance(coordinate, rate) {
-        return Math.sin(coordinate / rate)
-               + Math.sin(coordinate * _.random(1, 10))
-    }
 }
 
 
@@ -159,6 +83,4 @@ class WaterBody {
     get isOcean() { return this.type == OCEAN }
     get isSea() { return this.type == SEA }
     get isLake() { return this.type == LAKE }
-    get isRiver() { return this.type == RIVER }
-    // get isStream() { return this.type == STREAM }
 }

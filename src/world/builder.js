@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 import World from './world'
 import { WaterbodyMap } from './geo/waterbody'
+import { RiverMap } from './geo/river'
 import { ElevationMap } from './geo/elevation'
 import { HeatMap } from './climate/heat'
 import { MoistureMap } from './climate/moisture'
@@ -15,6 +16,7 @@ export default class WorldBuilder {
         this.moistureMap = new MoistureMap(size, roughness)
         this.heatMap = new HeatMap(size, .17)
         this.waterbodyMap = new WaterbodyMap(this.world)
+        this.riverMap = new RiverMap(this.world, this.waterbodyMap)
     }
 
     build() {
@@ -41,13 +43,12 @@ export default class WorldBuilder {
     }
 
     _detectSurface() {
-        this.world.forEach((tile, point) => {
-            let neighbors = new PointNeighbors(point)
-            this.waterbodyMap.detectWaterBody(point, neighbors)
+        this.world.forEach((_, point) => {
+            this.waterbodyMap.detect(point)
         })
 
-        this.waterbodyMap.riverSources.forEach(point => {
-            this.waterbodyMap.buildRiver(point)
+        this.world.forEach((_, point) => {
+            this.riverMap.detect(point)
         })
     }
 }

@@ -1,4 +1,5 @@
 import _ from 'lodash'
+
 import { Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
 import { getChance, Direction } from '../../lib/base';
@@ -11,11 +12,12 @@ const EMPTY_VALUE = 0
 
 export class RiverMap {
     constructor(world, waterbodyMap) {
-        this.world = world
         this.nextId = 1
-        this.idMap = {}
+        this.world = world
         this.waterbodyMap = waterbodyMap
+        this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
         this.sources = []
+        this.idMap = {}
     }
 
     get(point) {
@@ -23,17 +25,19 @@ export class RiverMap {
         return this.idMap[id]
     }
 
-    static isRiverSource(point) {
+    detect(point) {
         let tile = this.world.get(point)
+        let isProperPoint = this._isValidNeighborhood(point)
         let isElevated = tile.elevation.isRiverPossible
         let isWetEnough = tile.moisture.isRiverPossible
-        let isValid = RiverMap._isValidNeighborhood(point)
         let chance = getChance(RIVER_CHANCE)
 
-        return chance && isElevated && isValid && isWetEnough
+        if(chance && isElevated && isProperPoint && isWetEnough) {
+            this.buildRiver(point)
+        }
     }
 
-    static _isValidNeighborhood(refPoint) {
+    _isValidNeighborhood(refPoint) {
         let neighbors = new PointNeighbors(refPoint)
         let mountains = 0
         let isolated = true
@@ -51,22 +55,22 @@ export class RiverMap {
 
     buildRiver(point) {
         let id = this.nextId++
-        let name = Name.createRiverName()
-        let waterBody = new WaterBody(id, RIVER, name, point, 1)
+        let river = new River(id, point)
         this.grid.set(point, id)
-        this.idMap[id] = waterBody
+        this.idMap[id] = river
         this._flowRiver(id, point)
     }
 
     _flowRiver(id, point) {
         let direction = Direction.randomCardinal()
-        let points = [point]
 
         this.world.get(point).river = true
         let meanderRate = _.random(5, 20)
         while(true) {
             point = this._getNextRiverPoint(point, meanderRate, direction)
-            if (this.grid.get(point) != EMPTY_VALUE)
+            let waterbody = this.waterbodyMap.get(point)
+            let isRiver = this.grid.get(point) != EMPTY_VALUE
+            if (isRiver || (waterbody && waterbody.isOcean))
                 break
             this.grid.set(point, id)
             this.world.get(point).river = true
@@ -96,18 +100,10 @@ export class RiverMap {
 }
 
 
-class WaterBody {
-    constructor(id, type, name, point, area) {
+class River {
+    constructor(id, sourcepoint) {
         this.id = id
-        this.type = type
-        this.name = name
-        this.point = point
-        this.area = area
+        this.name = Name.createRiverName()
+        this.sourcepoint = sourcepoint
     }
-
-    get isOcean() { return this.type == OCEAN }
-    get isSea() { return this.type == SEA }
-    get isLake() { return this.type == LAKE }
-    get isRiver() { return this.type == RIVER }
-    // get isStream() { return this.type == STREAM }
 }
