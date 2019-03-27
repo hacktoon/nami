@@ -56,6 +56,7 @@ export class RiverMap {
     buildRiver(point) {
         let id = this.nextId++
         let river = new River(id, point)
+        this.sources.push(point)
         this.grid.set(point, id)
         this.idMap[id] = river
         this._flowRiver(id, point)
@@ -79,18 +80,16 @@ export class RiverMap {
 
     _getNextRiverPoint(point, meanderRate, direction) {
         let nextPoint = Point.at(point, direction)
-        let x, y
         if (Direction.isHorizontal(direction)) {
-            x = nextPoint.x
-            let variance = this._getMeanderVariance(x, meanderRate)
-            y = point.y + Math.round(variance)
+            let variance = this._getMeanderVariance(nextPoint.x, meanderRate)
+            nextPoint.y = point.y + Math.round(variance)
         }
         if (Direction.isVertical(direction)) {
-            y = nextPoint.y
-            let variance = this._getMeanderVariance(y, meanderRate)
-            x = point.x + Math.round(variance)
+            let variance = this._getMeanderVariance(nextPoint.y, meanderRate)
+            nextPoint.x = point.x + Math.round(variance)
         }
-        return new Point(x, y)
+        //this.buildIntermediaryPoints(point, nextPoint)
+        return nextPoint
     }
 
     _getMeanderVariance(coordinate, rate) {
