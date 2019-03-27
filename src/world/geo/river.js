@@ -71,10 +71,10 @@ export class RiverMap {
             point = this._getNextRiverPoint(point, meanderRate, direction)
             let waterbody = this.waterbodyMap.get(point)
             let isRiver = this.grid.get(point) != EMPTY_VALUE
-            if (isRiver || (waterbody && waterbody.isOcean))
+            let isWaterbody = Boolean(waterbody)
+            if (isRiver || isWaterbody)
                 break
-            this.grid.set(point, id)
-            this.world.get(point).river = true
+            this._setRiverPoint(id, point)
         }
     }
 
@@ -88,13 +88,22 @@ export class RiverMap {
             let variance = this._getMeanderVariance(nextPoint.y, meanderRate)
             nextPoint.x = point.x + Math.round(variance)
         }
-        //this.buildIntermediaryPoints(point, nextPoint)
+        this._buildIntermediaryPoints(point, nextPoint)
         return nextPoint
     }
 
     _getMeanderVariance(coordinate, rate) {
         return Math.sin(coordinate / rate)
                + Math.sin(coordinate * _.random(1, 10))
+    }
+
+    _buildIntermediaryPoints(source, target) {
+
+    }
+
+    _setRiverPoint(id, point) {
+        this.grid.set(point, id)
+        this.world.get(point).river = true
     }
 }
 
