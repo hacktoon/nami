@@ -40,6 +40,18 @@ export class Direction {
         return DirectionIdMap[code].symbol;
     }
 
+    static isHorizontal(dir) {
+        let east = dir == DirectionNameMap.EAST.code
+        let west = dir == DirectionNameMap.WEST.code
+        return east || west
+    }
+
+    static isVertical(dir) {
+        let north = dir == DirectionNameMap.NORTH.code
+        let south = dir == DirectionNameMap.SOUTH.code
+        return north || south
+    }
+
     static isOpposite (dir1, dir2) {
         return dir1 * -1 == dir2
     }
@@ -65,7 +77,8 @@ export class Direction {
             this.WEST
         ]);
     }
-};
+}
+window.Direction = Direction
 
 
 var NumberInterpolation = function(from, to, totalItems){

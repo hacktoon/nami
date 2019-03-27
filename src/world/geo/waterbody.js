@@ -114,17 +114,35 @@ export class WaterBodyMap {
         let points = [point]
 
         this.world.get(point).river = true
-        let period = _.random(2, 20)
+        let meanderRate = _.random(10, 20)
         while(true) {
-            let x = point.x + 1
-            let variance = Math.sin(x / period) + Math.sin(x * _.random(1, 10))
-            let y = point.y + Math.round(variance)
-            point = new Point(x, y)
+            point = this._getNextRiverPoint(point, meanderRate, direction)
             if (this.grid.get(point) != EMPTY_VALUE)
                 break
             this.grid.set(point, id)
             this.world.get(point).river = true
         }
+    }
+
+    _getNextRiverPoint(point, meanderRate, direction) {
+        let nextPoint = Point.at(point, direction)
+        let x, y
+        if (Direction.isHorizontal(direction)) {
+            x = nextPoint.x
+            let variance = this._getMeanderVariance(x, meanderRate)
+            y = point.y + Math.round(variance)
+        }
+        if (Direction.isVertical(direction)) {
+            y = nextPoint.y
+            let variance = this._getMeanderVariance(y, meanderRate)
+            x = point.x + Math.round(variance)
+        }
+        return new Point(x, y)
+    }
+
+    _getMeanderVariance(coordinate, rate) {
+        return Math.sin(coordinate / rate)
+               + Math.sin(coordinate * _.random(1, 10))
     }
 }
 

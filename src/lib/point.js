@@ -13,6 +13,11 @@ export class Point {
         return `${this.x},${this.y}`
     }
 
+    static at(point, direction) {
+        let name = "at" + _.capitalize(Direction.getName(direction))
+        return Point[name](point)
+    }
+
     static atNorth(point) {
         return new Point(point.x, point.y - 1)
     }
@@ -41,6 +46,7 @@ export class Point {
         return deltaX + deltaY
     }
 }
+window.Point = Point
 
 
 export class PointNeighborhood {
