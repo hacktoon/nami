@@ -19,9 +19,8 @@ const ELEVATION_TABLE = [
 
 
 class Elevation {
-    constructor(id, baseHeight) {
+    constructor(id) {
         this.data = ELEVATION_TABLE[id]
-        this.baseHeight = baseHeight
     }
 
     get id() { return this.data.id }
@@ -93,7 +92,7 @@ export class ElevationMap {
 
     buildElevation(point, height) {
         let id = this.getElevationId(height)
-        let elevation = new Elevation(id, height)
+        let elevation = new Elevation(id)
         let maskElevation = this.buildMaskElevation(point)
 
         return this.filterElevation(elevation, maskElevation)

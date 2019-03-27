@@ -1,6 +1,6 @@
 import { ScanlineFill, Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
-import { getChance } from '../../lib/base';
+import { getChance, Direction } from '../../lib/base';
 import { PointNeighborhood } from '../../lib/point';
 
 
@@ -115,8 +115,12 @@ export class WaterBodyMap {
     }
 
     _flowRiver(id, point) {
+        let dir = Direction.randomCardinal()
         let points = [point]
 
+        // while(true) {
+
+        // }
     }
 }
 
