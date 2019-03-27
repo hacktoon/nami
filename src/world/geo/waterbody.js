@@ -114,10 +114,11 @@ export class WaterBodyMap {
         let points = [point]
 
         this.world.get(point).river = true
+        let period = _.random(2, 20)
         while(true) {
             let x = point.x + 1
-            let variance = Math.round(Math.sin(x/2) + Math.sin(x * x))
-            let y = point.y + variance * _.random(-1, 1)
+            let variance = Math.sin(x / period) + Math.sin(x * _.random(1, 10))
+            let y = point.y + Math.round(variance)
             point = new Point(x, y)
             if (this.grid.get(point) != EMPTY_VALUE)
                 break

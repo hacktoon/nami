@@ -47,7 +47,6 @@ export default class WorldBuilder {
         })
 
         this.waterBodyMap.riverSources.forEach(point => {
-            console.log(point)
             this.waterBodyMap.buildRiver(point)
         })
     }
