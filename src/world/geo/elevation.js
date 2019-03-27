@@ -13,7 +13,8 @@ const ELEVATION_TABLE = [
     { id: 3, height: 150, color: "#0a5816", value: 3 },
     { id: 4, height: 190, color: "#31771a", value: 4 },
     { id: 5, height: 240, color: "#6f942b", value: 5 },
-    { id: 6, height: 254, color: "#d5cab4", value: 6 }
+    { id: 6, height: 254, color: "#BBBBBB", value: 6 },
+    { id: 7, height: 257, color: "#EEEEEE", value: 7 }
 ]
 
 

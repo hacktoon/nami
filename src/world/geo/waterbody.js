@@ -78,8 +78,8 @@ export class WaterBodyMap {
     }
 
     _detectRiver(point, neighbors) {
-        let isRiverSource = this._isRiverSource(point, neighbors)
-        if (! isRiverSource) return
+        if (! this._isRiverSource(point, neighbors))
+            return
 
         let id = this.nextId++
         let name = Name.createRiverName()
@@ -93,13 +93,13 @@ export class WaterBodyMap {
         let tile = this.world.get(point)
         let isElevated = tile.elevation.isRiverPossible
         let isMoist = tile.moisture.isRiverPossible
-        let isValidPoint = this._isRiverPointValid(neighbors)
+        let isValid = this._isValidRiverSource(neighbors)
         let chance = getChance(RIVER_CHANCE)
 
-        return chance && isElevated && isValidPoint && isMoist
+        return chance && isElevated && isValid && isMoist
     }
 
-    _isRiverPointValid(neighbors) {
+    _isValidRiverSource(neighbors) {
         let mountains = 0
         let isolated = true
         neighbors.adjacent(point => {
