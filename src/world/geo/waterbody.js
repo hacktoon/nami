@@ -1,7 +1,8 @@
+import _ from 'lodash'
 import { ScanlineFill, Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
 import { getChance, Direction } from '../../lib/base';
-import { PointNeighborhood } from '../../lib/point';
+import { PointNeighborhood, Point } from '../../lib/point';
 
 
 const RIVER_CHANCE = 0.15
@@ -20,6 +21,7 @@ export class WaterBodyMap {
         this.idMap = {}
         this.minOceanArea = world.area / 10
         this.minSeaArea = world.area / 50
+        this.riverSources = []
     }
 
     get(point) {
@@ -27,17 +29,8 @@ export class WaterBodyMap {
         return this.idMap[id]
     }
 
-    detect(point, neighbors) {
-        let tile = this.world.get(point)
-        if (tile.elevation.isBelowSeaLevel) {
-            this._detectContainedWaterBody(point)
-        } else {
-            this._detectRiver(point, neighbors)
-        }
-    }
-
     /* Detect oceans, seas and lakes */
-    _detectContainedWaterBody(startPoint) {
+    detectWaterBody(startPoint, neighbors) {
         let tileCount = 0
         const isFillable = point => {
             let tile = this.world.get(point)
@@ -49,9 +42,14 @@ export class WaterBodyMap {
             tileCount++
         }
 
-        if (!isFillable(startPoint)) return
-        new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
-        this._buildContainedWaterBody(this.nextId++, startPoint, tileCount)
+        if (isFillable(startPoint)) {
+            new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
+            this._buildContainedWaterBody(this.nextId++, startPoint, tileCount)
+            return
+        }
+
+        if (this._isRiverSource(startPoint, neighbors))
+            this.riverSources.push(startPoint)
     }
 
     _buildContainedWaterBody(id, point, tileCount) {
@@ -75,18 +73,6 @@ export class WaterBodyMap {
 
     _isSeaType(tileCount) {
         return !this._isOceanType(tileCount) && tileCount >= this.minSeaArea
-    }
-
-    _detectRiver(point, neighbors) {
-        if (! this._isRiverSource(point, neighbors))
-            return
-
-        let id = this.nextId++
-        let name = Name.createRiverName()
-        let waterBody = new WaterBody(id, RIVER, name, point, 1)
-        this.grid.set(point, id)
-        this.idMap[id] = waterBody
-        this._flowRiver(id, point)
     }
 
     _isRiverSource(point, neighbors) {
@@ -114,13 +100,30 @@ export class WaterBodyMap {
         return isolated && (mountains == 2 || mountains == 3)
     }
 
+    buildRiver(point) {
+        let id = this.nextId++
+        let name = Name.createRiverName()
+        let waterBody = new WaterBody(id, RIVER, name, point, 1)
+        this.grid.set(point, id)
+        this.idMap[id] = waterBody
+        this._flowRiver(id, point)
+    }
+
     _flowRiver(id, point) {
-        let dir = Direction.randomCardinal()
+        let direction = Direction.randomCardinal()
         let points = [point]
 
-        // while(true) {
-
-        // }
+        this.world.get(point).river = true
+        while(true) {
+            let x = point.x + 1
+            let variance = Math.round(Math.sin(x/2) + Math.sin(x * x))
+            let y = point.y + variance * _.random(-1, 1)
+            point = new Point(x, y)
+            if (this.grid.get(point) != EMPTY_VALUE)
+                break
+            this.grid.set(point, id)
+            this.world.get(point).river = true
+        }
     }
 }
 

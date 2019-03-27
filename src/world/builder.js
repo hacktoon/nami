@@ -43,7 +43,12 @@ export default class WorldBuilder {
     _detectSurface() {
         this.world.forEach((tile, point) => {
             let neighbors = new PointNeighborhood(point)
-            this.waterBodyMap.detect(point, neighbors)
+            this.waterBodyMap.detectWaterBody(point, neighbors)
+        })
+
+        this.waterBodyMap.riverSources.forEach(point => {
+            console.log(point)
+            this.waterBodyMap.buildRiver(point)
         })
     }
 }
