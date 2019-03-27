@@ -114,7 +114,7 @@ export class WaterBodyMap {
         let points = [point]
 
         this.world.get(point).river = true
-        let meanderRate = _.random(10, 20)
+        let meanderRate = _.random(5, 20)
         while(true) {
             point = this._getNextRiverPoint(point, meanderRate, direction)
             if (this.grid.get(point) != EMPTY_VALUE)
