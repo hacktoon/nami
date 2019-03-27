@@ -92,11 +92,11 @@ export class WaterBodyMap {
     _isRiverSource(point, neighbors) {
         let tile = this.world.get(point)
         let isElevated = tile.elevation.isRiverPossible
-        let isMoist = tile.moisture.isRiverPossible
+        let isWetEnough = tile.moisture.isRiverPossible
         let isValid = this._isValidRiverSource(neighbors)
         let chance = getChance(RIVER_CHANCE)
 
-        return chance && isElevated && isValid && isMoist
+        return chance && isElevated && isValid && isWetEnough
     }
 
     _isValidRiverSource(neighbors) {
@@ -116,29 +116,7 @@ export class WaterBodyMap {
 
     _flowRiver(id, point) {
         let points = [point]
-        while(true) {
-            let nextPoint = this._getDownstream(point)
-            if (this.grid.get(nextPoint) != EMPTY_VALUE) {
-                break
-            }
-            this.grid.set(nextPoint, id)
-            points.push(nextPoint)
-            point = nextPoint
-        }
-    }
 
-    _getDownstream(refPoint) {
-        let neighbors = new PointNeighborhood(refPoint)
-        let lowest = refPoint
-        neighbors.adjacent(point => {
-            let height = this.world.getHeight(point)
-            if (height <= this.world.getHeight(lowest)) {
-                lowest = point
-            }
-        })
-        // debug
-        this.world.get(refPoint).river = true
-        return lowest
     }
 }
 
@@ -156,4 +134,5 @@ class WaterBody {
     get isSea() { return this.type == SEA }
     get isLake() { return this.type == LAKE }
     get isRiver() { return this.type == RIVER }
+    // get isStream() { return this.type == STREAM }
 }
