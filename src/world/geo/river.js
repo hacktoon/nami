@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { ScanlineFill, Grid } from '../../lib/grid'
+import { Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
 import { getChance, Direction } from '../../lib/base';
 import { PointNeighbors, Point } from '../../lib/point';
@@ -7,21 +7,15 @@ import { PointNeighbors, Point } from '../../lib/point';
 
 const RIVER_CHANCE = 0.15
 const EMPTY_VALUE = 0
-const OCEAN = 0
-const SEA = 1
-const LAKE = 2
-const RIVER = 2
 
 
-export class WaterbodyMap {
-    constructor(world) {
+export class RiverMap {
+    constructor(world, waterbodyMap) {
         this.world = world
         this.nextId = 1
-        this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
         this.idMap = {}
-        this.minOceanArea = world.area / 10
-        this.minSeaArea = world.area / 50
-        this.riverSources = []
+        this.waterbodyMap = waterbodyMap
+        this.sources = []
     }
 
     get(point) {
@@ -29,63 +23,18 @@ export class WaterbodyMap {
         return this.idMap[id]
     }
 
-    /* Detect oceans, seas and lakes */
-    detectWaterBody(startPoint, neighbors) {
-        let tileCount = 0
-        const isFillable = point => {
-            let tile = this.world.get(point)
-            let isEmpty = this.grid.get(point) == EMPTY_VALUE
-            return tile.elevation.isBelowSeaLevel && isEmpty
-        }
-        const onFill = point => {
-            this.grid.set(point, this.nextId)
-            tileCount++
-        }
-
-        if (isFillable(startPoint)) {
-            new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
-            this._buildContainedWaterBody(this.nextId++, startPoint, tileCount)
-            return
-        }
-
-        if (this._isRiverSource(startPoint, neighbors))
-            this.riverSources.push(startPoint)
-    }
-
-    _buildContainedWaterBody(id, point, tileCount) {
-        if (tileCount == 0) return
-
-        let name = Name.createWaterBodyName()
-        let type = LAKE
-
-        if (this._isOceanType(tileCount)) {
-            type = OCEAN
-        } else if (this._isSeaType(tileCount)) {
-            type = SEA
-        }
-        let waterBody = new WaterBody(id, type, name, point, tileCount)
-        this.idMap[id] = waterBody
-    }
-
-    _isOceanType(tileCount) {
-        return tileCount >= this.minOceanArea
-    }
-
-    _isSeaType(tileCount) {
-        return !this._isOceanType(tileCount) && tileCount >= this.minSeaArea
-    }
-
-    _isRiverSource(point, neighbors) {
+    static isRiverSource(point) {
         let tile = this.world.get(point)
         let isElevated = tile.elevation.isRiverPossible
         let isWetEnough = tile.moisture.isRiverPossible
-        let isValid = this._isValidRiverSource(neighbors)
+        let isValid = RiverMap._isValidNeighborhood(point)
         let chance = getChance(RIVER_CHANCE)
 
         return chance && isElevated && isValid && isWetEnough
     }
 
-    _isValidRiverSource(neighbors) {
+    static _isValidNeighborhood(refPoint) {
+        let neighbors = new PointNeighbors(refPoint)
         let mountains = 0
         let isolated = true
         neighbors.adjacent(point => {

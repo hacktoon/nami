@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-import { Point, PointNeighborhood } from './point'
+import { Point, PointNeighbors } from './point'
 
 
 export class Grid {
@@ -110,7 +110,7 @@ export class FloodFill {
     }
 
     fillNeighborPoints (referencePoint) {
-        new PointNeighborhood(referencePoint)
+        new PointNeighbors(referencePoint)
         .adjacent((neighbor, direction) => {
             let point = this.grid.wrap(neighbor)
             if (this.isFillable(point, referencePoint, direction, this.step))

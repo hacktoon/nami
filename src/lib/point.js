@@ -49,7 +49,7 @@ export class Point {
 window.Point = Point
 
 
-export class PointNeighborhood {
+export class PointNeighbors {
     constructor (referencePoint) {
         this.referencePoint = referencePoint;
 
