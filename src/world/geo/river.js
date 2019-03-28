@@ -62,29 +62,34 @@ export class RiverMap {
         this._flowRiver(id, point)
     }
 
-    _flowRiver(id, point) {
+    _flowRiver(id, startPoint) {
         let direction = Direction.randomCardinal()
 
-        this.world.get(point).river = true
-        let meanderRate = _.random(5, 20)
+        this.world.get(startPoint).river = true
+        let meander = _.random(10, 30)
         while(true) {
-            point = this._getNextRiverPoint(id, point, meanderRate, direction)
-            let isRiver = this.grid.get(point) != EMPTY_VALUE
-            let isWaterbody = Boolean(this.waterbodyMap.get(point))
-            if (isRiver || isWaterbody)
+            let nextPoint = this._getNextPoint(id, startPoint, meander, direction)
+            if (this._isInvalidPoint(nextPoint))
                 break
-            this._setRiverPoint(id, point)
+            this._setRiverPoint(id, nextPoint)
+            startPoint = nextPoint
         }
     }
 
-    _getNextRiverPoint(id, point, meanderRate, direction) {
+    _isInvalidPoint(point) {
+        let isAnotherRiver = this.grid.get(point) != EMPTY_VALUE
+        let isWaterbody = Boolean(this.waterbodyMap.get(point))
+        return isAnotherRiver || isWaterbody
+    }
+
+    _getNextPoint(id, point, meander, direction) {
         let nextPoint = Point.at(point, direction)
         if (Direction.isHorizontal(direction)) {
-            let variance = this._getMeanderVariance(nextPoint.x, meanderRate)
+            let variance = this._getMeanderVariance(nextPoint.x, meander)
             nextPoint.y = point.y + variance
         }
         if (Direction.isVertical(direction)) {
-            let variance = this._getMeanderVariance(nextPoint.y, meanderRate)
+            let variance = this._getMeanderVariance(nextPoint.y, meander)
             nextPoint.x = point.x + variance
         }
         this._buildIntermediaryPoints(id, point, nextPoint)
@@ -92,7 +97,7 @@ export class RiverMap {
     }
 
     _getMeanderVariance(coordinate, rate) {
-        let sineVariance = Math.sin(coordinate * _.random(1, 10))
+        let sineVariance = Math.sin(coordinate * _.random(10, 20))
         let variance = Math.sin(coordinate / rate) + sineVariance
         return Math.round(variance)
     }
@@ -105,6 +110,9 @@ export class RiverMap {
             if (source.x > target.x) point = Point.atWest(source)
             if (source.y < target.y) point = Point.atSouth(source)
             if (source.y > target.y) point = Point.atNorth(source)
+
+            if (this._isInvalidPoint(point))
+                break
 
             source = point
             this._setRiverPoint(id, point)
