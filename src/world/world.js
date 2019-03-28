@@ -28,7 +28,7 @@ export default class World {
     }
 
     getHeight(point) {
-        return this.grid.get(point).relief.baseHeight
+        return this.grid.get(point).elevation.baseHeight
     }
 }
 

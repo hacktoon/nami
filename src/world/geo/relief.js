@@ -18,7 +18,7 @@ const ELEVATION_TABLE = [
 ]
 
 
-class Elevation {
+class Relief {
     constructor(id) {
         this.data = ELEVATION_TABLE[id]
     }
@@ -81,7 +81,7 @@ export class ReliefMap {
         this.gridMask = new HeightMap(size, roughness).grid
 
         new HeightMap(size, roughness, (point, height) => {
-            let relief = this.buildElevation(point, height)
+            let relief = this.buildRelief(point, height)
             this.grid.set(point, relief)
         })
     }
@@ -90,15 +90,15 @@ export class ReliefMap {
         return this.grid.get(point)
     }
 
-    buildElevation(point, height) {
-        let id = this.getElevationId(height)
-        let relief = new Elevation(id)
-        let maskElevation = this.buildMaskElevation(point)
+    buildRelief(point, height) {
+        let id = this.getReliefId(height)
+        let relief = new Relief(id)
+        let maskRelief = this.buildMaskRelief(point)
 
-        return this.filterElevation(relief, maskElevation)
+        return this.filterRelief(relief, maskRelief)
     }
 
-    getElevationId(height) {
+    getReliefId(height) {
         let id = 0
         for (let reliefData of ELEVATION_TABLE) {
             if (height >= reliefData.height) {
@@ -110,20 +110,20 @@ export class ReliefMap {
         return id
     }
 
-    buildMaskElevation(point) {
+    buildMaskRelief(point) {
         let height = this.gridMask.get(point)
-        let id = this.getElevationId(height)
-        return new Elevation(id)
+        let id = this.getReliefId(height)
+        return new Relief(id)
     }
 
-    filterElevation(relief, maskElevation) {
-        if (maskElevation.isMiddle) {
+    filterRelief(relief, maskRelief) {
+        if (maskRelief.isMiddle) {
             relief.lower()
         }
-        if (maskElevation.id > 5) {
+        if (maskRelief.id > 5) {
             relief.level(4)
         }
-        if (maskElevation.id == 0) {
+        if (maskRelief.id == 0) {
             relief.level(5)
         }
 

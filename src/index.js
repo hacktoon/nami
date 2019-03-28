@@ -4,7 +4,8 @@ import WorldBuilder from './world/builder'
 import WorldPainter from './world/painter'
 import {Point} from './lib/point'
 
-window.log = console.log.bind(console);
+window.log = console.log.bind(console)
+window._ = _
 
 let viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
@@ -32,6 +33,7 @@ const createWorld = () => {
     let currentWorld = worldBuilder.build()
     let worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
 
+    window.worldBuilder = worldBuilder
     window.currentWorld = currentWorld
     window.worldPainter = worldPainter
     return currentWorld
@@ -80,7 +82,7 @@ viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
         position = "("+ point.hash() + ")",
-        relief = ` | Elevation: ${tile.relief.value}t`,
+        relief = ` | Relief: ${tile.relief.value}t`,
         heat = " | " + tile.heat.name,
         moisture = " | " + tile.moisture.name
 
