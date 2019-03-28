@@ -32,7 +32,7 @@ export class WaterbodyMap {
         const isFillable = point => {
             let tile = this.world.get(point)
             let isEmpty = this.grid.get(point) == EMPTY_VALUE
-            return tile.elevation.isBelowSeaLevel && isEmpty
+            return tile.relief.isBelowSeaLevel && isEmpty
         }
         const onFill = point => {
             this.grid.set(point, this.nextId)

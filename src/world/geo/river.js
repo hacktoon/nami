@@ -28,7 +28,7 @@ export class RiverMap {
     detect(point) {
         let tile = this.world.get(point)
         let isProperPoint = this._isValidNeighborhood(point)
-        let isElevated = tile.elevation.isRiverPossible
+        let isElevated = tile.relief.isRiverPossible
         let isWetEnough = tile.moisture.isRiverPossible
         let chance = this._isIsolated(point)
 
@@ -57,7 +57,7 @@ export class RiverMap {
             if (this.grid.get(point) != EMPTY_VALUE) {
                 isolated = false
             }
-            if (tile.elevation.isHighest) {
+            if (tile.relief.isHighest) {
                 mountains++
             }
         })
@@ -145,9 +145,9 @@ export class RiverMap {
         let sourcePoint = this.idMap[id].sourcePoint
         let tile = this.world.get(sourcePoint)
         new PointNeighbors(riverPoint).around(point => {
-            let elevation = this.world.get(point).elevation
-            if (elevation.isAboveSeaLevel)
-                elevation.level(tile.elevation.id)
+            let relief = this.world.get(point).relief
+            if (relief.isAboveSeaLevel)
+                relief.level(tile.relief.id)
         })
     }
 }

@@ -53,12 +53,12 @@ class Elevation {
         }
     }
 
-    isLower (elevation) {
-        return this.data.id < elevation.id
+    isLower (relief) {
+        return this.data.id < relief.id
     }
 
-    isHigher(elevation) {
-        return this.data.id > elevation.id
+    isHigher(relief) {
+        return this.data.id > relief.id
     }
 
     get isLowest() {
@@ -75,14 +75,14 @@ class Elevation {
 }
 
 
-export class ElevationMap {
+export class ReliefMap {
     constructor(size, roughness) {
         this.grid = new Grid(size, size)
         this.gridMask = new HeightMap(size, roughness).grid
 
         new HeightMap(size, roughness, (point, height) => {
-            let elevation = this.buildElevation(point, height)
-            this.grid.set(point, elevation)
+            let relief = this.buildElevation(point, height)
+            this.grid.set(point, relief)
         })
     }
 
@@ -92,17 +92,17 @@ export class ElevationMap {
 
     buildElevation(point, height) {
         let id = this.getElevationId(height)
-        let elevation = new Elevation(id)
+        let relief = new Elevation(id)
         let maskElevation = this.buildMaskElevation(point)
 
-        return this.filterElevation(elevation, maskElevation)
+        return this.filterElevation(relief, maskElevation)
     }
 
     getElevationId(height) {
         let id = 0
-        for (let elevationData of ELEVATION_TABLE) {
-            if (height >= elevationData.height) {
-                id = elevationData.id
+        for (let reliefData of ELEVATION_TABLE) {
+            if (height >= reliefData.height) {
+                id = reliefData.id
             } else {
                 break
             }
@@ -116,17 +116,17 @@ export class ElevationMap {
         return new Elevation(id)
     }
 
-    filterElevation(elevation, maskElevation) {
+    filterElevation(relief, maskElevation) {
         if (maskElevation.isMiddle) {
-            elevation.lower()
+            relief.lower()
         }
         if (maskElevation.id > 5) {
-            elevation.level(4)
+            relief.level(4)
         }
         if (maskElevation.id == 0) {
-            elevation.level(5)
+            relief.level(5)
         }
 
-        return elevation
+        return relief
     }
 }

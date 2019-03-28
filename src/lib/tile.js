@@ -3,7 +3,7 @@ export default class Tile {
         this.placeName = ""
         this.heat = undefined
         this.moisture = undefined
-        this.elevation = undefined
+        this.relief = undefined
         this.biome = undefined
         this.isAboveSeaLevel = true
         this.isUnderwater = false

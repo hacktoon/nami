@@ -3,16 +3,15 @@ import _ from 'lodash'
 import World from './world'
 import { WaterbodyMap } from './geo/waterbody'
 import { RiverMap } from './geo/river'
-import { ElevationMap } from './geo/elevation'
+import { ReliefMap } from './geo/relief'
 import { HeatMap } from './climate/heat'
 import { MoistureMap } from './climate/moisture'
-import { PointNeighbors } from '../lib/point';
 
 
 export default class WorldBuilder {
     constructor(size, roughness) {
         this.world = new World(size)
-        this.elevationMap = new ElevationMap(size, roughness)
+        this.reliefMap = new ReliefMap(size, roughness)
         this.moistureMap = new MoistureMap(size, roughness)
         this.heatMap = new HeatMap(size, .17)
         this.waterbodyMap = new WaterbodyMap(this.world)
@@ -21,7 +20,7 @@ export default class WorldBuilder {
 
     build() {
         this.world.forEach((tile, point) => {
-            tile.elevation = this.elevationMap.get(point)
+            tile.relief = this.reliefMap.get(point)
             tile.moisture = this.moistureMap.get(point)
             tile.heat = this.heatMap.get(point)
             this._buildTileClimate(tile)
@@ -32,7 +31,7 @@ export default class WorldBuilder {
     }
 
     _buildTileClimate(tile) {
-        if (tile.elevation.isHighest)
+        if (tile.relief.isHighest)
             tile.heat.lower(2)
         if (tile.heat.isPolar)
             tile.moisture.lower(3)

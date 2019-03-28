@@ -8,7 +8,7 @@ export default class WorldPainter {
 
     draw () {
         this.world.grid.forEach((tile, point) => {
-            let color = tile.elevation.color
+            let color = tile.relief.color
             if (this.world.get(point).debug)
                 color = "red"
             this.drawPoint(point, color)
@@ -25,7 +25,7 @@ export default class WorldPainter {
 
     drawBlackWhite () {
         this.world.grid.forEach((tile, point) => {
-            let color = tile.elevation.isBelowSeaLevel ? "#FFF" : "#000"
+            let color = tile.relief.isBelowSeaLevel ? "#FFF" : "#000"
             this.drawPoint(point, color)
         })
     }
