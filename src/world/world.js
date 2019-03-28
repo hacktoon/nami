@@ -13,7 +13,7 @@ export default class World {
         this.grid = new Grid(size, size, point => new Tile(point))
     }
 
-    forEach(callback) {
+    iter(callback) {
         this.grid.forEach(tile => {
             callback(tile)
         })
@@ -21,6 +21,18 @@ export default class World {
 
     get(point) {
         return this.grid.get(point)
+    }
+
+    getRelief(point) {
+        return this.get(point).relief
+    }
+
+    getHeat(point) {
+        return this.get(point).heat
+    }
+
+    getMoisture(point) {
+        return this.get(point).moisture
     }
 }
 

@@ -19,7 +19,7 @@ export default class WorldBuilder {
     }
 
     build() {
-        this.world.forEach(tile => {
+        this.world.iter(tile => {
             tile.relief = this.reliefMap.get(tile.point)
             tile.moisture = this.moistureMap.get(tile.point)
             tile.heat = this.heatMap.get(tile.point)
@@ -42,11 +42,11 @@ export default class WorldBuilder {
     }
 
     _detectSurface() {
-        this.world.forEach(tile => {
+        this.world.iter(tile => {
             this.waterbodyMap.detect(tile.point)
         })
 
-        // this.world.forEach((_, point) => {
+        // this.world.iter((_, point) => {
         //     this.riverMap.detect(point)
         // })
     }
