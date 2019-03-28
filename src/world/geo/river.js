@@ -6,7 +6,7 @@ import { getChance, Direction } from '../../lib/base';
 import { PointNeighbors, Point } from '../../lib/point';
 
 
-const RIVER_CHANCE = 0.15
+const RIVER_CHANCE = 0.2
 const EMPTY_VALUE = 0
 
 
@@ -30,11 +30,22 @@ export class RiverMap {
         let isProperPoint = this._isValidNeighborhood(point)
         let isElevated = tile.elevation.isRiverPossible
         let isWetEnough = tile.moisture.isRiverPossible
-        let chance = getChance(RIVER_CHANCE)
+        let chance = this._isIsolated(point)
 
         if(chance && isElevated && isProperPoint && isWetEnough) {
             this.buildRiver(point)
         }
+    }
+
+    _isIsolated(newPoint) {
+        let minDistance = 30
+        for(let point of this.sources) {
+            let pointsDistance = Point.manhattanDistance(newPoint, point)
+            if (pointsDistance <= minDistance) {
+                return false
+            }
+        }
+        return true
     }
 
     _isValidNeighborhood(refPoint) {
@@ -57,15 +68,13 @@ export class RiverMap {
         let id = this.nextId++
         let river = new River(id, point)
         this.sources.push(point)
-        this.grid.set(point, id)
         this.idMap[id] = river
+        this._setRiverPoint(id, point)
         this._flowRiver(id, point)
     }
 
     _flowRiver(id, startPoint) {
         let direction = Direction.randomCardinal()
-
-        this.world.get(startPoint).river = true
         let meander = _.random(10, 30)
         while(true) {
             let nextPoint = this._getNextPoint(id, startPoint, meander, direction)
@@ -97,7 +106,7 @@ export class RiverMap {
     }
 
     _getMeanderVariance(coordinate, rate) {
-        let sineVariance = Math.sin(coordinate * _.random(10, 20))
+        let sineVariance = Math.cos(coordinate * _.random(10, 30))
         let variance = Math.sin(coordinate / rate) + sineVariance
         return Math.round(variance)
     }
