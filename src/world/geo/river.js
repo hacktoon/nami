@@ -112,21 +112,27 @@ export class RiverMap {
     }
 
     _setRiverPoint(id, point) {
-        this._digMargins(point)
         this.grid.set(point, id)
         this.world.get(point).river = true
+        this._digMargins(id, point)
     }
 
-    _digMargins(point) {
-        let neighbors = new PointNeighbors(point)
+    _digMargins(id, riverPoint) {
+        let sourcePoint = this.idMap[id].sourcePoint
+        let tile = this.world.get(sourcePoint)
+        new PointNeighbors(riverPoint).around(point => {
+            let elevation = this.world.get(point).elevation
+            if (elevation.isAboveSeaLevel)
+                elevation.level(tile.elevation.id)
+        })
     }
 }
 
 
 class River {
-    constructor(id, sourcepoint) {
+    constructor(id, sourcePoint) {
         this.id = id
         this.name = Name.createRiverName()
-        this.sourcepoint = sourcepoint
+        this.sourcePoint = sourcePoint
     }
 }
