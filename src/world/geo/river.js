@@ -76,6 +76,7 @@ export class RiverMap {
     _flowRiver(id, startPoint) {
         let direction = Direction.randomCardinal()
         let meander = _.random(10, 30)
+        this.world.get(startPoint).source = true
         while(true) {
             let nextPoint = this._getNextPoint(id, startPoint, meander, direction)
             if (this._isInvalidPoint(nextPoint))
@@ -131,7 +132,7 @@ export class RiverMap {
     _setRiverPoint(id, point) {
         this.grid.set(point, id)
         this.world.get(point).river = true
-        this._digMargins(id, point)
+        //this._digMargins(id, point)
     }
 
     _digMargins(id, riverPoint) {
