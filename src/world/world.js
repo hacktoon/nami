@@ -14,21 +14,13 @@ export default class World {
     }
 
     forEach(callback) {
-        this.grid.forEach((tile, point) => {
-            callback(tile, point)
+        this.grid.forEach(tile => {
+            callback(tile)
         })
     }
 
     get(point) {
         return this.grid.get(point)
-    }
-
-    set (point, tile) {
-        return this.grid.set(point, tile)
-    }
-
-    getHeight(point) {
-        return this.grid.get(point).elevation.baseHeight
     }
 }
 
