@@ -86,6 +86,12 @@ export class RiverMap {
         }
     }
 
+    _getRiverDirection(point) {
+        while(true) {
+
+        }
+    }
+
     _isInvalidPoint(point) {
         let isAnotherRiver = this.grid.get(point) != EMPTY_VALUE
         let isWaterbody = Boolean(this.waterbodyMap.get(point))

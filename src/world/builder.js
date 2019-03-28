@@ -20,26 +20,26 @@ export default class WorldBuilder {
     }
 
     build() {
-        const filterClimate = (tile) => {
-            if (tile.elevation.isHighest)
-                tile.heat.lower(2)
-            if (tile.heat.isPolar)
-                tile.moisture.lower(3)
-            if (tile.heat.isSubtropical)
-                tile.moisture.lower(1)
-            if (tile.heat.isTropical)
-                tile.moisture.raise(2)
-        }
-
         this.world.forEach((tile, point) => {
             tile.elevation = this.elevationMap.get(point)
             tile.moisture = this.moistureMap.get(point)
             tile.heat = this.heatMap.get(point)
-            filterClimate(tile)
+            this._buildTileClimate(tile)
         })
 
         this._detectSurface()
         return this.world
+    }
+
+    _buildTileClimate(tile) {
+        if (tile.elevation.isHighest)
+            tile.heat.lower(2)
+        if (tile.heat.isPolar)
+            tile.moisture.lower(3)
+        if (tile.heat.isSubtropical)
+            tile.moisture.lower(1)
+        if (tile.heat.isTropical)
+            tile.moisture.raise(2)
     }
 
     _detectSurface() {
@@ -47,8 +47,8 @@ export default class WorldBuilder {
             this.waterbodyMap.detect(point)
         })
 
-        this.world.forEach((_, point) => {
-            this.riverMap.detect(point)
-        })
+        // this.world.forEach((_, point) => {
+        //     this.riverMap.detect(point)
+        // })
     }
 }

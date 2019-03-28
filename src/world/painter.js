@@ -9,16 +9,9 @@ export default class WorldPainter {
     draw () {
         this.world.grid.forEach((tile, point) => {
             let color = tile.elevation.color
+            if (this.world.get(point).debug)
+                color = "red"
             this.drawPoint(point, color)
-            if (this.world.get(point).river) {
-                this.ctx.globalAlpha = .5
-                if (this.world.get(point).source)
-                    color = "red"
-                else
-                    color = "darkblue"
-                this.drawPoint(point, color)
-                this.ctx.globalAlpha = 1
-            }
         })
     }
 
