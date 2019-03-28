@@ -14,7 +14,7 @@ export class Grid {
             for(let x = 0; x < this.width; x++){
                 let value = defaultValue
                 if (_.isFunction(defaultValue)) {
-                    value = defaultValue()
+                    value = defaultValue(new Point(x, y))
                 }
                 this.matrix[y].push(value)
             }

@@ -10,7 +10,7 @@ export default class World {
         this.bio = {}
         this.climate = {}
 
-        this.grid = new Grid(size, size, () => new Tile())
+        this.grid = new Grid(size, size, point => new Tile(point))
     }
 
     forEach(callback) {

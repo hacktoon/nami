@@ -1,6 +1,6 @@
 export default class Tile {
-    constructor () {
-        this.point = undefined
+    constructor (point) {
+        this.point = point
         this.heat = undefined
         this.moisture = undefined
         this.relief = undefined
