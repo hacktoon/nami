@@ -1,5 +1,6 @@
 import _ from 'lodash'
-import {Grid, ScanlineFill, FloodFill} from '../../lib/grid'
+import { Grid } from '../../lib/grid'
+import { ScanlineFill, FloodFill} from '../../lib/flood-fill'
 import {getChance} from '../../lib/base'
 import {Point} from '../../lib/point'
 

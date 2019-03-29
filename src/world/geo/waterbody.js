@@ -1,6 +1,7 @@
 import _ from 'lodash'
 
-import { ScanlineFill, Grid } from '../../lib/grid'
+import { Grid } from '../../lib/grid'
+import { ScanlineFill } from '../../lib/flood-fill'
 import { Name } from '../../lib/name'
 
 
