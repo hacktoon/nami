@@ -139,9 +139,13 @@ export function getChance(percentage) {
 
 
 export class Random {
-    static setSeed(seed) {
-        Random.seed = Random._hash(seed)
-        Random.currentSeed = Random.seed
+    static set seed(seed) {
+        Random._seed = seed
+        Random._currentSeed = Random._hash(seed)
+    }
+
+    static get seed() {
+        return Random._seed
     }
 
     static _hash(seed) {
@@ -175,11 +179,11 @@ export class Random {
     }
 
     static float() {
-        if (Random.currentSeed == undefined) {
-            Random.setSeed(1)
+        if (Random._currentSeed === undefined) {
+            Random.seed = Number(new Date())
         }
-        let s = Random.currentSeed
-        Random.currentSeed = s + 1831565813 | 0
+        let s = Random._currentSeed
+        Random._currentSeed = s + 1831565813 | 0
         let t = Math.imul(s ^ s >>> 15, 1 | s)
         t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t
         return ((t ^ t >>> 14) >>> 0) / 2 ** 32;
