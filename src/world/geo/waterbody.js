@@ -41,15 +41,15 @@ export class WaterbodyMap {
 
         if (isFillable(startPoint)) {
             new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
-            this._buildWaterBody(this.nextId++, startPoint, tileCount)
+            this._buildWaterbody(this.nextId++, startPoint, tileCount)
             return
         }
     }
 
-    _buildWaterBody(id, point, tileCount) {
+    _buildWaterbody(id, point, tileCount) {
         if (tileCount == 0) return
 
-        let name = Name.createWaterBodyName()
+        let name = Name.createWaterbodyName()
         let type = LAKE
 
         if (this._isOceanType(tileCount)) {
@@ -57,8 +57,8 @@ export class WaterbodyMap {
         } else if (this._isSeaType(tileCount)) {
             type = SEA
         }
-        let waterBody = new WaterBody(id, type, name, point, tileCount)
-        this.idMap[id] = waterBody
+        let waterbody = new Waterbody(id, type, name, point, tileCount)
+        this.idMap[id] = waterbody
     }
 
     _isOceanType(tileCount) {
@@ -71,7 +71,7 @@ export class WaterbodyMap {
 }
 
 
-class WaterBody {
+class Waterbody {
     constructor(id, type, name, point, area) {
         this.id = id
         this.type = type
