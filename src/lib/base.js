@@ -139,12 +139,12 @@ export function getChance(percentage) {
 
 
 export class Random {
-    constructor(seed) {
-        this.seed = this._hash(seed)
-        this._s = this.seed
+    static setSeed(seed) {
+        Random.seed = Random._hash(seed)
+        Random.currentSeed = Random.seed
     }
 
-    _hash(seed) {
+    static _hash(seed) {
         let h = 61 ^ seed ^ seed >>> 16
         h += h << 3
         h = Math.imul(h, 668265261)
@@ -152,13 +152,13 @@ export class Random {
         return h >>> 0;
     }
 
-    choice(items) {
-        let index = this.int(0, items.length-1)
+    static choice(items) {
+        let index = Random.int(0, items.length-1)
         return items[index]
     }
 
-    int(lower=1, upper) {
-        let num = this.float()
+    static int(lower=1, upper) {
+        let num = Random.float()
 
         lower = _.toFinite(lower)
         if (upper === undefined) {
@@ -174,9 +174,12 @@ export class Random {
         return lower + Math.floor(num * (upper - lower + 1))
     }
 
-    float() {
-        let s = this._s
-        this._s = s + 1831565813 | 0
+    static float() {
+        if (Random.currentSeed == undefined) {
+            Random.setSeed(1)
+        }
+        let s = Random.currentSeed
+        Random.currentSeed = s + 1831565813 | 0
         let t = Math.imul(s ^ s >>> 15, 1 | s)
         t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t
         return ((t ^ t >>> 14) >>> 0) / 2 ** 32;
