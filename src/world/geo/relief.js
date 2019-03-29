@@ -5,14 +5,14 @@ import { HeightMap } from '../../lib/heightmap'
 
 
 const RELIEF_TABLE = [
-    { id: 0, height: 0,   color: "#000056", value: 0, name: "Abyssal" },
-    { id: 1, height: 80,  color: "#1a3792", value: 1, name: "Pelagic" },
-    { id: 2, height: 120, color: "#3379a6", value: 2, name: "Shelf" },
-    { id: 3, height: 150, color: "#0a5816", value: 3, name: "Basin" },
-    { id: 4, height: 190, color: "#31771a", value: 4, name: "Plain" },
-    { id: 5, height: 240, color: "#6f942b", value: 5, name: "Hill" },
-    { id: 6, height: 254, color: "#BBBBBB", value: 6, name: "Mountain" },
-    { id: 7, height: 257, color: "#EEEEEE", value: 7, name: "Peak" }
+    { id: 0, height: 0,   color: "#000056", value: 0 },
+    { id: 1, height: 80,  color: "#1a3792", value: 1 },
+    { id: 2, height: 120, color: "#3379a6", value: 2 },
+    { id: 3, height: 150, color: "#0a5816", value: 3 },
+    { id: 4, height: 190, color: "#31771a", value: 4 },
+    { id: 5, height: 240, color: "#6f942b", value: 5 },
+    { id: 6, height: 254, color: "#BBBBBB", value: 6 },
+    { id: 7, height: 257, color: "#EEEEEE", value: 7 }
 ]
 
 
