@@ -175,8 +175,9 @@ export class Random {
     }
 
     float() {
-        this._s = this._s + 1831565813 | 0
-        let t = Math.imul(this._s ^ this._s >>> 15, 1 | this._s)
+        let s = this._s
+        this._s = s + 1831565813 | 0
+        let t = Math.imul(s ^ s >>> 15, 1 | s)
         t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t
         return ((t ^ t >>> 14) >>> 0) / 2 ** 32;
     }
