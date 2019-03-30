@@ -35,7 +35,7 @@ const createWorld = () => {
     let t0 = performance.now()
     let currentWorld = worldBuilder.build()
     let t1 = performance.now()
-    console.log(t1-t0)
+    //console.log(t1-t0)
     let worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
 
     window.worldBuilder = worldBuilder
