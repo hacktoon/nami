@@ -1,4 +1,4 @@
-import { Grid } from './grid'
+import { Point } from './point'
 
 
 export class FloodFill {
@@ -38,12 +38,11 @@ export class FloodFill {
     }
 
     fillNeighborPoints(referencePoint) {
-        new PointNeighbors(referencePoint)
-            .adjacent((neighbor, direction) => {
-                let point = this.grid.wrap(neighbor)
-                if (this.isFillable(point, referencePoint, direction, this.step))
-                    this.fillPoint(point)
-            })
+        referencePoint.adjacentPoints(neighbor => {
+            let point = this.grid.wrap(neighbor)
+            if (this.isFillable(point, referencePoint, this.step))
+                this.fillPoint(point)
+        })
     }
 
     fillPoint(point) {

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
 import { getChance, Direction } from '../../lib/base';
-import { PointNeighbors, Point } from '../../lib/point';
+import { Point } from '../../lib/point';
 
 
 const RIVER_CHANCE = 0.2
@@ -49,10 +49,9 @@ export class RiverMap {
     }
 
     _isValidNeighborhood(refPoint) {
-        let neighbors = new PointNeighbors(refPoint)
         let mountains = 0
         let isolated = true
-        neighbors.adjacent(point => {
+        refPoint.adjacentPoints(point => {
             let tile = this.world.get(point)
             if (this.grid.get(point) != EMPTY_VALUE) {
                 isolated = false
@@ -144,7 +143,7 @@ export class RiverMap {
     _digMargins(id, riverPoint) {
         let sourcePoint = this.idMap[id].sourcePoint
         let tile = this.world.get(sourcePoint)
-        new PointNeighbors(riverPoint).around(point => {
+        riverPoint.aroundPoints(point => {
             let relief = this.world.get(point).relief
             if (relief.isAboveSeaLevel)
                 relief.level(tile.relief.id)

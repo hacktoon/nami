@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-import { Point, PointNeighbors } from './point'
+import { Point } from './point'
 
 
 export class Grid {
