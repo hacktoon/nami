@@ -1,17 +1,15 @@
 
 export default class WorldPainter {
     constructor (world, canvas, tilesize) {
+        this.ctx = canvas.getContext("2d")
         this.world = world
         this.tilesize = tilesize
-        this.ctx = canvas.getContext("2d")
     }
 
     draw () {
-        this.world.grid.forEach((tile, point) => {
-            let color = tile.relief.color
-            if (this.world.get(point).debug)
-                color = "red"
-            this.drawPoint(point, color)
+        this.world.iter(tile => {
+            let color = tile.debug ? "red" : tile.relief.color
+            this.drawPoint(tile.point, color)
         })
     }
 
@@ -24,21 +22,21 @@ export default class WorldPainter {
     }
 
     drawBlackWhite () {
-        this.world.grid.forEach((tile, point) => {
+        this.world.iter(tile => {
             let color = tile.relief.isBelowSeaLevel ? "#FFF" : "#000"
-            this.drawPoint(point, color)
+            this.drawPoint(tile.point, color)
         })
     }
 
     drawHeat() {
-        this.world.grid.forEach((tile, point) => {
-            this.drawPoint(point, tile.heat.color)
+        this.world.iter(tile => {
+            this.drawPoint(tile.point, tile.heat.color)
         })
     }
 
     drawMoisture() {
-        this.world.grid.forEach((tile, point) => {
-            this.drawPoint(point, tile.moisture.color)
+        this.world.iter(tile => {
+            this.drawPoint(tile.point, tile.moisture.color)
         })
     }
 }
