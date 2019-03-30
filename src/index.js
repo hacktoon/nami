@@ -85,16 +85,16 @@ viewCanvas.addEventListener('click', e => {
 viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.grid.get(point),
-        position = "("+ point.hash() + ")",
+        position = " | ("+ point.hash() + ")",
         relief = ` | Relief: ${tile.relief.value}t`,
         heat = " | " + tile.heat.name,
         moisture = " | " + tile.moisture.name
 
-    infoText.innerHTML = position + relief + heat + moisture
+    infoText.innerHTML = Random.seed + position + relief + heat + moisture
 })
 
 viewCanvas.addEventListener('mouseout', () => {
-    infoText.innerHTML = infoText.title
+    infoText.innerHTML = Random.seed + " | " + infoText.title
 })
 
 generateButton.click()
