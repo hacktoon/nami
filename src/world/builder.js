@@ -35,7 +35,7 @@ export default class WorldBuilder {
             let point = tile.point
             let waterbody = this.waterbodyMap.get(point)
             if (waterbody && waterbody.isLake) {
-                //tile.setLake(waterbody)
+                tile.setLake(waterbody)
                 tile.debug = true
             }
 

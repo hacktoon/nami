@@ -85,13 +85,15 @@ viewCanvas.addEventListener('click', e => {
 
 viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas),
-        tile = currentWorld.grid.get(point),
+        tile = currentWorld.get(point),
         position = " | ("+ point.hash() + ")",
         relief = ` | Relief: ${tile.relief.name}`,
         heat = " | " + tile.heat.name,
         moisture = " | " + tile.moisture.name
+    let lake = " | " + (tile.lake ? tile.lake.name + " lake" : "")
+    let tpl = `(${point.hash()}) | `
 
-    infoText.innerHTML = Random.seed + position + relief + heat + moisture
+    infoText.innerHTML = Random.seed + lake + position + relief + heat + moisture
 })
 
 viewCanvas.addEventListener('mouseout', () => {

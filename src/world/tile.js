@@ -27,11 +27,19 @@ export default class Tile {
     constructor (point) {
         this.point = point
         this.type = undefined
+        this.lake = undefined
+        this.sea = undefined
+        this.river = undefined
+        this.ocean = undefined
         this.isLand = true
         this.isWater = false
         this.isRiverSource = false
         this.isVolcano = false
         this.lastState = undefined
+    }
+
+    setLake(lake) {
+        this.lake = lake
     }
 }
 
