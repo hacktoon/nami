@@ -1,4 +1,4 @@
-import Tile from '../lib/tile'
+import Tile from './tile'
 import {Grid} from '../lib/grid'
 
 
