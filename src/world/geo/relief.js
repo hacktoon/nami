@@ -119,8 +119,8 @@ export class ReliefMap {
         if (maskRelief.isMiddle) {
             relief.lower()
         }
-        if (maskRelief.id > 5) {
-            relief.level(5)
+        if (maskRelief.id > 4) {
+            relief.level(6)
         }
         if (maskRelief.id == 0) {
             relief.level(5)
