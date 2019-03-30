@@ -18,8 +18,8 @@ const DirectionIdMap = (() => {
         item.name = key
         _map[item.code] = item
     })
-    return _map;
-})();
+    return _map
+})()
 
 
 export class Direction {
@@ -33,11 +33,11 @@ export class Direction {
     static get SOUTHWEST () { return DirectionNameMap.SOUTHWEST.code }
 
     static getName (code) {
-        return DirectionIdMap[code].name;
+        return DirectionIdMap[code].name
     }
 
     static getSymbol (code) {
-        return DirectionIdMap[code].symbol;
+        return DirectionIdMap[code].symbol
     }
 
     static isHorizontal(dir) {
@@ -66,7 +66,7 @@ export class Direction {
             this.NORTHWEST,
             this.SOUTHEAST,
             this.SOUTHWEST,
-        ]);
+        ])
     }
 
     static randomCardinal () {
@@ -75,7 +75,7 @@ export class Direction {
             this.EAST,
             this.SOUTH,
             this.WEST
-        ]);
+        ])
     }
 }
 window.Direction = Direction
@@ -85,22 +85,22 @@ var NumberInterpolation = function(from, to, totalItems){
     var totalNumbers = to - from + 1,
         stepValue = totalNumbers / totalItems,
         numbers = [from],
-        currentValue = from;
+        currentValue = from
 
     _.times(totalItems - 2, function(){
-        currentValue += stepValue;
-        numbers.push(Math.round(currentValue));
-    });
-    numbers.push(to);
+        currentValue += stepValue
+        numbers.push(Math.round(currentValue))
+    })
+    numbers.push(to)
 
-    return numbers;
-};
+    return numbers
+}
 
 
 export class HashMap {
     constructor() {
         this._map = {}
-        this._size = 0;
+        this._size = 0
     }
 
     add(obj) {
@@ -156,16 +156,16 @@ export class Random {
         h += h << 3
         h = Math.imul(h, 668265261)
         h ^= h >>> 15
-        return h >>> 0;
+        return h >>> 0
     }
 
     static _hashString(string) {
-        var h = 0, len = string.length, i = 0;
+        var h = 0, len = string.length, i = 0
         if (len > 0)
             while (i < len)
-                h = (h << 5) - h + string.charCodeAt(i++) | 0;
-        return h;
-    };
+                h = (h << 5) - h + string.charCodeAt(i++) | 0
+        return h
+    }
 
     static choice(items) {
         let index = Random.int(0, items.length-1)
@@ -197,7 +197,7 @@ export class Random {
         Random._currentSeed = s + 1831565813 | 0
         let t = Math.imul(s ^ s >>> 15, 1 | s)
         t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t
-        return ((t ^ t >>> 14) >>> 0) / 2 ** 32;
+        return ((t ^ t >>> 14) >>> 0) / 2 ** 32
     }
 }
 
