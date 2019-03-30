@@ -141,6 +141,9 @@ export function getChance(percentage) {
 export class Random {
     static set seed(seed) {
         Random._seed = seed
+        if (_.isString(seed)) {
+            seed = Random._hashString(seed)
+        }
         Random._currentSeed = Random._hash(seed)
     }
 
@@ -155,6 +158,14 @@ export class Random {
         h ^= h >>> 15
         return h >>> 0;
     }
+
+    static _hashString(string) {
+        var h = 0, len = string.length, i = 0;
+        if (len > 0)
+            while (i < len)
+                h = (h << 5) - h + string.charCodeAt(i++) | 0;
+        return h;
+    };
 
     static choice(items) {
         let index = Random.int(0, items.length-1)

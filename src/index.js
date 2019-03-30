@@ -17,12 +17,13 @@ let viewCanvas = document.getElementById("viewCanvas"),
     infoText = document.getElementById("infoText");
 
 const getSeedInput = () => {
-    let value = _.toNumber(seedInput.value || 0)
-    if (value == 0)
+    let value = String(seedInput.value)
+    if (value.trim() == "")
         return _.toNumber(new Date())
+    if (value.match(/\d+/))
+        return _.toNumber(value)
     return value
 }
-
 const getViewInput = () => viewInput.options[viewInput.selectedIndex].value
 const getTileSizeInput = () => Number(tilesizeInput.value)
 const getRoughnessInput = () => Number(roughnessInput.value)
