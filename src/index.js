@@ -3,31 +3,32 @@ import _ from 'lodash'
 import WorldBuilder from './world/builder'
 import WorldPainter from './world/painter'
 import {Point} from './lib/point'
+import { Random } from './lib/base';
 
 window.log = console.log.bind(console)
 window._ = _
 
 let viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
+    seedInput = document.getElementById("seedInput"),
+    viewInput = document.getElementById('viewInput'),
     tilesizeInput = document.getElementById("tilesizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
-    viewInput = document.getElementById('viewInput'),
     infoText = document.getElementById("infoText");
 
-const getViewInput = () => {
-    let option = viewInput.options[viewInput.selectedIndex];
-    return option.value;
-};
+const getSeedInput = () => {
+    let value = _.toNumber(seedInput.value || 0)
+    if (value == 0)
+        return _.toNumber(new Date())
+    return value
+}
 
-const getTileSizeInput = () => {
-    return Number(tilesizeInput.value)
-};
-
-const getRoughnessInput = () => {
-    return Number(roughnessInput.value)
-};
+const getViewInput = () => viewInput.options[viewInput.selectedIndex].value
+const getTileSizeInput = () => Number(tilesizeInput.value)
+const getRoughnessInput = () => Number(roughnessInput.value)
 
 const createWorld = () => {
+    Random.seed = getSeedInput()
     let tilesize = getTileSizeInput()
     let worldBuilder = new WorldBuilder(257, getRoughnessInput())
     let t0 = performance.now()

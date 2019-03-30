@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { Random } from './base';
 
 const personNames = {
     first: [
@@ -25,7 +26,7 @@ const oceanNames = [
 ]
 
 const seaNames = [
-    "Hexamaris"
+    "Hexamaris", "Blumarum"
 ]
 
 const riverNames = [
@@ -35,18 +36,18 @@ const riverNames = [
 
 export class Name {
     static createLandMassName () {
-        return _.sample(landMassNames.first) + _.sample(landMassNames.last)
+        return Random.choice(landMassNames.first) + Random.choice(landMassNames.last)
     }
 
     static createPersonName () {
-        return _.sample(personNames.first) +" "+ _.sample(personNames.last)
+        return Random.choice(personNames.first) +" "+ Random.choice(personNames.last)
     }
 
     static createWaterbodyName() {
-        return _.sample(oceanNames)
+        return Random.choice(oceanNames)
     }
 
     static createRiverName() {
-        return _.sample(riverNames)
+        return Random.choice(riverNames)
     }
 }

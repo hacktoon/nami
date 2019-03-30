@@ -40,7 +40,6 @@ header {
 }
 
 #main-menu input {
-    width: 40px;
     padding-right: 0;
 }
 
@@ -61,4 +60,12 @@ main { padding: 10px 20px 30px; }
     line-height: 30px;
     margin: 0;
     font-size: 1em;
+}
+
+#seedInput {
+    width: 100px;
+}
+
+#roughnessInput {
+    width: 40px;
 }

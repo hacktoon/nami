@@ -4,6 +4,7 @@ import { Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
 import { getChance, Direction } from '../../lib/base';
 import { Point } from '../../lib/point';
+import { Random } from '../../lib/base';
 
 
 const RIVER_CHANCE = 0.2
@@ -74,7 +75,7 @@ export class RiverMap {
 
     _flowRiver(id, startPoint) {
         let direction = Direction.randomCardinal()
-        let meander = _.random(10, 30)
+        let meander = Random.int(10, 30)
         this.world.get(startPoint).source = true
         while(true) {
             let nextPoint = this._getNextPoint(id, startPoint, meander, direction)
@@ -112,7 +113,7 @@ export class RiverMap {
     }
 
     _getMeanderVariance(coordinate, rate) {
-        let sineVariance = Math.cos(coordinate * _.random(10, 30))
+        let sineVariance = Math.cos(coordinate * Random.int(10, 30))
         let variance = Math.sin(coordinate / rate) + sineVariance
         return Math.round(variance)
     }

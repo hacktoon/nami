@@ -57,7 +57,7 @@ export class Direction {
     }
 
     static random () {
-        return _.sample([
+        return Random.choice([
             this.NORTH,
             this.EAST,
             this.SOUTH,
@@ -70,7 +70,7 @@ export class Direction {
     }
 
     static randomCardinal () {
-        return _.sample([
+        return Random.choiceo([
             this.NORTH,
             this.EAST,
             this.SOUTH,
@@ -133,7 +133,7 @@ export class HashMap {
 }
 
 export function getChance(percentage) {
-    let value = _.random(1.0, true)
+    let value = Random.float()
     return value <= percentage
 }
 

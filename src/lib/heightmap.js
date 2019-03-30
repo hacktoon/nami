@@ -1,7 +1,8 @@
 import _ from 'lodash'
 
-import {Grid} from './grid'
-import {Point} from './point'
+import { Grid } from './grid'
+import { Point } from './point'
+import { Random } from './base';
 
 
 export class HeightMap {
@@ -17,7 +18,7 @@ export class HeightMap {
 
             for (let y = half; y < size-1; y += midSize) {
                 for (let x = half; x < size-1; x += midSize) {
-                    let variance = _.random(-scale, scale)
+                    let variance = Random.int(-scale, scale)
                     let point = new Point(x, y)
                     this.square(point, half, variance)
                 }
@@ -25,7 +26,7 @@ export class HeightMap {
 
             for (let y = 0; y <= size-1; y += half) {
                 for (let x = (y + half) % midSize; x <= size-1; x += midSize) {
-                    let variance = _.random(-scale, scale)
+                    let variance = Random.int(-scale, scale)
                     let point = new Point(x, y)
                     this.diamond(point, half, variance)
                 }
@@ -35,7 +36,7 @@ export class HeightMap {
 
     setInitialPoints () {
         let maxIndex = this.size - 1
-        let rand = () => _.random(0, this.size)
+        let rand = () => Random.int(0, this.size)
         this.setPoint(new Point(0, 0), rand())
         this.setPoint(new Point(maxIndex, 0), rand())
         this.setPoint(new Point(0, maxIndex), rand())
@@ -100,7 +101,7 @@ export function MidpointDisplacement(p1, p2, maxSize, roughness, callback) {
     var buildPoint = function (p1, p2) {
         if (p2.x - p1.x <= 1) return
         var x = Math.floor((p1.x + p2.x) / 2),
-            y = (p1.y + p2.y) / 2 + _.random(-displacement, displacement)
+            y = (p1.y + p2.y) / 2 + Random.int(-displacement, displacement)
         y = _.clamp(Math.round(y), 0, maxSize - 1)
         return new Point(x, y)
     }

@@ -4,6 +4,7 @@ import {Grid} from '../lib/grid'
 
 export default class World {
     constructor(size) {
+        this.seed = Random.seed
         this.size = size
         this.area = size * size
         this.geo = new WorldGeo()
