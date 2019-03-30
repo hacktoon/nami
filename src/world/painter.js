@@ -23,7 +23,7 @@ export default class WorldPainter {
 
     drawBlackWhite () {
         this.world.iter(tile => {
-            let color = tile.relief.isBelowSeaLevel ? "#FFF" : "#000"
+            let color = tile.relief.isWater ? "#FFF" : "#000"
             this.drawPoint(tile.point, color)
         })
     }

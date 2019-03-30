@@ -4,17 +4,19 @@ import { Grid } from '../../lib/grid';
 import { HeightMap } from '../../lib/heightmap'
 
 
-const RELIEF_TABLE = [
-    { id: 0, height: 0,   color: "#000045", value: 0 },
-    { id: 1, height: 5,   color: "#000056", value: 1 },
-    { id: 2, height: 80,  color: "#1a3792", value: 2 },
-    { id: 3, height: 120, color: "#3379a6", value: 3 },
-    { id: 4, height: 150, color: "#0a5816", value: 4 },
-    { id: 5, height: 190, color: "#31771a", value: 5 },
-    { id: 6, height: 240, color: "#6f942b", value: 6 },
-    { id: 7, height: 254, color: "#AAAAAA", value: 7 },
-    { id: 8, height: 257, color: "#EEEEEE", value: 8 }
-]
+const RELIEF_TABLE = (function () {
+    return [
+        { height: 0,   color: "#000045", name: "Trench", isWater: true},
+        { height: 1,   color: "#000056", name: "Abyss", isWater: true },
+        { height: 70,  color: "#1a3792", name: "Deep", isWater: true },
+        { height: 120, color: "#3379a6", name: "Shallow", isWater: true },
+        { height: 150, color: "#0a5816", name: "Basin" },
+        { height: 190, color: "#31771a", name: "Plain" },
+        { height: 240, color: "#6f942b", name: "Hill" },
+        { height: 254, color: "#AAAAAA", name: "Mountain" },
+        { height: 257, color: "#EEEEEE", name: "Peak" }
+    ].map((obj, i) => { obj.id = i; return obj })
+})()
 
 
 class Relief {
@@ -23,13 +25,13 @@ class Relief {
     }
 
     get id() { return this.data.id }
-    get value () { return this.data.value }
     get color () { return this.data.color }
-    get isBelowSeaLevel () { return this.data.value < 4 } // remove
-    get isAboveSeaLevel() { return this.data.value >= 4 } // remove
+    get name () { return this.data.name }
+    get isWater () { return this.data.isWater }
+    get isLand() { return ! this.data.isWater }
     get isMiddle () {
         let middle = Math.floor(RELIEF_TABLE.length / 2)
-        return this.data.value == middle
+        return this.data.id == middle
     }
 
     raise (amount=1) {

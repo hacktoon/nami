@@ -146,7 +146,7 @@ export class RiverMap {
         let tile = this.world.get(sourcePoint)
         riverPoint.aroundPoints(point => {
             let relief = this.world.get(point).relief
-            if (relief.isAboveSeaLevel)
+            if (relief.isLand)
                 relief.level(tile.relief.id)
         })
     }

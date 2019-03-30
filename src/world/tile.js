@@ -2,10 +2,11 @@
 const TYPE_TABLE = (function() {
     return [
         { color: "", name: "Ocean" },
+        { color: "", name: "Sea" },
+        { color: "", name: "Beach" },
         { color: "", name: "Coral" },
         { color: "", name: "River" },
         { color: "", name: "Lake" },
-        { color: "", name: "Beach" },
         { color: "", name: "Tundra" },
         { color: "", name: "Taiga" },
         { color: "", name: "Grassland" },
@@ -22,7 +23,7 @@ export default class Tile {
     constructor (point) {
         this.point = point
         this.type = undefined
-        this.isAboveSeaLevel = true
+        this.isLand = true
         this.isWater = false
         this.isRiverSource = false
         this.isVolcano = false
