@@ -5,19 +5,23 @@ const TYPE_TABLE = (function() {
         { color: "", name: "Sea" },
         { color: "", name: "Beach" },
         { color: "", name: "Coral" },
+        { color: "", name: "River source" },
         { color: "", name: "River" },
         { color: "", name: "Lake" },
-        { color: "", name: "Tundra" },
-        { color: "", name: "Taiga" },
-        { color: "", name: "Grassland" },
-        { color: "", name: "Forest" },
+        { color: "", name: "Swamp" },
         { color: "", name: "Mangrove" },
-        { color: "", name: "Jungle" },
+        { color: "", name: "Grassland" },
         { color: "", name: "Shrubland" },
-        { color: "", name: "Desert" }
+        { color: "", name: "Desert" },
+        { color: "", name: "Forest" },
+        { color: "", name: "Jungle" },
+        { color: "", name: "Tundra" },
+        { color: "#FFFFFF", name: "Iceberg" },
+        { color: "#FFFFFF", name: "Ice cap" },
     ].map((obj, i) => { obj.id = i; return obj })
 })()
 window.TYPE_TABLE = TYPE_TABLE
+
 
 export default class Tile {
     constructor (point) {
