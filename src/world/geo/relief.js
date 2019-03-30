@@ -12,7 +12,7 @@ const RELIEF_TABLE = [
     { id: 4, height: 150, color: "#0a5816", value: 4 },
     { id: 5, height: 190, color: "#31771a", value: 5 },
     { id: 6, height: 240, color: "#6f942b", value: 6 },
-    { id: 7, height: 254, color: "#BBBBBB", value: 7 },
+    { id: 7, height: 254, color: "#AAAAAA", value: 7 },
     { id: 8, height: 257, color: "#EEEEEE", value: 8 }
 ]
 
@@ -116,14 +116,17 @@ export class ReliefMap {
     }
 
     filterRelief(relief, maskRelief) {
-        if (maskRelief.isMiddle) {
-            relief.lower()
-        }
         if (maskRelief.id > 4) {
             relief.level(6)
         }
         if (maskRelief.id == 0) {
             relief.level(5)
+        }
+        if (maskRelief.isMiddle) {
+            relief.lower()
+        }
+        if (relief.isHighest && maskRelief.id > 1) {
+            relief.lower()
         }
 
         return relief
