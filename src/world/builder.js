@@ -26,7 +26,21 @@ export default class WorldBuilder {
             this._buildTileClimate(tile)
         })
 
-        this._detectSurface()
+        // detect waterbodies and landforms
+        this.world.iter(tile => {
+            this.waterbodyMap.detect(tile.point)
+        })
+
+        this.world.iter(tile => {
+            let point = tile.point
+            let waterbody = this.waterbodyMap.get(point)
+            if (waterbody && waterbody.isLake) {
+                //tile.setLake(waterbody)
+                tile.debug = true
+            }
+
+        })
+
         return this.world
     }
 
@@ -39,15 +53,5 @@ export default class WorldBuilder {
             tile.moisture.lower(1)
         if (tile.heat.isTropical)
             tile.moisture.raise(2)
-    }
-
-    _detectSurface() {
-        this.world.iter(tile => {
-            this.waterbodyMap.detect(tile.point)
-        })
-
-        // this.world.iter((_, point) => {
-        //     this.riverMap.detect(point)
-        // })
     }
 }
