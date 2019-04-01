@@ -26,6 +26,7 @@ window.TYPE_TABLE = TYPE_TABLE
 export default class Tile {
     constructor (point) {
         this.point = point
+        this.name = ""
         this.type = undefined
         this.lake = undefined
         this.sea = undefined
