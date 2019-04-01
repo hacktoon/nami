@@ -31,12 +31,19 @@ export default class WorldBuilder {
             this.waterbodyMap.detect(tile.point)
         })
 
+        // apply deformations
         this.world.iter(tile => {
             let point = tile.point
             let waterbody = this.waterbodyMap.get(point)
-            if (waterbody && waterbody.isLake) {
-                tile.setLake(waterbody)
-                tile.debug = true
+            if (waterbody){
+                if (waterbody.isLake) {
+                    tile.setLake(waterbody)
+                    tile.debug = true
+                }
+                if (waterbody.isSea) {
+
+                    tile.debug2 = true
+                }
             }
 
         })

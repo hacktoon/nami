@@ -17,8 +17,8 @@ export class WaterbodyMap {
         this.nextId = 1
         this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
         this.idMap = {}
-        this.minOceanArea = world.area / 10
-        this.minSeaArea = world.area / 250
+        this.minOceanAreaPercentage = 10
+        this.minSeaAreaPercentage = 1
         this.riverSources = []
     }
 
@@ -63,11 +63,16 @@ export class WaterbodyMap {
     }
 
     _isOceanType(tileCount) {
-        return tileCount >= this.minOceanArea
+        let totalTiles = this.world.area
+        let tilePercentage = (100 * tileCount) / totalTiles
+        return tilePercentage >= this.minOceanAreaPercentage
     }
 
     _isSeaType(tileCount) {
-        return !this._isOceanType(tileCount) && tileCount >= this.minSeaArea
+        let totalTiles = this.world.area
+        let tilePercentage = (100 * tileCount) / totalTiles
+        let withinPercentage = tilePercentage >= this.minSeaAreaPercentage
+        return !this._isOceanType(tileCount) && withinPercentage
     }
 }
 

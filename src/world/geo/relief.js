@@ -6,15 +6,14 @@ import { HeightMap } from '../../lib/heightmap'
 
 const RELIEF_TABLE = (function () {
     return [
-        { height: 0,   color: "#000045", name: "Trench", isWater: true},
-        { height: 1,   color: "#000056", name: "Abyss", isWater: true },
-        { height: 70,  color: "#1a3792", name: "Deep", isWater: true },
-        { height: 120, color: "#3379a6", name: "Shallow", isWater: true },
-        { height: 150, color: "#0a5816", name: "Basin" },
-        { height: 190, color: "#31771a", name: "Plain" },
-        { height: 240, color: "#6f942b", name: "Hill" },
-        { height: 254, color: "#AAAAAA", name: "Mountain" },
-        { height: 257, color: "#EEEEEE", name: "Peak" }
+        { height: 0, color: "#144463", name: "Abyss", isWater: true },
+        { height: 1, color: "#174e71",  name: "Deep", isWater: true },
+        { height: 120,  color: "#3379a6", name: "Shallow", isWater: true },
+        { height: 150, color: "#6f942b", name: "Basin" },
+        { height: 190,  color: "#31771a", name: "Plain" },
+        { height: 240, color: "#346314", name: "Hill" },
+        { height: 254,  color: "#AAAAAA", name: "Mountain" },
+        { height: 257,  color: "#EEEEEE", name: "Peak" }
     ].map((obj, i) => { obj.id = i; return obj })
 })()
 
@@ -118,11 +117,12 @@ export class ReliefMap {
     }
 
     filterRelief(relief, maskRelief) {
+        // remove mountains
         if (maskRelief.id > 4) {
-            relief.level(6)
+            relief.level(5)
         }
         if (maskRelief.id == 0) {
-            relief.level(5)
+            relief.level(4)
         }
         if (maskRelief.isMiddle) {
             relief.lower()
