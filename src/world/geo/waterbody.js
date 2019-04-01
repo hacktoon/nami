@@ -12,11 +12,12 @@ const LAKE = 2
 
 
 export class WaterbodyMap {
-    constructor(world) {
-        this.world = world
+    constructor(reliefMap, moistureMap, world) {
         this.nextId = 1
-        this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
-        this.idMap = {}
+        this.world = world
+        this.reliefMap = reliefMap
+        this.grid = new Grid(reliefMap.size, reliefMap.size, EMPTY_VALUE)
+        this.map = {}
         this.minOceanAreaPercentage = 8
         this.minSeaAreaPercentage = 1
         this.riverSources = []
@@ -24,7 +25,7 @@ export class WaterbodyMap {
 
     get(point) {
         let id = this.grid.get(point)
-        return this.idMap[id]
+        return this.map[id]
     }
 
     /* Detect oceans, seas and lakes */
@@ -59,7 +60,7 @@ export class WaterbodyMap {
             type = SEA
         }
         let waterbody = new Waterbody(id, type, name, point, tileCount)
-        this.idMap[id] = waterbody
+        this.map[id] = waterbody
     }
 
     _isOceanType(tileCount) {

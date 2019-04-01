@@ -6,12 +6,12 @@ import { HeightMap } from '../../lib/heightmap'
 
 const RELIEF_TABLE = (function () {
     return [
-        { height: 0, color: "#144463", name: "Abyss", isWater: true },
+        { height: 0, color: "#144463", name: "Trench", isWater: true },
         { height: 1, color: "#174e71",  name: "Deep", isWater: true },
         { height: 120,  color: "#3379a6", name: "Shallow", isWater: true },
         { height: 150, color: "#6f942b", name: "Basin" },
-        { height: 190,  color: "#31771a", name: "Plain" },
-        { height: 240, color: "#346314", name: "Hill" },
+        { height: 190,  color: "#31771a", name: "Platform" },
+        { height: 240, color: "#346314", name: "Highland" },
         { height: 254,  color: "#AAAAAA", name: "Mountain" },
         { height: 257,  color: "#EEEEEE", name: "Peak" }
     ].map((obj, i) => { obj.id = i; return obj })
@@ -84,6 +84,10 @@ export class ReliefMap {
             let relief = this.buildRelief(point, height)
             this.grid.set(point, relief)
         })
+    }
+
+    get size() {
+        return this.grid.width
     }
 
     get(point) {

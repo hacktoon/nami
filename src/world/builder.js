@@ -14,7 +14,7 @@ export default class WorldBuilder {
         this.reliefMap = new ReliefMap(size, roughness)
         this.moistureMap = new MoistureMap(size, roughness)
         this.heatMap = new HeatMap(size, .17)
-        this.waterbodyMap = new WaterbodyMap(this.world)
+        this.waterbodyMap = new WaterbodyMap(this.reliefMap, this.moistureMap, this.world)
         //this.riverMap = new RiverMap(this.world, this.waterbodyMap)
     }
 

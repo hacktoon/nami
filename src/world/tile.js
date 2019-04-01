@@ -10,17 +10,18 @@ const TYPE_TABLE = (function() {
         { color: "", name: "Lake" },
         { color: "", name: "Mangrove" },
         { color: "", name: "Swamp" },
-        { color: "", name: "Grassland" },
+        { color: "", name: "Plain" },
         { color: "", name: "Shrubland" },
         { color: "", name: "Savanna" },
+        { color: "", name: "Desert" },
         { color: "", name: "Forest" },
         { color: "", name: "Taiga" },
         { color: "", name: "Jungle" },
-        { color: "", name: "Desert" },
         { color: "", name: "Tundra" },
-        { color: "", name: "Mountain" },
-        { color: "", name: "Peak" },
-        { color: "#FFFFFF", name: "Iceberg" },
+        { color: "green", name: "Boreal forest" },
+        { color: "#DDDDDD", name: "Mountain" },
+        { color: "#EEEEEE", name: "Peak" },
+        { color: "blue", name: "Iceberg" },
         { color: "#FFFFFF", name: "Ice cap" },
     ].map((obj, i) => { obj.id = i; return obj })
 })()
@@ -30,7 +31,7 @@ window.TYPE_TABLE = TYPE_TABLE
 export default class Tile {
     constructor (point) {
         this.point = point
-        this.type = undefined
+        this.type = undefined // Tile.default
         this.lake = ""
         this.sea = ""
         this.river = ""
@@ -39,6 +40,10 @@ export default class Tile {
         this.isLand = true
         this.isWater = false
         this.state = undefined
+    }
+
+    setRelief(relief) {
+        this.relief = relief
     }
 
     setLake(lake) {
