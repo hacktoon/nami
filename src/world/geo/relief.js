@@ -9,9 +9,9 @@ const RELIEF_TABLE = (function () {
         { height: 0, color: "#144463", name: "Trench", isWater: true },
         { height: 1, color: "#174e71",  name: "Deep", isWater: true },
         { height: 120,  color: "#3379a6", name: "Shallow", isWater: true },
-        { height: 150, color: "#6f942b", name: "Basin" },
+        { height: 170, color: "#6f942b", name: "Basin" },
         { height: 190,  color: "#31771a", name: "Platform" },
-        { height: 240, color: "#346314", name: "Highland" },
+        { height: 235, color: "#346314", name: "Highland" },
         { height: 254,  color: "#AAAAAA", name: "Mountain" },
         { height: 257,  color: "#EEEEEE", name: "Peak" }
     ].map((obj, i) => { obj.id = i; return obj })
@@ -92,6 +92,10 @@ export class ReliefMap {
 
     get(point) {
         return this.grid.get(point)
+    }
+
+    iter(callback) {
+        this.grid.forEach(callback)
     }
 
     buildRelief(point, height) {

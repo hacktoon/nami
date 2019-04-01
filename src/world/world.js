@@ -15,9 +15,7 @@ export default class World {
     }
 
     iter(callback) {
-        this.grid.forEach(tile => {
-            callback(tile)
-        })
+        this.grid.forEach(callback)
     }
 
     get(point) {

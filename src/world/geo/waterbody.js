@@ -4,6 +4,8 @@ import { Grid } from '../../lib/grid'
 import { ScanlineFill } from '../../lib/flood-fill'
 import { Name } from '../../lib/name'
 
+const MIN_OCEAN_AREA_CHANCE = 8
+const MIN_SEA_AREA_CHANCE = 1
 
 const EMPTY_VALUE = 0
 const OCEAN = 0
@@ -12,15 +14,18 @@ const LAKE = 2
 
 
 export class WaterbodyMap {
-    constructor(reliefMap, moistureMap, world) {
-        this.nextId = 1
-        this.world = world
-        this.reliefMap = reliefMap
+    constructor(size, reliefMap, moistureMap) {
         this.grid = new Grid(reliefMap.size, reliefMap.size, EMPTY_VALUE)
-        this.map = {}
-        this.minOceanAreaPercentage = 8
-        this.minSeaAreaPercentage = 1
+        this.moistureMap = moistureMap
+        this.reliefMap = reliefMap
         this.riverSources = []
+        this.size = size
+        this.nextId = 1
+        this.map = {}
+
+        this.grid.forEach((_, point) => {
+            this.detect(point)
+        })
     }
 
     get(point) {
@@ -32,9 +37,9 @@ export class WaterbodyMap {
     detect(startPoint) {
         let tileCount = 0
         const isFillable = point => {
-            let tile = this.world.get(point)
+            let relief = this.reliefMap.get(point)
             let isEmpty = this.grid.get(point) == EMPTY_VALUE
-            return tile.relief.isWater && isEmpty
+            return relief.isWater && isEmpty
         }
         const onFill = point => {
             this.grid.set(point, this.nextId)
@@ -42,9 +47,8 @@ export class WaterbodyMap {
         }
 
         if (isFillable(startPoint)) {
-            new ScanlineFill(this.world.grid, startPoint, onFill, isFillable).fill()
+            new ScanlineFill(this.grid, startPoint, onFill, isFillable).fill()
             this._buildWaterbody(this.nextId++, startPoint, tileCount)
-            return
         }
     }
 
@@ -59,20 +63,19 @@ export class WaterbodyMap {
         } else if (this._isSeaType(tileCount)) {
             type = SEA
         }
-        let waterbody = new Waterbody(id, type, name, point, tileCount)
-        this.map[id] = waterbody
+        this.map[id] = new Waterbody(id, type, name, point, tileCount)
     }
 
     _isOceanType(tileCount) {
-        let totalTiles = this.world.area
+        let totalTiles = Math.pow(this.size, 2)
         let tilePercentage = (100 * tileCount) / totalTiles
-        return tilePercentage >= this.minOceanAreaPercentage
+        return tilePercentage >= MIN_OCEAN_AREA_CHANCE
     }
 
     _isSeaType(tileCount) {
-        let totalTiles = this.world.area
+        let totalTiles = Math.pow(this.size, 2)
         let tilePercentage = (100 * tileCount) / totalTiles
-        let withinPercentage = tilePercentage >= this.minSeaAreaPercentage
+        let withinPercentage = tilePercentage >= MIN_SEA_AREA_CHANCE
         return !this._isOceanType(tileCount) && withinPercentage
     }
 }

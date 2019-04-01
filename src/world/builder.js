@@ -14,7 +14,7 @@ export default class WorldBuilder {
         this.reliefMap = new ReliefMap(size, roughness)
         this.moistureMap = new MoistureMap(size, roughness)
         this.heatMap = new HeatMap(size, .17)
-        this.waterbodyMap = new WaterbodyMap(this.reliefMap, this.moistureMap, this.world)
+        this.waterbodyMap = new WaterbodyMap(size, this.reliefMap, this.moistureMap)
         //this.riverMap = new RiverMap(this.world, this.waterbodyMap)
     }
 
@@ -24,11 +24,6 @@ export default class WorldBuilder {
             tile.moisture = this.moistureMap.get(tile.point)
             tile.heat = this.heatMap.get(tile.point)
             this._buildTileClimate(tile)
-        })
-
-        // detect waterbodies and landforms
-        this.world.iter(tile => {
-            this.waterbodyMap.detect(tile.point)
         })
 
         // apply deformations
