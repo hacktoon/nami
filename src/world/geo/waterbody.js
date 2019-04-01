@@ -17,7 +17,7 @@ export class WaterbodyMap {
         this.nextId = 1
         this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
         this.idMap = {}
-        this.minOceanAreaPercentage = 10
+        this.minOceanAreaPercentage = 8
         this.minSeaAreaPercentage = 1
         this.riverSources = []
     }

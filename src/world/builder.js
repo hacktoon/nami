@@ -40,10 +40,6 @@ export default class WorldBuilder {
                     tile.setLake(waterbody)
                     tile.debug = true
                 }
-                if (waterbody.isSea) {
-
-                    tile.debug2 = true
-                }
             }
 
         })
