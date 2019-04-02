@@ -3,9 +3,17 @@
 export default class Tile {
     constructor (point) {
         this.point = point
-        this.type = Tile.OCEAN
+        this._type = Tile.OCEAN
         this.waterbody = undefined
         this.state = undefined
+    }
+
+    set type(id) {
+        this._type = TILE_TABLE[id]
+    }
+
+    get type() {
+        return this._type
     }
 
     get isLand() { return Boolean(this.waterbody) }
@@ -38,7 +46,7 @@ export default class Tile {
 
 export const TILE_TABLE = [
     { id: Tile.OCEAN, color: "#000045", name: "Ocean" },
-    { id: Tile.LITORAL, color: "#000056", name: "Litoral" },
+    { id: Tile.LITORAL, color: "#000078", name: "Litoral" },
     { id: Tile.CORAL, color: "", name: "Coral" },
     { id: Tile.BEACH, color: "", name: "Beach" },
     { id: Tile.RIVERSOURCE, color: "", name: "River source" },
@@ -46,15 +54,15 @@ export const TILE_TABLE = [
     { id: Tile.LAKE, color: "#3379a6", name: "Lake" },
     { id: Tile.MANGROVE, color: "", name: "Mangrove" },
     { id: Tile.SWAMP, color: "", name: "Swamp" },
-    { id: Tile.PLAIN, color: "", name: "Plain" },
-    { id: Tile.SHRUBLAND, color: "", name: "Shrubland" },
-    { id: Tile.SAVANNA, color: "", name: "Savanna" },
-    { id: Tile.DESERT, color: "yellow", name: "Desert" },
-    { id: Tile.FOREST, color: "", name: "Forest" },
-    { id: Tile.TAIGA, color: "", name: "Taiga" },
-    { id: Tile.JUNGLE, color: "", name: "Jungle" },
-    { id: Tile.TUNDRA, color: "", name: "Tundra" },
-    { id: Tile.BOREAL, color: "green", name: "Boreal forest" },
+    { id: Tile.PLAIN, color: "#6f942b", name: "Plain" },
+    { id: Tile.SHRUBLAND, color: "#d2ff4d", name: "Shrubland" },
+    { id: Tile.SAVANNA, color: "#e6e600", name: "Savanna" },
+    { id: Tile.DESERT, color: "#ffff99", name: "Desert" },
+    { id: Tile.FOREST, color: "#669900", name: "Forest" },
+    { id: Tile.TAIGA, color: "#009933", name: "Taiga" },
+    { id: Tile.JUNGLE, color: "#336600", name: "Jungle" },
+    { id: Tile.TUNDRA, color: "#99ff99", name: "Tundra" },
+    { id: Tile.BOREAL, color: "#b3ffb3", name: "Boreal forest" },
     { id: Tile.MOUNTAIN, color: "#DDDDDD", name: "Mountain" },
     { id: Tile.PEAK, color: "#EEEEEE", name: "Peak" },
     { id: Tile.ICEBERG, color: "blue", name: "Iceberg" },

@@ -72,6 +72,14 @@ class Relief {
     get isRiverPossible() {
         return this.data.id == 5
     }
+
+    get isShallow() {
+        return this.data.id == 2
+    }
+
+    get isMountain() {
+        return this.data.id == 6
+    }
 }
 
 

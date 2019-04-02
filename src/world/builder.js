@@ -43,13 +43,53 @@ export default class WorldBuilder {
 
     _determineTileType(tile) {
         let type = Tile.OCEAN
+        if (tile.relief.isHighest) {
+            tile.type = Tile.PEAK
+            return
+        }
+        if (tile.relief.isMountain) {
+            tile.type = Tile.MOUNTAIN
+            return
+        }
         if (tile.isWater) {
             if (tile.heat.isPolar) {
                 type = Tile.ICECAP
+            } else {
+                if (tile.relief.isShallow) {
+                    type = Tile.LITORAL
+                }
             }
         } else {
             type = Tile.PLAIN
-
+            if (tile.heat.isPolar) {
+                type = Tile.ICECAP
+            }
+            if (tile.heat.isTemperate) {
+                type = Tile.TAIGA
+                if (tile.moisture.isHighest) {
+                    type = Tile.BOREAL
+                } else if (tile.moisture.isLowest) {
+                    type = Tile.TUNDRA
+                }
+            }
+            if (tile.heat.isSubtropical) {
+                if (tile.moisture.isHighest) {
+                    type = Tile.FOREST
+                } else if (tile.moisture.isLowest) {
+                    type = Tile.DESERT
+                } else {
+                    type = Tile.SAVANNA
+                }
+            }
+            if (tile.heat.isTropical) {
+                if (tile.moisture.isHighest) {
+                    type = Tile.JUNGLE
+                }
+                if (tile.moisture.isLowest) {
+                    type = Tile.SHRUBLAND
+                }
+            }
         }
+        tile.type = type
     }
 }
