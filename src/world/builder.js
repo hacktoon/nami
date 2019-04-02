@@ -91,6 +91,8 @@ export default class WorldBuilder {
                     } else {
                         return Tile.FOREST
                     }
+                } else if (tile.moisture.isDry) {
+                    return Tile.PLAIN
                 } else if (tile.relief.isHighland) {
                     return Tile.SAVANNA
                 }
