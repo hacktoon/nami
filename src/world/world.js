@@ -21,18 +21,6 @@ export default class World {
     get(point) {
         return this.grid.get(point)
     }
-
-    getRelief(point) {
-        return this.get(point).relief
-    }
-
-    getHeat(point) {
-        return this.get(point).heat
-    }
-
-    getMoisture(point) {
-        return this.get(point).moisture
-    }
 }
 
 
