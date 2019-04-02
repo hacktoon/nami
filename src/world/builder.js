@@ -53,7 +53,9 @@ export default class WorldBuilder {
         }
         if (tile.isWater) {
             if (tile.heat.isPolar) {
-                type = Tile.ICECAP
+                if (tile.relief.isShallow) {
+                    type = Tile.ICECAP
+                }
             } else {
                 if (tile.relief.isShallow) {
                     type = Tile.LITORAL
@@ -62,7 +64,7 @@ export default class WorldBuilder {
         } else {
             type = Tile.PLAIN
             if (tile.heat.isPolar) {
-                type = Tile.ICECAP
+                type = Tile.ICEPLAIN
             }
             if (tile.heat.isTemperate) {
                 type = Tile.TAIGA
@@ -75,9 +77,14 @@ export default class WorldBuilder {
             if (tile.heat.isSubtropical) {
                 if (tile.moisture.isHighest) {
                     type = Tile.FOREST
-                } else if (tile.moisture.isLowest) {
+                }
+                if (tile.moisture.isLowest) {
                     type = Tile.DESERT
-                } else {
+                }
+                if (tile.moisture.isWet) {
+                    type = Tile.SHRUBLAND
+                }
+                if (tile.moisture.isDry) {
                     type = Tile.SAVANNA
                 }
             }
@@ -87,6 +94,7 @@ export default class WorldBuilder {
                 }
                 if (tile.moisture.isLowest) {
                     type = Tile.SHRUBLAND
+                    log(tile)
                 }
             }
         }

@@ -53,6 +53,14 @@ class Moisture {
     get isRiverPossible() {
         return this.data.id >= MIN_RIVER_POSSIBLE
     }
+
+    get isDry() {
+        return this.data.id == 1
+    }
+
+    get isWet() {
+        return this.data.id == 2
+    }
 }
 
 

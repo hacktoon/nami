@@ -41,6 +41,7 @@ export default class Tile {
     static get PEAK() { return 19 }
     static get ICEBERG() { return 20 }
     static get ICECAP() { return 21 }
+    static get ICEPLAIN() { return 22 }
 }
 
 
@@ -56,8 +57,8 @@ export const TILE_TABLE = [
     { id: Tile.SWAMP, color: "", name: "Swamp" },
     { id: Tile.PLAIN, color: "#6f942b", name: "Plain" },
     { id: Tile.SHRUBLAND, color: "#d2ff4d", name: "Shrubland" },
-    { id: Tile.SAVANNA, color: "#e6e600", name: "Savanna" },
-    { id: Tile.DESERT, color: "#ffff99", name: "Desert" },
+    { id: Tile.SAVANNA, color: "#e0cd3e", name: "Savanna" },
+    { id: Tile.DESERT, color: "#ffec84", name: "Desert" },
     { id: Tile.FOREST, color: "#669900", name: "Forest" },
     { id: Tile.TAIGA, color: "#009933", name: "Taiga" },
     { id: Tile.JUNGLE, color: "#336600", name: "Jungle" },
@@ -66,5 +67,6 @@ export const TILE_TABLE = [
     { id: Tile.MOUNTAIN, color: "#DDDDDD", name: "Mountain" },
     { id: Tile.PEAK, color: "#EEEEEE", name: "Peak" },
     { id: Tile.ICEBERG, color: "blue", name: "Iceberg" },
-    { id: Tile.ICECAP, color: "#FFFFFF", name: "Ice cap" },
+    { id: Tile.ICECAP, color: "#87bfff", name: "Ice cap" },
+    { id: Tile.ICEPLAIN, color: "#FFFFFF", name: "Ice plain" },
 ]
