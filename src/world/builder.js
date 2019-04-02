@@ -25,7 +25,7 @@ export default class WorldBuilder {
             tile.moisture = this.moistureMap.get(tile.point)
             tile.waterbody = this.waterbodyMap.get(tile.point)
             this._buildTileClimate(tile)
-            this._determineTileType(tile)
+            tile.type = this._determineTileType(tile)
         }
 
         this.world.iter(iterator)
@@ -42,62 +42,57 @@ export default class WorldBuilder {
     }
 
     _determineTileType(tile) {
-        let type = Tile.OCEAN
-        if (tile.relief.isHighest) {
-            tile.type = Tile.PEAK
-            return
-        }
-        if (tile.relief.isMountain) {
-            tile.type = Tile.MOUNTAIN
-            return
-        }
+        if (tile.relief.isHighest)
+            return Tile.PEAK
+
+        if (tile.relief.isMountain)
+            return Tile.MOUNTAIN
+
         if (tile.isWater) {
             if (tile.heat.isPolar) {
-                if (tile.relief.isShallow) {
-                    type = Tile.ICECAP
+                if (tile.relief.isShallow || tile.relief.isLowest) {
+                    return Tile.ICECAP
                 }
-            } else {
-                if (tile.relief.isShallow) {
-                    type = Tile.LITORAL
-                }
+            } else if (tile.relief.isShallow) {
+                return Tile.LITORAL
             }
+            return Tile.OCEAN
         } else {
-            type = Tile.PLAIN
             if (tile.heat.isPolar) {
-                type = Tile.ICEPLAIN
+                return Tile.ICEPLAIN
             }
             if (tile.heat.isTemperate) {
-                type = Tile.TUNDRA
                 if (tile.moisture.isHighest) {
-                    type = Tile.TAIGA
+                    return Tile.TAIGA
                 } else if (tile.moisture.isLowest) {
-                    type = Tile.BOREAL
+                    return Tile.BOREAL
                 }
+                return Tile.TUNDRA
             }
             if (tile.heat.isSubtropical) {
                 if (tile.moisture.isHighest) {
-                    type = Tile.FOREST
+                    return Tile.FOREST
                 }
                 if (tile.moisture.isLowest) {
-                    type = Tile.DESERT
+                    return Tile.DESERT
                 }
                 if (tile.moisture.isWet) {
-                    type = Tile.SHRUBLAND
+                    return Tile.SHRUBLAND
                 }
                 if (tile.moisture.isDry) {
-                    type = Tile.SAVANNA
+                    return Tile.SAVANNA
                 }
             }
             if (tile.heat.isTropical) {
                 if (tile.moisture.isHighest) {
                     if (tile.relief.isBasin || tile.relief.isPlatform) {
-                        type = Tile.JUNGLE
+                        return Tile.JUNGLE
                     } else {
-                        type = Tile.FOREST
+                        return Tile.FOREST
                     }
                 }
             }
+            return Tile.PLAIN
         }
-        tile.type = type
     }
 }
