@@ -40,8 +40,6 @@ export default class WorldBuilder {
     }
 
     _buildTileClimate(tile) {
-        if (tile.relief.isHighest)
-            tile.heat.lower(2)
         if (tile.heat.isPolar)
             tile.moisture.lower(3)
         if (tile.heat.isSubtropical)
