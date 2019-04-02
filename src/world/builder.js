@@ -67,11 +67,11 @@ export default class WorldBuilder {
                 type = Tile.ICEPLAIN
             }
             if (tile.heat.isTemperate) {
-                type = Tile.TAIGA
+                type = Tile.TUNDRA
                 if (tile.moisture.isHighest) {
-                    type = Tile.BOREAL
+                    type = Tile.TAIGA
                 } else if (tile.moisture.isLowest) {
-                    type = Tile.TUNDRA
+                    type = Tile.BOREAL
                 }
             }
             if (tile.heat.isSubtropical) {
@@ -90,11 +90,11 @@ export default class WorldBuilder {
             }
             if (tile.heat.isTropical) {
                 if (tile.moisture.isHighest) {
-                    type = Tile.JUNGLE
-                }
-                if (tile.moisture.isLowest) {
-                    type = Tile.SHRUBLAND
-                    log(tile)
+                    if (tile.relief.isBasin || tile.relief.isPlatform) {
+                        type = Tile.JUNGLE
+                    } else {
+                        type = Tile.FOREST
+                    }
                 }
             }
         }

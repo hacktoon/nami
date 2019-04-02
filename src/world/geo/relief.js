@@ -77,6 +77,14 @@ class Relief {
         return this.data.id == 2
     }
 
+    get isBasin() {
+        return this.data.id == 3
+    }
+
+    get isPlatform() {
+        return this.data.id == 4
+    }
+
     get isMountain() {
         return this.data.id == 6
     }
