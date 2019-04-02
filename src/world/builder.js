@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 import World from './world'
 import { WaterbodyMap } from './geo/waterbody'
-import { RiverMap } from './geo/river'
+import Tile from './tile'
 import { ReliefMap } from './geo/relief'
 import { HeatMap } from './climate/heat'
 import { MoistureMap } from './climate/moisture'
@@ -25,19 +25,11 @@ export default class WorldBuilder {
             tile.moisture = this.moistureMap.get(tile.point)
             tile.waterbody = this.waterbodyMap.get(tile.point)
             this._buildTileClimate(tile)
+            this._determineTileType(tile)
         }
 
         this.world.iter(iterator)
         return this.world
-    }
-
-    _setTileType(tile) {
-        if (tile.heat.isPolar)
-            tile.moisture.lower(3)
-        if (tile.heat.isSubtropical)
-            tile.moisture.lower(1)
-        if (tile.heat.isTropical)
-            tile.moisture.raise(2)
     }
 
     _buildTileClimate(tile) {
@@ -47,5 +39,17 @@ export default class WorldBuilder {
             tile.moisture.lower(1)
         if (tile.heat.isTropical)
             tile.moisture.raise(2)
+    }
+
+    _determineTileType(tile) {
+        let type = Tile.OCEAN
+        if (tile.isWater) {
+            if (tile.heat.isPolar) {
+                type = Tile.ICECAP
+            }
+        } else {
+            type = Tile.PLAIN
+
+        }
     }
 }
