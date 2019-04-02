@@ -33,15 +33,14 @@ export default class Tile {
     static get SAVANNA() { return 11 }
     static get DESERT() { return 12 }
     static get FOREST() { return 13 }
-    static get TAIGA() { return 14 }
-    static get JUNGLE() { return 15 }
-    static get TUNDRA() { return 16 }
-    static get BOREAL() { return 17 }
-    static get MOUNTAIN() { return 18 }
-    static get PEAK() { return 19 }
+    static get STEPPE() { return 14 }
+    static get TAIGA() { return 15 }
+    static get JUNGLE() { return 16 }
+    static get MOUNTAIN() { return 17 }
+    static get PEAK() { return 18 }
+    static get TUNDRA() { return 19 }
     static get ICEBERG() { return 20 }
     static get ICECAP() { return 21 }
-    static get ICEPLAIN() { return 22 }
 }
 
 
@@ -60,13 +59,12 @@ export const TILE_TABLE = [
     { id: Tile.SAVANNA, color: "#d2ff4d", name: "Savanna" },
     { id: Tile.DESERT, color: "#ffec84", name: "Desert" },
     { id: Tile.FOREST, color: "#669900", name: "Forest" },
-    { id: Tile.TAIGA, color: "#1d7756", name: "Taiga" },
+    { id: Tile.STEPPE, color: "#2aaa3d", name: "Steppe" },
+    { id: Tile.TAIGA, color: "#19633d", name: "Taiga" },
     { id: Tile.JUNGLE, color: "#336600", name: "Jungle" },
-    { id: Tile.TUNDRA, color: "#67bc88", name: "Tundra" },
-    { id: Tile.BOREAL, color: "#b3ffb3", name: "Boreal forest" },
-    { id: Tile.MOUNTAIN, color: "#DDDDDD", name: "Mountain" },
-    { id: Tile.PEAK, color: "#EEEEEE", name: "Peak" },
+    { id: Tile.MOUNTAIN, color: "#afa182", name: "Mountain" },
+    { id: Tile.PEAK, color: "#FFFFFF", name: "Peak" },
+    { id: Tile.TUNDRA, color: "#EEEEEE", name: "Tundra" },
     { id: Tile.ICEBERG, color: "blue", name: "Iceberg" },
-    { id: Tile.ICECAP, color: "#87bfff", name: "Ice cap" },
-    { id: Tile.ICEPLAIN, color: "#FFFFFF", name: "Ice plain" },
+    { id: Tile.ICECAP, color: "#87bfff", name: "Ice" },
 ]

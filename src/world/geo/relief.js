@@ -85,6 +85,10 @@ class Relief {
         return this.data.id == 4
     }
 
+    get isHighland() {
+        return this.data.id == 5
+    }
+
     get isMountain() {
         return this.data.id == 6
     }
