@@ -13,12 +13,12 @@ const MOUNTAIN = 6
 const PEAK = 7
 
 const RELIEF_TABLE = [
-    { id: TRENCH, height: 0, color: "#144463", name: "Trench"},
-    { id: DEEP, height: 1, color: "#174e71",  name: "Deep"},
-    { id: SHALLOW, height: 120,  color: "#3379a6", name: "Shallow"},
-    { id: BASIN, height: 170, color: "#6f942b", name: "Basin" },
-    { id: PLATFORM, height: 190,  color: "#31771a", name: "Platform" },
-    { id: HIGHLAND, height: 235, color: "#346314", name: "Highland" },
+    { id: TRENCH, height: 0, color: "#1a3792", name: "Trench"},
+    { id: DEEP, height: 1, color: "#1a3792",  name: "Deep"},
+    { id: SHALLOW, height: 120, color: "#3379a6", name: "Shallow"},
+    { id: BASIN, height: 170, color: "#0a5816", name: "Basin" },
+    { id: PLATFORM, height: 190, color: "#31771a", name: "Platform" },
+    { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
     { id: MOUNTAIN, height: 254,  color: "#AAAAAA", name: "Mountain" },
     { id: PEAK, height: 257,  color: "#EEEEEE", name: "Peak" }
 ]

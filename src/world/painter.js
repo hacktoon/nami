@@ -9,11 +9,11 @@ export default class WorldPainter {
     draw () {
         this.world.iter(tile => {
             let color = tile.debug ? "red" : tile.type.color
-            this.drawPoint(tile.point, color)
+            this.drawTile(tile.point, color)
         })
     }
 
-    drawPoint (point, color) {
+    drawTile (point, color) {
         let x = point.x * this.tilesize,
             y = point.y * this.tilesize
 
@@ -21,22 +21,21 @@ export default class WorldPainter {
         this.ctx.fillRect(x, y, this.tilesize, this.tilesize)
     }
 
-    drawBlackWhite () {
+    drawRelief () {
         this.world.iter(tile => {
-            let color = tile.relief.isWater ? "#FFF" : "#000"
-            this.drawPoint(tile.point, color)
+            this.drawTile(tile.point, tile.relief.color)
         })
     }
 
     drawHeat() {
         this.world.iter(tile => {
-            this.drawPoint(tile.point, tile.heat.color)
+            this.drawTile(tile.point, tile.heat.color)
         })
     }
 
     drawMoisture() {
         this.world.iter(tile => {
-            this.drawPoint(tile.point, tile.moisture.color)
+            this.drawTile(tile.point, tile.moisture.color)
         })
     }
 }
