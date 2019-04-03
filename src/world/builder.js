@@ -42,12 +42,6 @@ export default class WorldBuilder {
     }
 
     _determineTileType(tile) {
-        if (tile.relief.isHighest)
-            return Tile.PEAK
-
-        if (tile.relief.isMountain)
-            return Tile.MOUNTAIN
-
         if (tile.isWater) {
             if (tile.heat.isPolar) {
                 if (tile.relief.isShallow || tile.relief.isLowest) {
@@ -62,9 +56,6 @@ export default class WorldBuilder {
                 return Tile.TUNDRA
             }
             if (tile.heat.isTemperate) {
-                if (tile.relief.isHighland && tile.moisture.isLowest) {
-                    return Tile.TUNDRA
-                }
                 if (tile.moisture.isHighest || tile.moisture.isWet) {
                     return Tile.TAIGA
                 }
@@ -74,27 +65,30 @@ export default class WorldBuilder {
                 if (tile.moisture.isHighest || tile.relief.isBasin) {
                     return Tile.FOREST
                 }
-                if (tile.moisture.isLowest) {
-                    return Tile.DESERT
-                }
                 if (tile.moisture.isWet) {
                     return Tile.SAVANNA
                 }
                 if (tile.moisture.isDry) {
                     return Tile.SHRUBLAND
                 }
+                if (tile.moisture.isLowest) {
+                    return Tile.DESERT
+                }
             }
             if (tile.heat.isTropical) {
-                if (tile.moisture.isHighest) {
-                    if (tile.relief.isBasin || tile.relief.isPlatform) {
-                        return Tile.JUNGLE
-                    } else {
-                        return Tile.FOREST
-                    }
-                } else if (tile.moisture.isDry) {
+                if (tile.relief.isHighland)
                     return Tile.PLAIN
-                } else if (tile.relief.isHighland) {
+                if (tile.moisture.isHighest) {
+                    if (tile.relief.isBasin || tile.relief.isPlatform)
+                        return Tile.JUNGLE
+                    else
+                        return Tile.FOREST
+                } else if (tile.moisture.isWet) {
+                    return Tile.FOREST
+                } else if (tile.moisture.isDry) {
                     return Tile.SAVANNA
+                } else if (tile.moisture.isLowest) {
+                    return Tile.SHRUBLAND
                 }
             }
             return Tile.PLAIN
