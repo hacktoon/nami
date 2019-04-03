@@ -3,19 +3,25 @@ import _ from 'lodash'
 import { Grid } from '../../lib/grid';
 import { HeightMap } from '../../lib/heightmap'
 
+const TRENCH = 0
+const DEEP = 1
+const SHALLOW = 2
+const BASIN = 3
+const PLATFORM = 4
+const HIGHLAND = 5
+const MOUNTAIN = 6
+const PEAK = 7
 
-const RELIEF_TABLE = (function () {
-    return [
-        { height: 0, color: "#144463", name: "Trench", isWater: true },
-        { height: 1, color: "#174e71",  name: "Deep", isWater: true },
-        { height: 120,  color: "#3379a6", name: "Shallow", isWater: true },
-        { height: 170, color: "#6f942b", name: "Basin" },
-        { height: 190,  color: "#31771a", name: "Platform" },
-        { height: 235, color: "#346314", name: "Highland" },
-        { height: 254,  color: "#AAAAAA", name: "Mountain" },
-        { height: 257,  color: "#EEEEEE", name: "Peak" }
-    ].map((obj, i) => { obj.id = i; return obj })
-})()
+const RELIEF_TABLE = [
+    { id: TRENCH, height: 0, color: "#144463", name: "Trench"},
+    { id: DEEP, height: 1, color: "#174e71",  name: "Deep"},
+    { id: SHALLOW, height: 120,  color: "#3379a6", name: "Shallow"},
+    { id: BASIN, height: 170, color: "#6f942b", name: "Basin" },
+    { id: PLATFORM, height: 190,  color: "#31771a", name: "Platform" },
+    { id: HIGHLAND, height: 235, color: "#346314", name: "Highland" },
+    { id: MOUNTAIN, height: 254,  color: "#AAAAAA", name: "Mountain" },
+    { id: PEAK, height: 257,  color: "#EEEEEE", name: "Peak" }
+]
 
 
 class Relief {
@@ -26,8 +32,8 @@ class Relief {
     get id() { return this.data.id }
     get color () { return this.data.color }
     get name () { return this.data.name }
-    get isWater () { return this.data.isWater }
-    get isLand() { return ! this.data.isWater }
+    get isWater () { return this.data.id <= SHALLOW }
+    get isLand() { return ! this.isWater }
     get isMiddle () {
         let middle = Math.floor(RELIEF_TABLE.length / 2)
         return this.data.id == middle
@@ -53,63 +59,35 @@ class Relief {
         }
     }
 
-    isLower (relief) {
-        return this.data.id < relief.id
-    }
+    get isTrench() { return this.data.id == TRENCH }
+    get isDeep() { return this.data.id == DEEP }
+    get isShallow() { return this.data.id == SHALLOW }
+    get isBasin() { return this.data.id == BASIN }
+    get isPlatform() { return this.data.id == PLATFORM }
+    get isHighland() { return this.data.id == HIGHLAND }
+    get isMountain() { return this.data.id == MOUNTAIN }
+    get isPeak() { return this.data.id == PEAK }
 
-    isHigher(relief) {
-        return this.data.id > relief.id
-    }
-
-    get isLowest() {
-        return this.data.id == _.first(RELIEF_TABLE).id
-    }
-
-    get isHighest() {
-        return this.data.id == _.last(RELIEF_TABLE).id
-    }
-
-    get isRiverPossible() {
-        return this.data.id == 5
-    }
-
-    get isShallow() {
-        return this.data.id == 2
-    }
-
-    get isBasin() {
-        return this.data.id == 3
-    }
-
-    get isPlatform() {
-        return this.data.id == 4
-    }
-
-    get isHighland() {
-        return this.data.id == 5
-    }
-
-    get isMountain() {
-        return this.data.id == 6
-    }
+    get isRiverPossible() { return this.isHighland }
 }
 
 
 export class ReliefMap {
     constructor(size, roughness) {
         this.grid = new Grid(size, size)
-        this.gridMask = new HeightMap(size, roughness).grid
-        let heightMap = new HeightMap(size, roughness)
+        this.gridMask = new HeightMap(size, roughness)
 
-        heightMap.grid.forEach((height, point) => {
-            height = HeightFilter.smooth(heightMap.grid, point)
+        new HeightMap(size, roughness, (point, height) => {
             let relief = this.buildRelief(point, height)
             this.grid.set(point, relief)
         })
-    }
 
-    get size() {
-        return this.grid.width
+        // heightMap.grid.forEach((height, point) => {
+        //     let relief = this.buildRelief(point, height)
+        //     //height = HeightFilter.median(heightMap.grid, point)
+        //     //height = _.clamp(height, 0, size-1)
+        //     this.grid.set(point, relief)
+        // })
     }
 
     get(point) {
@@ -129,7 +107,7 @@ export class ReliefMap {
     }
 
     getReliefId(height) {
-        let id = 0
+        let id = TRENCH
         for (let reliefData of RELIEF_TABLE) {
             if (height >= reliefData.height) {
                 id = reliefData.id
@@ -148,16 +126,16 @@ export class ReliefMap {
 
     filterRelief(relief, maskRelief) {
         // remove mountains
-        if (maskRelief.id > 4) {
-            relief.level(5)
+        if (maskRelief.id > PLATFORM) {
+            relief.level(HIGHLAND)
         }
-        if (maskRelief.id == 0) {
-            relief.level(4)
+        if (maskRelief.id == TRENCH) {
+            relief.level(PLATFORM)
         }
         if (maskRelief.isMiddle) {
             relief.lower()
         }
-        if (relief.isHighest && maskRelief.id > 1) {
+        if (relief.isPeak && maskRelief.id > DEEP) {
             relief.lower()
         }
 
@@ -175,5 +153,24 @@ class HeightFilter {
             valueCount++
         });
         return Math.round(sum / valueCount)
+    }
+
+    static filter(point, adjacentPoints) {
+
+    }
+
+    static median(grid, refPoint) {
+        let values = [grid.get(refPoint)]
+        refPoint.adjacentPoints(point => {
+            values.push(grid.get(point))
+        })
+        values.sort((a, b) => a-b)
+        if (values.length % 2 == 0) {
+            let index = values.length / 2
+            return (values[index-1] + values[index]) / 2
+        } else {
+            let index = Math.floor(values.length / 2)
+            return values[index]
+        }
     }
 }

@@ -15,7 +15,7 @@ const LAKE = 2
 
 export class WaterbodyMap {
     constructor(size, reliefMap, moistureMap) {
-        this.grid = new Grid(reliefMap.size, reliefMap.size, EMPTY_VALUE)
+        this.grid = new Grid(size, size, EMPTY_VALUE)
         this.moistureMap = moistureMap
         this.reliefMap = reliefMap
         this.riverSources = []

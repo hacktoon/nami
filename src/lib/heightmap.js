@@ -12,35 +12,37 @@ export class HeightMap {
         this.size = size
         this.setInitialPoints()
 
-        for(let midSize = size - 1; midSize/2 >= 1; midSize /= 2){
+        for(let midSize = size - 1; midSize / 2 >= 1; midSize /= 2){
             let half = midSize / 2
             let scale = roughness * midSize
 
             for (let y = half; y < size-1; y += midSize) {
                 for (let x = half; x < size-1; x += midSize) {
                     let variance = Random.int(-scale, scale)
-                    let point = new Point(x, y)
-                    this.square(point, half, variance)
+                    this.square(new Point(x, y), half, variance)
                 }
             }
 
             for (let y = 0; y <= size-1; y += half) {
                 for (let x = (y + half) % midSize; x <= size-1; x += midSize) {
                     let variance = Random.int(-scale, scale)
-                    let point = new Point(x, y)
-                    this.diamond(point, half, variance)
+                    this.diamond(new Point(x, y), half, variance)
                 }
             }
         }
     }
 
+    get(point) {
+        return this.grid.get(point)
+    }
+
     setInitialPoints () {
         let maxIndex = this.size - 1
         let rand = () => Random.int(0, this.size)
-        this.setPoint(new Point(0, 0), rand())
-        this.setPoint(new Point(maxIndex, 0), rand())
-        this.setPoint(new Point(0, maxIndex), rand())
-        this.setPoint(new Point(maxIndex, maxIndex), rand())
+        this.set(new Point(0, 0), rand())
+        this.set(new Point(maxIndex, 0), rand())
+        this.set(new Point(0, maxIndex), rand())
+        this.set(new Point(maxIndex, maxIndex), rand())
     }
 
     diamond (point, midSize, offset) {
@@ -52,7 +54,7 @@ export class HeightMap {
                 new Point(x, y + midSize),      // bottom
                 new Point(x - midSize, y)       // left
             ])
-        this.setPoint(point, average + offset)
+        this.set(point, average + offset)
     }
 
     square (point, midSize, offset) {
@@ -63,11 +65,11 @@ export class HeightMap {
                 new Point(x + midSize, y - midSize),   // upper right
                 new Point(x + midSize, y + midSize),   // lower right
                 new Point(x - midSize, y + midSize)    // lower left
-            ]);
-        this.setPoint(point, average + offset)
-    };
+            ])
+        this.set(point, average + offset)
+    }
 
-    setPoint (point, height) {
+    set(point, height) {
         height = _.clamp(height, 0, this.size)
         if (this.grid.isEdge(point)) {
             let oppositeEdge = this.grid.oppositeEdge(point)
@@ -84,7 +86,7 @@ export class HeightMap {
             let midIndex = (values.length) / 2
             let first = values[midIndex - 1]
             let second = values[midIndex]
-            return Math.round((first + second) / 2)
+            return Math.floor((first + second) / 2)
         } else {
             let index = Math.floor(values.length / 2)
             return values[index]

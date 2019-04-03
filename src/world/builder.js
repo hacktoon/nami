@@ -44,7 +44,7 @@ export default class WorldBuilder {
     _determineTileType(tile) {
         if (tile.isWater) {
             if (tile.heat.isPolar) {
-                if (tile.relief.isShallow || tile.relief.isLowest) {
+                if (tile.relief.isShallow || tile.relief.isTrench) {
                     return Tile.ICECAP
                 }
             } else if (tile.relief.isShallow) {
