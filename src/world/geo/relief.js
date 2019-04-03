@@ -99,8 +99,10 @@ export class ReliefMap {
     constructor(size, roughness) {
         this.grid = new Grid(size, size)
         this.gridMask = new HeightMap(size, roughness).grid
+        let heightMap = new HeightMap(size, roughness)
 
-        new HeightMap(size, roughness, (point, height) => {
+        heightMap.grid.forEach((height, point) => {
+            height = HeightFilter.smooth(heightMap.grid, point)
             let relief = this.buildRelief(point, height)
             this.grid.set(point, relief)
         })
@@ -160,5 +162,18 @@ export class ReliefMap {
         }
 
         return relief
+    }
+}
+
+
+class HeightFilter {
+    static smooth(grid, refPoint) {
+        let sum = grid.get(refPoint)
+        let valueCount = 1
+        refPoint.adjacentPoints(point => {
+            sum += grid.get(point)
+            valueCount++
+        });
+        return Math.round(sum / valueCount)
     }
 }

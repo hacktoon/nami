@@ -62,7 +62,7 @@ export default class WorldBuilder {
                 return Tile.STEPPE
             }
             if (tile.heat.isSubtropical) {
-                if (tile.moisture.isHighest || tile.relief.isBasin) {
+                if (tile.moisture.isHighest) {
                     return Tile.FOREST
                 }
                 if (tile.moisture.isWet) {
@@ -76,22 +76,16 @@ export default class WorldBuilder {
                 }
             }
             if (tile.heat.isTropical) {
-                if (tile.relief.isHighland)
-                    return Tile.PLAIN
                 if (tile.moisture.isHighest) {
-                    if (tile.relief.isBasin || tile.relief.isPlatform)
+                    if (tile.relief.isBasin || tile.relief.isPlatform) {
                         return Tile.JUNGLE
-                    else
-                        return Tile.FOREST
-                } else if (tile.moisture.isWet) {
-                    return Tile.FOREST
-                } else if (tile.moisture.isDry) {
-                    return Tile.SAVANNA
-                } else if (tile.moisture.isLowest) {
-                    return Tile.SHRUBLAND
+                    }
                 }
+                if (tile.relief.isPlatform){
+                    return Tile.FOREST
+                }
+                return Tile.PLAIN
             }
-            return Tile.PLAIN
         }
     }
 }
