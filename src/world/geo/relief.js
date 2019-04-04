@@ -2,7 +2,8 @@ import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
-import { Direction } from '../../lib/base'
+import { Direction, Random } from '../../lib/base'
+import { debug } from 'util';
 
 const TRENCH = 0
 const DEEP = 1
@@ -20,8 +21,8 @@ const RELIEF_TABLE = [
     { id: BASIN, height: 170, color: "#0a5816", name: "Basin" },
     { id: PLATFORM, height: 190, color: "#31771a", name: "Platform" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
-    { id: MOUNTAIN, height: 254,  color: "#AAAAAA", name: "Mountain" },
-    { id: PEAK, height: 257,  color: "#EEEEEE", name: "Peak" }
+    { id: MOUNTAIN, height: 250,  color: "#AAAAAA", name: "Mountain" },
+    { id: PEAK, height: 254,  color: "#EEEEEE", name: "Peak" }
 ]
 
 
@@ -75,15 +76,17 @@ class Relief {
 
 export class ReliefMap {
     constructor(size, roughness) {
+        this.size = size
+        this.mask = new HeightMap(size, roughness)
+        this.heightMap = new HeightMap(size, roughness)
         this.grid = new Grid(size, size)
-        this.gridMask = new HeightMap(size, roughness)
 
-        new HeightMap(size, roughness, (point, height) => {
+        HeightFilter.smooth(this.heightMap)
+        this.heightMap.iter((height, point) => {
             let relief = this.buildRelief(point, height)
             this.grid.set(point, relief)
         })
-
-        this.filterMap()
+        ReliefFilter.median(this)
     }
 
     get(point) {
@@ -94,7 +97,55 @@ export class ReliefMap {
         this.grid.forEach(callback)
     }
 
+    buildRelief(point, height) {
+        let id = this.getReliefId(height)
+        let relief = new Relief(id)
+        let maskRelief = this.buildMaskRelief(point)
+
+        return this.filterRelief(relief, maskRelief)
+    }
+
+    getReliefId(height) {
+        let id = TRENCH
+        for (let reliefData of RELIEF_TABLE) {
+            if (height >= reliefData.height) {
+                id = reliefData.id
+            } else {
+                break
+            }
+        }
+        return id
+    }
+
+    buildMaskRelief(point) {
+        let height = this.mask.get(point)
+        let id = this.getReliefId(height)
+        return new Relief(id)
+    }
+
+    filterRelief(relief, maskRelief) {
+        // remove mountains
+        if (maskRelief.id > PLATFORM) {
+            relief.level(HIGHLAND)
+        }
+        if (maskRelief.id == TRENCH) {
+            relief.level(PLATFORM)
+        }
+        if (maskRelief.isMiddle) {
+            relief.lower()
+        }
+        if (relief.isPeak && maskRelief.id > DEEP) {
+            relief.lower()
+        }
+
+        return relief
+    }
+
     filterMap() {
+        const NORTH = Direction.NORTH
+        const SOUTH = Direction.SOUTH
+        const EAST = Direction.EAST
+        const WEST = Direction.WEST
         /*
             DIRECTION PATTERN
             1  2  4
@@ -103,8 +154,8 @@ export class ReliefMap {
 
             Ex: 2 + 64 = NORTH + SOUTH
         */
-       const filterByAdjacentTiles = (relief, point) => {
-           const adjacentTilesSum = 2 + 8 + 16 + 64
+        const filterByAdjacentTiles = (relief, point) => {
+            const adjacentTilesSum = NORTH + SOUTH + EAST + WEST
             let higherTileSum = 0
             let lowerTileSum = 0
 
@@ -137,7 +188,7 @@ export class ReliefMap {
             . . .
              */
             if ([totalSum - Direction.NORTH, totalSum - Direction.WEST,
-                totalSum - Direction.EAST, totalSum - Direction.SOUTH
+            totalSum - Direction.EAST, totalSum - Direction.SOUTH
             ].includes(lowerTileSum)) relief.lower()
 
             /*
@@ -166,52 +217,88 @@ export class ReliefMap {
         }
 
         this.iter((relief, point) => {
+            //filterByTilesAround(relief, point)
             filterByAdjacentTiles(relief, point)
-            filterByTilesAround(relief, point)
         })
     }
+}
 
-    buildRelief(point, height) {
-        let id = this.getReliefId(height)
-        let relief = new Relief(id)
-        let maskRelief = this.buildMaskRelief(point)
 
-        return this.filterRelief(relief, maskRelief)
+class ReliefFilter {
+    static smooth(map) {
+        let grid = new Grid(map.size, map.size)
+        map.iter((relief, refPoint) => {
+            let sum = relief.id
+            let valueCount = 1
+
+            refPoint.pointsAround(point => {
+                sum += map.get(point).id
+                valueCount++
+            })
+            let id = Math.round(sum / valueCount)
+            relief.level(id)
+            grid.set(refPoint, relief)
+
+        })
+        //map.grid = grid
     }
 
-    getReliefId(height) {
-        let id = TRENCH
-        for (let reliefData of RELIEF_TABLE) {
-            if (height >= reliefData.height) {
-                id = reliefData.id
+    static median(map) {
+        let grid = new Grid(map.size, map.size)
+        map.iter((relief, point) => {
+            let values = [relief.id]
+            point.pointsAround(pt => {
+                values.push(map.get(pt).id)
+            })
+            values.sort((a, b) => a - b)
+            let id
+            if (values.length % 2 == 0) {
+                let index = values.length / 2
+                id = (values[index - 1] + values[index]) / 2
             } else {
-                break
+                let index = Math.floor(values.length / 2)
+                id = values[index]
             }
-        }
-        return id
+            relief.level(id)
+            grid.set(point, relief)
+        })
+        map.grid = grid
+    }
+}
+
+
+
+class HeightFilter {
+    static smooth(map) {
+        let grid = new Grid(map.size, map.size)
+        map.iter((height, refPoint) => {
+            let sum = height
+            let valueCount = 1
+            refPoint.pointsAround(point => {
+                sum += map.get(point)
+                valueCount++
+            });
+            grid.set(refPoint, Math.round(sum / valueCount))
+        })
+        map.grid = grid
     }
 
-    buildMaskRelief(point) {
-        let height = this.gridMask.get(point)
-        let id = this.getReliefId(height)
-        return new Relief(id)
-    }
-
-    filterRelief(relief, maskRelief) {
-        // remove mountains
-        if (maskRelief.id > PLATFORM) {
-            relief.level(HIGHLAND)
-        }
-        if (maskRelief.id == TRENCH) {
-            relief.level(PLATFORM)
-        }
-        if (maskRelief.isMiddle) {
-            relief.lower()
-        }
-        if (relief.isPeak && maskRelief.id > DEEP) {
-            relief.lower()
-        }
-
-        return relief
+    static median(map) {
+        let grid = new Grid(map.size, map.size)
+        map.iter((height, point) => {
+            let values = [map.get(point)]
+            point.pointsAround(pt => {
+                values.push(map.get(pt))
+            })
+            values.sort((a, b) => a - b)
+            if (values.length % 2 == 0) {
+                let index = values.length / 2
+                grid.set(point, (values[index - 1] + values[index]) / 2)
+            } else {
+                let index = Math.floor(values.length / 2)
+                grid.set(point, values[index])
+            }
+        })
+        map.grid = grid
     }
 }

@@ -68,7 +68,7 @@ export class MoistureMap {
     constructor(size, roughness) {
         this.grid = new Grid(size, size)
 
-        new HeightMap(size, roughness, (point, height) => {
+        new HeightMap(size, roughness, (height, point) => {
             let moisture = this.buildMoisture(height)
             this.grid.set(point, moisture)
         })

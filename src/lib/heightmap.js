@@ -36,6 +36,10 @@ export class HeightMap {
         return this.grid.get(point)
     }
 
+    iter(callback) {
+        this.grid.forEach(callback)
+    }
+
     setInitialPoints () {
         let maxIndex = this.size - 1
         let rand = () => Random.int(0, this.size)
@@ -76,7 +80,7 @@ export class HeightMap {
             this.grid.set(oppositeEdge, height)
         }
         this.grid.set(point, height)
-        this.callback(point, height)
+        this.callback(height, point)
     }
 
     averagePoints (points) {
