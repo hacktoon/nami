@@ -2,8 +2,6 @@ import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
-import { Direction, Random } from '../../lib/base'
-import { debug } from 'util';
 
 const TRENCH = 0
 const DEEP = 1
@@ -21,8 +19,8 @@ const RELIEF_TABLE = [
     { id: BASIN, height: 170, color: "#0a5816", name: "Basin" },
     { id: PLATFORM, height: 190, color: "#31771a", name: "Platform" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
-    { id: MOUNTAIN, height: 250,  color: "#AAAAAA", name: "Mountain" },
-    { id: PEAK, height: 254,  color: "#EEEEEE", name: "Peak" }
+    { id: MOUNTAIN, height: 248,  color: "#AAAAAA", name: "Mountain" },
+    { id: PEAK, height: 256,  color: "#EEEEEE", name: "Peak" }
 ]
 
 
@@ -78,11 +76,9 @@ export class ReliefMap {
     constructor(size, roughness) {
         this.size = size
         this.mask = new HeightMap(size, roughness)
-        this.heightMap = new HeightMap(size, roughness)
         this.grid = new Grid(size, size)
 
-        HeightFilter.smooth(this.heightMap)
-        this.heightMap.iter((height, point) => {
+        new HeightMap(size, roughness, (height, point) => {
             let relief = this.buildRelief(point, height)
             this.grid.set(point, relief)
         })
@@ -100,7 +96,7 @@ export class ReliefMap {
     buildRelief(point, height) {
         let id = this.getReliefId(height)
         let relief = new Relief(id)
-        let maskRelief = this.buildMaskRelief(point)
+        let maskRelief = this.getMaskRelief(point)
 
         return this.filterRelief(relief, maskRelief)
     }
@@ -117,7 +113,7 @@ export class ReliefMap {
         return id
     }
 
-    buildMaskRelief(point) {
+    getMaskRelief(point) {
         let height = this.mask.get(point)
         let id = this.getReliefId(height)
         return new Relief(id)
@@ -140,87 +136,6 @@ export class ReliefMap {
 
         return relief
     }
-
-    filterMap() {
-        const NORTH = Direction.NORTH
-        const SOUTH = Direction.SOUTH
-        const EAST = Direction.EAST
-        const WEST = Direction.WEST
-        /*
-            DIRECTION PATTERN
-            1  2  4
-            8     16
-            32 64 128
-
-            Ex: 2 + 64 = NORTH + SOUTH
-        */
-        const filterByAdjacentTiles = (relief, point) => {
-            const adjacentTilesSum = NORTH + SOUTH + EAST + WEST
-            let higherTileSum = 0
-            let lowerTileSum = 0
-
-            point.adjacentPoints((neighborPoint, dir) => {
-                let neighborId = this.get(neighborPoint).id
-                if (neighborId > relief.id) higherTileSum += dir
-                if (neighborId < relief.id) lowerTileSum += dir
-            })
-
-            // fill one-tile holes
-            if (higherTileSum == adjacentTilesSum) relief.raise()
-            if (lowerTileSum == adjacentTilesSum) relief.lower()
-        }
-
-        const filterByTilesAround = (relief, point) => {
-            const totalSum = 255
-            let lowerTileSum = 0
-            let sameOrHigherTileSum = 0
-
-            point.pointsAround((neighborPoint, dir) => {
-                let neighborId = this.get(neighborPoint).id
-                if (neighborId < relief.id) lowerTileSum += dir
-                if (neighborId >= relief.id) sameOrHigherTileSum += dir
-            })
-
-            /*
-            remove pointy edges
-            . . .
-            . 1 1  -- lower the middle point
-            . . .
-             */
-            if ([totalSum - Direction.NORTH, totalSum - Direction.WEST,
-            totalSum - Direction.EAST, totalSum - Direction.SOUTH
-            ].includes(lowerTileSum)) relief.lower()
-
-            /*
-            remove pointy corners
-            . 1 1
-            . 1 1  -- lower the middle point
-            . . .
-             */
-            if ([
-                Direction.NORTHEAST + Direction.NORTH + Direction.EAST,
-                Direction.NORTHWEST + Direction.NORTH + Direction.WEST,
-                Direction.SOUTHEAST + Direction.SOUTH + Direction.EAST,
-                Direction.SOUTHWEST + Direction.SOUTH + Direction.WEST
-            ].includes(sameOrHigherTileSum)) relief.lower()
-
-            /*
-            remove bridges
-            . . .
-            1 1 1  -- lower the middle point
-            . . .
-             */
-            if ([
-                Direction.NORTH + Direction.SOUTH,
-                Direction.EAST + Direction.WEST,
-            ].includes(sameOrHigherTileSum)) relief.lower()
-        }
-
-        this.iter((relief, point) => {
-            //filterByTilesAround(relief, point)
-            filterByAdjacentTiles(relief, point)
-        })
-    }
 }
 
 
@@ -238,7 +153,6 @@ class ReliefFilter {
             let id = Math.round(sum / valueCount)
             relief.level(id)
             grid.set(refPoint, relief)
-
         })
         //map.grid = grid
     }
