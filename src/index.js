@@ -6,7 +6,6 @@ import {Point} from './lib/point'
 import { Random } from './lib/base';
 
 window.log = console.log.bind(console)
-window._ = _
 
 let viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
@@ -38,7 +37,6 @@ const createWorld = () => {
     let worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
 
     window.worldBuilder = worldBuilder
-    window.currentWorld = currentWorld
     window.worldPainter = worldPainter
     return currentWorld
 }
@@ -87,12 +85,13 @@ viewCanvas.addEventListener('click', e => {
 viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas),
         tile = currentWorld.get(point),
-        position = `(${point.hash()}) | ${tile.type.name}`,
+        position = ` | (${point.hash()}) | ${tile.type.name}`,
         relief = ` | Relief: ${tile.relief.name}`,
         heat = " | " + tile.heat.name,
-        moisture = " | " + tile.moisture.name
+        moisture = " | " + tile.moisture.name,
+        debug = tile.debug ? "DEBUG | " : ""
 
-    infoText.innerHTML = Random.seed + position + relief + heat + moisture
+    infoText.innerHTML = debug + Random.seed + position + relief + heat + moisture
 })
 
 viewCanvas.addEventListener('mouseout', () => {

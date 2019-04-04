@@ -1,7 +1,8 @@
 import _ from 'lodash'
 
-import { Grid } from '../../lib/grid';
+import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
+import { Direction } from '../../lib/base'
 
 const TRENCH = 0
 const DEEP = 1
@@ -13,9 +14,9 @@ const MOUNTAIN = 6
 const PEAK = 7
 
 const RELIEF_TABLE = [
-    { id: TRENCH, height: 0, color: "#1a3792", name: "Trench"},
-    { id: DEEP, height: 1, color: "#1a3792",  name: "Deep"},
-    { id: SHALLOW, height: 120, color: "#3379a6", name: "Shallow"},
+    { id: TRENCH, height: 0, color: "#000045", name: "Trench"},
+    { id: DEEP, height: 1, color: "#000045",  name: "Deep"},
+    { id: SHALLOW, height: 120, color: "#000078", name: "Shallow"},
     { id: BASIN, height: 170, color: "#0a5816", name: "Basin" },
     { id: PLATFORM, height: 190, color: "#31771a", name: "Platform" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
@@ -82,12 +83,7 @@ export class ReliefMap {
             this.grid.set(point, relief)
         })
 
-        // heightMap.grid.forEach((height, point) => {
-        //     let relief = this.buildRelief(point, height)
-        //     //height = HeightFilter.median(heightMap.grid, point)
-        //     //height = _.clamp(height, 0, size-1)
-        //     this.grid.set(point, relief)
-        // })
+        this.filterMap()
     }
 
     get(point) {
@@ -96,6 +92,67 @@ export class ReliefMap {
 
     iter(callback) {
         this.grid.forEach(callback)
+    }
+
+    filterMap() {
+        /*
+            DIRECTION PATTERN
+            1  2  4
+            8     16
+            32 64 128
+
+            Ex: 2 + 64 = NORTH + SOUTH
+        */
+        const totalSum = 255
+        const adjacentTilesSum = 2 + 8 + 16 + 64
+
+        const filterByAdjacentTiles = (relief, point) => {
+            let higherTileSum = 0
+            let lowerTileSum = 0
+            let lowerTileCount = 0
+
+            point.adjacentPoints((neighborPoint, dir) => {
+                let neighborId = this.get(neighborPoint).id
+                if (neighborId > relief.id) higherTileSum += dir
+                if (neighborId < relief.id) lowerTileSum += dir
+            })
+
+            // fill one-tile holes
+            if (higherTileSum == adjacentTilesSum) relief.raise()
+            if (lowerTileSum == adjacentTilesSum) relief.lower()
+        }
+
+        const filterByTilesAround = (relief, point) => {
+            let higherTileSum = 0
+            let lowerTileSum = 0
+            let sameTileSum = 0
+            let differentTileSum = 0
+
+            point.pointsAround((neighborPoint, dir) => {
+                let neighborId = this.get(neighborPoint).id
+                if (neighborId > relief.id) higherTileSum += dir
+                if (neighborId < relief.id) lowerTileSum += dir
+                if (neighborId == relief.id) sameTileSum += dir
+                if (neighborId != relief.id) differentTileSum += dir
+            })
+
+            /*
+            remove pointy edges
+            . . .
+            . 1 1  -- lower the middle point
+            . . .
+             */
+            if ([totalSum - Direction.NORTH,
+                totalSum - Direction.WEST,
+                totalSum - Direction.EAST,
+                totalSum - Direction.SOUTH
+            ].includes(lowerTileSum)) relief.lower()
+        }
+
+        this.iter((relief, point) => {
+            filterByAdjacentTiles(relief, point)
+            filterByTilesAround(relief, point)
+        })
     }
 
     buildRelief(point, height) {

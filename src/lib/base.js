@@ -1,59 +1,61 @@
 import _ from 'lodash'
 
 
+/*
+    pattern
+    1  2  4
+    8     16
+    32 64 128
+*/
 const DirectionNameMap = {
-    NORTH:     { code: -1,  symbol: "\u25B2" },
-    EAST:      { code: 2,  symbol: "\u25B6" },
-    SOUTH:     { code: 1, symbol: "\u25BC" },
-    WEST:      { code: -2, symbol: "\u25C0" },
-    NORTHEAST: { code: 3,  symbol: "\u25E5" },
-    NORTHWEST: { code: 4,  symbol: "\u25E4" },
-    SOUTHEAST: { code: -4, symbol: "\u25E2" },
-    SOUTHWEST: { code: -3, symbol: "\u25E3" }
+    NORTH:     { id: 2,  symbol: "\u25B2" },
+    EAST:      { id: 16,  symbol: "\u25B6" },
+    SOUTH:     { id: 64, symbol: "\u25BC" },
+    WEST:      { id: 8, symbol: "\u25C0" },
+    NORTHEAST: { id: 4,  symbol: "\u25E5" },
+    NORTHWEST: { id: 1,  symbol: "\u25E4" },
+    SOUTHEAST: { id: 128, symbol: "\u25E2" },
+    SOUTHWEST: { id: 32, symbol: "\u25E3" }
 }
 
 const DirectionIdMap = (() => {
     let _map = {}
     _.each(DirectionNameMap, (item, key) => {
         item.name = key
-        _map[item.code] = item
+        _map[item.id] = item
     })
     return _map
 })()
 
 
 export class Direction {
-    static get NORTH () { return DirectionNameMap.NORTH.code }
-    static get EAST () { return DirectionNameMap.EAST.code }
-    static get SOUTH () { return DirectionNameMap.SOUTH.code }
-    static get WEST () { return DirectionNameMap.WEST.code }
-    static get NORTHEAST () { return DirectionNameMap.NORTHEAST.code }
-    static get NORTHWEST () { return DirectionNameMap.NORTHWEST.code }
-    static get SOUTHEAST () { return DirectionNameMap.SOUTHEAST.code }
-    static get SOUTHWEST () { return DirectionNameMap.SOUTHWEST.code }
+    static get NORTH () { return DirectionNameMap.NORTH.id }
+    static get EAST () { return DirectionNameMap.EAST.id }
+    static get SOUTH () { return DirectionNameMap.SOUTH.id }
+    static get WEST () { return DirectionNameMap.WEST.id }
+    static get NORTHEAST () { return DirectionNameMap.NORTHEAST.id }
+    static get NORTHWEST () { return DirectionNameMap.NORTHWEST.id }
+    static get SOUTHEAST () { return DirectionNameMap.SOUTHEAST.id }
+    static get SOUTHWEST () { return DirectionNameMap.SOUTHWEST.id }
 
-    static getName (code) {
-        return DirectionIdMap[code].name
+    static getName (id) {
+        return DirectionIdMap[id].name
     }
 
-    static getSymbol (code) {
-        return DirectionIdMap[code].symbol
+    static getSymbol (id) {
+        return DirectionIdMap[id].symbol
     }
 
     static isHorizontal(dir) {
-        let east = dir == DirectionNameMap.EAST.code
-        let west = dir == DirectionNameMap.WEST.code
+        let east = dir == DirectionNameMap.EAST.id
+        let west = dir == DirectionNameMap.WEST.id
         return east || west
     }
 
     static isVertical(dir) {
-        let north = dir == DirectionNameMap.NORTH.code
-        let south = dir == DirectionNameMap.SOUTH.code
+        let north = dir == DirectionNameMap.NORTH.id
+        let south = dir == DirectionNameMap.SOUTH.id
         return north || south
-    }
-
-    static isOpposite (dir1, dir2) {
-        return dir1 * -1 == dir2
     }
 
     static random () {

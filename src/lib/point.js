@@ -21,12 +21,29 @@ export class Point {
 
     adjacentPoints(callback) {
         let points = [
-            new Point(this.x - 1, this.y),
-            new Point(this.x + 1, this.y),
-            new Point(this.x, this.y - 1),
-            new Point(this.x, this.y + 1)
+            [new Point(this.x - 1, this.y), Direction.WEST],
+            [new Point(this.x + 1, this.y), Direction.EAST],
+            [new Point(this.x, this.y - 1), Direction.NORTH],
+            [new Point(this.x, this.y + 1), Direction.SOUTH]
         ]
-        points.forEach(callback)
+        if (_.isFunction(callback))
+            for (let point of points) {
+                callback(point[0], point[1])
+            }
+        return points
+    }
+
+    pointsAround(callback) {
+        let points = this.adjacentPoints().concat([
+            [new Point(this.x - 1, this.y - 1), Direction.NORTHWEST],
+            [new Point(this.x + 1, this.y + 1), Direction.SOUTHEAST],
+            [new Point(this.x + 1, this.y - 1), Direction.NORTHEAST],
+            [new Point(this.x - 1, this.y + 1), Direction.SOUTHWEST]
+        ])
+        if (_.isFunction(callback))
+            for (let point of points) {
+                callback(point[0], point[1])
+            }
         return points
     }
 
@@ -63,3 +80,5 @@ export class Point {
         return deltaX + deltaY
     }
 }
+
+window.Point = Point

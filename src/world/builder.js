@@ -11,6 +11,7 @@ import { MoistureMap } from './climate/moisture'
 export default class WorldBuilder {
     constructor(size, roughness) {
         this.world = new World(size)
+        window.currentWorld = this.world
         this.reliefMap = new ReliefMap(size, roughness)
         this.heatMap = new HeatMap(size, .2)
         this.moistureMap = new MoistureMap(size, roughness)

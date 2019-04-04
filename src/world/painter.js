@@ -23,7 +23,8 @@ export default class WorldPainter {
 
     drawRelief () {
         this.world.iter(tile => {
-            this.drawTile(tile.point, tile.relief.color)
+            let color = tile.debug ? "red" : tile.relief.color
+            this.drawTile(tile.point, color)
         })
     }
 
