@@ -20,7 +20,7 @@ const RELIEF_TABLE = [
     { id: PLATFORM, height: 190, color: "#31771a", name: "Platform" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
     { id: MOUNTAIN, height: 248,  color: "#AAAAAA", name: "Mountain" },
-    { id: PEAK, height: 256,  color: "#EEEEEE", name: "Peak" }
+    { id: PEAK, height: 255,  color: "#EEEEEE", name: "Peak" }
 ]
 
 
@@ -82,7 +82,7 @@ export class ReliefMap {
             let relief = this.buildRelief(point, height)
             this.grid.set(point, relief)
         })
-        ReliefFilter.median(this)
+        ReliefFilter.smooth(this)
     }
 
     get(point) {
@@ -154,7 +154,7 @@ class ReliefFilter {
             relief.level(id)
             grid.set(refPoint, relief)
         })
-        //map.grid = grid
+        map.grid = grid
     }
 
     static median(map) {
@@ -175,43 +175,6 @@ class ReliefFilter {
             }
             relief.level(id)
             grid.set(point, relief)
-        })
-        map.grid = grid
-    }
-}
-
-
-
-class HeightFilter {
-    static smooth(map) {
-        let grid = new Grid(map.size, map.size)
-        map.iter((height, refPoint) => {
-            let sum = height
-            let valueCount = 1
-            refPoint.pointsAround(point => {
-                sum += map.get(point)
-                valueCount++
-            });
-            grid.set(refPoint, Math.round(sum / valueCount))
-        })
-        map.grid = grid
-    }
-
-    static median(map) {
-        let grid = new Grid(map.size, map.size)
-        map.iter((height, point) => {
-            let values = [map.get(point)]
-            point.pointsAround(pt => {
-                values.push(map.get(pt))
-            })
-            values.sort((a, b) => a - b)
-            if (values.length % 2 == 0) {
-                let index = values.length / 2
-                grid.set(point, (values[index - 1] + values[index]) / 2)
-            } else {
-                let index = Math.floor(values.length / 2)
-                grid.set(point, values[index])
-            }
         })
         map.grid = grid
     }

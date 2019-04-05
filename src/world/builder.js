@@ -55,9 +55,6 @@ export default class WorldBuilder {
             return Tile.STEPPE
         }
         if (tile.heat.isSubtropical) {
-            if (tile.moisture.isHighest) {
-                return Tile.FOREST
-            }
             if (tile.moisture.isWet) {
                 return Tile.SAVANNA
             }
@@ -67,6 +64,7 @@ export default class WorldBuilder {
             if (tile.moisture.isLowest) {
                 return Tile.DESERT
             }
+            return Tile.FOREST
         }
         if (tile.heat.isTropical) {
             if (tile.moisture.isHighest) {
