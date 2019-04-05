@@ -11,15 +11,14 @@ import { MoistureMap } from './climate/moisture'
 export default class WorldBuilder {
     constructor(size, roughness) {
         this.world = new World(size)
-        window.currentWorld = this.world
         this.reliefMap = new ReliefMap(size, roughness)
         this.heatMap = new HeatMap(size, .2)
         this.moistureMap = new MoistureMap(size, roughness)
         this.waterbodyMap = new WaterbodyMap(size, this.reliefMap, this.moistureMap)
-        //this.riverMap = new RiverMap(this.waterbodyMap)
     }
 
     build() {
+        window.currentWorld = this.world
         const iterator = tile => {
             tile.relief = this.reliefMap.get(tile.point)
             tile.heat = this.heatMap.get(tile.point)

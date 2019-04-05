@@ -12,6 +12,12 @@ const OCEAN = 0
 const SEA = 1
 const LAKE = 2
 
+const WATERBODY_TABLE = {
+    [OCEAN]: {color: "#0c2e63"},
+    [SEA]: {color: "#8bddd4"},
+    [LAKE]: {color: "#29f25e"},
+}
+
 
 export class WaterbodyMap {
     constructor(size, reliefMap, moistureMap) {
@@ -90,6 +96,7 @@ class Waterbody {
         this.area = area
     }
 
+    get color() { return WATERBODY_TABLE[this.type].color }
     get isOcean() { return this.type == OCEAN }
     get isSea() { return this.type == SEA }
     get isLake() { return this.type == LAKE }

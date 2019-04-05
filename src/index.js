@@ -54,6 +54,8 @@ const draw = () =>  {
         worldPainter.drawMoisture()
     } else if (view == "relief") {
         worldPainter.drawRelief()
+    } else if (view == "waterbody") {
+        worldPainter.drawWaterbody()
     } else {
         worldPainter.draw()
     }
