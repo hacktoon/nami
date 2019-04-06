@@ -10,7 +10,7 @@ const SEA = 2
 const REEF = 3
 const INNERSEA = 4
 const BASIN = 5
-const PLATFORM = 6
+const PLAIN = 6
 const HIGHLAND = 7
 const MOUNTAIN = 8
 const PEAK = 9
@@ -19,13 +19,13 @@ const RELIEF_TABLE = [
     { id: TRENCH, height: 0, color: "#000034", name: "Trench"},
     { id: OCEAN, height: 1, color: "#000045",  name: "Ocean"},
     { id: SEA, height: 120, color: "#000078", name: "Sea"},
-    { id: REEF, height: 151, color: "#4444BC", name: "Reef"},
-    { id: INNERSEA, height: 152, color: "#000078", name: "Sea" },
+    { id: REEF, height: 151, color: "#6b39c7", name: "Reef"},
+    { id: INNERSEA, height: 152, color: "#000078", name: "Inner sea" },
     { id: BASIN, height: 170, color: "#0a5816", name: "Basin" },
-    { id: PLATFORM, height: 190, color: "#31771a", name: "Platform" },
+    { id: PLAIN, height: 195, color: "#31771a", name: "Plain" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
-    { id: MOUNTAIN, height: 248,  color: "#AAAAAA", name: "Mountain" },
-    { id: PEAK, height: 255,  color: "#EEEEEE", name: "Peak" }
+    { id: MOUNTAIN, height: 250,  color: "#AAAAAA", name: "Mountain" },
+    { id: PEAK, height: 257,  color: "#DDDDDD", name: "Peak" }
 ]
 
 
@@ -39,7 +39,6 @@ export class ReliefMap {
             let relief = this.buildRelief(point, height)
             this.grid.set(point, relief)
         })
-        ReliefFilter.smooth(this)
     }
 
     get(point) {
@@ -64,11 +63,11 @@ export class ReliefMap {
 
     filterRelief(relief, maskRelief) {
         // remove mountains
-        if (maskRelief.id > PLATFORM) {
+        if (maskRelief.id > PLAIN) {
             relief.level(HIGHLAND)
         }
         if (maskRelief.id == TRENCH) {
-            relief.level(PLATFORM)
+            relief.level(PLAIN)
         }
         if (maskRelief.isMiddle) {
             relief.lower()
@@ -78,84 +77,6 @@ export class ReliefMap {
         }
 
         return relief
-    }
-}
-
-
-class ReliefFilter {
-    static smooth(map) {
-        let grid = new Grid(map.size, map.size)
-        map.iter((relief, refPoint) => {
-            let sum = relief.id
-            let valueCount = 1
-
-            refPoint.pointsAround(point => {
-                sum += map.get(point).id
-                valueCount++
-            })
-            let id = Math.round(sum / valueCount)
-            relief.level(id)
-            grid.set(refPoint, relief)
-        })
-        map.grid = grid
-    }
-
-    static median(map) {
-        let grid = new Grid(map.size, map.size)
-        map.iter((relief, point) => {
-            let values = [relief.id]
-            point.pointsAround(pt => {
-                values.push(map.get(pt).id)
-            })
-            values.sort((a, b) => a - b)
-            let id
-            if (values.length % 2 == 0) {
-                let index = values.length / 2
-                id = (values[index - 1] + values[index]) / 2
-            } else {
-                let index = Math.floor(values.length / 2)
-                id = values[index]
-            }
-            relief.level(id)
-            grid.set(point, relief)
-        })
-        map.grid = grid
-    }
-}
-
-
-class HeightFilter {
-    static smooth(map) {
-        let grid = new Grid(map.size, map.size)
-        map.iter((height, refPoint) => {
-            let sum = height
-            let valueCount = 1
-            refPoint.pointsAround(point => {
-                sum += map.get(point)
-                valueCount++
-            });
-            grid.set(refPoint, Math.round(sum / valueCount))
-        })
-        map.grid = grid
-    }
-
-    static median(map) {
-        let grid = new Grid(map.size, map.size)
-        map.iter((height, point) => {
-            let values = [map.get(point)]
-            point.pointsAround(pt => {
-                values.push(map.get(pt))
-            })
-            values.sort((a, b) => a - b)
-            if (values.length % 2 == 0) {
-                let index = values.length / 2
-                grid.set(point, (values[index - 1] + values[index]) / 2)
-            } else {
-                let index = Math.floor(values.length / 2)
-                grid.set(point, values[index])
-            }
-        })
-        map.grid = grid
     }
 }
 
@@ -214,7 +135,7 @@ class Relief {
     get isReef() { return this.data.id == REEF }
     get isSea() { return this.data.id == INNERSEA || this.data.id == SEA }
     get isBasin() { return this.data.id == BASIN }
-    get isPlatform() { return this.data.id == PLATFORM }
+    get isPlatform() { return this.data.id == PLAIN }
     get isHighland() { return this.data.id == HIGHLAND }
     get isMountain() { return this.data.id == MOUNTAIN }
     get isPeak() { return this.data.id == PEAK }

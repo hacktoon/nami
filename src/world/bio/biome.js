@@ -1,25 +1,27 @@
 
 const TRENCH = 0
-const OCEAN = 0
-const BANK = 1
-const CORAL = 2
-const BEACH = 3
-const RIVER = 4
-const LAKE = 5
-const MANGROVE = 6
-const SWAMP = 7
-const GRASS = 8
-const SAVANNA = 9
-const DESERT = 10
-const FOREST = 11
-const MOUNTAIN = 12
-const PEAK = 13
-const ICECAP = 14
-const ICEBERG = 15
+const ICECAP = 1
+const ICEBERG = 2
+const OCEAN = 3
+const BANK = 4
+const CORAL = 5
+const BEACH = 6
+const RIVER = 7
+const LAKE = 8
+const MANGROVE = 9
+const SWAMP = 10
+const GRASS = 11
+const SAVANNA = 12
+const DESERT = 13
+const FOREST = 14
+const MOUNTAIN = 15
+const PEAK = 16
 
 
 const TILE_TABLE = [
     { id: TRENCH, color: "#000034", name: "Trench" },
+    { id: ICECAP, color: "#87bfff", name: "Icecap" },
+    { id: ICEBERG, color: "#EEE", name: "Iceberg" },
     { id: OCEAN, color: "#000045", name: "Ocean" },
     { id: BANK, color: "#000078", name: "Bank" },
     { id: CORAL, color: "", name: "Coral" },
@@ -33,9 +35,7 @@ const TILE_TABLE = [
     { id: DESERT, color: "#ffec84", name: "Desert" },
     { id: FOREST, color: "#669900", name: "Forest" },
     { id: MOUNTAIN, color: "#afa182", name: "Mountain" },
-    { id: PEAK, color: "#FFF", name: "Peak" },
-    { id: ICECAP, color: "#87bfff", name: "Icecap" },
-    { id: ICEBERG, color: "#EEE", name: "Iceberg" },
+    { id: PEAK, color: "#FFF", name: "Peak" }
 ]
 
 class BiomeMap {
