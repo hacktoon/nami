@@ -7,6 +7,8 @@ import { Random } from './lib/base';
 
 window.log = console.log.bind(console)
 
+const WORLDSIZE = 257
+
 let viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
     seedInput = document.getElementById("seedInput"),
@@ -31,7 +33,7 @@ const getRoughnessInput = () => Number(roughnessInput.value)
 const createWorld = () => {
     Random.seed = getSeedInput()
     let tilesize = getTileSizeInput()
-    let worldBuilder = new WorldBuilder(257, getRoughnessInput())
+    let worldBuilder = new WorldBuilder(WORLDSIZE, getRoughnessInput())
     let currentWorld = worldBuilder.build()
     worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
 
@@ -71,7 +73,7 @@ const showTileInfo = tile => {
         return
     }
     tpl += ` | ${tile.point.hash()} | ${tile.type.name}`
-    tpl += ` | ${tile.relief.name} | ${tile.heat.name}`
+    tpl += ` | ${tile.relief.name}:${tile.relief.height} | ${tile.heat.name}`
     tpl += ` | ${tile.moisture.name}`
 
     infoText.innerHTML = tpl

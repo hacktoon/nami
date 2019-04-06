@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
+import { debug } from 'util';
 
 const TRENCH = 0
 const DEEP = 1
@@ -13,7 +14,7 @@ const MOUNTAIN = 6
 const PEAK = 7
 
 const RELIEF_TABLE = [
-    { id: TRENCH, height: 0, color: "#000045", name: "Trench"},
+    { id: TRENCH, height: 0, color: "#000034", name: "Trench"},
     { id: DEEP, height: 1, color: "#000045",  name: "Deep"},
     { id: SHALLOW, height: 120, color: "#000078", name: "Shallow"},
     { id: BASIN, height: 170, color: "#0a5816", name: "Basin" },
@@ -22,54 +23,6 @@ const RELIEF_TABLE = [
     { id: MOUNTAIN, height: 248,  color: "#AAAAAA", name: "Mountain" },
     { id: PEAK, height: 255,  color: "#EEEEEE", name: "Peak" }
 ]
-
-
-class Relief {
-    constructor(id) {
-        this.data = RELIEF_TABLE[id]
-    }
-
-    get id() { return this.data.id }
-    get color () { return this.data.color }
-    get name () { return this.data.name }
-    get isWater () { return this.data.id <= SHALLOW }
-    get isLand() { return ! this.isWater }
-    get isMiddle () {
-        let middle = Math.floor(RELIEF_TABLE.length / 2)
-        return this.data.id == middle
-    }
-
-    raise (amount=1) {
-        let newId = this.data.id + amount
-        let id = _.clamp(newId, 0, RELIEF_TABLE.length-1)
-        this.data = RELIEF_TABLE[id]
-    }
-
-    lower (amount=1) {
-        let newId = this.data.id - amount
-        let id = _.clamp(newId, 0, RELIEF_TABLE.length-1)
-        this.data = RELIEF_TABLE[id]
-    }
-
-    level(newId) {
-        let oldId = this.data.id
-        let id = _.clamp(newId, 0, RELIEF_TABLE.length - 1)
-        if (oldId > id) {
-            this.data = RELIEF_TABLE[id]
-        }
-    }
-
-    get isTrench() { return this.data.id == TRENCH }
-    get isDeep() { return this.data.id == DEEP }
-    get isShallow() { return this.data.id == SHALLOW }
-    get isBasin() { return this.data.id == BASIN }
-    get isPlatform() { return this.data.id == PLATFORM }
-    get isHighland() { return this.data.id == HIGHLAND }
-    get isMountain() { return this.data.id == MOUNTAIN }
-    get isPeak() { return this.data.id == PEAK }
-
-    get isRiverPossible() { return this.isHighland }
-}
 
 
 export class ReliefMap {
@@ -94,29 +47,15 @@ export class ReliefMap {
     }
 
     buildRelief(point, height) {
-        let id = this.getReliefId(height)
-        let relief = new Relief(id)
+        let relief = new Relief(height)
         let maskRelief = this.getMaskRelief(point)
 
         return this.filterRelief(relief, maskRelief)
     }
 
-    getReliefId(height) {
-        let id = TRENCH
-        for (let reliefData of RELIEF_TABLE) {
-            if (height >= reliefData.height) {
-                id = reliefData.id
-            } else {
-                break
-            }
-        }
-        return id
-    }
-
     getMaskRelief(point) {
         let height = this.mask.get(point)
-        let id = this.getReliefId(height)
-        return new Relief(id)
+        return new Relief(height)
     }
 
     filterRelief(relief, maskRelief) {
@@ -178,4 +117,102 @@ class ReliefFilter {
         })
         map.grid = grid
     }
+}
+
+
+class HeightFilter {
+    static smooth(map) {
+        let grid = new Grid(map.size, map.size)
+        map.iter((height, refPoint) => {
+            let sum = height
+            let valueCount = 1
+            refPoint.pointsAround(point => {
+                sum += map.get(point)
+                valueCount++
+            });
+            grid.set(refPoint, Math.round(sum / valueCount))
+        })
+        map.grid = grid
+    }
+
+    static median(map) {
+        let grid = new Grid(map.size, map.size)
+        map.iter((height, point) => {
+            let values = [map.get(point)]
+            point.pointsAround(pt => {
+                values.push(map.get(pt))
+            })
+            values.sort((a, b) => a - b)
+            if (values.length % 2 == 0) {
+                let index = values.length / 2
+                grid.set(point, (values[index - 1] + values[index]) / 2)
+            } else {
+                let index = Math.floor(values.length / 2)
+                grid.set(point, values[index])
+            }
+        })
+        map.grid = grid
+    }
+}
+
+
+class Relief {
+    constructor(height) {
+        let id = this._constructorId(height)
+        this.height = height
+        this.data = RELIEF_TABLE[id]
+    }
+
+    _constructorId(height) {
+        let id = TRENCH
+        for (let reliefData of RELIEF_TABLE) {
+            if (height >= reliefData.height) {
+                id = reliefData.id
+            } else {
+                break
+            }
+        }
+        return id
+    }
+
+    get id() { return this.data.id }
+    get color() { return this.data.color }
+    get name() { return this.data.name }
+    get isWater() { return this.data.id <= SHALLOW }
+    get isLand() { return !this.isWater }
+    get isMiddle() {
+        let middle = Math.floor(RELIEF_TABLE.length / 2)
+        return this.data.id == middle
+    }
+
+    raise(amount = 1) {
+        let newId = this.data.id + amount
+        let id = _.clamp(newId, 0, RELIEF_TABLE.length - 1)
+        this.data = RELIEF_TABLE[id]
+    }
+
+    lower(amount = 1) {
+        let newId = this.data.id - amount
+        let id = _.clamp(newId, 0, RELIEF_TABLE.length - 1)
+        this.data = RELIEF_TABLE[id]
+    }
+
+    level(newId) {
+        let oldId = this.data.id
+        let id = _.clamp(newId, 0, RELIEF_TABLE.length - 1)
+        if (oldId > id) {
+            this.data = RELIEF_TABLE[id]
+        }
+    }
+
+    get isTrench() { return this.data.id == TRENCH }
+    get isDeep() { return this.data.id == DEEP }
+    get isShallow() { return this.data.id == SHALLOW }
+    get isBasin() { return this.data.id == BASIN }
+    get isPlatform() { return this.data.id == PLATFORM }
+    get isHighland() { return this.data.id == HIGHLAND }
+    get isMountain() { return this.data.id == MOUNTAIN }
+    get isPeak() { return this.data.id == PEAK }
+
+    get isRiverPossible() { return this.isHighland }
 }
