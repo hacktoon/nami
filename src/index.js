@@ -50,7 +50,7 @@ const draw = () =>  {
         moisture:  "drawMoisture",
         relief:  "drawRelief",
         waterbody:  "drawWaterbody",
-        biome:  "draw"
+        biome:  "drawBiome"
     }
     worldPainter[map[view]]()
 }

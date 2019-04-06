@@ -6,14 +6,14 @@ export default class WorldPainter {
         this.tilesize = tilesize
     }
 
-    draw () {
+    drawBiome() {
         this.world.iter(tile => {
             let color = tile.debug ? "red" : tile.type.color
             this.drawTile(tile.point, color)
         })
     }
 
-    drawTile (point, color) {
+    drawTile(point, color) {
         let x = point.x * this.tilesize,
             y = point.y * this.tilesize
 
@@ -21,7 +21,7 @@ export default class WorldPainter {
         this.ctx.fillRect(x, y, this.tilesize, this.tilesize)
     }
 
-    drawRelief () {
+    drawRelief() {
         this.world.iter(tile => {
             let color = tile.debug ? "red" : tile.relief.color
             this.drawTile(tile.point, color)
