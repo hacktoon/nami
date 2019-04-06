@@ -1,9 +1,12 @@
 import Tile from './tile'
 import {Grid} from '../lib/grid'
+import { Name } from '../lib/name';
 
 
 export default class World {
     constructor(size) {
+        this.id = Random.seed
+        this.name = Name.createLandMassName()
         this.seed = Random.seed
         this.size = size
         this.area = size * size

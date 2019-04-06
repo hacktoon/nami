@@ -13,7 +13,8 @@ let viewCanvas = document.getElementById("viewCanvas"),
     viewInput = document.getElementById('viewInput'),
     tilesizeInput = document.getElementById("tilesizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
-    infoText = document.getElementById("infoText");
+    infoText = document.getElementById("infoText"),
+    worldPainter
 
 const getSeedInput = () => {
     let value = String(seedInput.value)
@@ -31,13 +32,9 @@ const createWorld = () => {
     Random.seed = getSeedInput()
     let tilesize = getTileSizeInput()
     let worldBuilder = new WorldBuilder(257, getRoughnessInput())
-    let t0 = performance.now()
     let currentWorld = worldBuilder.build()
-    let t1 = performance.now()
-    let worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
+    worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
 
-    window.worldBuilder = worldBuilder
-    window.worldPainter = worldPainter
     return currentWorld
 }
 
@@ -48,18 +45,15 @@ const draw = () =>  {
     viewCanvas.width = currentWorld.size * tilesize;
     viewCanvas.height = currentWorld.size * tilesize;
 
-    if (view == "heat") {
-        worldPainter.drawHeat()
-    } else if (view == "moisture") {
-        worldPainter.drawMoisture()
-    } else if (view == "relief") {
-        worldPainter.drawRelief()
-    } else if (view == "waterbody") {
-        worldPainter.drawWaterbody()
-    } else {
-        worldPainter.draw()
+    let map = {
+        heat:  "drawHeat",
+        moisture:  "drawMoisture",
+        relief:  "drawRelief",
+        waterbody:  "drawWaterbody",
+        biome:  "draw"
     }
-};
+    worldPainter[map[view]]()
+}
 
 const getCanvasMousePoint = (e, viewCanvas) => {
     let scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
@@ -68,7 +62,20 @@ const getCanvasMousePoint = (e, viewCanvas) => {
         x = _.parseInt(mouseX / getTileSizeInput()),
         y = _.parseInt(mouseY / getTileSizeInput());
     return new Point(x, y);
-};
+}
+
+const showTileInfo = tile => {
+    let tpl = `<strong>${currentWorld.name}</strong> | Seed: ${Random.seed}`
+    if (!tile) {
+        infoText.innerHTML = tpl
+        return
+    }
+    tpl += ` | ${tile.point.hash()} | ${tile.type.name}`
+    tpl += ` | ${tile.relief.name} | ${tile.heat.name}`
+    tpl += ` | ${tile.moisture.name}`
+
+    infoText.innerHTML = tpl
+}
 
 /************ EVENT HANDLING *************************/
 
@@ -77,27 +84,21 @@ viewInput.addEventListener('change', draw)
 generateButton.addEventListener('click', () => {
     createWorld()
     draw()
+    showTileInfo()
 })
 
 viewCanvas.addEventListener('click', e => {
-    // let point = getCanvasMousePoint(e, viewCanvas)
-    // draw()
+    generateButton.click()
 })
 
 viewCanvas.addEventListener('mousemove', e => {
-    let point = getCanvasMousePoint(e, viewCanvas),
-        tile = currentWorld.get(point),
-        position = ` | (${point.hash()}) | ${tile.type.name}`,
-        relief = ` | Relief: ${tile.relief.name}`,
-        heat = " | " + tile.heat.name,
-        moisture = " | " + tile.moisture.name,
-        debug = tile.debug ? "DEBUG | " : ""
-
-    infoText.innerHTML = debug + Random.seed + position + relief + heat + moisture
+    let point = getCanvasMousePoint(e, viewCanvas)
+    let tile = currentWorld.get(point)
+    showTileInfo(tile)
 })
 
-viewCanvas.addEventListener('mouseout', () => {
-    infoText.innerHTML = Random.seed + " | " + infoText.title
+viewCanvas.addEventListener('mouseout', e => {
+    showTileInfo()
 })
 
 generateButton.click()

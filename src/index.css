@@ -63,7 +63,11 @@ main { padding: 10px 20px 30px; }
 }
 
 #seedInput {
-    width: 100px;
+    width: 120px;
+}
+
+#tilesizeInput {
+    width: 30px;
 }
 
 #roughnessInput {

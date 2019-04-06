@@ -8,31 +8,29 @@
   <body>
     <header>Nami : World generator</header>
     <nav id="main-menu">
-        <label for="seedInput">Seed
-            <input id="seedInput" type="text" value="" />
-        </label>
         <label for="viewInput">View
             <select id="viewInput">
-                <option value="">World</option>
                 <option value="relief" selected>Relief</option>
-                <option value="moisture">Moisture</option>
-                <option value="heat">Heat</option>
+                <option value="biome">Biome</option>
                 <option value="waterbody">Waterbody</option>
+                <option value="heat">Heat</option>
+                <option value="moisture">Moisture</option>
             </select>
         </label>
         <label for="tilesizeInput">Tile size
-            <input id="tilesizeInput" type="number" min="1" max="10" step="1" value="2" />
+            <input id="tilesizeInput" type="number" min="1" max="10" step="1" value="3" />
         </label>
         <label for="roughnessInput">Roughness
             <input id="roughnessInput" type="number" min="1" step="0.5" value="5" />
+        </label>
+        <label for="seedInput">Seed
+            <input id="seedInput" type="text" value="" />
         </label>
         <button id="generateButton">Generate!</button>
     </nav>
 
     <main>
-        <p id="infoText" title="Move mouse over map to view details">
-            Move mouse over map to view details
-        </p>
+        <p id="infoText"></p>
         <canvas id="viewCanvas"></canvas>
     </main>
 
