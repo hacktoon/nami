@@ -80,6 +80,11 @@ const showTileInfo = tile => {
 }
 
 /************ EVENT HANDLING *************************/
+let dragControl = {
+    startPoint: undefined,
+    endPoint: undefined,
+    dragging: false,
+}
 
 viewInput.addEventListener('change', draw)
 
@@ -89,18 +94,27 @@ generateButton.addEventListener('click', () => {
     showTileInfo()
 })
 
-viewCanvas.addEventListener('click', e => {
-    generateButton.click()
+viewCanvas.addEventListener('mousedown', e => {
+    let point = getCanvasMousePoint(e, viewCanvas)
+    dragControl.startPoint = point
+    dragControl.dragging = true
 })
 
 viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas)
     let tile = currentWorld.get(point)
+    //worldPainter.draw(-100, -100)
     showTileInfo(tile)
 })
 
 viewCanvas.addEventListener('mouseout', e => {
     showTileInfo()
+})
+
+viewCanvas.addEventListener('mouseup', e => {
+    let point = getCanvasMousePoint(e, viewCanvas)
+    dragControl.endPoint = point
+    dragControl.dragging = false
 })
 
 generateButton.click()

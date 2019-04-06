@@ -134,12 +134,6 @@ export class HashMap {
     }
 }
 
-export function getChance(percentage) {
-    let value = Random.float()
-    return value <= percentage
-}
-
-
 export class Random {
     static set seed(seed) {
         Random._seed = seed
@@ -167,6 +161,11 @@ export class Random {
             while (i < len)
                 h = (h << 5) - h + string.charCodeAt(i++) | 0
         return h
+    }
+
+    static chance(percentage) {
+        let value = Random.float()
+        return value <= percentage
     }
 
     static choice(items) {

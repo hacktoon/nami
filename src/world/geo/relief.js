@@ -3,28 +3,31 @@ import _ from 'lodash'
 import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
 import { debug } from 'util';
+import { Random } from '../../lib/base';
 
 const TRENCH = 0
 const OCEAN = 1
 const SEA = 2
 const REEF = 3
 const INNERSEA = 4
-const BASIN = 5
-const PLAIN = 6
-const HIGHLAND = 7
-const MOUNTAIN = 8
-const PEAK = 9
+const BEACH = 5
+const BASIN = 6
+const PLAIN = 7
+const HIGHLAND = 8
+const MOUNTAIN = 9
+const PEAK = 10
 
 const RELIEF_TABLE = [
     { id: TRENCH, height: 0, color: "#000034", name: "Trench"},
     { id: OCEAN, height: 1, color: "#000045",  name: "Ocean"},
     { id: SEA, height: 120, color: "#000078", name: "Sea"},
-    { id: REEF, height: 151, color: "#6b39c7", name: "Reef"},
+    { id: REEF, height: 151, color: "#007587", name: "Reef"},
     { id: INNERSEA, height: 152, color: "#000078", name: "Inner sea" },
-    { id: BASIN, height: 170, color: "#0a5816", name: "Basin" },
+    { id: BEACH, height: 170, color: "#adb734", name: "Beach" },
+    { id: BASIN, height: 172, color: "#0a5816", name: "Basin" },
     { id: PLAIN, height: 195, color: "#31771a", name: "Plain" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
-    { id: MOUNTAIN, height: 250,  color: "#AAAAAA", name: "Mountain" },
+    { id: MOUNTAIN, height: 254,  color: "#AAA", name: "Mountain" },
     { id: PEAK, height: 257,  color: "#DDDDDD", name: "Peak" }
 ]
 
@@ -84,8 +87,8 @@ export class ReliefMap {
 class Relief {
     constructor(height) {
         let id = this._constructorId(height)
-        this.height = height
         this.data = RELIEF_TABLE[id]
+        this.height = height
     }
 
     _constructorId(height) {
@@ -103,7 +106,7 @@ class Relief {
     get id() { return this.data.id }
     get color() { return this.data.color }
     get name() { return this.data.name }
-    get isWater() { return this.data.id <= SEA }
+    get isWater() { return this.data.id <= INNERSEA }
     get isLand() { return !this.isWater }
     get isMiddle() {
         let middle = Math.floor(RELIEF_TABLE.length / 2)

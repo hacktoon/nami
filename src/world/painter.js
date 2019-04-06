@@ -6,6 +6,10 @@ export default class WorldPainter {
         this.tilesize = tilesize
     }
 
+    draw(xOffset, yoffset) {
+        this.drawRelief()
+    }
+
     drawBiome() {
         this.world.iter(tile => {
             let color = tile.debug ? "red" : tile.type.color
