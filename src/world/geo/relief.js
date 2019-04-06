@@ -5,18 +5,22 @@ import { HeightMap } from '../../lib/heightmap'
 import { debug } from 'util';
 
 const TRENCH = 0
-const DEEP = 1
-const SHALLOW = 2
-const BASIN = 3
-const PLATFORM = 4
-const HIGHLAND = 5
-const MOUNTAIN = 6
-const PEAK = 7
+const OCEAN = 1
+const SEA = 2
+const REEF = 3
+const INNERSEA = 4
+const BASIN = 5
+const PLATFORM = 6
+const HIGHLAND = 7
+const MOUNTAIN = 8
+const PEAK = 9
 
 const RELIEF_TABLE = [
     { id: TRENCH, height: 0, color: "#000034", name: "Trench"},
-    { id: DEEP, height: 1, color: "#000045",  name: "Deep"},
-    { id: SHALLOW, height: 120, color: "#000078", name: "Shallow"},
+    { id: OCEAN, height: 1, color: "#000045",  name: "Ocean"},
+    { id: SEA, height: 120, color: "#000078", name: "Sea"},
+    { id: REEF, height: 151, color: "#4444BC", name: "Reef"},
+    { id: INNERSEA, height: 152, color: "#000078", name: "Sea" },
     { id: BASIN, height: 170, color: "#0a5816", name: "Basin" },
     { id: PLATFORM, height: 190, color: "#31771a", name: "Platform" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
@@ -69,7 +73,7 @@ export class ReliefMap {
         if (maskRelief.isMiddle) {
             relief.lower()
         }
-        if (relief.isPeak && maskRelief.id > DEEP) {
+        if (relief.isPeak && maskRelief.id > OCEAN) {
             relief.lower()
         }
 
@@ -178,7 +182,7 @@ class Relief {
     get id() { return this.data.id }
     get color() { return this.data.color }
     get name() { return this.data.name }
-    get isWater() { return this.data.id <= SHALLOW }
+    get isWater() { return this.data.id <= SEA }
     get isLand() { return !this.isWater }
     get isMiddle() {
         let middle = Math.floor(RELIEF_TABLE.length / 2)
@@ -206,8 +210,9 @@ class Relief {
     }
 
     get isTrench() { return this.data.id == TRENCH }
-    get isDeep() { return this.data.id == DEEP }
-    get isShallow() { return this.data.id == SHALLOW }
+    get isOcean() { return this.data.id == OCEAN }
+    get isReef() { return this.data.id == REEF }
+    get isSea() { return this.data.id == INNERSEA || this.data.id == SEA }
     get isBasin() { return this.data.id == BASIN }
     get isPlatform() { return this.data.id == PLATFORM }
     get isHighland() { return this.data.id == HIGHLAND }

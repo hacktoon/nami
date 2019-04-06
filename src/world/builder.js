@@ -35,11 +35,11 @@ export default class WorldBuilder {
         this._filterTileClimate(tile)
         if (tile.isWater) {
             if (tile.heat.isPolar) {
-                if (tile.relief.isShallow || tile.relief.isTrench) {
+                if (tile.relief.isSea || tile.relief.isTrench) {
                     return Tile.ICECAP
                 }
             }
-            if (tile.relief.isShallow) {
+            if (tile.relief.isSea) {
                 return Tile.LITORAL
             }
             return Tile.OCEAN
