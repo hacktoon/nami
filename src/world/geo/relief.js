@@ -73,7 +73,7 @@ export class ReliefMap {
         if (maskRelief.isShelf) {
             relief.level(PLAIN)
         }
-        if (maskRelief.isPlain) {
+        if (maskRelief.isBasin && !relief.isBasin && !relief.isBeach && !relief.isReef) {
             relief.lower()
         }
 
@@ -135,6 +135,7 @@ class Relief {
     get isDeep() { return this.data.id == DEEP }
     get isReef() { return this.data.id == REEF }
     get isShelf() { return this.data.id == SHORE || this.data.id == SHELF }
+    get isBeach() { return this.data.id == BEACH }
     get isBasin() { return this.data.id == BASIN }
     get isPlatform() { return this.data.id == PLAIN }
     get isHighland() { return this.data.id == HIGHLAND }
