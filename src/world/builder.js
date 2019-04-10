@@ -34,12 +34,10 @@ export default class WorldBuilder {
     _determineTileType(tile) {
         this._filterTileClimate(tile)
         if (tile.isWater) {
-            if (tile.heat.isPolar) {
-                if (tile.relief.isSea || tile.relief.isAbyss) {
-                    return Tile.ICECAP
-                }
+            if (tile.heat.isPolar &&  tile.relief.isAbyss) {
+                return Tile.ICECAP
             }
-            if (tile.relief.isSea) {
+            if (tile.relief.isShallow) {
                 return Tile.LITORAL
             }
             return Tile.OCEAN
@@ -67,11 +65,11 @@ export default class WorldBuilder {
         }
         if (tile.heat.isTropical) {
             if (tile.moisture.isHighest) {
-                if (tile.relief.isBasin || tile.relief.isPlatform) {
+                if (tile.relief.isBasin || tile.relief.isPlain) {
                     return Tile.JUNGLE
                 }
             }
-            if (tile.relief.isPlatform){
+            if (tile.relief.isPlain){
                 return Tile.FOREST
             }
             return Tile.PLAIN

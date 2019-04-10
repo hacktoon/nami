@@ -137,7 +137,7 @@ class Relief {
     get isShallow() { return this.data.id == SHALLOW || this.data.id == SHELF }
     get isBeach() { return this.data.id == BEACH }
     get isBasin() { return this.data.id == BASIN }
-    get isPlatform() { return this.data.id == PLAIN }
+    get isPlain() { return this.data.id == PLAIN }
     get isHighland() { return this.data.id == HIGHLAND }
     get isMountain() { return this.data.id == MOUNTAIN }
     get isPeak() { return this.data.id == PEAK }
