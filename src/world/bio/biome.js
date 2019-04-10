@@ -1,3 +1,5 @@
+import Tile from '../tile'
+
 
 const TRENCH = 0
 const ICECAP = 1
@@ -38,8 +40,70 @@ const TILE_TABLE = [
     { id: PEAK, color: "#FFF", name: "Peak" }
 ]
 
-class BiomeMap {
 
+export class BiomeMap {
+    constructor(reliefMap, moistureMap, heatMap, waterbodyMap) {
+        this.reliefMap = reliefMap
+        this.heatMap = heatMap
+        this.moistureMap = moistureMap
+        this.waterbodyMap = waterbodyMap
+    }
+
+    get(point) {
+        let relief = this.reliefMap.get(point)
+        let heat = this.heatMap.get(point)
+        let moisture = this.moistureMap.get(point)
+        let waterbody = this.waterbodyMap.get(point)
+
+        if (heat.isPolar)
+            moisture.lower(3)
+        if (heat.isSubtropical)
+            moisture.lower(1)
+        if (heat.isTropical)
+            moisture.raise(2)
+
+        if (relief.isWater) {
+            if (heat.isPolar && relief.isAbyss) {
+                return Tile.ICECAP
+            }
+            if (relief.isShallow) {
+                return Tile.LITORAL
+            }
+            return Tile.OCEAN
+        }
+        if (heat.isPolar) {
+            return Tile.TUNDRA
+        }
+        if (heat.isTemperate) {
+            if (moisture.isHighest || moisture.isWet) {
+                return Tile.TAIGA
+            }
+            return Tile.STEPPE
+        }
+        if (heat.isSubtropical) {
+            if (moisture.isWet) {
+                return Tile.SAVANNA
+            }
+            if (moisture.isDry) {
+                return Tile.SHRUBLAND
+            }
+            if (moisture.isLowest) {
+                return Tile.DESERT
+            }
+            return Tile.FOREST
+        }
+        if (heat.isTropical) {
+            if (moisture.isHighest) {
+                if (relief.isBasin || relief.isPlain) {
+                    return Tile.JUNGLE
+                }
+            }
+            if (relief.isPlain) {
+                return Tile.FOREST
+            }
+            return Tile.PLAIN
+        }
+    }
 }
 
 

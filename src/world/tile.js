@@ -3,17 +3,9 @@
 export default class Tile {
     constructor (point) {
         this.point = point
-        this._type = Tile.OCEAN
         this.waterbody = undefined
+        this.biome = undefined
         this.state = undefined
-    }
-
-    set type(id) {
-        this._type = TILE_TABLE[id]
-    }
-
-    get type() {
-        return this._type
     }
 
     get isLand() { return Boolean(this.waterbody) }
