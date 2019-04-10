@@ -32,9 +32,9 @@ const RELIEF_TABLE = [
 
 export class ReliefMap {
     constructor(size, roughness) {
-        this.size = size
         this.mask = new HeightMap(size, roughness)
         this.grid = new Grid(size, size)
+        this.size = size
 
         new HeightMap(size, roughness, (height, point) => {
             let relief = this.buildRelief(point, height)

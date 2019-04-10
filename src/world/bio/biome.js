@@ -1,11 +1,11 @@
 import Tile from '../tile'
 
 
-const TRENCH = 0
+const ABYSS = 0
 const ICECAP = 1
 const ICEBERG = 2
 const OCEAN = 3
-const BANK = 4
+const SEA = 4
 const CORAL = 5
 const BEACH = 6
 const RIVER = 7
@@ -21,50 +21,23 @@ const PEAK = 16
 
 
 const BIOME_TABLE = [
-    { id: TRENCH, color: "#000034", name: "Trench" },
+    { id: ABYSS, color: "#000034", name: "Abyss" },
     { id: ICECAP, color: "#87bfff", name: "Icecap" },
     { id: ICEBERG, color: "#EEE", name: "Iceberg" },
     { id: OCEAN, color: "#000045", name: "Ocean" },
-    { id: BANK, color: "#000078", name: "Bank" },
-    { id: CORAL, color: "", name: "Coral" },
-    { id: BEACH, color: "", name: "Beach" },
-    { id: RIVER, color: "", name: "River" },
+    { id: SEA, color: "#000078", name: "Sea" },
+    { id: CORAL, color: "#007587", name: "Coral" },
+    { id: BEACH, color: "#adb734", name: "Beach" },
+    { id: RIVER, color: "3379a6", name: "River" },
     { id: LAKE, color: "#3379a6", name: "Lake" },
-    { id: MANGROVE, color: "", name: "Mangrove" },
-    { id: SWAMP, color: "", name: "Swamp" },
+    { id: MANGROVE, color: "#0a5816", name: "Mangrove" },
+    { id: SWAMP, color: "#0a5816", name: "Swamp" },
     { id: GRASS, color: "#91c13a", name: "Grass" },
     { id: SAVANNA, color: "#d2ff4d", name: "Savanna" },
     { id: DESERT, color: "#ffec84", name: "Desert" },
     { id: FOREST, color: "#669900", name: "Forest" },
     { id: MOUNTAIN, color: "#afa182", name: "Mountain" },
-    { id: PEAK, color: "#FFF", name: "Peak" }
-]
-
-
-
-const TILE_TABLE = [
-    { id: Tile.OCEAN, color: "#000045", name: "Ocean" },
-    { id: Tile.LITORAL, color: "#000078", name: "Litoral" },
-    { id: Tile.CORAL, color: "", name: "Coral" },
-    { id: Tile.BEACH, color: "", name: "Beach" },
-    { id: Tile.RIVERSOURCE, color: "", name: "River source" },
-    { id: Tile.RIVER, color: "", name: "River" },
-    { id: Tile.LAKE, color: "#3379a6", name: "Lake" },
-    { id: Tile.MANGROVE, color: "", name: "Mangrove" },
-    { id: Tile.SWAMP, color: "", name: "Swamp" },
-    { id: Tile.PLAIN, color: "#91c13a", name: "Plain" },
-    { id: Tile.SHRUBLAND, color: "#e0cd3e", name: "Shrubland" },
-    { id: Tile.SAVANNA, color: "#d2ff4d", name: "Savanna" },
-    { id: Tile.DESERT, color: "#ffec84", name: "Desert" },
-    { id: Tile.FOREST, color: "#669900", name: "Forest" },
-    { id: Tile.STEPPE, color: "#2aaa3d", name: "Steppe" },
-    { id: Tile.TAIGA, color: "#19633d", name: "Taiga" },
-    { id: Tile.JUNGLE, color: "#336600", name: "Jungle" },
-    { id: Tile.MOUNTAIN, color: "#afa182", name: "Mountain" },
-    { id: Tile.PEAK, color: "#FFF", name: "Peak" },
-    { id: Tile.TUNDRA, color: "#E6E6E6", name: "Tundra" },
-    { id: Tile.ICEBERG, color: "blue", name: "Iceberg" },
-    { id: Tile.ICECAP, color: "#87bfff", name: "Ice" },
+    { id: PEAK, color: "#EEEEEE", name: "Peak" }
 ]
 
 
@@ -79,7 +52,7 @@ export class BiomeMap {
 
     get(point) {
         let type = this.getTileType(point)
-        return TILE_TABLE[type]
+        return BIOME_TABLE[type]
     }
 
     getTileType(point) {
@@ -95,46 +68,49 @@ export class BiomeMap {
         if (heat.isTropical)
             moisture.raise(2)
 
-        if (relief.isWater) {
+        if (waterbody) {
             if (heat.isPolar && relief.isAbyss) {
-                return Tile.ICECAP
+                return ICECAP
             }
-            if (relief.isShallow) {
-                return Tile.LITORAL
+            if (waterbody.isLake) {
+                return LAKE
             }
-            return Tile.OCEAN
+            if (waterbody.isSea) {
+                return SEA
+            }
+            return OCEAN
         }
         if (heat.isPolar) {
-            return Tile.TUNDRA
+            return GRASS
         }
         if (heat.isTemperate) {
             if (moisture.isHighest || moisture.isWet) {
-                return Tile.TAIGA
+                return FOREST
             }
-            return Tile.STEPPE
+            return GRASS
         }
         if (heat.isSubtropical) {
             if (moisture.isWet) {
-                return Tile.SAVANNA
+                return SAVANNA
             }
             if (moisture.isDry) {
-                return Tile.SHRUBLAND
+                return GRASS
             }
             if (moisture.isLowest) {
-                return Tile.DESERT
+                return DESERT
             }
-            return Tile.FOREST
+            return FOREST
         }
         if (heat.isTropical) {
             if (moisture.isHighest) {
                 if (relief.isBasin || relief.isPlain) {
-                    return Tile.JUNGLE
+                    return FOREST
                 }
             }
             if (relief.isPlain) {
-                return Tile.FOREST
+                return FOREST
             }
-            return Tile.PLAIN
+            return GRASS
         }
     }
 }
