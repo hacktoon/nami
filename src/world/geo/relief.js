@@ -22,7 +22,7 @@ const RELIEF_TABLE = [
     { id: REEF, height: 151, color: "#007587", name: "Reef"},
     { id: SHALLOW, height: 153, color: "#000078", name: "Shallow" },
     { id: BEACH, height: 170, color: "#adb734", name: "Beach" },
-    { id: BASIN, height: 178, color: "#0a5816", name: "Basin" },
+    { id: BASIN, height: 175, color: "#0a5816", name: "Basin" },
     { id: PLAIN, height: 198, color: "#31771a", name: "Plain" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
     { id: MOUNTAIN, height: 254,  color: "#AAA", name: "Mountain" },
