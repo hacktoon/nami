@@ -8,25 +8,23 @@ const DEEP = 1
 const SHELF = 2
 const REEF = 3
 const SHALLOW = 4
-const BEACH = 5
-const BASIN = 6
-const PLAIN = 7
-const HIGHLAND = 8
-const MOUNTAIN = 9
-const PEAK = 10
+const BASIN = 5
+const PLAIN = 6
+const HIGHLAND = 7
+const MOUNTAIN = 8
+const PEAK = 9
 
 const RELIEF_TABLE = [
     { id: ABYSS, height: 0, color: "#000034", name: "Abyss"},
     { id: DEEP, height: 20, color: "#000045",  name: "Deep"},
     { id: SHELF, height: 115, color: "#000078", name: "Shelf"},
-    { id: REEF, height: 151, color: "#007587", name: "Reef"},
+    { id: REEF, height: 152, color: "#007587", name: "Reef"},
     { id: SHALLOW, height: 153, color: "#000078", name: "Shallow" },
-    { id: BEACH, height: 170, color: "#adb734", name: "Beach" },
     { id: BASIN, height: 175, color: "#0a5816", name: "Basin" },
     { id: PLAIN, height: 198, color: "#31771a", name: "Plain" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
-    { id: MOUNTAIN, height: 254,  color: "#AAA", name: "Mountain" },
-    { id: PEAK, height: 257,  color: "#DDDDDD", name: "Peak" }
+    { id: MOUNTAIN, height: 254,  color: "#888", name: "Mountain" },
+    { id: PEAK, height: 257,  color: "#CCC", name: "Peak" }
 ]
 
 
@@ -73,7 +71,7 @@ export class ReliefMap {
         if (maskRelief.isShallow) {
             relief.level(PLAIN)
         }
-        if (maskRelief.isBasin && !relief.isBasin && !relief.isBeach && !relief.isReef) {
+        if (maskRelief.isBasin && !relief.isBasin && !relief.isReef) {
             relief.lower()
         }
 
@@ -135,7 +133,6 @@ class Relief {
     get isDeep() { return this.data.id == DEEP }
     get isReef() { return this.data.id == REEF }
     get isShallow() { return this.data.id == SHALLOW || this.data.id == SHELF }
-    get isBeach() { return this.data.id == BEACH }
     get isBasin() { return this.data.id == BASIN }
     get isPlain() { return this.data.id == PLAIN }
     get isHighland() { return this.data.id == HIGHLAND }
