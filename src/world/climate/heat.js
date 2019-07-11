@@ -4,26 +4,30 @@ import {Grid} from '../../lib/grid'
 import {MidpointDisplacement} from '../../lib/heightmap'
 import {Point} from '../../lib/point'
 
-const POLAR = 0
-const TEMPERATE = 1
-const SUBTROPICAL = 2
-const TROPICAL = 3
+const ARCTIC = 0
+const SUBARCTIC = 1
+const TEMPERATE = 2
+const SUBTROPICAL = 3
+const TROPICAL = 4
 
 const ZONE_TABLE = [
-    { id: 0, heatId: POLAR,         y: 15 },
-    { id: 1, heatId: TEMPERATE,     y: 60 },
-    { id: 2, heatId: SUBTROPICAL,   y: 96 },
-    { id: 3, heatId: TROPICAL,      y: 160 },
-    { id: 4, heatId: SUBTROPICAL,   y: 196 },
-    { id: 5, heatId: TEMPERATE,     y: 241 },
-    { id: 6, heatId: POLAR,         y: 256 }
+    { id: 0, heatId: ARCTIC,        y: 10 },
+    { id: 1, heatId: SUBARCTIC,     y: 15 },
+    { id: 2, heatId: TEMPERATE,     y: 60 },
+    { id: 3, heatId: SUBTROPICAL,   y: 96 },
+    { id: 4, heatId: TROPICAL,      y: 160 },
+    { id: 5, heatId: SUBTROPICAL,   y: 196 },
+    { id: 6, heatId: TEMPERATE,     y: 241 },
+    { id: 7, heatId: SUBARCTIC,     y: 251 },
+    { id: 8, heatId: ARCTIC,        y: 256 }
 ]
 
 const HEAT_TABLE = [
-    { id: POLAR, value: 0, color: "white",  name: "Polar" },
-    { id: TEMPERATE, value: 1, color: "blue",   name: "Temperate" },
-    { id: SUBTROPICAL, value: 2, color: "yellow", name: "Subtropical" },
-    { id: TROPICAL, value: 3, color: "red",    name: "Tropical" }
+    { id: ARCTIC, value: 0, color: "white",  name: "Arctic" },
+    { id: SUBARCTIC, value: 1, color: "gray",  name: "Subarctic" },
+    { id: TEMPERATE, value: 2, color: "blue",   name: "Temperate" },
+    { id: SUBTROPICAL, value: 3, color: "yellow", name: "Subtropical" },
+    { id: TROPICAL, value: 4, color: "red",    name: "Tropical" }
 ]
 
 
@@ -54,11 +58,15 @@ class Heat {
     }
 
     static getColdest() {
-        return HEAT_TABLE[POLAR]
+        return HEAT_TABLE[ARCTIC]
     }
 
-    get isPolar() {
-        return this.data.id == POLAR
+    get isArctic() {
+        return this.data.id == ARCTIC
+    }
+
+    get isSubarctic() {
+        return this.data.id == SUBARCTIC
     }
 
     get isTemperate() {

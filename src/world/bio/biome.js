@@ -61,7 +61,7 @@ export class BiomeMap {
         let moisture = this.moistureMap.get(point)
         let waterbody = this.waterbodyMap.get(point)
 
-        if (heat.isPolar)
+        if (heat.isArctic || heat.isSubarctic)
             moisture.lower(3)
         if (heat.isSubtropical)
             moisture.lower(1)
@@ -69,7 +69,7 @@ export class BiomeMap {
             moisture.raise(2)
 
         if (waterbody) {
-            if (heat.isPolar && relief.isAbyss) {
+            if (heat.isArctic && relief.isAbyss) {
                 return ICECAP
             }
             if (waterbody.isLake) {
@@ -80,7 +80,7 @@ export class BiomeMap {
             }
             return OCEAN
         }
-        if (heat.isPolar) {
+        if (heat.isArctic || heat.isSubarctic) {
             return GRASS
         }
         if (heat.isTemperate) {
