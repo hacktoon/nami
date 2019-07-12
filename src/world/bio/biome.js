@@ -70,12 +70,16 @@ export class BiomeMap {
         let waterbody = this.waterbodyMap.get(point)
 
         if (waterbody) {
-            if (heat.isArctic && (relief.isAbyss || relief.isShallow)) {
+            const isWater = relief.isAbyss || relief.isShallow || relief.isReef
+            if (heat.isArctic && isWater) {
                 return ICE
             }
             if (waterbody.isLake) return LAKE
             return OCEAN
         }
+
+        if (relief.isPeak) return PEAK
+        if (relief.isMountain) return MOUNTAIN
 
         if (heat.isArctic) return TUNDRA
 
