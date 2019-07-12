@@ -7,7 +7,6 @@ import { Point } from '../../lib/point';
 import { Random } from '../../lib/base';
 
 
-const RIVER_CHANCE = 0.2
 const EMPTY_VALUE = 0
 
 
@@ -27,7 +26,6 @@ export class RiverMap {
     }
 
     detect(point) {
-        let tile = this.world.get(point)
         let isProperPoint = this._isValidNeighborhood(point)
         let chance = this._isIsolated(point)
 
