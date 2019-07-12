@@ -81,7 +81,10 @@ export class BiomeMap {
         if (relief.isPeak) return PEAK
         if (relief.isMountain) return MOUNTAIN
 
-        if (heat.isArctic) return TUNDRA
+        if (heat.isArctic) {
+            if (moisture.isHighest || moisture.isWet) return ICE
+            return TUNDRA
+        }
 
         if (heat.isSubarctic) {
             if (moisture.isHighest || moisture.isWet) return BOREAL_FOREST
