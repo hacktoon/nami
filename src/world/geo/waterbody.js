@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
-import { ScanlineFill } from '../../lib/flood-fill'
+import { ScanlineFill8 } from '../../lib/flood-fill'
 import { Name } from '../../lib/name'
 
 const MIN_OCEAN_AREA_CHANCE = 8
@@ -53,7 +53,7 @@ export class WaterbodyMap {
         }
 
         if (isFillable(startPoint)) {
-            new ScanlineFill(this.grid, startPoint, onFill, isFillable).fill()
+            new ScanlineFill8(this.grid, startPoint, onFill, isFillable).fill()
             this._buildWaterbody(this.nextId++, startPoint, tileCount)
         }
     }
