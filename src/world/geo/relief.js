@@ -15,16 +15,16 @@ const MOUNTAIN = 8
 const PEAK = 9
 
 const RELIEF_TABLE = [
-    { id: ABYSS, height: 0, color: "#000034", name: "Abyss"},
-    { id: DEEP, height: 20, color: "#000045",  name: "Deep"},
-    { id: SHELF, height: 115, color: "#000078", name: "Shelf"},
-    { id: REEF, height: 152, color: "#007587", name: "Reef"},
-    { id: SHALLOW, height: 153, color: "#000078", name: "Shallow" },
-    { id: BASIN, height: 175, color: "#0a5816", name: "Basin" },
-    { id: PLAIN, height: 198, color: "#31771a", name: "Plain" },
+    { id: ABYSS,    height: 0,   color: "#000034", name: "Abyss" },
+    { id: DEEP,     height: 20,  color: "#000045", name: "Deep" },
+    { id: SHELF,    height: 115, color: "#000078", name: "Shelf" },
+    { id: REEF,     height: 152, color: "#007587", name: "Reef" },
+    { id: SHALLOW,  height: 153, color: "#000078", name: "Shallow" },
+    { id: BASIN,    height: 175, color: "#0a5816", name: "Basin" },
+    { id: PLAIN,    height: 198, color: "#31771a", name: "Plain" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
-    { id: MOUNTAIN, height: 254,  color: "#888", name: "Mountain" },
-    { id: PEAK, height: 257,  color: "#CCC", name: "Peak" }
+    { id: MOUNTAIN, height: 254, color: "#888888", name: "Mountain" },
+    { id: PEAK,     height: 257, color: "#CCCCCC", name: "Peak" }
 ]
 
 
@@ -38,14 +38,6 @@ export class ReliefMap {
             let relief = this.buildRelief(point, height)
             this.grid.set(point, relief)
         })
-    }
-
-    get(point) {
-        return this.grid.get(point)
-    }
-
-    iter(callback) {
-        this.grid.forEach(callback)
     }
 
     buildRelief(point, height) {
@@ -77,6 +69,14 @@ export class ReliefMap {
 
         return relief
     }
+
+    get(point) {
+        return this.grid.get(point)
+    }
+
+    iter(callback) {
+        this.grid.forEach(callback)
+    }
 }
 
 
@@ -104,10 +104,6 @@ class Relief {
     get name() { return this.data.name }
     get isWater() { return this.data.id <= SHALLOW }
     get isLand() { return !this.isWater }
-    get isMiddle() {
-        let middle = Math.floor(RELIEF_TABLE.length / 2)
-        return this.data.id == middle
-    }
 
     raise(amount = 1) {
         let newId = this.data.id + amount
