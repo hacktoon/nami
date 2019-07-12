@@ -138,6 +138,4 @@ class Relief {
     get isHighland() { return this.data.id == HIGHLAND }
     get isMountain() { return this.data.id == MOUNTAIN }
     get isPeak() { return this.data.id == PEAK }
-
-    get isRiverPossible() { return this.isHighland }
 }

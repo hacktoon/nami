@@ -4,7 +4,6 @@ import { Grid } from '../../lib/grid';
 import { HeightMap } from '../../lib/heightmap'
 
 
-const MIN_RIVER_POSSIBLE = 2
 const MOISTURE_TABLE = [
     { id: 0, height: 0, color: "#19FFFF", name: "Very dry" },
     { id: 1, height: 30, color: "#00D5FF", name: "Dry" },
@@ -41,10 +40,6 @@ class Moisture {
 
     isHigher (moisture) {
         return this.data.id > moisture.id
-    }
-
-    get isRiverPossible() {
-        return this.data.id >= MIN_RIVER_POSSIBLE
     }
 
     get isLowest() {

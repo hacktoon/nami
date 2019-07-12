@@ -29,11 +29,9 @@ export class RiverMap {
     detect(point) {
         let tile = this.world.get(point)
         let isProperPoint = this._isValidNeighborhood(point)
-        let isElevated = tile.relief.isRiverPossible
-        let isWetEnough = tile.moisture.isRiverPossible
         let chance = this._isIsolated(point)
 
-        if(chance && isElevated && isProperPoint && isWetEnough) {
+        if(chance && isProperPoint) {
             this.buildRiver(point)
         }
     }
