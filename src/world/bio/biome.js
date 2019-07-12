@@ -75,6 +75,7 @@ export class BiomeMap {
                 return ICE
             }
             if (waterbody.isLake) return LAKE
+            if (waterbody.isSea) return LAKE
             return OCEAN
         }
 
