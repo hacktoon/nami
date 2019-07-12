@@ -86,12 +86,14 @@ export class BiomeMap {
 
         if (heat.isTemperate) {
             if (moisture.isHighest || moisture.isWet) return TEMPERATE_FOREST
+            if (moisture.isSeasonal) return WOODLANDS
             return GRASSLANDS
         }
 
         if (heat.isSubtropical) {
             if (moisture.isHighest) return RAINFOREST
             if (moisture.isWet) return SAVANNA
+            if (moisture.isSeasonal) return SHRUBLAND
             if (moisture.isDry) return SHRUBLAND
             if (moisture.isLowest) return DESERT
         }
@@ -99,6 +101,7 @@ export class BiomeMap {
         if (heat.isTropical) {
             if (moisture.isHighest) return JUNGLE
             if (moisture.isWet) return RAINFOREST
+            if (moisture.isSeasonal) return SAVANNA
             if (moisture.isDry) return SHRUBLAND
             if (moisture.isLowest) return DESERT
         }

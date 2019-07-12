@@ -8,8 +8,9 @@ const MIN_RIVER_POSSIBLE = 2
 const MOISTURE_TABLE = [
     { id: 0, height: 0, color: "#19FFFF", name: "Very dry" },
     { id: 1, height: 30, color: "#00D5FF", name: "Dry" },
-    { id: 2, height: 90, color: "#00AAFF", name: "Wet" },
-    { id: 3, height: 210, color: "#0080FF", name: "Very wet" }
+    { id: 2, height: 90, color: "#00ffbc", name: "Seasonal" },
+    { id: 3, height: 150, color: "#00AAFF", name: "Wet" },
+    { id: 4, height: 210, color: "#0080FF", name: "Very wet" }
 ]
 
 
@@ -42,24 +43,28 @@ class Moisture {
         return this.data.id > moisture.id
     }
 
-    get isLowest() {
-        return this.data.id == _.first(MOISTURE_TABLE).id
-    }
-
-    get isHighest() {
-        return this.data.id == _.last(MOISTURE_TABLE).id
-    }
-
     get isRiverPossible() {
         return this.data.id >= MIN_RIVER_POSSIBLE
+    }
+
+    get isLowest() {
+        return this.data.id == _.first(MOISTURE_TABLE).id
     }
 
     get isDry() {
         return this.data.id == 1
     }
 
-    get isWet() {
+    get isSeasonal() {
         return this.data.id == 2
+    }
+
+    get isWet() {
+        return this.data.id == 3
+    }
+
+    get isHighest() {
+        return this.data.id == _.last(MOISTURE_TABLE).id
     }
 }
 
