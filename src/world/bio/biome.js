@@ -71,11 +71,8 @@ export class BiomeMap {
 
         if (waterbody) {
             const isWater = relief.isAbyss || relief.isShallow || relief.isReef
-            if (heat.isArctic && isWater) {
-                return ICE
-            }
-            if (waterbody.isLake) return LAKE
-            if (waterbody.isSea) return LAKE
+            if (heat.isArctic && isWater) return ICE
+            if (waterbody.isLake || waterbody.isSea) return LAKE
             return OCEAN
         }
 
