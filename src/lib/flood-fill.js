@@ -65,16 +65,16 @@ export class ScanlineFill {
 
     createRange(point) {
         this.rangeQueue.push({
-            point: this.detectRangeStart(point),
+            point: this.findRangeStart(point),
             canCheckAbove: true,
             canCheckBelow: true
         })
     }
 
-    detectRangeStart(point) {
-        let currentPoint = point
+    findRangeStart(originPoint) {
+        let currentPoint = originPoint
         let nextPoint = this.grid.wrap(Point.atWest(currentPoint))
-        while (this.isFillable(nextPoint) && nextPoint.x != point.x) {
+        while (this.isFillable(nextPoint) && nextPoint.x != originPoint.x) {
             currentPoint = nextPoint
             nextPoint = this.grid.wrap(Point.atWest(nextPoint))
         }
@@ -105,14 +105,14 @@ export class ScanlineFill {
 
         while (this.isFillable(point)) {
             this.onFill(point)
-            this.detectRangeAbove(point, range)
-            this.detectRangeBelow(point, range)
+            this.detectRangeAbove(Point.atNorth(point), range)
+            this.detectRangeBelow(Point.atSouth(point), range)
             point = this.grid.wrap(Point.atEast(point))
         }
     }
 
     detectRangeAbove(referencePoint, referenceRange) {
-        let pointAbove = this.grid.wrap(Point.atNorth(referencePoint))
+        let pointAbove = this.grid.wrap(referencePoint)
         if (this.isFillable(pointAbove)) {
             if (referenceRange.canCheckAbove) {
                 this.createRange(pointAbove)
@@ -124,7 +124,7 @@ export class ScanlineFill {
     }
 
     detectRangeBelow(referencePoint, referenceRange) {
-        let pointBelow = this.grid.wrap(Point.atSouth(referencePoint))
+        let pointBelow = this.grid.wrap(referencePoint)
         if (this.isFillable(pointBelow)) {
             if (referenceRange.canCheckBelow) {
                 this.createRange(pointBelow)
@@ -132,6 +132,24 @@ export class ScanlineFill {
             }
         } else {
             referenceRange.canCheckBelow = true
+        }
+    }
+}
+
+
+export class ScanlineFill8 extends ScanlineFill {
+    fillRange(range) {
+        let point = range.point
+
+        while (this.isFillable(point)) {
+            this.onFill(point)
+            this.detectRangeAbove(Point.atNorthwest(point), range)
+            this.detectRangeAbove(Point.atNorth(point), range)
+            this.detectRangeAbove(Point.atNortheast(point), range)
+            this.detectRangeBelow(Point.atSouthwest(point), range)
+            this.detectRangeBelow(Point.atSouth(point), range)
+            this.detectRangeBelow(Point.atSoutheast(point), range)
+            point = this.grid.wrap(Point.atEast(point))
         }
     }
 }

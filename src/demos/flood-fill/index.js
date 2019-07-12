@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { Grid } from '../../lib/grid'
-import { ScanlineFill, FloodFill} from '../../lib/flood-fill'
-import {getChance} from '../../lib/base'
+import { ScanlineFill, ScanlineFill8, FloodFill } from '../../lib/flood-fill'
+import { Random } from '../../lib/base'
 import {Point} from '../../lib/point'
 
 
@@ -16,6 +16,7 @@ const tileSizeInput = document.getElementById("tileSize")
 const gridSizeInput = document.getElementById("gridSize")
 const infoText = document.getElementById("infoText")
 const createGridButton = document.getElementById("createGrid")
+const clearGridButton = document.getElementById("clearGrid")
 const stepButton = document.getElementById("step")
 const fillButton = document.getElementById("fill")
 
@@ -44,6 +45,12 @@ const createScanlineFill = startPoint => {
     return new ScanlineFill(grid, startPoint, onFill, isFillable)
 }
 
+const createScanlineFill8 = startPoint => {
+    const onFill = point => grid.set(point, FILL_VALUE)
+    const isFillable = point => grid.get(point) == EMPTY_VALUE
+    return new ScanlineFill8(grid, startPoint, onFill, isFillable)
+}
+
 const getTileSize = () => Number(tileSizeInput.value) || 20
 const getGridSize = () => Number(gridSizeInput.value) || 10
 
@@ -67,8 +74,18 @@ const drawPoint = (point, color) => {
 const createGrid = () => {
     let size = getGridSize()
     grid = new Grid(size, size, () => {
-        return getChance(0.5) ? WALL_VALUE : EMPTY_VALUE
+        return Random.chance(0.2) ? WALL_VALUE : EMPTY_VALUE
     })
+}
+
+const clearGrid = () => {
+    grid.forEach((value, point) => {
+        if (value == FILL_VALUE){
+            grid.set(point, EMPTY_VALUE)
+        }
+    })
+    filler = null
+    draw()
 }
 
 const init = () => {
@@ -90,7 +107,8 @@ const getFillObject = point => {
     let id = algorithmSelect.options[algorithmSelect.selectedIndex].value
     let createFill = {
         "flood": createFloodFill,
-        "scanline": createScanlineFill
+        "scanline": createScanlineFill,
+        "scanline8": createScanlineFill8
     }[id]
 
     return createFill(point)
@@ -114,6 +132,7 @@ viewCanvas.addEventListener('mousemove', e => {
 })
 
 createGridButton.addEventListener('click', init)
+clearGridButton.addEventListener('click', clearGrid)
 
 stepButton.addEventListener('click', e => {
     if (! filler.isComplete) {
@@ -127,6 +146,7 @@ fillButton.addEventListener('click', e => {
     filler.fill()
     let t1 = performance.now()
     draw()
+    console.log(t1 - t0 + 'ms')
 })
 
 init()

@@ -68,6 +68,22 @@ export class Point {
         return new Point(point.x - 1, point.y)
     }
 
+    static atNortheast(point) {
+        return new Point(point.x + 1, point.y - 1)
+    }
+
+    static atSoutheast(point) {
+        return new Point(point.x + 1, point.y + 1)
+    }
+
+    static atNorthwest(point) {
+        return new Point(point.x - 1, point.y - 1)
+    }
+
+    static atSouthwest(point) {
+        return new Point(point.x - 1, point.y + 1)
+    }
+
     static euclidianDistance (point1, point2) {
         let deltaX = Math.pow(point2.x - point1.x, 2),
             deltaY = Math.pow(point2.y - point1.y, 2)
