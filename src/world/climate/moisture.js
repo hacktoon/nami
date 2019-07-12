@@ -20,6 +20,7 @@ export class MoistureMap {
 
         new HeightMap(size, roughness, (height, point) => {
             let moisture = this.buildMoisture(height)
+            moisture = this._filterMoisture(moisture, point)
             this.grid.set(point, moisture)
         })
     }
@@ -38,6 +39,14 @@ export class MoistureMap {
             }
         }
         return new Moisture(id)
+    }
+
+    _filterMoisture(moisture, point) {
+        const relief = this.reliefMap.get(point)
+        if (relief.isPeak)     moisture.lower(2)
+        if (relief.isMountain) moisture.lower()
+        if (relief.isBasin)    moisture.raise()
+        return moisture
     }
 }
 

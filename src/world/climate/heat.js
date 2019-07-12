@@ -1,8 +1,8 @@
 import _ from 'lodash'
 
-import {Grid} from '../../lib/grid'
-import {MidpointDisplacement} from '../../lib/heightmap'
-import {Point} from '../../lib/point'
+import { Grid } from '../../lib/grid'
+import { MidpointDisplacement } from '../../lib/heightmap'
+import { Point } from '../../lib/point'
 
 const ARCTIC = 0
 const SUBARCTIC = 1
@@ -37,10 +37,10 @@ export class HeatMap {
     constructor(size, reliefMap) {
         this.grid = new Grid(size, size)
         this.reliefMap = reliefMap
-        this._build(size, ROUGHNESS)
+        this._build(size)
     }
 
-    _build(size, roughness) {
+    _build(size) {
         const buildZone = zone => {
             let p1 = new Point(0, zone.y)
             let p2 = new Point(size - 1, zone.y)
@@ -50,7 +50,7 @@ export class HeatMap {
                 }
                 fillColumn(point, zone.heatId)
             }
-            MidpointDisplacement(p1, p2, size, roughness, setPoint)
+            MidpointDisplacement(p1, p2, size, ROUGHNESS, setPoint)
         }
 
         const fillColumn = (point, id) => {
@@ -61,11 +61,19 @@ export class HeatMap {
 
                 if (this.grid.get(pointAbove) != undefined)
                     break
-                this.grid.set(pointAbove, new Heat(id))
+                let heat = this._filterHeat(new Heat(id), pointAbove)
+                this.grid.set(pointAbove, heat)
                 baseY--
             }
         }
         ZONE_TABLE.forEach(buildZone)
+    }
+
+    _filterHeat(heat, point) {
+        const relief = this.reliefMap.get(point)
+        if (relief.isPeak)     heat.lower(2)
+        if (relief.isMountain) heat.lower()
+        return heat
     }
 
     get(point) {
