@@ -1,43 +1,51 @@
 import Tile from '../tile'
 
 
-const ABYSS = 0
-const ICECAP = 1
-const ICEBERG = 2
-const OCEAN = 3
-const SEA = 4
-const CORAL = 5
-const BEACH = 6
-const RIVER = 7
-const LAKE = 8
-const MANGROVE = 9
-const SWAMP = 10
-const GRASS = 11
-const SAVANNA = 12
-const DESERT = 13
-const FOREST = 14
-const MOUNTAIN = 15
-const PEAK = 16
+const ICE = 0
+const TUNDRA = 1
+const BOREAL_FOREST = 2
+const TEMPERATE_FOREST = 3
+const WOODLANDS = 4
+const GRASSLANDS = 5
+const RAINFOREST = 6
+const JUNGLE = 7
+const SAVANNA = 8
+const SHRUBLAND = 9
+const DESERT = 10
+const MESA = 11
+const OCEAN = 12
+const LAKE = 13
+const CORAL_REEF = 14
+const RIVER = 15
+const MANGROVE = 16
+const SWAMP = 17
+const BEACH = 18
+const MOUNTAIN = 19
+const PEAK = 20
 
 
 const BIOME_TABLE = [
-    { id: ABYSS, color: "#000034", name: "Abyss" },
-    { id: ICECAP, color: "#87bfff", name: "Icecap" },
-    { id: ICEBERG, color: "#EEE", name: "Iceberg" },
-    { id: OCEAN, color: "#000045", name: "Ocean" },
-    { id: SEA, color: "#000078", name: "Sea" },
-    { id: CORAL, color: "#007587", name: "Coral" },
-    { id: BEACH, color: "#adb734", name: "Beach" },
-    { id: RIVER, color: "3379a6", name: "River" },
-    { id: LAKE, color: "#3379a6", name: "Lake" },
-    { id: MANGROVE, color: "#0a5816", name: "Mangrove" },
-    { id: SWAMP, color: "#0a5816", name: "Swamp" },
-    { id: GRASS, color: "#91c13a", name: "Grass" },
-    { id: SAVANNA, color: "#d2ff4d", name: "Savanna" },
-    { id: DESERT, color: "#ffec84", name: "Desert" },
-    { id: FOREST, color: "#669900", name: "Forest" },
-    { id: MOUNTAIN, color: "#afa182", name: "Mountain" },
-    { id: PEAK, color: "#EEEEEE", name: "Peak" }
+    { id: ICE, color: "#f2f2f2", name: "Ice" },
+    { id: TUNDRA, color: "#b7c8c4", name: "Tundra" },
+    { id: BOREAL_FOREST, color: "#008066", name: "Boreal forest" },
+    { id: TEMPERATE_FOREST, color: "#00aa44", name: "Temperate forest" },
+    { id: WOODLANDS, color: "#71c837", name: "Woodlands" },
+    { id: GRASSLANDS, color: "#cdde87", name: "Grasslands" },
+    { id: RAINFOREST, color: "#338000", name: "Rainforest" },
+    { id: JUNGLE, color: "#165016", name: "Jungle" },
+    { id: SAVANNA, color: "#abc837", name: "Savanna" },
+    { id: SHRUBLAND, color: "#d3bc5f", name: "Shrubland" },
+    { id: DESERT, color: "#ffeeaa", name: "Desert" },
+    { id: MESA, color: "#9c5a2e", name: "Mesa" },
+    { id: OCEAN, color: "#000080", name: "Ocean" },
+    { id: LAKE, color: "#0055d4", name: "Lake" },
+    { id: CORAL_REEF, color: "#5cffc4", name: "Coral reef" },
+    { id: RIVER, color: "#5fbcd3", name: "River" },
+    { id: MANGROVE, color: "#876729", name: "Mangrove" },
+    { id: SWAMP, color: "#916f8a", name: "Swamp" },
+    { id: BEACH, color: "#ffe680", name: "Beach" },
+    { id: MOUNTAIN, color: "#b3b3b3", name: "Mountain" },
+    { id: PEAK, color: "#FFF", name: "Peak" },
 ]
 
 
@@ -61,56 +69,38 @@ export class BiomeMap {
         let moisture = this.moistureMap.get(point)
         let waterbody = this.waterbodyMap.get(point)
 
-        if (heat.isArctic || heat.isSubarctic)
-            moisture.lower(3)
-        if (heat.isSubtropical)
-            moisture.lower(1)
-        if (heat.isTropical)
-            moisture.raise(2)
-
         if (waterbody) {
-            if (heat.isArctic && relief.isAbyss) {
-                return ICECAP
+            if (heat.isArctic && (relief.isAbyss || relief.isShallow)) {
+                return ICE
             }
-            if (waterbody.isLake) {
-                return LAKE
-            }
-            if (waterbody.isSea) {
-                return SEA
-            }
+            if (waterbody.isLake) return LAKE
             return OCEAN
         }
-        if (heat.isArctic || heat.isSubarctic) {
-            return GRASS
+
+        if (heat.isArctic) return TUNDRA
+
+        if (heat.isSubarctic) {
+            if (moisture.isHighest || moisture.isWet) return BOREAL_FOREST
+            return TUNDRA
         }
+
         if (heat.isTemperate) {
-            if (moisture.isHighest || moisture.isWet) {
-                return FOREST
-            }
-            return GRASS
+            if (moisture.isHighest || moisture.isWet) return TEMPERATE_FOREST
+            return GRASSLANDS
         }
+
         if (heat.isSubtropical) {
-            if (moisture.isWet) {
-                return SAVANNA
-            }
-            if (moisture.isDry) {
-                return GRASS
-            }
-            if (moisture.isLowest) {
-                return DESERT
-            }
-            return FOREST
+            if (moisture.isHighest) return RAINFOREST
+            if (moisture.isWet) return SAVANNA
+            if (moisture.isDry) return SHRUBLAND
+            if (moisture.isLowest) return DESERT
         }
+
         if (heat.isTropical) {
-            if (moisture.isHighest) {
-                if (relief.isBasin || relief.isPlain) {
-                    return FOREST
-                }
-            }
-            if (relief.isPlain) {
-                return FOREST
-            }
-            return GRASS
+            if (moisture.isHighest) return JUNGLE
+            if (moisture.isWet) return RAINFOREST
+            if (moisture.isDry) return SHRUBLAND
+            if (moisture.isLowest) return DESERT
         }
     }
 }

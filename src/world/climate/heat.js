@@ -17,8 +17,8 @@ const ZONE_TABLE = [
     { id: 3, heatId: SUBTROPICAL,   y: 96 },
     { id: 4, heatId: TROPICAL,      y: 160 },
     { id: 5, heatId: SUBTROPICAL,   y: 196 },
-    { id: 6, heatId: TEMPERATE,     y: 241 },
-    { id: 7, heatId: SUBARCTIC,     y: 251 },
+    { id: 6, heatId: TEMPERATE,     y: 216 },
+    { id: 7, heatId: SUBARCTIC,     y: 241 },
     { id: 8, heatId: ARCTIC,        y: 256 }
 ]
 
