@@ -30,6 +30,49 @@ const HEAT_TABLE = [
     { id: TROPICAL, value: 4, color: "red",    name: "Tropical" }
 ]
 
+const ROUGHNESS = .2
+
+
+export class HeatMap {
+    constructor(size, reliefMap) {
+        this.grid = new Grid(size, size)
+        this.reliefMap = reliefMap
+        this._build(size, ROUGHNESS)
+    }
+
+    _build(size, roughness) {
+        const buildZone = zone => {
+            let p1 = new Point(0, zone.y)
+            let p2 = new Point(size - 1, zone.y)
+            let setPoint = point => {
+                if (zone.id == ZONE_TABLE.length - 1) {
+                    point.y = zone.y
+                }
+                fillColumn(point, zone.heatId)
+            }
+            MidpointDisplacement(p1, p2, size, roughness, setPoint)
+        }
+
+        const fillColumn = (point, id) => {
+            let baseY = point.y
+
+            while (baseY >= 0) {
+                let pointAbove = new Point(point.x, baseY)
+
+                if (this.grid.get(pointAbove) != undefined)
+                    break
+                this.grid.set(pointAbove, new Heat(id))
+                baseY--
+            }
+        }
+        ZONE_TABLE.forEach(buildZone)
+    }
+
+    get(point) {
+        return this.grid.get(point)
+    }
+}
+
 
 class Heat {
     constructor(id) {
@@ -79,45 +122,5 @@ class Heat {
 
     get isTropical() {
         return this.data.id == TROPICAL
-    }
-}
-
-
-export class HeatMap {
-    constructor(size, roughness) {
-        this.grid = new Grid(size, size)
-        this._build(size, roughness)
-    }
-
-    _build(size, roughness) {
-        const buildZone = zone => {
-            let p1 = new Point(0, zone.y)
-            let p2 = new Point(size - 1, zone.y)
-            let setPoint = point => {
-                if (zone.id == ZONE_TABLE.length - 1) {
-                    point.y = zone.y
-                }
-                fillColumn(point, zone.heatId)
-            }
-            MidpointDisplacement(p1, p2, size, roughness, setPoint)
-        }
-
-        const fillColumn = (point, id) => {
-            let baseY = point.y
-
-            while (baseY >= 0) {
-                let pointAbove = new Point(point.x, baseY)
-
-                if (this.grid.get(pointAbove) != undefined)
-                    break
-                this.grid.set(pointAbove, new Heat(id))
-                baseY--
-            }
-        }
-        ZONE_TABLE.forEach(buildZone)
-    }
-
-    get(point) {
-        return this.grid.get(point)
     }
 }

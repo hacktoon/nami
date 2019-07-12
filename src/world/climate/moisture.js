@@ -5,12 +5,41 @@ import { HeightMap } from '../../lib/heightmap'
 
 
 const MOISTURE_TABLE = [
-    { id: 0, height: 0, color: "#19FFFF", name: "Very dry" },
-    { id: 1, height: 30, color: "#00D5FF", name: "Dry" },
-    { id: 2, height: 90, color: "#00ffbc", name: "Seasonal" },
+    { id: 0, height: 0,   color: "#19FFFF", name: "Very dry" },
+    { id: 1, height: 30,  color: "#00D5FF", name: "Dry" },
+    { id: 2, height: 90,  color: "#00ffbc", name: "Seasonal" },
     { id: 3, height: 150, color: "#00AAFF", name: "Wet" },
     { id: 4, height: 210, color: "#0080FF", name: "Very wet" }
 ]
+
+
+export class MoistureMap {
+    constructor(size, roughness, reliefMap) {
+        this.grid = new Grid(size, size)
+        this.reliefMap = reliefMap
+
+        new HeightMap(size, roughness, (height, point) => {
+            let moisture = this.buildMoisture(height)
+            this.grid.set(point, moisture)
+        })
+    }
+
+    get(point) {
+        return this.grid.get(point)
+    }
+
+    buildMoisture(height) {
+        let id
+        for (let reference of MOISTURE_TABLE) {
+            if (height >= reference.height) {
+                id = reference.id
+            } else {
+                break
+            }
+        }
+        return new Moisture(id)
+    }
+}
 
 
 class Moisture {
@@ -60,33 +89,5 @@ class Moisture {
 
     get isHighest() {
         return this.data.id == _.last(MOISTURE_TABLE).id
-    }
-}
-
-
-export class MoistureMap {
-    constructor(size, roughness) {
-        this.grid = new Grid(size, size)
-
-        new HeightMap(size, roughness, (height, point) => {
-            let moisture = this.buildMoisture(height)
-            this.grid.set(point, moisture)
-        })
-    }
-
-    get(point) {
-        return this.grid.get(point)
-    }
-
-    buildMoisture(height) {
-        let id
-        for (let reference of MOISTURE_TABLE) {
-            if (height >= reference.height) {
-                id = reference.id
-            } else {
-                break
-            }
-        }
-        return new Moisture(id)
     }
 }

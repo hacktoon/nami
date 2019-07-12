@@ -12,8 +12,8 @@ export default class WorldBuilder {
     constructor(size, roughness) {
         this.world = new World(size)
         this.reliefMap = new ReliefMap(size, roughness)
-        this.heatMap = new HeatMap(size, .2)
-        this.moistureMap = new MoistureMap(size, roughness)
+        this.heatMap = new HeatMap(size, this.reliefMap)
+        this.moistureMap = new MoistureMap(size, roughness, this.reliefMap)
         this.waterbodyMap = new WaterbodyMap(size, this.reliefMap, this.moistureMap)
         this.biomeMap = new BiomeMap(
             this.reliefMap,
