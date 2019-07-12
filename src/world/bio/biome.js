@@ -20,8 +20,6 @@ const RIVER = 15
 const MANGROVE = 16
 const SWAMP = 17
 const BEACH = 18
-const MOUNTAIN = 19
-const PEAK = 20
 
 
 const BIOME_TABLE = [
@@ -43,9 +41,7 @@ const BIOME_TABLE = [
     { id: RIVER, color: "#5fbcd3", name: "River" },
     { id: MANGROVE, color: "#876729", name: "Mangrove" },
     { id: SWAMP, color: "#916f8a", name: "Swamp" },
-    { id: BEACH, color: "#ffe680", name: "Beach" },
-    { id: MOUNTAIN, color: "#b3b3b3", name: "Mountain" },
-    { id: PEAK, color: "#FFF", name: "Peak" },
+    { id: BEACH, color: "#ffe680", name: "Beach" }
 ]
 
 
@@ -78,9 +74,6 @@ export class BiomeMap {
             }
             return OCEAN
         }
-
-        if (relief.isPeak) return PEAK
-        if (relief.isMountain) return MOUNTAIN
 
         if (heat.isArctic) {
             if (moisture.isHighest || moisture.isWet) return ICE
