@@ -68,14 +68,15 @@ main {
 }
 
 #infoText p.title {
-    border-top: 1px solid #DDD;
-    line-height: 2;
+    line-height: 1.5;
     margin: 0 0 2px 0;
     font-weight: bold;
 }
 
 #infoText p.value {
-    margin: 0px 0 10px 0;
+    border-bottom: 1px solid #DDD;
+    margin: 0 0 10px 0;
+    padding-bottom: 5px;
     line-height: 1;
     font-size: .9em;
 }

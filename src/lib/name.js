@@ -13,7 +13,7 @@ const personNames = {
 
 const landMassNames = {
     first: [
-        "Bre", "Ad", "Bren", "Ard", "Meso", "Atla", "Ard", "Astra", "Dra", "Tre", "Ar", "Eud", "Aud"
+        "Bre", "Ad", "Bren", "Ard", "Meso", "Atla", "Ar", "Astr", "Dra", "Tre", "In", "Eud", "Aud", "Au", "Zor", "Or", "Er", "Eu", "Ur", "Ir", "Cor", "Gon", "San"
     ],
 
     last: [
