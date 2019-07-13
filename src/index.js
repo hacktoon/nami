@@ -76,7 +76,7 @@ const showTileInfo = tile => {
         infoText.innerHTML = tpl
         return
     }
-    tpl += wrap('Point', tile.point.hash())
+    tpl += wrap('Coordinates', tile.point.hash())
     tpl += wrap('Biome', tile.biome.name)
     tpl += wrap('Relief', tile.relief.name)
     tpl += wrap('Heat', tile.heat.name)
