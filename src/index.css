@@ -54,12 +54,30 @@ header {
     background: rgb(133, 156, 141);
 }
 
-main { padding: 10px 20px 30px; }
+main {
+    padding: 10px 20px 30px;
+    display: grid;
+    grid-template-columns: 150px auto;
+}
 
 #infoText {
     line-height: 30px;
     margin: 0;
     font-size: 1em;
+    padding-right: 10px;
+}
+
+#infoText p.title {
+    border-top: 1px solid #DDD;
+    line-height: 2;
+    margin: 0 0 2px 0;
+    font-weight: bold;
+}
+
+#infoText p.value {
+    margin: 0px 0 10px 0;
+    line-height: 1;
+    font-size: .9em;
 }
 
 #seedInput {

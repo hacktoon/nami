@@ -67,14 +67,21 @@ const getCanvasMousePoint = (e, viewCanvas) => {
 }
 
 const showTileInfo = tile => {
-    let tpl = `<strong>${currentWorld.name}</strong> | Seed: ${Random.seed}`
+    const wrap = (title, value) => {
+        return `<p class='title'>${title}</p><p class='value'>${value}</p>`
+    }
+    let tpl = wrap('World', currentWorld.name)
+        tpl += wrap('Seed', Random.seed)
     if (!tile) {
         infoText.innerHTML = tpl
         return
     }
-    tpl += ` | ${tile.point.hash()} | ${tile.type.name}`
-    tpl += ` | ${tile.relief.name}:${tile.relief.height} | ${tile.heat.name}`
-    tpl += ` | ${tile.moisture.name}`
+    tpl += wrap('Point', tile.point.hash())
+    tpl += wrap('Biome', tile.biome.name)
+    tpl += wrap('Relief', tile.relief.name)
+    tpl += wrap('Heat', tile.heat.name)
+    tpl += wrap('Moisture', tile.moisture.name)
+
 
     infoText.innerHTML = tpl
 }
@@ -103,7 +110,6 @@ viewCanvas.addEventListener('mousedown', e => {
 viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas)
     let tile = currentWorld.get(point)
-    //worldPainter.draw(-100, -100)
     showTileInfo(tile)
 })
 
