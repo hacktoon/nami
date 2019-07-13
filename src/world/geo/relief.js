@@ -23,8 +23,8 @@ const RELIEF_TABLE = [
     { id: BASIN,    height: 175, color: "#0a5816", name: "Basin" },
     { id: PLAIN,    height: 198, color: "#31771a", name: "Plain" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
-    { id: MOUNTAIN, height: 254, color: "#888888", name: "Mountain" },
-    { id: PEAK,     height: 257, color: "#CCCCCC", name: "Peak" }
+    { id: MOUNTAIN, height: 254, color: "#AAAAAA", name: "Mountain" },
+    { id: PEAK,     height: 257, color: "#EEEEEE", name: "Peak" }
 ]
 
 
@@ -63,7 +63,7 @@ export class ReliefMap {
         if (maskRelief.isShallow) {
             relief.level(PLAIN)
         }
-        if (maskRelief.isBasin && !relief.isBasin && !relief.isReef) {
+        if (maskRelief.isBasin) {
             relief.lower()
         }
 
