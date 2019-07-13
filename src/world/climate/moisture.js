@@ -43,7 +43,6 @@ export class MoistureMap {
 
     _filterMoisture(moisture, point) {
         const relief = this.reliefMap.get(point)
-        if (relief.isPeak)     moisture.lower(2)
         if (relief.isMountain) moisture.lower()
         if (relief.isBasin)    moisture.raise()
         return moisture

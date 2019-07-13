@@ -71,7 +71,6 @@ export class HeatMap {
 
     _filterHeat(heat, point) {
         const relief = this.reliefMap.get(point)
-        if (relief.isPeak)     heat.lower(2)
         if (relief.isMountain) heat.lower()
         return heat
     }

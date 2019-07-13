@@ -12,7 +12,6 @@ const BASIN = 5
 const PLAIN = 6
 const HIGHLAND = 7
 const MOUNTAIN = 8
-const PEAK = 9
 
 const RELIEF_TABLE = [
     { id: ABYSS,    height: 0,   color: "#000034", name: "Abyss" },
@@ -23,8 +22,7 @@ const RELIEF_TABLE = [
     { id: BASIN,    height: 175, color: "#0a5816", name: "Basin" },
     { id: PLAIN,    height: 198, color: "#31771a", name: "Plain" },
     { id: HIGHLAND, height: 235, color: "#6f942b", name: "Highland" },
-    { id: MOUNTAIN, height: 254, color: "#AAAAAA", name: "Mountain" },
-    { id: PEAK,     height: 257, color: "#EEEEEE", name: "Peak" }
+    { id: MOUNTAIN, height: 255, color: "#AAAAAA", name: "Mountain" }
 ]
 
 
@@ -53,12 +51,8 @@ export class ReliefMap {
     }
 
     filterRelief(relief, maskRelief) {
-        // remove mountains
         if (maskRelief.id > PLAIN) {
             relief.level(HIGHLAND)
-        }
-        if (maskRelief.id > DEEP && relief.isPeak) {
-            relief.lower()
         }
         if (maskRelief.isShallow) {
             relief.level(PLAIN)
@@ -133,5 +127,4 @@ class Relief {
     get isPlain() { return this.data.id == PLAIN }
     get isHighland() { return this.data.id == HIGHLAND }
     get isMountain() { return this.data.id == MOUNTAIN }
-    get isPeak() { return this.data.id == PEAK }
 }
