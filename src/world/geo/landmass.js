@@ -17,9 +17,10 @@ const LANDMASS_TABLE = {
 
 
 export class LandmassMap {
-    constructor(size, reliefMap) {
+    constructor(size, reliefMap, waterbodyMap) {
         this.grid = new Grid(size, size, EMPTY_VALUE)
         this.reliefMap = reliefMap
+        this.waterbodyMap = waterbodyMap
         this.size = size
         this.nextId = 1
         this.map = {}
