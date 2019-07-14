@@ -11,7 +11,7 @@ const personNames = {
     ]
 }
 
-const landMassNames = {
+const landformNames = {
     first: [
         "Bre", "Ad", "Bren", "Ard", "Meso", "Atla", "Ar", "Astr", "Dra", "Tre", "In", "Eud", "Aud", "Au", "Zor", "Or", "Er", "Eu", "Ur", "Ir", "Cor", "Gon", "San"
     ],
@@ -35,8 +35,8 @@ const riverNames = [
 
 
 export class Name {
-    static createLandMassName () {
-        return Random.choice(landMassNames.first) + Random.choice(landMassNames.last)
+    static createLandformName () {
+        return Random.choice(landformNames.first) + Random.choice(landformNames.last)
     }
 
     static createPersonName () {

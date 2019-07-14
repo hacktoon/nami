@@ -6,7 +6,7 @@ import { Name } from '../lib/name';
 export default class World {
     constructor(size) {
         this.id = Random.seed
-        this.name = Name.createLandMassName()
+        this.name = Name.createLandformName()
         this.seed = Random.seed
         this.size = size
         this.area = size * size
