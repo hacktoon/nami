@@ -165,7 +165,7 @@ export class Random {
 
     static chance(percentage) {
         let value = Random.float()
-        return value <= percentage
+        return percentage >= value
     }
 
     static choice(items) {

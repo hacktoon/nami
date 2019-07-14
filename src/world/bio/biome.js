@@ -1,4 +1,4 @@
-import Tile from '../tile'
+import { Random } from '../../lib/base'
 
 
 const ICE = 0
@@ -20,6 +20,7 @@ const RIVER = 15
 const MANGROVE = 16
 const SWAMP = 17
 const BEACH = 18
+const VOLCANO = 19
 
 
 const BIOME_TABLE = [
@@ -41,7 +42,8 @@ const BIOME_TABLE = [
     { id: RIVER, color: "#5fbcd3", name: "River" },
     { id: MANGROVE, color: "#876729", name: "Mangrove" },
     { id: SWAMP, color: "#916f8a", name: "Swamp" },
-    { id: BEACH, color: "#ffe680", name: "Beach" }
+    { id: BEACH, color: "#ffe680", name: "Beach" },
+    { id: VOLCANO, color: "#DD0000", name: "Volcano" }
 ]
 
 
@@ -73,6 +75,10 @@ export class BiomeMap {
                 return CORAL_REEF
             }
             return OCEAN
+        }
+
+        if (relief.isMountain && Random.chance(.01)) {
+            return VOLCANO
         }
 
         if (heat.isArctic) {
