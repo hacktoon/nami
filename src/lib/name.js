@@ -13,11 +13,12 @@ const personNames = {
 
 const landformNames = {
     first: [
-        "Bre", "Ad", "Bren", "Ard", "Meso", "Atla", "Ar", "Astr", "Dra", "Tre", "In", "Eud", "Aud", "Au", "Zor", "Or", "Er", "Eu", "Ur", "Ir", "Cor", "Gon", "San"
+        "Bre", "Ad", "Bren", "Ard", "Meso", "Atla", "Ar", "Astr", "Dra", "Tre", "In", "Eud", "Aud", "Au", "Zor", "Or", "Er", "Eu", "Ur", "Ir", "Cor", "Gon", "San",
+        "Zed", "Arg", "Ho", "Re", "Lam"
     ],
 
     last: [
-        "wana", "inia", "lum", "meria", "moria", "ania", "andia", "icia", "vedia"
+        "wana", "inia", "lum", "meria", "moria", "ania", "andia", "icia", "vedia", "elia"
     ]
 }
 

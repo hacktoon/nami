@@ -13,9 +13,9 @@ const SEA = 1
 const LAKE = 2
 
 const WATERBODY_TABLE = {
-    [OCEAN]: {color: "#0c2e63"},
-    [SEA]: {color: "#8bddd4"},
-    [LAKE]: {color: "#29f25e"},
+    [OCEAN]: {color: "#0c2e63", name: "Ocean"},
+    [SEA]: {color: "#8bddd4", name: "Sea"},
+    [LAKE]: {color: "#29f25e", name: "Lake"},
 }
 
 
@@ -34,17 +34,11 @@ export class WaterbodyMap {
 
     _detectFeatures() {
         this.grid.forEach((_, point) => {
-            this.detect(point)
+            this._detect(point)
         })
     }
 
-    get(point) {
-        let id = this.grid.get(point)
-        return this.map[id]
-    }
-
-    /* Detect oceans, seas and lakes */
-    detect(startPoint) {
+    _detect(startPoint) {
         let tileCount = 0
         const isFillable = point => {
             let relief = this.reliefMap.get(point)
@@ -88,6 +82,11 @@ export class WaterbodyMap {
         let withinPercentage = tilePercentage >= MIN_SEA_AREA_CHANCE
         return !this._isOceanType(tileCount) && withinPercentage
     }
+
+    get(point) {
+        let id = this.grid.get(point)
+        return this.map[id]
+    }
 }
 
 
@@ -95,11 +94,15 @@ class Waterbody {
     constructor(id, type, name, point, area) {
         this.id = id
         this.type = type
-        this.name = name
+        this._name = name
         this.point = point
         this.area = area
     }
 
+    get name() {
+        const type_name = WATERBODY_TABLE[this.type].name
+        return `${this._name} ${type_name}`
+    }
     get color() { return WATERBODY_TABLE[this.type].color }
     get isOcean() { return this.type == OCEAN }
     get isSea() { return this.type == SEA }

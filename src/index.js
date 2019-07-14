@@ -81,6 +81,8 @@ const showTileInfo = tile => {
     tpl += wrap('Relief', tile.relief.name)
     tpl += wrap('Heat', tile.heat.name)
     tpl += wrap('Moisture', tile.moisture.name)
+    if (tile.waterbody)
+        tpl += wrap('Waterbody', tile.waterbody.name)
 
 
     infoText.innerHTML = tpl
