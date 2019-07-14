@@ -33,24 +33,26 @@ export class ReliefMap {
         this.size = size
 
         new HeightMap(size, roughness, (height, point) => {
-            let relief = this.buildRelief(point, height)
+            let relief = this._buildRelief(height, point)
             this.grid.set(point, relief)
         })
+
+        //this._detectFeatures()
     }
 
-    buildRelief(point, height) {
+    _buildRelief(height, point) {
         let relief = new Relief(height)
-        let maskRelief = this.getMaskRelief(point)
+        let maskRelief = this._getMaskRelief(point)
 
-        return this.filterRelief(relief, maskRelief)
+        return this._filterRelief(relief, maskRelief)
     }
 
-    getMaskRelief(point) {
+    _getMaskRelief(point) {
         let height = this.mask.get(point)
         return new Relief(height)
     }
 
-    filterRelief(relief, maskRelief) {
+    _filterRelief(relief, maskRelief) {
         if (maskRelief.id > PLAIN) {
             relief.level(HIGHLAND)
         }
@@ -60,8 +62,13 @@ export class ReliefMap {
         if (maskRelief.isBasin) {
             relief.lower()
         }
-
         return relief
+    }
+
+    _detectFeatures() {
+        this.iter((relief, point) => {
+
+        })
     }
 
     get(point) {

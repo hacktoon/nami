@@ -29,6 +29,10 @@ export class WaterbodyMap {
         this.nextId = 1
         this.map = {}
 
+        this._detectFeatures()
+    }
+
+    _detectFeatures() {
         this.grid.forEach((_, point) => {
             this.detect(point)
         })
