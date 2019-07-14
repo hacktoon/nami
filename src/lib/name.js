@@ -35,7 +35,7 @@ const riverNames = [
 
 
 export class Name {
-    static createLandformName () {
+    static createLandmassName () {
         return Random.choice(landformNames.first) + Random.choice(landformNames.last)
     }
 

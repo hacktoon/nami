@@ -11,13 +11,13 @@ const EMPTY_VALUE = 0
 const CONTINENT = 0
 const ISLAND = 1
 
-const LANDFORM_TABLE = {
+const LANDMASS_TABLE = {
     [CONTINENT]: {color: "#0c2e63"},
     [ISLAND]: {color: "#8bddd4"},
 }
 
 
-export class LandformMap {
+export class LandmassMap {
     constructor(size, reliefMap) {
         this.grid = new Grid(size, size, EMPTY_VALUE)
         this.reliefMap = reliefMap
@@ -53,14 +53,14 @@ export class LandformMap {
 
         if (isFillable(startPoint)) {
             new ScanlineFill(this.grid, startPoint, onFill, isFillable).fill()
-            this._buildLandform(this.nextId++, startPoint, tileCount)
+            this._buildLandmass(this.nextId++, startPoint, tileCount)
         }
     }
 
-    _buildLandform(id, point, tileCount) {
+    _buildLandmass(id, point, tileCount) {
         if (tileCount == 0) return
 
-        let name = Name.createLandformName()
+        let name = Name.createLandmassName()
         let type = ISLAND
 
         if (this._isContinentType(tileCount)) {
@@ -68,7 +68,7 @@ export class LandformMap {
         } else if (this._isIslandType(tileCount)) {
             type = ISLAND
         }
-        this.map[id] = new Landform(id, type, name, point, tileCount)
+        this.map[id] = new Landmass(id, type, name, point, tileCount)
     }
 
     _isContinentType(tileCount) {
@@ -86,7 +86,7 @@ export class LandformMap {
 }
 
 
-class Landform {
+class Landmass {
     constructor(id, type, name, point, area) {
         this.id = id
         this.type = type
@@ -95,7 +95,7 @@ class Landform {
         this.area = area
     }
 
-    get color() { return LANDFORM_TABLE[this.type].color }
+    get color() { return LANDMASS_TABLE[this.type].color }
     get isContinent() { return this.type == CONTINENT }
     get isIsland() { return this.type == ISLAND }
 }
