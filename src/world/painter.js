@@ -12,7 +12,7 @@ export default class WorldPainter {
 
     drawBiome() {
         this.world.iter(tile => {
-            let color = tile.debug ? "red" : tile.type.color
+            let color = tile.debug ? "red" : tile.biome.color
             this.drawTile(tile.point, color)
         })
     }

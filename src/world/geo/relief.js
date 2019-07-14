@@ -31,19 +31,27 @@ export class ReliefMap {
         this.mask = new HeightMap(size, roughness)
         this.grid = new Grid(size, size)
         this.size = size
+        this.landPoints = []
+        this.waterPoints = []
 
+        this._buildMap(size, roughness)
+    }
+
+    _buildMap(size, roughness) {
         new HeightMap(size, roughness, (height, point) => {
             let relief = this._buildRelief(height, point)
             this.grid.set(point, relief)
+            if (relief.isWater) {
+                this.waterPoints.push(point)
+            } else {
+                this.landPoints.push(point)
+            }
         })
-
-        //this._detectFeatures()
     }
 
     _buildRelief(height, point) {
         let relief = new Relief(height)
         let maskRelief = this._getMaskRelief(point)
-
         return this._filterRelief(relief, maskRelief)
     }
 
@@ -63,12 +71,6 @@ export class ReliefMap {
             relief.lower()
         }
         return relief
-    }
-
-    _detectFeatures() {
-        this.iter((relief, point) => {
-
-        })
     }
 
     get(point) {
