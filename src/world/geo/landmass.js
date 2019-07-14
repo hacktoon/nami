@@ -11,8 +11,8 @@ const CONTINENT = 0
 const ISLAND = 1
 
 const LANDMASS_TABLE = {
-    [CONTINENT]: {color: "#0c2e63", name: "Continent"},
-    [ISLAND]: {color: "#8bddd4", name: "Island"},
+    [CONTINENT]: { color: "#0f7100", name: "Continent"},
+    [ISLAND]: { color: "#00ff00", name: "Island"},
 }
 
 

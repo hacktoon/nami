@@ -46,8 +46,16 @@ export default class WorldPainter {
 
     drawWaterbody() {
         this.world.iter(tile => {
-            let defaultColor = "#777"
+            let defaultColor = "#000"
             let color = tile.waterbody ? tile.waterbody.color : defaultColor
+            this.drawTile(tile.point, color)
+        })
+    }
+
+    drawLandmass() {
+        this.world.iter(tile => {
+            let defaultColor = "#000"
+            let color = tile.landmass ? tile.landmass.color : defaultColor
             this.drawTile(tile.point, color)
         })
     }

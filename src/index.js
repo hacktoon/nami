@@ -52,6 +52,7 @@ const draw = () =>  {
         moisture:  "drawMoisture",
         relief:  "drawRelief",
         waterbody:  "drawWaterbody",
+        landmass:  "drawLandmass",
         biome:  "drawBiome"
     }
     worldPainter[map[view]]()
