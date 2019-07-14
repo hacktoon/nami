@@ -83,6 +83,8 @@ const showTileInfo = tile => {
     tpl += wrap('Moisture', tile.moisture.name)
     if (tile.waterbody)
         tpl += wrap('Waterbody', tile.waterbody.name)
+    if (tile.landmass)
+        tpl += wrap('Landmass', tile.landmass.name)
 
 
     infoText.innerHTML = tpl

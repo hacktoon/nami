@@ -29,13 +29,11 @@ export class WaterbodyMap {
         this.nextId = 1
         this.map = {}
 
-        this._detectFeatures()
+        this._detectWaterbodies()
     }
 
-    _detectFeatures() {
-        this.grid.forEach((_, point) => {
-            this._detect(point)
-        })
+    _detectWaterbodies() {
+        this.reliefMap.waterPoints.forEach(point => this._detect(point))
     }
 
     _detect(startPoint) {

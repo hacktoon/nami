@@ -12,8 +12,8 @@ const CONTINENT = 0
 const ISLAND = 1
 
 const LANDMASS_TABLE = {
-    [CONTINENT]: {color: "#0c2e63"},
-    [ISLAND]: {color: "#8bddd4"},
+    [CONTINENT]: {color: "#0c2e63", name: "Continent"},
+    [ISLAND]: {color: "#8bddd4", name: "Island"},
 }
 
 
@@ -25,18 +25,11 @@ export class LandmassMap {
         this.nextId = 1
         this.map = {}
 
-        this._detectFeatures()
+        this._detectLandmasses()
     }
 
-    _detectFeatures() {
-        this.grid.forEach((_, point) => {
-            this._detect(point)
-        })
-    }
-
-    get(point) {
-        let id = this.grid.get(point)
-        return this.map[id]
+    _detectLandmasses() {
+        this.reliefMap.landPoints.forEach(point => this._detect(point))
     }
 
     _detect(startPoint) {
@@ -59,42 +52,36 @@ export class LandmassMap {
 
     _buildLandmass(id, point, tileCount) {
         if (tileCount == 0) return
-
-        let name = Name.createLandmassName()
-        let type = ISLAND
-
-        if (this._isContinentType(tileCount)) {
-            type = CONTINENT
-        } else if (this._isIslandType(tileCount)) {
-            type = ISLAND
-        }
-        this.map[id] = new Landmass(id, type, name, point, tileCount)
+        let type = this._isContinent(tileCount) ? CONTINENT : ISLAND
+        this.map[id] = new Landmass(id, type, point, tileCount)
     }
 
-    _isContinentType(tileCount) {
+    _isContinent(tileCount) {
         let totalTiles = Math.pow(this.size, 2)
         let tilePercentage = (100 * tileCount) / totalTiles
         return tilePercentage >= MIN_CONTINENT_AREA_CHANCE
     }
 
-    _isIslandType(tileCount) {
-        let totalTiles = Math.pow(this.size, 2)
-        let tilePercentage = (100 * tileCount) / totalTiles
-        let withinPercentage = tilePercentage >= MIN_ISLAND_AREA_CHANCE
-        return !this._isContinentType(tileCount) && withinPercentage
+    get(point) {
+        let id = this.grid.get(point)
+        return this.map[id]
     }
 }
 
 
 class Landmass {
-    constructor(id, type, name, point, area) {
+    constructor(id, type, point, area) {
         this.id = id
         this.type = type
-        this.name = name
+        this._name = Name.createLandmassName()
         this.point = point
         this.area = area
     }
 
+    get name() {
+        const type_name = LANDMASS_TABLE[this.type].name
+        return `${this._name} ${type_name}`
+    }
     get color() { return LANDMASS_TABLE[this.type].color }
     get isContinent() { return this.type == CONTINENT }
     get isIsland() { return this.type == ISLAND }
