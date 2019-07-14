@@ -59,7 +59,6 @@ export class WaterbodyMap {
     _buildWaterbody(id, point, tileCount) {
         if (tileCount == 0) return
 
-        let name = Name.createWaterbodyName()
         let type = LAKE
 
         if (this._isOceanType(tileCount)) {
@@ -67,7 +66,7 @@ export class WaterbodyMap {
         } else if (this._isSeaType(tileCount)) {
             type = SEA
         }
-        this.map[id] = new Waterbody(id, type, name, point, tileCount)
+        this.map[id] = new Waterbody(id, type, point, tileCount)
     }
 
     _isOceanType(tileCount) {
@@ -91,10 +90,10 @@ export class WaterbodyMap {
 
 
 class Waterbody {
-    constructor(id, type, name, point, area) {
+    constructor(id, type, point, area) {
         this.id = id
         this.type = type
-        this._name = name
+        this._name = Name.createWaterbodyName()
         this.point = point
         this.area = area
     }
