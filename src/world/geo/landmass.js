@@ -4,8 +4,7 @@ import { Grid } from '../../lib/grid'
 import { ScanlineFill } from '../../lib/flood-fill'
 import { Name } from '../../lib/name'
 
-const MIN_CONTINENT_AREA_CHANCE = 8
-const MIN_ISLAND_AREA_CHANCE = 1
+const MIN_CONTINENT_AREA_CHANCE = 4
 
 const EMPTY_VALUE = 0
 const CONTINENT = 0
