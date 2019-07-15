@@ -12,15 +12,14 @@ const JUNGLE = 7
 const SAVANNA = 8
 const SHRUBLAND = 9
 const DESERT = 10
-const MESA = 11
-const OCEAN = 12
-const LAKE = 13
-const CORAL_REEF = 14
-const RIVER = 15
-const MANGROVE = 16
-const SWAMP = 17
-const BEACH = 18
-const VOLCANO = 19
+const OCEAN = 11
+const LAKE = 12
+const CORAL_REEF = 13
+const RIVER = 14
+const MANGROVE = 15
+const SWAMP = 16
+const BEACH = 17
+const VOLCANO = 18
 
 
 const BIOME_TABLE = [
@@ -35,7 +34,6 @@ const BIOME_TABLE = [
     { id: SAVANNA, color: "#abc837", name: "Savanna" },
     { id: SHRUBLAND, color: "#d3bc5f", name: "Shrubland" },
     { id: DESERT, color: "#ffeeaa", name: "Desert" },
-    { id: MESA, color: "#9c5a2e", name: "Mesa" },
     { id: OCEAN, color: "#000080", name: "Ocean" },
     { id: LAKE, color: "#0055d4", name: "Lake" },
     { id: CORAL_REEF, color: "#5cffc4", name: "Coral reef" },
