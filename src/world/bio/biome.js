@@ -47,7 +47,6 @@ const BIOME_TABLE = [
 ]
 
 
-
 export class BiomeMap {
     constructor(reliefMap, heatMap, moistureMap, waterbodyMap, landmassMap) {
         this.reliefMap = reliefMap
@@ -58,16 +57,16 @@ export class BiomeMap {
     }
 
     get(point) {
-        let type = this.getTileType(point)
+        let type = this._detectBiome(point)
         return BIOME_TABLE[type]
     }
 
-    getTileType(point) {
-        let relief = this.reliefMap.get(point)
-        let heat = this.heatMap.get(point)
-        let moisture = this.moistureMap.get(point)
-        let waterbody = this.waterbodyMap.get(point)
-        let isLitoral = this.landmassMap.isLitoral(point)
+    _detectBiome(point) {
+        const relief = this.reliefMap.get(point)
+        const heat = this.heatMap.get(point)
+        const moisture = this.moistureMap.get(point)
+        const waterbody = this.waterbodyMap.get(point)
+        const isLitoral = this.landmassMap.isLitoral(point)
 
         if (waterbody) {
             const isWater = relief.isAbyss || relief.isShallow || relief.isReef
@@ -119,13 +118,5 @@ export class BiomeMap {
             if (moisture.isDry) return SHRUBLAND
             if (moisture.isLowest) return DESERT
         }
-    }
-}
-
-
-
-class Biome {
-    constructor(type) {
-        this.type = type
     }
 }
