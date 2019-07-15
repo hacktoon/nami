@@ -28,6 +28,7 @@ export class RiverMap {
 
         this._detectSources(this.reliefMap.mountainPoints)
         this._detectMouths(this.landmassMap.litoralPoints)
+        this._buildRivers()
     }
 
 
@@ -65,6 +66,28 @@ export class RiverMap {
 
     /* BUILDING METHODS ========================================== */
 
+    _buildRivers() {
+        while(this.sources.length) {
+            const source = this.sources.pop()
+            const mouth = this.getNearestMouth(source)
+            // log(source, mouth)
+        }
+    }
+
+    getNearestMouth(source) {
+        const minDistance = 10
+        let nearestDistance = Infinity
+        let nearest = undefined
+        for (let point of this.mouths) {
+            let pointsDistance = Point.manhattanDistance(source, point)
+            if (pointsDistance < nearestDistance && pointsDistance >= minDistance) {
+                nearestDistance = pointsDistance
+                nearest = point
+            }
+        }
+        return nearest
+    }
+
     buildRiver(point) {
         let id = this.nextId++
         let river = new River(id, point)
@@ -85,11 +108,6 @@ export class RiverMap {
         }
     }
 
-    _getRiverDirection(point) {
-        while(true) {
-
-        }
-    }
 
     _isInvalidPoint(point) {
         let isAnotherRiver = this.grid.get(point) != EMPTY_VALUE
