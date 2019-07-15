@@ -23,11 +23,11 @@ const ZONE_TABLE = [
 ]
 
 const HEAT_TABLE = [
-    { id: ARCTIC, value: 0, color: "white",  name: "Arctic" },
-    { id: SUBARCTIC, value: 1, color: "gray",  name: "Subarctic" },
-    { id: TEMPERATE, value: 2, color: "blue",   name: "Temperate" },
-    { id: SUBTROPICAL, value: 3, color: "yellow", name: "Subtropical" },
-    { id: TROPICAL, value: 4, color: "red",    name: "Tropical" }
+    { id: ARCTIC, value: 0, color: "#b5e4ff",  name: "Arctic" },
+    { id: SUBARCTIC, value: 1, color: "#8bff60",  name: "Subarctic" },
+    { id: TEMPERATE, value: 2, color: "#f7ff00",   name: "Temperate" },
+    { id: SUBTROPICAL, value: 3, color: "#ffa100", name: "Subtropical" },
+    { id: TROPICAL, value: 4, color: "#ff3503",    name: "Tropical" }
 ]
 
 const ROUGHNESS = .2

@@ -5,8 +5,8 @@ import { WaterbodyMap } from './geo/waterbody'
 import { LandmassMap } from './geo/landmass'
 import { BiomeMap } from './bio/biome'
 import { ReliefMap } from './geo/relief'
-import { HeatMap } from './climate/heat'
-import { MoistureMap } from './climate/moisture'
+import { HeatMap } from './atm/heat'
+import { MoistureMap } from './atm/moisture'
 
 
 export default class WorldBuilder {

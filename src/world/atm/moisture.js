@@ -5,11 +5,11 @@ import { HeightMap } from '../../lib/heightmap'
 
 
 const MOISTURE_TABLE = [
-    { id: 0, height: 0,   color: "#19FFFF", name: "Very dry" },
-    { id: 1, height: 30,  color: "#00D5FF", name: "Dry" },
-    { id: 2, height: 90,  color: "#00ffbc", name: "Seasonal" },
-    { id: 3, height: 150, color: "#00AAFF", name: "Wet" },
-    { id: 4, height: 210, color: "#0080FF", name: "Very wet" }
+    { id: 0, height: 0,   color: "#ffa100", name: "Very dry" },
+    { id: 1, height: 30,  color: "#ffe600", name: "Dry" },
+    { id: 2, height: 90,  color: "#aaff60", name: "Seasonal" },
+    { id: 3, height: 150, color: "#60ffca", name: "Wet" },
+    { id: 4, height: 210, color: "#0080ff", name: "Very wet" }
 ]
 
 
