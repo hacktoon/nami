@@ -41,7 +41,7 @@ const BIOME_TABLE = [
     { id: CORAL_REEF, color: "#5cffc4", name: "Coral reef" },
     { id: RIVER, color: "#5fbcd3", name: "River" },
     { id: MANGROVE, color: "#876729", name: "Mangrove" },
-    { id: SWAMP, color: "#916f8a", name: "Swamp" },
+    { id: SWAMP, color: "#a3358c", name: "Swamp" },
     { id: BEACH, color: "#ffe680", name: "Beach" },
     { id: VOLCANO, color: "#DD0000", name: "Volcano" }
 ]
@@ -72,6 +72,7 @@ export class BiomeMap {
         if (waterbody) {
             const isWater = relief.isAbyss || relief.isShallow || relief.isReef
             if (heat.isArctic && isWater) return ICE
+            if (waterbody.isSwamp) return SWAMP
             if (waterbody.isLake || waterbody.isSea) return LAKE
             if ((heat.isTropical || heat.isSubtropical) && relief.isReef) {
                 return CORAL_REEF

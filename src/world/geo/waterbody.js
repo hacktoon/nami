@@ -3,19 +3,25 @@ import _ from 'lodash'
 import { Grid } from '../../lib/grid'
 import { ScanlineFill8 } from '../../lib/flood-fill'
 import { Name } from '../../lib/name'
+import { Random } from '../../lib/base';
 
 const MIN_OCEAN_AREA_CHANCE = 8
 const MIN_SEA_AREA_CHANCE = 1
+const MAX_SWAMP_AREA = 4
+const SWAMP_CHANCE = .3
 
 const EMPTY_VALUE = 0
+
 const OCEAN = 0
 const SEA = 1
 const LAKE = 2
+const SWAMP = 3
 
 const WATERBODY_TABLE = {
     [OCEAN]: {color: "#0c2e63", name: "Ocean"},
     [SEA]: {color: "#8bddd4", name: "Sea"},
     [LAKE]: {color: "#29f25e", name: "Lake"},
+    [SWAMP]: { color: "#916f8a", name: "Swamp"},
 }
 
 
@@ -58,26 +64,31 @@ export class WaterbodyMap {
         if (tileCount == 0) return
 
         let type = LAKE
-
-        if (this._isOceanType(tileCount)) {
+        if (this._isSwampArea(tileCount)) {
+            type = SWAMP
+        } else if (this._isOceanArea(tileCount)) {
             type = OCEAN
-        } else if (this._isSeaType(tileCount)) {
+        } else if (this._isSeaArea(tileCount)) {
             type = SEA
         }
         this.map[id] = new Waterbody(id, type, point, tileCount)
     }
 
-    _isOceanType(tileCount) {
+    _isOceanArea(tileCount) {
         let totalTiles = Math.pow(this.size, 2)
         let tilePercentage = (100 * tileCount) / totalTiles
         return tilePercentage >= MIN_OCEAN_AREA_CHANCE
     }
 
-    _isSeaType(tileCount) {
+    _isSeaArea(tileCount) {
         let totalTiles = Math.pow(this.size, 2)
         let tilePercentage = (100 * tileCount) / totalTiles
         let withinPercentage = tilePercentage >= MIN_SEA_AREA_CHANCE
-        return !this._isOceanType(tileCount) && withinPercentage
+        return !this._isOceanArea(tileCount) && withinPercentage
+    }
+
+    _isSwampArea(tileCount) {
+        return tileCount <= MAX_SWAMP_AREA && Random.chance(SWAMP_CHANCE)
     }
 
     get(point) {
@@ -104,4 +115,5 @@ class Waterbody {
     get isOcean() { return this.type == OCEAN }
     get isSea() { return this.type == SEA }
     get isLake() { return this.type == LAKE }
+    get isSwamp() { return this.type == SWAMP }
 }
