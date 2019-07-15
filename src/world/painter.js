@@ -35,6 +35,8 @@ export default class WorldPainter {
     drawHeat() {
         this.world.iter(tile => {
             this.drawTile(tile.point, tile.heat.color)
+            if (tile.isLitoral)
+                this.drawTile(tile.point, "black")
         })
     }
 
