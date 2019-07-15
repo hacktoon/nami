@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 import World from './world'
 import { WaterbodyMap } from './geo/waterbody'
+import { RiverMap } from './geo/river'
 import { LandmassMap } from './geo/landmass'
 import { BiomeMap } from './bio/biome'
 import { ReliefMap } from './geo/relief'
@@ -15,8 +16,14 @@ export default class WorldBuilder {
         this.reliefMap = new ReliefMap(size, roughness)
         this.heatMap = new HeatMap(size, this.reliefMap)
         this.moistureMap = new MoistureMap(size, roughness, this.reliefMap)
-        this.waterbodyMap = new WaterbodyMap(size, this.reliefMap, this.moistureMap)
-        this.landmassMap = new LandmassMap(size, this.reliefMap, this.waterbodyMap)
+        this.waterbodyMap = new WaterbodyMap(this.reliefMap)
+        this.landmassMap = new LandmassMap(this.reliefMap, this.waterbodyMap)
+        this.riverMap = new RiverMap(
+            this.reliefMap,
+            this.moistureMap,
+            this.waterbodyMap,
+            this.landmassMap,
+        )
         this.biomeMap = new BiomeMap(
             this.reliefMap,
             this.heatMap,

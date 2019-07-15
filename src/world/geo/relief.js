@@ -33,6 +33,7 @@ export class ReliefMap {
         this.size = size
         this.landPoints = []
         this.waterPoints = []
+        this.mountainPoints = []
 
         this._buildMap(size, roughness)
     }
@@ -45,6 +46,9 @@ export class ReliefMap {
                 this.waterPoints.push(point)
             } else {
                 this.landPoints.push(point)
+                if (relief.isMountain) {
+                    this.mountainPoints.push(point)
+                }
             }
         })
     }

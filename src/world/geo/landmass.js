@@ -17,13 +17,14 @@ const LANDMASS_TABLE = {
 
 
 export class LandmassMap {
-    constructor(size, reliefMap, waterbodyMap) {
-        this.grid = new Grid(size, size, {id: EMPTY_VALUE, isLitoral: false})
+    constructor(reliefMap, waterbodyMap) {
+        this.size = reliefMap.size
+        this.grid = new Grid(this.size, this.size, {id: EMPTY_VALUE, isLitoral: false})
         this.reliefMap = reliefMap
         this.waterbodyMap = waterbodyMap
-        this.size = size
         this.nextId = 1
         this.map = {}
+        this.litoralPoints = []
 
         this._detectLandmasses()
     }
@@ -52,6 +53,7 @@ export class LandmassMap {
                 const waterbody = this.waterbodyMap.get(neighbor)
                 if (waterbody && (waterbody.isOcean || waterbody.isSea)) {
                     isLitoral = true
+                    this.litoralPoints.push(point)
                 }
             })
             return isLitoral

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { Grid } from '../../lib/grid'
 import { ScanlineFill8 } from '../../lib/flood-fill'
 import { Name } from '../../lib/name'
-import { Random } from '../../lib/base';
+import { Random } from '../../lib/base'
 
 const MIN_OCEAN_AREA_CHANCE = 8
 const MIN_SEA_AREA_CHANCE = 1
@@ -26,12 +26,11 @@ const WATERBODY_TABLE = {
 
 
 export class WaterbodyMap {
-    constructor(size, reliefMap, moistureMap) {
-        this.grid = new Grid(size, size, EMPTY_VALUE)
-        this.moistureMap = moistureMap
+    constructor(reliefMap) {
+        this.size = reliefMap.size
+        this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
         this.reliefMap = reliefMap
         this.riverSources = []
-        this.size = size
         this.nextId = 1
         this.map = {}
 

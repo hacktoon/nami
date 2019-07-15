@@ -2,69 +2,73 @@ import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
-import { getChance, Direction } from '../../lib/base';
+import { Direction } from '../../lib/base';
 import { Point } from '../../lib/point';
 import { Random } from '../../lib/base';
 
 
 const EMPTY_VALUE = 0
 
+const SOURCE_CHANCE = .05
+const MOUTH_CHANCE = .05
+
 
 export class RiverMap {
-    constructor(world, waterbodyMap) {
-        this.nextId = 1
-        this.world = world
+    constructor(reliefMap, moistureMap, waterbodyMap, landmassMap) {
+        this.size = reliefMap.size
+        this.reliefMap = reliefMap
+        this.moistureMap = moistureMap
         this.waterbodyMap = waterbodyMap
-        this.grid = new Grid(world.size, world.size, EMPTY_VALUE)
+        this.landmassMap = landmassMap
+        this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
+        this.nextId = 1
         this.sources = []
-        this.idMap = {}
+        this.mouths = []
+        this.map = {}
+
+        this._detectSources(this.reliefMap.mountainPoints)
+        this._detectMouths(this.landmassMap.litoralPoints)
     }
 
-    get(point) {
-        let id = this.grid.get(point)
-        return this.idMap[id]
+
+    /* DETECTION METHODS ========================================== */
+
+    _detectSources(points) {
+        points.forEach(point => {
+            if (this._isSource(point))
+                this.sources.push(point)
+        })
     }
 
-    detect(point) {
-        let isProperPoint = this._isValidNeighborhood(point)
-        let chance = this._isIsolated(point)
-
-        if(chance && isProperPoint) {
-            this.buildRiver(point)
-        }
+    _isSource(point) {
+        const chance = Random.chance(SOURCE_CHANCE)
+        return chance && this._isIsolated(point)
     }
 
     _isIsolated(newPoint) {
-        let minDistance = 30
-        for(let point of this.sources) {
+        let minDistance = 20
+        for (let point of this.sources) {
             let pointsDistance = Point.manhattanDistance(newPoint, point)
-            if (pointsDistance <= minDistance) {
+            if (pointsDistance <= minDistance)
                 return false
-            }
         }
         return true
     }
 
-    _isValidNeighborhood(refPoint) {
-        let mountains = 0
-        let isolated = true
-        refPoint.adjacentPoints(point => {
-            let tile = this.world.get(point)
-            if (this.grid.get(point) != EMPTY_VALUE) {
-                isolated = false
-            }
-            if (tile.relief.isHighest) {
-                mountains++
-            }
+    _detectMouths(points) {
+        points.forEach(point => {
+            if (Random.chance(MOUTH_CHANCE))
+                this.mouths.push(point)
         })
-        return isolated && (mountains == 2 || mountains == 3)
     }
+
+
+    /* BUILDING METHODS ========================================== */
 
     buildRiver(point) {
         let id = this.nextId++
         let river = new River(id, point)
-        this.sources.push(point)
-        this.idMap[id] = river
+        this.map[id] = river
         this._setRiverPoint(id, point)
         this._flowRiver(id, point)
     }
@@ -72,7 +76,6 @@ export class RiverMap {
     _flowRiver(id, startPoint) {
         let direction = Direction.randomCardinal()
         let meander = Random.int(10, 30)
-        this.world.get(startPoint).source = true
         while(true) {
             let nextPoint = this._getNextPoint(id, startPoint, meander, direction)
             if (this._isInvalidPoint(nextPoint))
@@ -138,13 +141,18 @@ export class RiverMap {
     }
 
     _digMargins(id, riverPoint) {
-        let sourcePoint = this.idMap[id].sourcePoint
+        let sourcePoint = this.map[id].sourcePoint
         let tile = this.world.get(sourcePoint)
         riverPoint.aroundPoints(point => {
             let relief = this.world.get(point).relief
             if (relief.isLand)
                 relief.level(tile.relief.id)
         })
+    }
+
+    get(point) {
+        let id = this.grid.get(point)
+        return this.map[id]
     }
 }
 
