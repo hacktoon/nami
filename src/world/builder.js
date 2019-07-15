@@ -28,17 +28,19 @@ export default class WorldBuilder {
 
     build() {
         window.currentWorld = this.world
-        this.world.iter(tile => {
-            const point = tile.point
-            tile.relief = this.reliefMap.get(point)
-            tile.heat = this.heatMap.get(point)
-            tile.moisture = this.moistureMap.get(point)
-            tile.waterbody = this.waterbodyMap.get(point)
-            tile.landmass = this.landmassMap.get(point)
-            tile.isLitoral = this.landmassMap.isLitoral(point)
-            tile.biome = this.biomeMap.get(point)
-        })
+        this.world.iter(tile => this.updateTile(tile))
         return this.world
+    }
+
+    updateTile(tile) {
+        const point = tile.point
+        tile.relief = this.reliefMap.get(point)
+        tile.heat = this.heatMap.get(point)
+        tile.moisture = this.moistureMap.get(point)
+        tile.waterbody = this.waterbodyMap.get(point)
+        tile.landmass = this.landmassMap.get(point)
+        tile.isLitoral = this.landmassMap.isLitoral(point)
+        tile.biome = this.biomeMap.get(point)
     }
 
 
