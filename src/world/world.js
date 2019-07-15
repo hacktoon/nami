@@ -1,6 +1,7 @@
 import Tile from './tile'
-import {Grid} from '../lib/grid'
+import { Grid } from '../lib/grid'
 import { Name } from '../lib/name';
+import { Random } from '../lib/base';
 
 
 export default class World {

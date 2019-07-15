@@ -72,7 +72,7 @@ export class Direction {
     }
 
     static randomCardinal () {
-        return Random.choiceo([
+        return Random.choice([
             this.NORTH,
             this.EAST,
             this.SOUTH,
@@ -80,7 +80,6 @@ export class Direction {
         ])
     }
 }
-window.Direction = Direction
 
 
 var NumberInterpolation = function(from, to, totalItems){
@@ -133,6 +132,7 @@ export class HashMap {
         _.each(this._map, obj => callback(obj))
     }
 }
+
 
 export class Random {
     static set seed(seed) {
@@ -201,5 +201,3 @@ export class Random {
         return ((t ^ t >>> 14) >>> 0) / 2 ** 32
     }
 }
-
-window.Random = Random

@@ -67,20 +67,22 @@ export class RiverMap {
     /* BUILDING METHODS ========================================== */
 
     _buildRivers() {
+        const MINDISTANCE = 10
         while(this.sources.length) {
             const source = this.sources.pop()
-            const mouth = this.getNearestMouth(source)
-            // log(source, mouth)
+            const mouth = this._getNearestMouth(source)
+            if (mouth) {
+                this._buildRiver(source, mouth)
+            }
         }
     }
 
-    getNearestMouth(source) {
-        const minDistance = 10
+    _getNearestMouth(source) {
         let nearestDistance = Infinity
         let nearest = undefined
         for (let point of this.mouths) {
             let pointsDistance = Point.manhattanDistance(source, point)
-            if (pointsDistance < nearestDistance && pointsDistance >= minDistance) {
+            if (pointsDistance < nearestDistance) {
                 nearestDistance = pointsDistance
                 nearest = point
             }
@@ -88,84 +90,19 @@ export class RiverMap {
         return nearest
     }
 
-    buildRiver(point) {
+    _buildRiver(source, mouth) {
         let id = this.nextId++
-        let river = new River(id, point)
-        this.map[id] = river
-        this._setRiverPoint(id, point)
-        this._flowRiver(id, point)
+        this.map[id] = new River(id, source, mouth)
+        this._setRiverPoint(id, source)
+        this._flowRiver(id, source, mouth)
     }
 
-    _flowRiver(id, startPoint) {
-        let direction = Direction.randomCardinal()
-        let meander = Random.int(10, 30)
-        while(true) {
-            let nextPoint = this._getNextPoint(id, startPoint, meander, direction)
-            if (this._isInvalidPoint(nextPoint))
-                break
-            this._setRiverPoint(id, nextPoint)
-            startPoint = nextPoint
-        }
-    }
+    _flowRiver(id, source, mouth) {
 
-
-    _isInvalidPoint(point) {
-        let isAnotherRiver = this.grid.get(point) != EMPTY_VALUE
-        let isWaterbody = Boolean(this.waterbodyMap.get(point))
-        return isAnotherRiver || isWaterbody
-    }
-
-    _getNextPoint(id, point, meander, direction) {
-        let nextPoint = Point.at(point, direction)
-        if (Direction.isHorizontal(direction)) {
-            let variance = this._getMeanderVariance(nextPoint.x, meander)
-            nextPoint.y = point.y + variance
-        }
-        if (Direction.isVertical(direction)) {
-            let variance = this._getMeanderVariance(nextPoint.y, meander)
-            nextPoint.x = point.x + variance
-        }
-        this._buildIntermediaryPoints(id, point, nextPoint)
-        return nextPoint
-    }
-
-    _getMeanderVariance(coordinate, rate) {
-        let sineVariance = Math.cos(coordinate * Random.int(10, 30))
-        let variance = Math.sin(coordinate / rate) + sineVariance
-        return Math.round(variance)
-    }
-
-    _buildIntermediaryPoints(id, source, target) {
-        while (! source.isNeighbor(target)) {
-            let point
-
-            if (source.x < target.x) point = Point.atEast(source)
-            if (source.x > target.x) point = Point.atWest(source)
-            if (source.y < target.y) point = Point.atSouth(source)
-            if (source.y > target.y) point = Point.atNorth(source)
-
-            if (this._isInvalidPoint(point))
-                break
-
-            source = point
-            this._setRiverPoint(id, point)
-        }
     }
 
     _setRiverPoint(id, point) {
         this.grid.set(point, id)
-        this.world.get(point).river = true
-        //this._digMargins(id, point)
-    }
-
-    _digMargins(id, riverPoint) {
-        let sourcePoint = this.map[id].sourcePoint
-        let tile = this.world.get(sourcePoint)
-        riverPoint.aroundPoints(point => {
-            let relief = this.world.get(point).relief
-            if (relief.isLand)
-                relief.level(tile.relief.id)
-        })
     }
 
     get(point) {
@@ -176,9 +113,10 @@ export class RiverMap {
 
 
 class River {
-    constructor(id, sourcePoint) {
+    constructor(id, source, mouth) {
         this.id = id
         this.name = Name.createRiverName()
-        this.sourcePoint = sourcePoint
+        this.source = source
+        this.mouth = mouth
     }
 }
