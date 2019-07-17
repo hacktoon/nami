@@ -2,7 +2,6 @@ import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
-import { Direction } from '../../lib/base';
 import { Point } from '../../lib/point';
 import { Random } from '../../lib/base';
 
@@ -68,7 +67,7 @@ export class RiverMap {
 
     _buildRivers() {
         const MINDISTANCE = 10
-        while(this.sources.length) {
+        while (this.sources.length) {
             const source = this.sources.pop()
             const mouth = this._getNearestMouth(source)
             if (mouth) {
@@ -92,17 +91,47 @@ export class RiverMap {
 
     _buildRiver(source, mouth) {
         let id = this.nextId++
-        this.map[id] = new River(id, source, mouth)
-        this._setRiverPoint(id, source)
+        //this._buildRiverPoints(source, mouth)
+        this.map[id] = new River(id, source)
         this._flowRiver(id, source, mouth)
     }
 
     _flowRiver(id, source, mouth) {
+        const isWater = point => {
+            if (this.reliefMap.get(point).isWater) return true
+            let isWaterNeighbor = false
+            point.pointsAround(p => {
+                isWaterNeighbor = this.reliefMap.get(p).isWater
+            })
+            return isWaterNeighbor
+        }
+        const reachedMouth = pt => pt.x == mouth.x && pt.y == mouth.y
 
+        let currentPoint = source
+        while (!reachedMouth(currentPoint)) {
+            this._setRiverPoint(id, currentPoint)
+            currentPoint = this._getNextRiverPoint(currentPoint, mouth)
+            if (isWater(currentPoint)) break
+        }
+        this._setRiverPoint(id, currentPoint)
     }
 
     _setRiverPoint(id, point) {
         this.grid.set(point, id)
+        this.reliefMap.get(point).debug = true
+    }
+
+    _getNextRiverPoint(origin, target) {
+        let points = []
+        if (origin.x != target.x) {
+            let nextX = origin.x + Math.sign(target.x - origin.x)
+            points.push(new Point(nextX, origin.y))
+        }
+        if (origin.y != target.y) {
+            let nextY = origin.y + Math.sign(target.y - origin.y)
+            points.push(new Point(origin.x, nextY))
+        }
+        return this.grid.wrap(Random.choice(points))
     }
 
     get(point) {
@@ -113,10 +142,9 @@ export class RiverMap {
 
 
 class River {
-    constructor(id, source, mouth) {
+    constructor(id, source) {
         this.id = id
         this.name = Name.createRiverName()
         this.source = source
-        this.mouth = mouth
     }
 }
