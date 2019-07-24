@@ -8,8 +8,9 @@ import { Random } from '../../lib/base';
 
 const EMPTY_VALUE = 0
 
-const SOURCE_CHANCE = .05
-const MOUTH_CHANCE = .05
+const SOURCE_CHANCE = .05  // chance of spawning a river source
+const MOUTH_CHANCE = .05  // chance of spawning a river mouth
+const MIN_SOURCE_ISOLATION = 20  // minimum tiles between river sources
 
 
 export class RiverMap {
@@ -46,10 +47,9 @@ export class RiverMap {
     }
 
     _isIsolated(newPoint) {
-        let minDistance = 20
         for (let point of this.sources) {
             let pointsDistance = Point.manhattanDistance(newPoint, point)
-            if (pointsDistance <= minDistance)
+            if (pointsDistance <= MIN_SOURCE_ISOLATION)
                 return false
         }
         return true
@@ -66,7 +66,6 @@ export class RiverMap {
     /* BUILDING METHODS ========================================== */
 
     _buildRivers() {
-        const MINDISTANCE = 10
         while (this.sources.length) {
             const source = this.sources.pop()
             const mouth = this._getNearestMouth(source)
@@ -91,7 +90,6 @@ export class RiverMap {
 
     _buildRiver(source, mouth) {
         let id = this.nextId++
-        //this._buildRiverPoints(source, mouth)
         this.map[id] = new River(id, source)
         this._flowRiver(id, source, mouth)
     }
@@ -102,7 +100,7 @@ export class RiverMap {
         let currentPoint = source
         while (! reachedMouth(currentPoint)) {
             this._setRiverPoint(id, currentPoint)
-            currentPoint = this._getNextRiverPoint(currentPoint, mouth)
+            currentPoint = this._getNextAdjacentPoint(currentPoint, mouth)
             if (this._reachedWater(currentPoint))
                 break
         }
@@ -123,7 +121,7 @@ export class RiverMap {
         this.reliefMap.get(point).debug = true
     }
 
-    _getNextRiverPoint(origin, target) {
+    _getNextAdjacentPoint(origin, target) {
         let points = []
         if (origin.x != target.x) {
             let nextX = origin.x + Math.sign(target.x - origin.x)
