@@ -98,11 +98,9 @@ export class RiverMap {
         const reachedMouth = pt => pt.x == mouth.x && pt.y == mouth.y
 
         let currentPoint = source
-        while (! reachedMouth(currentPoint)) {
+        while (!reachedMouth(currentPoint) && !this._reachedWater(currentPoint)) {
             this._setRiverPoint(id, currentPoint)
             currentPoint = this._getNextAdjacentPoint(currentPoint, mouth)
-            if (this._reachedWater(currentPoint))
-                break
         }
         this._setRiverPoint(id, currentPoint)
     }
@@ -110,7 +108,9 @@ export class RiverMap {
     _reachedWater(point) {
         let hasWaterNeighbor = false
         point.adjacentPoints(p => {
-            if (this.reliefMap.get(p).isWater)
+            const neighborRiver = this.get(p) != EMPTY_VALUE
+            const neighborWaterbody = this.reliefMap.get(p).isWater
+            if (neighborWaterbody && neighborRiver)
                 hasWaterNeighbor = true
         })
         return hasWaterNeighbor
