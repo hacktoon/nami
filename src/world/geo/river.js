@@ -11,6 +11,8 @@ const EMPTY_VALUE = 0
 const SOURCE_CHANCE = .05  // chance of spawning a river source
 const MOUTH_CHANCE = .05  // chance of spawning a river mouth
 const MIN_SOURCE_ISOLATION = 20  // minimum tiles between river sources
+const MEANDER_RATE = 5  // midpoint separation
+const MEANDER_VARIANCE = 2  // meandering variance
 
 
 export class RiverMap {
@@ -89,16 +91,55 @@ export class RiverMap {
     }
 
     _buildRiver(source, mouth) {
-        let id = this.nextId++
+        const id = this.nextId++
+        const points = this._generateRiverPoints(id, source, mouth)
+        this._flowRiver(id, source, mouth, points)
         this.map[id] = new River(id, source)
-        this._flowRiver(id, source, mouth)
     }
 
-    _flowRiver(id, source, mouth) {
+    _generateRiverPoints(id, source, mouth) {
+        const points = [source]
+        const xDelta = Math.abs(mouth.x - source.x)
+        const yDelta = Math.abs(mouth.y - source.y)
+        const horizontalFlow = xDelta > yDelta
+        const flowAxis = horizontalFlow ? 'x' : 'y'
+        const meanderAxis = horizontalFlow ? 'y' : 'x'
+        const riverLength = horizontalFlow ? xDelta : yDelta
+        const flowSign = Math.sign(mouth[flowAxis] - source[flowAxis])
+        const displacement = Math.ceil(riverLength / MEANDER_RATE) * flowSign
+        const meanderStartAxis = Math.min(source[meanderAxis], mouth[meanderAxis])
+        const meanderEndAxis = Math.max(source[meanderAxis], mouth[meanderAxis])
+        let currentAxis = source[flowAxis] + displacement
+
+        const buildPoint = currentAxis => {
+            const point = new Point()
+            point[flowAxis] = currentAxis
+            point[meanderAxis] = Random.int(
+                meanderStartAxis - MEANDER_VARIANCE,
+                meanderEndAxis + MEANDER_VARIANCE
+            )
+
+            //this.reliefMap.get(point).debugBlack = true
+            return point
+        }
+
+        while (flowSign > 0 && currentAxis < mouth[flowAxis] ||
+            flowSign < 0 && currentAxis > mouth[flowAxis]) {
+            const pt = buildPoint(currentAxis)
+            points.push(pt)
+            currentAxis += displacement
+        }
+        points.push(mouth)
+        return points
+    }
+
+    _flowRiver(id, source, mouth, points) {
         const reachedMouth = pt => pt.x == mouth.x && pt.y == mouth.y
 
         let currentPoint = source
-        while (!reachedMouth(currentPoint) && !this._reachedWater(currentPoint)) {
+        while (true) {
+            if (reachedMouth(currentPoint) || this._reachedWater(currentPoint))
+                break
             this._setRiverPoint(id, currentPoint)
             currentPoint = this._getNextAdjacentPoint(currentPoint, mouth)
         }
