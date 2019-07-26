@@ -68,35 +68,36 @@ export class RiverMap {
     /* BUILDING METHODS ========================================== */
 
     _buildRivers() {
+        const usedMouthIndexes = new Set()
         while (this.sources.length) {
             const id = this.nextId++
             const source = this.sources.pop()
-            const mouth = this._getNearestMouth(id, source)
+            const mouth = this._getNearestMouth(source, usedMouthIndexes)
             if (mouth) {
                 this._buildRiver(id, source, mouth)
             }
         }
     }
 
-    _getNearestMouth(id, source) {
+    _getNearestMouth(source, usedMouthIndexes) {
         let nearestDistance = Infinity
         let nearest = undefined
-        for (let point of this.mouths) {
-            if (this.grid.get(point) != EMPTY_VALUE)
-                continue
-            let pointsDistance = Point.manhattanDistance(source, point)
+        let nearestIndex = undefined
+        this.mouths.forEach((point, index) => {
+            if (usedMouthIndexes.has(index)) return
+            const pointsDistance = Point.manhattanDistance(source, point)
             if (pointsDistance < nearestDistance ) {
                 nearestDistance = pointsDistance
                 nearest = point
+                nearestIndex = index
             }
-        }
-        this.grid.set(nearest, id)
+        })
+        usedMouthIndexes.add(nearestIndex)
         return nearest
     }
 
     _buildRiver(id, source, mouth) {
-        const points = this._generateRiverPoints(id, source, mouth)
-        this._flowRiver(id, source, mouth, points)
+        this._flowRiver(id, source, mouth)
         this.map[id] = new River(id, source)
     }
 
@@ -136,12 +137,13 @@ export class RiverMap {
         return points
     }
 
-    _flowRiver(id, source, mouth, points) {
+    _flowRiver(id, source, mouth) {
+        //const points = this._generateRiverPoints(id, source, mouth)
         const reachedMouth = pt => pt.x == mouth.x && pt.y == mouth.y
 
         let currentPoint = source
         while (true) {
-            if (reachedMouth(currentPoint) || this._reachedWater(currentPoint))
+            if (reachedMouth(currentPoint) || this._reachedWater(id, currentPoint))
                 break
             this._setRiverPoint(id, currentPoint)
             currentPoint = this._getNextAdjacentPoint(currentPoint, mouth)
@@ -149,12 +151,15 @@ export class RiverMap {
         this._setRiverPoint(id, currentPoint)
     }
 
-    _reachedWater(point) {
+    _reachedWater(id, point) {
         let hasWaterNeighbor = false
-        point.adjacentPoints(p => {
-            const neighborRiver = this.get(p) != EMPTY_VALUE
-            const neighborWaterbody = this.reliefMap.get(p).isWater
-            if (neighborWaterbody && neighborRiver)
+        point.adjacentPoints(pt => {
+            const neighborId = this.grid.get(pt)
+            if (neighborId == id) return
+
+            const neighborRiver = neighborId != EMPTY_VALUE
+            const neighborWaterbody = this.reliefMap.get(pt).isWater
+            if (neighborWaterbody || neighborRiver)
                 hasWaterNeighbor = true
         })
         return hasWaterNeighbor
@@ -190,5 +195,16 @@ class River {
         this.id = id
         this.name = Name.createRiverName()
         this.source = source
+    }
+}
+
+
+class RiverPoint {
+    constructor(id, direction, strength) {
+        this.id = id
+        this.direction = direction
+        this.strength = strength
+        this.isSource = false
+        this.isMouth = false
     }
 }
