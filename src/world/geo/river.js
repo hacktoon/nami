@@ -25,7 +25,7 @@ export class RiverMap {
         this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
         this.nextId = 1
         this.sources = []
-        this.mouths = []
+        this.mouths = {}
         this.map = {}
 
         this._detectSources(this.reliefMap.mountainPoints)
@@ -58,9 +58,9 @@ export class RiverMap {
     }
 
     _detectMouths(points) {
-        points.forEach(point => {
+        points.forEach((point, index) => {
             if (Random.chance(MOUTH_CHANCE))
-                this.mouths.push(point)
+                this.mouths[index] = point
         })
     }
 
@@ -68,32 +68,30 @@ export class RiverMap {
     /* BUILDING METHODS ========================================== */
 
     _buildRivers() {
-        const usedMouthIndexes = new Set()
         while (this.sources.length) {
             const id = this.nextId++
             const source = this.sources.pop()
-            const mouth = this._getNearestMouth(source, usedMouthIndexes)
+            const mouth = this._getNearestMouth(source)
             if (mouth) {
                 this._buildRiver(id, source, mouth)
             }
         }
     }
 
-    _getNearestMouth(source, usedMouthIndexes) {
+    _getNearestMouth(source) {
         let nearestDistance = Infinity
-        let nearest = undefined
+        let nearestPoint = undefined
         let nearestIndex = undefined
-        this.mouths.forEach((point, index) => {
-            if (usedMouthIndexes.has(index)) return
+        _.each(this.mouths, (point, index) => {
             const pointsDistance = Point.manhattanDistance(source, point)
-            if (pointsDistance < nearestDistance ) {
+            if (pointsDistance < nearestDistance) {
                 nearestDistance = pointsDistance
-                nearest = point
+                nearestPoint = point
                 nearestIndex = index
             }
         })
-        usedMouthIndexes.add(nearestIndex)
-        return nearest
+        delete this.mouths[nearestIndex]
+        return nearestPoint
     }
 
     _buildRiver(id, source, mouth) {
