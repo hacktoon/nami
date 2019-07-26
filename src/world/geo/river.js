@@ -69,29 +69,32 @@ export class RiverMap {
 
     _buildRivers() {
         while (this.sources.length) {
+            const id = this.nextId++
             const source = this.sources.pop()
-            const mouth = this._getNearestMouth(source)
+            const mouth = this._getNearestMouth(id, source)
             if (mouth) {
-                this._buildRiver(source, mouth)
+                this._buildRiver(id, source, mouth)
             }
         }
     }
 
-    _getNearestMouth(source) {
+    _getNearestMouth(id, source) {
         let nearestDistance = Infinity
         let nearest = undefined
         for (let point of this.mouths) {
+            if (this.grid.get(point) != EMPTY_VALUE)
+                continue
             let pointsDistance = Point.manhattanDistance(source, point)
-            if (pointsDistance < nearestDistance) {
+            if (pointsDistance < nearestDistance ) {
                 nearestDistance = pointsDistance
                 nearest = point
             }
         }
+        this.grid.set(nearest, id)
         return nearest
     }
 
-    _buildRiver(source, mouth) {
-        const id = this.nextId++
+    _buildRiver(id, source, mouth) {
         const points = this._generateRiverPoints(id, source, mouth)
         this._flowRiver(id, source, mouth, points)
         this.map[id] = new River(id, source)
