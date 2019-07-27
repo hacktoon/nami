@@ -62,7 +62,7 @@ export class HeightMap {
     }
 
     square (point, midSize, offset) {
-        var x = point.x,
+        let x = point.x,
             y = point.y,
             average = this.averagePoints([
                 new Point(x - midSize, y - midSize),   // upper left
@@ -99,21 +99,21 @@ export class HeightMap {
 }
 
 
-export function MidpointDisplacement(p1, p2, maxSize, roughness, callback) {
-    var points = Array(size),
+export const MidpointDisplacement = function(p1, p2, maxSize, roughness, callback) {
+    let points = Array(size),
         size = maxSize - 1,
         displacement = roughness * (size / 2)
 
-    var buildPoint = function (p1, p2) {
+    let buildPoint = function (p1, p2) {
         if (p2.x - p1.x <= 1) return
-        var x = Math.floor((p1.x + p2.x) / 2),
+        let x = Math.floor((p1.x + p2.x) / 2),
             y = (p1.y + p2.y) / 2 + Random.int(-displacement, displacement)
         y = _.clamp(Math.round(y), 0, maxSize - 1)
         return new Point(x, y)
     }
 
-    var midpoint = function (p1, p2, size) {
-        var point = buildPoint(p1, p2)
+    let midpoint = function (p1, p2, size) {
+        let point = buildPoint(p1, p2)
         if (!point) return
         points[point.x] = point
         callback(point)
@@ -129,4 +129,4 @@ export function MidpointDisplacement(p1, p2, maxSize, roughness, callback) {
 
     midpoint(p1, p2, size / 2)
     return points
-};
+}
