@@ -8,7 +8,7 @@ import { Random } from '../../lib/base';
 
 const EMPTY_VALUE = 0
 
-const SOURCE_CHANCE = .1        // chance of spawning a river source
+const SOURCE_CHANCE = .5        // chance of spawning a river source
 const MIN_SOURCE_ISOLATION = 10  // minimum tiles between river sources
 
 
@@ -39,9 +39,9 @@ export class RiverMap {
     }
 
     _isSource(point) {
-        const rainsEnough = this.moistureMap.get(point).canSpawnRiver
+        const isRiverPossible = this.moistureMap.get(point).isRiverPossible
         const chance = Random.chance(SOURCE_CHANCE)
-        return chance && rainsEnough
+        return chance && isRiverPossible
     }
 
     _isIsolated(newPoint) {

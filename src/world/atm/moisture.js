@@ -79,7 +79,7 @@ class Moisture {
         return this.data.id > moisture.id
     }
 
-    get canSpawnRiver() {
+    get isRiverPossible() {
         return this.data.id >= 1
     }
 
