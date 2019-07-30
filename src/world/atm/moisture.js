@@ -79,6 +79,10 @@ class Moisture {
         return this.data.id > moisture.id
     }
 
+    get canSpawnRiver() {
+        return this.data.id >= 1
+    }
+
     get isLowest() {
         return this.data.id == _.first(MOISTURE_TABLE).id
     }

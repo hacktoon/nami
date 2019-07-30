@@ -8,20 +8,16 @@ import { Random } from '../../lib/base';
 
 const EMPTY_VALUE = 0
 
-const SOURCE_CHANCE = .05  // chance of spawning a river source
-const MOUTH_CHANCE = .05  // chance of spawning a river mouth
-const MIN_SOURCE_ISOLATION = 20  // minimum tiles between river sources
-const MEANDER_RATE = 5  // midpoint separation
-const MEANDER_VARIANCE = 2  // meandering variance
+const SOURCE_CHANCE = .1        // chance of spawning a river source
+const MIN_SOURCE_ISOLATION = 10  // minimum tiles between river sources
 
 
 export class RiverMap {
-    constructor(reliefMap, moistureMap, waterbodyMap, landmassMap) {
+    constructor(reliefMap, moistureMap, waterbodyMap) {
         this.size = reliefMap.size
         this.reliefMap = reliefMap
         this.moistureMap = moistureMap
         this.waterbodyMap = waterbodyMap
-        this.landmassMap = landmassMap
         this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
         this.nextId = 1
         this.sources = []
@@ -29,7 +25,6 @@ export class RiverMap {
         this.map = {}
 
         this._detectSources(this.reliefMap.mountainPoints)
-        this._detectMouths(this.landmassMap.litoralPoints)
         this._buildRivers()
     }
 
@@ -38,14 +33,15 @@ export class RiverMap {
 
     _detectSources(points) {
         points.forEach(point => {
-            if (this._isSource(point))
+            if (this._isSource(point) && this._isIsolated(point))
                 this.sources.push(point)
         })
     }
 
     _isSource(point) {
+        const rainsEnough = this.moistureMap.get(point).canSpawnRiver
         const chance = Random.chance(SOURCE_CHANCE)
-        return chance && this._isIsolated(point)
+        return chance && rainsEnough
     }
 
     _isIsolated(newPoint) {
@@ -57,94 +53,26 @@ export class RiverMap {
         return true
     }
 
-    _detectMouths(points) {
-        points.forEach((point, index) => {
-            if (Random.chance(MOUTH_CHANCE))
-                this.mouths[index] = point
-        })
-    }
-
 
     /* BUILDING METHODS ========================================== */
 
     _buildRivers() {
         while (this.sources.length) {
             const id = this.nextId++
-            const source = this.sources.pop()
-            const mouth = this._getNearestMouth(source)
-            if (mouth) {
-                this._buildRiver(id, source, mouth)
-            }
+            this._buildRiver(id, this.sources.pop())
         }
     }
 
-    _getNearestMouth(source) {
-        let nearestDistance = Infinity
-        let nearestPoint = undefined
-        let nearestIndex = undefined
-        _.each(this.mouths, (point, index) => {
-            const pointsDistance = Point.manhattanDistance(source, point)
-            if (pointsDistance < nearestDistance) {
-                nearestDistance = pointsDistance
-                nearestPoint = point
-                nearestIndex = index
-            }
-        })
-        delete this.mouths[nearestIndex]
-        return nearestPoint
-    }
-
-    _buildRiver(id, source, mouth) {
-        this._flowRiver(id, source, mouth)
+    _buildRiver(id, source) {
+        this._flowRiver(id, source)
         this.map[id] = new River(id, source)
     }
 
-    _generateRiverPoints(id, source, mouth) {
-        const points = [source]
-        const xDelta = Math.abs(mouth.x - source.x)
-        const yDelta = Math.abs(mouth.y - source.y)
-        const horizontalFlow = xDelta > yDelta
-        const flowAxis = horizontalFlow ? 'x' : 'y'
-        const meanderAxis = horizontalFlow ? 'y' : 'x'
-        const riverLength = horizontalFlow ? xDelta : yDelta
-        const flowSign = Math.sign(mouth[flowAxis] - source[flowAxis])
-        const displacement = Math.ceil(riverLength / MEANDER_RATE) * flowSign
-        const meanderStartAxis = Math.min(source[meanderAxis], mouth[meanderAxis])
-        const meanderEndAxis = Math.max(source[meanderAxis], mouth[meanderAxis])
-        let currentAxis = source[flowAxis] + displacement
-
-        const buildPoint = currentAxis => {
-            const point = new Point()
-            point[flowAxis] = currentAxis
-            point[meanderAxis] = Random.int(
-                meanderStartAxis - MEANDER_VARIANCE,
-                meanderEndAxis + MEANDER_VARIANCE
-            )
-
-            //this.reliefMap.get(point).debugBlack = true
-            return point
-        }
-
-        while (flowSign > 0 && currentAxis < mouth[flowAxis] ||
-            flowSign < 0 && currentAxis > mouth[flowAxis]) {
-            const pt = buildPoint(currentAxis)
-            points.push(pt)
-            currentAxis += displacement
-        }
-        points.push(mouth)
-        return points
-    }
-
-    _flowRiver(id, source, mouth) {
-        //const points = this._generateRiverPoints(id, source, mouth)
-        const reachedMouth = pt => pt.x == mouth.x && pt.y == mouth.y
-
+    _flowRiver(id, source) {
         let currentPoint = source
-        while (true) {
-            if (reachedMouth(currentPoint) || this._reachedWater(id, currentPoint))
-                break
+        while (! this._reachedWater(id, currentPoint)) {
             this._setRiverPoint(id, currentPoint)
-            currentPoint = this._getNextAdjacentPoint(currentPoint, mouth)
+            currentPoint = this._getNextPoint(currentPoint)
         }
         this._setRiverPoint(id, currentPoint)
     }
@@ -156,29 +84,28 @@ export class RiverMap {
             if (neighborId == id) return
 
             const neighborRiver = neighborId != EMPTY_VALUE
-            const neighborWaterbody = this.reliefMap.get(pt).isWater
-            if (neighborWaterbody || neighborRiver)
+            const waterBody = this.reliefMap.get(pt).isWater
+            if (waterBody || neighborRiver)
                 hasWaterNeighbor = true
         })
         return hasWaterNeighbor
     }
 
+    _getNextPoint(origin) {
+        let lowestNeighbor = Point.atNorth(origin)
+        origin.adjacentPoints(neighbor => {
+            if (this.grid.get(neighbor) != EMPTY_VALUE) return
+            const neighborHeight = this.reliefMap.get(neighbor).height
+            const lowestHeight =  this.reliefMap.get(lowestNeighbor).height
+            if (neighborHeight < lowestHeight)
+                lowestNeighbor = neighbor
+        })
+        return this.grid.wrap(lowestNeighbor)
+    }
+
     _setRiverPoint(id, point) {
         this.grid.set(point, id)
         this.reliefMap.get(point).debug = true
-    }
-
-    _getNextAdjacentPoint(origin, target) {
-        let points = []
-        if (origin.x != target.x) {
-            let nextX = origin.x + Math.sign(target.x - origin.x)
-            points.push(new Point(nextX, origin.y))
-        }
-        if (origin.y != target.y) {
-            let nextY = origin.y + Math.sign(target.y - origin.y)
-            points.push(new Point(origin.x, nextY))
-        }
-        return this.grid.wrap(Random.choice(points))
     }
 
     get(point) {
