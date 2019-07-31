@@ -21,11 +21,10 @@ export class RiverMap {
         this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
         this.nextId = 1
         this.sources = []
-        this.mouths = {}
         this.map = {}
 
         this._detectSources(this.reliefMap.mountainPoints)
-        //this._buildRivers()
+        this._buildRivers()
     }
 
 
@@ -79,13 +78,16 @@ export class RiverMap {
 
     _reachedWater(id, point) {
         let hasWaterNeighbor = false
+        const reachedSea = point => {
+            const waterbody = this.waterbodyMap.get(point)
+            return waterbody ? waterbody.isOcean || waterbody.isSea : false
+        }
         point.adjacentPoints(pt => {
             const neighborId = this.grid.get(pt)
             if (neighborId == id) return
 
             const neighborRiver = neighborId != EMPTY_VALUE
-            const waterBody = this.reliefMap.get(pt).isWater
-            if (waterBody || neighborRiver)
+            if (reachedSea(pt) || neighborRiver)
                 hasWaterNeighbor = true
         })
         return hasWaterNeighbor
