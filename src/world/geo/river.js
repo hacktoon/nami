@@ -68,10 +68,11 @@ export class RiverMap {
     }
 
     _flowRiver(id, source) {
+        const directionHistory = []
         let currentPoint = source
         while (! this._reachedWater(id, currentPoint)) {
             this._setRiverPoint(id, currentPoint)
-            currentPoint = this._getNextPoint(currentPoint)
+            currentPoint = this._getNextPoint(currentPoint, directionHistory)
         }
         this._setRiverPoint(id, currentPoint)
     }
@@ -84,8 +85,8 @@ export class RiverMap {
         }
         point.adjacentPoints(pt => {
             const neighborId = this.grid.get(pt)
-            if (neighborId == id) return
-
+            if (neighborId == id)
+                return
             const neighborRiver = neighborId != EMPTY_VALUE
             if (reachedSea(pt) || neighborRiver)
                 hasWaterNeighbor = true
@@ -93,13 +94,16 @@ export class RiverMap {
         return hasWaterNeighbor
     }
 
-    _getNextPoint(origin) {
-        let lowestNeighbor = Point.atNorth(origin)
+    _getNextPoint(origin, directionHistory) {
+        let lowestNeighbor = undefined
         origin.adjacentPoints(neighbor => {
-            if (this.grid.get(neighbor) != EMPTY_VALUE) return
+            if (! lowestNeighbor)
+                lowestNeighbor = neighbor
+            if (this.grid.get(neighbor) != EMPTY_VALUE)
+                return
             const neighborHeight = this.reliefMap.get(neighbor).height
             const lowestHeight =  this.reliefMap.get(lowestNeighbor).height
-            if (neighborHeight < lowestHeight)
+            if (neighborHeight <= lowestHeight)
                 lowestNeighbor = neighbor
         })
         return this.grid.wrap(lowestNeighbor)
