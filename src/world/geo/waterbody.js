@@ -3,26 +3,33 @@ import _ from 'lodash'
 import { Grid } from '../../lib/grid'
 import { ScanlineFill8 } from '../../lib/flood-fill'
 import { Name } from '../../lib/name'
-import { Random } from '../../lib/base'
+import { Random } from '../../lib/base';
 
-const MIN_OCEAN_AREA_CHANCE = 8
-const MIN_SEA_AREA_CHANCE = 1
-const MAX_SWAMP_AREA = 4
-const SWAMP_CHANCE = .3
 
 const EMPTY_VALUE = 0
+const SWAMP_CHANCE = .3
 
 const OCEAN = 0
 const SEA = 1
 const LAKE = 2
-const SWAMP = 3
+const POND = 3
+const SWAMP = 4
 
-const WATERBODY_TABLE = {
-    [OCEAN]: {color: "#0c2e63", name: "Ocean"},
-    [SEA]: {color: "#8bddd4", name: "Sea"},
-    [LAKE]: {color: "#29f25e", name: "Lake"},
-    [SWAMP]: { color: "#916f8a", name: "Swamp"},
-}
+
+const WATERBODY_AREA_TABLE = [
+    { id: OCEAN, percentage: 8 },
+    { id: SEA,   percentage: 1 },
+    { id: LAKE,  percentage: 0.016 },
+    { id: POND,  percentage: 0 }
+]
+
+const WATERBODY_TABLE = [
+    { id: OCEAN, color: "#0c2e63",  name: "Ocean" },
+    { id: SEA,   color: "#8bddd4",  name: "Sea" },
+    { id: LAKE,  color: "#29f25e",  name: "Lake" },
+    { id: POND,  color: "#29f25e",  name: "Pond" },
+    { id: SWAMP, color: "#a3358c",  name: "Swamp" }
+]
 
 
 export class WaterbodyMap {
@@ -30,6 +37,7 @@ export class WaterbodyMap {
         this.size = reliefMap.size
         this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
         this.reliefMap = reliefMap
+        this.totalArea = Math.pow(this.size, 2)
         this.riverSources = []
         this.nextId = 1
         this.map = {}
@@ -59,35 +67,20 @@ export class WaterbodyMap {
         }
     }
 
-    _buildWaterbody(id, point, tileCount) {
-        if (tileCount == 0) return
-
-        let type = LAKE
-        if (this._isSwampArea(tileCount)) {
-            type = SWAMP
-        } else if (this._isOceanArea(tileCount)) {
-            type = OCEAN
-        } else if (this._isSeaArea(tileCount)) {
-            type = SEA
+    _buildWaterbody(id, startPoint, tileCount) {
+        let type = POND
+        for (let waterbody of WATERBODY_AREA_TABLE) {
+            let tilePercentage = (100 * tileCount) / this.totalArea
+            if (tilePercentage >= waterbody.percentage) {
+                type = waterbody.id
+                break
+            }
         }
-        this.map[id] = new Waterbody(id, type, point, tileCount)
-    }
-
-    _isOceanArea(tileCount) {
-        let totalTiles = Math.pow(this.size, 2)
-        let tilePercentage = (100 * tileCount) / totalTiles
-        return tilePercentage >= MIN_OCEAN_AREA_CHANCE
-    }
-
-    _isSeaArea(tileCount) {
-        let totalTiles = Math.pow(this.size, 2)
-        let tilePercentage = (100 * tileCount) / totalTiles
-        let withinPercentage = tilePercentage >= MIN_SEA_AREA_CHANCE
-        return !this._isOceanArea(tileCount) && withinPercentage
-    }
-
-    _isSwampArea(tileCount) {
-        return tileCount <= MAX_SWAMP_AREA && Random.chance(SWAMP_CHANCE)
+        if (type == POND && Random.chance(SWAMP_CHANCE)) {
+            type = SWAMP
+        }
+        const waterbody = new Waterbody(id, type, startPoint, tileCount)
+        this.map[id] = waterbody
     }
 
     get(point) {
@@ -114,5 +107,6 @@ class Waterbody {
     get isOcean() { return this.type == OCEAN }
     get isSea() { return this.type == SEA }
     get isLake() { return this.type == LAKE }
+    get isPond() { return this.type == POND }
     get isSwamp() { return this.type == SWAMP }
 }

@@ -25,7 +25,7 @@ export class RiverMap {
         this.map = {}
 
         this._detectSources(this.reliefMap.mountainPoints)
-        this._buildRivers()
+        //this._buildRivers()
     }
 
 
