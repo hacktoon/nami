@@ -64,6 +64,7 @@ export class RiverMap {
 
     _buildRiver(id, source) {
         this._flowRiver(id, source)
+        this.reliefMap.get(source).debugSource = true
         this.map[id] = new River(id, source)
     }
 
@@ -113,11 +114,11 @@ export class RiverMap {
 
     _isValidMeander(id, candidate) {
         let totalSimilarNeighbors = 0
-        candidate.adjacentPoints(neighbor => {
+        candidate.pointsAround(neighbor => {
             if (this.grid.get(neighbor) == id)
                 totalSimilarNeighbors++
         })
-        return totalSimilarNeighbors < 2
+        return totalSimilarNeighbors <= 2
     }
 
     _setRiverPoint(id, point) {
