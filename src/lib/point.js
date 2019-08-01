@@ -15,6 +15,10 @@ export class Point {
         return (x == 1 && y == 0) || (x == 0 && y == 1)
     }
 
+    equals(point) {
+        return this.x == point.x && this.y == point.y
+    }
+
     hash () {
         return `${this.x},${this.y}`
     }
