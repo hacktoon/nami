@@ -10,7 +10,7 @@ import { Recoverable } from 'repl';
 const EMPTY_VALUE = 0
 const SOURCE_CHANCE = .2     // chance of spawning a river source
 const SOURCE_ISOLATION = 15  // minimum tiles between river sources
-const MEANDER_RATE = .4      // how much the river will meander
+const MEANDER_RATE = .3      // how much the river will meander
 
 
 export class RiverMap {
