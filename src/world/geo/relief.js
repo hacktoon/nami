@@ -132,6 +132,10 @@ class Relief {
         }
     }
 
+    erodeByRiver() {
+        this.level(PLAIN)
+    }
+
     get isAbyss() { return this.data.id == ABYSS }
     get isDeep() { return this.data.id == DEEP }
     get isReef() { return this.data.id == REEF }

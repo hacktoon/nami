@@ -11,6 +11,7 @@ const EMPTY_VALUE = 0
 const SOURCE_CHANCE = .2     // chance of spawning a river source
 const SOURCE_ISOLATION = 15  // minimum tiles between river sources
 const MEANDER_RATE = .3      // how much the river will meander
+const EROSION_START = 3      // at which tile erosion will start
 
 
 export class RiverMap {
@@ -76,8 +77,7 @@ export class RiverMap {
             const id = nextId++
             const source = sources.pop()
             const mouth = this._getNearestMouth(source)
-            if (this.grid.get(source) == EMPTY_VALUE && mouth)
-                this._buildRiver(id, source, mouth)
+            this.map[id] = this._buildRiver(id, source, mouth)
         }
     }
 
@@ -85,7 +85,7 @@ export class RiverMap {
         const river = new River(id, source, mouth)
         this._flowRiver(river)
         this._drawRiver(river)
-        this.map[id] = river
+        return river
     }
 
     _flowRiver(river) {
@@ -180,6 +180,15 @@ export class RiverMap {
     _setRiverPoint(river, point) {
         river.add(point)
         this.grid.set(point, river.id)
+        if (river.length > EROSION_START) {
+            this._erode(point)
+        }
+    }
+
+    _erode(point) {
+        point.adjacentPoints(pt => {
+            this.reliefMap.get(pt).erodeByRiver()
+        })
     }
 
     _drawRiver(river) {
@@ -210,5 +219,9 @@ class River {
 
     add(point) {
         this.points.push(point)
+    }
+
+    get length() {
+        return this.points.length
     }
 }
