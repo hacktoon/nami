@@ -14,6 +14,7 @@ const SEA = 1
 const LAKE = 2
 const POND = 3
 const SWAMP = 4
+const RIVER = 5
 
 
 const WATERBODY_AREA_TABLE = [
@@ -28,7 +29,8 @@ const WATERBODY_TABLE = [
     { id: SEA,   color: "#8bddd4",  name: "Sea" },
     { id: LAKE,  color: "#29f25e",  name: "Lake" },
     { id: POND,  color: "#29f25e",  name: "Pond" },
-    { id: SWAMP, color: "#a3358c",  name: "Swamp" }
+    { id: SWAMP, color: "#a3358c",  name: "Swamp" },
+    { id: RIVER, color: "#29f25e",  name: "River" }
 ]
 
 
@@ -109,4 +111,5 @@ class Waterbody {
     get isLake() { return this.type == LAKE }
     get isPond() { return this.type == POND }
     get isSwamp() { return this.type == SWAMP }
+    get isRiver() { return this.type == RIVER }
 }

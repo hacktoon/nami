@@ -91,7 +91,6 @@ class Relief {
     constructor(height) {
         let id = this._constructorId(height)
         this.data = RELIEF_TABLE[id]
-        this.height = height
     }
 
     _constructorId(height) {
@@ -132,8 +131,13 @@ class Relief {
         }
     }
 
+    setRiver() {
+        this.level(SHALLOW)
+    }
+
     erodeByRiver(level) {
-        this.level(level.id)
+        let levelId = _.clamp(level.id, BASIN, PLAIN)
+        this.level(levelId)
     }
 
     get isAbyss() { return this.data.id == ABYSS }
