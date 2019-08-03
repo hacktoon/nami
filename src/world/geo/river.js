@@ -83,24 +83,28 @@ export class RiverMap {
 
     _buildRiver(id, source, mouth) {
         const river = new River(id, source, mouth)
-        this._flowRiver(river)
+        const midpoints = this._generateMidpoints(river.source, river.mouth)
+        this._flowRiver(river, midpoints)
         this._drawRiver(river)
         return river
     }
 
-    _flowRiver(river) {
-        let points = this._generateMidpoints(river.source, river.mouth)
+    _flowRiver(river, points) {
         let index = 0
         let currentPoint = points[index]
+        let currentRelief = this.reliefMap.get(currentPoint)
 
         this._setRiverPoint(river, currentPoint)
         while (!this._flowShouldStop(river, currentPoint)) {
-            if (currentPoint.equals(points[index]))
-                index++
+            index += currentPoint.equals(points[index]) ? 1 : 0
             if (index >= points.length)
                 break
             currentPoint = this._getNextPoint(currentPoint, points[index])
             this._setRiverPoint(river, currentPoint)
+            let relief = this.reliefMap.get(currentPoint)
+            if (relief.id < currentRelief.id)
+                currentRelief = relief
+            this._erode(river, currentPoint, currentRelief)
         }
         river.mouth = currentPoint
     }
@@ -180,14 +184,12 @@ export class RiverMap {
     _setRiverPoint(river, point) {
         river.add(point)
         this.grid.set(point, river.id)
-        if (river.length > EROSION_START) {
-            this._erode(point)
-        }
     }
 
-    _erode(point) {
+    _erode(river, point, reliefLevel) {
+        if (river.length < EROSION_START) return
         point.adjacentPoints(pt => {
-            this.reliefMap.get(pt).erodeByRiver()
+            this.reliefMap.get(pt).erodeByRiver(reliefLevel)
         })
     }
 
