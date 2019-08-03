@@ -94,7 +94,7 @@ export class RiverMap {
         let currentPoint = points[index]
         let currentRelief = this.reliefMap.get(currentPoint)
 
-        this._setRiverPoint(river, currentPoint)
+        this._addPoint(river, currentPoint)
         while (!this._flowShouldStop(river, currentPoint)) {
             index += currentPoint.equals(points[index]) ? 1 : 0
             if (index >= points.length)
@@ -104,7 +104,7 @@ export class RiverMap {
             if (relief.id < currentRelief.id)
                 currentRelief = relief
             this._erode(river, currentPoint, currentRelief)
-            this._setRiverPoint(river, currentPoint)
+            this._addPoint(river, currentPoint)
         }
         river.mouth = currentPoint
     }
@@ -141,7 +141,7 @@ export class RiverMap {
         return Random.choice(validPoints)
     }
 
-    _setRiverPoint(river, point) {
+    _addPoint(river, point) {
         river.add(point)
         this.grid.set(point, river.id)
     }

@@ -35,7 +35,7 @@ export default class WorldPainter {
         let defaultColor = "#444"
         this.world.iter(tile => {
             let color = tile.landmass ? tile.heat.color : defaultColor
-            this.drawTile(tile.point, tile.heat.color)
+            this.drawTile(tile.point, color)
         })
     }
 

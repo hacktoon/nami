@@ -1,5 +1,6 @@
 import { Random } from '../../lib/base'
 
+const VOLCANO_CHANCE = .008
 
 const ICE = 0
 const TUNDRA = 1
@@ -77,7 +78,7 @@ export class BiomeMap {
             return OCEAN
         }
 
-        if (relief.isMountain && Random.chance(.01)) {
+        if (relief.isMountain && Random.chance(VOLCANO_CHANCE)) {
             return VOLCANO
         }
 
