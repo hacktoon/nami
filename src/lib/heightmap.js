@@ -99,34 +99,47 @@ export class HeightMap {
 }
 
 
-export const MidpointDisplacement = function(p1, p2, maxSize, roughness, callback) {
-    let points = Array(size),
-        size = maxSize - 1,
-        displacement = roughness * (size / 2)
+export const MidpointDisplacement = (source, target, roughness, callback=_.noop) => {
+    const deltaX = Math.abs(source.x - target.x)
+    const deltaY = Math.abs(source.y - target.y)
+    const fixedAxis = deltaX > deltaY ? 'x' : 'y'
+    const displacedAxis = deltaX > deltaY ? 'y' : 'x'
+    const size = Math.abs(target[fixedAxis] - source[fixedAxis])
+    let displacement = roughness * (size / 2)
+    let points = []
 
-    let buildPoint = function (p1, p2) {
-        if (p2.x - p1.x <= 1) return
-        let x = Math.floor((p1.x + p2.x) / 2),
-            y = (p1.y + p2.y) / 2 + Random.int(-displacement, displacement)
-        y = _.clamp(Math.round(y), 0, maxSize - 1)
-        return new Point(x, y)
+    const buildPoint = (p1, p2) => {
+        if (Math.abs(p2[fixedAxis] - p1[fixedAxis]) <= 1)
+            return
+        const displacedValue = (p1[displacedAxis] + p2[displacedAxis]) / 2
+        const variance = Random.int(-displacement, displacement)
+        const point = new Point()
+
+        point[fixedAxis] = Math.floor((p1[fixedAxis] + p2[fixedAxis]) / 2)
+        point[displacedAxis] = Math.round(displacedValue + variance)
+        return point
     }
 
-    let midpoint = function (p1, p2, size) {
+    const midpoints = (p1, p2, size) => {
+        let points = []
         let point = buildPoint(p1, p2)
-        if (!point) return
-        points[point.x] = point
-        callback(point)
+        if (!point)
+            return points
         displacement = roughness * size
-        midpoint(p1, point, size / 2)
-        midpoint(point, p2, size / 2)
+        points = points.concat(midpoints(p1, point, size / 2))
+        addPoint(point)
+        points = points.concat(midpoints(point, p2, size / 2))
+        return points
     }
 
-    points[p1.x] = p1
-    callback(p1)
-    points[p2.x] = p2
-    callback(p2)
+    const addPoint = (point) => {
+        points.push(point)
+        callback(point)
+    }
 
-    midpoint(p1, p2, size / 2)
+    addPoint(source)
+    points = points.concat(midpoints(source, target, size / 2))
+    addPoint(target)
+
     return points
 }

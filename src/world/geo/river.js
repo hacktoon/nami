@@ -4,7 +4,7 @@ import { Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
 import { Point } from '../../lib/point'
 import { Random } from '../../lib/base'
-import { Recoverable } from 'repl';
+import { MidpointDisplacement } from '../../lib/heightmap';
 
 
 const EMPTY_VALUE = 0
@@ -83,7 +83,7 @@ export class RiverMap {
 
     _buildRiver(id, source, mouth) {
         const river = new River(id, source, mouth)
-        const midpoints = this._generateMidpoints(river.source, river.mouth)
+        const midpoints = MidpointDisplacement(river.source, river.mouth, MEANDER_RATE)
         this._buildPath(river, midpoints)
         this._digRiver(river)
         return river
@@ -107,46 +107,6 @@ export class RiverMap {
             this._setRiverPoint(river, currentPoint)
         }
         river.mouth = currentPoint
-    }
-
-    _generateMidpoints(source, target) {
-        const deltaX = Math.abs(source.x - target.x)
-        const deltaY = Math.abs(source.y - target.y)
-        const fixedAxis = deltaX > deltaY ? 'x' : 'y'
-        const displacedAxis = deltaX > deltaY ? 'y' : 'x'
-        const size = Math.abs(target[fixedAxis] - source[fixedAxis])
-        let points = []
-        let displacement = MEANDER_RATE * (size / 2)
-
-        let buildPoint = (p1, p2) => {
-            if (Math.abs(p2[fixedAxis] - p1[fixedAxis]) <= 2)
-                return
-            let fixedValue = Math.floor((p1[fixedAxis] + p2[fixedAxis]) / 2),
-                displacedValue = (p1[displacedAxis] + p2[displacedAxis]) / 2,
-                variance = Random.int(-displacement, displacement)
-
-            const point = new Point()
-            point[fixedAxis] = fixedValue
-            point[displacedAxis] = Math.floor(displacedValue + variance)
-            return point
-        }
-
-        const midpoints = (p1, p2, size) => {
-            let points = []
-            let point = buildPoint(p1, p2)
-            if (!point)
-                return points
-            displacement = MEANDER_RATE * size
-            points = points.concat(midpoints(p1, point, size / 2))
-            points.push(point)
-            points = points.concat(midpoints(point, p2, size / 2))
-            return points
-        }
-
-        points.push(source)
-        points = points.concat(midpoints(source, target, size / 2))
-        points.push(target)
-        return points
     }
 
     _flowShouldStop(river, currentPoint) {

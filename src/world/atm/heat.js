@@ -48,9 +48,10 @@ export class HeatMap {
                 if (zone.id == ZONE_TABLE.length - 1) {
                     point.y = zone.y
                 }
+                point.y = _.clamp(point.y, 0, size-1)
                 fillColumn(point, zone.heatId)
             }
-            MidpointDisplacement(p1, p2, size, ROUGHNESS, setPoint)
+            MidpointDisplacement(p1, p2, ROUGHNESS, setPoint)
         }
 
         const fillColumn = (point, id) => {
