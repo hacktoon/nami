@@ -1,6 +1,9 @@
 ## TODO
 
-* detect water/land regions
-* detect litoral tiles/beaches
-* create rivers on height 2, set straight to sea
-    * use sin() to add meandering
+ * add cities
+ * add roads
+
+
+## GOOD SEEDS
+
+ * 1564863262875

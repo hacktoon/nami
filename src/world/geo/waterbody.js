@@ -17,7 +17,7 @@ const SWAMP = 4
 const RIVER = 5
 
 
-const WATERBODY_AREA_TABLE = [
+const WATERBODY_MIN_AREA_TABLE = [
     { id: OCEAN, percentage: 8 },
     { id: SEA,   percentage: 1 },
     { id: LAKE,  percentage: 0.016 },
@@ -71,7 +71,7 @@ export class WaterbodyMap {
 
     _buildWaterbody(id, startPoint, tileCount) {
         let type = POND
-        for (let waterbody of WATERBODY_AREA_TABLE) {
+        for (let waterbody of WATERBODY_MIN_AREA_TABLE) {
             let tilePercentage = (100 * tileCount) / this.totalArea
             if (tilePercentage >= waterbody.percentage) {
                 type = waterbody.id
