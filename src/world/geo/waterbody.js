@@ -45,20 +45,19 @@ export class WaterbodyMap {
     constructor(reliefMap, moistureMap) {
         this.size = reliefMap.size
         this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
-        this.reliefMap = reliefMap
         this.totalArea = Math.pow(this.size, 2)
-        this.riverSources = []
+        this.moistureMap = moistureMap
+        this.reliefMap = reliefMap
+        this.littoralPoints = []
         this.nextId = 1
         this.map = {}
-        this.littoralPoints = []
 
+        this._build()
+    }
+
+    _build() {
         this._detectWaterbodies()
-
-        this.riverMap = new RiverMap(
-            reliefMap,
-            moistureMap,
-            this
-        )
+        new RiverMap(this.reliefMap, this.moistureMap, this)
     }
 
     _detectWaterbodies() {
@@ -88,11 +87,11 @@ export class WaterbodyMap {
 
         if (isFillable(startPoint)) {
             new ScanlineFill8(this.grid, startPoint, onFill, isFillable).fill()
-            this._buildWaterbody(this.nextId++, startPoint, tileCount)
+            this._buildWaterbody(startPoint, tileCount)
         }
     }
 
-    _buildWaterbody(id, startPoint, tileCount) {
+    _buildWaterbody(startPoint, tileCount) {
         let type = POND
         for (let waterbody of WATERBODY_MIN_AREA_TABLE) {
             let tilePercentage = (100 * tileCount) / this.totalArea
@@ -104,8 +103,13 @@ export class WaterbodyMap {
         if (type == POND && Random.chance(SWAMP_CHANCE)) {
             type = SWAMP
         }
-        const waterbody = new Waterbody(id, type, startPoint, tileCount)
-        this.map[id] = waterbody
+        const waterbody = new Waterbody(this.nextId, type, startPoint, tileCount)
+        this.add(waterbody)
+    }
+
+    add(waterbody) {
+        this.map[waterbody.id] = waterbody
+        this.nextId++
     }
 
     get(point) {
@@ -127,8 +131,16 @@ class RiverMap {
         this._buildRivers()
     }
 
-
-    /* DETECTION METHODS ========================================== */
+    _buildRivers() {
+        let nextId = 1
+        let sources = this._detectSources(this.reliefMap.mountainPoints)
+        while (sources.length) {
+            const id = nextId++
+            const source = sources.pop()
+            const mouth = this._getNearestMouth(source)
+            this.map[id] = this._buildRiver(id, source, mouth)
+        }
+    }
 
     _detectSources(points) {
         let sources = []
@@ -168,20 +180,6 @@ class RiverMap {
             }
         })
         return nearestPoint
-    }
-
-
-    /* BUILDING METHODS ========================================== */
-
-    _buildRivers() {
-        let nextId = 1
-        let sources = this._detectSources(this.reliefMap.mountainPoints)
-        while (sources.length) {
-            const id = nextId++
-            const source = sources.pop()
-            const mouth = this._getNearestMouth(source)
-            this.map[id] = this._buildRiver(id, source, mouth)
-        }
     }
 
     _buildRiver(id, source, mouth) {
