@@ -19,12 +19,11 @@ const LANDMASS_TABLE = {
 export class LandmassMap {
     constructor(reliefMap, waterbodyMap) {
         this.size = reliefMap.size
-        this.grid = new Grid(this.size, this.size, {id: EMPTY_VALUE, isLitoral: false})
+        this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
         this.reliefMap = reliefMap
         this.waterbodyMap = waterbodyMap
         this.nextId = 1
         this.map = {}
-        this.litoralPoints = []
 
         this._detectLandmasses()
     }
@@ -37,26 +36,12 @@ export class LandmassMap {
         let tileCount = 0
         const isFillable = point => {
             let relief = this.reliefMap.get(point)
-            let isEmpty = this.grid.get(point).id == EMPTY_VALUE
+            let isEmpty = this.grid.get(point) == EMPTY_VALUE
             return relief.isLand && isEmpty
         }
         const onFill = point => {
-            this.grid.set(point, {
-                id: this.nextId,
-                isLitoral: detectLitoral(point)
-            })
+            this.grid.set(point, this.nextId)
             tileCount++
-        }
-        const detectLitoral = point => {
-            let isLitoral = false
-            point.adjacentPoints(neighbor => {
-                const waterbody = this.waterbodyMap.get(neighbor)
-                if (waterbody && (waterbody.isOcean || waterbody.isSea)) {
-                    isLitoral = true
-                    this.litoralPoints.push(point)
-                }
-            })
-            return isLitoral
         }
 
         if (isFillable(startPoint)) {
@@ -78,12 +63,8 @@ export class LandmassMap {
     }
 
     get(point) {
-        let id = this.grid.get(point).id
+        let id = this.grid.get(point)
         return this.map[id]
-    }
-
-    isLitoral(point) {
-        return this.grid.get(point).isLitoral
     }
 }
 

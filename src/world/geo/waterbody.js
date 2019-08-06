@@ -43,6 +43,7 @@ export class WaterbodyMap {
         this.riverSources = []
         this.nextId = 1
         this.map = {}
+        this.littoralPoints = []
 
         this._detectWaterbodies()
     }
@@ -60,7 +61,16 @@ export class WaterbodyMap {
         }
         const onFill = point => {
             this.grid.set(point, this.nextId)
+            detectLittoral(point)
             tileCount++
+        }
+        const detectLittoral = point => {
+            for (let [neighbor, _] of point.adjacentPoints()) {
+                if (this.reliefMap.get(neighbor).isLand) {
+                    this.littoralPoints.push(point)
+                    return
+                }
+            }
         }
 
         if (isFillable(startPoint)) {

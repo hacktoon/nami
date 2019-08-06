@@ -21,8 +21,7 @@ export default class WorldBuilder {
         this.riverMap = new RiverMap(
             this.reliefMap,
             this.moistureMap,
-            this.waterbodyMap,
-            this.landmassMap,
+            this.waterbodyMap
         )
         this.biomeMap = new BiomeMap(
             this.reliefMap,
@@ -46,7 +45,6 @@ export default class WorldBuilder {
         tile.moisture = this.moistureMap.get(point)
         tile.waterbody = this.waterbodyMap.get(point)
         tile.landmass = this.landmassMap.get(point)
-        tile.isLitoral = this.landmassMap.isLitoral(point)
         tile.biome = this.biomeMap.get(point)
     }
 

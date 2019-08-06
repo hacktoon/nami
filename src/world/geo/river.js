@@ -15,12 +15,11 @@ const EROSION_START = 3      // at which tile erosion will start
 
 
 export class RiverMap {
-    constructor(reliefMap, moistureMap, waterbodyMap, landmassMap) {
+    constructor(reliefMap, moistureMap, waterbodyMap) {
         this.size = reliefMap.size
         this.reliefMap = reliefMap
         this.moistureMap = moistureMap
         this.waterbodyMap = waterbodyMap
-        this.landmassMap = landmassMap
         this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
         this.map = {}
 
@@ -57,7 +56,10 @@ export class RiverMap {
     _getNearestMouth(source) {
         let nearestDistance = Infinity
         let nearestPoint = undefined
-        _.each(this.landmassMap.litoralPoints, point => {
+        _.each(this.waterbodyMap.littoralPoints, point => {
+            let waterbody = this.waterbodyMap.get(point)
+            if (! waterbody.isOcean || waterbody.isSea)
+                return
             const pointsDistance = Point.euclidianDistance(source, point)
             if (pointsDistance < nearestDistance) {
                 nearestDistance = pointsDistance

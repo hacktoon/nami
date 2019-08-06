@@ -19,8 +19,7 @@ const CORAL_REEF = 13
 const RIVER = 14
 const MANGROVE = 15
 const SWAMP = 16
-const BEACH = 17
-const VOLCANO = 18
+const VOLCANO = 17
 
 
 const BIOME_TABLE = [
@@ -41,7 +40,6 @@ const BIOME_TABLE = [
     { id: RIVER, color: "#5fbcd3", name: "River" },
     { id: MANGROVE, color: "#876729", name: "Mangrove" },
     { id: SWAMP, color: "#a3358c", name: "Swamp" },
-    { id: BEACH, color: "#ffe680", name: "Beach" },
     { id: VOLCANO, color: "#DD0000", name: "Volcano" }
 ]
 
@@ -65,7 +63,6 @@ export class BiomeMap {
         const heat = this.heatMap.get(point)
         const moisture = this.moistureMap.get(point)
         const waterbody = this.waterbodyMap.get(point)
-        const isLitoral = this.landmassMap.isLitoral(point)
 
         if (waterbody) {
             const isWater = relief.isAbyss || relief.isShallow || relief.isReef
@@ -80,10 +77,6 @@ export class BiomeMap {
 
         if (relief.isMountain && Random.chance(VOLCANO_CHANCE)) {
             return VOLCANO
-        }
-
-        if (isLitoral && !heat.isArctic && Random.chance(.3)) {
-            return BEACH
         }
 
         if (heat.isArctic) {
