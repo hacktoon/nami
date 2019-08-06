@@ -1,6 +1,6 @@
 import { Random } from '../../lib/base'
 
-const VOLCANO_CHANCE = .008
+const VOLCANO_CHANCE = .007
 
 const ICE = 0
 const TUNDRA = 1
