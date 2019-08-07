@@ -57,7 +57,7 @@ export class WaterbodyMap {
 
     _build() {
         this._detectWaterbodies()
-        new RiverMap(this.reliefMap, this.moistureMap, this)
+        new RiverBuilder(this.reliefMap, this.moistureMap, this)
     }
 
     _detectWaterbodies() {
@@ -103,7 +103,7 @@ export class WaterbodyMap {
         if (type == POND && Random.chance(SWAMP_CHANCE)) {
             type = SWAMP
         }
-        const waterbody = new Waterbody(this.nextId, type, startPoint, tileCount)
+        const waterbody = new Waterbody(this.nextId, type, startPoint)
         this.add(waterbody)
     }
 
@@ -119,26 +119,25 @@ export class WaterbodyMap {
 }
 
 
-class RiverMap {
+class RiverBuilder {
     constructor(reliefMap, moistureMap, waterbodyMap) {
         this.size = reliefMap.size
         this.reliefMap = reliefMap
         this.moistureMap = moistureMap
         this.waterbodyMap = waterbodyMap
         this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
-        this.map = {}
 
         this._buildRivers()
     }
 
     _buildRivers() {
-        let nextId = 1
         let sources = this._detectSources(this.reliefMap.mountainPoints)
         while (sources.length) {
-            const id = nextId++
+            const id = this.waterbodyMap.nextId
             const source = sources.pop()
-            const mouth = this._getNearestMouth(source)
-            this.map[id] = this._buildRiver(id, source, mouth)
+            const target = this._getNearestRiverTarget(source)
+            let river = this._buildRiver(id, source, target)
+            this.waterbodyMap.add(river)
         }
     }
 
@@ -166,7 +165,7 @@ class RiverMap {
         return true
     }
 
-    _getNearestMouth(source) {
+    _getNearestRiverTarget(source) {
         let nearestDistance = Infinity
         let nearestPoint = undefined
         _.each(this.waterbodyMap.littoralPoints, point => {
@@ -182,9 +181,9 @@ class RiverMap {
         return nearestPoint
     }
 
-    _buildRiver(id, source, mouth) {
-        const river = new River(id, source, mouth)
-        const midpoints = MidpointDisplacement(river.source, river.mouth, MEANDER_RATE)
+    _buildRiver(id, source, target) {
+        const river = new River(id, source)
+        const midpoints = MidpointDisplacement(river.source, target, MEANDER_RATE)
         this._buildPath(river, midpoints)
         this._digRiver(river)
         return river
@@ -207,7 +206,6 @@ class RiverMap {
             this._erode(river, currentPoint, currentRelief)
             this._addPoint(river, currentPoint)
         }
-        river.mouth = currentPoint
     }
 
     _flowShouldStop(river, currentPoint) {
@@ -225,7 +223,9 @@ class RiverMap {
 
     _reachedWater(point) {
         const waterbody = this.waterbodyMap.get(point)
-        return waterbody ? waterbody.isOcean || waterbody.isSea : false
+        if (waterbody)
+            return waterbody.isOcean || waterbody.isSea || waterbody.isRiver
+        return false
     }
 
     _getNextPoint(origin, target) {
@@ -247,11 +247,11 @@ class RiverMap {
         this.grid.set(point, river.id)
     }
 
-    _erode(river, point, reliefLevel) {
+    _erode(river, riverPoint, reliefLevel) {
         if (river.length < EROSION_START)
             return
-        point.pointsAround(pt => {
-            this.reliefMap.get(pt).erodeByRiver(reliefLevel)
+        riverPoint.pointsAround(point => {
+            this.reliefMap.get(point).erodeRiverMargin(reliefLevel)
         })
     }
 
@@ -260,21 +260,15 @@ class RiverMap {
             this.reliefMap.get(point).setRiver()
         }
     }
-
-    get(point) {
-        let id = this.grid.get(point)
-        return this.map[id]
-    }
 }
 
 
 class Waterbody {
-    constructor(id, type, point, area) {
+    constructor(id, type, point) {
         this.id = id
         this.type = type
         this._name = Name.createWaterbodyName()
         this.point = point
-        this.area = area
     }
 
     get name() {
@@ -291,17 +285,21 @@ class Waterbody {
 }
 
 
-class River {
-    constructor(id, source, mouth) {
+class River extends Waterbody {
+    constructor(id, source) {
+        super(id, RIVER, source)
         this.id = id
-        this.name = Name.createRiverName()
+        this._name = Name.createRiverName()
         this.source = source
-        this.mouth = mouth
         this.points = []
     }
 
     add(point) {
         this.points.push(point)
+    }
+
+    get mouth() {
+        return _.last(this.points)
     }
 
     get length() {
