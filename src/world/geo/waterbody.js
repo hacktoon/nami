@@ -13,7 +13,7 @@ const SWAMP_CHANCE = .3
 
 const SOURCE_CHANCE = .2     // chance of spawning a river source
 const SOURCE_ISOLATION = 15  // minimum tiles between river sources
-const MEANDER_RATE = .3      // how much the river will meander
+const MEANDER_RATE = .4      // how much the river will meander
 const EROSION_START = 3      // at which tile erosion will start
 
 const OCEAN = 0
