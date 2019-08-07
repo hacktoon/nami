@@ -37,7 +37,7 @@ const BIOME_TABLE = [
     { id: OCEAN, color: "#000080", name: "Ocean" },
     { id: LAKE, color: "#0055d4", name: "Lake" },
     { id: CORAL_REEF, color: "#5cffc4", name: "Coral reef" },
-    { id: RIVER, color: "#5fbcd3", name: "River" },
+    { id: RIVER, color: "#000080", name: "River" },
     { id: MANGROVE, color: "#876729", name: "Mangrove" },
     { id: SWAMP, color: "#a3358c", name: "Swamp" },
     { id: VOLCANO, color: "#DD0000", name: "Volcano" }
@@ -72,6 +72,7 @@ export class BiomeMap {
             if ((heat.isTropical || heat.isSubtropical) && relief.isReef) {
                 return CORAL_REEF
             }
+            if (waterbody.isRiver) return RIVER
             return OCEAN
         }
 

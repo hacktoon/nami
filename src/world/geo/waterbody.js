@@ -23,7 +23,6 @@ const POND = 3
 const SWAMP = 4
 const RIVER = 5
 
-
 const WATERBODY_MIN_AREA_TABLE = [
     { id: OCEAN, percentage: 8 },
     { id: SEA,   percentage: 1 },
@@ -125,7 +124,7 @@ class RiverBuilder {
         this.reliefMap = reliefMap
         this.moistureMap = moistureMap
         this.waterbodyMap = waterbodyMap
-        this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
+        this.grid = waterbodyMap.grid
 
         this._buildRivers()
     }
@@ -170,7 +169,7 @@ class RiverBuilder {
         let nearestPoint = undefined
         _.each(this.waterbodyMap.littoralPoints, point => {
             let waterbody = this.waterbodyMap.get(point)
-            if (!waterbody.isOcean || waterbody.isSea)
+            if (! (waterbody.isOcean || waterbody.isSea))
                 return
             const pointsDistance = Point.euclidianDistance(source, point)
             if (pointsDistance < nearestDistance) {
@@ -203,8 +202,7 @@ class RiverBuilder {
             let relief = this.reliefMap.get(currentPoint)
             if (relief.id < currentRelief.id)
                 currentRelief = relief
-            this._erode(river, currentPoint, currentRelief)
-            this._addPoint(river, currentPoint)
+            this._addPoint(river, currentPoint, currentRelief)
         }
     }
 
@@ -212,19 +210,19 @@ class RiverBuilder {
         let flag = false
 
         currentPoint.adjacentPoints(neighbor => {
-            const neighborId = this.grid.get(neighbor)
-            if (neighborId == river.id)
-                return
-            if (this._reachedWater(neighbor) || neighborId != EMPTY_VALUE)
+            const notItself = this.grid.get(neighbor) != river.id
+            if (notItself && this._reachedWater(neighbor)) {
                 flag = true
+            }
         })
         return flag
     }
 
     _reachedWater(point) {
         const waterbody = this.waterbodyMap.get(point)
-        if (waterbody)
+        if (waterbody) {
             return waterbody.isOcean || waterbody.isSea || waterbody.isRiver
+        }
         return false
     }
 
@@ -238,13 +236,15 @@ class RiverBuilder {
             const nextY = origin.y + Math.sign(target.y - origin.y)
             points.push(new Point(origin.x, nextY))
         }
-        const validPoints = _.filter(points, p => this.grid.get(p) == EMPTY_VALUE)
-        return Random.choice(validPoints)
+        return Random.choice(points)
     }
 
-    _addPoint(river, point) {
+    _addPoint(river, point, currentRelief) {
+        if (this.grid.get(point) != EMPTY_VALUE)
+            return
         river.add(point)
         this.grid.set(point, river.id)
+        this._erode(river, point, currentRelief)
     }
 
     _erode(river, riverPoint, reliefLevel) {
