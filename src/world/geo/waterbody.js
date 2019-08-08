@@ -260,6 +260,7 @@ class RiverBuilder {
             return
         riverPoint.pointsAround(point => {
             this.reliefMap.get(point).setRiverMargin(reliefLevel)
+            this.moistureMap.get(point).raise()
         })
     }
 
