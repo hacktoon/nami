@@ -143,7 +143,7 @@ class Relief {
         this.level(SHALLOW)
     }
 
-    erodeRiverMargin(level) {
+    setRiverMargin(level) {
         let levelId = _.clamp(level.id, BASIN, PLAIN)
         this.level(levelId)
     }

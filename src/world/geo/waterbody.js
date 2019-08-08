@@ -259,7 +259,7 @@ class RiverBuilder {
         if (river.length < EROSION_START)
             return
         riverPoint.pointsAround(point => {
-            this.reliefMap.get(point).erodeRiverMargin(reliefLevel)
+            this.reliefMap.get(point).setRiverMargin(reliefLevel)
         })
     }
 
