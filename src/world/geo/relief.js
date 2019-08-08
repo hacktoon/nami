@@ -2,6 +2,8 @@ import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
+import { FloodFill } from '../../lib/flood-fill'
+
 
 const ABYSS = 0
 const DEEP = 1
@@ -91,6 +93,7 @@ class Relief {
     constructor(height) {
         let id = this._constructorId(height)
         this.data = RELIEF_TABLE[id]
+        this._isRiverBank = false
     }
 
     _constructorId(height) {
@@ -131,6 +134,11 @@ class Relief {
         }
     }
 
+    setRiverBank() {
+        if (this.isBasin)
+            this._isRiverBank = true
+    }
+
     setRiver() {
         this.level(SHALLOW)
     }
@@ -145,6 +153,7 @@ class Relief {
     get isReef() { return this.data.id == REEF }
     get isShallow() { return this.data.id == SHALLOW || this.data.id == SHELF }
     get isBasin() { return this.data.id == BASIN }
+    get isRiverBank() { return this._isRiverBank }
     get isPlain() { return this.data.id == PLAIN }
     get isHighland() { return this.data.id == HIGHLAND }
     get isMountain() { return this.data.id == MOUNTAIN }

@@ -97,6 +97,7 @@ export class BiomeMap {
         }
 
         if (heat.isSubtropical) {
+            if (relief.isRiverBank) return MANGROVE
             if (moisture.isHighest) return RAINFOREST
             if (moisture.isWet) return SAVANNA
             if (moisture.isSeasonal) return SHRUBLAND
@@ -105,6 +106,7 @@ export class BiomeMap {
         }
 
         if (heat.isTropical) {
+            if (relief.isRiverBank) return MANGROVE
             if (moisture.isHighest) return JUNGLE
             if (moisture.isWet) return RAINFOREST
             if (moisture.isSeasonal) return SAVANNA

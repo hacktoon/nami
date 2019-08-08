@@ -4,17 +4,18 @@ import { Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
 import { Point } from '../../lib/point'
 import { Random } from '../../lib/base'
-import { ScanlineFill8 } from '../../lib/flood-fill'
+import { ScanlineFill8, FloodFill } from '../../lib/flood-fill'
 import { MidpointDisplacement } from '../../lib/heightmap'
 
 
 const EMPTY_VALUE = 0
 const SWAMP_CHANCE = .3
 
-const SOURCE_CHANCE = .2     // chance of spawning a river source
-const SOURCE_ISOLATION = 15  // minimum tiles between river sources
-const MEANDER_RATE = .4      // how much the river will meander
-const EROSION_START = 3      // at which tile erosion will start
+const SOURCE_CHANCE = .2                // chance of spawning a river source
+const SOURCE_ISOLATION = 15             // minimum tiles between river sources
+const MEANDER_RATE = .4                 // how much the river will meander
+const EROSION_START = 3                 // at which tile erosion will start
+const RIVER_BANK_SPREAD = [2, 3, 4, 5]  // how much the river deposits sediment
 
 const OCEAN = 0
 const SEA = 1
@@ -204,6 +205,7 @@ class RiverBuilder {
                 currentRelief = relief
             this._addPoint(river, currentPoint, currentRelief)
         }
+        this._detectRiverbanks(river)
     }
 
     _flowShouldStop(river, currentPoint) {
@@ -211,19 +213,22 @@ class RiverBuilder {
 
         currentPoint.adjacentPoints(neighbor => {
             const notItself = this.grid.get(neighbor) != river.id
-            if (notItself && this._reachedWater(neighbor)) {
+            if (notItself && this._reachedWater(river, neighbor)) {
                 flag = true
             }
         })
         return flag
     }
 
-    _reachedWater(point) {
+    _reachedWater(river, point) {
         const waterbody = this.waterbodyMap.get(point)
-        if (waterbody) {
-            return waterbody.isOcean || waterbody.isSea || waterbody.isRiver
+        if (!waterbody)
+            return false
+        if (waterbody.isRiver) {
+            river.setTributary()
+            return true
         }
-        return false
+        return waterbody.isOcean || waterbody.isSea
     }
 
     _getNextPoint(origin, target) {
@@ -253,6 +258,24 @@ class RiverBuilder {
         riverPoint.pointsAround(point => {
             this.reliefMap.get(point).erodeRiverMargin(reliefLevel)
         })
+    }
+
+    _detectRiverbanks(river) {
+        if (river.length <= 1 || river.isTributary)
+            return
+        const onFill = point => {
+            const relief = this.reliefMap.get(point)
+            if (relief.isWater)
+                return
+            for (let [neighbor, _] of point.adjacentPoints()) {
+                if (this.reliefMap.get(neighbor).isWater) {
+                    relief.setRiverBank()
+                    break
+                }
+            }
+        }
+        const spread = Random.choice(RIVER_BANK_SPREAD)
+        new FloodFill(this.grid, river.mouth, onFill).stepFill(spread)
     }
 
     _digRiver(river) {
@@ -292,14 +315,23 @@ class River extends Waterbody {
         this._name = Name.createRiverName()
         this.source = source
         this.points = []
+        this._isTributary = false
     }
 
     add(point) {
         this.points.push(point)
     }
 
+    setTributary() {
+        this._isTributary = true
+    }
+
     get mouth() {
         return _.last(this.points)
+    }
+
+    get isTributary() {
+        return this._isTributary
     }
 
     get length() {
