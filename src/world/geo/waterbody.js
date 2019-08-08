@@ -137,7 +137,8 @@ class RiverBuilder {
             const source = sources.pop()
             const target = this._getNearestRiverTarget(source)
             let river = this._buildRiver(id, source, target)
-            this.waterbodyMap.add(river)
+            if (river)
+                this.waterbodyMap.add(river)
         }
     }
 
@@ -185,8 +186,11 @@ class RiverBuilder {
         const river = new River(id, source)
         const midpoints = MidpointDisplacement(river.source, target, MEANDER_RATE)
         this._buildPath(river, midpoints)
-        this._digRiver(river)
-        return river
+        if (river.length >= 1) {
+            this._digRiver(river)
+            this._detectRiverbanks(river)
+            return river
+        }
     }
 
     _buildPath(river, points) {
@@ -205,7 +209,6 @@ class RiverBuilder {
                 currentRelief = relief
             this._addPoint(river, currentPoint, currentRelief)
         }
-        this._detectRiverbanks(river)
     }
 
     _flowShouldStop(river, currentPoint) {
@@ -261,7 +264,7 @@ class RiverBuilder {
     }
 
     _detectRiverbanks(river) {
-        if (river.length <= 1 || river.isTributary)
+        if (river.isTributary)
             return
         const onFill = point => {
             const relief = this.reliefMap.get(point)
