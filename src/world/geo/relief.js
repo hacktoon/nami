@@ -2,20 +2,19 @@ import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
-import { FloodFill } from '../../lib/flood-fill'
 
 
-const ABYSS = 0
-const DEEP = 1
-const SHELF = 2
-const REEF = 3
-const SHALLOW = 4
-const BASIN = 5
-const PLAIN = 6
-const HIGHLAND = 7
-const MOUNTAIN = 8
+export const ABYSS = 0
+export const DEEP = 1
+export const SHELF = 2
+export const REEF = 3
+export const SHALLOW = 4
+export const BASIN = 5
+export const PLAIN = 6
+export const HIGHLAND = 7
+export const MOUNTAIN = 8
 
-const RELIEF_TABLE = [
+export const RELIEF_TABLE = [
     { id: ABYSS,    height: 0,   color: "#000034", name: "Abyss" },
     { id: DEEP,     height: 20,  color: "#000045", name: "Deep" },
     { id: SHELF,    height: 115, color: "#000078", name: "Shelf" },
@@ -83,9 +82,17 @@ export class ReliefMap {
         return this.grid.get(point)
     }
 
-    iter(callback) {
-        this.grid.forEach(callback)
-    }
+    isAbyss(pt) { return this.get(pt) == ABYSS }
+    isDeep(pt) { return this.get(pt) == DEEP }
+    isReef(pt) { return this.get(pt) == REEF }
+    isShallow(pt) { return this.get(pt) == SHALLOW || this.get(pt) == SHELF }
+    isBasin(pt) { return this.get(pt) == BASIN }
+    isPlain(pt) { return this.get(pt) == PLAIN }
+    isHighland(pt) { return this.get(pt) == HIGHLAND }
+    isMountain(pt) { return this.get(pt) == MOUNTAIN }
+
+    isWater(pt) { return this.get(pt) <= SHALLOW }
+    isLand(pt) { return !this.isWater(pt) }
 }
 
 
@@ -113,12 +120,6 @@ class Relief {
     get name() { return this.data.name }
     get isWater() { return this.data.id <= SHALLOW }
     get isLand() { return !this.isWater }
-
-    raise(amount = 1) {
-        let newId = this.data.id + amount
-        let id = _.clamp(newId, 0, RELIEF_TABLE.length - 1)
-        this.data = RELIEF_TABLE[id]
-    }
 
     lower(amount = 1) {
         let newId = this.data.id - amount
