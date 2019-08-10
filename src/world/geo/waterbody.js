@@ -330,12 +330,12 @@ class River extends Waterbody {
         this._isTributary = true
     }
 
-    get mouth() {
-        return _.last(this.points)
-    }
-
     get isTributary() {
         return this._isTributary
+    }
+
+    get mouth() {
+        return _.last(this.points)
     }
 
     get length() {
