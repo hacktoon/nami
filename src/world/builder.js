@@ -21,8 +21,7 @@ export default class WorldBuilder {
             this.reliefMap,
             this.heatMap,
             this.moistureMap,
-            this.waterbodyMap,
-            this.landmassMap,
+            this.waterbodyMap
         )
     }
 

@@ -45,12 +45,11 @@ const BIOME_TABLE = [
 
 
 export class BiomeMap {
-    constructor(reliefMap, heatMap, moistureMap, waterbodyMap, landmassMap) {
+    constructor(reliefMap, heatMap, moistureMap, waterbodyMap) {
         this.reliefMap = reliefMap
         this.heatMap = heatMap
         this.moistureMap = moistureMap
         this.waterbodyMap = waterbodyMap
-        this.landmassMap = landmassMap
     }
 
     get(point) {
