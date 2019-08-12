@@ -34,10 +34,11 @@ const ROUGHNESS = .2
 
 
 export class HeatMap {
-    constructor(size, reliefMap) {
-        this.grid = new Grid(size, size)
+    constructor(reliefMap) {
+        this.size = reliefMap.size
+        this.grid = new Grid(this.size, this.size)
         this.reliefMap = reliefMap
-        this._build(size)
+        this._build(this.size)
     }
 
     _build(size) {

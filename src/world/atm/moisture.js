@@ -14,11 +14,12 @@ const MOISTURE_TABLE = [
 
 
 export class MoistureMap {
-    constructor(size, roughness, reliefMap) {
-        this.grid = new Grid(size, size)
+    constructor(roughness, reliefMap) {
+        this.size = reliefMap.size
+        this.grid = new Grid(this.size, this.size)
         this.reliefMap = reliefMap
 
-        new HeightMap(size, roughness, (height, point) => {
+        new HeightMap(this.size, roughness, (height, point) => {
             let moisture = this.buildMoisture(height)
             moisture = this._filterMoisture(moisture, point)
             this.grid.set(point, moisture)
