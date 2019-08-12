@@ -4,7 +4,7 @@ import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
 
 
-export const ABYSS = 0
+export const ABYSSAL = 0
 export const DEEP = 1
 export const SHELF = 2
 export const REEF = 3
@@ -15,7 +15,7 @@ export const HIGHLAND = 7
 export const MOUNTAIN = 8
 
 export const RELIEF_TABLE = [
-    { id: ABYSS,    height: 0,   color: "#000034", name: "Abyss" },
+    { id: ABYSSAL,  height: 0,   color: "#000034", name: "Abyss" },
     { id: DEEP,     height: 20,  color: "#000045", name: "Deep" },
     { id: SHELF,    height: 115, color: "#000078", name: "Shelf" },
     { id: REEF,     height: 152, color: "#007587", name: "Reef" },
@@ -82,7 +82,7 @@ export class ReliefMap {
         return this.grid.get(point)
     }
 
-    isAbyss(pt) { return this.get(pt) == ABYSS }
+    isAbyss(pt) { return this.get(pt) == ABYSSAL }
     isDeep(pt) { return this.get(pt) == DEEP }
     isReef(pt) { return this.get(pt) == REEF }
     isShallow(pt) { return this.get(pt) == SHALLOW || this.get(pt) == SHELF }
@@ -104,7 +104,7 @@ class Relief {
     }
 
     _constructorId(height) {
-        let id = ABYSS
+        let id = ABYSSAL
         for (let reliefData of RELIEF_TABLE) {
             if (height >= reliefData.height) {
                 id = reliefData.id
@@ -149,7 +149,7 @@ class Relief {
         this.level(levelId)
     }
 
-    get isAbyss() { return this.data.id == ABYSS }
+    get isAbyss() { return this.data.id == ABYSSAL }
     get isDeep() { return this.data.id == DEEP }
     get isReef() { return this.data.id == REEF }
     get isShallow() { return this.data.id == SHALLOW || this.data.id == SHELF }
