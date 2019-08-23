@@ -1,12 +1,12 @@
 import _ from 'lodash'
 
 import World from './world'
-import { WaterbodyMap } from './geo/waterbody'
-import { LandmassMap } from './geo/landmass'
-import { BiomeMap } from './bio/biome'
 import { ReliefMap } from './geo/relief'
+import { LandmassMap } from './geo/landmass'
 import { HeatMap } from './atm/heat'
 import { MoistureMap } from './atm/moisture'
+import { WaterbodyMap } from './hydro'
+import { BiomeMap } from './bio/biome'
 
 
 export default class WorldBuilder {
@@ -17,18 +17,18 @@ export default class WorldBuilder {
         const moistureMap = new MoistureMap(size, roughness)
         const waterbodyMap = new WaterbodyMap(size, reliefMap, moistureMap)
 
-        // this.landmassMap = new LandmassMap(this.reliefMap, this.waterbodyMap)
+        // const landmassMap = new LandmassMap(this.reliefMap, this.waterbodyMap)
         // this.biomeMap = new BiomeMap(
-            //     this.reliefMap,
-            //     this.heatMap,
-            //     this.moistureMap,
-            //     this.waterbodyMap
-            // )
+        //     this.reliefMap,
+        //     this.heatMap,
+        //     this.moistureMap,
+        //     this.waterbodyMap
+        // )
         this.world.reliefMap = reliefMap
         this.world.heatMap = heatMap
         this.world.moistureMap = moistureMap
         this.world.waterbodyMap = waterbodyMap
-        }
+    }
 
     build() {
         window.currentWorld = this.world
