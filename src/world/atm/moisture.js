@@ -3,6 +3,11 @@ import _ from 'lodash'
 import { Grid } from '../../lib/grid';
 import { HeightMap } from '../../lib/heightmap'
 
+export const VERY_DRY = 0
+export const DRY = 1
+export const SEASONAL = 2
+export const WET = 3
+export const VERY_WET = 4
 
 const MOISTURE_TABLE = [
     { id: 0, height: 0,   color: "#ffa100", name: "Very dry" },
@@ -14,23 +19,21 @@ const MOISTURE_TABLE = [
 
 
 export class MoistureMap {
-    constructor(roughness, reliefMap) {
-        this.size = reliefMap.size
-        this.grid = new Grid(this.size, this.size)
-        this.reliefMap = reliefMap
+    constructor(size, roughness) {
+        this.grid = new Grid(size, size)
+        this.size = size
 
-        new HeightMap(this.size, roughness, (height, point) => {
-            let moisture = this.buildMoisture(height)
-            moisture = this._filterMoisture(moisture, point)
+        this._buildMap(size, roughness)
+    }
+
+    _buildMap(size, roughness) {
+        new HeightMap(size, roughness, (height, point) => {
+            let moisture = this._buildMoisture(height)
             this.grid.set(point, moisture)
         })
     }
 
-    get(point) {
-        return this.grid.get(point)
-    }
-
-    buildMoisture(height) {
+    _buildMoisture(height) {
         let id
         for (let reference of MOISTURE_TABLE) {
             if (height >= reference.height) {
@@ -39,68 +42,30 @@ export class MoistureMap {
                 break
             }
         }
-        return new Moisture(id)
+        return id
     }
 
-    _filterMoisture(moisture, point) {
-        const relief = this.reliefMap.get(point)
-        if (relief.isMountain) moisture.lower()
-        if (relief.isBasin)    moisture.raise()
-        return moisture
-    }
-}
+    isVeryDry(point) { return this.get(point) == VERY_DRY }
 
+    isDry(point) { return this.get(point) == DRY }
 
-class Moisture {
-    constructor(id) {
-        this.data = MOISTURE_TABLE[id]
-    }
+    isSeasonal(point) { return this.get(point) == SEASONAL }
 
-    get id () { return this.data.id }
-    get name () { return this.data.name }
-    get color () { return this.data.color }
+    isWet(point) { return this.get(point) == WET }
 
-    raise(amount = 1) {
-        let raisedIndex = this.data.id + amount
-        let id = _.clamp(raisedIndex, 0, MOISTURE_TABLE.length - 1)
-        this.data = MOISTURE_TABLE[id]
+    isVeryWet(point) { return this.get(point) == VERY_WET }
+
+    get(point) {
+        return this.grid.get(point)
     }
 
-    lower(amount = 1) {
-        let loweredIndex = this.data.id - amount
-        let id = _.clamp(loweredIndex, 0, MOISTURE_TABLE.length - 1)
-        this.data = MOISTURE_TABLE[id]
+    getName(point) {
+        const id = this.get(point)
+        return MOISTURE_TABLE[id].name
     }
 
-    isLower (moisture) {
-        return this.data.id < moisture.id
-    }
-
-    isHigher (moisture) {
-        return this.data.id > moisture.id
-    }
-
-    get isRiverPossible() {
-        return this.data.id >= 1
-    }
-
-    get isLowest() {
-        return this.data.id == _.first(MOISTURE_TABLE).id
-    }
-
-    get isDry() {
-        return this.data.id == 1
-    }
-
-    get isSeasonal() {
-        return this.data.id == 2
-    }
-
-    get isWet() {
-        return this.data.id == 3
-    }
-
-    get isHighest() {
-        return this.data.id == _.last(MOISTURE_TABLE).id
+    getColor(point) {
+        const id = this.get(point)
+        return MOISTURE_TABLE[id].color
     }
 }

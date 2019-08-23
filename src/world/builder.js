@@ -12,18 +12,23 @@ import { MoistureMap } from './atm/moisture'
 export default class WorldBuilder {
     constructor(size, roughness) {
         this.world = new World(size)
-        this.reliefMap = new ReliefMap(size, roughness)
-        this.heatMap = new HeatMap(this.reliefMap)
-        this.moistureMap = new MoistureMap(roughness, this.reliefMap)
-        this.waterbodyMap = new WaterbodyMap(this.reliefMap, this.moistureMap)
-        this.landmassMap = new LandmassMap(this.reliefMap, this.waterbodyMap)
-        this.biomeMap = new BiomeMap(
-            this.reliefMap,
-            this.heatMap,
-            this.moistureMap,
-            this.waterbodyMap
-        )
-    }
+        const reliefMap = new ReliefMap(size, roughness)
+        const heatMap = new HeatMap(size)
+        const moistureMap = new MoistureMap(size, roughness)
+        const waterbodyMap = new WaterbodyMap(size, reliefMap, moistureMap)
+
+        // this.landmassMap = new LandmassMap(this.reliefMap, this.waterbodyMap)
+        // this.biomeMap = new BiomeMap(
+            //     this.reliefMap,
+            //     this.heatMap,
+            //     this.moistureMap,
+            //     this.waterbodyMap
+            // )
+        this.world.reliefMap = reliefMap
+        this.world.heatMap = heatMap
+        this.world.moistureMap = moistureMap
+        this.world.waterbodyMap = waterbodyMap
+        }
 
     build() {
         window.currentWorld = this.world
@@ -33,11 +38,11 @@ export default class WorldBuilder {
 
     updateTile(tile) {
         const point = tile.point
-        tile.relief = this.reliefMap.get(point)
-        tile.heat = this.heatMap.get(point)
-        tile.moisture = this.moistureMap.get(point)
-        tile.waterbody = this.waterbodyMap.get(point)
-        tile.landmass = this.landmassMap.get(point)
-        tile.biome = this.biomeMap.get(point)
+        // tile.relief = this.reliefMap.get(point)
+        // tile.heat = this.heatMap.get(point)
+        // tile.moisture = this.moistureMap.get(point)
+        // tile.waterbody = this.waterbodyMap.get(point)
+        // tile.landmass = this.landmassMap.get(point)
+        // tile.biome = this.biomeMap.get(point)
     }
 }

@@ -23,6 +23,7 @@ const LAKE = 2
 const POND = 3
 const SWAMP = 4
 const RIVER = 5
+const RIVER_MOUTH = 6
 
 const WATERBODY_MIN_AREA_TABLE = [
     { id: OCEAN, percentage: 8 },
@@ -42,34 +43,32 @@ const WATERBODY_TABLE = [
 
 
 export class WaterbodyMap {
-    constructor(reliefMap, moistureMap) {
-        this.size = reliefMap.size
-        this.grid = new Grid(this.size, this.size, EMPTY_VALUE)
-        this.totalArea = Math.pow(this.size, 2)
+    constructor(size, reliefMap, moistureMap) {
+        this.grid = new Grid(size, size, EMPTY_VALUE)
         this.moistureMap = moistureMap
         this.reliefMap = reliefMap
         this.littoralPoints = []
+        this.size = size
         this.nextId = 1
         this.map = {}
 
-        this._build()
+        this._buildMap()
     }
 
-    _build() {
+    _buildMap() {
         this._detectWaterbodies()
-        new RiverBuilder(this.reliefMap, this.moistureMap, this)
+        //new RiverMap(this.reliefMap, this.moistureMap, this)
     }
 
     _detectWaterbodies() {
-        this.reliefMap.waterPoints.forEach(point => this._detect(point))
+        this.grid.forEach((_, point) => this._detect(point))
     }
 
     _detect(startPoint) {
         let tileCount = 0
         const isFillable = point => {
-            let relief = this.reliefMap.get(point)
             let isEmpty = this.grid.get(point) == EMPTY_VALUE
-            return relief.isWater && isEmpty
+            return this.reliefMap.isWater(point) && isEmpty
         }
         const onFill = point => {
             this.grid.set(point, this.nextId)
@@ -78,7 +77,7 @@ export class WaterbodyMap {
         }
         const detectLittoral = point => {
             for (let [neighbor, _] of point.adjacentPoints()) {
-                if (this.reliefMap.get(neighbor).isLand) {
+                if (this.reliefMap.isLand(neighbor)) {
                     this.littoralPoints.push(point)
                     return
                 }
@@ -92,9 +91,16 @@ export class WaterbodyMap {
     }
 
     _buildWaterbody(startPoint, tileCount) {
+        const type = this._getWaterbodyType(tileCount)
+        const waterbody = new Waterbody(this.nextId, type, startPoint)
+        this.add(waterbody)
+    }
+
+    _getWaterbodyType(tileCount) {
+        const totalArea = Math.pow(this.size, 2)
         let type = POND
         for (let waterbody of WATERBODY_MIN_AREA_TABLE) {
-            let tilePercentage = (100 * tileCount) / this.totalArea
+            let tilePercentage = (100 * tileCount) / totalArea
             if (tilePercentage >= waterbody.percentage) {
                 type = waterbody.id
                 break
@@ -103,8 +109,7 @@ export class WaterbodyMap {
         if (type == POND && Random.chance(SWAMP_CHANCE)) {
             type = SWAMP
         }
-        const waterbody = new Waterbody(this.nextId, type, startPoint)
-        this.add(waterbody)
+        return type
     }
 
     add(waterbody) {
@@ -119,7 +124,7 @@ export class WaterbodyMap {
 }
 
 
-class RiverBuilder {
+class RiverMap {
     constructor(reliefMap, moistureMap, waterbodyMap) {
         this.size = reliefMap.size
         this.reliefMap = reliefMap
@@ -259,7 +264,7 @@ class RiverBuilder {
         if (river.length < EROSION_START)
             return
         riverPoint.pointsAround(point => {
-            this.reliefMap.get(point).setRiverMargin(reliefLevel)
+            //this.reliefMap.get(point).setRiverMargin(reliefLevel)  FIXME
             this.moistureMap.get(point).raise()
         })
     }
@@ -272,10 +277,11 @@ class RiverBuilder {
             if (relief.isWater)
                 return
             for (let [neighbor, _] of point.adjacentPoints()) {
-                if (this.reliefMap.get(neighbor).isWater) {
-                    relief.setRiverBank()
-                    break
-                }
+                // FIXME
+                // if (this.reliefMap.get(neighbor).isWater) {
+                //     relief.setRiverBank()
+                //     break
+                // }
             }
         }
         const spread = Random.choice(RIVER_BANK_SPREAD)
@@ -283,9 +289,10 @@ class RiverBuilder {
     }
 
     _digRiver(river) {
-        for (let point of river.points) {
-            this.reliefMap.get(point).setRiver()
-        }
+        // FIXME
+        // for (let point of river.points) {
+        //     this.reliefMap.get(point).setRiver()
+        // }
     }
 }
 

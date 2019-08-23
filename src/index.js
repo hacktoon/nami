@@ -72,20 +72,21 @@ const showTileInfo = tile => {
         return `<p class='title'>${title}</p><p class='value'>${value}</p>`
     }
     let tpl = wrap('World', currentWorld.name)
-        tpl += wrap('Seed', Random.seed)
+    tpl += wrap('Seed', Random.seed)
     if (!tile) {
         infoText.innerHTML = tpl
         return
     }
-    tpl += wrap('Coordinates', tile.point.hash())
-    tpl += wrap('Biome', tile.biome.name)
-    tpl += wrap('Relief', tile.relief.name)
-    tpl += wrap('Heat', tile.heat.name)
-    tpl += wrap('Moisture', tile.moisture.name)
-    if (tile.waterbody)
-        tpl += wrap('Waterbody', tile.waterbody.name)
-    if (tile.landmass)
-        tpl += wrap('Landmass', tile.landmass.name)
+    const point = tile.point
+    tpl += wrap('Coordinates', point.hash())
+    tpl += wrap('Relief', currentWorld.reliefMap.getName(point))
+    tpl += wrap('Heat', currentWorld.heatMap.getName(point))
+    tpl += wrap('Moisture', currentWorld.moistureMap.getName(point))
+    if (currentWorld.waterbodyMap.get(point))
+        tpl += wrap('Waterbody', currentWorld.waterbodyMap.get(point).name)
+    // if (tile.landmass)
+    //     tpl += wrap('Landmass', tile.landmass.name)
+    // tpl += wrap('Biome', tile.biome.name)
 
 
     infoText.innerHTML = tpl

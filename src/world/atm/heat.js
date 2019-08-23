@@ -4,11 +4,11 @@ import { Grid } from '../../lib/grid'
 import { MidpointDisplacement } from '../../lib/heightmap'
 import { Point } from '../../lib/point'
 
-const ARCTIC = 0
-const SUBARCTIC = 1
-const TEMPERATE = 2
-const SUBTROPICAL = 3
-const TROPICAL = 4
+export const ARCTIC = 0
+export const SUBARCTIC = 1
+export const TEMPERATE = 2
+export const SUBTROPICAL = 3
+export const TROPICAL = 4
 
 const ZONE_TABLE = [
     { id: 0, heatId: ARCTIC,        y: 10 },
@@ -34,22 +34,21 @@ const ROUGHNESS = .2
 
 
 export class HeatMap {
-    constructor(reliefMap) {
-        this.size = reliefMap.size
-        this.grid = new Grid(this.size, this.size)
-        this.reliefMap = reliefMap
-        this._build(this.size)
+    constructor(size) {
+        this.grid = new Grid(size, size)
+        this.size = size
+        this._buildMap()
     }
 
-    _build(size) {
+    _buildMap() {
         const buildZone = zone => {
             let p1 = new Point(0, zone.y)
-            let p2 = new Point(size - 1, zone.y)
+            let p2 = new Point(this.size - 1, zone.y)
             let setPoint = point => {
-                if (zone.id == ZONE_TABLE.length - 1) {
+                if (zone.id == _.last(ZONE_TABLE).id) {
                     point.y = zone.y
                 }
-                point.y = _.clamp(point.y, 0, size-1)
+                point.y = _.clamp(point.y, 0, this.size-1)
                 fillColumn(point, zone.heatId)
             }
             MidpointDisplacement(p1, p2, ROUGHNESS, setPoint)
@@ -63,73 +62,34 @@ export class HeatMap {
 
                 if (this.grid.get(pointAbove) != undefined)
                     break
-                let heat = this._filterHeat(new Heat(id), pointAbove)
-                this.grid.set(pointAbove, heat)
+                this.grid.set(pointAbove, id)
                 baseY--
             }
         }
         ZONE_TABLE.forEach(buildZone)
     }
 
-    _filterHeat(heat, point) {
-        const relief = this.reliefMap.get(point)
-        if (relief.isMountain) heat.lower()
-        return heat
-    }
+    isArctic(point) { return this.get(point) == ARCTIC }
+
+    isSubarctic(point) { return this.get(point) == SUBARCTIC }
+
+    isTemperate(point) { return this.get(point) == TEMPERATE }
+
+    isSubtropical(point) { return this.get(point) == SUBTROPICAL }
+
+    isTropical(point) { return this.get(point) == TROPICAL }
 
     get(point) {
         return this.grid.get(point)
     }
-}
 
-
-class Heat {
-    constructor(id) {
-        this.data = HEAT_TABLE[id]
+    getName(point) {
+        const id = this.get(point)
+        return HEAT_TABLE[id].name
     }
 
-    get id() { return this.data.id }
-    get y() { return this.data.y }
-    get name() { return this.data.name }
-    get color() { return this.data.color }
-
-    raise(amount = 1) {
-        let raisedIndex = this.data.id + amount
-        let id = _.clamp(raisedIndex, 0, HEAT_TABLE.length - 1)
-        this.data = HEAT_TABLE[id]
-    }
-
-    lower(amount = 1) {
-        let loweredIndex = this.data.id - amount
-        let id = _.clamp(loweredIndex, 0, HEAT_TABLE.length - 1)
-        this.data = HEAT_TABLE[id]
-    }
-
-    static getHottest() {
-        return HEAT_TABLE[TROPICAL]
-    }
-
-    static getColdest() {
-        return HEAT_TABLE[ARCTIC]
-    }
-
-    get isArctic() {
-        return this.data.id == ARCTIC
-    }
-
-    get isSubarctic() {
-        return this.data.id == SUBARCTIC
-    }
-
-    get isTemperate() {
-        return this.data.id == TEMPERATE
-    }
-
-    get isSubtropical() {
-        return this.data.id == SUBTROPICAL
-    }
-
-    get isTropical() {
-        return this.data.id == TROPICAL
+    getColor(point) {
+        const id = this.get(point)
+        return HEAT_TABLE[id].color
     }
 }
