@@ -178,3 +178,34 @@ class RiverBuilder {
         // }
     }
 }
+
+
+class River {
+    constructor(id, source) {
+        this.id = id
+        this._name = Name.createRiverName()
+        this.source = source
+        this.points = []
+        this._isTributary = false
+    }
+
+    add(point) {
+        this.points.push(point)
+    }
+
+    setTributary() {
+        this._isTributary = true
+    }
+
+    get isTributary() {
+        return this._isTributary
+    }
+
+    get mouth() {
+        return _.last(this.points)
+    }
+
+    get length() {
+        return this.points.length
+    }
+}

@@ -7,15 +7,17 @@ import { ScanlineFill8 } from '../../lib/flood-fill'
 import { RiverMap } from './river'
 
 
-const EMPTY_VALUE = 0
+const EMPTY = 0
 const DEFAULT_COLOR = 'darkgreen'
 
 const OCEAN = 0
 const SEA = 1
 const LAKE = 2
 const POND = 3
-const RIVER = 5
+const RIVER = 4
 
+const RAPIDS = 'R'
+const WATERFALL = 'W'
 const BEACH = 'B'
 const CLIFF = 'C'
 const BANK = 'K'
@@ -40,7 +42,7 @@ const WATERBODY_TABLE = [
 
 export class WaterbodyMap {
     constructor(size, reliefMap, moistureMap) {
-        this.grid = new Grid(size, size, EMPTY_VALUE)
+        this.grid = new Grid(size, size, new WaterPoint())
         this.moistureMap = moistureMap
         this.reliefMap = reliefMap
         this.littoralPoints = []
@@ -64,13 +66,12 @@ export class WaterbodyMap {
     _detect(startPoint) {
         let tileCount = 0
         const isFillable = point => {
-            let isEmpty = this.grid.get(point) == EMPTY_VALUE
+            let isEmpty = this.grid.get(point) == EMPTY
             return this.reliefMap.isWater(point) && isEmpty
         }
         const onFill = point => {
             this.grid.set(point, this.nextId)
             this._detectLittoral(point)
-            this._detectRiverSource(point)
             tileCount++
         }
 
@@ -86,12 +87,6 @@ export class WaterbodyMap {
                 this.littoralPoints.push(point)
                 return
             }
-        }
-    }
-
-    _detectRiverSource(point) {
-        if (this.reliefMap.isMountain(point)) {
-            this.riverSources.push(point)
         }
     }
 
@@ -128,70 +123,32 @@ export class WaterbodyMap {
         const waterbody = this.get(point)
         return waterbody ? waterbody.color : DEFAULT_COLOR
     }
+
+    getName(point) {
+        const waterbody = this.get(point)
+        const type_name = WATERBODY_TABLE[waterbody.type].name
+        return `${waterbody.name} ${type_name}`
+    }
+    isOcean(point) { return this.get(point).type == OCEAN }
+    isSea(point) { return this.get(point).type == SEA }
+    isLake(point) { return this.get(point).type == LAKE }
+    isPond(point) { return this.get(point).type == POND }
+    isRiver(point) { return this.get(point).type == RIVER }
+}
+
+
+class WaterPoint {
+    constructor(id=EMPTY, type=undefined) {
+        this.id = id
+        this.type = type
+    }
 }
 
 
 class Waterbody {
-    constructor(id, type, point) {
+    constructor(id, type) {
         this.id = id
         this.type = type
-        this._name = Name.createWaterbodyName()
-        this.point = point
-    }
-
-    get name() {
-        const type_name = WATERBODY_TABLE[this.type].name
-        return `${this._name} ${type_name}`
-    }
-    get color() { return WATERBODY_TABLE[this.type].color }
-    get isOcean() { return this.type == OCEAN }
-    get isSea() { return this.type == SEA }
-    get isLake() { return this.type == LAKE }
-    get isPond() { return this.type == POND }
-    get isRiver() { return this.type == RIVER }
-}
-
-
-class Ocean extends Waterbody {
-    constructor(id, source) {
-        super(id, OCEAN, source)
-    }
-}
-
-class Sea extends Waterbody {
-    constructor(id, source) {
-        super(id, SEA, source)
-    }
-}
-
-
-class River extends Waterbody {
-    constructor(id, source) {
-        super(id, RIVER, source)
-        this.id = id
-        this._name = Name.createRiverName()
-        this.source = source
-        this.points = []
-        this._isTributary = false
-    }
-
-    add(point) {
-        this.points.push(point)
-    }
-
-    setTributary() {
-        this._isTributary = true
-    }
-
-    get isTributary() {
-        return this._isTributary
-    }
-
-    get mouth() {
-        return _.last(this.points)
-    }
-
-    get length() {
-        return this.points.length
+        this.name = Name.createWaterbodyName()
     }
 }
