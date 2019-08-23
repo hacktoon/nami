@@ -31,8 +31,8 @@ export default class WorldBuilder {
     }
 
     build() {
-        window.currentWorld = this.world
-        this.world.iter(tile => this.updateTile(tile))
+        window.world = this.world
+        //this.world.iter(tile => this.updateTile(tile))
         return this.world
     }
 

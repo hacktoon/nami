@@ -2,22 +2,25 @@ import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
 import { Name } from '../../lib/name'
-import { Random } from '../../lib/base'
 import { ScanlineFill8 } from '../../lib/flood-fill'
 
 import { RiverMap } from './river'
 
 
 const EMPTY_VALUE = 0
-const SWAMP_CHANCE = .3
+const DEFAULT_COLOR = 'darkgreen'
 
 const OCEAN = 0
 const SEA = 1
 const LAKE = 2
 const POND = 3
-const SWAMP = 4
 const RIVER = 5
-const RIVER_MOUTH = 6
+
+const BEACH = 'B'
+const CLIFF = 'C'
+const BANK = 'K'
+const SHORE = 'S'
+const STREAM = 'T'
 
 const WATERBODY_MIN_AREA_TABLE = [
     { id: OCEAN, percentage: 8 },
@@ -31,7 +34,6 @@ const WATERBODY_TABLE = [
     { id: SEA,   color: "#8bddd4",  name: "Sea" },
     { id: LAKE,  color: "#29f25e",  name: "Lake" },
     { id: POND,  color: "#29f25e",  name: "Pond" },
-    { id: SWAMP, color: "#a3358c",  name: "Swamp" },
     { id: RIVER, color: "#29f25e",  name: "River" }
 ]
 
@@ -42,20 +44,21 @@ export class WaterbodyMap {
         this.moistureMap = moistureMap
         this.reliefMap = reliefMap
         this.littoralPoints = []
+        this.riverSources = []
         this.size = size
         this.nextId = 1
         this.map = {}
 
-        this._buildMap()
+        this._buildWaterbodies()
+        this._buildRivers()
     }
 
-    _buildMap() {
-        this._detectWaterbodies()
-        //new RiverMap(this.reliefMap, this.moistureMap, this)
-    }
-
-    _detectWaterbodies() {
+    _buildWaterbodies() {
         this.grid.forEach((_, point) => this._detect(point))
+    }
+
+    _buildRivers() {
+        //new RiverMap(this.reliefMap, this)
     }
 
     _detect(startPoint) {
@@ -66,21 +69,29 @@ export class WaterbodyMap {
         }
         const onFill = point => {
             this.grid.set(point, this.nextId)
-            detectLittoral(point)
+            this._detectLittoral(point)
+            this._detectRiverSource(point)
             tileCount++
-        }
-        const detectLittoral = point => {
-            for (let [neighbor, _] of point.adjacentPoints()) {
-                if (this.reliefMap.isLand(neighbor)) {
-                    this.littoralPoints.push(point)
-                    return
-                }
-            }
         }
 
         if (isFillable(startPoint)) {
             new ScanlineFill8(this.grid, startPoint, onFill, isFillable).fill()
             this._buildWaterbody(startPoint, tileCount)
+        }
+    }
+
+    _detectLittoral(point) {
+        for (let [neighbor, _] of point.adjacentPoints()) {  // TODO: check with .pointsAround
+            if (this.reliefMap.isLand(neighbor)) {
+                this.littoralPoints.push(point)
+                return
+            }
+        }
+    }
+
+    _detectRiverSource(point) {
+        if (this.reliefMap.isMountain(point)) {
+            this.riverSources.push(point)
         }
     }
 
@@ -100,9 +111,6 @@ export class WaterbodyMap {
                 break
             }
         }
-        if (type == POND && Random.chance(SWAMP_CHANCE)) {
-            type = SWAMP
-        }
         return type
     }
 
@@ -115,9 +123,12 @@ export class WaterbodyMap {
         let id = this.grid.get(point)
         return this.map[id]
     }
+
+    getColor(point) {
+        const waterbody = this.get(point)
+        return waterbody ? waterbody.color : DEFAULT_COLOR
+    }
 }
-
-
 
 
 class Waterbody {
@@ -137,8 +148,20 @@ class Waterbody {
     get isSea() { return this.type == SEA }
     get isLake() { return this.type == LAKE }
     get isPond() { return this.type == POND }
-    get isSwamp() { return this.type == SWAMP }
     get isRiver() { return this.type == RIVER }
+}
+
+
+class Ocean extends Waterbody {
+    constructor(id, source) {
+        super(id, OCEAN, source)
+    }
+}
+
+class Sea extends Waterbody {
+    constructor(id, source) {
+        super(id, SEA, source)
+    }
 }
 
 

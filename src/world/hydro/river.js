@@ -11,11 +11,10 @@ const EROSION_START = 3                 // at which tile erosion will start
 const RIVER_BANK_SPREAD = [2, 3, 4, 5]  // how much the river deposits sediment
 
 
-class RiverMap {
-    constructor(reliefMap, moistureMap, waterbodyMap) {
+class RiverBuilder {
+    constructor(reliefMap, waterbodyMap) {
         this.size = reliefMap.size
         this.reliefMap = reliefMap
-        this.moistureMap = moistureMap
         this.waterbodyMap = waterbodyMap
         this.grid = waterbodyMap.grid
 
@@ -44,9 +43,7 @@ class RiverMap {
     }
 
     _isSource(point) {
-        const isRiverPossible = this.moistureMap.get(point).isRiverPossible
-        const chance = Random.chance(SOURCE_CHANCE)
-        return chance && isRiverPossible
+        return Random.chance(SOURCE_CHANCE)
     }
 
     _isIsolated(newPoint, sources) {
@@ -152,7 +149,6 @@ class RiverMap {
             return
         riverPoint.pointsAround(point => {
             //this.reliefMap.get(point).setRiverMargin(reliefLevel)  FIXME
-            this.moistureMap.get(point).raise()
         })
     }
 

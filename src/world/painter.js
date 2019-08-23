@@ -8,7 +8,7 @@ export default class WorldPainter {
 
     drawRelief() {
         this.world.iter(tile => {
-            const color = this.world.reliefMap.getColor(tile.point)
+            let color = this.world.reliefMap.getColor(tile.point)
             this.drawTile(tile.point, color)
         })
     }
@@ -28,10 +28,9 @@ export default class WorldPainter {
     }
 
     drawWaterbody() {
-        let defaultColor = "#444"
-        this.world.iter(tile => {
-            let color = tile.waterbody ? tile.waterbody.color : defaultColor
-            this.drawTile(tile.point, color)
+        this.world.iter((tile, point) => {
+            let color = this.world.waterbodyMap.getColor(point)
+            this.drawTile(point, color)
         })
     }
 

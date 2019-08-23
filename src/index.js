@@ -44,8 +44,8 @@ const draw = () =>  {
     let view = getViewInput(),
         tilesize = getTileSizeInput()
 
-    viewCanvas.width = currentWorld.size * tilesize;
-    viewCanvas.height = currentWorld.size * tilesize;
+    viewCanvas.width = world.size * tilesize;
+    viewCanvas.height = world.size * tilesize;
 
     let map = {
         heat:  "drawHeat",
@@ -71,7 +71,7 @@ const showTileInfo = tile => {
     const wrap = (title, value) => {
         return `<p class='title'>${title}</p><p class='value'>${value}</p>`
     }
-    let tpl = wrap('World', currentWorld.name)
+    let tpl = wrap('World', world.name)
     tpl += wrap('Seed', Random.seed)
     if (!tile) {
         infoText.innerHTML = tpl
@@ -79,11 +79,11 @@ const showTileInfo = tile => {
     }
     const point = tile.point
     tpl += wrap('Coordinates', point.hash())
-    tpl += wrap('Relief', currentWorld.reliefMap.getName(point))
-    tpl += wrap('Heat', currentWorld.heatMap.getName(point))
-    tpl += wrap('Moisture', currentWorld.moistureMap.getName(point))
-    if (currentWorld.waterbodyMap.get(point))
-        tpl += wrap('Waterbody', currentWorld.waterbodyMap.get(point).name)
+    tpl += wrap('Relief', world.reliefMap.getName(point))
+    tpl += wrap('Heat', world.heatMap.getName(point))
+    tpl += wrap('Moisture', world.moistureMap.getName(point))
+    if (world.waterbodyMap.get(point))
+        tpl += wrap('Waterbody', world.waterbodyMap.get(point).name)
     // if (tile.landmass)
     //     tpl += wrap('Landmass', tile.landmass.name)
     // tpl += wrap('Biome', tile.biome.name)
@@ -115,7 +115,7 @@ viewCanvas.addEventListener('mousedown', e => {
 
 viewCanvas.addEventListener('mousemove', e => {
     let point = getCanvasMousePoint(e, viewCanvas)
-    let tile = currentWorld.get(point)
+    let tile = world.get(point)
     showTileInfo(tile)
 })
 
