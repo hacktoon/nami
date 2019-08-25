@@ -22,7 +22,7 @@ const HEIGHT_TABLE = [
     { minHeight:  20, mapTo: DEEP },
     { minHeight: 115, mapTo: SHALLOW },
     { minHeight: 152, mapTo: REEF },
-    { minHeight: 153, mapTo: SHALLOW },
+    { minHeight: 153, mapTo: SHALLOW, ignoreSort: true },
     { minHeight: 175, mapTo: BASIN },
     { minHeight: 198, mapTo: PLAIN },
     { minHeight: 235, mapTo: HIGHLAND },
@@ -30,11 +30,11 @@ const HEIGHT_TABLE = [
     { minHeight: 257, mapTo: MOUNTAIN },
 ]
 
-const RELIEF_TABLE = {
+const RELIEF_MAP = {
     [ABYSSAL]:  { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
     [DEEP]:     { id: DEEP,     color: "#000045", name: "Deep" },
-    [REEF]:     { id: REEF,     color: "#6e0f68", name: "Reef" },
     [SHALLOW]:  { id: SHALLOW,  color: "#000078", name: "Shallow" },
+    [REEF]:     { id: REEF,     color: "#6e0f68", name: "Reef" },
     [BASIN]:    { id: BASIN,    color: "#0a5816", name: "Basin" },
     [PLAIN]:    { id: PLAIN,    color: "#31771a", name: "Plain" },
     [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
@@ -51,8 +51,8 @@ const RELIEF_TABLE = {
 //        maybe create generic map class
 //        create "memory snapshot" usando um grid de tiles, excluindo todos os meta-dados
 
-class HeightReliefMap {
-    constructor(table) {
+class HeightToReliefMap {
+    constructor(table = HEIGHT_TABLE) {
         this.table = table
         this.map = this._buildMap(table)
     }
@@ -89,19 +89,40 @@ class HeightReliefMap {
 
 class ReliefCodeMap {
     constructor(size, roughness) {
+        this.heightToReliefMap = new HeightToReliefMap()
         this.heightMap = new HeightMap(size, roughness)
-        this.heightReliefMap = new HeightReliefMap(HEIGHT_TABLE)
-        this.grid = this._buildGrid(size, this.heightMap, this.heightReliefMap)
+        this.maskHeightMap = new HeightMap(size, roughness)
+        this.grid = this._buildGrid(size, this.heightMap, this.heightToReliefMap)
+        this.maskGrid = this._buildGrid(size, this.maskHeightMap, this.heightToReliefMap)
     }
 
-    _buildGrid(size, heightMap, heightReliefMap) {
+    _buildGrid(size, heightMap, heightToReliefMap) {
         return new Grid(size, size, point => {
             const height = heightMap.get(point)
-            return heightReliefMap.get(height)
+            return heightToReliefMap.get(height)
         })
     }
 
     get(point) {
+        const relief = this.grid.get(point)
+        const maskRelief = this.maskGrid.get(point)
+        return this._maskRelief(relief, maskRelief)
+    }
+
+    _maskRelief(relief, maskRelief) {
+        if (maskRelief > PLAIN) {
+            relief = _.clamp(relief, ABYSSAL, HIGHLAND)
+        }
+        if (maskRelief == SHALLOW) {
+            relief = _.clamp(relief, ABYSSAL, PLAIN)
+        }
+        // if (maskRelief == BASIN) {
+        //     relief = Math.max(ABYSSAL, relief - 1)
+        // }
+        return relief
+    }
+
+    isLower(point, relief) {
         return this.grid.get(point)
     }
 }
@@ -109,17 +130,16 @@ class ReliefCodeMap {
 
 export class ReliefMap {
     constructor(size, roughness) {
-        this.grid = new ReliefCodeMap(size, roughness)
-        this.maskGrid = new ReliefCodeMap(size, roughness)
-        //this.filterMap = new ReliefAnalysisMap(size, roughness)
+        this.codeMap = new ReliefCodeMap(size, roughness)
+        //this.regionMap = new RegionMap()
         this.roughness = roughness
         this.size = size
     }
 
     isAbyss(pt) { return this.get(pt) == ABYSSAL }
     isDeep(pt) { return this.get(pt) == DEEP }
-    isReef(pt) { return this.get(pt) == REEF }
     isShallow(pt) { return this.get(pt) == SHALLOW }
+    isReef(pt) { return this.get(pt) == REEF }
     isBasin(pt) { return this.get(pt) == BASIN }
     isPlain(pt) { return this.get(pt) == PLAIN }
     isHighland(pt) { return this.get(pt) == HIGHLAND }
@@ -128,38 +148,37 @@ export class ReliefMap {
     isWater(pt) { return this.get(pt) <= SHALLOW }
     isLand(pt) { return !this.isWater(pt) }
 
-    get(point) {
-        let relief = this.grid.get(point)
-        let maskedRelief = this._maskRelief(point, relief)
-        return maskedRelief
-    }
-
-    _maskRelief(point, relief) {
-        const maskRelief = this.maskGrid.get(point)
-
-        // if (maskRelief > PLAIN) {
-        //     relief = _.clamp(relief, ABYSSAL, HIGHLAND)
-        // }
-        // if (maskRelief == SHALLOW) {
-        //     relief = _.clamp(relief, ABYSSAL, PLAIN)
-        // }
-        // if (maskRelief == BASIN) {
-        //     relief = Math.max(ABYSSAL, relief - 1)
-        // }
-        return relief
-    }
-
     getName(point) {
-        const id = this.get(point)
-        return RELIEF_TABLE[id].name
+        const code = this.get(point)
+        return RELIEF_MAP[code].name
     }
 
     getHeight(point) {
-        return this.grid.heightMap.get(point)
+        return this.codeMap.heightMap.get(point)
     }
 
     getColor(point) {
-        const id = this.get(point)
-        return RELIEF_TABLE[id].color
+        const code = this.get(point)
+        return RELIEF_MAP[code].color
+    }
+
+    get(point) {
+        return this.codeMap.get(point)
+    }
+}
+
+
+
+export class TerrainMap {
+    constructor(size, roughness) {
+        this.relief = new ReliefMap(size, roughness)
+        this.size = size
+    }
+
+    isWater(pt) { return this.get(pt) <= SHALLOW }
+    isLand(pt) { return !this.isWater(pt) }
+
+    get(point) {
+        return
     }
 }
