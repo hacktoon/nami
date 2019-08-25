@@ -15,33 +15,36 @@ export const PLAIN = 6
 export const HIGHLAND = 7
 export const HILL = 8
 export const MOUNTAIN = 9
-
-const CODE_TABLE = [
-    { mapTo: ABYSSAL,  minHeight:   0 },
-    { mapTo: DEEP,     minHeight:  20 },
-    { mapTo: SHELF,    minHeight: 115 },
-    { mapTo: REEF,     minHeight: 152 },
-    { mapTo: SHALLOW,  minHeight: 153 },
-    { mapTo: BASIN,    minHeight: 175 },
-    { mapTo: PLAIN,    minHeight: 198 },
-    { mapTo: HIGHLAND, minHeight: 235 },
-    { mapTo: HILL,     minHeight: 255 },
-    { mapTo: MOUNTAIN, minHeight: 257 }
-]
+export const TABLE = 10
 
 const buildCodeMap = function(table) {
-    const map = {}
+    const map = []
     const isLast = index => index == table.length - 1
+    const getMaxHeight = index => table[index + 1].minHeight - 1
     for (let [index, code] of table.entries()) {
         if (isLast(index)) {
-
+            map.push(code.mapTo)
         } else {
-            const next = table[index + 1]
-            const upTo = next.minHeight - 1
+            for (let i = code.minHeight; i <= getMaxHeight(index); i++) {
+                map.push(code.mapTo)
+            }
         }
     }
     return map
 }
+
+const CODE_MAP = buildCodeMap([
+    { mapTo: ABYSSAL, minHeight: 0 },
+    { mapTo: DEEP, minHeight: 20 },
+    { mapTo: SHELF, minHeight: 115 },
+    { mapTo: REEF, minHeight: 152 },
+    { mapTo: SHALLOW, minHeight: 153 },
+    { mapTo: BASIN, minHeight: 175 },
+    { mapTo: PLAIN, minHeight: 198 },
+    { mapTo: HIGHLAND, minHeight: 235 },
+    { mapTo: HILL, minHeight: 255 },
+    { mapTo: MOUNTAIN, minHeight: 257 }
+])
 
 const RELIEF_TABLE = {
     [ABYSSAL]: { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
@@ -54,6 +57,7 @@ const RELIEF_TABLE = {
     [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
     [HILL]: { id: HILL, color: "#9f908b", name: "Hill" },
     [MOUNTAIN]: { id: MOUNTAIN, color: "#AAAAAA", name: "Mountain" },
+    [TABLE]: { id: TABLE, color: "#AAAAAA", name: "Mountain" },
 }
 
 // TODO:  rename everything to geo add geologic formations as
@@ -73,20 +77,8 @@ class ReliefCodeMap {
     _buildGrid(size, heightMap) {
         return new Grid(size, size, point => {
             const height = heightMap.get(point)
-            return this._convertHeightToRelief(height)
+            return CODE_MAP[height]
         })
-    }
-
-    _convertHeightToRelief(height) {
-        let id = ABYSSAL
-        for (let code of CODE_TABLE) {
-            if (height >= code.minHeight) {
-                id = code.mapTo
-            } else {
-                break
-            }
-        }
-        return id
     }
 
     get(point) {
