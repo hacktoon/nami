@@ -13,7 +13,8 @@ export const SHALLOW = 4
 export const BASIN = 5
 export const PLAIN = 6
 export const HIGHLAND = 7
-export const MOUNTAIN = 8
+export const HILL = 8
+export const MOUNTAIN = 9
 
 const CODE_TABLE = [
     { mapTo: ABYSSAL,  minHeight:   0 },
@@ -24,7 +25,8 @@ const CODE_TABLE = [
     { mapTo: BASIN,    minHeight: 175 },
     { mapTo: PLAIN,    minHeight: 198 },
     { mapTo: HIGHLAND, minHeight: 235 },
-    { mapTo: MOUNTAIN, minHeight: 256 }
+    { mapTo: HILL,     minHeight: 255 },
+    { mapTo: MOUNTAIN, minHeight: 257 }
 ]
 
 const buildCodeMap = function(table) {
@@ -41,17 +43,18 @@ const buildCodeMap = function(table) {
     return map
 }
 
-const RELIEF_TABLE = [
-    { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
-    { id: DEEP,  color: "#000045", name: "Deep" },
-    { id: SHALLOW,  color: "#000078", name: "Shallow" },
-    { id: REEF,  color: "#007587", name: "Reef" },
-    { id: SHALLOW,  color: "#000078", name: "Shallow" },
-    { id: BASIN,  color: "#0a5816", name: "Basin" },
-    { id: PLAIN,  color: "#31771a", name: "Plain" },
-    { id: HIGHLAND,  color: "#6f942b", name: "Highland" },
-    { id: MOUNTAIN,  color: "#AAAAAA", name: "Mountain" },
-]
+const RELIEF_TABLE = {
+    [ABYSSAL]: { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
+    [DEEP]: { id: DEEP,     color: "#000045", name: "Deep" },
+    [SHELF]: { id: SHELF,  color: "#000078", name: "Shallow" },
+    [REEF]: { id: REEF,     color: "#007587", name: "Reef" },
+    [SHALLOW]: { id: SHALLOW,  color: "#000078", name: "Shallow" },
+    [BASIN]: { id: BASIN,    color: "#0a5816", name: "Basin" },
+    [PLAIN]: { id: PLAIN,    color: "#31771a", name: "Plain" },
+    [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
+    [HILL]: { id: HILL, color: "#9f908b", name: "Hill" },
+    [MOUNTAIN]: { id: MOUNTAIN, color: "#AAAAAA", name: "Mountain" },
+}
 
 // TODO:  rename everything to geo add geologic formations as
 //        both shallow and shelf are filtered to one
