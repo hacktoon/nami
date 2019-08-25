@@ -17,23 +17,8 @@ export const HILL = 8
 export const MOUNTAIN = 9
 export const TABLE = 10
 
-const buildCodeMap = function(table) {
-    const map = []
-    const isLast = index => index == table.length - 1
-    const getMaxHeight = index => table[index + 1].minHeight - 1
-    for (let [index, code] of table.entries()) {
-        if (isLast(index)) {
-            map.push(code.mapTo)
-        } else {
-            for (let i = code.minHeight; i <= getMaxHeight(index); i++) {
-                map.push(code.mapTo)
-            }
-        }
-    }
-    return map
-}
 
-const CODE_MAP = buildCodeMap([
+const CODE_TABLE = [
     { mapTo: ABYSSAL, minHeight: 0 },
     { mapTo: DEEP, minHeight: 20 },
     { mapTo: SHELF, minHeight: 115 },
@@ -44,20 +29,20 @@ const CODE_MAP = buildCodeMap([
     { mapTo: HIGHLAND, minHeight: 235 },
     { mapTo: HILL, minHeight: 255 },
     { mapTo: MOUNTAIN, minHeight: 257 }
-])
+]
 
 const RELIEF_TABLE = {
-    [ABYSSAL]: { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
-    [DEEP]: { id: DEEP,     color: "#000045", name: "Deep" },
-    [SHELF]: { id: SHELF,  color: "#000078", name: "Shallow" },
-    [REEF]: { id: REEF,     color: "#007587", name: "Reef" },
-    [SHALLOW]: { id: SHALLOW,  color: "#000078", name: "Shallow" },
-    [BASIN]: { id: BASIN,    color: "#0a5816", name: "Basin" },
-    [PLAIN]: { id: PLAIN,    color: "#31771a", name: "Plain" },
+    [ABYSSAL]:  { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
+    [DEEP]:     { id: DEEP,     color: "#000045", name: "Deep" },
+    [SHELF]:    { id: SHELF,    color: "#000078", name: "Shallow" },
+    [REEF]:     { id: REEF,     color: "#007587", name: "Reef" },
+    [SHALLOW]:  { id: SHALLOW,  color: "#000078", name: "Shallow" },
+    [BASIN]:    { id: BASIN,    color: "#0a5816", name: "Basin" },
+    [PLAIN]:    { id: PLAIN,    color: "#31771a", name: "Plain" },
     [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
-    [HILL]: { id: HILL, color: "#9f908b", name: "Hill" },
+    [HILL]:     { id: HILL,     color: "#9f908b", name: "Hill" },
     [MOUNTAIN]: { id: MOUNTAIN, color: "#AAAAAA", name: "Mountain" },
-    [TABLE]: { id: TABLE, color: "#AAAAAA", name: "Mountain" },
+    [TABLE]:    { id: TABLE,    color: "brown",   name: "Table" },
 }
 
 // TODO:  rename everything to geo add geologic formations as
@@ -71,14 +56,31 @@ const RELIEF_TABLE = {
 class ReliefCodeMap {
     constructor(size, roughness) {
         this.heightMap = new HeightMap(size, roughness)
-        this.grid = this._buildGrid(size, this.heightMap)
+        this.codeMap = this._buildCodeMap(CODE_TABLE)
+        this.grid = this._buildGrid(size, this.heightMap, this.codeMap)
     }
 
-    _buildGrid(size, heightMap) {
+    _buildGrid(size, heightMap, codeMap) {
         return new Grid(size, size, point => {
             const height = heightMap.get(point)
-            return CODE_MAP[height]
+            return codeMap[height]
         })
+    }
+
+    _buildCodeMap(table) {
+        const map = []
+        const isLast = index => index == table.length - 1
+        const getMaxHeight = index => table[index + 1].minHeight - 1
+        for (let [index, code] of table.entries()) {
+            if (isLast(index)) {
+                map.push(code.mapTo)
+            } else {
+                for (let i = code.minHeight; i <= getMaxHeight(index); i++) {
+                    map.push(code.mapTo)
+                }
+            }
+        }
+        return map
     }
 
     get(point) {
