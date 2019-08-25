@@ -42,7 +42,10 @@ const WATERBODY_TABLE = [
 
 export class WaterbodyMap {
     constructor(size, reliefMap, moistureMap) {
-        this.grid = new Grid(size, size, new WaterPoint())
+
+        // TODO: detect litorals on grid creation
+
+        this.grid = new Grid(size, size, point => new WaterPoint(point))
         this.moistureMap = moistureMap
         this.reliefMap = reliefMap
         this.littoralPoints = []

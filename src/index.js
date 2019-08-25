@@ -78,8 +78,9 @@ const showTileInfo = tile => {
         return
     }
     const point = tile.point
+    const reliefMap = world.reliefMap
     tpl += wrap('Coordinates', point.hash())
-    tpl += wrap('Relief', world.reliefMap.getName(point))
+    tpl += wrap('Relief', reliefMap.getHeight(point) + ' ' + reliefMap.getName(point))
     tpl += wrap('Heat', world.heatMap.getName(point))
     tpl += wrap('Moisture', world.moistureMap.getName(point))
     if (world.waterbodyMap.get(point))
