@@ -8,7 +8,7 @@ import { Point } from '../../lib/point';
 export const ABYSSAL = 0
 export const DEEP = 1
 export const SHALLOW = 2
-export const BANK = 3
+export const BANKS = 3
 export const BASIN = 4
 export const PLAIN = 5
 export const HIGHLAND = 6
@@ -22,12 +22,12 @@ const HEIGHT_TABLE = [
     { minHeight:   0, mapTo: ABYSSAL },
     { minHeight:  20, mapTo: DEEP },
     { minHeight: 115, mapTo: SHALLOW },
-    { minHeight: 152, mapTo: BANK },
+    { minHeight: 152, mapTo: BANKS },
     { minHeight: 153, mapTo: SHALLOW },
     { minHeight: 175, mapTo: BASIN },
     { minHeight: 198, mapTo: PLAIN },
     { minHeight: 235, mapTo: HIGHLAND },
-    { minHeight: 255, mapTo: HILL },
+    { minHeight: 254, mapTo: HILL },
     { minHeight: 257, mapTo: MOUNTAIN },
 ]
 
@@ -35,7 +35,7 @@ const RELIEF_MAP = {
     [ABYSSAL]:  { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
     [DEEP]:     { id: DEEP,     color: "#000045", name: "Deep" },
     [SHALLOW]:  { id: SHALLOW,  color: "#000078", name: "Shallow" },
-    [BANK]:     { id: BANK,     color: "#6e0f68", name: "Bank" },
+    [BANKS]:    { id: BANKS,    color: "#6e0f68", name: "Banks" },
     [BASIN]:    { id: BASIN,    color: "#0a5816", name: "Basin" },
     [PLAIN]:    { id: PLAIN,    color: "#31771a", name: "Plain" },
     [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
@@ -51,6 +51,9 @@ const RELIEF_MAP = {
 //        disable storing filter layers on production to speed up generation
 //        maybe create generic map class
 //        create "memory snapshot" usando um grid de tiles, excluindo todos os meta-dados
+//        on region map, build mountains up to, 4, 8 tiles p/region
+//        (4 = Peak)
+//        (9 = Everest)
 
 class HeightToReliefMap {
     constructor(table = HEIGHT_TABLE) {
@@ -140,7 +143,7 @@ export class ReliefMap {
     isAbyss(pt) { return this.get(pt) == ABYSSAL }
     isDeep(pt) { return this.get(pt) == DEEP }
     isShallow(pt) { return this.get(pt) == SHALLOW }
-    isReef(pt) { return this.get(pt) == BANK }
+    isReef(pt) { return this.get(pt) == BANKS }
     isBasin(pt) { return this.get(pt) == BASIN }
     isPlain(pt) { return this.get(pt) == PLAIN }
     isHighland(pt) { return this.get(pt) == HIGHLAND }
