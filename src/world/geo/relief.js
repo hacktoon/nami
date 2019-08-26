@@ -8,21 +8,22 @@ import { Point } from '../../lib/point';
 export const ABYSSAL = 0
 export const DEEP = 1
 export const SHALLOW = 2
-export const REEF = 3
+export const BANK = 3
 export const BASIN = 4
 export const PLAIN = 5
 export const HIGHLAND = 6
 export const HILL = 7
 export const MOUNTAIN = 8
 export const TABLE = 9
+export const VOLCANO = 10
 
 
 const HEIGHT_TABLE = [
     { minHeight:   0, mapTo: ABYSSAL },
     { minHeight:  20, mapTo: DEEP },
     { minHeight: 115, mapTo: SHALLOW },
-    { minHeight: 152, mapTo: REEF },
-    { minHeight: 153, mapTo: SHALLOW, ignoreSort: true },
+    { minHeight: 152, mapTo: BANK },
+    { minHeight: 153, mapTo: SHALLOW },
     { minHeight: 175, mapTo: BASIN },
     { minHeight: 198, mapTo: PLAIN },
     { minHeight: 235, mapTo: HIGHLAND },
@@ -34,17 +35,17 @@ const RELIEF_MAP = {
     [ABYSSAL]:  { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
     [DEEP]:     { id: DEEP,     color: "#000045", name: "Deep" },
     [SHALLOW]:  { id: SHALLOW,  color: "#000078", name: "Shallow" },
-    [REEF]:     { id: REEF,     color: "#6e0f68", name: "Reef" },
+    [BANK]:     { id: BANK,     color: "#6e0f68", name: "Bank" },
     [BASIN]:    { id: BASIN,    color: "#0a5816", name: "Basin" },
     [PLAIN]:    { id: PLAIN,    color: "#31771a", name: "Plain" },
     [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
     [HILL]:     { id: HILL,     color: "#9f908b", name: "Hill" },
     [MOUNTAIN]: { id: MOUNTAIN, color: "#AAAAAA", name: "Mountain" },
     [TABLE]:    { id: TABLE,    color: "brown",   name: "Table" },
+    [VOLCANO]:  { id: VOLCANO,  color: "red",     name: "Volcano" },
 }
 
 // TODO:  rename everything to geo add geologic formations as
-//        both shallow and shelf are filtered to one
 //        valleys, depressions, tables,
 //        FILTER LAYER
 //        disable storing filter layers on production to speed up generation
@@ -84,6 +85,10 @@ class HeightToReliefMap {
     get(height) {
         return this.map[height]
     }
+
+    getLower(relief) {
+        return Math.max(ABYSSAL, relief - 1)
+    }
 }
 
 
@@ -116,14 +121,10 @@ class ReliefCodeMap {
         if (maskRelief == SHALLOW) {
             relief = _.clamp(relief, ABYSSAL, PLAIN)
         }
-        // if (maskRelief == BASIN) {
-        //     relief = Math.max(ABYSSAL, relief - 1)
-        // }
+        if (maskRelief == BASIN) {
+            return this.heightToReliefMap.getLower(relief)
+        }
         return relief
-    }
-
-    isLower(point, relief) {
-        return this.grid.get(point)
     }
 }
 
@@ -131,7 +132,7 @@ class ReliefCodeMap {
 export class ReliefMap {
     constructor(size, roughness) {
         this.codeMap = new ReliefCodeMap(size, roughness)
-        //this.regionMap = new RegionMap()
+        //TODO: this.regionMap = new RegionMap()
         this.roughness = roughness
         this.size = size
     }
@@ -139,7 +140,7 @@ export class ReliefMap {
     isAbyss(pt) { return this.get(pt) == ABYSSAL }
     isDeep(pt) { return this.get(pt) == DEEP }
     isShallow(pt) { return this.get(pt) == SHALLOW }
-    isReef(pt) { return this.get(pt) == REEF }
+    isReef(pt) { return this.get(pt) == BANK }
     isBasin(pt) { return this.get(pt) == BASIN }
     isPlain(pt) { return this.get(pt) == PLAIN }
     isHighland(pt) { return this.get(pt) == HIGHLAND }
@@ -154,7 +155,7 @@ export class ReliefMap {
     }
 
     getHeight(point) {
-        return this.codeMap.heightMap.get(point)
+        return this.codeMap.heightMap.get(point) // TODO: normalize height
     }
 
     getColor(point) {
