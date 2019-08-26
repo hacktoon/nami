@@ -5,7 +5,7 @@ import { HeightMap } from '../../lib/heightmap'
 import { Random } from '../../lib/base';
 
 
-export const VOLCANO_CHANCE = .01
+export const VOLCANO_CHANCE = .006
 
 export const TRENCH = 0
 export const ABYSSAL = 1
@@ -27,8 +27,9 @@ const HEIGHT_TABLE = [
     { minHeight:   0, mapTo: _ => TRENCH },
     { minHeight:   2, mapTo: _ => ABYSSAL },
     { minHeight:  20, mapTo: _ => DEEP },
-    { minHeight:  84, mapTo: _ => Random.choice([BANKS, BASIN]) },
-    { minHeight:  85, mapTo: _ => DEEP },
+    { minHeight:  94, mapTo: _ => Random.choice([BANKS, BASIN]) },
+    { minHeight:  95, mapTo: _ => BANKS },
+    { minHeight:  96, mapTo: _ => DEEP },
     { minHeight: 115, mapTo: _ => SHALLOW },
     { minHeight: 151, mapTo: _ => BASIN },
     { minHeight: 152, mapTo: _ => Random.choice([BANKS, SHALLOW]) },
@@ -89,14 +90,10 @@ class HeightToReliefMap {
     }
 
     _pushMapSection(map, index, code) {
-        const maxHeight = this._getSectionMaxHeight(index)
+        const maxHeight = this.table[index + 1].minHeight - 1
         for (let i = code.minHeight; i <= maxHeight; i++) {
             map.push(code.mapTo())
         }
-    }
-
-    _getSectionMaxHeight(index) {
-        return this.table[index + 1].minHeight - 1
     }
 
     get(height) {
@@ -121,10 +118,13 @@ export class ReliefCodeMap {
         })
     }
 
-    get(point) {
+    get(point, enableMask=true) {
         const relief = this.grid.get(point)
-        const maskRelief = this.maskGrid.get(point)
-        return this._maskRelief(relief, maskRelief)
+        if (enableMask) {
+            const maskRelief = this.maskGrid.get(point)
+            return this._maskRelief(relief, maskRelief)
+        }
+        return relief
     }
 
     _maskRelief(relief, maskRelief) {
@@ -137,7 +137,7 @@ export class ReliefCodeMap {
         if (maskRelief == SHALLOW) {
             relief = _.clamp(relief, ABYSSAL, PLAIN)
         }
-        if (maskRelief == BASIN) {
+        if (maskRelief == BASIN || maskRelief == BANKS) {
             return Math.max(ABYSSAL, relief - 1)
         }
         return relief
