@@ -24,24 +24,24 @@ export const DEPRESSION = 'D'
 
 
 const HEIGHT_TABLE = [
-    { minHeight:   0, mapTo: _ => TRENCH },
-    { minHeight:   2, mapTo: _ => ABYSSAL },
-    { minHeight:  20, mapTo: _ => DEEP },
-    { minHeight:  94, mapTo: _ => Random.choice([BANKS, BASIN]) },
-    { minHeight:  95, mapTo: _ => BANKS },
-    { minHeight:  96, mapTo: _ => DEEP },
-    { minHeight: 115, mapTo: _ => SHALLOW },
-    { minHeight: 150, mapTo: _ => BASIN },
-    { minHeight: 151, mapTo: _ => BANKS },
-    { minHeight: 153, mapTo: _ => SHALLOW },
-    { minHeight: 175, mapTo: _ => BASIN },
-    { minHeight: 198, mapTo: _ => PLAIN },
-    { minHeight: 235, mapTo: _ => HIGHLAND },
-    { minHeight: 236, mapTo: _ => TABLE },
-    { minHeight: 237, mapTo: _ => HIGHLAND },
-    { minHeight: 252, mapTo: _ => HILL },
-    { minHeight: 254, mapTo: _ => HIGHLAND },
-    { minHeight: 257, mapTo: _ => MOUNTAIN },
+    { minHeight:   0, mapTo: TRENCH },
+    { minHeight:   2, mapTo: ABYSSAL },
+    { minHeight:  20, mapTo: DEEP },
+    { minHeight:  94, mapTo: BASIN },
+    { minHeight:  95, mapTo: BANKS },
+    { minHeight:  96, mapTo: DEEP },
+    { minHeight: 115, mapTo: SHALLOW },
+    { minHeight: 150, mapTo: BASIN },
+    { minHeight: 151, mapTo: BANKS },
+    { minHeight: 153, mapTo: SHALLOW },
+    { minHeight: 175, mapTo: BASIN },
+    { minHeight: 198, mapTo: PLAIN },
+    { minHeight: 235, mapTo: HIGHLAND },
+    { minHeight: 236, mapTo: TABLE },
+    { minHeight: 237, mapTo: HIGHLAND },
+    { minHeight: 252, mapTo: HILL },
+    { minHeight: 254, mapTo: HIGHLAND },
+    { minHeight: 257, mapTo: MOUNTAIN },
 ]
 
 export const RELIEF_MAP = {
@@ -75,7 +75,7 @@ class HeightToReliefMap {
         const isLast = index => index == this.table.length - 1
         for (let [index, code] of this.table.entries()) {
             if (isLast(index)) {
-                map.push(code.mapTo())
+                map.push(code.mapTo)
             } else {
                 this._pushMapSection(map, index, code)
             }
@@ -86,7 +86,7 @@ class HeightToReliefMap {
     _pushMapSection(map, index, code) {
         const maxHeight = this.table[index + 1].minHeight - 1
         for (let i = code.minHeight; i <= maxHeight; i++) {
-            map.push(code.mapTo())
+            map.push(code.mapTo)
         }
     }
 
