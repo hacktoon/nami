@@ -16,7 +16,6 @@ export const HILL = 7
 export const MOUNTAIN = 8
 export const TABLE = 9
 export const VOLCANO = 10
-export const DUNE = 11
 
 
 const HEIGHT_TABLE = [
@@ -39,7 +38,7 @@ const RELIEF_MAP = {
     [ABYSSAL]:  { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
     [DEEP]:     { id: DEEP,     color: "#000045", name: "Deep" },
     [SHALLOW]:  { id: SHALLOW,  color: "#000078", name: "Shallow" },
-    [BANKS]:    { id: BANKS,    color: "#6e0f68", name: "Banks" },
+    [BANKS]:    { id: BANKS,    color: "#2d3806", name: "Banks" },
     [BASIN]:    { id: BASIN,    color: "#0a5816", name: "Basin" },
     [PLAIN]:    { id: PLAIN,    color: "#31771a", name: "Plain" },
     [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
@@ -47,7 +46,6 @@ const RELIEF_MAP = {
     [MOUNTAIN]: { id: MOUNTAIN, color: "#AAAAAA", name: "Mountain" },
     [TABLE]:    { id: TABLE,    color: "#5f5c33", name: "Table" },
     [VOLCANO]:  { id: VOLCANO,  color: "red",     name: "Volcano" },
-    [DUNE]:     { id: DUNE,     color: "red",     name: "Dune" },
 }
 
 // TODO:  rename everything to geo add geologic formations as
