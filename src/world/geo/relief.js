@@ -16,6 +16,7 @@ export const HILL = 7
 export const MOUNTAIN = 8
 export const TABLE = 9
 export const VOLCANO = 10
+export const DUNE = 11
 
 
 const HEIGHT_TABLE = [
@@ -27,7 +28,10 @@ const HEIGHT_TABLE = [
     { minHeight: 175, mapTo: BASIN },
     { minHeight: 198, mapTo: PLAIN },
     { minHeight: 235, mapTo: HIGHLAND },
-    { minHeight: 254, mapTo: HILL },
+    { minHeight: 236, mapTo: TABLE },
+    { minHeight: 237, mapTo: HIGHLAND },
+    { minHeight: 252, mapTo: HILL },
+    { minHeight: 254, mapTo: HIGHLAND },
     { minHeight: 257, mapTo: MOUNTAIN },
 ]
 
@@ -39,10 +43,11 @@ const RELIEF_MAP = {
     [BASIN]:    { id: BASIN,    color: "#0a5816", name: "Basin" },
     [PLAIN]:    { id: PLAIN,    color: "#31771a", name: "Plain" },
     [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
-    [HILL]:     { id: HILL,     color: "#9f908b", name: "Hill" },
+    [HILL]:     { id: HILL,     color: "#8a8584", name: "Hill" },
     [MOUNTAIN]: { id: MOUNTAIN, color: "#AAAAAA", name: "Mountain" },
-    [TABLE]:    { id: TABLE,    color: "brown",   name: "Table" },
+    [TABLE]:    { id: TABLE,    color: "#5f5c33", name: "Table" },
     [VOLCANO]:  { id: VOLCANO,  color: "red",     name: "Volcano" },
+    [DUNE]:     { id: DUNE,     color: "red",     name: "Dune" },
 }
 
 // TODO:  rename everything to geo add geologic formations as
