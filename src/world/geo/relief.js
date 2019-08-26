@@ -5,20 +5,24 @@ import { HeightMap } from '../../lib/heightmap'
 import { Point } from '../../lib/point';
 
 
-export const ABYSSAL = 0
-export const DEEP = 1
-export const SHALLOW = 2
-export const BANKS = 3
-export const BASIN = 4
-export const PLAIN = 5
-export const HIGHLAND = 6
-export const TABLE = 7
-export const HILL = 8
-export const MOUNTAIN = 9
+export const TRENCH = 0
+export const ABYSSAL = 1
+export const DEEP = 2
+export const SHALLOW = 3
+export const BANKS = 4
+export const BASIN = 5
+export const PLAIN = 6
+export const HIGHLAND = 7
+export const TABLE = 8
+export const HILL = 9
+export const MOUNTAIN = 10
+
+export const DEPRESSION = 'D'
 
 
 const HEIGHT_TABLE = [
-    { minHeight:   0, mapTo: ABYSSAL },
+    { minHeight:   0, mapTo: TRENCH },
+    { minHeight:   2, mapTo: ABYSSAL },
     { minHeight:  20, mapTo: DEEP },
     { minHeight: 115, mapTo: SHALLOW },
     { minHeight: 151, mapTo: BASIN },
@@ -35,16 +39,18 @@ const HEIGHT_TABLE = [
 ]
 
 const RELIEF_MAP = {
-    [ABYSSAL]:  { id: ABYSSAL,  color: "#000034", name: "Abyssal" },
-    [DEEP]:     { id: DEEP,     color: "#000045", name: "Deep" },
-    [SHALLOW]:  { id: SHALLOW,  color: "#000078", name: "Shallow" },
-    [BANKS]:    { id: BANKS,    color: "#2d3806", name: "Banks" },
-    [BASIN]:    { id: BASIN,    color: "#0a5816", name: "Basin" },
-    [PLAIN]:    { id: PLAIN,    color: "#31771a", name: "Plain" },
-    [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
-    [HILL]:     { id: HILL,     color: "#8a8584", name: "Hill" },
-    [MOUNTAIN]: { id: MOUNTAIN, color: "#AAAAAA", name: "Mountain" },
-    [TABLE]:    { id: TABLE,    color: "#5f5c33", name: "Table" }
+    [TRENCH]:     { id: TRENCH,     color: "#000023", name: "Trench" },
+    [ABYSSAL]:    { id: ABYSSAL,    color: "#000034", name: "Abyssal" },
+    [DEEP]:       { id: DEEP,       color: "#000045", name: "Deep" },
+    [SHALLOW]:    { id: SHALLOW,    color: "#000078", name: "Shallow" },
+    [BANKS]:      { id: BANKS,      color: "#2d3806", name: "Banks" },
+    [BASIN]:      { id: BASIN,      color: "#0a5816", name: "Basin" },
+    [PLAIN]:      { id: PLAIN,      color: "#31771a", name: "Plain" },
+    [HIGHLAND]:   { id: HIGHLAND,   color: "#6f942b", name: "Highland" },
+    [HILL]:       { id: HILL,       color: "#8a8584", name: "Hill" },
+    [MOUNTAIN]:   { id: MOUNTAIN,   color: "#AAAAAA", name: "Mountain" },
+    [TABLE]:      { id: TABLE,      color: "#5f5c33", name: "Table" },
+    [DEPRESSION]: { id: DEPRESSION, color: "#5f5c33", name: "Depression" },
 }
 
 // TODO:  rename everything to geo add geologic formations as
@@ -116,7 +122,7 @@ class ReliefCodeMap {
     }
 
     _maskRelief(relief, maskRelief) {
-        if (maskRelief >= HIGHLAND) {
+        if (maskRelief > PLAIN) {
             relief = _.clamp(relief, ABYSSAL, HIGHLAND)
         }
         if (maskRelief == SHALLOW) {
