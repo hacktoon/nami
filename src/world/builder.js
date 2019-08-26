@@ -1,10 +1,10 @@
 import _ from 'lodash'
 
 import World from './world'
-import { ReliefMap } from './geo'
+import { ReliefMap } from './geo/relief'
+import { WaterbodyMap } from './hydro'
 import { HeatMap } from './atm/heat'
 import { MoistureMap } from './atm/moisture'
-import { WaterbodyMap } from './hydro'
 import { BiomeMap } from './bio/biome'
 
 

@@ -77,15 +77,15 @@ class HeightToReliefMap {
             if (isLast(index)) {
                 map.push(code.mapTo)
             } else {
-                this._pushMapSection(map, index, code)
+                this._pushMapSegment(map, index, code)
             }
         }
         return map
     }
 
-    _pushMapSection(map, index, code) {
-        const maxHeight = this.table[index + 1].minHeight - 1
-        for (let i = code.minHeight; i <= maxHeight; i++) {
+    _pushMapSegment(map, index, code) {
+        const maxSegmentHeight = this.table[index + 1].minHeight - 1
+        for (let i = code.minHeight; i <= maxSegmentHeight; i++) {
             map.push(code.mapTo)
         }
     }
@@ -96,7 +96,7 @@ class HeightToReliefMap {
 }
 
 
-export class ReliefCodeMap {
+export class ReliefMap {
     constructor(size, roughness) {
         this.heightToReliefMap = new HeightToReliefMap()
         this.heightMap = new HeightMap(size, roughness)
@@ -110,6 +110,33 @@ export class ReliefCodeMap {
             const height = heightMap.get(point)
             return this.heightToReliefMap.get(height)
         })
+    }
+
+    isTrench(pt) { return this.get(pt) == TRENCH }
+    isAbyss(pt) { return this.get(pt) == ABYSSAL }
+    isDeep(pt) { return this.get(pt) == DEEP }
+    isShallow(pt) { return this.get(pt) == SHALLOW }
+    isBanks(pt) { return this.get(pt) == BANKS }
+    isBasin(pt) { return this.get(pt) == BASIN }
+    isPlain(pt) { return this.get(pt) == PLAIN }
+    isHighland(pt) { return this.get(pt) == HIGHLAND }
+    isTable(pt) { return this.get(pt) == TABLE }
+    isHill(pt) { return this.get(pt) == HILL }
+    isMountain(pt) { return this.get(pt) == MOUNTAIN }
+    isVolcano(pt) { return this.get(pt) == VOLCANO }
+    isDepression(pt) { return this.get(pt) == DEPRESSION }
+
+    isWater(pt) { return this.get(pt) <= BANKS }
+    isLand(pt) { return !this.isWater(pt) }
+
+    getName(point) {
+        const code = this.get(point)
+        return RELIEF_MAP[code].name
+    }
+
+    getColor(point) {
+        const code = this.get(point)
+        return RELIEF_MAP[code].color
     }
 
     get(point, enableMask=true) {
