@@ -19,14 +19,25 @@ let viewCanvas = document.getElementById("viewCanvas"),
     worldPainter
 
 const getSeedInput = () => {
-    let value = String(seedInput.value)
+    const seedParam = getURLParams('seed')
+    let value = seedInput.value
+    if (seedParam) {
+        seedInput.value = value = seedParam
+    }
     if (value.trim() == "")
         return _.toNumber(new Date())
     if (value.match(/\d+/))
         return _.toNumber(value)
     return value
 }
-const getViewInput = () => viewInput.options[viewInput.selectedIndex].value
+const getViewInput = function() {
+    const viewParam = getURLParams('view')
+    let value = viewInput.options[viewInput.selectedIndex].value
+    if (viewParam) {
+        viewInput.value = value = viewParam
+    }
+    return value
+}
 const getTileSizeInput = () => Number(tilesizeInput.value)
 const getRoughnessInput = () => Number(roughnessInput.value)
 
@@ -68,7 +79,7 @@ const getCanvasMousePoint = (e, viewCanvas) => {
     return new Point(x, y);
 }
 
-const getUrlParams = function() {
+const getURLParams = function(name) {
     let params = {}
     const query = window.location.search
     const hash = query.slice(query.indexOf('?') + 1).trim()
@@ -78,6 +89,9 @@ const getUrlParams = function() {
             let [key, val] = hash.split('=')
             params[key] = decodeURIComponent(val)
         })
+    }
+    if (name) {
+        return params[name]
     }
     return params
 }
