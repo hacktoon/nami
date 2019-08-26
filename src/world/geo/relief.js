@@ -64,56 +64,6 @@ export const RELIEF_MAP = {
 //        (4 = Peak)
 //        (9 = Everest)
 
-class HeightCodeMap {
-    constructor(table = HEIGHT_TABLE) {
-        this.table = table
-        this.map = this._buildMap(table)
-    }
-
-    _buildMap() {
-        const map = []
-        const isLast = index => index == this.table.length - 1
-        for (let [index, code] of this.table.entries()) {
-            if (isLast(index)) {
-                map.push(code.mapTo)
-            } else {
-                this._pushMapSegment(map, index, code)
-            }
-        }
-        return map
-    }
-
-    _pushMapSegment(map, index, code) {
-        const maxSegmentHeight = this.table[index + 1].minHeight - 1
-        for (let i = code.minHeight; i <= maxSegmentHeight; i++) {
-            map.push(code.mapTo)
-        }
-    }
-
-    get(height) {
-        return this.map[height]
-    }
-}
-
-
-class ReliefMask {
-    static apply(relief, maskRelief) {
-        if (relief == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
-            return VOLCANO
-        }
-        if (maskRelief > PLAIN) {
-            return _.clamp(relief, ABYSSAL, HIGHLAND)
-        }
-        if (maskRelief == SHALLOW) {
-            return _.clamp(relief, ABYSSAL, PLAIN)
-        }
-        if (maskRelief == BASIN || maskRelief == BANKS) {
-            return Math.max(ABYSSAL, relief - 1)
-        }
-        return relief
-    }
-}
-
 
 export class ReliefMap {
     constructor(size, roughness) {
@@ -163,6 +113,57 @@ export class ReliefMap {
         if (enableMask) {
             const maskRelief = this.maskGrid.get(point)
             return ReliefMask.apply(relief, maskRelief)
+        }
+        return relief
+    }
+}
+
+
+class HeightCodeMap {
+    constructor(table = HEIGHT_TABLE) {
+        this.table = table
+        this.map = this._buildMap(table)
+    }
+
+    _buildMap() {
+        const map = []
+        const isLast = index => index == this.table.length - 1
+        for (let [index, code] of this.table.entries()) {
+            if (isLast(index)) {
+                map.push(code.mapTo)
+            } else {
+                this._pushMapSegment(map, index, code)
+            }
+        }
+        return map
+    }
+
+    _pushMapSegment(map, index, code) {
+        const maxSegmentHeight = this.table[index + 1].minHeight - 1
+        for (let i = code.minHeight; i <= maxSegmentHeight; i++) {
+            map.push(code.mapTo)
+        }
+    }
+
+    get(height) {
+        return this.map[height]
+    }
+}
+
+
+class ReliefMask {
+    static apply(relief, maskRelief) {
+        if (relief == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
+            return VOLCANO
+        }
+        if (maskRelief > PLAIN) {
+            return _.clamp(relief, ABYSSAL, HIGHLAND)
+        }
+        if (maskRelief == SHALLOW) {
+            return _.clamp(relief, ABYSSAL, PLAIN)
+        }
+        if (maskRelief == BASIN || maskRelief == BANKS) {
+            return Math.max(ABYSSAL, relief - 1)
         }
         return relief
     }
