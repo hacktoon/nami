@@ -56,7 +56,7 @@ export const RELIEF_MAP = {
     [HILL]:       { id: HILL,       color: "#AAAAAA", name: "Hill" },
     [MOUNTAIN]:   { id: MOUNTAIN,   color: "#CCCCCC", name: "Mountain" },
     [TABLE]:      { id: TABLE,      color: "#766842", name: "Table" },
-    [VOLCANO]:    { id: VOLCANO,    color: "#FF0000", name: "Volcano" },
+    [VOLCANO]:    { id: VOLCANO,    color: "orange",  name: "Volcano" },
     [DEPRESSION]: { id: DEPRESSION, color: "#5f5c33", name: "Depression" },
 }
 
