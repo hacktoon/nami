@@ -44,8 +44,7 @@ const RELIEF_MAP = {
     [HIGHLAND]: { id: HIGHLAND, color: "#6f942b", name: "Highland" },
     [HILL]:     { id: HILL,     color: "#8a8584", name: "Hill" },
     [MOUNTAIN]: { id: MOUNTAIN, color: "#AAAAAA", name: "Mountain" },
-    [TABLE]:    { id: TABLE,    color: "#5f5c33", name: "Table" },
-    [VOLCANO]:  { id: VOLCANO,  color: "red",     name: "Volcano" },
+    [TABLE]:    { id: TABLE,    color: "#5f5c33", name: "Table" }
 }
 
 // TODO:  rename everything to geo add geologic formations as
@@ -152,7 +151,7 @@ export class ReliefMap {
     isHighland(pt) { return this.get(pt) == HIGHLAND }
     isMountain(pt) { return this.get(pt) == MOUNTAIN }
 
-    isWater(pt) { return this.get(pt) <= SHALLOW }
+    isWater(pt) { return this.get(pt) <= SHALLOW } // TODO: remove
     isLand(pt) { return !this.isWater(pt) }
 
     getName(point) {
