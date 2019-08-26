@@ -2,7 +2,6 @@ import _ from 'lodash'
 
 import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
-import { Point } from '../../lib/point';
 import { Random } from '../../lib/base';
 
 
@@ -44,7 +43,7 @@ const HEIGHT_TABLE = [
     { minHeight: 257, mapTo: _ => MOUNTAIN },
 ]
 
-const RELIEF_MAP = {
+export const RELIEF_MAP = {
     [TRENCH]:     { id: TRENCH,     color: "#000023", name: "Trench" },
     [ABYSSAL]:    { id: ABYSSAL,    color: "#000034", name: "Abyssal" },
     [DEEP]:       { id: DEEP,       color: "#000045", name: "Deep" },
@@ -106,7 +105,7 @@ class HeightToReliefMap {
 }
 
 
-class ReliefCodeMap {
+export class ReliefCodeMap {
     constructor(size, roughness) {
         this.heightToReliefMap = new HeightToReliefMap()
         this.heightMap = new HeightMap(size, roughness)
@@ -142,61 +141,5 @@ class ReliefCodeMap {
             return Math.max(ABYSSAL, relief - 1)
         }
         return relief
-    }
-}
-
-
-export class ReliefMap {
-    constructor(size, roughness) {
-        this.codeMap = new ReliefCodeMap(size, roughness)
-        //TODO: this.regionMap = new RegionMap()
-        this.roughness = roughness
-        this.size = size
-    }
-
-    isAbyss(pt) { return this.get(pt) == ABYSSAL }
-    isDeep(pt) { return this.get(pt) == DEEP }
-    isShallow(pt) { return this.get(pt) == SHALLOW }
-    isReef(pt) { return this.get(pt) == BANKS }
-    isBasin(pt) { return this.get(pt) == BASIN }
-    isPlain(pt) { return this.get(pt) == PLAIN }
-    isHighland(pt) { return this.get(pt) == HIGHLAND }
-    isMountain(pt) { return this.get(pt) == MOUNTAIN }
-
-    isWater(pt) { return this.get(pt) <= SHALLOW } // TODO: remove
-    isLand(pt) { return !this.isWater(pt) }
-
-    getName(point) {
-        const code = this.get(point)
-        return RELIEF_MAP[code].name
-    }
-
-    getHeight(point) {
-        return this.codeMap.heightMap.get(point) // TODO: normalize height
-    }
-
-    getColor(point) {
-        const code = this.get(point)
-        return RELIEF_MAP[code].color
-    }
-
-    get(point) {
-        return this.codeMap.get(point)
-    }
-}
-
-
-
-export class TerrainMap {
-    constructor(size, roughness) {
-        this.relief = new ReliefMap(size, roughness)
-        this.size = size
-    }
-
-    isWater(pt) { return this.get(pt) <= SHALLOW }
-    isLand(pt) { return !this.isWater(pt) }
-
-    get(point) {
-        return
     }
 }

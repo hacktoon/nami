@@ -64,11 +64,11 @@ export class BiomeMap {
         const waterbody = this.waterbodyMap.get(point)
 
         if (waterbody) {
-            const isWater = relief.isAbyss || relief.isShallow || relief.isReef
+            const isWater = relief.isAbyss || relief.isShallow || relief.isBanks
             if (heat.isArctic && isWater) return ICE
             if (waterbody.isSwamp) return SWAMP
             if (waterbody.isLake || waterbody.isSea || waterbody.isPond) return LAKE
-            if ((heat.isTropical || heat.isSubtropical) && relief.isReef) {
+            if ((heat.isTropical || heat.isSubtropical) && relief.isBanks) {
                 return CORAL_REEF
             }
             if (waterbody.isRiver) return RIVER
