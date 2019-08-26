@@ -60,10 +60,6 @@ export const RELIEF_MAP = {
     [DEPRESSION]: { id: DEPRESSION, color: "#5f5c33", name: "Depression" },
 }
 
-// TODO:  on region map, build mountains up to, 4, 8 tiles p/region
-//        (4 = Peak)
-//        (9 = Everest)
-
 
 export class ReliefMap {
     constructor(size, roughness) {

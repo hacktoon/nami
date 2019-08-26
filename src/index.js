@@ -68,6 +68,20 @@ const getCanvasMousePoint = (e, viewCanvas) => {
     return new Point(x, y);
 }
 
+const getUrlParams = function() {
+    let params = {}
+    const query = window.location.search
+    const hash = query.slice(query.indexOf('?') + 1).trim()
+    if (hash.length > 0) {
+        let pairs = hash.split('&')
+        pairs.map(hash => {
+            let [key, val] = hash.split('=')
+            params[key] = decodeURIComponent(val)
+        })
+    }
+    return params
+}
+
 const showTileInfo = tile => {
     const wrap = (title, value) => {
         return `<p class='title'>${title}</p><p class='value'>${value}</p>`
