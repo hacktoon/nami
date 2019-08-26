@@ -31,8 +31,8 @@ const HEIGHT_TABLE = [
     { minHeight:  95, mapTo: _ => BANKS },
     { minHeight:  96, mapTo: _ => DEEP },
     { minHeight: 115, mapTo: _ => SHALLOW },
-    { minHeight: 151, mapTo: _ => BASIN },
-    { minHeight: 152, mapTo: _ => Random.choice([BANKS, SHALLOW]) },
+    { minHeight: 150, mapTo: _ => BASIN },
+    { minHeight: 151, mapTo: _ => BANKS },
     { minHeight: 153, mapTo: _ => SHALLOW },
     { minHeight: 175, mapTo: _ => BASIN },
     { minHeight: 198, mapTo: _ => PLAIN },
@@ -60,13 +60,7 @@ export const RELIEF_MAP = {
     [DEPRESSION]: { id: DEPRESSION, color: "#5f5c33", name: "Depression" },
 }
 
-// TODO:  rename everything to geo add geologic formations as
-//        valleys, depressions, tables,
-//        FILTER LAYER
-//        disable storing filter layers on production to speed up generation
-//        maybe create generic map class
-//        create "memory snapshot" usando um grid de tiles, excluindo todos os meta-dados
-//        on region map, build mountains up to, 4, 8 tiles p/region
+// TODO:  on region map, build mountains up to, 4, 8 tiles p/region
 //        (4 = Peak)
 //        (9 = Everest)
 
