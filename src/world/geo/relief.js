@@ -12,16 +12,16 @@ export const BANKS = 3
 export const BASIN = 4
 export const PLAIN = 5
 export const HIGHLAND = 6
-export const HILL = 7
-export const MOUNTAIN = 8
-export const TABLE = 9
-export const VOLCANO = 10
+export const TABLE = 7
+export const HILL = 8
+export const MOUNTAIN = 9
 
 
 const HEIGHT_TABLE = [
     { minHeight:   0, mapTo: ABYSSAL },
     { minHeight:  20, mapTo: DEEP },
     { minHeight: 115, mapTo: SHALLOW },
+    { minHeight: 151, mapTo: BASIN },
     { minHeight: 152, mapTo: BANKS },
     { minHeight: 153, mapTo: SHALLOW },
     { minHeight: 175, mapTo: BASIN },
@@ -90,10 +90,6 @@ class HeightToReliefMap {
     get(height) {
         return this.map[height]
     }
-
-    getLower(relief) {
-        return Math.max(ABYSSAL, relief - 1)
-    }
 }
 
 
@@ -102,14 +98,14 @@ class ReliefCodeMap {
         this.heightToReliefMap = new HeightToReliefMap()
         this.heightMap = new HeightMap(size, roughness)
         this.maskHeightMap = new HeightMap(size, roughness)
-        this.grid = this._buildGrid(size, this.heightMap, this.heightToReliefMap)
-        this.maskGrid = this._buildGrid(size, this.maskHeightMap, this.heightToReliefMap)
+        this.grid = this._buildGrid(size, this.heightMap)
+        this.maskGrid = this._buildGrid(size, this.maskHeightMap)
     }
 
-    _buildGrid(size, heightMap, heightToReliefMap) {
+    _buildGrid(size, heightMap) {
         return new Grid(size, size, point => {
             const height = heightMap.get(point)
-            return heightToReliefMap.get(height)
+            return this.heightToReliefMap.get(height)
         })
     }
 
@@ -120,14 +116,14 @@ class ReliefCodeMap {
     }
 
     _maskRelief(relief, maskRelief) {
-        if (maskRelief > PLAIN) {
+        if (maskRelief >= HIGHLAND) {
             relief = _.clamp(relief, ABYSSAL, HIGHLAND)
         }
         if (maskRelief == SHALLOW) {
             relief = _.clamp(relief, ABYSSAL, PLAIN)
         }
         if (maskRelief == BASIN) {
-            return this.heightToReliefMap.getLower(relief)
+            return Math.max(ABYSSAL, relief - 1)
         }
         return relief
     }
