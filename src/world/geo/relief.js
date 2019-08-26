@@ -6,6 +6,8 @@ import { Point } from '../../lib/point';
 import { Random } from '../../lib/base';
 
 
+export const VOLCANO_CHANCE = .01
+
 export const TRENCH = 0
 export const ABYSSAL = 1
 export const DEEP = 2
@@ -18,6 +20,7 @@ export const TABLE = 8
 export const HILL = 9
 export const MOUNTAIN = 10
 
+export const VOLCANO = 'V'
 export const DEPRESSION = 'D'
 
 
@@ -29,7 +32,7 @@ const HEIGHT_TABLE = [
     { minHeight:  85, mapTo: _ => DEEP },
     { minHeight: 115, mapTo: _ => SHALLOW },
     { minHeight: 151, mapTo: _ => BASIN },
-    { minHeight: 152, mapTo: _ => BANKS },
+    { minHeight: 152, mapTo: _ => Random.choice([BANKS, SHALLOW]) },
     { minHeight: 153, mapTo: _ => SHALLOW },
     { minHeight: 175, mapTo: _ => BASIN },
     { minHeight: 198, mapTo: _ => PLAIN },
@@ -50,9 +53,10 @@ const RELIEF_MAP = {
     [BASIN]:      { id: BASIN,      color: "#0a5816", name: "Basin" },
     [PLAIN]:      { id: PLAIN,      color: "#31771a", name: "Plain" },
     [HIGHLAND]:   { id: HIGHLAND,   color: "#6f942b", name: "Highland" },
-    [HILL]:       { id: HILL,       color: "#8a8584", name: "Hill" },
-    [MOUNTAIN]:   { id: MOUNTAIN,   color: "#AAAAAA", name: "Mountain" },
-    [TABLE]:      { id: TABLE,      color: "#5f5c33", name: "Table" },
+    [HILL]:       { id: HILL,       color: "#AAAAAA", name: "Hill" },
+    [MOUNTAIN]:   { id: MOUNTAIN,   color: "#CCCCCC", name: "Mountain" },
+    [TABLE]:      { id: TABLE,      color: "#766842", name: "Table" },
+    [VOLCANO]:    { id: VOLCANO,    color: "#FF0000", name: "Volcano" },
     [DEPRESSION]: { id: DEPRESSION, color: "#5f5c33", name: "Depression" },
 }
 
@@ -125,6 +129,9 @@ class ReliefCodeMap {
     }
 
     _maskRelief(relief, maskRelief) {
+        if (relief == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
+            return VOLCANO
+        }
         if (maskRelief > PLAIN) {
             relief = _.clamp(relief, ABYSSAL, HIGHLAND)
         }
