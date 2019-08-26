@@ -64,7 +64,7 @@ export const RELIEF_MAP = {
 //        (4 = Peak)
 //        (9 = Everest)
 
-class HeightToReliefMap {
+class HeightCodeMap {
     constructor(table = HEIGHT_TABLE) {
         this.table = table
         this.map = this._buildMap(table)
@@ -96,9 +96,28 @@ class HeightToReliefMap {
 }
 
 
+class ReliefMask {
+    static apply(relief, maskRelief) {
+        if (relief == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
+            return VOLCANO
+        }
+        if (maskRelief > PLAIN) {
+            return _.clamp(relief, ABYSSAL, HIGHLAND)
+        }
+        if (maskRelief == SHALLOW) {
+            return _.clamp(relief, ABYSSAL, PLAIN)
+        }
+        if (maskRelief == BASIN || maskRelief == BANKS) {
+            return Math.max(ABYSSAL, relief - 1)
+        }
+        return relief
+    }
+}
+
+
 export class ReliefMap {
     constructor(size, roughness) {
-        this.heightToReliefMap = new HeightToReliefMap()
+        this.heightCodeMap = new HeightCodeMap()
         this.heightMap = new HeightMap(size, roughness)
         this.maskHeightMap = new HeightMap(size, roughness)
         this.grid = this._buildGrid(size, this.heightMap)
@@ -108,7 +127,7 @@ export class ReliefMap {
     _buildGrid(size, heightMap) {
         return new Grid(size, size, point => {
             const height = heightMap.get(point)
-            return this.heightToReliefMap.get(height)
+            return this.heightCodeMap.get(height)
         })
     }
 
@@ -143,23 +162,7 @@ export class ReliefMap {
         const relief = this.grid.get(point)
         if (enableMask) {
             const maskRelief = this.maskGrid.get(point)
-            return this._maskRelief(relief, maskRelief)
-        }
-        return relief
-    }
-
-    _maskRelief(relief, maskRelief) {
-        if (relief == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
-            return VOLCANO
-        }
-        if (maskRelief > PLAIN) {
-            relief = _.clamp(relief, ABYSSAL, HIGHLAND)
-        }
-        if (maskRelief == SHALLOW) {
-            relief = _.clamp(relief, ABYSSAL, PLAIN)
-        }
-        if (maskRelief == BASIN || maskRelief == BANKS) {
-            return Math.max(ABYSSAL, relief - 1)
+            return ReliefMask.apply(relief, maskRelief)
         }
         return relief
     }

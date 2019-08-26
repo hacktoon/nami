@@ -40,13 +40,14 @@ const createWorld = () => {
     return currentWorld
 }
 
-const draw = () =>  {
-    let view = getViewInput(),
-        tilesize = getTileSizeInput()
+const init = function() {
+    const tilesize = getTileSizeInput()
+    viewCanvas.width = WORLDSIZE * tilesize;
+    viewCanvas.height = WORLDSIZE * tilesize;
+}
 
-    viewCanvas.width = world.size * tilesize;
-    viewCanvas.height = world.size * tilesize;
-
+const draw = function() {
+    let view = getViewInput()
     let map = {
         heat:  "drawHeat",
         moisture:  "drawMoisture",
@@ -129,4 +130,5 @@ viewCanvas.addEventListener('mouseup', e => {
     dragControl.dragging = false
 })
 
+init()
 generateButton.click()
