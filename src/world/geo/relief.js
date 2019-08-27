@@ -64,10 +64,11 @@ export const RELIEF_MAP = {
 export class ReliefMap {
     constructor(size, roughness) {
         this.heightCodeMap = new HeightCodeMap()
-        this.heightMap = new HeightMap(size, roughness)
+        this.heightMap     = new HeightMap(size, roughness)
         this.maskHeightMap = new HeightMap(size, roughness)
-        this.grid = this._buildGrid(size, this.heightMap)
-        this.maskGrid = this._buildGrid(size, this.maskHeightMap)
+        this.grid          = this._buildGrid(size, this.heightMap)
+        this.maskGrid      = this._buildGrid(size, this.maskHeightMap)
+        this.size = size
     }
 
     _buildGrid(size, heightMap) {

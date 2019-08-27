@@ -3,6 +3,9 @@ import { Point } from '../../../lib/point'
 import { MidpointDisplacement } from '../../../lib/heightmap'
 import { FloodFill } from '../../../lib/flood-fill'
 
+const RAPIDS = 'R'
+const WATERFALL = 'W'
+const STREAM = 'T'
 
 const SOURCE_CHANCE = .2                // chance of spawning a river source
 const SOURCE_ISOLATION = 15             // minimum tiles between river sources

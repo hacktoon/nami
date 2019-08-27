@@ -112,7 +112,7 @@ const showTileInfo = tile => {
     tpl += wrap('Heat', world.heatMap.getName(point))
     tpl += wrap('Moisture', world.moistureMap.getName(point))
     if (world.waterbodyMap.get(point))
-        tpl += wrap('Waterbody', world.waterbodyMap.get(point).name)
+        tpl += wrap('Waterbody', world.waterbodyMap.getName(point))
     // if (tile.landmass)
     //     tpl += wrap('Landmass', tile.landmass.name)
     // tpl += wrap('Biome', tile.biome.name)
