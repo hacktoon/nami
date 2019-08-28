@@ -6,6 +6,7 @@ import { Random } from '../../lib/base';
 
 
 export const VOLCANO_CHANCE = .006
+export const CAVE_CHANCE = .007
 
 export const TRENCH = 0
 export const ABYSSAL = 1
@@ -19,8 +20,11 @@ export const TABLE = 8
 export const HILL = 9
 export const MOUNTAIN = 10
 
-export const VOLCANO = 'V'
-export const DEPRESSION = 'D'
+// MASK CODES
+export const CAVE = 'C'
+export const VOLCANO = 'X'
+export const SINKHOLE = 'V'
+export const DEPRESSION = '_'
 
 
 const HEIGHT_TABLE = [
@@ -44,7 +48,7 @@ const HEIGHT_TABLE = [
     { minHeight: 257, mapTo: MOUNTAIN },
 ]
 
-export const RELIEF_MAP = {
+export const RELIEF_TABLE = {
     [TRENCH]:     { id: TRENCH,     color: "#000023", name: "Trench" },
     [ABYSSAL]:    { id: ABYSSAL,    color: "#000034", name: "Abyssal" },
     [DEEP]:       { id: DEEP,       color: "#000045", name: "Deep" },
@@ -57,6 +61,7 @@ export const RELIEF_MAP = {
     [MOUNTAIN]:   { id: MOUNTAIN,   color: "#CCCCCC", name: "Mountain" },
     [TABLE]:      { id: TABLE,      color: "#766842", name: "Table" },
     [VOLCANO]:    { id: VOLCANO,    color: "orange",  name: "Volcano" },
+    [CAVE]:       { id: CAVE,       color: "#222222", name: "Cave" },
     [DEPRESSION]: { id: DEPRESSION, color: "#5f5c33", name: "Depression" },
 }
 
@@ -74,44 +79,48 @@ export class ReliefMap {
     _buildGrid(size, heightMap) {
         return new Grid(size, size, point => {
             const height = heightMap.get(point)
-            return this.heightCodeMap.get(height)
+            const id = this.heightCodeMap.get(height)
+            return new Relief(id)
         })
     }
 
-    isTrench(pt) { return this.get(pt) == TRENCH }
-    isAbyss(pt) { return this.get(pt) == ABYSSAL }
-    isDeep(pt) { return this.get(pt) == DEEP }
-    isShallow(pt) { return this.get(pt) == SHALLOW }
-    isBanks(pt) { return this.get(pt) == BANKS }
-    isBasin(pt) { return this.get(pt) == BASIN }
-    isPlain(pt) { return this.get(pt) == PLAIN }
-    isHighland(pt) { return this.get(pt) == HIGHLAND }
-    isTable(pt) { return this.get(pt) == TABLE }
-    isHill(pt) { return this.get(pt) == HILL }
-    isMountain(pt) { return this.get(pt) == MOUNTAIN }
-    isVolcano(pt) { return this.get(pt) == VOLCANO }
-    isDepression(pt) { return this.get(pt) == DEPRESSION }
+    get(point) {
+        const relief = this.grid.get(point)
+        const maskRelief = this.maskGrid.get(point)
+        return ReliefMask.apply(relief, maskRelief)
+    }
 
-    isWater(pt) { return this.get(pt) <= BANKS }
+    isTrench(pt) { return this.getId(pt) == TRENCH }
+    isAbyss(pt) { return this.getId(pt) == ABYSSAL }
+    isDeep(pt) { return this.getId(pt) == DEEP }
+    isShallow(pt) { return this.getId(pt) == SHALLOW }
+    isBanks(pt) { return this.getId(pt) == BANKS }
+    isBasin(pt) { return this.getId(pt) == BASIN }
+    isPlain(pt) { return this.getId(pt) == PLAIN }
+    isHighland(pt) { return this.getId(pt) == HIGHLAND }
+    isTable(pt) { return this.getId(pt) == TABLE }
+    isHill(pt) { return this.getId(pt) == HILL }
+    isMountain(pt) { return this.getId(pt) == MOUNTAIN }
+    isVolcano(pt) { return this.getId(pt) == VOLCANO }
+    isDepression(pt) { return this.getId(pt) == DEPRESSION }
+
+    isWater(pt) { return this.getId(pt) <= BANKS }
     isLand(pt) { return !this.isWater(pt) }
 
+    getId(point) {
+        return this.get(point).id
+    }
+
     getName(point) {
-        const code = this.get(point)
-        return RELIEF_MAP[code].name
+        return this.get(point).name
     }
 
     getColor(point) {
-        const code = this.get(point)
-        return RELIEF_MAP[code].color
-    }
-
-    get(point, enableMask=true) {
-        const relief = this.grid.get(point)
-        if (enableMask) {
-            const maskRelief = this.maskGrid.get(point)
-            return ReliefMask.apply(relief, maskRelief)
+        const { id, mask } = this.get(point)
+        if (mask) {
+            return RELIEF_TABLE[mask].color
         }
-        return relief
+        return RELIEF_TABLE[id].color
     }
 }
 
@@ -150,18 +159,38 @@ class HeightCodeMap {
 
 class ReliefMask {
     static apply(relief, maskRelief) {
-        if (relief == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
-            return VOLCANO
+        let [id, maskId] = [relief.id, maskRelief.id]
+        let mask = false
+
+        if (maskId > PLAIN) {
+            id = _.clamp(id, TRENCH, HIGHLAND)
         }
-        if (maskRelief > PLAIN) {
-            return _.clamp(relief, ABYSSAL, HIGHLAND)
+        if (maskId == SHALLOW) {
+            id = _.clamp(id, TRENCH, PLAIN)
         }
-        if (maskRelief == SHALLOW) {
-            return _.clamp(relief, ABYSSAL, PLAIN)
+        if (maskId == BASIN || maskId == BANKS) {
+            id = Math.max(TRENCH, id - 1)
         }
-        if (maskRelief == BASIN || maskRelief == BANKS) {
-            return Math.max(ABYSSAL, relief - 1)
+        if (id == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
+            mask = VOLCANO
         }
-        return relief
+        if (id >= BASIN && Random.chance(CAVE_CHANCE)) {
+            mask = CAVE
+        }
+        return new Relief(id, mask)
+    }
+}
+
+
+class Relief {
+    constructor(id, mask=false) {
+        this.id = id
+        this.mask = mask
+    }
+
+    get name() {
+        const name = RELIEF_TABLE[this.id].name
+        const maskName = this.mask ? RELIEF_TABLE[this.mask].name : ''
+        return `${name} ${maskName}`
     }
 }
