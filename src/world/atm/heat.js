@@ -1,8 +1,8 @@
 import _ from 'lodash'
 
-import { Grid } from '../../lib/grid'
-import { MidpointDisplacement } from '../../lib/heightmap'
-import { Point } from '../../lib/point'
+import { Grid } from '/lib/grid'
+import { MidpointDisplacement } from '/lib/heightmap'
+import { Point } from '/lib/point'
 
 export const ARCTIC = 0
 export const SUBARCTIC = 1

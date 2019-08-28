@@ -1,7 +1,7 @@
 
-import { Point } from '../../../lib/point'
-import { MidpointDisplacement } from '../../../lib/heightmap'
-import { FloodFill } from '../../../lib/flood-fill'
+import { Point } from '/lib/point'
+import { MidpointDisplacement } from '/lib/heightmap'
+import { FloodFill } from '/lib/flood-fill'
 
 const RIVER = 'I'
 const RAPIDS = 'R'

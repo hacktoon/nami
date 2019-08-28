@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
-import { Grid } from '../../lib/grid';
-import { HeightMap } from '../../lib/heightmap'
+import { Grid } from '/lib/grid'
+import { HeightMap } from '/lib/heightmap'
 
 export const VERY_DRY = 0
 export const DRY = 1

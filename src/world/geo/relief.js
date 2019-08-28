@@ -1,8 +1,8 @@
 import _ from 'lodash'
 
-import { Grid } from '../../lib/grid'
-import { HeightMap } from '../../lib/heightmap'
-import { Random } from '../../lib/base';
+import { Grid } from '/lib/grid'
+import { HeightMap } from '/lib/heightmap'
+import { Random } from '/lib/base';
 
 export const VOLCANO_CHANCE = .006
 export const CAVE_CHANCE = .007
