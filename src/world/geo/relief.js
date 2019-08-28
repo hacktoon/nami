@@ -4,7 +4,6 @@ import { Grid } from '../../lib/grid'
 import { HeightMap } from '../../lib/heightmap'
 import { Random } from '../../lib/base';
 
-
 export const VOLCANO_CHANCE = .006
 export const CAVE_CHANCE = .007
 
@@ -20,11 +19,12 @@ export const TABLE = 8
 export const HILL = 9
 export const MOUNTAIN = 10
 
-// MASK CODES
+// FILTERED RELIEFS
+export const DEPRESSION = '_'
+
+// FEATURE RELIEFS
 export const CAVE = 'C'
 export const VOLCANO = 'X'
-export const SINKHOLE = 'V'
-export const DEPRESSION = '_'
 
 
 const HEIGHT_TABLE = [
@@ -48,84 +48,24 @@ const HEIGHT_TABLE = [
     { minHeight: 257, mapTo: MOUNTAIN },
 ]
 
-export const RELIEF_TABLE = {
-    [TRENCH]:     { id: TRENCH,     color: "#000023", name: "Trench" },
-    [ABYSSAL]:    { id: ABYSSAL,    color: "#000034", name: "Abyssal" },
-    [DEEP]:       { id: DEEP,       color: "#000045", name: "Deep" },
-    [SHALLOW]:    { id: SHALLOW,    color: "#000078", name: "Shallow" },
-    [BANKS]:      { id: BANKS,      color: "#2d3806", name: "Banks" },
-    [BASIN]:      { id: BASIN,      color: "#0a5816", name: "Basin" },
-    [PLAIN]:      { id: PLAIN,      color: "#31771a", name: "Plain" },
-    [HIGHLAND]:   { id: HIGHLAND,   color: "#6f942b", name: "Highland" },
-    [HILL]:       { id: HILL,       color: "#AAAAAA", name: "Hill" },
-    [MOUNTAIN]:   { id: MOUNTAIN,   color: "#CCCCCC", name: "Mountain" },
-    [TABLE]:      { id: TABLE,      color: "#766842", name: "Table" },
-    [VOLCANO]:    { id: VOLCANO,    color: "orange",  name: "Volcano" },
-    [CAVE]:       { id: CAVE,       color: "#222222", name: "Cave" },
-    [DEPRESSION]: { id: DEPRESSION, color: "#5f5c33", name: "Depression" },
+const RELIEF_TABLE = {
+    [TRENCH]:   { code: TRENCH,   color: "#000023", name: "Trench" },
+    [ABYSSAL]:  { code: ABYSSAL,  color: "#000034", name: "Abyssal" },
+    [DEEP]:     { code: DEEP,     color: "#000045", name: "Deep" },
+    [SHALLOW]:  { code: SHALLOW,  color: "#000078", name: "Shallow" },
+    [BANKS]:    { code: BANKS,    color: "#2d3806", name: "Banks" },
+    [BASIN]:    { code: BASIN,    color: "#0a5816", name: "Basin" },
+    [PLAIN]:    { code: PLAIN,    color: "#31771a", name: "Plain" },
+    [HIGHLAND]: { code: HIGHLAND, color: "#6f942b", name: "Highland" },
+    [HILL]:     { code: HILL,     color: "#AAAAAA", name: "Hill" },
+    [MOUNTAIN]: { code: MOUNTAIN, color: "#CCCCCC", name: "Mountain" },
+    [TABLE]:    { code: TABLE,    color: "#766842", name: "Table" },
+    [VOLCANO]:  { code: VOLCANO,  color: "orange",  name: "Volcano" },
+    [CAVE]:     { code: CAVE,     color: "#222222", name: "Cave" },
 }
 
 
-export class ReliefMap {
-    constructor(size, roughness) {
-        this.heightCodeMap = new HeightCodeMap()
-        this.heightMap     = new HeightMap(size, roughness)
-        this.maskHeightMap = new HeightMap(size, roughness)
-        this.grid          = this._buildGrid(size, this.heightMap)
-        this.maskGrid      = this._buildGrid(size, this.maskHeightMap)
-        this.size = size
-    }
-
-    _buildGrid(size, heightMap) {
-        return new Grid(size, size, point => {
-            const height = heightMap.get(point)
-            const id = this.heightCodeMap.get(height)
-            return new Relief(id)
-        })
-    }
-
-    get(point) {
-        const relief = this.grid.get(point)
-        const maskRelief = this.maskGrid.get(point)
-        return ReliefMask.apply(relief, maskRelief)
-    }
-
-    isTrench(pt) { return this.getId(pt) == TRENCH }
-    isAbyss(pt) { return this.getId(pt) == ABYSSAL }
-    isDeep(pt) { return this.getId(pt) == DEEP }
-    isShallow(pt) { return this.getId(pt) == SHALLOW }
-    isBanks(pt) { return this.getId(pt) == BANKS }
-    isBasin(pt) { return this.getId(pt) == BASIN }
-    isPlain(pt) { return this.getId(pt) == PLAIN }
-    isHighland(pt) { return this.getId(pt) == HIGHLAND }
-    isTable(pt) { return this.getId(pt) == TABLE }
-    isHill(pt) { return this.getId(pt) == HILL }
-    isMountain(pt) { return this.getId(pt) == MOUNTAIN }
-    isVolcano(pt) { return this.getId(pt) == VOLCANO }
-    isDepression(pt) { return this.getId(pt) == DEPRESSION }
-
-    isWater(pt) { return this.getId(pt) <= BANKS }
-    isLand(pt) { return !this.isWater(pt) }
-
-    getId(point) {
-        return this.get(point).id
-    }
-
-    getName(point) {
-        return this.get(point).name
-    }
-
-    getColor(point) {
-        const { id, mask } = this.get(point)
-        if (mask) {
-            return RELIEF_TABLE[mask].color
-        }
-        return RELIEF_TABLE[id].color
-    }
-}
-
-
-class HeightCodeMap {
+class CodeMap {
     constructor(table = HEIGHT_TABLE) {
         this.table = table
         this.map = this._buildMap(table)
@@ -151,46 +91,116 @@ class HeightCodeMap {
         }
     }
 
-    get(height) {
+    getCode(height) {
         return this.map[height]
     }
 }
 
 
-class ReliefMask {
-    static apply(relief, maskRelief) {
-        let [id, maskId] = [relief.id, maskRelief.id]
-        let mask = false
+export class ReliefMap {
+    constructor(size, roughness) {
+        this.codeMap       = new CodeMap()
+        this.heightMap     = new HeightMap(size, roughness)
+        this.maskHeightMap = new HeightMap(size, roughness)
+        this.grid          = this._buildGrid(size, this.heightMap)
+        this.maskGrid      = this._buildGrid(size, this.maskHeightMap)
+        this.size          = size
 
-        if (maskId > PLAIN) {
-            id = _.clamp(id, TRENCH, HIGHLAND)
+        delete this.codeMap
+    }
+
+    _buildGrid(size, heightMap) {
+        return new Grid(size, size, point => {
+            const height = heightMap.get(point)
+            return this._buildRelief(height)
+        })
+    }
+
+    _buildRelief(height) {
+        const code = this.codeMap.getCode(height)
+        const mask = ReliefScan.mask(code)
+        return new Relief(code, mask)
+    }
+
+    get(point) {
+        const relief = this.grid.get(point)
+        const maskRelief = this.maskGrid.get(point)
+        return ReliefScan.filter(relief, maskRelief)
+    }
+
+    getCode(point) {
+        return this.get(point).code
+    }
+
+    getName(point) {
+        return this.get(point).name
+    }
+
+    getColor(point) {
+        return this.get(point).color
+    }
+
+    isWater(pt) { return this.getCode(pt) <= BANKS }
+    isLand(pt) { return !this.isWater(pt) }
+    isTrench(pt) { return this.getCode(pt) == TRENCH }
+    isAbyss(pt) { return this.getCode(pt) == ABYSSAL }
+    isDeep(pt) { return this.getCode(pt) == DEEP }
+    isShallow(pt) { return this.getCode(pt) == SHALLOW }
+    isBanks(pt) { return this.getCode(pt) == BANKS }
+    isBasin(pt) { return this.getCode(pt) == BASIN }
+    isPlain(pt) { return this.getCode(pt) == PLAIN }
+    isHighland(pt) { return this.getCode(pt) == HIGHLAND }
+    isTable(pt) { return this.getCode(pt) == TABLE }
+    isHill(pt) { return this.getCode(pt) == HILL }
+    isMountain(pt) { return this.getCode(pt) == MOUNTAIN }
+
+    hasVolcano(pt) { return this.get(pt).mask == VOLCANO }
+    hasCave(pt) { return this.get(pt).mask == CAVE }
+}
+
+
+class ReliefScan {
+    static filter(relief, maskRelief) {
+        let [code, maskCode] = [relief.code, maskRelief.code]
+        if (maskCode > PLAIN) {
+            code = _.clamp(code, TRENCH, HIGHLAND)
         }
-        if (maskId == SHALLOW) {
-            id = _.clamp(id, TRENCH, PLAIN)
+        if (maskCode == SHALLOW) {
+            code = _.clamp(code, TRENCH, PLAIN)
         }
-        if (maskId == BASIN || maskId == BANKS) {
-            id = Math.max(TRENCH, id - 1)
+        if (maskCode == BASIN || maskCode == BANKS) {
+            code = Math.max(TRENCH, code - 1)
         }
-        if (id == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
-            mask = VOLCANO
+        return new Relief(code, relief.mask)
+    }
+
+    static mask(code) {
+        if (code == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
+            return VOLCANO
         }
-        if (id >= BASIN && Random.chance(CAVE_CHANCE)) {
-            mask = CAVE
+        if (code >= BASIN && Random.chance(CAVE_CHANCE)) {
+            return CAVE
         }
-        return new Relief(id, mask)
+        return undefined
     }
 }
 
 
 class Relief {
-    constructor(id, mask=false) {
-        this.id = id
+    constructor(code, mask=undefined) {
+        this.code = code
         this.mask = mask
     }
 
     get name() {
-        const name = RELIEF_TABLE[this.id].name
-        const maskName = this.mask ? RELIEF_TABLE[this.mask].name : ''
-        return `${name} ${maskName}`
+        const [code, mask] = [this.code, this.mask]
+        const name = RELIEF_TABLE[code].name
+        const maskName = mask ? ` [${RELIEF_TABLE[mask].name}]` : ''
+        return `${name}${maskName}`
+    }
+
+    get color() {
+        const [code, mask] = [this.code, this.mask]
+        return RELIEF_TABLE[mask || code].color
     }
 }

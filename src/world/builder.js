@@ -10,23 +10,12 @@ import { BiomeMap } from './bio/biome'
 
 export default class WorldBuilder {
     constructor(size, roughness) {
-        this.world = new World(size)
         const reliefMap = new ReliefMap(size, roughness)
-        const heatMap = new HeatMap(size)
-        const moistureMap = new MoistureMap(size, roughness)
-        const waterMap = new WaterMap(size, reliefMap)
-
-        // const landmassMap = new LandmassMap(this.reliefMap, this.waterMap)
-        // this.biomeMap = new BiomeMap(
-        //     this.reliefMap,
-        //     this.heatMap,
-        //     this.moistureMap,
-        //     this.waterMap
-        // )
+        this.world = new World(size)
         this.world.reliefMap = reliefMap
-        this.world.heatMap = heatMap
-        this.world.moistureMap = moistureMap
-        this.world.waterMap = waterMap
+        this.world.waterMap = new WaterMap(size, reliefMap)
+        this.world.moistureMap = new MoistureMap(size, roughness)
+        this.world.heatMap = new HeatMap(size)
     }
 
     build() {

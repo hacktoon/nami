@@ -131,6 +131,7 @@ let dragControl = {
 viewInput.addEventListener('change', draw)
 
 generateButton.addEventListener('click', () => {
+    init()
     createWorld()
     draw()
     showTileInfo()
@@ -158,5 +159,4 @@ viewCanvas.addEventListener('mouseup', e => {
     dragControl.dragging = false
 })
 
-init()
 generateButton.click()

@@ -7,9 +7,9 @@ export default class WorldPainter {
     }
 
     drawRelief() {
-        this.world.iter(tile => {
-            let color = this.world.reliefMap.getColor(tile.point)
-            this.drawTile(tile.point, color)
+        this.world.iter(({point}) => {
+            let color = this.world.reliefMap.getColor(point)
+            this.drawTile(point, color)
         })
     }
 
