@@ -27,9 +27,9 @@ export default class WorldPainter {
         })
     }
 
-    drawWaterbody() {
+    drawWater() {
         this.world.iter((tile, point) => {
-            let color = this.world.waterbodyMap.getColor(point)
+            let color = this.world.waterMap.getColor(point)
             this.drawTile(point, color)
         })
     }

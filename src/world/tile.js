@@ -3,12 +3,12 @@
 export default class Tile {
     constructor (point) {
         this.point = point
-        this.waterbody = undefined
+        this.water = undefined
         this.biome = undefined
         this.state = undefined
     }
 
-    get isLand() { return Boolean(this.waterbody) }
+    get isLand() { return Boolean(this.water) }
     get isWater() { return this.isLand }
 
 }

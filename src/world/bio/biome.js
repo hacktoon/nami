@@ -45,11 +45,11 @@ const BIOME_TABLE = [
 
 
 export class BiomeMap {
-    constructor(reliefMap, heatMap, moistureMap, waterbodyMap) {
+    constructor(reliefMap, heatMap, moistureMap, waterMap) {
         this.reliefMap = reliefMap
         this.heatMap = heatMap
         this.moistureMap = moistureMap
-        this.waterbodyMap = waterbodyMap
+        this.waterMap = waterMap
     }
 
     get(point) {
@@ -61,17 +61,17 @@ export class BiomeMap {
         const relief = this.reliefMap.get(point)
         const heat = this.heatMap.get(point)
         const moisture = this.moistureMap.get(point)
-        const waterbody = this.waterbodyMap.get(point)
+        const water = this.waterMap.get(point)
 
-        if (waterbody) {
+        if (water) {
             const isWater = relief.isAbyss || relief.isShallow || relief.isBanks
             if (heat.isArctic && isWater) return ICE
-            if (waterbody.isSwamp) return SWAMP
-            if (waterbody.isLake || waterbody.isSea || waterbody.isPond) return LAKE
+            if (water.isSwamp) return SWAMP
+            if (water.isLake || water.isSea || water.isPond) return LAKE
             if ((heat.isTropical || heat.isSubtropical) && relief.isBanks) {
                 return CORAL_REEF
             }
-            if (waterbody.isRiver) return RIVER
+            if (water.isRiver) return RIVER
             return OCEAN
         }
 

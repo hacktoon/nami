@@ -27,13 +27,13 @@ const WATERBODY_TABLE = [
 ]
 
 
-/* Maps contiguous areas of a waterbody's surface */
-class WaterSurfaceMap {
+/* Maps contiguous areas of a water's surface */
+class WaterGrid {
     constructor(reliefMap) {
         this.currentID    = 1
         this.shorePoints  = []
         this.waterPoints  = []
-        this.waterbodyMap = {}
+        this.waterMap = {}
         this.reliefMap    = reliefMap
         this.grid         = this._buildGrid(reliefMap.size)
         this._buildMap()
@@ -49,10 +49,10 @@ class WaterSurfaceMap {
     }
 
     _buildMap() {
-        this.waterPoints.forEach(point => this._detectWaterbody(point))
+        this.waterPoints.forEach(point => this._detectWater(point))
     }
 
-    _detectWaterbody(startPoint) {
+    _detectWater(startPoint) {
         let tileCount = 0
         const isFillable = point => this.getId(point) == EMPTY
         const onFill = point => {
@@ -63,7 +63,7 @@ class WaterSurfaceMap {
         if (isFillable(startPoint)) {
             new ScanlineFill8(this.grid, startPoint, onFill, isFillable).fill()
             // TODO: create new WaterRegion extends Region()
-            this._buildWaterbody(tileCount)
+            this._buildWater(tileCount)
         }
     }
 
@@ -81,19 +81,19 @@ class WaterSurfaceMap {
         })
     }
 
-    _buildWaterbody(tileCount) {
+    _buildWater(tileCount) {
         const id = this.currentID++
-        const type = this._getWaterbodyType(tileCount)
-        this.waterbodyMap[id] = new Waterbody(id, type)
+        const type = this._getWaterType(tileCount)
+        this.waterMap[id] = new Water(id, type)
     }
 
-    _getWaterbodyType(tileCount) {
+    _getWaterType(tileCount) {
         const totalArea = Math.pow(this.size, 2)
         let type = POND
-        for (let waterbody of WATERBODY_MIN_AREA_TABLE) {
+        for (let water of WATERBODY_MIN_AREA_TABLE) {
             let tilePercentage = (100 * tileCount) / totalArea
-            if (tilePercentage >= waterbody.percentage) {
-                type = waterbody.id
+            if (tilePercentage >= water.percentage) {
+                type = water.id
                 break
             }
         }
@@ -108,34 +108,33 @@ class WaterSurfaceMap {
         return this.grid.get(point)
     }
 
-    getWaterbody(id) {
-        return this.waterbodyMap[id]
+    getWater(id) {
+        return this.waterMap[id]
     }
 }
 
 
 export class WaterbodyMap {
-    constructor(size, reliefMap, moistureMap) {
-        this.moistureMap = moistureMap
-        this.surfaceMap  = new WaterSurfaceMap(reliefMap)
-        this.size        = size
+    constructor(size, reliefMap) {
+        this.size      = size
+        this.waterGrid = new WaterGrid(reliefMap)
     }
 
     get(point) {
-        const id = this.surfaceMap.getId(point)
-        return this.surfaceMap.getWaterbody(id)
+        const id = this.waterGrid.getId(point)
+        return this.waterGrid.getWater(id)
     }
 
     getColor(point) {
-        const id = this.surfaceMap.getId(point)
+        const id = this.waterGrid.getId(point)
         return WATERBODY_TABLE[id].color
     }
 
     getName(point) {
-        const id = this.surfaceMap.getId(point)
-        const waterbody = this.get(point)
+        const id = this.waterGrid.getId(point)
+        const water = this.get(point)
         const type_name = WATERBODY_TABLE[id].name
-        return `${id}: ${waterbody.name} ${type_name}`
+        return `${id}: ${water.name} ${type_name}`
     }
     isShore(point) { return this.isShore(point) }
 
@@ -146,10 +145,10 @@ export class WaterbodyMap {
 }
 
 
-class Waterbody {
+class Water {
     constructor(id, type) {
         this.id = id
         this.type = type
-        this.name = Name.createWaterbodyName()
+        this.name = Name.createWaterName()
     }
 }

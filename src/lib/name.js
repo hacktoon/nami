@@ -40,7 +40,7 @@ export class Name {
         return Random.choice(personNames.first) +' '+ Random.choice(personNames.last)
     }
 
-    static createWaterbodyName() {
+    static createWaterName() {
         return Random.choice(oceanNames)
     }
 

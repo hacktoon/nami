@@ -3,9 +3,11 @@ import { Point } from '../../../lib/point'
 import { MidpointDisplacement } from '../../../lib/heightmap'
 import { FloodFill } from '../../../lib/flood-fill'
 
+const RIVER = 'I'
 const RAPIDS = 'R'
 const WATERFALL = 'W'
-const STREAM = 'T'
+const STREAM = 'S'
+const DELTA = 'Y'
 
 const SOURCE_CHANCE = .2                // chance of spawning a river source
 const SOURCE_ISOLATION = 15             // minimum tiles between river sources
@@ -14,12 +16,12 @@ const EROSION_START = 3                 // at which tile erosion will start
 const RIVER_BANK_SPREAD = [2, 3, 4, 5]  // how much the river deposits sediment
 
 
-class RiverBuilder {
-    constructor(reliefMap, waterbodyMap) {
+class WaterFlowMap {
+    constructor(reliefMap, waterMap) {
         this.size = reliefMap.size
         this.reliefMap = reliefMap
-        this.waterbodyMap = waterbodyMap
-        this.grid = waterbodyMap.grid
+        this.waterMap = waterMap
+        this.grid = waterMap.grid
 
         this._buildRivers()
     }
@@ -27,12 +29,12 @@ class RiverBuilder {
     _buildRivers() {
         let sources = this._detectSources(this.reliefMap.mountainPoints)
         while (sources.length) {
-            const id = this.waterbodyMap.nextId
+            const id = this.waterMap.nextId
             const source = sources.pop()
             const target = this._getNearestRiverTarget(source)
             let river = this._buildRiver(id, source, target)
             if (river)
-                this.waterbodyMap.add(river)
+                this.waterMap.add(river)
         }
     }
 
@@ -61,9 +63,9 @@ class RiverBuilder {
     _getNearestRiverTarget(source) {
         let nearestDistance = Infinity
         let nearestPoint = undefined
-        _.each(this.waterbodyMap.littoralPoints, point => {
-            let waterbody = this.waterbodyMap.get(point)
-            if (! (waterbody.isOcean || waterbody.isSea))
+        _.each(this.waterMap.littoralPoints, point => {
+            let water = this.waterMap.get(point)
+            if (! (water.isOcean || water.isSea))
                 return
             const pointsDistance = Point.euclidianDistance(source, point)
             if (pointsDistance < nearestDistance) {
@@ -116,14 +118,14 @@ class RiverBuilder {
     }
 
     _reachedWater(river, point) {
-        const waterbody = this.waterbodyMap.get(point)
-        if (!waterbody)
+        const water = this.waterMap.get(point)
+        if (!water)
             return false
-        if (waterbody.isRiver) {
+        if (water.isRiver) {
             river.setTributary()
             return true
         }
-        return waterbody.isOcean || waterbody.isSea
+        return water.isOcean || water.isSea
     }
 
     _getNextPoint(origin, target) {

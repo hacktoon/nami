@@ -63,7 +63,7 @@ const draw = function() {
         heat:  "drawHeat",
         moisture:  "drawMoisture",
         relief:  "drawRelief",
-        waterbody:  "drawWaterbody",
+        water:  "drawWater",
         landmass:  "drawLandmass",
         biome:  "drawBiome"
     }
@@ -111,8 +111,8 @@ const showTileInfo = tile => {
     tpl += wrap('Relief', world.reliefMap.getName(point))
     tpl += wrap('Heat', world.heatMap.getName(point))
     tpl += wrap('Moisture', world.moistureMap.getName(point))
-    if (world.waterbodyMap.get(point))
-        tpl += wrap('Waterbody', world.waterbodyMap.getName(point))
+    if (world.waterMap.get(point))
+        tpl += wrap('Water', world.waterMap.getName(point))
     // if (tile.landmass)
     //     tpl += wrap('Landmass', tile.landmass.name)
     // tpl += wrap('Biome', tile.biome.name)
