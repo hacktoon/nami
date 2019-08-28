@@ -19,9 +19,6 @@ export const TABLE = 8
 export const HILL = 9
 export const MOUNTAIN = 10
 
-// FILTERED RELIEFS
-export const DEPRESSION = '_'
-
 // FEATURE RELIEFS
 export const CAVE = 'C'
 export const VOLCANO = 'X'
@@ -118,8 +115,8 @@ export class ReliefMap {
 
     _buildRelief(height) {
         const code = this.codeMap.getCode(height)
-        const mask = ReliefScan.mask(code)
-        return new Relief(code, mask)
+        const feature = ReliefScan.getFeature(code)
+        return new Relief(code, feature)
     }
 
     get(point) {
@@ -162,6 +159,7 @@ export class ReliefMap {
 class ReliefScan {
     static filter(relief, maskRelief) {
         let [code, maskCode] = [relief.code, maskRelief.code]
+        const feature = relief.feature
         if (maskCode > PLAIN) {
             code = _.clamp(code, TRENCH, HIGHLAND)
         }
@@ -171,10 +169,10 @@ class ReliefScan {
         if (maskCode == BASIN || maskCode == BANKS) {
             code = Math.max(TRENCH, code - 1)
         }
-        return new Relief(code, relief.mask)
+        return new Relief(code, feature)
     }
 
-    static mask(code) {
+    static getFeature(code) {
         if (code == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
             return VOLCANO
         }
@@ -187,20 +185,21 @@ class ReliefScan {
 
 
 class Relief {
-    constructor(code, mask=undefined) {
-        this.code = code
-        this.mask = mask
+    constructor(code, feature=undefined) {
+        this.code    = code
+        this.feature = feature
     }
 
     get name() {
-        const [code, mask] = [this.code, this.mask]
+        const [code, feature] = [this.code, this.feature]
         const name = RELIEF_TABLE[code].name
-        const maskName = mask ? ` [${RELIEF_TABLE[mask].name}]` : ''
-        return `${name}${maskName}`
+        const featureName = feature ? `, ${RELIEF_TABLE[feature].name}` : ''
+        return `${name}${featureName}`
     }
 
     get color() {
-        const [code, mask] = [this.code, this.mask]
-        return RELIEF_TABLE[mask || code].color
+        const [code, feature] = [this.code, this.feature]
+        let color = RELIEF_TABLE[feature || code].color
+        return color
     }
 }
