@@ -57,8 +57,8 @@ const RELIEF_TABLE = {
     [HILL]:     { code: HILL,     color: "#AAAAAA", name: "Hill" },
     [MOUNTAIN]: { code: MOUNTAIN, color: "#CCCCCC", name: "Mountain" },
     [TABLE]:    { code: TABLE,    color: "#766842", name: "Table" },
-    [VOLCANO]:  { code: VOLCANO,  color: "orange",  name: "Volcano" },
-    [CAVE]:     { code: CAVE,     color: "#222222", name: "Cave" },
+    [VOLCANO]:  { code: VOLCANO,  color: "#ff620f",  name: "Volcano" },
+    [CAVE]:     { code: CAVE,     color: "#766842", name: "Cave" },
 }
 
 
