@@ -21,24 +21,19 @@ export class Grid {
         }
     }
 
-    get (point) {
-        let p = this.wrap(point)
-        return this.matrix[p.y][p.x]
+    get (p) {
+        if (this.isValid(p))
+            return this.matrix[p.y][p.x]
     }
 
-    set (point, value) {
-        let p = this.wrap(point)
-        this.matrix[p.y][p.x] = value
+    set (p, value) {
+        if (this.isValid(p))
+            this.matrix[p.y][p.x] = value
     }
 
-    wrap (point) {
-        let x = point.x,
-            y = point.y
-        if (x >= this.width){ x %= this.width }
-        if (y >= this.height){ y %= this.height }
-        if (x < 0){ x = this.width - 1 - Math.abs(x+1) % this.width }
-        if (y < 0){ y = this.height - 1 - Math.abs(y+1) % this.height }
-        return new Point(x, y);
+    isValid (point) {
+        let {x, y} = point
+        return x >= 0 && y >= 0 && x < this.width && y < this.height
     }
 
     forEach (callback) {
@@ -49,25 +44,5 @@ export class Grid {
                 callback(value, point)
             }
         }
-    }
-
-    isEdge (point) {
-        let isTopLeft = point.x === 0 || point.y === 0,
-            isBottomRight = point.x === this.width - 1 ||
-                            point.y === this.height - 1
-        return isTopLeft || isBottomRight
-    }
-
-    oppositeEdge (point) {
-        let x = point.x,
-            y = point.y
-        if (! this.isEdge(point)) {
-            throw new RangeError("Point not in edge")
-        }
-        if (point.x === 0) { x = this.width - 1 }
-        if (point.x === this.width - 1) { x = 0 }
-        if (point.y === 0) { y = this.height - 1 }
-        if (point.y === this.height - 1) { y = 0 }
-        return new Point(x, y)
     }
 }

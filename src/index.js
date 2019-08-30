@@ -125,6 +125,13 @@ const showTileInfo = tile => {
     infoText.innerHTML = tpl
 }
 
+const updateUI = () => {
+    init()
+    createWorld()
+    draw()
+    showTileInfo()
+}
+
 /************ EVENT HANDLING *************************/
 let dragControl = {
     startPoint: undefined,
@@ -133,17 +140,9 @@ let dragControl = {
 }
 
 viewInput.addEventListener('change', draw)
-roughnessInput.addEventListener('change', () => {
-    createWorld()
-    draw()
-    showTileInfo()
-})
-
-generateButton.addEventListener('click', () => {
-    createWorld()
-    draw()
-    showTileInfo()
-})
+tilesizeInput.addEventListener('change', updateUI)
+roughnessInput.addEventListener('change', updateUI)
+generateButton.addEventListener('click', updateUI)
 
 viewCanvas.addEventListener('mousedown', e => {
     let point = getCanvasMousePoint(e, viewCanvas)

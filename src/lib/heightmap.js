@@ -5,12 +5,9 @@ import { Point } from './point'
 import { Random } from './base'
 import { ColorGradient } from './color'
 
-const Simplex = require('perlin-simplex')
-
 const EMPTY = 0
 
 window.ColorGradient = ColorGradient
-window.Simplex = Simplex
 
 
 export class HeightMap {
@@ -18,12 +15,9 @@ export class HeightMap {
         this.grid = new Grid(size, size, EMPTY)
         this.callback = callback
         this.size = size
-        this.maxHeight = 0
-        this.maxVariance = 0
 
         this._buildGrid(size, roughness)
-        log('max size: ', this.maxHeight)
-        this.colorMap = ColorGradient('444', 'FFF', 200)
+        this.colorMap = ColorGradient('000', 'FFF', this.size+1)
     }
 
     _buildGrid(size, roughness) {
@@ -31,15 +25,11 @@ export class HeightMap {
 
         for(let midSize = size - 1; midSize / 2 >= 1; midSize /= 2) {
             let half = midSize / 2
-            let scale = Math.round(roughness * half)
+            let scale = Math.floor(roughness * midSize)
 
             for(let y = half; y < size - 1; y += midSize) {
                 for (let x = half; x < size - 1; x += midSize) {
                     let variance = Random.int(-scale, scale)
-                    if (variance > this.maxVariance) {
-                        log('scale: ', scale)
-                        this.maxVariance = variance
-                    }
                     this.square(new Point(x, y), half, variance)
                 }
             }
@@ -47,15 +37,10 @@ export class HeightMap {
             for(let y = 0; y <= size - 1; y += half) {
                 for (let x = (y + half) % midSize; x <= size - 1; x += midSize) {
                     let variance = Random.int(-scale, scale)
-                    if (variance > this.maxVariance) {
-
-                        this.maxVariance = variance
-                    }
                     this.diamond(new Point(x, y), half, variance)
                 }
             }
         }
-        log('max variance: ', this.maxVariance)
     }
 
     get(point) {
@@ -105,20 +90,17 @@ export class HeightMap {
     }
 
     set(point, height) {
-        if (height > this.maxHeight) {
-            this.maxHeight = height
+        height = (height >= this.size / 2) ? this.size : 0
+
+        if (point.y < 20 || point.y > 236) {
+            height = 0
         }
-        height = Math.max(0, height)
-        // if (this.grid.isEdge(point)) {
-        //     let oppositeEdge = this.grid.oppositeEdge(point)
-        //     this.grid.set(oppositeEdge, height)
-        // }
-        // limit on vertical
-        // if (point.y < 30 || point.y > 226) {
-        //     height = 0
-        // }
+        if (point.x < 5 || point.x > 252) {
+            height = 0
+        }
         // flat earth map filter
-        // if (Point.euclidianDistance(point, new Point(this.size / 2, this.size/2)) > 127) {
+        // const midPoint = new Point(this.size / 2, this.size / 2)
+        // if (Point.euclidianDistance(point, midPoint) > this.size / 2 - 10) {
         //     height = 0
         // }
         this.grid.set(point, height)
@@ -126,13 +108,27 @@ export class HeightMap {
     }
 
     averagePoints(points) {
-        let values = points.map(pt => this.grid.get(pt))
-        return Math.floor(_.sum(values) / values.length)
+        let sum = 0
+        let count = 0
+        points.forEach(pt => {
+            const value = this.grid.get(pt)
+            if (value != undefined) {
+                sum+=value
+                count++
+            }
+        })
+        return Math.floor(sum / count)
     }
 
     meanPoints(points) {
-        let values = points.map(pt => this.grid.get(pt))
-        return Math.floor(_.sum(values) / values.length)
+        //let values = points.map(pt => this.grid.get(pt))
+        let values = []
+        points.forEach(pt => {
+            const value = this.grid.get(pt)
+            if (value != undefined) {
+                values.push(value)
+            }
+        })
         values.sort((a, b) => a - b)
         if (values.length % 2 == 0) {
             let midIndex = (values.length) / 2
