@@ -1,8 +1,13 @@
+import _ from 'lodash'
+import { Random } from './base';
+import { NumberInterpolation } from './base';
+
+
 var RandomColor = function() {
     var letters = '0123456789ABCDEF',
         color = '#';
     for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
+        color += letters[Math.floor(Random.int(0, 16))]
     }
     return color;
 };
@@ -35,7 +40,7 @@ var RGBTriplet = function(hexString) {
     ];
 };
 
-var ColorGradient = function(from, to, totalItems){
+export const ColorGradient = function(from, to, totalItems){
     var start = RGBTriplet(from),
         end   = RGBTriplet(to),
         red = NumberInterpolation(start[0], end[0], totalItems),
@@ -47,4 +52,4 @@ var ColorGradient = function(from, to, totalItems){
         colors.push('#' + HTMLHex([red[i], green[i], blue[i]]));
     }
     return colors;
-};
+}

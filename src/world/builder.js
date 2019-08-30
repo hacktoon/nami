@@ -13,9 +13,9 @@ export default class WorldBuilder {
         const reliefMap = new ReliefMap(size, roughness)
         this.world = new World(size)
         this.world.reliefMap = reliefMap
-        this.world.waterMap = new WaterMap(size, reliefMap)
-        this.world.moistureMap = new MoistureMap(size, roughness)
-        this.world.heatMap = new HeatMap(size)
+        // this.world.waterMap = new WaterMap(size, reliefMap)
+        // this.world.moistureMap = new MoistureMap(size, roughness)
+        // this.world.heatMap = new HeatMap(size)
     }
 
     build() {

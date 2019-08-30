@@ -82,7 +82,7 @@ export class Direction {
 }
 
 
-var NumberInterpolation = function(from, to, totalItems){
+export const NumberInterpolation = function(from, to, totalItems){
     var totalNumbers = to - from + 1,
         stepValue = totalNumbers / totalItems,
         numbers = [from],

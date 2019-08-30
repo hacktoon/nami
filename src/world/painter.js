@@ -6,6 +6,13 @@ export default class WorldPainter {
         this.tilesize = tilesize
     }
 
+    drawHeightMap() {
+        this.world.iter(({point}) => {
+            let color = this.world.reliefMap.heightMap.getColor(point)
+            this.drawTile(point, color)
+        })
+    }
+
     drawRelief() {
         this.world.iter(({point}) => {
             let color = this.world.reliefMap.getColor(point)

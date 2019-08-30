@@ -60,9 +60,12 @@ const init = function() {
 const draw = function() {
     let view = getViewInput()
     let map = {
-        heat:  "drawHeat",
-        moisture:  "drawMoisture",
+        heightmap:  "drawHeightMap",
+        heightmap2:  "drawHeat",
+        heightmap3:  "drawHeat",
         relief:  "drawRelief",
+        moisture:  "drawMoisture",
+        heat:  "drawHeat",
         water:  "drawWater",
         landmass:  "drawLandmass",
         biome:  "drawBiome"
@@ -108,11 +111,12 @@ const showTileInfo = tile => {
     }
     const point = tile.point
     tpl += wrap('Coordinates', point.hash())
-    tpl += wrap('Relief', world.reliefMap.getName(point))
-    tpl += wrap('Heat', world.heatMap.getName(point))
-    tpl += wrap('Moisture', world.moistureMap.getName(point))
-    if (world.waterMap.get(point))
-        tpl += wrap('Water', world.waterMap.getName(point))
+    tpl += wrap('Height', world.reliefMap.heightMap.get(point))
+    //tpl += wrap('Relief', world.reliefMap.getName(point))
+    // tpl += wrap('Heat', world.heatMap.getName(point))
+    // tpl += wrap('Moisture', world.moistureMap.getName(point))
+    // if (world.waterMap.get(point))
+    //     tpl += wrap('Water', world.waterMap.getName(point))
     // if (tile.landmass)
     //     tpl += wrap('Landmass', tile.landmass.name)
     // tpl += wrap('Biome', tile.biome.name)

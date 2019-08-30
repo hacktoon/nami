@@ -89,6 +89,7 @@ class CodeMap {
     }
 
     getCode(height) {
+        height = _.clamp(height, 0, 300)
         return this.map[height]
     }
 }
@@ -123,7 +124,7 @@ export class ReliefMap {
     get(point) {
         const relief = this.grid.get(point)
         const maskRelief = this.maskGrid.get(point)
-        return ReliefScan.filter(relief, maskRelief)
+        return relief//ReliefScan.filter(relief, maskRelief)
     }
 
     getCode(point) {
