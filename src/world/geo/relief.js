@@ -102,6 +102,7 @@ export class ReliefMap {
         this.grid          = this._buildGrid(size, this.heightMap)
         this.maskGrid      = this._buildGrid(size, this.maskHeightMap)
         this.size          = size
+        this.filters       = []
 
         delete this.codeMap
     }
