@@ -1,5 +1,6 @@
 import _ from 'lodash'
 
+import { IndexToValueMap } from './indexing'
 import { Grid } from './grid'
 import { Point } from './point'
 import { Random } from './base'
@@ -99,48 +100,6 @@ class BaseHeightMap {
     }
 }
 
-
-/**
- * Creates a map from 0 to size with values given by table
- *
- *
-*/
-
-class IndexToValueMap {
-    constructor(size, values, rates=undefined) {
-        this.map   = this._buildMap(size, values, rates || [])
-        this.size  = size
-        this.values = values
-
-    }
-
-    _buildMap(size, values, rates) {
-        const map = []
-        const indexesPerValue = Math.floor(size / values.length)
-        for (let i = 0; i < size; i++) {
-            const vIndex = Math.floor(i / indexesPerValue)
-            map.push(values[vIndex])
-        }
-        return map
-    }
-
-    _buildMapSegment(map, values) {
-
-    }
-
-    _percentToIndex(rate) {
-        return Math.floor((rate * this.size) / 100)
-    }
-
-    get(index) {
-        if (! this.map[index]) {
-            const msg = `Index: ${index} on map ${this.map}`
-            throw new RangeError(msg)
-        }
-        return this.map[index]
-    }
-}
-window.IndexToValueMap = IndexToValueMap
 
 //export class MaskHeightMap extends BaseHeightMap {}
 
