@@ -10,31 +10,31 @@ const EMPTY = 0
 window.ColorGradient = ColorGradient
 
 
-export class HeightMap {
-    constructor(size, roughness, callback = _.noop) {
+class BaseHeightMap {
+    constructor(size, roughness, callback) {
         this.grid = new Grid(size, size, EMPTY)
+        this.roughness = roughness
         this.callback = callback
         this.size = size
 
         this._buildGrid(size, roughness)
-        this.colorMap = ColorGradient('000', 'FFF', this.size+1)
     }
 
     _buildGrid(size, roughness) {
         this.setInitialPoints()
 
-        for(let midSize = size - 1; midSize / 2 >= 1; midSize /= 2) {
+        for (let midSize = size - 1; midSize / 2 >= 1; midSize /= 2) {
             let half = midSize / 2
             let scale = Math.floor(roughness * midSize)
 
-            for(let y = half; y < size - 1; y += midSize) {
+            for (let y = half; y < size - 1; y += midSize) {
                 for (let x = half; x < size - 1; x += midSize) {
                     let variance = Random.int(-scale, scale)
                     this.square(new Point(x, y), half, variance)
                 }
             }
 
-            for(let y = 0; y <= size - 1; y += half) {
+            for (let y = 0; y <= size - 1; y += half) {
                 for (let x = (y + half) % midSize; x <= size - 1; x += midSize) {
                     let variance = Random.int(-scale, scale)
                     this.diamond(new Point(x, y), half, variance)
@@ -56,16 +56,15 @@ export class HeightMap {
         this.grid.forEach(callback)
     }
 
-    setInitialPoints () {
+    setInitialPoints() {
         let maxIndex = this.size - 1
-        let rand = () => Random.int(0, this.size)
-        this.set(new Point(0, 0), rand())
-        this.set(new Point(maxIndex, 0), rand())
-        this.set(new Point(0, maxIndex), rand())
-        this.set(new Point(maxIndex, maxIndex), rand())
+        this.set(new Point(0, 0), EMPTY)
+        this.set(new Point(maxIndex, 0), EMPTY)
+        this.set(new Point(0, maxIndex), EMPTY)
+        this.set(new Point(maxIndex, maxIndex), EMPTY)
     }
 
-    diamond (point, midSize, offset) {
+    diamond(point, midSize, offset) {
         let x = point.x,
             y = point.y,
             average = this.averagePoints([
@@ -77,7 +76,7 @@ export class HeightMap {
         this.set(point, average + offset)
     }
 
-    square (point, midSize, offset) {
+    square(point, midSize, offset) {
         let x = point.x,
             y = point.y,
             average = this.averagePoints([
@@ -90,55 +89,68 @@ export class HeightMap {
     }
 
     set(point, height) {
-        height = (height >= this.size / 2) ? this.size : 0
-
-        if (point.y < 20 || point.y > 236) {
-            height = 0
-        }
-        if (point.x < 5 || point.x > 252) {
-            height = 0
-        }
-        // flat earth map filter
-        // const midPoint = new Point(this.size / 2, this.size / 2)
-        // if (Point.euclidianDistance(point, midPoint) > this.size / 2 - 10) {
-        //     height = 0
-        // }
         this.grid.set(point, height)
         this.callback(height, point)
     }
 
     averagePoints(points) {
-        let sum = 0
-        let count = 0
-        points.forEach(pt => {
-            const value = this.grid.get(pt)
-            if (value != undefined) {
-                sum+=value
-                count++
-            }
-        })
-        return Math.floor(sum / count)
+        const values = points.map(pt => this.grid.get(pt))
+        return Math.floor(_.sum(values) / values.length)
+    }
+}
+
+
+/**
+ * Creates a map from 0 to size with values given by table
+ *
+ *
+*/
+
+class IndexToValueMap {
+    constructor(size, values, rates=undefined) {
+        this.map   = this._buildMap(size, values, rates || [])
+        this.size  = size
+        this.values = values
+
     }
 
-    meanPoints(points) {
-        //let values = points.map(pt => this.grid.get(pt))
-        let values = []
-        points.forEach(pt => {
-            const value = this.grid.get(pt)
-            if (value != undefined) {
-                values.push(value)
-            }
-        })
-        values.sort((a, b) => a - b)
-        if (values.length % 2 == 0) {
-            let midIndex = (values.length) / 2
-            let first = values[midIndex - 1]
-            let second = values[midIndex]
-            return Math.floor((first + second) / 2)
-        } else {
-            let index = Math.floor(values.length / 2)
-            return values[index]
+    _buildMap(size, values, rates) {
+        const map = []
+        const indexesPerValue = Math.floor(size / values.length)
+        for (let i = 0; i < size; i++) {
+            const vIndex = Math.floor(i / indexesPerValue)
+            map.push(values[vIndex])
         }
+        return map
+    }
+
+    _buildMapSegment(map, values) {
+
+    }
+
+    _percentToIndex(rate) {
+        return Math.floor((rate * this.size) / 100)
+    }
+
+    get(index) {
+        if (! this.map[index]) {
+            const msg = `Index: ${index} on map ${this.map}`
+            throw new RangeError(msg)
+        }
+        return this.map[index]
+    }
+}
+window.IndexToValueMap = IndexToValueMap
+
+//export class MaskHeightMap extends BaseHeightMap {}
+
+//export class IterativeHeightMap extends BaseHeightMap {}
+
+export class HeightMap extends BaseHeightMap {
+    constructor(size, roughness, callback = _.noop, stops = undefined) {
+        super(size, roughness, callback)
+        this.stops = stops || []
+        this.colorMap = ColorGradient('152762', '676441', this.size + 1)
     }
 }
 
@@ -186,4 +198,21 @@ export const MidpointDisplacement = (source, target, roughness, callback=_.noop)
     addPoint(target)
 
     return points
+}
+
+
+
+class HeightColorMap {
+    constructor(size, rates, colorGradient) {
+        this.map = this._buildMap(table)
+    }
+
+    _buildMap() {
+
+    }
+
+    getColor(height) {
+
+        return this.map[height]
+    }
 }

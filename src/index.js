@@ -53,8 +53,12 @@ const createWorld = () => {
 
 const init = function() {
     const tilesize = getTileSizeInput()
-    viewCanvas.width = WORLDSIZE * tilesize;
-    viewCanvas.height = WORLDSIZE * tilesize;
+    const width = WORLDSIZE * tilesize;
+    const height = WORLDSIZE * tilesize;
+    if (viewCanvas.width != width || viewCanvas.height != height) {
+        viewCanvas.width = width
+        viewCanvas.height = height
+    }
 }
 
 const draw = function() {

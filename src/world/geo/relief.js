@@ -89,7 +89,6 @@ class CodeMap {
     }
 
     getCode(height) {
-        height = _.clamp(height, 0, 300)
         return this.map[height]
     }
 }
@@ -97,13 +96,11 @@ class CodeMap {
 
 export class ReliefMap {
     constructor(size, roughness) {
-        this.codeMap       = new CodeMap()
-        this.heightMap     = new HeightMap(size, roughness)
-        this.maskHeightMap = new HeightMap(size, roughness)
-        this.grid          = this._buildGrid(size, this.heightMap)
-        this.maskGrid      = this._buildGrid(size, this.maskHeightMap)
-        this.size          = size
-        this.filters       = []
+        this.codeMap   = new CodeMap()
+        this.heightMap = new HeightMap(size, roughness)
+        this.grid      = this._buildGrid(size, this.heightMap)
+        this.size      = size
+        this.filters   = []
 
         delete this.codeMap
     }
@@ -117,14 +114,11 @@ export class ReliefMap {
 
     _buildRelief(height) {
         const code = this.codeMap.getCode(height)
-        const feature = ReliefScan.getFeature(code)
-        return new Relief(code, feature)
+        return new Relief(code, undefined)
     }
 
     get(point) {
-        const relief = this.grid.get(point)
-        const maskRelief = this.maskGrid.get(point)
-        return relief//ReliefScan.filter(relief, maskRelief)
+        return this.grid.get(point)
     }
 
     getCode(point) {
@@ -155,34 +149,6 @@ export class ReliefMap {
 
     hasVolcano(pt) { return this.get(pt).mask == VOLCANO }
     hasCave(pt) { return this.get(pt).mask == CAVE }
-}
-
-
-class ReliefScan {
-    static filter(relief, maskRelief) {
-        let [code, maskCode] = [relief.code, maskRelief.code]
-        const feature = relief.feature
-        if (maskCode > PLAIN) {
-            code = _.clamp(code, TRENCH, HIGHLAND)
-        }
-        if (maskCode == SHALLOW) {
-            code = _.clamp(code, TRENCH, PLAIN)
-        }
-        if (maskCode == BASIN || maskCode == BANKS) {
-            code = Math.max(TRENCH, code - 1)
-        }
-        return new Relief(code, feature)
-    }
-
-    static getFeature(code) {
-        if (code == MOUNTAIN && Random.chance(VOLCANO_CHANCE)) {
-            return VOLCANO
-        }
-        if (code >= BASIN && Random.chance(CAVE_CHANCE)) {
-            return CAVE
-        }
-        return undefined
-    }
 }
 
 
