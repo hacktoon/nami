@@ -25,7 +25,7 @@ import _ from 'lodash'
 // use this to map  a numeric range to true | false -> mascara binaria
 // bitmask
 
-export class IndexToValueMap {
+export class ValueDistributionMap {
     constructor(size, values) {
         this.map    = this._buildMap(size, values)
         this.values = values
@@ -42,20 +42,18 @@ export class IndexToValueMap {
     }
 
     _getValue(i, size, values) {
-        const indexesPervalue = Math.floor(size / values.length)
-        const rawIndex = Math.floor(i / indexesPervalue)
-        const index = Math.min(rawIndex, values.length - 1)
+        let indexesPerValue = Math.max(1, Math.round(size / values.length))
+        const index = Math.min(Math.floor(i / indexesPerValue), values.length - 1)
         return values[index]
     }
 
     get(index) {
         if (!this.map[index]) {
-            const msg = `Index: ${index} on map ${this.map}`
-            throw new RangeError(msg)
+            throw new RangeError(`Index: ${index} on map ${this.map}`)
         }
         return this.map[index]
     }
 }
 
 
-window.IndexToValueMap = IndexToValueMap
+window.ValueDistributionMap = ValueDistributionMap
