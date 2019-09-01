@@ -17,6 +17,7 @@ class BaseHeightMap {
         this.roughness = roughness
         this.callback = callback
         this.size = size
+        this.report = {}
 
         this._buildGrid(size, roughness)
     }
@@ -53,8 +54,7 @@ class BaseHeightMap {
     }
 
     diamond(point, midSize, offset) {
-        let x = point.x,
-            y = point.y,
+        let {x, y} = point,
             average = this._averagePoints([
                 new Point(x, y - midSize),      // top
                 new Point(x + midSize, y),      // right
@@ -65,8 +65,7 @@ class BaseHeightMap {
     }
 
     square(point, midSize, offset) {
-        let x = point.x,
-            y = point.y,
+        let {x, y} = point,
             average = this._averagePoints([
                 new Point(x - midSize, y - midSize),   // upper left
                 new Point(x + midSize, y - midSize),   // upper right
@@ -77,7 +76,9 @@ class BaseHeightMap {
     }
 
     _averagePoints(points) {
-        let values = points.map(pt => this.grid.get(pt)).filter(p=> p != undefined)
+        let values = points
+            .map(pt => this.grid.get(pt))
+            .filter(p=> p != undefined)
         return Math.floor(_.sum(values) / values.length)
     }
 
@@ -96,8 +97,12 @@ class BaseHeightMap {
     }
 
     set(point, height) {
-        let {x, y} = point
+        let v = this.report[height] || 0
+        this.report[height] = v + 1
 
+        // if (x > 10 && x < 246 && y > 10 && y < 246) {
+        //     height = 256
+        // }
         this.grid.set(point, height)
         this.callback(height, point)
     }
@@ -111,12 +116,13 @@ class BaseHeightMap {
 export class HeightMap extends BaseHeightMap {
     constructor(size, roughness, callback = _.noop) {
         super(size, roughness, callback)
-        let values = ColorGradient('003', 'FFF', 10)
+        let values = ColorGradient('003', 'FFF', size)
         this.map = new ValueDistributionMap(size, values)
+        log(this.map)
     }
 
     getColor(point) {
-        return this.get(point)
+        return this.getValue(point)
     }
 }
 

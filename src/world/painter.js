@@ -8,7 +8,7 @@ export default class WorldPainter {
 
     drawHeightMap() {
         this.world.iter(({point}) => {
-            let color = this.world.reliefMap.heightMap.getValue(point)
+            let color = this.world.reliefMap.heightMap.getColor(point)
             this.drawTile(point, color)
         })
     }
