@@ -1,10 +1,10 @@
 import _ from 'lodash'
 
-import { IndexToValueMap } from './indexing'
 import { Grid } from './grid'
 import { Point } from './point'
 import { Random } from './base'
 import { ColorGradient } from './color'
+import { ValueDistributionMap } from './indexing'
 
 const EMPTY = 0
 
@@ -44,19 +44,6 @@ class BaseHeightMap {
         }
     }
 
-    get(point) {
-        return this.grid.get(point)
-    }
-
-    getColor(point) {
-        const height = this.get(point)
-        return this.colorMap[height]
-    }
-
-    iter(callback) {
-        this.grid.forEach(callback)
-    }
-
     setInitialPoints() {
         let maxIndex = this.size - 1
         this.set(new Point(0, 0), EMPTY)
@@ -68,7 +55,7 @@ class BaseHeightMap {
     diamond(point, midSize, offset) {
         let x = point.x,
             y = point.y,
-            average = this.averagePoints([
+            average = this._averagePoints([
                 new Point(x, y - midSize),      // top
                 new Point(x + midSize, y),      // right
                 new Point(x, y + midSize),      // bottom
@@ -80,7 +67,7 @@ class BaseHeightMap {
     square(point, midSize, offset) {
         let x = point.x,
             y = point.y,
-            average = this.averagePoints([
+            average = this._averagePoints([
                 new Point(x - midSize, y - midSize),   // upper left
                 new Point(x + midSize, y - midSize),   // upper right
                 new Point(x + midSize, y + midSize),   // lower right
@@ -89,14 +76,30 @@ class BaseHeightMap {
         this.set(point, average + offset)
     }
 
-    set(point, height) {
-        this.grid.set(point, height)
-        this.callback(height, point)
+    _averagePoints(points) {
+        let values = points.map(pt => this.grid.get(pt)).filter(p=> p != undefined)
+        return Math.floor(_.sum(values) / values.length)
     }
 
-    averagePoints(points) {
-        const values = points.map(pt => this.grid.get(pt))
-        return Math.floor(_.sum(values) / values.length)
+    get(point) {
+        const height = this.grid.get(point)
+        return _.clamp(height, 0, this.size - 1)
+    }
+
+    getValue(point) {
+        const height = this.get(point)
+        return this.map.get(height)
+    }
+
+    iter(callback) {
+        this.grid.forEach(callback)
+    }
+
+    set(point, height) {
+        let {x, y} = point
+
+        this.grid.set(point, height)
+        this.callback(height, point)
     }
 }
 
@@ -106,10 +109,14 @@ class BaseHeightMap {
 //export class IterativeHeightMap extends BaseHeightMap {}
 
 export class HeightMap extends BaseHeightMap {
-    constructor(size, roughness, callback = _.noop, stops = undefined) {
+    constructor(size, roughness, callback = _.noop) {
         super(size, roughness, callback)
-        this.stops = stops || []
-        this.colorMap = ColorGradient('152762', '676441', this.size + 1)
+        let values = ColorGradient('003', 'FFF', 10)
+        this.map = new ValueDistributionMap(size, values)
+    }
+
+    getColor(point) {
+        return this.get(point)
     }
 }
 
