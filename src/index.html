@@ -10,8 +10,8 @@
     <nav id="main-menu">
         <label for="sizeInput">Size
             <select id="sizeInput">
-                <option value="256" selected>256</option>
-                <option value="128">128</option>
+                <option value="256">256</option>
+                <option value="128" selected>128</option>
                 <option value="64">64</option>
                 <option value="32">32</option>
                 <option value="16">16</option>
@@ -19,12 +19,13 @@
                 <option value="4">4</option>
             </select>
         </label>
+        <label for="roughnessInput">Roughness
+            <input id="roughnessInput" type="number" step="1" value="1" />
+        </label>
         <label for="viewInput">View
             <select id="viewInput">
                 <option value="heightmap" selected>Heightmap</option>
                 <option value="relief">Relief</option>
-                <option value="heightmap2">Heightmap 2</option>
-                <option value="heightmap3" >Heightmap 3</option>
                 <option value="heat">Heat</option>
                 <option value="moisture">Moisture</option>
                 <option value="water">Water</option>
@@ -33,7 +34,7 @@
             </select>
         </label>
         <label for="tilesizeInput">Tile size
-            <input id="tilesizeInput" type="number" min="1" max="15" step="1" value="3" />
+            <input id="tilesizeInput" type="number" min="1" max="15" step="1" value="4" />
         </label>
         <label for="seedInput">Seed
             <input id="seedInput" type="text" value="" />

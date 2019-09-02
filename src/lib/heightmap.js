@@ -10,8 +10,9 @@ const EMPTY = 0
 
 
 class BaseHeightMap {
-    constructor(size) {
+    constructor(size, roughness) {
         this.grid      = new Grid(size, size, EMPTY)
+        this.roughness = roughness
         this.size      = size
         this.maxValue  = -Infinity
         this.minValue  = Infinity
@@ -53,7 +54,7 @@ class BaseHeightMap {
     }
 
     _getSquareValue(x, y, size) {
-        const variation = Random.floatRange(-size, size)
+        const variation = this._getVariation(size)
         const height = this._averagePoints([
             [x - size, y - size],   // upper left
             [x + size, y - size],   // upper right
@@ -64,7 +65,7 @@ class BaseHeightMap {
     }
 
     _getDiamondValue(x, y, size) {
-        const variation = Random.floatRange(-size, size)
+        const variation = this._getVariation(size)
         const height = this._averagePoints([
             [x, y - size],          // top
             [x, y + size],          // bottom
@@ -74,19 +75,19 @@ class BaseHeightMap {
         this._set(x, y, height + variation)
     }
 
+    _getVariation(size) {
+        let scale = size * this.roughness
+        return Random.floatRange(-scale, scale)
+    }
+
     _averagePoints(points) {
-        // TODO : wrap option
         const getValue = ([ x, y ]) => this.grid.get(new Point(x, y))
         const values = points.map(getValue).filter(_.isNumber)
         return _.sum(values) / values.length
     }
 
     _set(x, y, height) {
-        let point = new Point(x, y)
-        // if (Point.euclidianDistance(point, new Point(this.size/2,this.size/2)) > this.size/2) {
-        //     height = 0
-        // }
-        this.grid.set(point, height)
+        this.grid.set(new Point(x, y), height)
         if (height > this.maxValue) this.maxValue = height
         if (height < this.minValue) this.minValue = height
     }
@@ -98,22 +99,18 @@ class BaseHeightMap {
 
 
 export class HeightMap extends BaseHeightMap {
-    constructor(size) {
-        super(size)
+    constructor(size, roughness) {
+        super(size, roughness)
         this.values = initColors([
-            ['#000023', 20],
-            ['#000034', 30],
-            ['#000045', 40],
-            ['#000078', 40],
-            ['#2d3806', 10],
-            ['#0a5816', 40],
-            ['#31771a', 50],
-            ['#6f942b', 40],
-            ['#766842', 10],
-            ['#6f942b', 30],
-            ['#AAAAAA', 20],
-            ['#6f942b', 20],
-            ['#CCCCCC', 15],
+            ['#000023', 2],
+            ['#000034', 3],
+            ['#000045', 4],
+            ['#000078', 4],
+            ['#0a5816', 4],
+            ['#31771a', 5],
+            ['#6f942b', 3],
+            ['#AAAAAA', 2],
+            ['#CCCCCC', 5],
         ])
     }
 
