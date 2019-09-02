@@ -8,8 +8,6 @@ import { ValueDistributionMap } from './indexing'
 
 const EMPTY = 0
 
-window.ColorGradient = ColorGradient
-
 
 class BaseHeightMap {
     constructor(size, roughness) {
@@ -111,20 +109,20 @@ class BaseHeightMap {
 export class HeightMap extends BaseHeightMap {
     constructor(size, roughness) {
         super(size, roughness)
-        let values = [
+        this.values = [
             ...ColorGradient('000022', '000080', 10),
             ...ColorGradient('729b00', '41c11b', 10),
             ...ColorGradient('41c11b', '246c0f', 10),
             ...ColorGradient('555555', 'FFFFFF', 10)
         ]
-        values = ColorGradient('000', 'FFF', size)
-        this.map = new ValueDistributionMap(size, values)
+        this.values = ColorGradient('000', 'FFF', 1000)
     }
 
     getColor(point) {
         const height = this.get(point)
-        const index = Math.floor(height * 256)
-        return this.map.get(index)
+        const range = this.values.length - 1
+        const index = Math.floor(height * range)
+        return this.values[index]
     }
 }
 
