@@ -82,7 +82,11 @@ class BaseHeightMap {
     }
 
     _set(x, y, height) {
-        this.grid.set(new Point(x, y), height)
+        let point = new Point(x, y)
+        // if (Point.euclidianDistance(point, new Point(this.size/2,this.size/2)) > this.size/2) {
+        //     height = 0
+        // }
+        this.grid.set(point, height)
         if (height > this.maxValue) this.maxValue = height
         if (height < this.minValue) this.minValue = height
     }
@@ -93,19 +97,24 @@ class BaseHeightMap {
 }
 
 
-//export class MaskHeightMap extends BaseHeightMap {}
-
-//export class IterativeHeightMap extends BaseHeightMap {}
-
 export class HeightMap extends BaseHeightMap {
     constructor(size) {
         super(size)
-        this.values = [
-            ...ColorGradient('000022', '000080', 28),
-            ...ColorGradient('729b00', '41c11b', 8),
-            ...ColorGradient('41c11b', '246c0f', 28),
-            ...ColorGradient('555555', 'FFFFFF', 8)
-        ]
+        this.values = initColors([
+            ['#000023', 20],
+            ['#000034', 30],
+            ['#000045', 40],
+            ['#000078', 40],
+            ['#2d3806', 10],
+            ['#0a5816', 40],
+            ['#31771a', 50],
+            ['#6f942b', 40],
+            ['#766842', 10],
+            ['#6f942b', 30],
+            ['#AAAAAA', 20],
+            ['#6f942b', 20],
+            ['#CCCCCC', 15],
+        ])
     }
 
     getColor(point) {
@@ -120,6 +129,14 @@ export class HeightMap extends BaseHeightMap {
         const index = (value - this.minValue) / oldRange * newRange
         return Math.floor(index)
     }
+}
+
+const initColors = (values) => {
+    let arr = []
+    for (let [val, count] of values) {
+        arr = arr.concat(new Array(count).fill(val))
+    }
+    return arr
 }
 
 
