@@ -10,12 +10,11 @@ const EMPTY = 0
 
 
 class BaseHeightMap {
-    constructor(size, roughness) {
+    constructor(size) {
         this.grid      = new Grid(size, size, EMPTY)
-        this.roughness = roughness
         this.size      = size
-        this.maxValue  = 0
-        this.minValue  = 0
+        this.maxValue  = -Infinity
+        this.minValue  = Infinity
 
         this._init()
         this._buildGrid(size)
@@ -54,8 +53,7 @@ class BaseHeightMap {
     }
 
     _getSquareValue(x, y, size) {
-        const scale = this.roughness * size
-        const variation = Random.floatRange(-scale, scale)
+        const variation = Random.floatRange(-size, size)
         const height = this._averagePoints([
             [x - size, y - size],   // upper left
             [x + size, y - size],   // upper right
@@ -66,8 +64,7 @@ class BaseHeightMap {
     }
 
     _getDiamondValue(x, y, size) {
-        const scale = this.roughness * size
-        const variation = Random.floatRange(-scale, scale)
+        const variation = Random.floatRange(-size, size)
         const height = this._averagePoints([
             [x, y - size],          // top
             [x, y + size],          // bottom
@@ -91,13 +88,7 @@ class BaseHeightMap {
     }
 
     get(point) {
-        return this._normalize(this.grid.get(point))
-    }
-
-    _normalize(value) {
-        // normalize value to [0, 1] range
-        const range = this.maxValue - this.minValue
-        return (value - this.minValue) / range
+        return this.grid.get(point)
     }
 }
 
@@ -107,22 +98,27 @@ class BaseHeightMap {
 //export class IterativeHeightMap extends BaseHeightMap {}
 
 export class HeightMap extends BaseHeightMap {
-    constructor(size, roughness) {
-        super(size, roughness)
+    constructor(size) {
+        super(size)
         this.values = [
-            ...ColorGradient('000022', '000080', 10),
-            ...ColorGradient('729b00', '41c11b', 10),
-            ...ColorGradient('41c11b', '246c0f', 10),
-            ...ColorGradient('555555', 'FFFFFF', 10)
+            ...ColorGradient('000022', '000080', 28),
+            ...ColorGradient('729b00', '41c11b', 8),
+            ...ColorGradient('41c11b', '246c0f', 28),
+            ...ColorGradient('555555', 'FFFFFF', 8)
         ]
-        this.values = ColorGradient('000', 'FFF', 1000)
     }
 
     getColor(point) {
         const height = this.get(point)
-        const range = this.values.length - 1
-        const index = Math.floor(height * range)
+        const index = this._normalizeIndex(height, this.values)
         return this.values[index]
+    }
+
+    _normalizeIndex(value, valueList) {
+        const newRange = valueList.length
+        const oldRange = this.maxValue - this.minValue
+        const index = (value - this.minValue) / oldRange * newRange
+        return Math.floor(index)
     }
 }
 
