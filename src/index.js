@@ -13,7 +13,7 @@ let viewCanvas = document.getElementById("viewCanvas"),
     viewInput = document.getElementById('viewInput'),
     tilesizeInput = document.getElementById("tilesizeInput"),
     sizeInput = document.getElementById("sizeInput"),
-    stepsInput = document.getElementById("stepsInput"),
+    roughnessInput = document.getElementById("roughnessInput"),
     infoText = document.getElementById("infoText"),
     worldPainter
 
@@ -39,13 +39,13 @@ const getViewInput = function() {
 }
 const getTileSizeInput = () => Number(tilesizeInput.value)
 const getSizeInput = () => Number(sizeInput.value)
-const getStepsInput = () => Number(stepsInput.value)
+const getRoughnessInput = () => Number(roughnessInput.value)
 
 const createWorld = () => {
     Random.seed = getSeedInput()
     let tilesize = getTileSizeInput()
     let worldSize = getSizeInput() + 1 // TODO: remove
-    let worldBuilder = new WorldBuilder(worldSize, getStepsInput())
+    let worldBuilder = new WorldBuilder(worldSize, getRoughnessInput())
     let currentWorld = worldBuilder.build()
     worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
 
@@ -53,9 +53,9 @@ const createWorld = () => {
 }
 
 const init = function() {
-    const tilesize = getTileSizeInput()
-    const width = getSizeInput() * tilesize
-    const height = getSizeInput() * tilesize
+    const [size, tilesize] = [getSizeInput(), getTileSizeInput()]
+    const width = size * tilesize
+    const height = size * tilesize
     if (viewCanvas.width != width || viewCanvas.height != height) {
         viewCanvas.width = width
         viewCanvas.height = height
@@ -66,8 +66,6 @@ const draw = function() {
     let view = getViewInput()
     let map = {
         heightmap:  "drawHeightMap",
-        heightmap2:  "drawHeat",
-        heightmap3:  "drawHeat",
         relief:  "drawRelief",
         moisture:  "drawMoisture",
         heat:  "drawHeat",
@@ -147,7 +145,7 @@ let dragControl = {
 viewInput.addEventListener('change', draw)
 tilesizeInput.addEventListener('change', updateUI)
 sizeInput.addEventListener('change', updateUI)
-stepsInput.addEventListener('change', updateUI)
+roughnessInput.addEventListener('change', updateUI)
 seedInput.addEventListener('change', updateUI)
 generateButton.addEventListener('click', updateUI)
 
