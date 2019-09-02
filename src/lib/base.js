@@ -190,6 +190,14 @@ export class Random {
         return lower + Math.floor(num * (upper - lower + 1))
     }
 
+    static floatRange(lower, upper) {
+        let num = Random.float()
+        if (lower > upper) {
+            [lower, upper] = [upper, lower]
+        }
+        return lower + num * (upper - lower)
+    }
+
     static float() {
         if (Random._currentSeed === undefined) {
             Random.seed = Number(new Date())
@@ -201,3 +209,4 @@ export class Random {
         return ((t ^ t >>> 14) >>> 0) / 2 ** 32
     }
 }
+window.Random = Random
