@@ -7,13 +7,12 @@ import { Random } from './lib/base';
 
 window.log = console.log.bind(console)
 
-const WORLDSIZE = 257
-
 let viewCanvas = document.getElementById("viewCanvas"),
     generateButton = document.getElementById("generateButton"),
     seedInput = document.getElementById("seedInput"),
     viewInput = document.getElementById('viewInput'),
     tilesizeInput = document.getElementById("tilesizeInput"),
+    sizeInput = document.getElementById("sizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
     infoText = document.getElementById("infoText"),
     worldPainter
@@ -39,12 +38,14 @@ const getViewInput = function() {
     return value
 }
 const getTileSizeInput = () => Number(tilesizeInput.value)
+const getSizeInput = () => Number(sizeInput.value)
 const getRoughnessInput = () => Number(roughnessInput.value)
 
 const createWorld = () => {
     Random.seed = getSeedInput()
     let tilesize = getTileSizeInput()
-    let worldBuilder = new WorldBuilder(WORLDSIZE, getRoughnessInput())
+    let worldSize = getSizeInput() + 1 // TODO: remove
+    let worldBuilder = new WorldBuilder(worldSize, getRoughnessInput())
     let currentWorld = worldBuilder.build()
     worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
 
@@ -53,8 +54,8 @@ const createWorld = () => {
 
 const init = function() {
     const tilesize = getTileSizeInput()
-    const width = WORLDSIZE * tilesize;
-    const height = WORLDSIZE * tilesize;
+    const width = getSizeInput() * tilesize
+    const height = getSizeInput() * tilesize
     if (viewCanvas.width != width || viewCanvas.height != height) {
         viewCanvas.width = width
         viewCanvas.height = height

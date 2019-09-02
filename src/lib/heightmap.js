@@ -16,7 +16,7 @@ class BaseHeightMap {
         this.grid = new Grid(size, size, EMPTY)
         this.roughness = roughness
         this.callback = callback
-        this.size = size
+        this.size     = size
         this.maxValue = 0
         this.minValue = 0
 
@@ -33,7 +33,6 @@ class BaseHeightMap {
         this.set(new Point(maxIndex, maxIndex), _rand())
     }
 
-    /** if you set the offset value before the two loops, you get a tesselation */
     _buildGrid(size, roughness) {
         for (let midSize = size - 1; midSize / 2 >= 1; midSize /= 2) {
             let half = midSize / 2
@@ -109,7 +108,12 @@ class BaseHeightMap {
 export class HeightMap extends BaseHeightMap {
     constructor(size, roughness, callback = _.noop) {
         super(size, roughness, callback)
-        let values = ColorGradient('003', 'FFF', size)
+        let values = [
+            ...ColorGradient('000022', '000080', 10),
+            ...ColorGradient('729b00', '41c11b', 10),
+            ...ColorGradient('41c11b', '246c0f', 10),
+            ...ColorGradient('555555', 'FFFFFF', 10)
+        ]
         this.map = new ValueDistributionMap(size, values)
     }
 
