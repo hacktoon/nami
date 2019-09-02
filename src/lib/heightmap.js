@@ -20,83 +20,75 @@ class BaseHeightMap {
         this.maxValue = 0
         this.minValue = 0
 
-        this.setInitialPoints()
-        this._buildGrid(size, roughness)
+        this._init()
+        this._buildGrid(size)
     }
 
-    setInitialPoints() {
+    _init() {
         const maxIndex = this.size - 1
         const _rand = () => Random.float()
-        this.set(new Point(0, 0), _rand())
-        this.set(new Point(maxIndex, 0), _rand())
-        this.set(new Point(0, maxIndex), _rand())
-        this.set(new Point(maxIndex, maxIndex), _rand())
+        this._set(new Point(0, 0), _rand())
+        this._set(new Point(maxIndex, 0), _rand())
+        this._set(new Point(0, maxIndex), _rand())
+        this._set(new Point(maxIndex, maxIndex), _rand())
     }
 
-    _buildGrid(size, roughness) {
+    _buildGrid(size) {
         for (let midSize = size - 1; midSize / 2 >= 1; midSize /= 2) {
             let half = midSize / 2
-            let scale = roughness * half
-
             for (let y = half; y < size - 1; y += midSize) {
                 for (let x = half; x < size - 1; x += midSize) {
-                    const offset = Random.floatRange(-scale, scale)
-                    this.square(new Point(x, y), half, offset)
+                    this.square(x, y, half)
                 }
             }
-
             for (let y = 0; y <= size - 1; y += half) {
                 for (let x = (y + half) % midSize; x <= size - 1; x += midSize) {
-                    const offset = Random.floatRange(-scale, scale)
-                    this.diamond(new Point(x, y), half, offset)
+                    this.diamond(x, y, half)
                 }
             }
         }
     }
 
-    square(point, midSize, offset) {
-        const {x, y} = point,
-            average = this._averagePoints([
-                new Point(x - midSize, y - midSize),   // upper left
-                new Point(x + midSize, y - midSize),   // upper right
-                new Point(x + midSize, y + midSize),   // lower right
-                new Point(x - midSize, y + midSize)    // lower left
-            ])
-        this.set(point, average + offset)
+    square(x, y, size) {
+        const variation = Random.floatRange(-size, size)
+        const height = this._averagePoints([
+            new Point(x - size, y - size),   // upper left
+            new Point(x + size, y - size),   // upper right
+            new Point(x + size, y + size),   // lower right
+            new Point(x - size, y + size)    // lower left
+        ])
+        this._set(new Point(x, y), height + variation)
     }
 
-    diamond(point, midSize, offset) {
-        const { x, y } = point,
-            average = this._averagePoints([
-                new Point(x, y - midSize),      // top
-                new Point(x + midSize, y),      // right
-                new Point(x, y + midSize),      // bottom
-                new Point(x - midSize, y)       // left
-            ])
-        this.set(point, average + offset)
+    diamond(x, y, size) {
+        const variation = Random.floatRange(-size, size)
+        const height = this._averagePoints([
+            new Point(x, y - size),      // top
+            new Point(x + size, y),      // right
+            new Point(x, y + size),      // bottom
+            new Point(x - size, y)       // left
+        ])
+        this._set(new Point(x, y), height + variation)
     }
 
     _averagePoints(points) {
-        const values = points
-            .map(pt => this.grid.get(pt))   // TODO : wrap option
-            .filter(p=> p != undefined)
+        // TODO : wrap option
+        const getValue = ({ x, y }) => this.grid.get(new Point(x, y))
+        const values = points.map(getValue).filter(p=> p != undefined)
         return _.sum(values) / values.length
+    }
+
+    _set(point, height) {
+        this.grid.set(point, height)
+        this.callback(height, point)
+        if (height > this.maxValue) this.maxValue = height
+        if (height < this.minValue) this.minValue = height
     }
 
     get(point) {
         const height = this.grid.get(point)
         // normalize value to [0, 1] range
         return (height - this.minValue) / (this.maxValue - this.minValue)
-    }
-
-    set(point, height) {
-        // if (x > 10 && x < 246 && y > 10 && y < 246) {
-        //     height = 256
-        // }
-        if (height > this.maxValue) this.maxValue = height
-        if (height < this.minValue) this.minValue = height
-        this.grid.set(point, height)
-        this.callback(height, point)
     }
 }
 
@@ -114,7 +106,7 @@ export class HeightMap extends BaseHeightMap {
             ...ColorGradient('41c11b', '246c0f', 10),
             ...ColorGradient('555555', 'FFFFFF', 10)
         ]
-        this.map = new ValueDistributionMap(size, values)
+        this.map = new ValueDistributionMap(size, ColorGradient('000', 'FFF', roughness))
     }
 
     getColor(point) {

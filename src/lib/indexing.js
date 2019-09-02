@@ -18,7 +18,7 @@ export class ValueDistributionMap {
     }
 
     _getValue(i, size, values) {
-        let indexesPerValue = Math.max(1, Math.round(size / values.length))
+        let indexesPerValue = Math.max(1, Math.floor(size / values.length))
         const index = Math.min(Math.floor(i / indexesPerValue), values.length - 1)
         return values[index]
     }
