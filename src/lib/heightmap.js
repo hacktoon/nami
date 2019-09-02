@@ -12,10 +12,8 @@ window.ColorGradient = ColorGradient
 
 
 class BaseHeightMap {
-    constructor(size, roughness, callback) {
-        this.grid = new Grid(size, size, EMPTY)
-        this.roughness = roughness
-        this.callback = callback
+    constructor(size) {
+        this.grid     = new Grid(size, size, EMPTY)
         this.size     = size
         this.maxValue = 0
         this.minValue = 0
@@ -26,11 +24,10 @@ class BaseHeightMap {
 
     _init() {
         const maxIndex = this.size - 1
-        const _rand = () => Random.float()
-        this._set(new Point(0, 0), _rand())
-        this._set(new Point(maxIndex, 0), _rand())
-        this._set(new Point(0, maxIndex), _rand())
-        this._set(new Point(maxIndex, maxIndex), _rand())
+        this._set(0, 0, Random.float())
+        this._set(maxIndex, 0, Random.float())
+        this._set(0, maxIndex, Random.float())
+        this._set(maxIndex, maxIndex, Random.float())
     }
 
     _buildGrid(size) {
@@ -52,43 +49,46 @@ class BaseHeightMap {
     square(x, y, size) {
         const variation = Random.floatRange(-size, size)
         const height = this._averagePoints([
-            new Point(x - size, y - size),   // upper left
-            new Point(x + size, y - size),   // upper right
-            new Point(x + size, y + size),   // lower right
-            new Point(x - size, y + size)    // lower left
+            [x - size, y - size],   // upper left
+            [x + size, y - size],   // upper right
+            [x + size, y + size],   // lower right
+            [x - size, y + size]    // lower left
         ])
-        this._set(new Point(x, y), height + variation)
+        this._set(x, y, height + variation)
     }
 
     diamond(x, y, size) {
         const variation = Random.floatRange(-size, size)
         const height = this._averagePoints([
-            new Point(x, y - size),      // top
-            new Point(x + size, y),      // right
-            new Point(x, y + size),      // bottom
-            new Point(x - size, y)       // left
+            [x, y - size],          // top
+            [x, y + size],          // bottom
+            [x + size, y],          // right
+            [x - size, y]           // left
         ])
-        this._set(new Point(x, y), height + variation)
+        this._set(x, y, height + variation)
     }
 
     _averagePoints(points) {
         // TODO : wrap option
-        const getValue = ({ x, y }) => this.grid.get(new Point(x, y))
-        const values = points.map(getValue).filter(p=> p != undefined)
+        const getValue = ([ x, y ]) => this.grid.get(new Point(x, y))
+        const values = points.map(getValue).filter(_.isNumber)
         return _.sum(values) / values.length
     }
 
-    _set(point, height) {
-        this.grid.set(point, height)
-        this.callback(height, point)
+    _set(x, y, height) {
+        this.grid.set(new Point(x, y), height)
         if (height > this.maxValue) this.maxValue = height
         if (height < this.minValue) this.minValue = height
     }
 
     get(point) {
-        const height = this.grid.get(point)
+        return this._normalize(this.grid.get(point))
+    }
+
+    _normalize(value) {
         // normalize value to [0, 1] range
-        return (height - this.minValue) / (this.maxValue - this.minValue)
+        const range = this.maxValue - this.minValue
+        return (value - this.minValue) / range
     }
 }
 
@@ -98,20 +98,23 @@ class BaseHeightMap {
 //export class IterativeHeightMap extends BaseHeightMap {}
 
 export class HeightMap extends BaseHeightMap {
-    constructor(size, roughness, callback = _.noop) {
-        super(size, roughness, callback)
+    constructor(size, steps) {
+        super(size)
+        this.steps = steps
         let values = [
             ...ColorGradient('000022', '000080', 10),
             ...ColorGradient('729b00', '41c11b', 10),
             ...ColorGradient('41c11b', '246c0f', 10),
             ...ColorGradient('555555', 'FFFFFF', 10)
         ]
-        this.map = new ValueDistributionMap(size, ColorGradient('000', 'FFF', roughness))
+        //values = ColorGradient('000', 'FFF', steps)
+        this.map = new ValueDistributionMap(size, values)
     }
 
     getColor(point) {
         const height = this.get(point)
-        return this.map.get(Math.floor(height * (this.size - 1)))
+        const index = Math.floor(height * (this.steps - 1))
+        return this.map.get(index)
     }
 }
 
@@ -159,21 +162,4 @@ export const MidpointDisplacement = (source, target, roughness, callback=_.noop)
     addPoint(target)
 
     return points
-}
-
-
-
-class HeightColorMap {
-    constructor(size, rates, colorGradient) {
-        this.map = this._buildMap(table)
-    }
-
-    _buildMap() {
-
-    }
-
-    getColor(height) {
-
-        return this.map[height]
-    }
 }
