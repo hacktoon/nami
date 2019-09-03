@@ -75,19 +75,23 @@ class BaseHeightMap {
         this._set(x, y, height + variation)
     }
 
-    _getVariation(size) {
-        let scale = size * this.roughness
-        return Random.floatRange(-scale, scale)
-    }
-
     _averagePoints(points) {
         const getValue = ([ x, y ]) => this.grid.get(new Point(x, y))
         const values = points.map(getValue).filter(_.isNumber)
         return _.sum(values) / values.length
     }
 
+    _getVariation(size) {
+        let scale = size * this.roughness
+        return Random.floatRange(-scale, scale)
+    }
+
     _set(x, y, height) {
         this.grid.set(new Point(x, y), height)
+        this._updateMetrics(height)
+    }
+
+    _updateMetrics(height) {
         if (height > this.maxValue) this.maxValue = height
         if (height < this.minValue) this.minValue = height
     }
