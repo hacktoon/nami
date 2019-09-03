@@ -115,20 +115,16 @@ export class HeightMap extends BaseHeightMap {
             ['#AAAAAA', 2],
             ['#CCCCCC', 5],
         ])
-        log(`min: ${this.minValue}\nmax: ${this.maxValue}`)
     }
 
     getColor(point) {
         const height = this.get(point)
         const index = this._normalizeIndex(height, this.values)
-        if (! this.values[index]) {
-            log(index, this.values)
-        }
         return this.values[index]
     }
 
     _normalizeIndex(value, valueList) {
-        const newRange = valueList.length
+        const newRange = valueList.length - 1
         const oldRange = this.maxValue - this.minValue
         const index = (value - this.minValue) / oldRange * newRange
         return Math.floor(index)
