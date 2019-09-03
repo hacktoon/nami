@@ -3,8 +3,6 @@ import _ from 'lodash'
 import { Grid } from './grid'
 import { Point } from './point'
 import { Random } from './base'
-import { ColorGradient } from './color'
-import { ValueDistributionMap } from './indexing'
 
 const EMPTY = 0
 
