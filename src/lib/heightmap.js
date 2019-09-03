@@ -36,8 +36,9 @@ export class BaseHeightMap {
 
     _squareStep(midSize) {
         const half = midSize / 2
-        for (let y = half; y < this.size-1; y += midSize) {
-            for (let x = half; x < this.size-1; x += midSize) {
+        const size = this.size - 1
+        for (let y = half; y < size; y += midSize) {
+            for (let x = half; x < size; x += midSize) {
                 this._square(new Point(x, y), half)
             }
         }
@@ -45,8 +46,9 @@ export class BaseHeightMap {
 
     _diamondStep(midSize) {
         const half = midSize / 2
-        for (let y = 0; y <= this.size-1; y += half) {
-            for (let x = (y + half) % midSize; x <= this.size-1; x += midSize) {
+        const size = this.size - 1
+        for (let y = 0; y <= size; y += half) {
+            for (let x = (y + half) % midSize; x <= size; x += midSize) {
                 this._diamond(new Point(x, y), half)
             }
         }
@@ -85,9 +87,9 @@ export class BaseHeightMap {
     }
 
     _set(point, value) {
-        const height = _.clamp(value, 0, this.size-1)
-        this._updateMetrics(height)
+        const height = _.clamp(value, -this.size, this.size)
         this.grid.set(point, height)
+        this._updateMetrics(height)
     }
 
     _updateMetrics(height) {
@@ -105,25 +107,25 @@ export class HeightMap extends BaseHeightMap {
     constructor(size, roughness) {
         super(size, roughness)
         this.values = initColors([
-            ['#000023', 2],
-            ['#000034', 3],
+            ['#000023', 4],
+            ['#000034', 5],
             ['#000045', 4],
             ['#000078', 4],
-            ['#0a5816', 4],
+            ['#0a5816', 5],
             ['#31771a', 5],
             ['#6f942b', 3],
             ['#AAAAAA', 2],
-            ['#CCCCCC', 5],
+            ['#CCCCCC', 1],
         ])
     }
 
     getColor(point) {
         const height = this.get(point)
-        const index = this._normalizeIndex(height, this.values)
+        const index = this._normalize(height, this.values)
         return this.values[index]
     }
 
-    _normalizeIndex(value, valueList) {
+    _normalize(value, valueList) {
         const newRange = valueList.length - 1
         const oldRange = this.maxValue - this.minValue
         const index = (value - this.minValue) / oldRange * newRange
