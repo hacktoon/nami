@@ -10,8 +10,8 @@
     <nav id="main-menu">
         <label for="sizeInput">Size
             <select id="sizeInput">
-                <option value="256">256</option>
-                <option value="128" selected>128</option>
+                <option value="256" selected>256</option>
+                <option value="128">128</option>
                 <option value="64">64</option>
                 <option value="32">32</option>
                 <option value="16">16</option>
@@ -20,7 +20,7 @@
             </select>
         </label>
         <label for="roughnessInput">Roughness
-            <input id="roughnessInput" type="number" step="1" value="1" />
+            <input id="roughnessInput" type="number" step="1" value="8" />
         </label>
         <label for="viewInput">View
             <select id="viewInput">
@@ -34,10 +34,10 @@
             </select>
         </label>
         <label for="tilesizeInput">Tile size
-            <input id="tilesizeInput" type="number" min="1" max="15" step="1" value="4" />
+            <input id="tilesizeInput" type="number" min="1" step="1" value="3" />
         </label>
         <label for="seedInput">Seed
-            <input id="seedInput" type="text" value="1567544363912" />
+            <input id="seedInput" type="text" value="" />
         </label>
         <button id="generateButton">Generate!</button>
     </nav>

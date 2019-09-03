@@ -60,7 +60,7 @@ export class BaseHeightMap {
             [x + midSize, y - midSize],   // upper right
             [x + midSize, y + midSize],   // lower right
             [x - midSize, y - midSize],   // upper left
-            [x - midSize, y + midSize]    // lower left
+            [x - midSize, y + midSize],   // lower left
         ])
         this._set(point, average + this._getVariation())
     }
@@ -68,10 +68,10 @@ export class BaseHeightMap {
     _diamond(point, midSize) {
         const {x, y} = point
         const average = this._averagePoints([
-            [x, y - midSize],      // top
-            [x, y + midSize],      // bottom
-            [x + midSize, y],      // right
-            [x - midSize, y]       // left
+            [x, y - midSize],   // top
+            [x, y + midSize],   // bottom
+            [x + midSize, y],   // right
+            [x - midSize, y],   // left
         ])
         this._set(point, average + this._getVariation())
     }
