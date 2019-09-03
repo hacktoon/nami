@@ -9,70 +9,75 @@ import { ValueDistributionMap } from './indexing'
 const EMPTY = 0
 
 
-class BaseHeightMap {
+export class BaseHeightMap {
     constructor(size, roughness) {
-        this.grid      = new Grid(size, size, EMPTY)
-        this.roughness = roughness
-        this.size      = size
-        this.maxValue  = -Infinity
-        this.minValue  = Infinity
-
-        this._init()
-        this._buildGrid(size)
+        this._scale   = roughness * (size - 1)
+        this.grid     = new Grid(size, size, EMPTY)
+        this.size     = size
+        this.maxValue = -Infinity
+        this.minValue = Infinity
+        this._buildGrid()
     }
 
-    _init() {
-        const maxIndex = this.size - 1
-        this._set(0, 0, Random.float())
-        this._set(maxIndex, 0, Random.float())
-        this._set(0, maxIndex, Random.float())
-        this._set(maxIndex, maxIndex, Random.float())
-    }
-
-    _buildGrid(size) {
-        for (let midSize = size - 1; midSize / 2 >= 1; midSize /= 2) {
-            const half = midSize / 2
-            this._squareStep(midSize, half)
-            this._diamondStep(midSize, half)
+    _buildGrid(){
+        this._setSeedPoints()
+        for(let midSize = this.size - 1; midSize / 2 >= 1; midSize /= 2){
+            this._squareStep(midSize)
+            this._diamondStep(midSize)
+            this._scale /= 2
         }
     }
 
-    _squareStep(midSize, half) {
-        for (let y = half; y < this.size - 1; y += midSize) {
-            for (let x = half; x < this.size - 1; x += midSize) {
-                this._getSquareValue(x, y, half)
+    _setSeedPoints() {
+        let maxIndex = this.size - 1
+        this._set(new Point(0, 0), this._getVariation())
+        this._set(new Point(maxIndex, 0), this._getVariation())
+        this._set(new Point(0, maxIndex), this._getVariation())
+        this._set(new Point(maxIndex, maxIndex), this._getVariation())
+    }
+
+    _squareStep(midSize) {
+        const half = midSize / 2
+        for (let y = half; y < this.size-1; y += midSize) {
+            for (let x = half; x < this.size-1; x += midSize) {
+                this._square(new Point(x, y), half)
             }
         }
     }
 
-    _diamondStep(midSize, half) {
-        for (let y = 0; y <= this.size - 1; y += half) {
-            for (let x = (y + half) % midSize; x <= this.size - 1; x += midSize) {
-                this._getDiamondValue(x, y, half)
+    _diamondStep(midSize) {
+        const half = midSize / 2
+        for (let y = 0; y <= this.size-1; y += half) {
+            for (let x = (y + half) % midSize; x <= this.size-1; x += midSize) {
+                this._diamond(new Point(x, y), half)
             }
         }
     }
 
-    _getSquareValue(x, y, size) {
-        const variation = this._getVariation(size)
-        const height = this._averagePoints([
-            [x - size, y - size],   // upper left
-            [x + size, y - size],   // upper right
-            [x + size, y + size],   // lower right
-            [x - size, y + size]    // lower left
+    _square(point, midSize) {
+        const {x, y} = point
+        const average = this._averagePoints([
+            [x + midSize, y - midSize],   // upper right
+            [x + midSize, y + midSize],   // lower right
+            [x - midSize, y - midSize],   // upper left
+            [x - midSize, y + midSize]    // lower left
         ])
-        this._set(x, y, height + variation)
+        this._set(point, average + this._getVariation())
     }
 
-    _getDiamondValue(x, y, size) {
-        const variation = this._getVariation(size)
-        const height = this._averagePoints([
-            [x, y - size],          // top
-            [x, y + size],          // bottom
-            [x + size, y],          // right
-            [x - size, y]           // left
+    _diamond(point, midSize) {
+        const {x, y} = point
+        const average = this._averagePoints([
+            [x, y - midSize],      // top
+            [x, y + midSize],      // bottom
+            [x + midSize, y],      // right
+            [x - midSize, y]       // left
         ])
-        this._set(x, y, height + variation)
+        this._set(point, average + this._getVariation())
+    }
+
+    _getVariation() {
+        return Random.int(-this._scale, this._scale)
     }
 
     _averagePoints(points) {
@@ -81,14 +86,10 @@ class BaseHeightMap {
         return _.sum(values) / values.length
     }
 
-    _getVariation(size) {
-        let scale = size * this.roughness
-        return Random.floatRange(-scale, scale)
-    }
-
-    _set(x, y, height) {
-        this.grid.set(new Point(x, y), height)
+    _set(point, value) {
+        const height = _.clamp(value, 0, this.size-1)
         this._updateMetrics(height)
+        this.grid.set(point, height)
     }
 
     _updateMetrics(height) {
@@ -116,11 +117,15 @@ export class HeightMap extends BaseHeightMap {
             ['#AAAAAA', 2],
             ['#CCCCCC', 5],
         ])
+        log(`min: ${this.minValue}\nmax: ${this.maxValue}`)
     }
 
     getColor(point) {
         const height = this.get(point)
         const index = this._normalizeIndex(height, this.values)
+        if (! this.values[index]) {
+            log(index, this.values)
+        }
         return this.values[index]
     }
 
