@@ -98,42 +98,6 @@ export const NumberInterpolation = function(from, to, totalItems){
 }
 
 
-export class HashMap {
-    constructor() {
-        this._map = {}
-        this._size = 0
-    }
-
-    add(obj) {
-        if (this.has(obj))
-            return
-        this._map[obj.hash()] = obj
-        this._size++
-    }
-
-    has(obj) {
-        return _.has(this._map, obj.hash())
-    }
-
-    get(obj) {
-        return this._map[obj.hash()]
-    }
-
-    remove(obj) {
-        delete this._map[obj.hash()]
-        this._size--
-    }
-
-    size() {
-        return this._size
-    }
-
-    each(callback) {
-        _.each(this._map, obj => callback(obj))
-    }
-}
-
-
 export class Random {
     static set seed(seed) {
         Random._seed = seed

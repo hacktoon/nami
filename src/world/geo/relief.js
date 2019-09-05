@@ -1,8 +1,7 @@
 import _ from 'lodash'
 
 import { Grid } from '/lib/grid'
-import { HeightMap } from '/lib/heightmap'
-import { Random } from '/lib/base';
+import { HeightCodeMap } from '/lib/heightmap'
 
 export const VOLCANO_CHANCE = .006
 export const CAVE_CHANCE = .007
@@ -62,7 +61,7 @@ const RELIEF_TABLE = {
 }
 
 
-class CodeMap {
+class CodeTable {
     constructor(table = HEIGHT_TABLE) {
         this.table = table
         this.map = this._buildMap(table)
@@ -96,13 +95,13 @@ class CodeMap {
 
 export class ReliefMap {
     constructor(size, roughness) {
-        this.codeMap   = new CodeMap()
-        this.heightMap = new HeightMap(size, roughness)
+        this.codeTable   = new CodeTable()
+        this.heightMap = new HeightCodeMap(size, roughness)
+            // build all things with build() method
+            // avoid running on contruction
         this.grid      = this._buildGrid(size, this.heightMap)
         this.size      = size
         this.filters   = []
-
-        delete this.codeMap
     }
 
     _buildGrid(size, heightMap) {
@@ -113,7 +112,7 @@ export class ReliefMap {
     }
 
     _buildRelief(height) {
-        const code = this.codeMap.getCode(height)
+        const code = this.codeTable.getCode(height)
         return new Relief(code, undefined)
     }
 

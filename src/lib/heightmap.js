@@ -7,7 +7,7 @@ import { Random } from './base'
 const EMPTY = 0
 
 
-export class BaseHeightMap {
+export class HeightMap {
     constructor(size, roughness) {
         this._scale   = roughness * (size - 1)
         this.grid     = new Grid(size, size, EMPTY)
@@ -103,7 +103,7 @@ export class BaseHeightMap {
 }
 
 
-export class HeightMap extends BaseHeightMap {
+export class HeightCodeMap extends HeightMap {
     constructor(size, roughness) {
         super(size, roughness)
         this.values = initColors([
