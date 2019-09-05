@@ -103,7 +103,38 @@ export class HeightMap {
 }
 
 
-export class HeightCodeMap extends HeightMap {
+export class TileableHeightMap extends HeightMap {
+    _isEdge(point) {
+        let isTopLeft = point.x === 0 || point.y === 0,
+            isBottomRight = point.x === this.size - 1 ||
+                point.y === this.size - 1
+        return isTopLeft || isBottomRight
+    }
+
+    _oppositeEdge(point) {
+        let {x, y} = point
+        if (!this._isEdge(point)) {
+            throw new RangeError("Point not in edge")
+        }
+        if (point.x === 0) { x = this.size - 1 }
+        if (point.x === this.size - 1) { x = 0 }
+        if (point.y === 0) { y = this.size - 1 }
+        if (point.y === this.size - 1) { y = 0 }
+        return new Point(x, y)
+    }
+
+    _set(point, value) {
+        if (this.get(point) != EMPTY) return
+        if (this._isEdge(point)) {
+            let oppositeEdge = this._oppositeEdge(point)
+            super._set(oppositeEdge, value)
+        }
+        super._set(point, value)
+    }
+}
+
+
+export class HeightCodeMap extends TileableHeightMap {
     constructor(size, roughness) {
         super(size, roughness)
         this.values = initColors([
