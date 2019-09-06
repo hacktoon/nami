@@ -182,14 +182,14 @@ class Relief {
 export class CodeMap {
     constructor(size, roughness) {
         const values = initColors([
-            ['#000023', 4],
-            ['#000034', 5],
-            ['#000045', 4],
-            ['#000078', 4],
-            ['#0a5816', 5],
-            ['#31771a', 5],
+            ['#000023', 2],
+            ['#000034', 7],
+            ['#000045', 10],
+            ['#000078', 6],
+            ['#0a5816', 6],
+            ['#31771a', 8],
             ['#6f942b', 6],
-            ['#AAAAAA', 3],
+            ['#AAAAAA', 2],
             ['#CCCCCC', 2],
         ])
         this.map = new TileableHeightMap(size, roughness, values)
