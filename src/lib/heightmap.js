@@ -134,45 +134,6 @@ export class TileableHeightMap extends HeightMap {
 }
 
 
-export class HeightCodeMap extends TileableHeightMap {
-    constructor(size, roughness) {
-        super(size, roughness)
-        this.values = initColors([
-            ['#000023', 4],
-            ['#000034', 5],
-            ['#000045', 4],
-            ['#000078', 4],
-            ['#0a5816', 5],
-            ['#31771a', 5],
-            ['#6f942b', 3],
-            ['#AAAAAA', 2],
-            ['#CCCCCC', 1],
-        ])
-    }
-
-    getColor(point) {
-        const height = this.get(point)
-        const index = this._normalize(height, this.values)
-        return this.values[index]
-    }
-
-    _normalize(value, valueList) {
-        const newRange = valueList.length - 1
-        const oldRange = this.maxValue - this.minValue
-        const index = (value - this.minValue) / oldRange * newRange
-        return Math.floor(index)
-    }
-}
-
-const initColors = (values) => {
-    let arr = []
-    for (let [val, count] of values) {
-        arr = arr.concat(new Array(count).fill(val))
-    }
-    return arr
-}
-
-
 export const MidpointDisplacement = (source, target, roughness, callback=_.noop) => {
     const deltaX = Math.abs(source.x - target.x)
     const deltaY = Math.abs(source.y - target.y)

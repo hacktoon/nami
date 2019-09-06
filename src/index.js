@@ -114,7 +114,7 @@ const showTileInfo = tile => {
     }
     const point = tile.point
     tpl += wrap('Coordinates', point.hash())
-    tpl += wrap('Height', world.reliefMap.heightMap.get(point))
+    //tpl += wrap('Height', world.reliefMap.get(point))
     //tpl += wrap('Relief', world.reliefMap.getName(point))
     // tpl += wrap('Heat', world.heatMap.getName(point))
     // tpl += wrap('Moisture', world.moistureMap.getName(point))

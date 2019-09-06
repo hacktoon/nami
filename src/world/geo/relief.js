@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 import { Grid } from '/lib/grid'
-import { HeightCodeMap } from '/lib/heightmap'
+import { TileableHeightMap } from '/lib/heightmap'
 
 export const VOLCANO_CHANCE = .006
 export const CAVE_CHANCE = .007
@@ -96,17 +96,17 @@ class CodeTable {
 export class ReliefMap {
     constructor(size, roughness) {
         this.codeTable   = new CodeTable()
-        this.heightMap = new HeightCodeMap(size, roughness)
+        this.codeMap     = new HeightCodeMap(size, roughness)
             // build all things with build() method
             // avoid running on contruction
-        this.grid      = this._buildGrid(size, this.heightMap)
+        this.grid      = this._buildGrid(size, this.codeMap)
         this.size      = size
         this.filters   = []
     }
 
-    _buildGrid(size, heightMap) {
+    _buildGrid(size, codeMap) {
         return new Grid(size, size, point => {
-            const height = heightMap.get(point)
+            const height = codeMap.get(point)
             return this._buildRelief(height)
         })
     }
@@ -169,4 +169,56 @@ class Relief {
         let color = RELIEF_TABLE[feature || code].color
         return color
     }
+}
+
+
+/*
+    HEIGHT CODE MAPS
+
+    Converts HeightMap values to a grid, given a translation table
+
+*/
+
+export class HeightCodeMap {
+    constructor(size, roughness) {
+        this.map = new TileableHeightMap(size, roughness)
+        this.values = initColors([
+            ['#000023', 4],
+            ['#000034', 5],
+            ['#000045', 4],
+            ['#000078', 4],
+            ['#0a5816', 5],
+            ['#31771a', 5],
+            ['#6f942b', 6],
+            ['#AAAAAA', 3],
+            ['#CCCCCC', 2],
+        ])
+    }
+
+    get(point) {
+        const height = this.map.get(point)
+        const index = this._normalize(height, this.values)
+        return this.values[index]
+    }
+
+    getColor(point) {
+        const height = this.map.get(point)
+        const index = this._normalize(height, this.values)
+        return this.values[index]
+    }
+
+    _normalize(value, valueList) {
+        const newRange = valueList.length - 1
+        const oldRange = this.map.maxValue - this.map.minValue
+        const index = (value - this.map.minValue) / oldRange * newRange
+        return Math.floor(index)
+    }
+}
+
+const initColors = (values) => {
+    let arr = []
+    for (let [val, count] of values) {
+        arr = arr.concat(new Array(count).fill(val))
+    }
+    return arr
 }
