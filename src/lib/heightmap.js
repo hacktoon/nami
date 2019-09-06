@@ -150,28 +150,25 @@ class DiamondSquare {
 
 
 class TileableDiamondSquare extends DiamondSquare {
-    _isEdge(point) {
-        let {x, y} = point
-        let isTopLeft = x === 0 || y === 0
-        let isBottomRight = x === this.size - 1 || y === this.size - 1
-        return isTopLeft || isBottomRight
+    _isTopLeftSide(point) {
+        return point.x === 0 || point.y === 0
     }
 
-    _oppositeEdge(point) {
+    _isBottomRightSide(point) {
+        return point.x === this.size - 1 || point.y === this.size - 1
+    }
+
+    _getOpposite(point) {
         let {x, y} = point
-        if (!this._isEdge(point)) {
-            throw new RangeError("Point not in edge")
-        }
         if (point.x === 0) { x = this.size - 1 }
-        if (point.x === this.size - 1) { x = 0 }
         if (point.y === 0) { y = this.size - 1 }
-        if (point.y === this.size - 1) { y = 0 }
         return new Point(x, y)
     }
 
     _set(point, value) {
-        if (this._isEdge(point)) {
-            let oppositeEdge = this._oppositeEdge(point)
+        if (this._isBottomRightSide(point)) return
+        if (this._isTopLeftSide(point)) {
+            let oppositeEdge = this._getOpposite(point)
             super._set(oppositeEdge, value)
         }
         super._set(point, value)
