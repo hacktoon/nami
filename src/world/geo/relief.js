@@ -96,7 +96,7 @@ class CodeTable {
 export class ReliefMap {
     constructor(size, roughness) {
         this.codeTable   = new CodeTable()
-        this.codeMap     = new HeightCodeMap(size, roughness)
+        this.codeMap     = new CodeMap(size, roughness)
             // build all things with build() method
             // avoid running on contruction
         this.grid      = this._buildGrid(size, this.codeMap)
@@ -179,10 +179,9 @@ class Relief {
 
 */
 
-export class HeightCodeMap {
+export class CodeMap {
     constructor(size, roughness) {
-        this.map = new TileableHeightMap(size, roughness)
-        this.values = initColors([
+        const values = initColors([
             ['#000023', 4],
             ['#000034', 5],
             ['#000045', 4],
@@ -193,25 +192,15 @@ export class HeightCodeMap {
             ['#AAAAAA', 3],
             ['#CCCCCC', 2],
         ])
+        this.map = new TileableHeightMap(size, roughness, values)
     }
 
     get(point) {
-        const height = this.map.get(point)
-        const index = this._normalize(height, this.values)
-        return this.values[index]
+        return this.map.get(point)
     }
 
     getColor(point) {
-        const height = this.map.get(point)
-        const index = this._normalize(height, this.values)
-        return this.values[index]
-    }
-
-    _normalize(value, valueList) {
-        const newRange = valueList.length - 1
-        const oldRange = this.map.maxValue - this.map.minValue
-        const index = (value - this.map.minValue) / oldRange * newRange
-        return Math.floor(index)
+        return this.get(point)
     }
 }
 

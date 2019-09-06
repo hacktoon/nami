@@ -4,10 +4,56 @@ import { Grid } from './grid'
 import { Point } from './point'
 import { Random } from './base'
 
-const EMPTY = 0
+const EMPTY = undefined
 
 
-export class HeightMap {
+export const MidpointDisplacement = (source, target, roughness, callback = _.noop) => {
+    const deltaX = Math.abs(source.x - target.x)
+    const deltaY = Math.abs(source.y - target.y)
+    const fixedAxis = deltaX > deltaY ? 'x' : 'y'
+    const displacedAxis = deltaX > deltaY ? 'y' : 'x'
+    const size = Math.abs(target[fixedAxis] - source[fixedAxis])
+    let displacement = roughness * (size / 2)
+    let points = []
+
+    const buildPoint = (p1, p2) => {
+        if (Math.abs(p2[fixedAxis] - p1[fixedAxis]) <= 1)
+            return
+        const displacedValue = (p1[displacedAxis] + p2[displacedAxis]) / 2
+        const variance = Random.int(-displacement, displacement)
+        const point = new Point()
+
+        point[fixedAxis] = Math.floor((p1[fixedAxis] + p2[fixedAxis]) / 2)
+        point[displacedAxis] = Math.round(displacedValue + variance)
+        return point
+    }
+
+    const midpoints = (p1, p2, size) => {
+        let points = []
+        let point = buildPoint(p1, p2)
+        if (!point)
+            return points
+        displacement = roughness * size
+        points = points.concat(midpoints(p1, point, size / 2))
+        addPoint(point)
+        points = points.concat(midpoints(point, p2, size / 2))
+        return points
+    }
+
+    const addPoint = (point) => {
+        points.push(point)
+        callback(point)
+    }
+
+    addPoint(source)
+    points = points.concat(midpoints(source, target, size / 2))
+    addPoint(target)
+
+    return points
+}
+
+
+class DiamondSquare {
     constructor(size, roughness) {
         this._scale   = roughness * (size - 1)
         this.grid     = new Grid(size, size, EMPTY)
@@ -103,11 +149,11 @@ export class HeightMap {
 }
 
 
-export class TileableHeightMap extends HeightMap {
+class TileableDiamondSquare extends DiamondSquare {
     _isEdge(point) {
-        let isTopLeft = point.x === 0 || point.y === 0,
-            isBottomRight = point.x === this.size - 1 ||
-                point.y === this.size - 1
+        let {x, y} = point
+        let isTopLeft = x === 0 || y === 0
+        let isBottomRight = x === this.size - 1 || y === this.size - 1
         return isTopLeft || isBottomRight
     }
 
@@ -124,7 +170,6 @@ export class TileableHeightMap extends HeightMap {
     }
 
     _set(point, value) {
-        if (this.get(point) != EMPTY) return
         if (this._isEdge(point)) {
             let oppositeEdge = this._oppositeEdge(point)
             super._set(oppositeEdge, value)
@@ -134,47 +179,29 @@ export class TileableHeightMap extends HeightMap {
 }
 
 
-export const MidpointDisplacement = (source, target, roughness, callback=_.noop) => {
-    const deltaX = Math.abs(source.x - target.x)
-    const deltaY = Math.abs(source.y - target.y)
-    const fixedAxis = deltaX > deltaY ? 'x' : 'y'
-    const displacedAxis = deltaX > deltaY ? 'y' : 'x'
-    const size = Math.abs(target[fixedAxis] - source[fixedAxis])
-    let displacement = roughness * (size / 2)
-    let points = []
-
-    const buildPoint = (p1, p2) => {
-        if (Math.abs(p2[fixedAxis] - p1[fixedAxis]) <= 1)
-            return
-        const displacedValue = (p1[displacedAxis] + p2[displacedAxis]) / 2
-        const variance = Random.int(-displacement, displacement)
-        const point = new Point()
-
-        point[fixedAxis] = Math.floor((p1[fixedAxis] + p2[fixedAxis]) / 2)
-        point[displacedAxis] = Math.round(displacedValue + variance)
-        return point
+class HeightMap {
+    constructor(size, roughness, values, Method=DiamondSquare) {
+        this.values = values
+        this.map = new Method(size, roughness)
     }
 
-    const midpoints = (p1, p2, size) => {
-        let points = []
-        let point = buildPoint(p1, p2)
-        if (!point)
-            return points
-        displacement = roughness * size
-        points = points.concat(midpoints(p1, point, size / 2))
-        addPoint(point)
-        points = points.concat(midpoints(point, p2, size / 2))
-        return points
+    get(point) {
+        const height = this.map.get(point)
+        const index = this._normalize(height, this.values)
+        return this.values[index]
     }
 
-    const addPoint = (point) => {
-        points.push(point)
-        callback(point)
+    _normalize(value, values) {
+        const newRange = values.length - 1
+        const oldRange = this.map.maxValue - this.map.minValue
+        const index = (value - this.map.minValue) / oldRange * newRange
+        return Math.floor(index)
     }
+}
 
-    addPoint(source)
-    points = points.concat(midpoints(source, target, size / 2))
-    addPoint(target)
 
-    return points
+export class TileableHeightMap extends HeightMap {
+    constructor(size, roughness, values, Method=TileableDiamondSquare) {
+        super(size, roughness, values, Method)
+    }
 }
