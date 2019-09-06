@@ -183,14 +183,16 @@ export class CodeMap {
     constructor(size, roughness) {
         const values = initColors([
             ['#000023', 2],
-            ['#000034', 7],
-            ['#000045', 10],
+            ['#000034', 8],
+            ['#000045', 11],
             ['#000078', 6],
-            ['#0a5816', 6],
-            ['#31771a', 8],
-            ['#6f942b', 6],
-            ['#AAAAAA', 2],
+            ['#0a5816', 8],
+            ['#31771a', 10],
+            ['#6f942b', 8],
+            ['#888888', 4],
+            ['#AAAAAA', 3],
             ['#CCCCCC', 2],
+            ['#FFFFFF', 1],
         ])
         this.map = new TileableHeightMap(size, roughness, values)
     }

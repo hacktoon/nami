@@ -155,13 +155,14 @@ class TileableDiamondSquare extends DiamondSquare {
     }
 
     _isBottomRightSide(point) {
-        return point.x === this.size - 1 || point.y === this.size - 1
+        const size = this.size - 1
+        return point.x === size || point.y === size
     }
 
     _getOpposite(point) {
         let {x, y} = point
-        if (point.x === 0) { x = this.size - 1 }
-        if (point.y === 0) { y = this.size - 1 }
+        if (point.x === 0) x = this.size - 1
+        if (point.y === 0) y = this.size - 1
         return new Point(x, y)
     }
 
@@ -198,7 +199,7 @@ class HeightMap {
 
 
 export class TileableHeightMap extends HeightMap {
-    constructor(size, roughness, values, Method=TileableDiamondSquare) {
-        super(size, roughness, values, Method)
+    constructor(size, roughness, values) {
+        super(size, roughness, values, TileableDiamondSquare)
     }
 }
