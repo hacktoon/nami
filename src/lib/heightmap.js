@@ -53,7 +53,7 @@ export const MidpointDisplacement = (source, target, roughness, callback = _.noo
 }
 
 
-class DiamondSquare {
+export class HeightMap {
     constructor(size, roughness) {
         this._scale   = roughness * (size - 1)
         this.grid     = new Grid(size, size, EMPTY)
@@ -149,7 +149,7 @@ class DiamondSquare {
 }
 
 
-class TileableDiamondSquare extends DiamondSquare {
+export class TileableHeightMap extends HeightMap {
     _isTopLeftSide(point) {
         return point.x === 0 || point.y === 0
     }
@@ -173,31 +173,5 @@ class TileableDiamondSquare extends DiamondSquare {
             super._set(oppositeEdge, value)
         }
         super._set(point, value)
-    }
-}
-
-
-export class HeightMap {
-    constructor(size, roughness, Method=DiamondSquare) {
-        this.map = new Method(size, roughness)
-    }
-
-    get(point) {
-        return this.map.get(point)
-    }
-
-    getNormalized(point, values) {
-        const height = this.get(point)
-        const newRange = values.length - 1
-        const oldRange = this.map.maxValue - this.map.minValue
-        const index = (height - this.map.minValue) / oldRange * newRange
-        return values[Math.floor(index)]
-    }
-}
-
-
-export class TileableHeightMap extends HeightMap {
-    constructor(size, roughness) {
-        super(size, roughness, TileableDiamondSquare)
     }
 }

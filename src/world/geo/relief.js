@@ -196,6 +196,14 @@ export class CodeMap {
     }
 
     getColor(point) {
-        return this.map.getNormalized(point, this.values)
+        return this.getNormalized(point, this.values)
+    }
+
+    getNormalized(point, values) {
+        const height = this.get(point)
+        const newRange = values.length - 1
+        const oldRange = this.map.maxValue - this.map.minValue
+        const index = (height - this.map.minValue) / oldRange * newRange
+        return values[Math.floor(index)]
     }
 }
