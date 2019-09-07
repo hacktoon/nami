@@ -183,12 +183,10 @@ class Relief {
 export class CodeMap {
     constructor(size, roughness) {
         this.values = [
-            ...ColorGradient('3a3223', '5a5040', 10),
-            ...ColorGradient('555', 'AAA', 10)
+            ...ColorGradient('3a3223', '5a5040', 110),
+            ...ColorGradient('555', 'AAA', 110)
         ]
-        this.maskValues = [-1, 0, 1]
         this.map = new TileableHeightMap(size, roughness)
-        this.mask = new TileableHeightMap(size, roughness)
     }
 
     get(point) {
@@ -196,14 +194,6 @@ export class CodeMap {
     }
 
     getColor(point) {
-        return this.getNormalized(point, this.values)
-    }
-
-    getNormalized(point, values) {
-        const height = this.get(point)
-        const newRange = values.length - 1
-        const oldRange = this.map.maxValue - this.map.minValue
-        const index = (height - this.map.minValue) / oldRange * newRange
-        return values[Math.floor(index)]
+        return this.map.getNormalized(point, this.values)
     }
 }

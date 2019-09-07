@@ -4,8 +4,6 @@ import { Grid } from './grid'
 import { Point } from './point'
 import { Random } from './base'
 
-const EMPTY = undefined
-
 
 export const MidpointDisplacement = (source, target, roughness, callback = _.noop) => {
     const deltaX = Math.abs(source.x - target.x)
@@ -55,20 +53,20 @@ export const MidpointDisplacement = (source, target, roughness, callback = _.noo
 
 export class HeightMap {
     constructor(size, roughness) {
-        this._scale   = roughness * (size - 1)
-        this.grid     = new Grid(size, size, EMPTY)
-        this.size     = size
-        this.maxValue = -Infinity
-        this.minValue = Infinity
-        this._buildGrid()
+        this.scale = roughness * (size - 1)
+        this.grid  = new Grid(size, size)
+        this.size  = size
+        this.max   = -Infinity
+        this.min   = Infinity
+        this._build()
     }
 
-    _buildGrid(){
+    _build() {
         this._setSeedPoints()
-        for(let midSize = this.size - 1; midSize / 2 >= 1; midSize /= 2){
+        for (let midSize = this.size - 1; midSize / 2 >= 1; midSize /= 2) {
             this._squareStep(midSize)
             this._diamondStep(midSize)
-            this._scale /= 2
+            this.scale /= 2
         }
     }
 
@@ -123,7 +121,7 @@ export class HeightMap {
     }
 
     _getVariation() {
-        return Random.int(-this._scale, this._scale)
+        return Random.int(-this.scale, this.scale)
     }
 
     _averagePoints(points) {
@@ -135,16 +133,24 @@ export class HeightMap {
     _set(point, value) {
         const height = _.clamp(value, -this.size, this.size)
         this.grid.set(point, height)
-        this._updateMetrics(height)
+        this._updateMinMax(height)
     }
 
-    _updateMetrics(height) {
-        if (height > this.maxValue) this.maxValue = height
-        if (height < this.minValue) this.minValue = height
+    _updateMinMax(height) {
+        if (height > this.max) this.max = height
+        if (height < this.min) this.min = height
     }
 
     get(point) {
         return _.toInteger(this.grid.get(point))
+    }
+
+    getNormalized(point, values) {
+        const height = this.get(point)
+        const newRange = values.length - 1
+        const oldRange = this.max - this.min
+        const index = (height - this.min) / oldRange * newRange
+        return values[Math.floor(index)]
     }
 }
 
