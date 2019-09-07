@@ -46,10 +46,10 @@ export const ColorGradient = function(from, to, totalItems){
         red = NumberInterpolation(start[0], end[0], totalItems),
         green = NumberInterpolation(start[1], end[1], totalItems),
         blue = NumberInterpolation(start[2], end[2], totalItems),
-        colors = [];
+        colors = []
 
     for (var i = 0; i < totalItems; i++) {
-        colors.push('#' + HTMLHex([red[i], green[i], blue[i]]));
+        colors.push('#' + HTMLHex([red[i], green[i], blue[i]]))
     }
-    return colors;
+    return colors
 }

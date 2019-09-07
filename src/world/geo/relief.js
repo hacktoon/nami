@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 import { Grid } from '/lib/grid'
 import { TileableHeightMap } from '/lib/heightmap'
+import { ColorGradient } from '/lib/color'
 
 export const VOLCANO_CHANCE = .006
 export const CAVE_CHANCE = .007
@@ -181,20 +182,13 @@ class Relief {
 
 export class CodeMap {
     constructor(size, roughness) {
-        const values = initColors([
-            ['#000023', 2],
-            ['#000034', 8],
-            ['#000045', 11],
-            ['#000078', 6],
-            ['#0a5816', 8],
-            ['#31771a', 10],
-            ['#6f942b', 8],
-            ['#888888', 4],
-            ['#AAAAAA', 3],
-            ['#CCCCCC', 2],
-            ['#FFFFFF', 1],
-        ])
-        this.map = new TileableHeightMap(size, roughness, values)
+        this.values = [
+            ...ColorGradient('3a3223', '5a5040', 10),
+            ...ColorGradient('555', 'AAA', 10)
+        ]
+        this.maskValues = [-1, 0, 1]
+        this.map = new TileableHeightMap(size, roughness)
+        this.mask = new TileableHeightMap(size, roughness)
     }
 
     get(point) {
@@ -202,14 +196,6 @@ export class CodeMap {
     }
 
     getColor(point) {
-        return this.get(point)
+        return this.map.getNormalized(point, this.values)
     }
-}
-
-const initColors = (values) => {
-    let arr = []
-    for (let [val, count] of values) {
-        arr = arr.concat(new Array(count).fill(val))
-    }
-    return arr
 }

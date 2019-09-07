@@ -144,7 +144,7 @@ class DiamondSquare {
     }
 
     get(point) {
-        return this.grid.get(point)
+        return _.toInteger(this.grid.get(point))
     }
 }
 
@@ -177,29 +177,27 @@ class TileableDiamondSquare extends DiamondSquare {
 }
 
 
-class HeightMap {
-    constructor(size, roughness, values, Method=DiamondSquare) {
-        this.values = values
+export class HeightMap {
+    constructor(size, roughness, Method=DiamondSquare) {
         this.map = new Method(size, roughness)
     }
 
     get(point) {
-        const height = this.map.get(point)
-        const index = this._normalize(height, this.values)
-        return this.values[index]
+        return this.map.get(point)
     }
 
-    _normalize(value, values) {
+    getNormalized(point, values) {
+        const height = this.get(point)
         const newRange = values.length - 1
         const oldRange = this.map.maxValue - this.map.minValue
-        const index = (value - this.map.minValue) / oldRange * newRange
-        return Math.floor(index)
+        const index = (height - this.map.minValue) / oldRange * newRange
+        return values[Math.floor(index)]
     }
 }
 
 
 export class TileableHeightMap extends HeightMap {
-    constructor(size, roughness, values) {
-        super(size, roughness, values, TileableDiamondSquare)
+    constructor(size, roughness) {
+        super(size, roughness, TileableDiamondSquare)
     }
 }
