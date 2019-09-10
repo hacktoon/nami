@@ -52,12 +52,14 @@ export const MidpointDisplacement = (source, target, roughness, callback = _.noo
 
 
 export class HeightMap {
-    constructor(size, roughness) {
-        this.scale = roughness * (size - 1)
-        this.grid  = new Grid(size, size)
-        this.size  = size
-        this.max   = -Infinity
-        this.min   = Infinity
+    constructor(size, roughness, values, mask) {
+        this.scale  = roughness * (size - 1)
+        this.grid   = new Grid(size, size)
+        this.max    = -Infinity
+        this.min    = Infinity
+        this.values = values || []
+        this.size   = size
+        this.mask   = mask
         this._build()
     }
 
@@ -143,15 +145,20 @@ export class HeightMap {
     }
 
     get(point) {
-        return this.grid.get(point)
+        let value = this.grid.get(point)
+        if (this.mask) {
+            const mask = this.mask.get(point)
+            value -= (value * mask) / 100
+            value = _.clamp(value, this.min, this.max)
+        }
+        return this.values.length ? this._normalize(value) : value
     }
 
-    getNormalized(point, values) {
-        const height = this.get(point)
-        const newRange = values.length - 1
+    _normalize(height) {
+        const newRange = this.values.length - 1
         const oldRange = this.max - this.min
         const index = (height - this.min) / oldRange * newRange
-        return values[Math.floor(index)]
+        return this.values[Math.floor(index)]
     }
 }
 

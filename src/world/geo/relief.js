@@ -94,6 +94,59 @@ class CodeTable {
 }
 
 
+export class CodeMap {
+    constructor(size, roughness) {
+        this.mask = new TileableHeightMap(size, roughness, this._initColors([
+            [0, 100],
+            [10, 30],
+            [20, 25],
+            [30, 20],
+            [40, 15],
+            [50, 10],
+            [60, 5],
+            [70, 2],
+            [60, 5],
+            [50, 10],
+            [40, 15],
+            [30, 20],
+            [20, 25],
+            [10, 30],
+            [0, 100],
+        ]))
+        this.baseMap = new TileableHeightMap(size, roughness, this._initColors([
+            ['#000023', 3],
+            ['#000034', 10],
+            ['#000045', 15],
+            ['#000078', 10],
+            ['#0a5816', 8],
+            ['#31771a', 12],
+            ['#6f942b', 10],
+            ['#888888', 6],
+            ['#AAAAAA', 6],
+            ['#CCCCCC', 5],
+            ['#FFFFFF', 4],
+        ]), this.mask)
+
+    }
+
+    _initColors(values) {
+        let arr = []
+        for (let [val, count] of values) {
+            arr = arr.concat(new Array(count).fill(val))
+        }
+        return arr
+    }
+
+    get(point) {
+        return this.baseMap.get(point)
+    }
+
+    getColor(point) {
+        return this.baseMap.get(point)
+    }
+}
+
+
 export class ReliefMap {
     constructor(size, roughness) {
         this.codeTable   = new CodeTable()
@@ -169,31 +222,5 @@ class Relief {
         const [code, feature] = [this.code, this.feature]
         let color = RELIEF_TABLE[feature || code].color
         return color
-    }
-}
-
-
-/*
-    HEIGHT CODE MAPS
-
-    Converts HeightMap values to a grid, given a translation table
-
-*/
-
-export class CodeMap {
-    constructor(size, roughness) {
-        this.values = [
-            ...ColorGradient('3a3223', '5a5040', 110),
-            ...ColorGradient('555', 'AAA', 110)
-        ]
-        this.map = new TileableHeightMap(size, roughness)
-    }
-
-    get(point) {
-        return this.map.get(point)
-    }
-
-    getColor(point) {
-        return this.map.getNormalized(point, this.values)
     }
 }
