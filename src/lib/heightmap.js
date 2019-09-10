@@ -131,7 +131,8 @@ export class HeightMap {
     }
 
     _set(point, value) {
-        const height = _.clamp(value, -this.size, this.size)
+        const size = this.size
+        const height = _.toInteger(_.clamp(value, -size, size))
         this.grid.set(point, height)
         this._updateMinMax(height)
     }
@@ -142,7 +143,7 @@ export class HeightMap {
     }
 
     get(point) {
-        return _.toInteger(this.grid.get(point))
+        return this.grid.get(point)
     }
 
     getNormalized(point, values) {
