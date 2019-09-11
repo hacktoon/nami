@@ -5,6 +5,9 @@ import { Point } from './point'
 import { Random } from './base'
 
 
+const EMPTY = null
+
+
 export const MidpointDisplacement = (source, target, roughness, callback = _.noop) => {
     const deltaX = Math.abs(source.x - target.x)
     const deltaY = Math.abs(source.y - target.y)
@@ -54,7 +57,7 @@ export const MidpointDisplacement = (source, target, roughness, callback = _.noo
 export class HeightMap {
     constructor(size, roughness, values, mask) {
         this.scale  = roughness * (size - 1)
-        this.grid   = new Grid(size, size)
+        this.grid   = new Grid(size, size, EMPTY)
         this.max    = -Infinity
         this.min    = Infinity
         this.values = values || []
@@ -73,7 +76,7 @@ export class HeightMap {
     }
 
     _setSeedPoints() {
-        let maxIndex = this.size - 1
+        const maxIndex = this.size - 1
         this._set(new Point(0, 0), this._getVariation())
         this._set(new Point(maxIndex, 0), this._getVariation())
         this._set(new Point(0, maxIndex), this._getVariation())
@@ -164,28 +167,38 @@ export class HeightMap {
 
 
 export class TileableHeightMap extends HeightMap {
-    _isTopLeftSide(point) {
-        return point.x === 0 || point.y === 0
-    }
-
-    _isBottomRightSide(point) {
-        const size = this.size - 1
-        return point.x === size || point.y === size
-    }
-
-    _getOpposite(point) {
-        let {x, y} = point
-        if (point.x === 0) x = this.size - 1
-        if (point.y === 0) y = this.size - 1
-        return new Point(x, y)
+    _setSeedPoints() {
+        const maxIndex = this.size - 1
+        const value = this._getVariation()
+        this._set(new Point(0, 0), value)
+        this._set(new Point(maxIndex, 0), value)
+        this._set(new Point(0, maxIndex), value)
+        this._set(new Point(maxIndex, maxIndex), value)
     }
 
     _set(point, value) {
-        if (this._isBottomRightSide(point)) return
-        if (this._isTopLeftSide(point)) {
+        if (this.grid.get(point) != EMPTY) return
+        if (! this._isCorner(point)) {
             let oppositeEdge = this._getOpposite(point)
             super._set(oppositeEdge, value)
         }
         super._set(point, value)
+    }
+
+    _isCorner(point) {
+        let { x, y } = point
+        let size = this.size - 1
+        const topLeft = x == 0 && y == 0
+        const bottomRight = x == size && y == size
+        const topRight = x == size && y == 0
+        const bottomLeft = x == 0 && y == size
+        return topLeft || bottomRight || topRight || bottomLeft
+    }
+
+    _getOpposite(point) {
+        let { x, y } = point
+        if (point.x === 0) x = this.size - 1
+        if (point.y === 0) y = this.size - 1
+        return new Point(x, y)
     }
 }
