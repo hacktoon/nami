@@ -114,21 +114,22 @@ export class CodeMap {
             [0, 100],
         ])
         const values = this._initValues([
-            ['#000023', 3],
-            ['#000034', 10],
-            ['#000045', 15],
-            ['#000078', 10],
-            ['#0a5816', 8],
-            ['#31771a', 12],
-            ['#6f942b', 10],
-            ['#888888', 6],
-            ['#AAAAAA', 6],
-            ['#CCCCCC', 5],
-            ['#FFFFFF', 4],
+            ['#000023', 5],
+            ['#000034', 7],
+            ['#000045', 10],
+            ['#000078', 5],
+            ['#0a5816', 5],
+            ['#31771a', 8],
+            ['#6f942b', 5],
+            ['#888888', 3],
+            ['#AAAAAA', 2],
+            ['#BBBBBB', 2],
+            ['#CCCCCC', 2],
+            ['#D5D5D5', 2],
+            ['#FFFFFF', 3],
         ])
         this.mask = new TileableHeightMap(size, roughness, maskValues)
         this.baseMap = new TileableHeightMap(size, roughness, values, this.mask)
-
     }
 
     _initValues(values) {
