@@ -96,7 +96,7 @@ class CodeTable {
 
 export class CodeMap {
     constructor(size, roughness) {
-        this.mask = new TileableHeightMap(size, roughness, this._initColors([
+        const maskValues = this._initValues([
             [0, 100],
             [10, 30],
             [20, 25],
@@ -112,8 +112,8 @@ export class CodeMap {
             [20, 25],
             [10, 30],
             [0, 100],
-        ]))
-        this.baseMap = new TileableHeightMap(size, roughness, this._initColors([
+        ])
+        const values = this._initValues([
             ['#000023', 3],
             ['#000034', 10],
             ['#000045', 15],
@@ -125,11 +125,13 @@ export class CodeMap {
             ['#AAAAAA', 6],
             ['#CCCCCC', 5],
             ['#FFFFFF', 4],
-        ]), this.mask)
+        ])
+        this.mask = new TileableHeightMap(size, roughness, maskValues)
+        this.baseMap = new TileableHeightMap(size, roughness, values, this.mask)
 
     }
 
-    _initColors(values) {
+    _initValues(values) {
         let arr = []
         for (let [val, count] of values) {
             arr = arr.concat(new Array(count).fill(val))

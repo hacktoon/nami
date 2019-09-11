@@ -2,8 +2,8 @@ import _ from 'lodash'
 
 import WorldBuilder from './world/builder'
 import WorldPainter from './world/painter'
-import {Point} from './lib/point'
-import { Random } from './lib/base';
+import { Point } from './lib/point'
+import { Random } from './lib/base'
 
 window.log = console.log.bind(console)
 
@@ -44,7 +44,7 @@ const getRoughnessInput = () => Number(roughnessInput.value)
 const createWorld = () => {
     Random.seed = getSeedInput()
     let tilesize = getTileSizeInput()
-    let worldSize = getSizeInput() + 1 // TODO: remove
+    let worldSize = getSizeInput()
     let worldBuilder = new WorldBuilder(worldSize, getRoughnessInput())
     let currentWorld = worldBuilder.build()
     worldPainter = new WorldPainter(currentWorld, viewCanvas, tilesize)
