@@ -173,4 +173,3 @@ export class Random {
         return ((t ^ t >>> 14) >>> 0) / 2 ** 32
     }
 }
-window.Random = Random
