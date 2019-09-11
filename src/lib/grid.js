@@ -9,9 +9,9 @@ export class Grid {
         this.height = height
         this.matrix = []
 
-        for(let y = 0; y < this.height; y++) {
+        for (let y = 0; y < this.height; y++) {
             this.matrix.push([])
-            for(let x = 0; x < this.width; x++){
+            for (let x = 0; x < this.width; x++) {
                 let value = defaultValue
                 if (_.isFunction(defaultValue)) {
                     value = defaultValue(new Point(x, y))
@@ -21,24 +21,28 @@ export class Grid {
         }
     }
 
-    get (p) {
-        if (this.isValid(p))
-            return this.matrix[p.y][p.x]
+    get(point) {
+        let p = this.wrap(point)
+        return this.matrix[p.y][p.x]
     }
 
-    set (p, value) {
-        if (this.isValid(p))
-            this.matrix[p.y][p.x] = value
+    set(point, value) {
+        let p = this.wrap(point)
+        this.matrix[p.y][p.x] = value
     }
 
-    isValid (point) {
+    wrap(point) {
         let {x, y} = point
-        return x >= 0 && y >= 0 && x < this.width && y < this.height
+        if (x >= this.width) { x %= this.width }
+        if (y >= this.height) { y %= this.height }
+        if (x < 0) { x = this.width - 1 - Math.abs(x + 1) % this.width }
+        if (y < 0) { y = this.height - 1 - Math.abs(y + 1) % this.height }
+        return new Point(x, y)
     }
 
-    forEach (callback) {
-        for(let y = 0; y < this.height; y++){
-            for(let x = 0; x < this.width; x++){
+    forEach(callback) {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
                 let point = new Point(x, y),
                     value = this.get(point)
                 callback(value, point)
