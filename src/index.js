@@ -37,7 +37,14 @@ const getViewInput = function() {
     }
     return value
 }
-const getTileSizeInput = () => Number(tilesizeInput.value)
+const getTileSizeInput = function() {
+    const tilesizeParam = getURLParams('tilesize')
+    let value = Number(tilesizeInput.value)
+    if (tilesizeParam) {
+        tilesizeInput.value = value = Number(tilesizeParam)
+    }
+    return value
+}
 const getSizeInput = () => Number(sizeInput.value)
 const getRoughnessInput = () => Number(roughnessInput.value)
 

@@ -111,7 +111,7 @@ export class CodeMap {
         ])
         const values = this._initValues([
             ['#000023', 4],
-            ['#000034', 9],
+            ['#000034', 10],
             ['#000045', 14],
             ['#000078', 8],
             ['#0a5816', 5],
@@ -123,7 +123,6 @@ export class CodeMap {
             ['#CCCCCC', 2],
             ['#DDDDDD', 2],
             ['#EEEEEE', 1],
-            ['#FFFFFF', 2],
         ])
         this.mask = new TileableHeightMap(size, roughness, maskValues)
         this.baseMap = new TileableHeightMap(size, roughness, values, this.mask)
@@ -152,10 +151,9 @@ export class ReliefMap {
         this.codeTable   = new CodeTable()
         this.codeMap     = new CodeMap(size, roughness)
             // build all things with build() method
-            // avoid running on contruction
+            // avoid running on construction
         this.grid      = this._buildGrid(size, this.codeMap)
         this.size      = size
-        this.filters   = []
     }
 
     _buildGrid(size, codeMap) {
