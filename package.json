@@ -24,13 +24,11 @@
   },
   "homepage": "https://github.com/hacktoon/nami#readme",
   "dependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "lib": "^4.0.5",
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
     "lodash": "^4.17.15",
-    "parcel-bundler": "^1.12.3",
-    "perlin-simplex": "0.0.3"
+    "parcel-bundler": "^1.12.4"
   },
   "alias": {
     "lib": "./src/lib"
