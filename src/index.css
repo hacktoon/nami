@@ -4,6 +4,9 @@ body {
     font: 14px inherit Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
+    display: grid;
+    grid-template-rows: 50px 50px auto;
+    height: 100vh;
 }
 
 header {
@@ -12,7 +15,6 @@ header {
     display: grid;
     font-weight: bold;
     grid-template-columns: 110px auto;
-    height: 50px;
     margin: 0;
 }
 
@@ -33,7 +35,6 @@ header #header-menu {
 
 header #header-menu .header-menu-item {
     border-left: 1px solid #444;
-    height: 50px;
     line-height: 50px;
     padding: 0 1em;
 }
@@ -74,7 +75,6 @@ header #header-menu #generateButton:active {
     display: block;
     margin: 0;
     padding: 0 20px;
-    height: 50px;
     line-height: 50px;
 }
 #sub-menu label,
@@ -115,7 +115,6 @@ main #main-options {
     margin: 0;
     font-size: 1em;
     padding: 10px 0 0 10px;
-    height: 100vh;
 }
 
 main #main-options p.title {
@@ -134,5 +133,10 @@ main #main-options p.value {
 
 main #main-view {
     background: black;
-    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+main #main-view #viewCanvas {
+    position: absolute;
 }
