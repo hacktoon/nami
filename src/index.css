@@ -7,15 +7,68 @@ body {
 }
 
 header {
-    background: #333;
+    background: #111;
     color: white;
-    margin: 0;
+    display: grid;
     font-weight: bold;
-    font-size: 1.8em;
-    padding: 0.5em 20px;
+    grid-template-columns: 110px auto;
+    height: 50px;
+    margin: 0;
 }
 
-#main-menu {
+header #header-title {
+    font-size: 1.8em;
+    text-transform: uppercase;
+    line-height: 50px;
+    text-align: center;
+}
+
+header #header-menu {
+    border: 0;
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-items: right;
+    justify-content: end;
+}
+
+header #header-menu .header-menu-item {
+    border-left: 1px solid #444;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 1em;
+}
+
+header #header-menu label[for="seedInput"] {
+    margin-right: 0.5em;
+    text-transform: uppercase;
+}
+
+header #header-menu #seedInput {
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 .5em;
+    border: 0;
+}
+
+header #header-menu #generateButton {
+    background: rgb(9, 128, 9);
+    color: #FFF;
+    border: 0;
+    font-size: 1em;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+header #header-menu #generateButton:active {
+    background: rgb(133, 156, 141);
+}
+
+
+#sub-menu {
     background: #DDD;
     border-bottom: 1px solid #AAA;
     display: block;
@@ -24,34 +77,23 @@ header {
     height: 50px;
     line-height: 50px;
 }
-#main-menu label,
-#main-menu select,
-#main-menu input {
+#sub-menu label,
+#sub-menu select,
+#sub-menu input {
     font-size: 1em;
     height: 25px;
     line-height: 25px;
 }
 
-#main-menu select,
-#main-menu input {
+#sub-menu select,
+#sub-menu input {
     border: 1px solid #CCC;
     background: #FFF;
     padding: 0 5px;
 }
 
-#main-menu input {
+#sub-menu input {
     padding-right: 0;
-}
-
-#main-menu button {
-    background: rgb(13, 77, 33);
-    color: #FFF;
-    border: 0;
-    height: 25px;
-    font-weight: bold;
-}
-#main-menu button:active {
-    background: rgb(133, 156, 141);
 }
 
 main {
@@ -79,10 +121,6 @@ main {
     padding-bottom: 5px;
     line-height: 1;
     font-size: .9em;
-}
-
-#seedInput {
-    width: 120px;
 }
 
 #tilesizeInput {

@@ -6,8 +6,19 @@
     <link rel="stylesheet" type="text/css" href="index.css" />
   </head>
   <body>
-    <header>Nami : World generator</header>
-    <nav id="main-menu">
+    <header>
+        <section id="header-title">Nami</section>
+        <section id="header-menu">
+            <section class="header-menu-item">
+                <label for="seedInput">Seed</label>
+                <input id="seedInput" type="text" value="" />
+            </section>
+            <section class="header-menu-item">
+                <button id="generateButton">Generate</button>
+            </section>
+        </section>
+    </header>
+    <nav id="sub-menu">
         <label for="sizeInput">Size
             <select id="sizeInput">
                 <option value="257" selected>257</option>
@@ -36,10 +47,7 @@
         <label for="tilesizeInput">Tile size
             <input id="tilesizeInput" type="number" min="1" step="1" value="3" />
         </label>
-        <label for="seedInput">Seed
-            <input id="seedInput" type="text" value="" />
-        </label>
-        <button id="generateButton">Generate!</button>
+
     </nav>
 
     <main>
