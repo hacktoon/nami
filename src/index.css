@@ -96,26 +96,35 @@ header #header-menu #generateButton:active {
     padding-right: 0;
 }
 
+#tilesizeInput {
+    width: 30px;
+}
+
+#roughnessInput {
+    width: 42px;
+}
+
+
 main {
-    padding: 10px;
     display: grid;
     grid-template-columns: 150px auto;
 }
 
-#infoText {
+main #main-options {
     line-height: 30px;
     margin: 0;
     font-size: 1em;
-    padding-right: 10px;
+    padding: 10px 0 0 10px;
+    height: 100vh;
 }
 
-#infoText p.title {
+main #main-options p.title {
     line-height: 1.5;
     margin: 0 0 2px 0;
     font-weight: bold;
 }
 
-#infoText p.value {
+main #main-options p.value {
     border-bottom: 1px solid #DDD;
     margin: 0 0 10px 0;
     padding-bottom: 5px;
@@ -123,10 +132,7 @@ main {
     font-size: .9em;
 }
 
-#tilesizeInput {
-    width: 30px;
-}
-
-#roughnessInput {
-    width: 42px;
+main #main-view {
+    background: black;
+    height: 100vh;
 }

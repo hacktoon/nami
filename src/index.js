@@ -14,7 +14,7 @@ let viewCanvas = document.getElementById("viewCanvas"),
     tilesizeInput = document.getElementById("tilesizeInput"),
     sizeInput = document.getElementById("sizeInput"),
     roughnessInput = document.getElementById("roughnessInput"),
-    infoText = document.getElementById("infoText"),
+    infoText = document.getElementById("main-options"),
     worldPainter
 
 const getSeedInput = () => {
