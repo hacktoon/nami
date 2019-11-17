@@ -3,59 +3,9 @@
   <head>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <title>Nami : World generator</title>
-    <link rel="stylesheet" type="text/css" href="index.css" />
   </head>
   <body>
-    <header>
-        <section id="header-title">Nami</section>
-        <section id="header-menu">
-            <section class="header-menu-item">
-                <label for="seedInput">Seed</label>
-                <input id="seedInput" type="text" value="" />
-            </section>
-            <section class="header-menu-item">
-                <button id="generateButton">Generate</button>
-            </section>
-        </section>
-    </header>
-    <nav id="sub-menu">
-        <label for="sizeInput">Size
-            <select id="sizeInput">
-                <option value="257" selected>257</option>
-                <option value="129">129</option>
-                <option value="65">65</option>
-                <option value="33">33</option>
-                <option value="17">17</option>
-                <option value="9">9</option>
-                <option value="5">5</option>
-            </select>
-        </label>
-        <label for="roughnessInput">Roughness
-            <input id="roughnessInput" type="number" step="1" value="8" />
-        </label>
-        <label for="viewInput">View
-            <select id="viewInput">
-                <option value="heightmap" selected>Heightmap</option>
-                <option value="relief">Relief</option>
-                <option value="heat">Heat</option>
-                <option value="moisture">Moisture</option>
-                <option value="water">Water</option>
-                <option value="biome">Biome</option>
-                <option value="landmass">Landmass</option>
-            </select>
-        </label>
-        <label for="tilesizeInput">Tile size
-            <input id="tilesizeInput" type="number" min="1" step="1" value="3" />
-        </label>
-    </nav>
-
-    <main>
-        <section id="main-options"></section>
-        <section id="main-view">
-            <canvas id="viewCanvas"></canvas>
-        </section>
-    </main>
-
-    <script src="./index.js"></script>
+      <div id="root"></div>
+      <script src="./index.js"></script>
   </body>
 </html>

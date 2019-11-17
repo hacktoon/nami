@@ -4,6 +4,9 @@ body {
     font: 14px inherit Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
+}
+
+#root {
     display: grid;
     grid-template-rows: 50px 50px auto;
     height: 100vh;
@@ -14,7 +17,7 @@ header {
     color: white;
     display: grid;
     font-weight: bold;
-    grid-template-columns: 110px auto;
+    grid-template-columns: 100px auto;
     margin: 0;
 }
 
@@ -28,7 +31,7 @@ header #header-title {
 header #header-menu {
     border: 0;
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: auto auto auto;
     justify-items: right;
     justify-content: end;
 }
@@ -39,12 +42,12 @@ header #header-menu .header-menu-item {
     padding: 0 1em;
 }
 
-header #header-menu label[for="seedInput"] {
+header #header-menu label {
     margin-right: 0.5em;
     text-transform: uppercase;
 }
 
-header #header-menu #seedInput {
+header #header-menu input {
     width: 100px;
     height: 30px;
     line-height: 30px;
@@ -135,8 +138,4 @@ main #main-view {
     background: black;
     overflow: hidden;
     position: relative;
-}
-
-main #main-view #viewCanvas {
-    position: absolute;
 }
