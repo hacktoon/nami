@@ -6,7 +6,6 @@ import { SeedInput, GenerateButton, WorldView } from './ui/components'
 import Menu from './ui/Menu'
 
 import WorldBuilder from './world/builder'
-import WorldPainter from './world/painter'
 import { Point } from './lib/point'
 import { Random } from './lib/base'
 
@@ -23,19 +22,7 @@ import "./App.css"
 //     mainView = document.getElementById("main-view"),
 //     worldPainter
 
-// /* INPUTS */
-// const getSeedInput = () => {
-//     const seedParam = getURLParams('seed')
-//     let value = seedInput.value
-//     if (seedParam) {
-//         seedInput.value = value = seedParam
-//     }
-//     if (value.trim() == "")
-//         return _.toNumber(new Date())
-//     if (value.match(/\d+/))
-//         return _.toNumber(value)
-//     return value
-// }
+
 // const getViewInput = function() {
 //     const viewParam = getURLParams('view')
 //     let value = viewInput.options[viewInput.selectedIndex].value
@@ -55,33 +42,6 @@ import "./App.css"
 // const getSizeInput = () => Number(sizeInput.value)
 // const getRoughnessInput = () => Number(roughnessInput.value)
 
-
-// /*  */
-// const createWorld = () => {
-//
-//     let tileSize = getTileSizeInput()
-//     let worldSize = getSizeInput()
-//     let worldBuilder = new WorldBuilder(worldSize, getRoughnessInput())
-//     let currentWorld = worldBuilder.build()
-//     worldPainter = new WorldPainter(currentWorld, viewCanvas, tileSize)
-
-//     return currentWorld
-// }
-
-
-// const draw = function() {
-//     let view = getViewInput()
-//     let map = {
-//         heightmap:  "drawHeightMap",
-//         relief:  "drawRelief",
-//         moisture:  "drawMoisture",
-//         heat:  "drawHeat",
-//         water:  "drawWater",
-//         landmass:  "drawLandmass",
-//         biome:  "drawBiome"
-//     }
-//     worldPainter[map[view]]()
-// }
 
 // const getCanvasMousePoint = (e, viewCanvas) => {
 //     let scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
@@ -136,25 +96,22 @@ import "./App.css"
 
 
 function Nami(props) {
+    let [seed, setSeed] = useState(+new Date())
+    let [world, setWorld] = useState(null)
 
-    let [world, setWorld] = useState('')
-    let [seed, setSeed] = useState('')
-
-    const onGenerate = () => {
-        console.log(`Generate using seed: ${seed}`)
+    const generate = () => {
+        let worldBuilder = new WorldBuilder(seed, 257, 8)
+        setWorld(worldBuilder.build())
     }
 
-    const onSeedChange = (event) => {
-        setSeed(event.target.value)
-        Random.seed = seed
-    }
+    const updateSeed = event => setSeed(event.target.value)
 
     return <>
         <header>
             <section id="header-title">Nami</section>
             <section id="header-menu">
-                <SeedInput onChange={onSeedChange} />
-                <GenerateButton onClick={onGenerate} />
+                <SeedInput onChange={updateSeed} />
+                <GenerateButton onClick={generate} />
             </section>
         </header>
 
@@ -174,7 +131,7 @@ function Nami(props) {
                     </select>
                 </label>
             </section>
-            <WorldView />
+            <WorldView world={world} />
         </main>
     </>
 }

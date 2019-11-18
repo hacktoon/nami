@@ -1,9 +1,7 @@
 
 export default class WorldPainter {
-    constructor (world, canvas, tilesize) {
-        this.ctx = canvas.getContext("2d")
+    constructor (world) {
         this.world = world
-        this.tilesize = tilesize
     }
 
     drawHeightMap() {

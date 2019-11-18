@@ -1,6 +1,9 @@
 import _ from 'lodash'
 
+import { Random } from '../lib/base'
+
 import World from './world'
+import WorldPainter from './painter'
 import { ReliefMap } from './geo/relief'
 import { WaterMap } from './geo/water'
 import { HeatMap } from './atm/heat'
@@ -9,10 +12,12 @@ import { BiomeMap } from './bio/biome'
 
 
 export default class WorldBuilder {
-    constructor(size, roughness) {
+    constructor(seed=+new Date(), size=257, roughness=8) {
+        Random.seed = seed
         const reliefMap = new ReliefMap(size, roughness)
         this.world = new World(size)
         this.world.reliefMap = reliefMap
+        this.painter = new WorldPainter(this.world)
         // this.world.waterMap = new WaterMap(size, reliefMap)
         // this.world.moistureMap = new MoistureMap(size, roughness)
         // this.world.heatMap = new HeatMap(size)
