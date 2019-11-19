@@ -1,3 +1,9 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
 body {
     background: #FFF;
     color: #333;
@@ -6,7 +12,7 @@ body {
     padding: 0;
 }
 
-#root {
+#container {
     display: grid;
     grid-template-rows: 50px 50px auto;
     height: 100vh;
@@ -72,7 +78,7 @@ header #header-menu #generateButton:active {
 }
 
 
-#sub-menu {
+#world-config {
     background: #DDD;
     border-bottom: 1px solid #AAA;
     display: block;
@@ -80,22 +86,22 @@ header #header-menu #generateButton:active {
     padding: 0 20px;
     line-height: 50px;
 }
-#sub-menu label,
-#sub-menu select,
-#sub-menu input {
+#world-config label,
+#world-config select,
+#world-config input {
     font-size: 1em;
     height: 25px;
     line-height: 25px;
 }
 
-#sub-menu select,
-#sub-menu input {
+#world-config select,
+#world-config input {
     border: 1px solid #CCC;
     background: #FFF;
     padding: 0 5px;
 }
 
-#sub-menu input {
+#world-config input {
     padding-right: 0;
 }
 
@@ -107,33 +113,42 @@ header #header-menu #generateButton:active {
     width: 42px;
 }
 
-
-main {
-    display: grid;
-    grid-template-columns: 150px auto;
+#world-view {
+    background: black;
+    position: relative;
 }
 
-main #main-options {
+#world-view  #view-options {
+    background-color: rgba(255, 255, 255, .2);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    bottom: 20px;
     line-height: 30px;
-    margin: 0;
-    font-size: 1em;
     padding: 10px 0 0 10px;
+    width: 200px;
+    margin: 0;
+    color: #FFF;
 }
 
-main #main-options p.title {
+#world-view  #view-options p.title {
     line-height: 1.5;
-    margin: 0 0 2px 0;
+    margin-bottom: 2px;
     font-weight: bold;
 }
 
-main #main-options p.value {
-    border-bottom: 1px solid #DDD;
-    margin: 0 0 10px 0;
+#world-view  #view-options p.value {
+    margin-bottom: 10px;
     padding-bottom: 5px;
     line-height: 1;
     font-size: .9em;
 }
 
-main #main-view {
-    background: black;
+
+#world-view #tilesizeField {
+    display: block;
+}
+
+#world-view canvas {
+    display: block;
 }

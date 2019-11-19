@@ -1,15 +1,15 @@
 import _ from 'lodash'
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 
 import { SeedInput, GenerateButton } from './ui/components'
 import WorldView from './ui/WorldView'
-import Menu from './ui/Menu'
+import WorldConfig from './ui/WorldConfig'
 
 import { WorldBuilder } from './world/builder'
 import { Random } from './lib/base'
 
-import "./App.css"
+import "./index.css"
 
 
 // const getCanvasMousePoint = (e, viewCanvas) => {
@@ -21,28 +21,31 @@ import "./App.css"
 //     return new Point(x, y);
 // }
 
-const buildSeed = (baseSeed='') => {
-    let seed = baseSeed.length ? baseSeed : (+new Date())
-    Random.seed = seed
-    return seed
-}
 
-
-function Nami(props) {
+function App(props) {
     let worldBuilder = new WorldBuilder()
 
-    let [world, setWorld] = useState(worldBuilder.build(buildSeed(), 257, 8))
-    let [seed, setSeed] = useState('')
+    let [seed, setSeed] = useState(+new Date())
+    let [config, setConfig] = useState({size: 257, roughness: 8})
+    let [world, setWorld] = useState(worldBuilder.build(seed, config))
+
+    console.log(seed, world);
 
     const onGenerate = () => {
-        let newSeed = buildSeed(seed)
-        setWorld(worldBuilder.build(newSeed, 257, 8))
+        let newSeed = seed.lenght ? seed : (+new Date())
+        setWorld(worldBuilder.build(newSeed, config))
+        setSeed(newSeed)
     }
 
-    const onSeedChange = value => {
-        let newSeed = buildSeed(value)
-        setWorld(worldBuilder.build(newSeed, 257, 8))
+    const onSeedChange = newSeed => {
+        setWorld(worldBuilder.build(newSeed, config))
         setSeed(newSeed)
+    }
+
+    const onConfigChange = newConfig => {
+        setWorld(worldBuilder.build(seed, newConfig))
+        setConfig(newConfig)
+        console.log(seed, world);
     }
 
     return <>
@@ -54,26 +57,10 @@ function Nami(props) {
             </section>
         </header>
 
-        <Menu></Menu>
+        <WorldConfig onChange={onConfigChange} />
 
-        <main>
-            <section id="main-options">
-                <p>Seed: {world.seed}</p>
-                <label htmlFor="viewInput">View
-                    <select id="viewInput">
-                        <option value="heightmap">Heightmap</option>
-                        <option value="relief">Relief</option>
-                        <option value="heat">Heat</option>
-                        <option value="moisture">Moisture</option>
-                        <option value="water">Water</option>
-                        <option value="biome">Biome</option>
-                        <option value="landmass">Landmass</option>
-                    </select>
-                </label>
-            </section>
-            <WorldView world={world} />
-        </main>
+        <WorldView world={world} />
     </>
 }
 
-render(<Nami />, document.getElementById('root'));
+render(<App />, document.getElementById('container'));

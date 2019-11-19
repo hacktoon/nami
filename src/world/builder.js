@@ -11,7 +11,9 @@ import { BiomeMap } from './bio/biome'
 
 
 export class WorldBuilder {
-    build(seed, size, roughness) {
+    build(seed, config) {
+        Random.seed = seed
+        let {size, roughness} = config;
         const world = new World(seed, size)
         const reliefMap = new ReliefMap(size, roughness)
 
