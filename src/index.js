@@ -6,7 +6,7 @@ import { SeedInput, GenerateButton } from './ui/components'
 import WorldView from './ui/WorldView'
 import Menu from './ui/Menu'
 
-import WorldBuilder from './world/builder'
+import { WorldBuilder, WorldPainter } from './world/builder'
 import { Random } from './lib/base'
 
 import "./App.css"
@@ -25,6 +25,7 @@ import "./App.css"
 function Nami(props) {
     let timer = null
     let worldBuilder = new WorldBuilder()
+    let worldPainter = new WorldPainter()
 
     let [world, setWorld] = useState(worldBuilder.build((+new Date()), 257, 8))
     let [seed, setSeed] = useState('')
@@ -71,7 +72,7 @@ function Nami(props) {
                     </select>
                 </label>
             </section>
-            <WorldView world={world} />
+            <WorldView world={world} painter={worldPainter} />
         </main>
     </>
 }

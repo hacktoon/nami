@@ -1,22 +1,18 @@
-import React, { useState, useRef, useLayoutEffect } from 'react'
+import React, { useLayoutEffect, useRef } from 'react'
 
 
 export default function WorldView(props) {
     const containerRef = useRef(null)
     const canvasRef = useRef(null)
-    let [width, setWidth] = useState(null)
-    let [height, setHeight] = useState(null)
 
     useLayoutEffect(() => {
-        setWidth(containerRef.current.offsetWidth)
-        setHeight(containerRef.current.offsetHeight)
-
-        if (width && height) {
-
-        }
-    }, [containerRef.current])
+        let ctx = canvasRef.current.getContext('2d')
+        canvasRef.current.width = containerRef.current.offsetWidth
+        canvasRef.current.height = containerRef.current.offsetHeight
+        props.painter.draw(ctx, props.world, 3)
+    })
 
     return <section id="main-view" ref={containerRef}>
-        <canvas ref={canvasRef} width={width} height={height}></canvas>
+        <canvas ref={canvasRef}></canvas>
     </section>
 }

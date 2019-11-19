@@ -10,7 +10,7 @@ import { MoistureMap } from './atm/moisture'
 import { BiomeMap } from './bio/biome'
 
 
-export default class WorldBuilder {
+export class WorldBuilder {
     build(seed, size, roughness) {
         const world = new World(seed, size)
         const reliefMap = new ReliefMap(size, roughness)
@@ -19,7 +19,10 @@ export default class WorldBuilder {
         window.world = world
         return world
     }
+}
 
+
+export class WorldPainter {
     draw(ctx, world, tilesize) {
         world.iter((tile, point) => {
             const color = world.reliefMap.codeMap.getColor(point)
