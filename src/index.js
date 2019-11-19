@@ -21,34 +21,29 @@ import "./App.css"
 //     return new Point(x, y);
 // }
 
-const getSeed = (defaultSeed='') => {
-    return defaultSeed.length ? defaultSeed : (+new Date())
+const buildSeed = (baseSeed='') => {
+    let seed = baseSeed.length ? baseSeed : (+new Date())
+    Random.seed = seed
+    return seed
 }
 
 
 function Nami(props) {
-    let timer = null
     let worldBuilder = new WorldBuilder()
     let worldPainter = new WorldPainter()
 
-    let [world, setWorld] = useState(worldBuilder.build(getSeed(), 257, 8))
+    let [world, setWorld] = useState(worldBuilder.build(buildSeed(), 257, 8))
     let [seed, setSeed] = useState('')
 
     const onGenerate = () => {
-        let newSeed = getSeed(seed)
-        Random.seed = newSeed
+        let newSeed = buildSeed(seed)
         setWorld(worldBuilder.build(newSeed, 257, 8))
     }
 
-    const onSeedChange = event => {
-        let newSeed = getSeed(event.target.value.trim())
-
-        clearTimeout(timer)
-        timer = setTimeout(() => {
-            Random.seed = newSeed
-            setWorld(worldBuilder.build(newSeed, 257, 8))
-            setSeed(newSeed)
-        }, 500)
+    const onSeedChange = value => {
+        let newSeed = buildSeed(value)
+        setWorld(worldBuilder.build(newSeed, 257, 8))
+        setSeed(newSeed)
     }
 
     return <>

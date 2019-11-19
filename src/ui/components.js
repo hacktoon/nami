@@ -2,9 +2,19 @@ import React from 'react'
 
 
 export function SeedInput(props) {
+    let timer = null
+
+    const onChange = event => {
+        let value = event.target.value.trim()
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+            props.onChange(value)
+        }, 500)
+    }
+
     return <section className="header-menu-item">
         <label htmlFor="seedInput">Seed</label>
-        <input id="seedInput" type="text" onChange={props.onChange} />
+        <input id="seedInput" type="text" onChange={onChange} />
     </section>
 }
 
