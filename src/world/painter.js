@@ -1,65 +1,60 @@
 
 export default class WorldPainter {
-    constructor (world) {
-        this.world = world
-    }
-
-    drawHeightMap() {
-        this.world.iter(({point}) => {
-            // TODO: abstract
-            let color = this.world.reliefMap.codeMap.getColor(point)
-            this.drawTile(point, color)
+    drawHeightMap(world, tilesize) {
+        world.iter((tile, point) => {
+            const color = world.reliefMap.codeMap.getColor(point)
+            this.drawTile(ctx, point, color, tilesize)
         })
     }
 
-    drawRelief() {
-        this.world.iter(({point}) => {
-            let color = this.world.reliefMap.getColor(point)
-            this.drawTile(point, color)
+    drawRelief(world, tilesize) {
+        world.iter((tile, point) => {
+            const color = world.reliefMap.getColor(point)
+            this.drawTile(ctx, point, color, tilesize)
         })
     }
 
-    drawHeat() {
-        this.world.iter(tile => {
-            const color = this.world.heatMap.getColor(tile.point)
-            this.drawTile(tile.point, color)
+    drawHeat(world, tilesize) {
+        world.iter((tile, point) => {
+            const color = world.heatMap.getColor(tile.point)
+            this.drawTile(ctx, point, color, tilesize)
         })
     }
 
-    drawMoisture() {
-        this.world.iter(tile => {
-            const color = this.world.moistureMap.getColor(tile.point)
-            this.drawTile(tile.point, color)
+    drawMoisture(world, tilesize) {
+        world.iter((tile, point) => {
+            const color = world.moistureMap.getColor(tile.point)
+            this.drawTile(ctx, point, color, tilesize)
         })
     }
 
-    drawWater() {
-        this.world.iter((tile, point) => {
-            let color = this.world.waterMap.getColor(point)
-            this.drawTile(point, color)
+    drawWater(world, tilesize) {
+        world.iter((tile, point) => {
+            const color = world.waterMap.getColor(point)
+            this.drawTile(ctx, point, color, tilesize)
         })
     }
 
-    drawLandmass() {
+    drawLandmass(world, tilesize) {
         let defaultColor = "#444"
-        this.world.iter(tile => {
-            let color = tile.landmass ? tile.landmass.color : defaultColor
-            this.drawTile(tile.point, color)
+        world.iter((tile, point) => {
+            const color = tile.landmass ? tile.landmass.color : defaultColor
+            this.drawTile(ctx, point, color, tilesize)
         })
     }
 
-    drawBiome() {
-        this.world.iter(tile => {
-            let color = tile.debug ? "red" : tile.biome.color
-            this.drawTile(tile.point, color)
+    drawBiome(world, tilesize) {
+        world.iter((tile, point) => {
+            const color = tile.debug ? "red" : tile.biome.color
+            this.drawTile(ctx, point, color, tilesize)
         })
     }
 
-    drawTile(point, color) {
-        let x = point.x * this.tilesize,
-            y = point.y * this.tilesize
+    drawTile(ctx, point, color, tilesize) {
+        let x = point.x * tilesize,
+            y = point.y * tilesize
 
-        this.ctx.fillStyle = color
-        this.ctx.fillRect(x, y, this.tilesize, this.tilesize)
+        ctx.fillStyle = color
+        ctx.fillRect(x, y, tilesize, tilesize)
     }
 }

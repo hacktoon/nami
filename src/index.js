@@ -1,46 +1,15 @@
 import _ from 'lodash'
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { render } from 'react-dom';
 
-import { SeedInput, GenerateButton, WorldView } from './ui/components'
+import { SeedInput, GenerateButton } from './ui/components'
+import WorldView from './ui/WorldView'
 import Menu from './ui/Menu'
 
 import WorldBuilder from './world/builder'
-import { Point } from './lib/point'
 import { Random } from './lib/base'
 
 import "./App.css"
-
-// let viewCanvas = document.getElementById("viewCanvas"),
-//     generateButton = document.getElementById("generateButton"),
-//     seedInput = document.getElementById("seedInput"),
-//     viewInput = document.getElementById('viewInput'),
-//     tilesizeInput = document.getElementById("tilesizeInput"),
-//     sizeInput = document.getElementById("sizeInput"),
-//     roughnessInput = document.getElementById("roughnessInput"),
-//     infoText = document.getElementById("main-options"),
-//     mainView = document.getElementById("main-view"),
-//     worldPainter
-
-
-// const getViewInput = function() {
-//     const viewParam = getURLParams('view')
-//     let value = viewInput.options[viewInput.selectedIndex].value
-//     if (viewParam) {
-//         viewInput.value = value = viewParam
-//     }
-//     return value
-// }
-// const getTileSizeInput = function() {
-//     const tilesizeParam = getURLParams('tilesize')
-//     let value = Number(tilesizeInput.value)
-//     if (tilesizeParam) {
-//         tilesizeInput.value = value = Number(tilesizeParam)
-//     }
-//     return value
-// }
-// const getSizeInput = () => Number(sizeInput.value)
-// const getRoughnessInput = () => Number(roughnessInput.value)
 
 
 // const getCanvasMousePoint = (e, viewCanvas) => {
@@ -52,66 +21,36 @@ import "./App.css"
 //     return new Point(x, y);
 // }
 
-// const showTileInfo = tile => {
-//     const wrap = (title, value) => {
-//         return `<p class='title'>${title}</p><p class='value'>${value}</p>`
-//     }
-//     let tpl = wrap('World', world.name)
-//     tpl += wrap('Seed', Random.seed)
-//     if (!tile) {
-//         infoText.innerHTML = tpl
-//         return
-//     }
-//     const point = tile.point
-//     tpl += wrap('Coordinates', point.hash())
-//     infoText.innerHTML = tpl
-// }
-
-
-// /************ EVENT HANDLING *************************/
-// let dragControl = {
-//     startPoint: undefined,
-//     endPoint: undefined,
-//     dragging: false,
-// }
-
-// viewCanvas.addEventListener('mousedown', e => {
-//     let point = getCanvasMousePoint(e, viewCanvas)
-//     dragControl.startPoint = point
-//     dragControl.dragging = true
-// })
-
-// viewCanvas.addEventListener('mousemove', e => {
-//     let point = getCanvasMousePoint(e, viewCanvas)
-//     let tile = world.get(point)
-//     showTileInfo(tile)
-// })
-
-
-// viewCanvas.addEventListener('mouseup', e => {
-//     let point = getCanvasMousePoint(e, viewCanvas)
-//     dragControl.endPoint = point
-//     dragControl.dragging = false
-// })
-
 
 function Nami(props) {
-    let [seed, setSeed] = useState(+new Date())
-    let [world, setWorld] = useState(null)
+    let timer = null
+    let worldBuilder = new WorldBuilder()
 
-    const generate = () => {
-        let worldBuilder = new WorldBuilder(seed, 257, 8)
-        setWorld(worldBuilder.build())
+    let [world, setWorld] = useState(worldBuilder.build((+new Date()), 257, 8))
+    let [seed, setSeed] = useState('')
+
+    const onGenerate = () => {
+        let newSeed = seed.length ? seed : (+new Date())
+        Random.seed = newSeed
+        setWorld(worldBuilder.build(newSeed, 257, 8))
     }
 
-    const updateSeed = event => setSeed(event.target.value)
+    const onSeedChange = event => {
+        let newSeed = event.target.value.trim()
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+            Random.seed = newSeed
+            setWorld(worldBuilder.build(newSeed, 257, 8))
+            setSeed(newSeed)
+        }, 250)
+    }
 
     return <>
         <header>
             <section id="header-title">Nami</section>
             <section id="header-menu">
-                <SeedInput onChange={updateSeed} />
-                <GenerateButton onClick={generate} />
+                <SeedInput onChange={onSeedChange} />
+                <GenerateButton onClick={onGenerate} />
             </section>
         </header>
 
@@ -119,6 +58,7 @@ function Nami(props) {
 
         <main>
             <section id="main-options">
+                <p>Seed: {world.seed}</p>
                 <label htmlFor="viewInput">View
                     <select id="viewInput">
                         <option value="heightmap">Heightmap</option>

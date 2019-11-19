@@ -5,10 +5,9 @@ import { Random } from '/lib/base'
 
 
 export default class World {
-    constructor(size) {
-        this.id = Random.seed
+    constructor(seed, size) {
+        this.seed = seed
         this.name = Name.createLandmassName()
-        this.seed = Random.seed
         this.size = size
         this.area = size * size
         this.grid = new Grid(size, size, point => new Tile(point))
