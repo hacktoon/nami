@@ -24,18 +24,18 @@ export default function WorldView(props) {
         setTilesize(event.target.value)
     }
 
-    return <>
-        <section id="world-view" ref={containerRef}>
-            <section id="view-options">
-                <p>Seed: {world.seed}</p>
-                <label id="tilesizeField" htmlFor="tilesizeInput">Tile size
-                    <input id="tilesizeInput"
-                        onChange={onTilesizeChange}
-                        type="number" min="1" step="1" value={tilesize} />
-                </label>
-                <ViewInput />
-            </section>
+    return <section id="world-view">
+        <section class="options">
+            <p>Seed: {world.seed}</p>
+            <label id="tilesizeField" htmlFor="tilesizeInput">Tile size
+                <input id="tilesizeInput"
+                    onChange={onTilesizeChange}
+                    type="number" min="1" step="1" value={tilesize} />
+            </label>
+            <ViewInput />
+        </section>
+        <section class="screen" ref={containerRef}>
             <canvas ref={canvasRef}></canvas>
         </section>
-    </>
+    </section>
 }

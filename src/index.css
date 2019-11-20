@@ -78,6 +78,7 @@ header #header-menu #generateButton:active {
 }
 
 
+
 #world-config {
     background: #DDD;
     border-bottom: 1px solid #AAA;
@@ -86,6 +87,7 @@ header #header-menu #generateButton:active {
     padding: 0 20px;
     line-height: 50px;
 }
+
 #world-config label,
 #world-config select,
 #world-config input {
@@ -102,53 +104,52 @@ header #header-menu #generateButton:active {
 }
 
 #world-config input {
-    padding-right: 0;
+    padding: 2px 6px;
 }
 
-#tilesizeInput {
-    width: 30px;
+#world-config #tilesizeInput {
+    width: 10px;
 }
 
-#roughnessInput {
-    width: 42px;
+#world-view #tilesizeField {
+    display: block;
 }
+
+#world-config #roughnessInput {
+    width: 40px;
+}
+
+
 
 #world-view {
     background: black;
-    position: relative;
+    display: grid;
+    grid-template-columns: 15% auto;
 }
 
-#world-view  #view-options {
-    background-color: rgba(255, 255, 255, .2);
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    bottom: 20px;
+#world-view .options {
+    background: #FFF;
     line-height: 30px;
     padding: 10px 0 0 10px;
-    width: 200px;
-    margin: 0;
-    color: #FFF;
 }
 
-#world-view  #view-options p.title {
+#world-view .options p.title {
     line-height: 1.5;
     margin-bottom: 2px;
     font-weight: bold;
 }
 
-#world-view  #view-options p.value {
+#world-view .options p.value {
     margin-bottom: 10px;
     padding-bottom: 5px;
     line-height: 1;
     font-size: .9em;
 }
 
-
-#world-view #tilesizeField {
-    display: block;
+#world-view .screen {
+    overflow: hidden;
 }
 
-#world-view canvas {
+#world-view .screen canvas {
     display: block;
 }
