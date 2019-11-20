@@ -25,7 +25,7 @@ export default function WorldView(props) {
     }
 
     return <section id="world-view">
-        <section class="options">
+        <section className="options">
             <p>Seed: {world.seed}</p>
             <label id="tilesizeField" htmlFor="tilesizeInput">Tile size
                 <input id="tilesizeInput"
@@ -34,7 +34,7 @@ export default function WorldView(props) {
             </label>
             <ViewInput />
         </section>
-        <section class="screen" ref={containerRef}>
+        <section className="screen" ref={containerRef}>
             <canvas ref={canvasRef}></canvas>
         </section>
     </section>

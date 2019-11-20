@@ -1,27 +1,43 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+
+
+function SeedInput(props) {
+    return <section className="config-field">
+        <label htmlFor="seedInput">Seed</label>
+        <input id="seedInput" type="text" onChange={props.onChange} />
+    </section>
+}
+
+
+function GenerateButton(props) {
+    return <section className="config-field">
+        <button id="generateButton" onClick={props.onClick}>Generate</button>
+    </section>
+}
+
 
 export default function WorldConfig(props) {
-    let [size, setSize] = useState(257)
     let [roughness, setRoughness] = useState(8)
+    let [seed, setSeed] = useState('')
+    let [size, setSize] = useState(257)
 
-    const onSizeChange = event => {
-        let newSize = event.target.value
-        setSize(newSize)
-        props.onChange({size: newSize, roughness})
+    const onSizeChange = event => setSize(event.target.value)
+    const onRoughnessChange = event => setRoughness(event.target.value)
+    const onSeedChange = event => setSeed(event.target.value.trim())
+
+    const onSubmit = event => {
+        event.preventDefault()
+        const _seed = seed.length ? seed : (+new Date())
+        let config = {size, roughness, seed: _seed}
+        props.onUpdate(config)
     }
 
-    const onRoughnessChange = event => {
-        let newRoughness = event.target.value
-        setRoughness(newRoughness)
-        props.onChange({roughness: newRoughness, size})
-    }
-
-    return <>
-        <nav id="world-config">
-            <label htmlFor="sizeInput">
+    return <section id="world-config">
+        <form onSubmit={onSubmit}>
+            <label htmlFor="sizeInput" className="config-field">
                 Size
                 <select id="sizeInput" value={size} onChange={onSizeChange}>
-                    <option value="257" defaultValue>257</option>
+                    <option value="257">257</option>
                     <option value="129">129</option>
                     <option value="65">65</option>
                     <option value="33">33</option>
@@ -30,13 +46,16 @@ export default function WorldConfig(props) {
                 </select>
             </label>
 
-            <label htmlFor="roughnessInput">
+            <label htmlFor="roughnessInput" className="config-field">
                 Roughness
                 <input id="roughnessInput"
                     onChange={onRoughnessChange}
                     type="number" step="1" value={roughness} />
             </label>
-        </nav>
-    </>
+
+            <SeedInput onChange={onSeedChange} />
+            <GenerateButton onClick={onSubmit} />
+        </form>
+    </section>
 }
 

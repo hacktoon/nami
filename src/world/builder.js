@@ -10,19 +10,21 @@ import { MoistureMap } from './atm/moisture'
 import { BiomeMap } from './bio/biome'
 
 
+const DEFAULT_CONFIG = {size: 257, roughness: 8, seed: ''}
+
+
 export class WorldBuilder {
-    build(seed, config) {
-        Random.seed = seed
-        let {size, roughness} = config;
+    build(config=DEFAULT_CONFIG) {
+        let {size, roughness, seed} = config;
         const world = new World(seed, size)
         const reliefMap = new ReliefMap(size, roughness)
 
+        Random.seed = seed
         world.reliefMap = reliefMap
         window.world = world
         return world
     }
 }
-
 
 export class WorldPainter {
     draw(ctx, world, tilesize) {

@@ -61,6 +61,10 @@ header #header-menu input {
     border: 0;
 }
 
+header #header-menu #seedInput {
+    width: 150px;
+}
+
 header #header-menu #generateButton {
     background: rgb(9, 128, 9);
     color: #FFF;
@@ -84,42 +88,39 @@ header #header-menu #generateButton:active {
     border-bottom: 1px solid #AAA;
     display: block;
     margin: 0;
-    padding: 0 20px;
     line-height: 50px;
+    position: relative;
 }
 
-#world-config label,
+#world-config .config-field {
+    float: left;
+    padding: 0 10px;
+}
+
+#world-config label {
+    line-height: 50px;
+    padding-right: 5px;
+}
+
 #world-config select,
 #world-config input {
     font-size: 1em;
-    height: 25px;
-    line-height: 25px;
 }
 
 #world-config select,
 #world-config input {
+    height: 30px;
     border: 1px solid #CCC;
     background: #FFF;
-    padding: 0 5px;
 }
 
 #world-config input {
-    padding: 2px 6px;
+    padding: 10px;
 }
 
-#world-config #tilesizeInput {
-    width: 10px;
+#world-config select {
+    padding: 0 5px;
 }
-
-#world-view #tilesizeField {
-    display: block;
-}
-
-#world-config #roughnessInput {
-    width: 40px;
-}
-
-
 
 #world-view {
     background: black;
