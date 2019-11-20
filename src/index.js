@@ -1,11 +1,12 @@
 import _ from 'lodash'
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { render } from 'react-dom';
 
 import WorldView from './ui/WorldView'
 import WorldConfig from './ui/WorldConfig'
 
-import { WorldBuilder } from './world/builder'
+import { buildWorld } from './world/builder'
 
 import "./index.css"
 
@@ -18,19 +19,23 @@ import "./index.css"
 //         y = _.parseInt(mouseY / getTileSizeInput());
 //     return new Point(x, y);
 // }
-
+window.buildWorld = buildWorld
 
 function App(props) {
-    let worldBuilder = new WorldBuilder()
+    let [world, setWorld] = useState(buildWorld())
 
-    let [world, setWorld] = useState(worldBuilder.build())
-    let onConfigChange = config => setWorld(worldBuilder.build(config))
+    let onConfigChange = config => {
+        console.log(`onConfigChange, old name: ${world.name}, old seed: ${world.seed}, new seed: ${config.seed}`)
+        let w = buildWorld(config)
+        setWorld(w)
+    }
 
+    console.log(`render App: ${world.name}, ${world.seed}`);
     return <>
         <header>
             <section id="header-title">Nami</section>
         </header>
-        <WorldConfig onUpdate={onConfigChange} />
+        <WorldConfig onChange={onConfigChange} />
         <WorldView world={world} />
     </>
 }

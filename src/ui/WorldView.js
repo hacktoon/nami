@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import { WorldPainter } from '../world/builder'
 
@@ -26,21 +26,23 @@ export default function WorldView(props) {
 
     let worldPainter = new WorldPainter()
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         let canvas = canvasRef.current
         let ctx = canvas.getContext('2d')
         canvas.width = containerRef.current.offsetWidth
         canvas.height = containerRef.current.offsetHeight
         worldPainter.draw(ctx, props.world, tilesize)
-    })
+        console.log(`Draw World: ${props.world.name}, ${props.world.seed}`)
+    }, [containerRef.current])
 
     const onTilesizeChange = event => {
         setTilesize(event.target.value)
     }
 
+    console.log(`Render WorldView ${props.world.name}, ${props.world.seed}`)
     return <section id="world-view">
         <section className="options">
-            <p>Seed: {world.seed}</p>
+            <p>Seed: {props.world.seed}</p>
             <label id="tilesizeField" htmlFor="tilesizeInput">Tile size
                 <input id="tilesizeInput"
                     onChange={onTilesizeChange}

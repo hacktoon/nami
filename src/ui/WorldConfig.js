@@ -1,37 +1,23 @@
 import React, { useState } from 'react'
 
 
-function SeedInput(props) {
-    return <section className="config-field">
-        <label htmlFor="seedInput">Seed</label>
-        <input id="seedInput" type="text" onChange={props.onChange} />
-    </section>
-}
-
-
-function GenerateButton(props) {
-    return <section className="config-field">
-        <button id="generateButton" onClick={props.onClick}>Generate</button>
-    </section>
-}
-
-
 export default function WorldConfig(props) {
     let [roughness, setRoughness] = useState(8)
     let [seed, setSeed] = useState('')
     let [size, setSize] = useState(257)
 
-    const onSizeChange = event => setSize(event.target.value)
-    const onRoughnessChange = event => setRoughness(event.target.value)
+    const onSizeChange = event => setSize(Number(event.target.value))
+    const onRoughnessChange = event => setRoughness(Number(event.target.value))
     const onSeedChange = event => setSeed(event.target.value.trim())
 
     const onSubmit = event => {
         event.preventDefault()
-        const _seed = seed.length ? seed : (+new Date())
-        let config = {size, roughness, seed: _seed}
-        props.onUpdate(config)
+        let config = { size, roughness, seed }
+        console.log(`onSubmit: ${config.seed}, ${config.size}, ${config.roughness}`)
+        props.onChange(config)
     }
 
+    console.log(`render WorldConfig '${seed}', ${size}, ${roughness}`)
     return <section id="world-config">
         <form onSubmit={onSubmit}>
             <label htmlFor="sizeInput" className="config-field">
@@ -59,3 +45,17 @@ export default function WorldConfig(props) {
     </section>
 }
 
+
+function SeedInput(props) {
+    return <section className="config-field">
+        <label htmlFor="seedInput">Seed</label>
+        <input id="seedInput" type="text" onChange={props.onChange} />
+    </section>
+}
+
+
+function GenerateButton(props) {
+    return <section className="config-field">
+        <button id="generateButton" onClick={props.onClick}>Generate</button>
+    </section>
+}

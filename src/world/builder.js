@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 import { Random } from '../lib/base'
 
-import World from './world'
+import World from '.'
 import { ReliefMap } from './geo/relief'
 import { WaterMap } from './geo/water'
 import { HeatMap } from './atm/heat'
@@ -10,20 +10,17 @@ import { MoistureMap } from './atm/moisture'
 import { BiomeMap } from './bio/biome'
 
 
-const DEFAULT_CONFIG = {size: 257, roughness: 8, seed: ''}
+export function buildWorld(config) {
+    let defaultConfig = {size: 257, roughness: 8, seed: (+new Date())}
+    let {size, roughness, seed} = config || defaultConfig;
+    Random.seed = seed
+    const world = new World(seed, size)
+    const reliefMap = new ReliefMap(size, roughness)
+    world.reliefMap = reliefMap
+    window.currentWorld = world
+    console.log(`buildWorld(${world.name}, ${world.seed} ${config})`);
 
-
-export class WorldBuilder {
-    build(config=DEFAULT_CONFIG) {
-        let {size, roughness, seed} = config;
-        const world = new World(seed, size)
-        const reliefMap = new ReliefMap(size, roughness)
-
-        Random.seed = seed
-        world.reliefMap = reliefMap
-        window.world = world
-        return world
-    }
+    return world
 }
 
 export class WorldPainter {
