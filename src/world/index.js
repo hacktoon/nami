@@ -24,8 +24,8 @@ const buildConfig = (rawConfig={}) => {
 export default class World {
     constructor(config) {
         let {size, roughness, seed} = buildConfig(config)
-        this.seed = seed
         this.name = Name.createLandmassName()
+        this.seed = seed
         this.size = size
         this.area = size * size
         this.grid = new Grid(size, size, point => new Tile(point))
