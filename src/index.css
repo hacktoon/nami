@@ -61,27 +61,8 @@ header #header-menu input {
     border: 0;
 }
 
-header #header-menu #seedInput {
-    width: 150px;
-}
 
-header #header-menu #generateButton {
-    background: rgb(9, 128, 9);
-    color: #FFF;
-    border: 0;
-    font-size: 1em;
-    height: 30px;
-    line-height: 30px;
-    padding: 0 10px;
-    text-transform: uppercase;
-    font-weight: bold;
-}
-
-header #header-menu #generateButton:active {
-    background: rgb(133, 156, 141);
-}
-
-
+/* WorldConfig ---------------------- */
 
 #world-config {
     background: #DDD;
@@ -121,6 +102,31 @@ header #header-menu #generateButton:active {
 #world-config select {
     padding: 0 5px;
 }
+
+#world-config #seedInput {
+    width: 150px;
+}
+
+#world-config #generateButton {
+    background: rgb(9, 128, 9);
+    color: #FFF;
+    border: 0;
+    font-size: 1em;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+#world-config #generateButton:active {
+    background: rgb(133, 156, 141);
+}
+
+
+
+
+/* WorldView ============================== */
 
 #world-view {
     background: black;

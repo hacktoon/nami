@@ -13,11 +13,9 @@ export default function WorldConfig(props) {
     const onSubmit = event => {
         event.preventDefault()
         let config = { size, roughness, seed }
-        console.log(`onSubmit: ${config.seed}, ${config.size}, ${config.roughness}`)
         props.onChange(config)
     }
 
-    console.log(`render WorldConfig '${seed}', ${size}, ${roughness}`)
     return <section id="world-config">
         <form onSubmit={onSubmit}>
             <label htmlFor="sizeInput" className="config-field">

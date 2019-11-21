@@ -146,7 +146,6 @@ fillButton.addEventListener('click', e => {
     filler.fill()
     let t1 = performance.now()
     draw()
-    console.log(t1 - t0 + 'ms')
 })
 
 init()

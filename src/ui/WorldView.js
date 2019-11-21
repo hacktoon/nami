@@ -26,22 +26,21 @@ export default function WorldView(props) {
 
     let worldPainter = new WorldPainter()
 
+    const onTilesizeChange = event => {
+        setTilesize(event.target.value)
+    }
+
     useEffect(() => {
         let canvas = canvasRef.current
         let ctx = canvas.getContext('2d')
         canvas.width = containerRef.current.offsetWidth
         canvas.height = containerRef.current.offsetHeight
         worldPainter.draw(ctx, props.world, tilesize)
-        console.log(`Draw World: ${props.world.name}, ${props.world.seed}`)
-    }, [containerRef.current])
+    })
 
-    const onTilesizeChange = event => {
-        setTilesize(event.target.value)
-    }
-
-    console.log(`Render WorldView ${props.world.name}, ${props.world.seed}`)
     return <section id="world-view">
         <section className="options">
+            <p>Name: {props.world.name}</p>
             <p>Seed: {props.world.seed}</p>
             <label id="tilesizeField" htmlFor="tilesizeInput">Tile size
                 <input id="tilesizeInput"
