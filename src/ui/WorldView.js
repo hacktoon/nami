@@ -1,10 +1,56 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { WorldPainter } from '../world/builder'
+
+const DEFAULT_TILE_SIZE = 2
+
+
+export default function WorldView(props) {
+    const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
+
+    const onTilesizeChange = event => setTilesize(event.target.value)
+
+    const draw = (ctx, width, height) => {
+        drawWorld(ctx, props.world, tilesize)
+    }
+
+    return <section id="world-view">
+        <section className="options">
+            <p className="item">Name: {props.world.name}</p>
+            <p className="item">Seed: {props.world.seed}</p>
+            <label className="item" id="tilesizeField" htmlFor="tilesizeInput">
+                Tile size:
+                <input id="tilesizeInput"
+                    onChange={onTilesizeChange}
+                    type="number" min="1" step="1" value={tilesize}
+                />
+            </label>
+            <ViewInput />
+        </section>
+        <Screen onInit={draw} />
+    </section>
+}
+
+
+function Screen(props) {
+    const containerRef = useRef(null)
+    const canvasRef = useRef(null)
+
+    useEffect(() => {
+        let canvas = canvasRef.current
+        let ctx = canvas.getContext('2d')
+        canvas.width = containerRef.current.offsetWidth
+        canvas.height = containerRef.current.offsetHeight
+        props.onInit(ctx, canvas.width, canvas.height)
+    })
+
+    return <section className="screen" ref={containerRef}>
+        <canvas ref={canvasRef}></canvas>
+    </section>
+}
 
 
 function ViewInput(props) {
-    return <label htmlFor="viewInput">View
+    return <label className="item" htmlFor="viewInput">View
         <select id="viewInput">
             <option value="heightmap">Heightmap</option>
             <option value="relief">Relief</option>
@@ -18,39 +64,17 @@ function ViewInput(props) {
 }
 
 
-export default function WorldView(props) {
-    const containerRef = useRef(null)
-    const canvasRef = useRef(null)
-
-    const [tilesize, setTilesize] = useState(2)
-
-    let worldPainter = new WorldPainter()
-
-    const onTilesizeChange = event => {
-        setTilesize(event.target.value)
-    }
-
-    useEffect(() => {
-        let canvas = canvasRef.current
-        let ctx = canvas.getContext('2d')
-        canvas.width = containerRef.current.offsetWidth
-        canvas.height = containerRef.current.offsetHeight
-        worldPainter.draw(ctx, props.world, tilesize)
+const drawWorld = (ctx, world, tilesize) => {
+    world.iter((tile, point) => {
+        const color = world.reliefMap.codeMap.getColor(point)
+        drawWorldTile(ctx, point, tilesize, color)
     })
+}
 
-    return <section id="world-view">
-        <section className="options">
-            <p>Name: {props.world.name}</p>
-            <p>Seed: {props.world.seed}</p>
-            <label id="tilesizeField" htmlFor="tilesizeInput">Tile size
-                <input id="tilesizeInput"
-                    onChange={onTilesizeChange}
-                    type="number" min="1" step="1" value={tilesize} />
-            </label>
-            <ViewInput />
-        </section>
-        <section className="screen" ref={containerRef}>
-            <canvas ref={canvasRef}></canvas>
-        </section>
-    </section>
+const drawWorldTile = (ctx, point, tilesize, color) => {
+    let x = point.x * tilesize,
+        y = point.y * tilesize
+
+    ctx.fillStyle = color
+    ctx.fillRect(x, y, tilesize, tilesize)
 }

@@ -24,7 +24,6 @@ header {
     display: grid;
     font-weight: bold;
     grid-template-columns: 100px auto;
-    margin: 0;
 }
 
 header #header-title {
@@ -66,11 +65,10 @@ header #header-menu input {
 
 #world-config {
     background: #DDD;
-    border-bottom: 1px solid #AAA;
     display: block;
-    margin: 0;
     line-height: 50px;
-    position: relative;
+    margin: 0;
+    display: flexbox;
 }
 
 #world-config .config-field {
@@ -101,6 +99,10 @@ header #header-menu input {
 
 #world-config select {
     padding: 0 5px;
+}
+
+#world-config #roughnessInput {
+    width: 60px;
 }
 
 #world-config #seedInput {
@@ -140,17 +142,18 @@ header #header-menu input {
     padding: 10px 0 0 10px;
 }
 
-#world-view .options p.title {
-    line-height: 1.5;
-    margin-bottom: 2px;
-    font-weight: bold;
+#world-view .options .item {
+    display: block;
+    margin-bottom: 10px;
 }
 
-#world-view .options p.value {
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    line-height: 1;
-    font-size: .9em;
+#world-view .options label {
+    margin-right: 5px;
+}
+
+#world-view .options #tilesizeInput {
+    display: inline-block;
+    width: 60px;
 }
 
 #world-view .screen {

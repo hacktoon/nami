@@ -7,7 +7,12 @@ export default function WorldConfig(props) {
     let [size, setSize] = useState(257)
 
     const onSizeChange = event => setSize(Number(event.target.value))
-    const onRoughnessChange = event => setRoughness(Number(event.target.value))
+    const onRoughnessChange = event => {
+        let newRoughness = Number(event.target.value)
+        let config = { size, roughness: newRoughness, seed }
+        setRoughness(newRoughness)
+        props.onChange(config)
+    }
     const onSeedChange = event => setSeed(event.target.value.trim())
 
     const onSubmit = event => {
@@ -47,7 +52,7 @@ export default function WorldConfig(props) {
 function SeedInput(props) {
     return <section className="config-field">
         <label htmlFor="seedInput">Seed</label>
-        <input id="seedInput" type="text" onChange={props.onChange} />
+        <input id="seedInput" type="text" onChange={props.onChange} autoComplete="off" />
     </section>
 }
 
