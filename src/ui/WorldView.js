@@ -42,7 +42,12 @@ function View(props) {
         props.onInit(canvas.getContext('2d'), canvas.width, canvas.height)
     })
 
-    return <section className="screen" ref={containerRef}>
+    const onMouseMove = event => {
+        let x = event.clientX - event.target.offsetLeft
+        let y = event.clientY - event.target.offsetTop
+    }
+
+    return <section className="screen" ref={containerRef} onMouseMove={onMouseMove}>
         <canvas ref={canvasRef}></canvas>
     </section>
 }
