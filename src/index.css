@@ -134,6 +134,7 @@ header #header-menu input {
     background: black;
     display: grid;
     grid-template-columns: 15% auto;
+    height: 100vh;
 }
 
 #world-view .options {

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useLayoutEffect, useRef } from 'react'
 
 
-const DEFAULT_TILE_SIZE = 2
+const DEFAULT_TILE_SIZE = 3
 
 
 export default function WorldView(props) {
@@ -19,28 +19,27 @@ export default function WorldView(props) {
             <p className="item">Seed: {props.world.seed}</p>
             <label className="item" id="tilesizeField" htmlFor="tilesizeInput">
                 Tile size:
-                <input id="tilesizeInput"
+                <input type="number" id="tilesizeInput"
                     onChange={onTilesizeChange}
-                    type="number" min="1" step="1" value={tilesize}
+                    min="1" step="1" value={tilesize}
                 />
             </label>
             <ViewInput />
         </section>
-        <Screen onInit={draw} />
+        <View onInit={draw} />
     </section>
 }
 
 
-function Screen(props) {
+function View(props) {
     const containerRef = useRef(null)
     const canvasRef = useRef(null)
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         let canvas = canvasRef.current
-        let ctx = canvas.getContext('2d')
-        canvas.width = containerRef.current.offsetWidth
-        canvas.height = containerRef.current.offsetHeight
-        props.onInit(ctx, canvas.width, canvas.height)
+        canvas.width = containerRef.current.clientWidth
+        canvas.height = containerRef.current.clientHeight
+        props.onInit(canvas.getContext('2d'), canvas.width, canvas.height)
     })
 
     return <section className="screen" ref={containerRef}>
