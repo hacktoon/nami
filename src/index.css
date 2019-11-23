@@ -15,7 +15,6 @@ body {
 #container {
     display: grid;
     grid-template-rows: 50px 50px auto;
-    height: 100vh;
 }
 
 header {
@@ -110,7 +109,7 @@ header #header-menu input {
 }
 
 #world-config #generateButton {
-    background: rgb(9, 128, 9);
+    background: rgb(6, 94, 6);
     color: #FFF;
     border: 0;
     font-size: 1em;
@@ -126,15 +125,17 @@ header #header-menu input {
 }
 
 
-
-
 /* WorldView ============================== */
 
 #world-view {
     background: black;
     display: grid;
     grid-template-columns: 15% auto;
-    height: 100vh;
+    position: absolute;
+    top: 100px;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 #world-view .options {

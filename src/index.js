@@ -5,7 +5,7 @@ import { render } from 'react-dom';
 
 import World from './world'
 import WorldView from './ui/WorldView'
-import WorldConfig from './ui/WorldConfig'
+import WorldConfigPanel from './ui/WorldConfigPanel'
 
 import "./index.css"
 
@@ -31,7 +31,7 @@ function App() {
         <header>
             <section id="header-title">Nami</section>
         </header>
-        <WorldConfig onChange={onConfigChange} />
+        <WorldConfigPanel onChange={onConfigChange} />
         <WorldView world={world} />
     </>
 }

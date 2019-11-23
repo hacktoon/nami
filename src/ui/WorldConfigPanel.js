@@ -1,23 +1,25 @@
 import React, { useState } from 'react'
 
+import { WorldConfig } from '../world'
 
-export default function WorldConfig(props) {
+
+export default function WorldConfigPanel(props) {
     let [roughness, setRoughness] = useState(8)
     let [seed, setSeed] = useState('')
     let [size, setSize] = useState(257)
 
     const onSizeChange = event => setSize(Number(event.target.value))
     const onRoughnessChange = event => {
-        let newRoughness = Number(event.target.value)
-        let config = { size, roughness: newRoughness, seed }
-        setRoughness(newRoughness)
+        const roughness = Number(event.target.value)
+        const config = new WorldConfig({ size, roughness, seed })
+        setRoughness(roughness)
         props.onChange(config)
     }
     const onSeedChange = event => setSeed(event.target.value.trim())
 
     const onSubmit = event => {
+        const config = new WorldConfig({ size, roughness, seed })
         event.preventDefault()
-        let config = { size, roughness, seed }
         props.onChange(config)
     }
 
@@ -59,6 +61,6 @@ function SeedInput(props) {
 
 function GenerateButton(props) {
     return <section className="config-field">
-        <button id="generateButton" onClick={props.onClick}>Generate</button>
+        <button id="generateButton" type="submit">Generate</button>
     </section>
 }

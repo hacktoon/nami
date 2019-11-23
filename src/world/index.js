@@ -10,20 +10,38 @@ import { MoistureMap } from './atm/moisture'
 import { BiomeMap } from './bio/biome'
 
 
-const DEFAULT_CONFIG = {size: 257, roughness: 8, seed: ''}
+export class WorldConfig {
+    static DEFAULT_ROUGHNESS = 8  // TODO: move attr to HeightMap
+    static DEFAULT_SIZE = 257
+    static get DEFAULT_SEED () { return Number(new Date()) }
 
+    constructor(params={}) {
+        let config = Object.assign({}, this.defaultParams, params)
+        this.seed = this.constructorSeed(config.seed)
+        this.roughness = config.roughness
+        this.size = config.size
+    }
 
-const buildConfig = (rawConfig={}) => {
-    let config = Object.assign(DEFAULT_CONFIG, rawConfig)
-    config.seed = config.seed.length ? config.seed : String(+new Date())
-    Random.seed = config.seed
-    return config
+    constructorSeed(value) {
+        const defaultSeed = WorldConfig.DEFAULT_SEED
+        const seed = String(value).length ? value : defaultSeed
+        Random.seed = seed
+        return seed
+    }
+
+    get defaultParams() {
+        return {
+            size: WorldConfig.DEFAULT_SIZE,
+            roughness: WorldConfig.DEFAULT_ROUGHNESS,
+            seed: WorldConfig.DEFAULT_SEED
+        }
+    }
 }
 
 
 export default class World {
-    constructor(config) {
-        let {size, roughness, seed} = buildConfig(config)
+    constructor(config=new WorldConfig()) {
+        const {size, roughness, seed} = config
         this.name = Name.createLandmassName()
         this.seed = seed
         this.size = size

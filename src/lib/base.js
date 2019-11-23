@@ -99,7 +99,8 @@ export const NumberInterpolation = function(from, to, totalItems){
 
 
 export class Random {
-    static set seed(seed) {
+    static set seed(value) {
+        let seed = String(value)
         Random._seed = seed
         if (_.isString(seed)) {
             seed = Random._hashString(seed)
