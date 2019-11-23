@@ -1,11 +1,9 @@
 import _ from 'lodash'
 
-import React, { useState } from 'react';
-import { render } from 'react-dom';
+import React from 'react'
+import { render } from 'react-dom'
 
-import World from './world'
-import WorldView from './ui/WorldView'
-import WorldConfigPanel from './ui/WorldConfigPanel'
+import WorldGenerator from './ui/world'
 
 import "./index.css"
 
@@ -21,18 +19,11 @@ import "./index.css"
 
 
 function App() {
-    let [world, setWorld] = useState(new World())
-
-    const onConfigChange = config => {
-        setWorld(new World(config))
-    }
-
     return <>
         <header>
             <section id="header-title">Nami</section>
         </header>
-        <WorldConfigPanel onChange={onConfigChange} />
-        <WorldView world={world} />
+        <WorldGenerator />
     </>
 }
 

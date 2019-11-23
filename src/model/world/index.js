@@ -13,34 +13,32 @@ import { BiomeMap } from './bio/biome'
 export class WorldConfig {
     static DEFAULT_ROUGHNESS = 8  // TODO: move attr to HeightMap
     static DEFAULT_SIZE = 257
-    static get DEFAULT_SEED () { return Number(new Date()) }
+    static get DEFAULT_SEED() { return Number(new Date()) }
 
     constructor(params={}) {
-        let config = Object.assign({}, this.defaultParams, params)
-        this.seed = this._buildSeed(config.seed)
-        this.roughness = Number(config.roughness)
-        this.size = Number(config.size)
-    }
-
-    _buildSeed(seed) {
-        seed = String(seed).length ? seed : WorldConfig.DEFAULT_SEED
-        Random.seed = seed
-        return seed
-    }
-
-    get defaultParams() {
-        return {
+        const defaultParams = {
             size: WorldConfig.DEFAULT_SIZE,
             roughness: WorldConfig.DEFAULT_ROUGHNESS,
             seed: WorldConfig.DEFAULT_SEED
         }
+        let config = Object.assign(defaultParams, params)
+
+        this.seed = this._normalizeSeed(config.seed)
+        this.roughness = Number(config.roughness)
+        this.size = Number(config.size)
+    }
+
+    _normalizeSeed(seed='') {
+        seed = String(seed).length ? seed : WorldConfig.DEFAULT_SEED
+        Random.seed = seed
+        return seed
     }
 }
 
 
 export default class World {
-    constructor(config=new WorldConfig()) {
-        const {size, roughness, seed} = config
+    constructor(config) {
+        const {size, roughness, seed} = new WorldConfig(config)
         this.name = Name.createLandmassName()
         this.seed = seed
         this.size = size
