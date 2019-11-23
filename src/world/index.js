@@ -17,14 +17,13 @@ export class WorldConfig {
 
     constructor(params={}) {
         let config = Object.assign({}, this.defaultParams, params)
-        this.seed = this.constructorSeed(config.seed)
-        this.roughness = config.roughness
-        this.size = config.size
+        this.seed = this._buildSeed(config.seed)
+        this.roughness = Number(config.roughness)
+        this.size = Number(config.size)
     }
 
-    constructorSeed(value) {
-        const defaultSeed = WorldConfig.DEFAULT_SEED
-        const seed = String(value).length ? value : defaultSeed
+    _buildSeed(seed) {
+        seed = String(seed).length ? seed : WorldConfig.DEFAULT_SEED
         Random.seed = seed
         return seed
     }
