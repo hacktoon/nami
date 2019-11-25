@@ -22,13 +22,13 @@ export class Grid {
     }
 
     get(point) {
-        let p = this.wrap(point)
-        return this.matrix[p.y][p.x]
+        let {x, y} = this.wrap(point)
+        return this.matrix[y][x]
     }
 
     set(point, value) {
-        let p = this.wrap(point)
-        this.matrix[p.y][p.x] = value
+        let {x, y} = this.wrap(point)
+        this.matrix[y][x] = value
     }
 
     wrap(point) {
