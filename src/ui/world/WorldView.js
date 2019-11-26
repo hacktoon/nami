@@ -11,57 +11,36 @@ export default function WorldView(props) {
 
     const draw = (ctx, width, height) => {
         drawWorld(ctx, props.world, tilesize)
+        console.info(`Rendered world '${props.world.name}'.`)
     }
 
     return <section id="world-view">
-        <section className="options">
-            <ViewOptions
-                world={props.world}
-                tilesize={tilesize}
-                onTilesizeChange={onTilesizeChange}
-            />
-        </section>
-        <View onInit={draw} />
+        <OptionsPanel
+            world={props.world}
+            tilesize={tilesize}
+            onTilesizeChange={onTilesizeChange}
+        />
+        <ViewPanel drawFunction={draw} />
     </section>
 }
 
 
-function ViewOptions(props) {
-    return <section>
+function OptionsPanel(props) {
+    return <section className="options-panel">
         <p className="item">Name: {props.world.name}</p>
         <p className="item">Seed: {props.world.seed}</p>
         <label className="item" id="tilesizeField" htmlFor="tilesizeInput">
             Tile size:
             <input type="number" id="tilesizeInput"
-                onChange={props.onTilesizeChange} min="1" step="1" value={props.tilesize}
+                onChange={props.onTilesizeChange}
+                value={props.tilesize}
+                min="1"
+                step="1"
             />
         </label>
         <LayerInput />
     </section>
 }
-
-
-function View(props) {
-    const containerRef = useRef(null)
-    const canvasRef = useRef(null)
-
-    useLayoutEffect(() => {
-        let canvas = canvasRef.current
-        canvas.width = containerRef.current.clientWidth
-        canvas.height = containerRef.current.clientHeight
-        props.onInit(canvas.getContext('2d'), canvas.width, canvas.height)
-    })
-
-    const onMouseMove = event => {
-        let x = event.clientX - event.target.offsetLeft
-        let y = event.clientY - event.target.offsetTop
-    }
-
-    return <section className="screen" ref={containerRef} onMouseMove={onMouseMove}>
-        <canvas ref={canvasRef}></canvas>
-    </section>
-}
-
 
 function LayerInput(props) {
     return <label className="item" htmlFor="viewInput">View
@@ -75,6 +54,49 @@ function LayerInput(props) {
             <option value="landmass">Landmass</option>
         </select>
     </label>
+}
+
+
+// VIEW PANEL =================================================
+
+function ViewPanel(props) {
+    let [point, setPoint] = useState([0, 0])
+
+    return <section className="view-panel">
+        <ViewCanvas drawFunction={props.drawFunction}/>
+        <TrackerPanel />
+    </section>
+}
+
+
+function ViewCanvas(props) {
+    const screenRef = useRef(null)
+    const canvasRef = useRef(null)
+
+    useLayoutEffect(() => {
+        const canvas = canvasRef.current
+        const width = canvas.width = screenRef.current.clientWidth
+        const height = canvas.height = screenRef.current.clientHeight
+        props.drawFunction(canvas.getContext('2d'), width, height)
+    })
+
+    return <section className="screen" ref={screenRef}>
+        <canvas ref={canvasRef}></canvas>
+    </section>
+}
+
+function TrackerPanel(props) {
+    const [point, setPoint] = useState([0, 0])
+
+    const onMouseMove = e => {
+        const x = e.nativeEvent.offsetX
+        const y = e.nativeEvent.offsetY
+        setPoint([x, y])
+    }
+
+    return <section className="tracker" onMouseMove={onMouseMove}>
+        ({point[0]}, {point[1]})
+    </section>
 }
 
 

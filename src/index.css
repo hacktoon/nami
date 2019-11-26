@@ -138,30 +138,53 @@ header #header-menu input {
     right: 0;
 }
 
-#world-view .options {
+#world-view .options-panel {
     background: #FFF;
     line-height: 30px;
     padding: 10px 0 0 10px;
 }
 
-#world-view .options .item {
+#world-view .options-panel .item {
     display: block;
     margin-bottom: 10px;
 }
 
-#world-view .options label {
+#world-view .options-panel label {
     margin-right: 5px;
 }
 
-#world-view .options #tilesizeInput {
+#world-view .options-panel #tilesizeInput {
     display: inline-block;
     width: 60px;
 }
 
-#world-view .screen {
-    overflow: hidden;
+
+#world-view .view-panel {
+    position: relative;
 }
 
-#world-view .screen canvas {
+#world-view .view-panel .screen {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#world-view .view-panel .screen canvas {
     display: block;
+}
+
+#world-view .view-panel .tracker {
+    overflow: hidden;
+    line-height: 30px;
+    padding: 0 10px;
+    color: #FFF;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
 }
