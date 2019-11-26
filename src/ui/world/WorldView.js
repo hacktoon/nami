@@ -80,15 +80,36 @@ function ViewPanel(props) {
 
 function TrackerPanel(props) {
     const [point, setPoint] = useState([0, 0])
+    const [translation, setTranslation] = useState([0, 0])
+    const [dragPoint, setDragPoint] = useState([0, 0])
+    const [dragging, setDragging] = useState(false)
 
-    const onMouseMove = e => {
-        const x = e.nativeEvent.offsetX
-        const y = e.nativeEvent.offsetY
-        setPoint([x, y])
+    const onMouseMove = event => {
+        setPoint(getPoint(event))
     }
 
-    return <section className="tracker" onMouseMove={onMouseMove}>
-        {point[0]}, {point[1]}
+    const onMouseDown = event => {
+        event.preventDefault()
+        setDragging(true)
+        setDragPoint(getPoint(event))
+    }
+
+    const onMouseUp = event => {
+        const pt = dragPoint
+        const pt2 = getPoint(event)
+        setDragging(false)
+    }
+
+    const getPoint = event => {
+        const {offsetX: x, offsetY: y} = event.nativeEvent
+        return [x, y]
+    }
+
+    return <section className="tracker"
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onMouseMove={onMouseMove}>
+        {point[0]}, {point[1]} {dragging ? ', dragging' : ''}
     </section>
 }
 
