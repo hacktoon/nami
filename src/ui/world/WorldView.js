@@ -15,18 +15,28 @@ export default function WorldView(props) {
 
     return <section id="world-view">
         <section className="options">
-            <p className="item">Name: {props.world.name}</p>
-            <p className="item">Seed: {props.world.seed}</p>
-            <label className="item" id="tilesizeField" htmlFor="tilesizeInput">
-                Tile size:
-                <input type="number" id="tilesizeInput"
-                    onChange={onTilesizeChange}
-                    min="1" step="1" value={tilesize}
-                />
-            </label>
-            <ViewInput />
+            <ViewOptions
+                world={props.world}
+                tilesize={tilesize}
+                onTilesizeChange={onTilesizeChange}
+            />
         </section>
         <View onInit={draw} />
+    </section>
+}
+
+
+function ViewOptions(props) {
+    return <section>
+        <p className="item">Name: {props.world.name}</p>
+        <p className="item">Seed: {props.world.seed}</p>
+        <label className="item" id="tilesizeField" htmlFor="tilesizeInput">
+            Tile size:
+            <input type="number" id="tilesizeInput"
+                onChange={props.onTilesizeChange} min="1" step="1" value={props.tilesize}
+            />
+        </label>
+        <LayerInput />
     </section>
 }
 
@@ -53,7 +63,7 @@ function View(props) {
 }
 
 
-function ViewInput(props) {
+function LayerInput(props) {
     return <label className="item" htmlFor="viewInput">View
         <select id="viewInput">
             <option value="heightmap">Heightmap</option>
