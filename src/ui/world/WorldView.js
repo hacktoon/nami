@@ -20,7 +20,7 @@ export default function WorldView(props) {
             tilesize={tilesize}
             onTilesizeChange={onTilesizeChange}
         />
-        <ViewPanel drawFunction={draw} />
+        <ViewPanel world={props.world} drawFunction={draw} />
     </section>
 }
 
@@ -60,16 +60,6 @@ function LayerInput(props) {
 // VIEW PANEL =================================================
 
 function ViewPanel(props) {
-    let [point, setPoint] = useState([0, 0])
-
-    return <section className="view-panel">
-        <ViewCanvas drawFunction={props.drawFunction}/>
-        <TrackerPanel />
-    </section>
-}
-
-
-function ViewCanvas(props) {
     const screenRef = useRef(null)
     const canvasRef = useRef(null)
 
@@ -80,8 +70,11 @@ function ViewCanvas(props) {
         props.drawFunction(canvas.getContext('2d'), width, height)
     })
 
-    return <section className="screen" ref={screenRef}>
-        <canvas ref={canvasRef}></canvas>
+    return <section className="view-panel">
+        <section className="screen" ref={screenRef}>
+            <canvas ref={canvasRef}></canvas>
+        </section>
+        <TrackerPanel world={props.world} />
     </section>
 }
 
@@ -95,7 +88,7 @@ function TrackerPanel(props) {
     }
 
     return <section className="tracker" onMouseMove={onMouseMove}>
-        ({point[0]}, {point[1]})
+        {point[0]}, {point[1]}
     </section>
 }
 
