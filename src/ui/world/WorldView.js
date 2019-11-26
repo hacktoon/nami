@@ -6,12 +6,19 @@ const DEFAULT_TILE_SIZE = 3
 
 export default function WorldView(props) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
+    const [offset, setOffset] = useState([0, 0])
 
     const onTilesizeChange = event => setTilesize(event.target.value)
 
-    const draw = (ctx, width, height) => {
-        drawWorld(ctx, props.world, tilesize)
-        console.info(`Rendered world '${props.world.name}'.`)
+    const onOffsetChange = (startPoint, endPoint) => {
+        const x = startPoint[0] - endPoint[0]
+        const y = startPoint[1] - endPoint[1]
+        setOffset([x + offset[0], y + offset[1]])
+    }
+
+    const drawFunction = (ctx, width, height) => {
+        console.log(offset)
+        drawWorld(props.world, ctx, tilesize)
     }
 
     return <section id="world-view">
@@ -20,7 +27,11 @@ export default function WorldView(props) {
             tilesize={tilesize}
             onTilesizeChange={onTilesizeChange}
         />
-        <ViewPanel world={props.world} drawFunction={draw} />
+        <ViewPanel
+            world={props.world}
+            onReady={drawFunction}
+            onDrag={onOffsetChange}
+        />
     </section>
 }
 
@@ -60,47 +71,51 @@ function LayerInput(props) {
 // VIEW PANEL =================================================
 
 function ViewPanel(props) {
-    const screenRef = useRef(null)
+    const viewportRef = useRef(null)
     const canvasRef = useRef(null)
 
     useLayoutEffect(() => {
         const canvas = canvasRef.current
-        const width = canvas.width = screenRef.current.clientWidth
-        const height = canvas.height = screenRef.current.clientHeight
-        props.drawFunction(canvas.getContext('2d'), width, height)
+        const width = canvas.width = viewportRef.current.clientWidth
+        const height = canvas.height = viewportRef.current.clientHeight
+        props.onReady(canvas.getContext('2d'), width, height)
     })
 
     return <section className="view-panel">
-        <section className="screen" ref={screenRef}>
+        <section className="screen" ref={viewportRef}>
             <canvas ref={canvasRef}></canvas>
         </section>
-        <TrackerPanel world={props.world} />
+        <TrackerPanel world={props.world} onDrag={props.onDrag}/>
     </section>
 }
 
+
+// TRACKING PANEL ================================================
+
 function TrackerPanel(props) {
     const [point, setPoint] = useState([0, 0])
-    const [translation, setTranslation] = useState([0, 0])
     const [dragPoint, setDragPoint] = useState([0, 0])
     const [dragging, setDragging] = useState(false)
 
-    const onMouseMove = event => {
-        setPoint(getPoint(event))
-    }
+    const onMouseMove = event => setPoint(getEventPoint(event))
+    const onMouseLeave = () => setDragging(false)
 
     const onMouseDown = event => {
         event.preventDefault()
         setDragging(true)
-        setDragPoint(getPoint(event))
+        setDragPoint(getEventPoint(event))
     }
 
     const onMouseUp = event => {
-        const pt = dragPoint
-        const pt2 = getPoint(event)
+        if (! dragging)
+            return
+        const startPoint = dragPoint
+        const endPoint = getEventPoint(event)
+        props.onDrag(startPoint, endPoint)
         setDragging(false)
     }
 
-    const getPoint = event => {
+    const getEventPoint = event => {
         const {offsetX: x, offsetY: y} = event.nativeEvent
         return [x, y]
     }
@@ -108,13 +123,14 @@ function TrackerPanel(props) {
     return <section className="tracker"
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
+        onMouseLeave={onMouseLeave}
         onMouseMove={onMouseMove}>
-        {point[0]}, {point[1]} {dragging ? ', dragging' : ''}
+            {point[0]}, {point[1]} {dragging ? ', dragging' : ''}
     </section>
 }
 
 
-const drawWorld = (ctx, world, tilesize) => {
+const drawWorld = (world, ctx, tilesize) => {
     world.iter((tile, point) => {
         const color = world.reliefMap.codeMap.getColor(point)
         drawWorldTile(ctx, point, tilesize, color)
