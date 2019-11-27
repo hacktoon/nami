@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
 import World from '../../model/world'
-import WorldView from './WorldView'
-import WorldConfigPanel from './WorldConfigPanel'
+import WorldView from './view'
+import ConfigPanel from './config'
 
 
 export default function WorldGenerator(props) {
@@ -11,7 +11,7 @@ export default function WorldGenerator(props) {
     const onConfigChange = config => setWorld(new World(config))
 
     return <>
-        <WorldConfigPanel onChange={onConfigChange} />
+        <ConfigPanel onChange={onConfigChange} />
         <WorldView world={world} />
     </>
 }

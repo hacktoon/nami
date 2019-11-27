@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { WorldConfig } from '../../model/world'
 
 
-export default function WorldConfigPanel(props) {
+export default function ConfigPanel(props) {
     let [roughness, setRoughness] = useState(WorldConfig.DEFAULT_ROUGHNESS)
     let [size, setSize] = useState(WorldConfig.DEFAULT_SIZE)
     let [seed, setSeed] = useState('')
