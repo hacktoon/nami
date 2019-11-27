@@ -5,12 +5,8 @@ import { NumberInterpolation } from './base'
 
 
 function RandomColor() {
-    let letters = '0123456789ABCDEF'
-    let color = '#'
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Random.int(0, 16))]
-    }
-    return color
+    const number = (Math.random() * 0xFFFFFF << 0)
+    return `#${number.toString(16)}`
 }
 
 function HexByte(number) {

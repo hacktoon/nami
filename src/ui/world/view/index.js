@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Point } from '/lib/point'
+
 import { ViewCanvas, TrackerPanel } from './display'
 import { OptionsPanel } from './options'
+import { Point } from '/lib/point'
 
 
 const DEFAULT_TILE_SIZE = 16
