@@ -163,7 +163,7 @@ header #header-menu input {
     position: relative;
 }
 
-#world-view .view-panel .screen {
+#world-view .view-panel .display {
     overflow: hidden;
     position: absolute;
     top: 0;
@@ -172,7 +172,7 @@ header #header-menu input {
     bottom: 0;
 }
 
-#world-view .view-panel .screen canvas {
+#world-view .view-panel .display canvas {
     display: block;
 }
 

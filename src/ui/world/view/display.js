@@ -15,7 +15,7 @@ export function ViewCanvas(props) {
         props.onReady(canvas.getContext('2d'), width, height)
     })
 
-    return <section className="screen" ref={viewportRef}>
+    return <section className="display" ref={viewportRef}>
         <canvas ref={canvasRef}></canvas>
     </section>
 }
