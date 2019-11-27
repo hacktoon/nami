@@ -2,8 +2,6 @@ import React, { useState, useLayoutEffect, useRef } from 'react'
 import { Point } from '/lib/point'
 
 
-// VIEW CANVAS =================================================
-
 export function ViewCanvas(props) {
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
@@ -20,8 +18,6 @@ export function ViewCanvas(props) {
     </section>
 }
 
-
-// TRACKING PANEL ================================================
 
 export function TrackerPanel(props) {
     const [coordinates, setCoordinates] = useState(new Point(0, 0))
@@ -49,9 +45,8 @@ export function TrackerPanel(props) {
     }
 
     const updateCoordinates = point => {
-        const tilesize = props.tilesize
-        const gridX = Math.floor(point.x / tilesize)
-        const gridY = Math.floor(point.y / tilesize)
+        const gridX = Math.floor(point.x / props.tilesize)
+        const gridY = Math.floor(point.y / props.tilesize)
         setCoordinates(new Point(gridX, gridY))
     }
 
@@ -61,7 +56,6 @@ export function TrackerPanel(props) {
         const y = startDragPoint.y - currentPoint.y
         setOffset(new Point(x + offset.x, y + offset.y))
         setDragging(false)
-        clearTimeout(timeoutId)
     }
 
     const onMouseDown = event => {
@@ -72,16 +66,19 @@ export function TrackerPanel(props) {
 
     const onMouseLeave = () => setDragging(false)
 
-    const getEventPoint = event => {
-        const {offsetX: x, offsetY: y} = event.nativeEvent
-        return new Point(x, y)
-    }
-
-    return <section className="tracker"
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseLeave}
-        onMouseMove={onMouseMove}>
+    return (
+        <section className="tracker"
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+            onMouseLeave={onMouseLeave}
+            onMouseMove={onMouseMove}>
             {coordinates.x}, {coordinates.y}
-    </section>
+        </section>
+    )
+}
+
+
+const getEventPoint = event => {
+    const {offsetX: x, offsetY: y} = event.nativeEvent
+    return new Point(x, y)
 }
