@@ -36,22 +36,27 @@ class PaintConfig {
         this.tilesize = config.tilesize
     }
 
+    get gridWidth() {
+        return Math.ceil(this.width / this.tilesize)
+    }
+
+    get gridHeight() {
+        return Math.ceil(this.height / this.tilesize)
+    }
+
     get gridOffset() {
-        return new Point()
+        const x = Math.floor(this.offset.x / this.tilesize)
+        const y = Math.floor(this.offset.y / this.tilesize)
+        return new Point(x, y)
     }
 }
 
 const paintWorld = (world, config) => {
-    const { canvas, width, height, tilesize, offset } = config
-    const {x: offsetX, y: offsetY} = offset
-    const subGridWidth = Math.ceil(width / tilesize)
-    const subGridHeight = Math.ceil(height / tilesize)
-    const gridOffsetX = Math.floor(offsetX / tilesize)
-    const gridOffsetY = Math.floor(offsetY / tilesize)
+    const { canvas, tilesize } = config
 
-    for(let i = 0; i < subGridWidth; i++) {
-        for(let j = 0; j < subGridHeight; j++) {
-            const gridPoint = new Point(i + gridOffsetX, j + gridOffsetY)
+    for(let i = 0; i < config.gridWidth; i++) {
+        for(let j = 0; j < config.gridHeight; j++) {
+            const gridPoint = config.gridOffset.plus(new Point(i, j))
             const x = i * tilesize
             const y = j * tilesize
 
