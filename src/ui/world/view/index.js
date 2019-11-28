@@ -29,11 +29,11 @@ export default function WorldView(props) {
 
 class PaintConfig {
     constructor(config={}) {
-        this.canvas = config.canvas
-        this.width = config.width
-        this.height = config.height
-        this.offset = config.offset
-        this.tilesize = config.tilesize
+        this.canvas = config.canvas || <canvas />
+        this.offset = config.offset || new Point(0, 0)
+        this.width = Number(config.width)
+        this.height = Number(config.height)
+        this.tilesize = Number(config.tilesize)
     }
 
     get gridWidth() {
@@ -50,6 +50,7 @@ class PaintConfig {
         return new Point(x + i, y + j)
     }
 }
+
 
 const paintWorld = (world, config) => {
     const { canvas, tilesize, gridWidth, gridHeight } = config
