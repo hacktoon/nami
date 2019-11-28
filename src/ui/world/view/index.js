@@ -44,24 +44,21 @@ class PaintConfig {
         return Math.ceil(this.height / this.tilesize)
     }
 
-    get gridOffset() {
+    gridPoint(i, j) {
         const x = Math.floor(this.offset.x / this.tilesize)
         const y = Math.floor(this.offset.y / this.tilesize)
-        return new Point(x, y)
+        return new Point(x + i, y + j)
     }
 }
 
 const paintWorld = (world, config) => {
-    const { canvas, tilesize } = config
-
-    for(let i = 0; i < config.gridWidth; i++) {
-        for(let j = 0; j < config.gridHeight; j++) {
-            const gridPoint = config.gridOffset.plus(new Point(i, j))
+    const { canvas, tilesize, gridWidth, gridHeight } = config
+    for(let i = 0; i < gridWidth; i++) {
+        for(let j = 0; j < gridHeight; j++) {
             const x = i * tilesize
             const y = j * tilesize
-
-            const color = world.reliefMap.codeMap.getColor(gridPoint)
-            canvas.fillStyle = color
+            const gridPoint = config.gridPoint(i, j)
+            canvas.fillStyle = world.reliefMap.codeMap.getColor(gridPoint)
             canvas.fillRect(x, y, tilesize, tilesize)
         }
     }
