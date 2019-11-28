@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { ViewCanvas, TrackerPanel } from './display'
+import { Display } from './display'
 import { OptionsPanel } from './options'
 import { Point } from '/lib/point'
 
@@ -10,25 +10,19 @@ const DEFAULT_TILE_SIZE = 16
 
 export default function WorldView(props) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
-    const [offset, setOffset] = useState(new Point(0, 0))
 
-    const onTilesizeChange = event => setTilesize(event.target.value)
-
-    const drawFunction = (context, width, height) => {
-        const options = { context, width, height, tilesize, offset }
+    const drawFunction = (context, width, height, offset) => {
+        const options = { context, width, height, offset, tilesize }
         drawWorld(props.world, options)
     }
 
     return <section id="world-view">
         <OptionsPanel
+            onTilesizeChange={event => setTilesize(event.target.value)}
             world={props.world}
             tilesize={tilesize}
-            onTilesizeChange={onTilesizeChange}
         />
-        <section className="view-panel">
-            <ViewCanvas onReady={drawFunction} />
-            <TrackerPanel world={props.world} onDrag={setOffset} tilesize={tilesize} />
-        </section>
+        <Display drawFunction={drawFunction} />
     </section>
 }
 
@@ -52,8 +46,4 @@ const drawWorld = (world, options) => {
             context.fillRect(x, y, tilesize, tilesize)
         }
     }
-}
-
-const drawWorldTile = (context, point, tilesize, color) => {
-
 }

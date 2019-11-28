@@ -1,5 +1,15 @@
-import React, { useState, useLayoutEffect, useRef } from 'react'
+import React, { useState, useLayoutEffect, useRef, useCallback } from 'react'
 import { Point } from '/lib/point'
+
+
+export function Display(props) {
+    const [offset, setOffset] = useState(new Point(0, 0))
+
+    return <section className="view-panel">
+        <ViewCanvas onReady={props.drawFunction} offset={offset} />
+        <MouseTracker onDrag={setOffset} />
+    </section>
+}
 
 
 export function ViewCanvas(props) {
@@ -10,7 +20,7 @@ export function ViewCanvas(props) {
         const canvas = canvasRef.current
         const width = canvas.width = viewportRef.current.clientWidth
         const height = canvas.height = viewportRef.current.clientHeight
-        props.onReady(canvas.getContext('2d'), width, height)
+        props.onReady(canvas.getContext('2d'), width, height, props.offset)
     })
 
     return <section className="display" ref={viewportRef}>
@@ -19,66 +29,35 @@ export function ViewCanvas(props) {
 }
 
 
-export function TrackerPanel(props) {
-    const [coordinates, setCoordinates] = useState(new Point(0, 0))
-    const [offset, setOffset] = useState(new Point(0, 0))
-    const [startDragPoint, setStartDragPoint] = useState(new Point(0, 0))
+export function MouseTracker(props) {
+    const [dragPoint, setDragPoint] = useState(new Point(0, 0))
     const [dragging, setDragging] = useState(false)
-    let timeoutId
 
-    const onMouseMove = event => {
-        let currentPoint = getEventPoint(event)
-        let x = currentPoint.x + offset.x
-        let y = currentPoint.y + offset.y
-        let newPoint = new Point(x, y)
+    const onMouseMove = useCallback(event => {
+        if (! dragging)
+            return
+        let mousePoint = getMousePoint(event)
+        const point = dragPoint.minus(mousePoint)
+        props.onDrag(point)
+    })
 
-        if (dragging) {
-            clearTimeout(timeoutId)
-            timeoutId = setTimeout(() => {
-                const x = startDragPoint.x - currentPoint.x + offset.x
-                const y = startDragPoint.y - currentPoint.y + offset.y
-                newPoint = new Point(x, y)
-                props.onDrag(newPoint)
-            }, 60)
-        }
-        updateCoordinates(newPoint)
-    }
-
-    const updateCoordinates = point => {
-        const gridX = Math.floor(point.x / props.tilesize)
-        const gridY = Math.floor(point.y / props.tilesize)
-        setCoordinates(new Point(gridX, gridY))
-    }
-
-    const onMouseUp = event => {
-        const currentPoint = getEventPoint(event)
-        const x = startDragPoint.x - currentPoint.x
-        const y = startDragPoint.y - currentPoint.y
-        setOffset(new Point(x + offset.x, y + offset.y))
-        setDragging(false)
-    }
-
-    const onMouseDown = event => {
+    const onMouseDown = useCallback(event => {
         event.preventDefault()
         setDragging(true)
-        setStartDragPoint(getEventPoint(event))
-    }
+        setDragPoint(getMousePoint(event))
+    })
 
-    const onMouseLeave = () => setDragging(false)
+    const getMousePoint = useCallback(event => {
+        const {offsetX: x, offsetY: y} = event.nativeEvent
+        return new Point(x, y)
+    })
 
     return (
         <section className="tracker"
+            onMouseLeave={() => setDragging(false)}
+            onMouseUp={() => setDragging(false)}
             onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseLeave}
             onMouseMove={onMouseMove}>
-            {coordinates.x}, {coordinates.y}
         </section>
     )
-}
-
-
-const getEventPoint = event => {
-    const {offsetX: x, offsetY: y} = event.nativeEvent
-    return new Point(x, y)
 }
