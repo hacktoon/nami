@@ -19,6 +19,10 @@ export class Point {
         return this.x == point.x && this.y == point.y
     }
 
+    plus(point) {
+        return new Point(this.x + point.x, this.y + point.y)
+    }
+
     minus(point) {
         return new Point(this.x - point.x, this.y - point.y)
     }

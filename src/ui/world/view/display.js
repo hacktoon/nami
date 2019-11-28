@@ -1,4 +1,5 @@
-import React, { useState, useLayoutEffect, useRef, useCallback } from 'react'
+import React, { useRef, useState, useLayoutEffect } from 'react'
+
 import { Point } from '/lib/point'
 
 
@@ -24,40 +25,49 @@ export function Canvas(props) {
     })
 
     return <div className="canvasWrapper" ref={viewportRef}>
-        <canvas ref={canvasRef}></canvas>
+        <canvas ref={canvasRef} ></canvas>
     </div>
 }
 
 
 export function MouseTracking(props) {
-    const [dragPoint, setDragPoint] = useState(new Point(0, 0))
+    const [dragOrigin, setDragOrigin] = useState(new Point(0, 0))
     const [dragging, setDragging] = useState(false)
+    const [offset, setOffset] = useState(new Point(0, 0))
 
-    const onMouseMove = useCallback(event => {
-        if (! dragging)
-            return
-        let mousePoint = getMousePoint(event)
-        const point = dragPoint.minus(mousePoint)
-        props.onDrag(point)
-    })
+    const onMouseMove = event => {
+        if (! dragging) return
+        const mousePoint = getMousePoint(event)
+        props.onDrag(getTotalOffset(mousePoint))
+    }
 
-    const onMouseDown = useCallback(event => {
+    const onMouseDown = event => {
         event.preventDefault()
+        setDragOrigin(getMousePoint(event))
         setDragging(true)
-        setDragPoint(getMousePoint(event))
-    })
+    }
 
-    const getMousePoint = useCallback(event => {
-        const {offsetX: x, offsetY: y} = event.nativeEvent
+    const onMouseUp = event => {
+        const mousePoint = getMousePoint(event)
+        setOffset(getTotalOffset(mousePoint))
+        setDragging(false)
+    }
+
+    const getTotalOffset = point => {
+        return dragOrigin.minus(point).plus(offset)
+    }
+
+    const getMousePoint = event => {
+        const { offsetX: x, offsetY: y } = event.nativeEvent
         return new Point(x, y)
-    })
+    }
 
     return (
-        <section className="tracker"
+        <div className="tracker"
             onMouseLeave={() => setDragging(false)}
-            onMouseUp={() => setDragging(false)}
+            onMouseUp={onMouseUp}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}>
-        </section>
+        </div>
     )
 }
