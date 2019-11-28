@@ -11,9 +11,9 @@ const DEFAULT_TILE_SIZE = 16
 export default function WorldView(props) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
 
-    const drawFunction = (context, width, height, offset) => {
-        const options = { context, width, height, offset, tilesize }
-        drawWorld(props.world, options)
+    const painter = (canvas, width, height, offset) => {
+        const config = new PaintConfig({ canvas, width, height, offset, tilesize })
+        paintWorld(props.world, config)
     }
 
     return <section id="world-view">
@@ -22,13 +22,27 @@ export default function WorldView(props) {
             world={props.world}
             tilesize={tilesize}
         />
-        <Display drawFunction={drawFunction} />
+        <Display painter={painter} />
     </section>
 }
 
 
-const drawWorld = (world, options) => {
-    const { context, width, height, tilesize, offset } = options
+class PaintConfig {
+    constructor(config={}) {
+        this.canvas = config.canvas
+        this.width = config.width
+        this.height = config.height
+        this.offset = config.offset
+        this.tilesize = config.tilesize
+    }
+
+    get gridOffset() {
+        return new Point()
+    }
+}
+
+const paintWorld = (world, config) => {
+    const { canvas, width, height, tilesize, offset } = config
     const {x: offsetX, y: offsetY} = offset
     const subGridWidth = Math.ceil(width / tilesize)
     const subGridHeight = Math.ceil(height / tilesize)
@@ -42,8 +56,8 @@ const drawWorld = (world, options) => {
             const y = j * tilesize
 
             const color = world.reliefMap.codeMap.getColor(gridPoint)
-            context.fillStyle = color
-            context.fillRect(x, y, tilesize, tilesize)
+            canvas.fillStyle = color
+            canvas.fillRect(x, y, tilesize, tilesize)
         }
     }
 }

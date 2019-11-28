@@ -6,13 +6,13 @@ export function Display(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
     return <section className="view-panel">
-        <ViewCanvas onReady={props.drawFunction} offset={offset} />
-        <MouseTracker onDrag={setOffset} />
+        <Canvas painter={props.painter} offset={offset} />
+        <MouseTracking onDrag={setOffset} />
     </section>
 }
 
 
-export function ViewCanvas(props) {
+export function Canvas(props) {
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
 
@@ -20,16 +20,16 @@ export function ViewCanvas(props) {
         const canvas = canvasRef.current
         const width = canvas.width = viewportRef.current.clientWidth
         const height = canvas.height = viewportRef.current.clientHeight
-        props.onReady(canvas.getContext('2d'), width, height, props.offset)
+        props.painter(canvas.getContext('2d'), width, height, props.offset)
     })
 
-    return <section className="display" ref={viewportRef}>
+    return <div className="canvasWrapper" ref={viewportRef}>
         <canvas ref={canvasRef}></canvas>
-    </section>
+    </div>
 }
 
 
-export function MouseTracker(props) {
+export function MouseTracking(props) {
     const [dragPoint, setDragPoint] = useState(new Point(0, 0))
     const [dragging, setDragging] = useState(false)
 
