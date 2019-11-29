@@ -14,7 +14,7 @@ body {
     padding: 0;
 }
 
-#container {
+#nami-app {
     display: grid;
     grid-template-rows: 50px 50px auto;
 }
@@ -37,28 +37,19 @@ header #header-title {
 header #header-menu {
     border: 0;
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto;
     justify-items: right;
     justify-content: end;
 }
 
-header #header-menu .header-menu-item {
-    border-left: 1px solid #444;
+header #header-menu .field {
     line-height: 50px;
-    padding: 0 1em;
+    padding: 0 10px;
 }
 
 header #header-menu label {
     margin-right: 0.5em;
     text-transform: uppercase;
-}
-
-header #header-menu input {
-    width: 100px;
-    height: 30px;
-    line-height: 30px;
-    padding: 0 .5em;
-    border: 0;
 }
 
 

@@ -1,30 +1,30 @@
-import _ from 'lodash'
+import React, { useState } from 'react'
+import ReactDOM from 'react-dom'
 
-import React from 'react'
-import { render } from 'react-dom'
-
-import WorldGenerator from './ui/world'
+import AppInput from './ui'
+import WorldApp from './ui/world'
 
 import "./index.css"
 
 
-// const getCanvasMousePoint = (e, viewCanvas) => {
-//     let scrollOffset = window.pageYOffset || document.documentElement.scrollTop,
-//         mouseX = e.clientX - viewCanvas.offsetLeft,
-//         mouseY = e.clientY - viewCanvas.offsetTop + scrollOffset,
-//         x = _.parseInt(mouseX / getTileSizeInput()),
-//         y = _.parseInt(mouseY / getTileSizeInput());
-//     return new Point(x, y);
-// }
+const APPS = {
+    world: {name: 'World builder', component: <WorldApp />}
+}
+const DEFAULT_APP = APPS.world
 
 
-function App() {
+function Nami() {
+    const [app, setApp] = useState(DEFAULT_APP)
+
     return <>
         <header>
             <section id="header-title">Nami</section>
+            <section id="header-menu">
+                <AppInput apps={APPS} current={DEFAULT_APP} onChange={setApp} />
+            </section>
         </header>
-        <WorldGenerator />
+        {app.component}
     </>
 }
 
-render(<App />, document.getElementById('container'));
+ReactDOM.render(<Nami />, document.getElementById('nami-app'));
