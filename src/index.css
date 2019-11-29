@@ -153,6 +153,7 @@ header #header-menu {
 }
 
 #world-view .view-panel .tracker {
+    cursor: pointer;
     overflow: hidden;
     line-height: 30px;
     padding: 0 10px;
