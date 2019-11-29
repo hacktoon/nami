@@ -35,7 +35,7 @@ export default function ConfigPanel(props) {
 
 
 function RoughnessInput(props) {
-    return <label htmlFor="roughnessInput" className="config-field">
+    return <label htmlFor="roughnessInput" className="field">
         Roughness
         <input id="roughnessInput"
             onChange={props.onChange}
@@ -45,22 +45,19 @@ function RoughnessInput(props) {
 
 
 function SizeInput(props) {
-    return <label htmlFor="sizeInput" className="config-field">
+    return <label htmlFor="sizeInput" className="field">
         Size
         <select id="sizeInput" value={props.size} onChange={props.onChange}>
             <option value="257">257</option>
             <option value="129">129</option>
             <option value="65">65</option>
-            <option value="33">33</option>
-            <option value="17">17</option>
-            <option value="9">9</option>
         </select>
     </label>
 }
 
 
 function SeedInput(props) {
-    return <section className="config-field">
+    return <section className="field">
         <label htmlFor="seedInput">Seed</label>
         <input id="seedInput" type="text" onChange={props.onChange} autoComplete="off" />
     </section>
@@ -68,7 +65,7 @@ function SeedInput(props) {
 
 
 function BuildButton(props) {
-    return <section className="config-field">
+    return <section className="field">
         <button id="generateButton" type="submit">Build</button>
     </section>
 }

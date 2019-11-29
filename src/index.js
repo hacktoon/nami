@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 import AppInput from './ui'
-import WorldApp from './ui/world'
+import WorldBuilderApp from './ui/world'
 
 import "./index.css"
 
 
 const APPS = {
-    world: {name: 'World builder', component: <WorldApp />}
+    world: {name: 'World builder', component: <WorldBuilderApp />}
 }
 const DEFAULT_APP = APPS.world
 

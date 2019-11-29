@@ -14,10 +14,10 @@ body {
 }
 
 select, input {
-    font-size: 1em;
-    height: 30px;
     border: 1px solid #CCC;
     background: #FFF;
+    font-size: 1em;
+    height: 30px;
 }
 
 input { padding: 10px; }
@@ -25,6 +25,16 @@ input { padding: 10px; }
 select { padding: 0 5px; }
 
 canvas { display: block; }
+
+.field {
+    display: inline-block;
+    line-height: 50px;
+    padding: 0 10px;
+}
+
+label.field {
+    margin-right: 0.5em;
+}
 
 
 #nami-app {
@@ -36,11 +46,11 @@ header {
     background: #111;
     color: white;
     display: grid;
-    font-weight: bold;
     grid-template-columns: 100px auto;
 }
 
 header #header-title {
+    font-weight: bold;
     font-size: 1.8em;
     text-transform: uppercase;
     line-height: 50px;
@@ -55,28 +65,17 @@ header #header-menu {
     justify-content: end;
 }
 
-header #header-menu .field {
-    line-height: 50px;
-    padding: 0 10px;
-}
-
-header #header-menu label {
-    margin-right: 0.5em;
-    text-transform: uppercase;
-}
-
 
 /* WorldConfig ---------------------- */
 
 #world-config {
-    background: #DDD;
-    display: block;
+    background: #CCC;
+    display: flexbox;
     line-height: 50px;
     margin: 0;
-    display: flexbox;
 }
 
-#world-config .config-field {
+#world-config .field {
     float: left;
     padding: 0 10px;
 }
@@ -128,11 +127,6 @@ header #header-menu label {
     background: #FFF;
     line-height: 30px;
     padding: 10px 0 0 10px;
-}
-
-#world-view .options-panel .item {
-    display: block;
-    margin-bottom: 10px;
 }
 
 #world-view .options-panel label {
