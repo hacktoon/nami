@@ -18,7 +18,7 @@ export function OptionsPanel(props) {
     </section>
 }
 
-export  function LayerInput() {
+export function LayerInput() {
     return <label className="item field" htmlFor="viewInput">
         View
         <select id="viewInput">
