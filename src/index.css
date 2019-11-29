@@ -1,10 +1,9 @@
 * {
     box-sizing: border-box;
+    border: none;
     padding: 0;
     margin: 0;
 }
-
-canvas { display: block; }
 
 body {
     background: #FFF;
@@ -13,6 +12,20 @@ body {
     margin: 0;
     padding: 0;
 }
+
+select, input {
+    font-size: 1em;
+    height: 30px;
+    border: 1px solid #CCC;
+    background: #FFF;
+}
+
+input { padding: 10px; }
+
+select { padding: 0 5px; }
+
+canvas { display: block; }
+
 
 #nami-app {
     display: grid;
@@ -71,26 +84,6 @@ header #header-menu label {
 #world-config label {
     line-height: 50px;
     padding-right: 5px;
-}
-
-#world-config select,
-#world-config input {
-    font-size: 1em;
-}
-
-#world-config select,
-#world-config input {
-    height: 30px;
-    border: 1px solid #CCC;
-    background: #FFF;
-}
-
-#world-config input {
-    padding: 10px;
-}
-
-#world-config select {
-    padding: 0 5px;
 }
 
 #world-config #roughnessInput {
