@@ -5,7 +5,7 @@ import { OptionsPanel } from './options'
 import { Point } from '/lib/point'
 
 
-const DEFAULT_TILE_SIZE = 16
+const DEFAULT_TILE_SIZE = 10
 
 
 export default function WorldView(props) {

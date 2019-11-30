@@ -1,20 +1,21 @@
 import React from 'react'
 
+import { TextField, NumberField } from '../../lib/field'
+
 
 export function OptionsPanel(props) {
     return <section className="options-panel">
         <p className="item">Name: {props.world.name}</p>
         <p className="item">Seed: {props.world.seed}</p>
-        <label className="item field" id="tilesizeField" htmlFor="tilesizeInput">
-            Tile size:
-            <input type="number" id="tilesizeInput"
-                onChange={props.onTilesizeChange}
-                value={props.tilesize}
-                min="1"
-                step="1"
-            />
-        </label>
+        <NumberField id="tilesize"
+            label="Tile size"
+            value={props.tilesize}
+            onChange={props.onTilesizeChange}
+            step={1}
+            min={1}
+        />
         <LayerInput />
+
     </section>
 }
 
