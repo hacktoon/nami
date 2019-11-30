@@ -5,7 +5,7 @@ import { OptionsPanel } from './options'
 import { Point } from '/lib/point'
 
 
-const DEFAULT_TILE_SIZE = 10
+const DEFAULT_TILE_SIZE = 3
 
 
 export default function WorldView(props) {
@@ -44,7 +44,7 @@ class PaintConfig {
         return Math.ceil(this.height / this.tilesize)
     }
 
-    gridPoint(i, j) {
+    getGridPoint(i, j) {
         const x = Math.floor(this.offset.x / this.tilesize)
         const y = Math.floor(this.offset.y / this.tilesize)
         return new Point(x + i, y + j)
@@ -58,7 +58,7 @@ const paintWorld = (world, config) => {
         for(let j = 0; j < gridHeight; j++) {
             const x = i * tilesize
             const y = j * tilesize
-            const gridPoint = config.gridPoint(i, j)
+            const gridPoint = config.getGridPoint(i, j)
             canvas.fillStyle = world.reliefMap.codeMap.getColor(gridPoint)
             canvas.fillRect(x, y, tilesize, tilesize)
         }
