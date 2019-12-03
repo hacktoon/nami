@@ -27,17 +27,17 @@ export default function ConfigPanel(props) {
     return <section id="world-config">
         <form onSubmit={onSubmit}>
             <section className="Fieldset Horizontal">
-            <OptionInput label="Size" value={size}
-                axis="H"
-                onChange={onSizeChange} options={{
-                    257: 257,
-                    129: 129,
-                    65: 65,
-                }}/>
-            <NumberInput axis="H" label="Roughness"
-                value={roughness} step={1} onChange={onRoughnessChange} />
-            <TextInput axis="H" label="Seed" onChange={onSeedChange} />
-            <Button onClick={onSubmit} />
+                <OptionInput label="Size" value={size}
+                    axis="H"
+                    onChange={onSizeChange} options={{
+                        257: 257,
+                        129: 129,
+                        65: 65,
+                    }}/>
+                <NumberInput axis="H" label="Roughness"
+                    value={roughness} step={1} onChange={onRoughnessChange} />
+                <TextInput axis="H" label="Seed" onChange={onSeedChange} />
+                <Button onClick={onSubmit} />
             </section>
         </form>
     </section>
@@ -45,7 +45,7 @@ export default function ConfigPanel(props) {
 
 
 function Button(props) {
-    return <section className="field">
+    return <section>
         <button className="Button" type="submit">Build</button>
     </section>
 }

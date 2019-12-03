@@ -41,5 +41,9 @@ canvas { display: block; }
 
 .Fieldset {
     display: grid;
-    grid-template-columns: repeat(4, auto);
+}
+
+.Fieldset.Horizontal {
+    grid-auto-flow: column;
+    place-items: left;
 }
