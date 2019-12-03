@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import AppInput from './ui'
 import WorldBuilderApp from './ui/world'
 
+import "./base.css"
 import "./index.css"
 
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import { TextInput, NumberInput, OptionInput } from '../lib/field'
 import { WorldConfig } from '../../model/world'
 
 
@@ -25,47 +26,26 @@ export default function ConfigPanel(props) {
 
     return <section id="world-config">
         <form onSubmit={onSubmit}>
-            <SizeInput size={size} onChange={onSizeChange}/>
-            <RoughnessInput roughness={roughness} onChange={onRoughnessChange}/>
-            <SeedInput onChange={onSeedChange} />
-            <BuildButton onClick={onSubmit} />
+            <section className="Fieldset Horizontal">
+            <OptionInput label="Size" value={size}
+                axis="H"
+                onChange={onSizeChange} options={{
+                    257: 257,
+                    129: 129,
+                    65: 65,
+                }}/>
+            <NumberInput axis="H" label="Roughness"
+                value={roughness} step={1} onChange={onRoughnessChange} />
+            <TextInput axis="H" label="Seed" onChange={onSeedChange} />
+            <Button onClick={onSubmit} />
+            </section>
         </form>
     </section>
 }
 
 
-function RoughnessInput(props) {
-    return <label htmlFor="roughnessInput" className="field">
-        Roughness
-        <input id="roughnessInput"
-            onChange={props.onChange}
-            type="number" step="1" value={props.roughness} />
-    </label>
-}
-
-
-function SizeInput(props) {
-    return <label htmlFor="sizeInput" className="field">
-        Size
-        <select id="sizeInput" value={props.size} onChange={props.onChange}>
-            <option value="257">257</option>
-            <option value="129">129</option>
-            <option value="65">65</option>
-        </select>
-    </label>
-}
-
-
-function SeedInput(props) {
+function Button(props) {
     return <section className="field">
-        <label htmlFor="seedInput">Seed</label>
-        <input id="seedInput" type="text" onChange={props.onChange} autoComplete="off" />
-    </section>
-}
-
-
-function BuildButton(props) {
-    return <section className="field">
-        <button id="generateButton" type="submit">Build</button>
+        <button className="Button" type="submit">Build</button>
     </section>
 }

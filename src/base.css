@@ -1,0 +1,45 @@
+* {
+    box-sizing: border-box;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background: #FFF;
+    color: #333;
+    font: 14px inherit Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+select, input {
+    border: 1px solid #CCC;
+    background: #FFF;
+    font-size: 1em;
+    height: 30px;
+    width: 100%;
+}
+
+input { padding: 10px; }
+
+select { padding: 0 5px; }
+
+canvas { display: block; }
+
+
+.Field {
+    display: grid;
+}
+
+.Field-V { grid-template-rows: auto auto; }
+
+.Field-H {
+    grid-template-columns: auto auto;
+    align-content: center;
+}
+
+.Fieldset {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+}
