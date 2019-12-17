@@ -1,20 +1,20 @@
 import React from 'react'
 
-import { NumberInput, OptionInput, Output } from '../../lib/field'
+import { NumberField, MultiOptionField, OutputField } from '../../lib/field'
 
 
 export function OptionsPanel(props) {
     return <section className="options-panel">
-        <Output label="Name" value={props.world.name} />
-        <Output label="Seed" value={props.world.seed} />
-        <NumberInput id="tilesize"
+        <OutputField label="Name" value={props.world.name} />
+        <OutputField label="Seed" value={props.world.seed} />
+        <NumberField id="tilesize"
             label="Tile size"
             value={props.tilesize}
             onChange={props.onTilesizeChange}
             step={1}
             min={1}
         />
-        <OptionInput label="Layer" options={{
+        <MultiOptionField label="Layer" options={{
             heightmap: "Heightmap",
             relief: "Relief",
             heat: "Heat",

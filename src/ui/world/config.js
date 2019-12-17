@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { TextInput, NumberInput, OptionInput } from '../lib/field'
+import { TextField, NumberField, MultiOptionField } from '../lib/field'
 import { WorldConfig } from '../../model/world'
 
 
@@ -24,19 +24,20 @@ export default function ConfigPanel(props) {
         props.onChange(config)
     }
 
+    const sizeOptions = {
+        257: 257,
+        129: 129,
+        65: 65,
+    }
+
     return <section id="world-config">
         <form onSubmit={onSubmit}>
             <section className="Fieldset Horizontal">
-                <OptionInput label="Size" value={size}
-                    axis="H"
-                    onChange={onSizeChange} options={{
-                        257: 257,
-                        129: 129,
-                        65: 65,
-                    }}/>
-                <NumberInput axis="H" label="Roughness"
+                <MultiOptionField label="Size" value={size}
+                    axis="H" onChange={onSizeChange} options={sizeOptions} />
+                <NumberField axis="H" label="Roughness"
                     value={roughness} step={1} onChange={onRoughnessChange} />
-                <TextInput axis="H" label="Seed" onChange={onSeedChange} />
+                <TextField axis="H" label="Seed" onChange={onSeedChange} />
                 <Button onClick={onSubmit} />
             </section>
         </form>

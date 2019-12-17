@@ -3,50 +3,81 @@ import React from 'react'
 
 // PUBLIC COMPONENTS ===============================================
 
-export const TextInput = props => Input('text', props)
+export const TextField = props => InputField('text', props)
 
-export const NumberInput = props => Input('number', props)
+export const NumberField = props => InputField('number', props)
 
-const Input = (type, props) => {
-    const id = `${props.label}-${type}-field`
+const InputField = (type, props) => {
+    const id = `${props.label}-${type}-input-field`
     const onChange = props.onChange && (event => props.onChange(event.target.value))
-    const axis = getFieldAxis(props.axis)
 
-    return <section className={`Field Field-${axis} Input`}>
-        <label className="Label" htmlFor={id}>{props.label}</label>
-        <input type={type} id={id} onChange={onChange} autocomplete="off" />
-    </section>
+    return <Field htmlFor={id} label={props.label}>
+        <input type={type} id={id} onChange={onChange} autoComplete="off" />
+    </Field>
 }
 
 
-export const OptionInput = props => {
-    const id = `${props.label}-option-field`
+export const MultiOptionField = props => {
+    const id = `${props.label}-multi-option-field`
     const onChange = props.onChange && (event => props.onChange(event.target.value))
-    const axis = getFieldAxis(props.axis)
 
-    const options = Object.entries(props.options).map((entry, index) => {
-        const [value, label] = entry
+    const options = Object.entries(props.options).map((option, index) => {
+        const [value, label] = option
         return <option key={index} value={value}>{label}</option>
     })
 
-    return <section className={`Field Field-${axis} Select`}>
-        <label className="Label" htmlFor={id}>{props.label}</label>
+    return <Field htmlFor={id} label={props.label}>
         <select id={id} value={props.value} onChange={onChange}>
             {options}
         </select>
+    </Field>
+}
+
+
+export function OutputField(props) {
+    return <Field label={props.label}>
+        <output className="Value">{props.value}</output>
+    </Field>
+}
+
+export function Field(props) {
+    const label = String(props.label)
+
+    return <section className="Field">
+        {label}
+        {props.children}
     </section>
 }
 
+{/*
 
-export function Output(props) {
-    const axis = getFieldAxis(props.axis)
+GridLayout
+ListLayout
+    align="vertical|horizontal"
+FlowLayout
+CardLayout
+    default=<Component>
 
-    return <section className={`Field Field-${axis}`}>
-        <span className="Label">{props.label}</span>
-        <output className="Label">{props.value}</output>
-    </section>
-}
+==============================================
+OutputField
+    label
+    value
 
-function getFieldAxis(text) {
-    return String(text).match(/^[VvHh]$/) || 'H'
-}
+BooleanField
+FloatField
+IntField
+TextField
+    default
+    label
+    value
+
+AnyOptionField
+MultiOptionField
+    options
+    default
+    label
+
+FieldSet
+Form
+
+*/}
