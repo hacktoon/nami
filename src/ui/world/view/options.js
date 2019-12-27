@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { NumberField, MultiOptionField, OutputField } from '../../lib/field'
+import { NumberField, SelectField, OutputField } from '../../lib/field'
 
 
 export function OptionsPanel(props) {
@@ -14,7 +14,7 @@ export function OptionsPanel(props) {
             step={1}
             min={1}
         />
-        <MultiOptionField label="Layer" options={{
+        <SelectField label="Layer" options={{
             heightmap: "Heightmap",
             relief: "Relief",
             heat: "Heat",

@@ -1,83 +1,52 @@
 import React from 'react'
 
 
+function normalizeText(text) {
+    return text.toLowerCase().replace(/\s+/g, '-')
+}
+
+function buildSelectOptions(options) {
+    const entries = Object.entries(options)
+    return entries.map((option, index) => {
+        const [value, label] = option
+        return <option key={index} value={value}>{label}</option>
+    })
+}
+
+function EditableField(props) {
+    const label = String(props.label || '')
+    return <section className="Field">
+        <label htmlFor={props.id}>{props.label}</label>
+        {props.children}
+    </section>
+}
+
+function InputField(type, props) {
+    const id = `${normalizeText(props.label)}-input-field`
+    return <EditableField id={id} label={props.label}>
+        <input id={id} type={type} {...props} />
+    </EditableField>
+}
+
+
 // PUBLIC COMPONENTS ===============================================
 
 export const TextField = props => InputField('text', props)
 
 export const NumberField = props => InputField('number', props)
 
-const InputField = (type, props) => {
-    const id = `${props.label}-${type}-input-field`
-    const onChange = props.onChange && (event => props.onChange(event.target.value))
-
-    return <Field htmlFor={id} label={props.label}>
-        <input type={type} id={id} onChange={onChange} autoComplete="off" />
-    </Field>
-}
-
-
-export const MultiOptionField = props => {
-    const id = `${props.label}-multi-option-field`
-    const onChange = props.onChange && (event => props.onChange(event.target.value))
-
-    const options = Object.entries(props.options).map((option, index) => {
-        const [value, label] = option
-        return <option key={index} value={value}>{label}</option>
-    })
-
-    return <Field htmlFor={id} label={props.label}>
-        <select id={id} value={props.value} onChange={onChange}>
-            {options}
+export function SelectField(props) {
+    const id = `${normalizeText(props.label)}-select-field`
+    return <EditableField id={id} label={props.label}>
+        <select id={id} value={props.value} onChange={props.onChange}>
+            {buildSelectOptions(props.options)}
         </select>
-    </Field>
+    </EditableField>
 }
-
 
 export function OutputField(props) {
-    return <Field label={props.label}>
-        <output className="Value">{props.value}</output>
-    </Field>
-}
-
-export function Field(props) {
-    const label = String(props.label)
-
     return <section className="Field">
-        {label}
-        {props.children}
+        <p className="label">{props.label}</p>
+        <output className="value">{props.value}</output>
     </section>
 }
-
-{/*
-
-GridLayout
-ListLayout
-    align="vertical|horizontal"
-FlowLayout
-CardLayout
-    default=<Component>
-
-==============================================
-OutputField
-    label
-    value
-
-BooleanField
-FloatField
-IntField
-TextField
-    default
-    label
-    value
-
-AnyOptionField
-MultiOptionField
-    options
-    default
-    label
-
-FieldSet
-Form
-
-*/}
