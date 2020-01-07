@@ -35,8 +35,12 @@ export default function ConfigPanel(props) {
             <section className="Fieldset Horizontal">
                 <SelectField label="Size" value={size}
                     onChange={onSizeChange} options={sizeOptions} />
-                <NumberField  label="Roughness"
-                    value={roughness} step={1} onChange={onRoughnessChange} />
+                <NumberField
+                    label="Roughness"
+                    value={roughness}
+                    step={1}
+                    onChange={onRoughnessChange}
+                />
                 <TextField  label="Seed" onChange={onSeedChange} />
                 <Button onClick={onSubmit} />
             </section>

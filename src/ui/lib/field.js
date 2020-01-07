@@ -1,48 +1,62 @@
 import React from 'react'
 
 
-function normalizeText(text) {
-    return text.toLowerCase().replace(/\s+/g, '-')
+// HELPER FUNCTIONS ===============================================
+
+function generateFieldID(type, props) {
+    const id = props.label.toLowerCase().replace(/\s+/g, '-')
+    return `${id}:${Number(new Date())}-${type}`
 }
 
-function buildSelectOptions(options) {
-    const entries = Object.entries(options)
-    return entries.map((option, index) => {
-        const [value, label] = option
-        return <option key={index} value={value}>{label}</option>
-    })
-}
 
-function EditableField(props) {
+// GENERIC FIELDS ===============================================
+
+function LabeledField(props) {
     const label = String(props.label || '')
     return <section className="Field">
-        <label htmlFor={props.id}>{props.label}</label>
+        <label htmlFor={props.id}>{label}</label>
         {props.children}
     </section>
 }
 
 function InputField(type, props) {
-    const id = `${normalizeText(props.label)}-input-field`
-    return <EditableField id={id} label={props.label}>
-        <input id={id} type={type} {...props} />
-    </EditableField>
+    const {label, ...inputProps} = props
+    const id = generateFieldID(type, props)
+    return <LabeledField id={id} label={label}>
+        <input id={id} type={type} {...inputProps} />
+    </LabeledField>
 }
 
 
 // PUBLIC COMPONENTS ===============================================
 
-export const TextField = props => InputField('text', props)
+export function TextField(props) {
+    return InputField('text', props)
+}
 
-export const NumberField = props => InputField('number', props)
+export function NumberField(props) {
+    return InputField('number', props)
+}
+
 
 export function SelectField(props) {
-    const id = `${normalizeText(props.label)}-select-field`
-    return <EditableField id={id} label={props.label}>
+    const id = generateFieldID("select", props)
+
+    function buildSelectOptions(options) {
+        const entries = Object.entries(options)
+        return entries.map((option, index) => {
+            const [value, label] = option
+            return <option key={index} value={value}>{label}</option>
+        })
+    }
+
+    return <LabeledField id={id} label={props.label}>
         <select id={id} value={props.value} onChange={props.onChange}>
             {buildSelectOptions(props.options)}
         </select>
-    </EditableField>
+    </LabeledField>
 }
+
 
 export function OutputField(props) {
     return <section className="Field">
