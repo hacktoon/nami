@@ -1,6 +1,7 @@
 * {
     box-sizing: border-box;
     border: none;
+    font: normal 1.1rem monospace;
     padding: 0;
     margin: 0;
 }
@@ -8,43 +9,67 @@
 body {
     background: #FFF;
     color: #333;
-    font: 14px inherit Arial, Helvetica, sans-serif;
-    margin: 0;
-    padding: 0;
 }
 
 select, input {
-    border: 1px solid #CCC;
     background: #FFF;
+    border: 1px solid #CCC;
+    display: block;
     font-size: 1em;
-    height: 30px;
-    width: 100%;
 }
 
-input { padding: 10px; }
+input {
+    padding: 10px;
+}
 
-select { padding: 0 5px; }
+select {
+    padding: 0 5px;
+}
+
+label {
+    font-weight: bold;
+}
 
 canvas { display: block; }
 
 
-.Field {
-    display: flex;
-    align-items: stretch;
-}
-
-.Vertical .Field { flex-direction: column; }
-
-.Horizontal .Field {
-    flex-direction: row;
-    align-content: center;
-}
+/* FIELDSETS ==================================== */
 
 .Fieldset {
     display: flex;
+    padding: 5px;
 }
 
 .Fieldset.Horizontal {
     flex-direction: row;
-    align-items: stretch;
+    height: 100%;
+}
+.Fieldset.Vertical {
+    flex-direction: column;
+}
+
+
+/* FIELDS ======================================= */
+
+.Button, .Field {
+    display: flex;
+}
+
+.Vertical .Field {
+    flex-direction: column;
+}
+
+
+.Horizontal label {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+.Horizontal .Field {
+    flex-direction: row;
+    height: 100%;
+}
+
+.Horizontal .Button {
+    height: 100%;
 }
