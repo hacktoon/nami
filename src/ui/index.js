@@ -1,4 +1,5 @@
 import React from 'react'
+import { SelectField } from './lib/field'
 
 
 export default function AppInput({ apps, current, setApp }) {
@@ -7,13 +8,13 @@ export default function AppInput({ apps, current, setApp }) {
         setApp(apps[id])
     }
 
-    return <label htmlFor="appInput" className="field">
-        App
-        <select id="appInput" value={current.id} onChange={onChange}>
-            {Object.entries(apps).map((entry, i) => {
-                const [id, app] = entry
-                return <option key={i} value={id}>{app.name}</option>
-            })}
-        </select>
-    </label>
+    const appOptions = Object.fromEntries(
+        Object.entries(apps).map(entry => {
+            const [id, app] = entry
+            return [id, app.name]
+        }))
+
+    return <SelectField label="App" value={current.id}
+        onChange={onChange} options={appOptions} />
+
 }

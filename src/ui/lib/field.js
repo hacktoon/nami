@@ -14,6 +14,8 @@ function buildSelectOptions(options) {
     const entries = Object.entries(options)
 
     return entries.map((option, index) => {
+        console.log(option);
+
         const [value, label] = option
         return <option key={index} value={value}>{label}</option>
     })
@@ -26,7 +28,7 @@ function LabeledField(props) {
     const className = 'Field'
     const label = props.label || className
     return <section className={className}>
-        <label htmlFor={props.id}>{label}</label>
+        <label className="Label" htmlFor={props.id}>{label}</label>
         {props.children}
     </section>
 }
@@ -66,7 +68,7 @@ export function SelectField(props) {
 
 export function OutputField(props) {
     return <section className="Field">
-        <p className="label">{props.label}</p>
+        <p className="Label">{props.label}</p>
         <output className="value">{props.value}</output>
     </section>
 }

@@ -1,7 +1,7 @@
 * {
     box-sizing: border-box;
     border: none;
-    font: normal 1.1rem monospace;
+    font: normal 1.05rem monospace;
     padding: 0;
     margin: 0;
 }
@@ -26,7 +26,15 @@ select {
     padding: 0 5px;
 }
 
-label {
+.Label {
+    font-weight: bold;
+}
+
+button {
+    background: none;
+    cursor: pointer;
+    padding: 0 1em;
+    text-transform: uppercase;
     font-weight: bold;
 }
 
@@ -51,23 +59,35 @@ canvas { display: block; }
 
 /* FIELDS ======================================= */
 
-.Button, .Field {
+.Button {
     display: flex;
+    background: rgb(6, 94, 6);
 }
+.Button button {
+    color: #FFF;
+}
+
+.Button:active {
+    background: rgb(133, 156, 141);
+}
+
 
 .Vertical .Field {
     flex-direction: column;
 }
 
 
-.Horizontal label {
+.Horizontal .Label {
     display: flex;
     align-items: center;
     height: 100%;
 }
+
 .Horizontal .Field {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: auto auto;
     height: 100%;
+    grid-gap: 5px;
 }
 
 .Horizontal .Button {

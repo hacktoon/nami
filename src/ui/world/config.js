@@ -49,6 +49,6 @@ export default function ConfigPanel(props) {
 
 function Button(props) {
     return <section className="Button">
-        <button className="Button" type="submit">Build</button>
+        <button type="submit">Build</button>
     </section>
 }

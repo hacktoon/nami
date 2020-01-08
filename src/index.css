@@ -35,22 +35,6 @@ header #header-menu {
     background: #CCC;
 }
 
-.Button {
-    background: rgb(6, 94, 6);
-    color: #FFF;
-    border: 0;
-    font-size: 1em;
-    height: 30px;
-    line-height: 30px;
-    padding: 0 10px;
-    text-transform: uppercase;
-    font-weight: bold;
-}
-
-.Button:active {
-    background: rgb(133, 156, 141);
-}
-
 
 /* WorldView ============================== */
 

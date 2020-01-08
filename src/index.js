@@ -9,7 +9,7 @@ import "./index.css"
 
 
 const APPS = {
-    world: {name: 'World builder', component: <WorldBuilderApp />}
+    world: { name: 'World builder', component: <WorldBuilderApp /> }
 }
 const DEFAULT_APP = APPS.world
 
