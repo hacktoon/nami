@@ -3,9 +3,9 @@ import React, { useMemo } from 'react'
 
 // HELPER FUNCTIONS ===============================================
 
-function generateFieldID(text) {
-    // create unique id based on current timestamp
-    const id = text.toLowerCase().replace(/\s+/g, '-')
+function generateFieldID(label) {
+    // create unique id based on label and current timestamp
+    const id = label.toLowerCase().replace(/\s+/g, '-')
     const hash = new Date().valueOf() / Math.random()
     return `${id}Field${hash}`
 }
@@ -23,8 +23,9 @@ function buildSelectOptions(options) {
 // GENERIC FIELDS ===============================================
 
 function LabeledField(props) {
-    const label = String(props.label || '')
-    return <section className="Field">
+    const className = 'Field'
+    const label = props.label || className
+    return <section className={className}>
         <label htmlFor={props.id}>{label}</label>
         {props.children}
     </section>
@@ -52,12 +53,12 @@ export function NumberField(props) {
 
 export function SelectField(props) {
     const {label, options, ...selectProps} = props
-    const childOptions = useMemo(() => buildSelectOptions(options), [options])
+    const children = useMemo(() => buildSelectOptions(options), [options])
     const id = generateFieldID(label)
 
     return <LabeledField id={id} label={label}>
         <select id={id} {...selectProps}>
-            {childOptions}
+            {children}
         </select>
     </LabeledField>
 }
