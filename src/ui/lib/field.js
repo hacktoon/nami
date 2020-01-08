@@ -3,11 +3,11 @@ import React, { useMemo } from 'react'
 
 // HELPER FUNCTIONS ===============================================
 
-function generateFieldID(type, text) {
+function generateFieldID(text) {
     // create unique id based on current timestamp
     const id = text.toLowerCase().replace(/\s+/g, '-')
-    const hash = Number(new Date()) * parseInt(Math.random() * 10, 10)
-    return `Field:${type}.${id}.${hash}`
+    const hash = new Date().valueOf() / Math.random()
+    return `${id}Field${hash}`
 }
 
 function buildSelectOptions(options) {
@@ -32,7 +32,7 @@ function LabeledField(props) {
 
 function InputField(type, props) {
     const {label, ...inputProps} = props
-    const id = generateFieldID(type, label)
+    const id = generateFieldID(label)
     return <LabeledField id={id} label={label}>
         <input id={id} type={type} {...inputProps} />
     </LabeledField>
@@ -53,7 +53,7 @@ export function NumberField(props) {
 export function SelectField(props) {
     const {label, options, ...selectProps} = props
     const childOptions = useMemo(() => buildSelectOptions(options), [options])
-    const id = generateFieldID("select", label)
+    const id = generateFieldID(label)
 
     return <LabeledField id={id} label={label}>
         <select id={id} {...selectProps}>
