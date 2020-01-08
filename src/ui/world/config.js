@@ -38,8 +38,8 @@ export default function ConfigPanel(props) {
                 <NumberField
                     label="Roughness"
                     value={roughness}
-                    step={1}
                     onChange={onRoughnessChange}
+                    step={1}
                 />
                 <TextField  label="Seed" onChange={onSeedChange} />
                 <Button onClick={onSubmit} />

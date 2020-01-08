@@ -1,11 +1,22 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 
 
 // HELPER FUNCTIONS ===============================================
 
-function generateFieldID(type, props) {
-    const id = props.label.toLowerCase().replace(/\s+/g, '-')
-    return `${id}:${Number(new Date())}-${type}`
+function generateFieldID(type, text) {
+    // create unique id based on current timestamp
+    const id = text.toLowerCase().replace(/\s+/g, '-')
+    const hash = Number(new Date()) * parseInt(Math.random() * 10, 10)
+    return `Field:${type}.${id}.${hash}`
+}
+
+function buildSelectOptions(options) {
+    const entries = Object.entries(options)
+
+    return entries.map((option, index) => {
+        const [value, label] = option
+        return <option key={index} value={value}>{label}</option>
+    })
 }
 
 
@@ -21,7 +32,7 @@ function LabeledField(props) {
 
 function InputField(type, props) {
     const {label, ...inputProps} = props
-    const id = generateFieldID(type, props)
+    const id = generateFieldID(type, label)
     return <LabeledField id={id} label={label}>
         <input id={id} type={type} {...inputProps} />
     </LabeledField>
@@ -40,19 +51,13 @@ export function NumberField(props) {
 
 
 export function SelectField(props) {
-    const id = generateFieldID("select", props)
+    const {label, options, ...selectProps} = props
+    const childOptions = useMemo(() => buildSelectOptions(options), [options])
+    const id = generateFieldID("select", label)
 
-    function buildSelectOptions(options) {
-        const entries = Object.entries(options)
-        return entries.map((option, index) => {
-            const [value, label] = option
-            return <option key={index} value={value}>{label}</option>
-        })
-    }
-
-    return <LabeledField id={id} label={props.label}>
-        <select id={id} value={props.value} onChange={props.onChange}>
-            {buildSelectOptions(props.options)}
+    return <LabeledField id={id} label={label}>
+        <select id={id} {...selectProps}>
+            {childOptions}
         </select>
     </LabeledField>
 }
