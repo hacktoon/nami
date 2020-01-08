@@ -29,21 +29,22 @@ canvas { display: block; }
 
 
 .Field {
-    display: grid;
+    display: flex;
+    align-items: stretch;
 }
 
-.Field-V { grid-template-rows: auto auto; }
+.Vertical .Field { flex-direction: column; }
 
-.Field-H {
-    grid-template-columns: auto auto;
+.Horizontal .Field {
+    flex-direction: row;
     align-content: center;
 }
 
 .Fieldset {
-    display: grid;
+    display: flex;
 }
 
 .Fieldset.Horizontal {
-    grid-auto-flow: column;
-    place-items: left;
+    flex-direction: row;
+    align-items: stretch;
 }

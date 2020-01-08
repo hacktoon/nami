@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Display } from './display'
-import { OptionsPanel } from './options'
+import { ConfigPanel } from './config'
 import { Point } from '/lib/point'
 
 
@@ -17,7 +17,7 @@ export default function WorldView(props) {
     }
 
     return <section id="world-view">
-        <OptionsPanel
+        <ConfigPanel
             onTilesizeChange={event => setTilesize(event.target.value)}
             world={props.world}
             tilesize={tilesize}

@@ -3,7 +3,7 @@ import React from 'react'
 import { NumberField, SelectField, OutputField } from '../../lib/field'
 
 
-export function OptionsPanel(props) {
+export function ConfigPanel(props) {
     return <section className="options-panel">
         <OutputField label="Name" value={props.world.name} />
         <OutputField label="Seed" value={props.world.seed} />
