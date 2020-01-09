@@ -14,7 +14,10 @@ export default function AppInput({ apps, current, setApp }) {
             return [id, app.name]
         }))
 
-    return <SelectField label="App" value={current.id}
-        onChange={onChange} options={appOptions} />
-
+    return <SelectField
+        label="App"
+        value={current.id}
+        options={appOptions}
+        onChange={onChange}
+    />
 }

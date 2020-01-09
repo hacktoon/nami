@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
-import AppInput from './ui'
 import WorldBuilderApp from './ui/world'
+import AppInput from './ui'
+import { Row } from './ui/lib'
 
 import "./base.css"
 import "./index.css"
@@ -18,12 +19,12 @@ function Nami() {
     const [app, setApp] = useState(DEFAULT_APP)
 
     return <>
-        <header>
-            <section id="header-title">Nami</section>
-            <section id="header-menu">
+        <Row className="AppBar">
+            <section className="Title">Nami</section>
+            <section className="Menu">
                 <AppInput apps={APPS} current={DEFAULT_APP} onChange={setApp} />
             </section>
-        </header>
+        </Row>
         {app.component}
     </>
 }

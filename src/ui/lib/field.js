@@ -14,8 +14,6 @@ function buildSelectOptions(options) {
     const entries = Object.entries(options)
 
     return entries.map((option, index) => {
-        console.log(option);
-
         const [value, label] = option
         return <option key={index} value={value}>{label}</option>
     })
@@ -68,7 +66,7 @@ export function SelectField(props) {
 
 export function OutputField(props) {
     return <section className="Field">
-        <p className="Label">{props.label}</p>
+        <output className="Label">{props.label}</output>
         <output className="value">{props.value}</output>
     </section>
 }

@@ -5,14 +5,14 @@
     grid-template-rows: 50px 50px auto;
 }
 
-header {
+.AppBar {
     background: #111;
     color: white;
     display: grid;
     grid-template-columns: 100px auto;
 }
 
-header #header-title {
+.AppBar .Title {
     font-weight: bold;
     font-size: 1.8em;
     text-transform: uppercase;
@@ -20,7 +20,7 @@ header #header-title {
     text-align: center;
 }
 
-header #header-menu {
+.AppBar .Menu {
     border: 0;
     display: grid;
     grid-template-columns: auto;
