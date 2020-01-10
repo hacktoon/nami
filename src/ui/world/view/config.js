@@ -1,10 +1,11 @@
 import React from 'react'
 
-import { NumberField, SelectField, OutputField } from '../../lib/field'
+import { NumberField, SelectField, OutputField } from '/ui/lib/field'
+import { Column } from '/ui/lib'
 
 
-export function ConfigPanel(props) {
-    return <section className="options-panel">
+export function ViewConfig(props) {
+    return <Column className="ViewConfig">
         <OutputField label="Name" value={props.world.name} />
         <OutputField label="Seed" value={props.world.seed} />
         <NumberField id="tilesize"
@@ -23,5 +24,5 @@ export function ConfigPanel(props) {
             biome: "Biome",
             landmass: "Landmass",
         }} />
-    </section>
+    </Column>
 }

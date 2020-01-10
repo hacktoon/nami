@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 
-import { Display } from './display'
-import { ConfigPanel } from './config'
+import { Screen } from './screen'
+import { ViewConfig } from './config'
+import { Row } from '/ui/lib'
 import { Point } from '/lib/point'
 
 
@@ -16,14 +17,14 @@ export default function WorldView(props) {
         paintWorld(props.world, config)
     }
 
-    return <section id="world-view">
-        <ConfigPanel
+    return <Row className='WorldView'>
+        <ViewConfig
             onTilesizeChange={event => setTilesize(event.target.value)}
             world={props.world}
             tilesize={tilesize}
         />
-        <Display painter={painter} />
-    </section>
+        <Screen painter={painter} />
+    </Row>
 }
 
 
@@ -52,7 +53,7 @@ class PaintConfig {
 }
 
 
-const paintWorld = (world, config) => {
+function paintWorld(world, config){
     const { canvas, tilesize, gridWidth, gridHeight } = config
     for(let i = 0; i < gridWidth; i++) {
         for(let j = 0; j < gridHeight; j++) {

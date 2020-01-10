@@ -67,6 +67,6 @@ export function SelectField(props) {
 export function OutputField(props) {
     return <section className="Field">
         <output className="Label">{props.label}</output>
-        <output className="value">{props.value}</output>
+        <output className="Value">{props.value}</output>
     </section>
 }

@@ -3,10 +3,10 @@ import React, { useRef, useState, useLayoutEffect } from 'react'
 import { Point } from '/lib/point'
 
 
-export function Display(props) {
+export function Screen(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
-    return <section className="view-panel">
+    return <section className="Screen">
         <Canvas painter={props.painter} offset={offset} />
         <MouseTracking onDrag={setOffset} />
     </section>

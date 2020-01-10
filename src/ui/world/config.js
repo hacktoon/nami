@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 
 import { TextField, NumberField, SelectField } from '../lib/field'
-import { WorldConfig } from '../../model/world'
+import { WorldConfig } from '/model/world'
+import { Row } from '../lib'
 
 
-export default function ConfigPanel(props) {
+export default function Config(props) {
     let [roughness, setRoughness] = useState(WorldConfig.DEFAULT_ROUGHNESS)
     let [size, setSize] = useState(WorldConfig.DEFAULT_SIZE)
     let [seed, setSeed] = useState('')
@@ -30,8 +31,8 @@ export default function ConfigPanel(props) {
         65: 65,
     }
 
-    return <section id="world-config">
-        <form onSubmit={onSubmit} className="Fieldset Horizontal">
+    return <Row className="Config">
+        <form onSubmit={onSubmit} className="Fieldset">
             <SelectField label="Size" value={size}
                 onChange={onSizeChange} options={sizeOptions} />
             <NumberField
@@ -43,7 +44,7 @@ export default function ConfigPanel(props) {
             <TextField  label="Seed" onChange={onSeedChange} />
             <Button onClick={onSubmit} />
         </form>
-    </section>
+    </Row>
 }
 
 

@@ -40,13 +40,23 @@ button {
 
 canvas { display: block; }
 
+/*  */
 
-.Row { /* extends Panel */
-    font-weight: bold;
-    font-size: 1.8em;
-    text-transform: uppercase;
-    line-height: 50px;
-    text-align: center;
+.Grid {
+    display: grid;
+}
+
+.Row, .Column {
+    display: flex;
+    flex: 1;
+}
+
+.Row {
+
+}
+
+.Column {
+    flex-direction: column;
 }
 
 /* FIELDSETS ==================================== */
@@ -62,6 +72,7 @@ canvas { display: block; }
 }
 .Fieldset.Vertical {
     flex-direction: column;
+    width: 100%;
 }
 
 
@@ -80,24 +91,26 @@ canvas { display: block; }
 }
 
 
-.Vertical .Field {
-    flex-direction: column;
+.Field {
+    display: flex;
 }
 
+.Column > .Field {
+    flex-direction: column;
+    width: 100%;
+}
 
-.Horizontal .Label {
+.Row > .Field {
+    flex-direction: row;
+    height: 100%;
+}
+
+.Row > .Label {
     display: flex;
     align-items: center;
     height: 100%;
 }
 
-.Horizontal .Field {
-    display: grid;
-    grid-template-columns: auto auto;
-    height: 100%;
-    grid-gap: 5px;
-}
-
-.Horizontal .Button {
+.Row > .Button {
     height: 100%;
 }

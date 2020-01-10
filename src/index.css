@@ -1,64 +1,78 @@
 
+/* Nami ============================== */
 
-#nami-app {
-    display: grid;
-    grid-template-rows: 50px 50px auto;
-}
-
-.AppBar {
+.Nami {
     background: #111;
-    color: white;
-    display: grid;
+    color: #333;
+    height: 100vh;
+    grid-template-rows: 50px auto;
     grid-template-columns: 100px auto;
+    grid-template-areas:
+        "title menu"
+        "view view";
 }
 
-.AppBar .Title {
+.NamiTitle {
+    color: #FFF;
+    display: flex;
+    align-items: center;
     font-weight: bold;
     font-size: 1.8em;
     text-transform: uppercase;
-    line-height: 50px;
-    text-align: center;
+    justify-content: center;
 }
 
-.AppBar .Menu {
-    border: 0;
+.NamiConfig {
+    color: #FFF;
     display: grid;
-    grid-template-columns: auto;
     justify-items: right;
     justify-content: end;
 }
 
-
-/* WorldConfig ---------------------- */
-
-#world-config {
-    background: #CCC;
+.NamiView {
+    background: #BBB;
+    grid-column-start: 1;
+    grid-column-end: -1;
 }
 
 
-/* WorldView ============================== */
+/* World ============================== */
 
-#world-view {
+.WorldApp {
+    grid-template-rows: 50px auto;
+    width: 100%;
+}
+
+.WorldApp .Config {
+    background: #CCC;
+    color: #333;
+}
+
+.WorldApp .WorldView {
     background: black;
     display: grid;
     grid-template-columns: 15% auto;
-    position: absolute;
-    top: 100px;
-    left: 0;
-    right: 0;
-    bottom: 0;
 }
 
-#world-view .options-panel {
-    background: #FFF;
-    padding: 10px 5px;
+.WorldApp .WorldView .ViewConfig {
+    background: #111;
+    color: #FFF;
+    align-items: flex-start;
+    padding: 5px;
 }
 
-#world-view .view-panel {
+.WorldApp .WorldView .ViewConfig .Field {
+    padding: 5px 0;
+}
+.WorldApp .WorldView .ViewConfig .Value {
+    color: #AAA;
+}
+
+.WorldApp .WorldView .Screen {
     position: relative;
 }
 
-#world-view .view-panel .canvasWrapper {
+.WorldApp .WorldView .Screen .canvasWrapper {
     overflow: hidden;
     position: absolute;
     top: 0;
@@ -67,7 +81,7 @@
     bottom: 0;
 }
 
-#world-view .view-panel .tracker {
+.WorldApp .WorldView .Screen .tracker {
     cursor: pointer;
     overflow: hidden;
     line-height: 30px;
