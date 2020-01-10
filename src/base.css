@@ -52,7 +52,7 @@ canvas { display: block; }
 }
 
 .Row {
-
+    flex-direction: row;
 }
 
 .Column {
@@ -121,6 +121,6 @@ canvas { display: block; }
     background: rgb(133, 156, 141);
 }
 
-.Row > .Button {
+.Form.RowLayout .Button {
     height: 100%;
 }

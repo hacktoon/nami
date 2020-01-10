@@ -8,7 +8,7 @@ import React from 'react'
 
 export function Form(props) {
     const {className, layout, ...formProps} = props
-    return <section className={`${className||''} ${layout} Form`} {...formProps}>
+    return <section className={`${className||''} Form ${layout}`} {...formProps}>
         {props.children}
     </section>
 }
@@ -34,4 +34,8 @@ export function Column(props) {
     </section>
 }
 
-// PUBLIC WIDGETS =================================================
+export function Button(props) {
+    return <section className="Button">
+        <button type="submit">{props.text}</button>
+    </section>
+}

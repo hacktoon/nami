@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { TextField, NumberField, SelectField } from '../lib/field'
 import { WorldConfig } from '/model/world'
-import { Form, Row } from '../lib'
+import { Form, Row, Button } from '../lib'
 
 
 export default function Config(props) {
@@ -42,14 +42,9 @@ export default function Config(props) {
                 step={1}
             />
             <TextField  label="Seed" onChange={onSeedChange} />
-            <Button onClick={onSubmit} />
+            <Button onClick={onSubmit} text="Build"/>
         </Form>
     </Row>
 }
 
 
-function Button(props) {
-    return <section className="Button">
-        <button type="submit">Build</button>
-    </section>
-}
