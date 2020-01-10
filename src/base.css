@@ -63,7 +63,7 @@ canvas { display: block; }
 
 .Form {
     display: flex;
-    padding: 5px;
+    flex: 1;
 }
 
 .Form.RowLayout {

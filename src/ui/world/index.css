@@ -8,6 +8,7 @@
 
 .WorldApp .Config {
     background: #CCC;
+    padding: 5px;
 }
 
 .WorldApp .WorldView {
