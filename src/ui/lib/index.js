@@ -6,13 +6,19 @@ import React from 'react'
 
 // GENERIC WIDGETS ===============================================
 
-export function Grid(props) {
-    const {className, ...rowProps} = props
-    return <section className={`${className} Grid`} {...rowProps}>
+export function Form(props) {
+    const {className, layout, ...formProps} = props
+    return <section className={`${className||''} ${layout} Form`} {...formProps}>
         {props.children}
     </section>
 }
 
+export function Grid(props) {
+    const {className, ...gridProps} = props
+    return <section className={`${className} Grid`} {...gridProps}>
+        {props.children}
+    </section>
+}
 
 export function Row(props) {
     const {className, ...rowProps} = props

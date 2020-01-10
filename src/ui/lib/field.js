@@ -31,9 +31,9 @@ function LabeledField(props) {
     </section>
 }
 
-function InputField(type, props) {
+function LabeledInputField(type, props) {
+    const id = generateFieldID(props.label)
     const {label, ...inputProps} = props
-    const id = generateFieldID(label)
     return <LabeledField id={id} label={label}>
         <input id={id} type={type} {...inputProps} />
     </LabeledField>
@@ -43,11 +43,11 @@ function InputField(type, props) {
 // PUBLIC COMPONENTS ===============================================
 
 export function TextField(props) {
-    return InputField('text', props)
+    return LabeledInputField('text', props)
 }
 
 export function NumberField(props) {
-    return InputField('number', props)
+    return LabeledInputField('number', props)
 }
 
 

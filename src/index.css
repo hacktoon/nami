@@ -24,73 +24,11 @@
 
 .NamiConfig {
     color: #FFF;
-    display: grid;
-    justify-items: right;
-    justify-content: end;
+    justify-content: flex-end;
 }
 
 .NamiView {
     background: #BBB;
     grid-column-start: 1;
     grid-column-end: -1;
-}
-
-
-/* World ============================== */
-
-.WorldApp {
-    grid-template-rows: 50px auto;
-    width: 100%;
-}
-
-.WorldApp .Config {
-    background: #CCC;
-    color: #333;
-}
-
-.WorldApp .WorldView {
-    background: black;
-    display: grid;
-    grid-template-columns: 15% auto;
-}
-
-.WorldApp .WorldView .ViewConfig {
-    background: #111;
-    color: #FFF;
-    align-items: flex-start;
-    padding: 5px;
-}
-
-.WorldApp .WorldView .ViewConfig .Field {
-    padding: 5px 0;
-}
-.WorldApp .WorldView .ViewConfig .Value {
-    color: #AAA;
-}
-
-.WorldApp .WorldView .Screen {
-    position: relative;
-}
-
-.WorldApp .WorldView .Screen .canvasWrapper {
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.WorldApp .WorldView .Screen .tracker {
-    cursor: pointer;
-    overflow: hidden;
-    line-height: 30px;
-    padding: 0 10px;
-    color: #FFF;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1;
 }

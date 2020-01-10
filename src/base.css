@@ -61,22 +61,53 @@ canvas { display: block; }
 
 /* FIELDSETS ==================================== */
 
-.Fieldset {
+.Form {
     display: flex;
     padding: 5px;
 }
 
-.Fieldset.Horizontal {
+.Form.RowLayout {
     flex-direction: row;
     height: 100%;
 }
-.Fieldset.Vertical {
+
+.Form.ColumnLayout {
     flex-direction: column;
     width: 100%;
 }
 
 
 /* FIELDS ======================================= */
+
+.Field {
+    display: flex;
+    flex-direction: row;
+}
+
+.Form.ColumnLayout .Field {
+    flex-direction: column;
+    width: 100%;
+}
+
+.Form.RowLayout .Field {
+    height: 100%;
+}
+
+.Field .Label {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.Form.ColumnLayout .Field .Label {
+    width: 100%;
+}
+.Form.RowLayout .Field .Label {
+    padding: 0 5px 0 10px;
+}
+
+
+/* BUTTONS ======================================= */
 
 .Button {
     display: flex;
@@ -88,27 +119,6 @@ canvas { display: block; }
 
 .Button:active {
     background: rgb(133, 156, 141);
-}
-
-
-.Field {
-    display: flex;
-}
-
-.Column > .Field {
-    flex-direction: column;
-    width: 100%;
-}
-
-.Row > .Field {
-    flex-direction: row;
-    height: 100%;
-}
-
-.Row > .Label {
-    display: flex;
-    align-items: center;
-    height: 100%;
 }
 
 .Row > .Button {

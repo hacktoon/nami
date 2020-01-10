@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { TextField, NumberField, SelectField } from '../lib/field'
 import { WorldConfig } from '/model/world'
-import { Row } from '../lib'
+import { Form, Row } from '../lib'
 
 
 export default function Config(props) {
@@ -32,7 +32,7 @@ export default function Config(props) {
     }
 
     return <Row className="Config">
-        <form onSubmit={onSubmit} className="Fieldset">
+        <Form onSubmit={onSubmit} layout="RowLayout">
             <SelectField label="Size" value={size}
                 onChange={onSizeChange} options={sizeOptions} />
             <NumberField
@@ -43,7 +43,7 @@ export default function Config(props) {
             />
             <TextField  label="Seed" onChange={onSeedChange} />
             <Button onClick={onSubmit} />
-        </form>
+        </Form>
     </Row>
 }
 

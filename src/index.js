@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 import WorldApp from '/ui/world'
-import { Row, Grid } from '/ui/lib'
+import { Row, Form, Grid } from '/ui/lib'
 import { SelectField } from '/ui/lib/field'
 
 import "./base.css"
@@ -20,9 +20,9 @@ function Nami() {
 
     return <Grid className="Nami">
         <section className="NamiTitle">Nami</section>
-        <Row className="NamiConfig">
+        <Form className="NamiConfig" layout="RowLayout">
             <AppSelect apps={APPS} current={DEFAULT_APP} onChange={setApp} />
-        </Row>
+        </Form>
         <Row className="NamiView">
             {app.component}
         </Row>

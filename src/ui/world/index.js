@@ -5,6 +5,8 @@ import Config from './config'
 import WorldView from './view'
 import { Grid } from '/ui/lib'
 
+import "./index.css"
+
 
 export default function WorldApp(props) {
     let [world, setWorld] = useState(new World())
