@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 
+import { cls } from '/ui/lib'
 
 // HELPER FUNCTIONS ===============================================
 
@@ -23,10 +24,8 @@ function buildSelectOptions(options) {
 // GENERIC FIELDS ===============================================
 
 function LabeledField(props) {
-    const className = 'Field'
-    const label = props.label || className
-    return <section className={className}>
-        <label className="Label" htmlFor={props.id}>{label}</label>
+    return <section className={cls(props.className, 'Field')}>
+        <label className='Label' htmlFor={props.id}>{props.label}</label>
         {props.children}
     </section>
 }
@@ -34,7 +33,7 @@ function LabeledField(props) {
 function LabeledInputField(type, props) {
     const id = generateFieldID(props.label)
     const {label, ...inputProps} = props
-    return <LabeledField id={id} label={label}>
+    return <LabeledField className='Value' id={id} label={label}>
         <input id={id} type={type} {...inputProps} />
     </LabeledField>
 }
@@ -65,8 +64,8 @@ export function SelectField(props) {
 
 
 export function OutputField(props) {
-    return <section className="Field">
-        <output className="Label">{props.label}</output>
-        <output className="Value">{props.value}</output>
+    return <section className='Field'>
+        <output className='Label'>{props.label}</output>
+        <output className='Value'>{props.value}</output>
     </section>
 }

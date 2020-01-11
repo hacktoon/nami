@@ -31,8 +31,8 @@ export default function Config(props) {
         65: 65,
     }
 
-    return <Row className="Config">
-        <Form onSubmit={onSubmit} layout="RowLayout">
+    return <Form className="WorldConfig" onSubmit={onSubmit}>
+        <Row>
             <SelectField label="Size" value={size}
                 onChange={onSizeChange} options={sizeOptions} />
             <NumberField
@@ -40,11 +40,12 @@ export default function Config(props) {
                 value={roughness}
                 onChange={onRoughnessChange}
                 step={1}
+                min={1}
             />
             <TextField  label="Seed" onChange={onSeedChange} />
-            <Button onClick={onSubmit} text="Build"/>
-        </Form>
-    </Row>
+            <Button onClick={onSubmit} text="Build" />
+        </Row>
+    </Form>
 }
 
 

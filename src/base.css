@@ -1,14 +1,21 @@
 * {
-    box-sizing: border-box;
     border: none;
-    font: normal 1.05rem monospace;
     padding: 0;
     margin: 0;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
 }
 
 body {
     background: #FFF;
     color: #333;
+    font: normal 1.05rem monospace;
 }
 
 select, input {
@@ -33,9 +40,6 @@ select {
 button {
     background: none;
     cursor: pointer;
-    padding: 0 1em;
-    text-transform: uppercase;
-    font-weight: bold;
 }
 
 canvas { display: block; }
@@ -66,16 +70,6 @@ canvas { display: block; }
     flex: 1;
 }
 
-.Form.RowLayout {
-    flex-direction: row;
-    height: 100%;
-}
-
-.Form.ColumnLayout {
-    flex-direction: column;
-    width: 100%;
-}
-
 
 /* FIELDS ======================================= */
 
@@ -84,25 +78,28 @@ canvas { display: block; }
     flex-direction: row;
 }
 
-.Form.ColumnLayout .Field {
-    flex-direction: column;
-    width: 100%;
-}
-
-.Form.RowLayout .Field {
-    height: 100%;
-}
-
 .Field .Label {
     display: flex;
     align-items: center;
     height: 100%;
 }
 
-.Form.ColumnLayout .Field .Label {
+
+.Form .Column .Field {
+    flex-direction: column;
     width: 100%;
 }
-.Form.RowLayout .Field .Label {
+
+.Form .Row .Field {
+    height: 100%;
+}
+
+
+.Form .Column .Field .Label + .Value {
+    padding: 0 5px 0 10px;
+}
+
+.Form .Row .Field .Label {
     padding: 0 5px 0 10px;
 }
 
@@ -112,8 +109,9 @@ canvas { display: block; }
 .Button {
     display: flex;
     background: rgb(6, 94, 6);
-}
-.Button button {
+    padding: 0 1em;
+    text-transform: uppercase;
+    font-weight: bold;
     color: #FFF;
 }
 
@@ -121,6 +119,6 @@ canvas { display: block; }
     background: rgb(133, 156, 141);
 }
 
-.Form.RowLayout .Button {
+.Form .Row .Button {
     height: 100%;
 }
