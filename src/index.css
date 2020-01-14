@@ -7,10 +7,6 @@
     height: 100vh;
     display: grid;
     grid-template-rows: 50px auto;
-    grid-template-columns: 100px auto;
-    grid-template-areas:
-        "title menu"
-        "view view";
 }
 
 .NamiTitle {
@@ -32,4 +28,9 @@
     background: #BBB;
     grid-column-start: 1;
     grid-column-end: -1;
+}
+
+.NamiNavigation {
+    display: grid;
+    grid-template-columns: 100px auto;
 }

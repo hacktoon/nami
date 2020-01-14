@@ -9,9 +9,9 @@ export function cls(...classNames) {
     }).join(' ')
 }
 
-export function Component(props) {
+export function Layout(props) {
     const {className, ...textProps} = props
-    return <div className={cls(className, 'Component')} {...textProps}>
+    return <div className={cls(className, 'Layout')} {...textProps}>
         {props.children}
     </div>
 }
