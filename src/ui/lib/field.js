@@ -33,7 +33,7 @@ function LabeledField(props) {
 function LabeledInputField(type, props) {
     const id = generateFieldID(props.label)
     const {label, ...inputProps} = props
-    return <LabeledField className='Value' id={id} label={label}>
+    return <LabeledField id={id} label={label}>
         <input id={id} type={type} {...inputProps} />
     </LabeledField>
 }

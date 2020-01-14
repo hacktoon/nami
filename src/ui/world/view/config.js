@@ -9,7 +9,7 @@ export function ViewConfig(props) {
         <Column>
             <OutputField label="Name" value={props.world.name} />
             <OutputField label="Seed" value={props.world.seed} />
-            <NumberField id="tilesize"
+            <NumberField
                 label="Tile size"
                 value={props.tilesize}
                 onChange={props.onTilesizeChange}

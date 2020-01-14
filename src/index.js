@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 import WorldApp from '/ui/world'
-import { Row, Form, Layout, Text } from '/ui/lib'
+import { Layout, Text } from '/ui/lib'
 import { SelectField } from '/ui/lib/field'
 
 import "./base.css"
@@ -19,7 +19,7 @@ function Nami() {
     const [app, setApp] = useState(DEFAULT_APP)
 
     return <Layout className="NamiApp">
-        <NamiHeader app={app} setApp={setApp} height='50px' />
+        <NamiHeader app={app} setApp={setApp} />
         {app.component}
     </Layout>
 }

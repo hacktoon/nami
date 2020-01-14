@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import World from '/model/world'
 import Config from './config'
 import WorldView from './view'
-import { Grid } from '/ui/lib'
+import { Layout } from '/ui/lib'
 
 import "./index.css"
 
@@ -13,8 +13,8 @@ export default function WorldApp(props) {
 
     const onConfigChange = config => setWorld(new World(config))
 
-    return <Grid className='WorldApp'>
+    return <Layout className='WorldApp'>
         <Config onChange={onConfigChange} />
         <WorldView world={world} />
-    </Grid>
+    </Layout>
 }

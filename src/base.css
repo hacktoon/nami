@@ -44,11 +44,7 @@ button {
 
 canvas { display: block; }
 
-/*  */
-
-.Grid {
-    display: grid;
-}
+/* LAYOUT  */
 
 .Row, .Column {
     display: flex;

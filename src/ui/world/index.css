@@ -2,8 +2,8 @@
 /* World ============================== */
 
 .WorldApp {
+    display: grid;
     grid-template-rows: 50px auto;
-    width: 100%;
 }
 
 .WorldApp .WorldConfig {
