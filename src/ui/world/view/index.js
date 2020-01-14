@@ -6,7 +6,7 @@ import { Row } from '/ui/lib'
 import { Point } from '/lib/point'
 
 
-const DEFAULT_TILE_SIZE = 4
+const DEFAULT_TILE_SIZE = 10
 
 
 export default function WorldView(props) {

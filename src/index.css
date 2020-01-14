@@ -5,6 +5,7 @@
     background: #111;
     color: #333;
     height: 100vh;
+    display: grid;
     grid-template-rows: 50px auto;
     grid-template-columns: 100px auto;
     grid-template-areas:

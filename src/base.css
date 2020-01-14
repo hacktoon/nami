@@ -81,7 +81,6 @@ canvas { display: block; }
 .Field .Label {
     display: flex;
     align-items: center;
-    height: 100%;
 }
 
 
@@ -91,12 +90,8 @@ canvas { display: block; }
 }
 
 .Form .Row .Field {
+    flex-direction: row;
     height: 100%;
-}
-
-
-.Form .Column .Field .Label + .Value {
-    padding: 0 5px 0 10px;
 }
 
 .Form .Row .Field .Label {
@@ -107,12 +102,12 @@ canvas { display: block; }
 /* BUTTONS ======================================= */
 
 .Button {
-    display: flex;
     background: rgb(6, 94, 6);
+    color: #FFF;
+    display: flex;
+    font-weight: bold;
     padding: 0 1em;
     text-transform: uppercase;
-    font-weight: bold;
-    color: #FFF;
 }
 
 .Button:active {

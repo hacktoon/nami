@@ -20,8 +20,11 @@
 .WorldApp .WorldView .ViewConfig {
     background: #111;
     color: #FFF;
-    align-items: flex-start;
     padding: 5px;
+}
+
+.WorldApp .WorldView .Form.ViewConfig {
+    flex-direction: column;
 }
 
 .WorldApp .WorldView .ViewConfig .Field {
