@@ -1,7 +1,7 @@
 
 /* Nami ============================== */
 
-.Nami {
+.NamiApp {
     background: #111;
     color: #333;
     height: 100vh;
@@ -32,5 +32,6 @@
 
 .NamiNavigation {
     display: grid;
+    padding: 5px;
     grid-template-columns: 100px auto;
 }

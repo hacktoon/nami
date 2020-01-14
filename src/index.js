@@ -18,7 +18,7 @@ const DEFAULT_APP = APPS.world
 function Nami() {
     const [app, setApp] = useState(DEFAULT_APP)
 
-    return <Layout className="Nami">
+    return <Layout className="NamiApp">
         <Navigation app={app} setApp={setApp} height='50px' />
         <Content app={app} />
     </Layout>
