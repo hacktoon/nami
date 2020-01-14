@@ -9,6 +9,12 @@
     grid-template-rows: 50px auto;
 }
 
+.NamiHeader {
+    display: grid;
+    padding: 5px;
+    grid-template-columns: 100px auto;
+}
+
 .NamiTitle {
     color: #FFF;
     display: flex;
@@ -19,19 +25,8 @@
     justify-content: center;
 }
 
-.NamiConfig {
+.NamiMenu {
+    display: flex;
     color: #FFF;
     justify-content: flex-end;
-}
-
-.NamiView {
-    background: #BBB;
-    grid-column-start: 1;
-    grid-column-end: -1;
-}
-
-.NamiNavigation {
-    display: grid;
-    padding: 5px;
-    grid-template-columns: 100px auto;
 }

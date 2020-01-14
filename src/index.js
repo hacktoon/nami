@@ -19,23 +19,21 @@ function Nami() {
     const [app, setApp] = useState(DEFAULT_APP)
 
     return <Layout className="NamiApp">
-        <Navigation app={app} setApp={setApp} height='50px' />
-        <Content app={app} />
+        <NamiHeader app={app} setApp={setApp} height='50px' />
+        {app.component}
     </Layout>
 }
 
-function Content({app}) {
-    return <Row className="Content">
-        {app.component}
-    </Row>
+function NamiHeader({app, setApp}) {
+    return <Layout className="NamiHeader">
+        <Text className="NamiTitle">Nami</Text>
+        <NamiMenu app={app} setApp={setApp} />
+    </Layout>
 }
 
-function Navigation({setApp}) {
-    return <Layout className="NamiNavigation">
-        <Text className="NamiTitle">Nami</Text>
-        <Form className="NamiConfig">
-            <AppSelect apps={APPS} current={DEFAULT_APP} onChange={setApp} />
-        </Form>
+function NamiMenu({app, setApp}) {
+    return <Layout className="NamiMenu">
+        <AppSelect apps={APPS} current={app} onChange={setApp} />
     </Layout>
 }
 

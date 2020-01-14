@@ -29,9 +29,9 @@ export function Text(props) {
 
 export function Form(props) {
     const {className, ...formProps} = props
-    return <section className={cls(className, 'Form')} {...formProps}>
+    return <div className={cls(className, 'Form')} {...formProps}>
         {props.children}
-    </section>
+    </div>
 }
 
 export function Button(props) {
@@ -45,21 +45,21 @@ export function Button(props) {
 
 export function Grid(props) {
     const {className, ...gridProps} = props
-    return <section className={cls(className, 'Grid')} {...gridProps}>
+    return <div className={cls(className, 'Grid')} {...gridProps}>
         {props.children}
-    </section>
+    </div>
 }
 
 export function Row(props) {
     const {className, ...rowProps} = props
-    return <section className={cls(className, 'Row')} {...rowProps}>
+    return <div className={cls(className, 'Row')} {...rowProps}>
         {props.children}
-    </section>
+    </div>
 }
 
 export function Column(props) {
     const {className, ...colProps} = props
-    return <section className={cls(className, 'Column')} {...colProps}>
+    return <div className={cls(className, 'Column')} {...colProps}>
         {props.children}
-    </section>
+    </div>
 }
