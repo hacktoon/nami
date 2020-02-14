@@ -12,5 +12,14 @@ export class TectonicsMap {
 
 class Tectonics {
     constructor() {
+        self.plates = []
+    }
+}
+
+
+class Plate {
+    constructor(name='anonym', dir=1) {
+        self.name = name
+        self.dir = dir
     }
 }

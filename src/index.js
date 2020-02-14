@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 import WorldApp from '/ui/world'
+import RegionsApp from '/ui/regions'
 import { Layout, Text } from '/ui/lib'
 import { SelectField } from '/ui/lib/field'
 
@@ -10,7 +11,8 @@ import "./index.css"
 
 
 const APPS = {
-    world: { name: 'World', component: <WorldApp /> }
+    world: { name: 'World', component: <WorldApp /> },
+    regions: { name: 'Regions', component: <RegionsApp /> }
 }
 const DEFAULT_APP = APPS.world
 
@@ -33,7 +35,7 @@ function NamiHeader({app, setApp}) {
 
 function NamiMenu({app, setApp}) {
     return <Layout className="NamiMenu">
-        <AppSelect apps={APPS} current={app} onChange={setApp} />
+        <AppSelect apps={APPS} current={app} setApp={setApp} />
     </Layout>
 }
 
