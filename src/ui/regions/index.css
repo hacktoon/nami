@@ -6,3 +6,8 @@
     display: grid;
     grid-template-rows: 50px auto;
 }
+
+.RegionsApp .RegionsConfig {
+    background: #CCC;
+    padding: 5px;
+}
