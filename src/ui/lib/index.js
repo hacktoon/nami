@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useLayoutEffect } from 'react'
 
 
 // HELPER FUNCTIONS ==============================================
@@ -61,5 +61,25 @@ export function Column(props) {
     const {className, ...colProps} = props
     return <div className={cls(className, 'Column')} {...colProps}>
         {props.children}
+    </div>
+}
+
+
+// CANVAS WIDGET ===============================================
+
+export function Canvas(props) {
+    const painter = props.painter || (() => {})
+    const viewportRef = useRef(null)
+    const canvasRef = useRef(null)
+
+    useLayoutEffect(() => {
+        const canvas = canvasRef.current
+        const width = canvas.width = viewportRef.current.clientWidth
+        const height = canvas.height = viewportRef.current.clientHeight
+        painter(canvas.getContext('2d'), width, height, props.offset)
+    })
+
+    return <div className="canvasWrapper" ref={viewportRef}>
+        <canvas ref={canvasRef} ></canvas>
     </div>
 }

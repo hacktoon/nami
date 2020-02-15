@@ -1,6 +1,7 @@
 import React, { useRef, useState, useLayoutEffect } from 'react'
 
 import { Point } from '/lib/point'
+import { Canvas } from '/ui/lib'
 
 
 export function Screen(props) {
@@ -10,23 +11,6 @@ export function Screen(props) {
         <Canvas painter={props.painter} offset={offset} />
         <MouseTracking onDrag={setOffset} />
     </section>
-}
-
-
-export function Canvas(props) {
-    const viewportRef = useRef(null)
-    const canvasRef = useRef(null)
-
-    useLayoutEffect(() => {
-        const canvas = canvasRef.current
-        const width = canvas.width = viewportRef.current.clientWidth
-        const height = canvas.height = viewportRef.current.clientHeight
-        props.painter(canvas.getContext('2d'), width, height, props.offset)
-    })
-
-    return <div className="canvasWrapper" ref={viewportRef}>
-        <canvas ref={canvasRef} ></canvas>
-    </div>
 }
 
 
