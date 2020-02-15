@@ -11,7 +11,7 @@
 
 .NamiHeader {
     display: grid;
-    padding: 5px;
+    padding: 5px 10px;
     grid-template-columns: 100px auto;
 }
 
@@ -19,10 +19,10 @@
     color: #FFF;
     display: flex;
     align-items: center;
+    text-align: left;
     font-weight: bold;
     font-size: 1.8em;
     text-transform: uppercase;
-    justify-content: center;
 }
 
 .NamiMenu {

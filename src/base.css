@@ -33,10 +33,6 @@ select {
     padding: 0 5px;
 }
 
-.Label {
-    font-weight: bold;
-}
-
 button {
     background: none;
     cursor: pointer;
@@ -44,30 +40,29 @@ button {
 
 canvas { display: block; }
 
-/* LAYOUT  */
-
-.Row, .Column {
-    display: flex;
-    flex: 1;
+.CanvasWrapper {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
-.Row {
-    flex-direction: row;
+
+/* LAYOUT  ====================================== */
+
+.Layout {
+    display: grid;
 }
 
-.Column {
-    flex-direction: column;
-}
 
-/* FIELDSETS ==================================== */
+/* FORM WIDGETS ================================ */
 
 .Form {
     display: flex;
     flex: 1;
 }
-
-
-/* FIELDS ======================================= */
 
 .Field {
     display: flex;
@@ -75,10 +70,10 @@ canvas { display: block; }
 }
 
 .Field .Label {
-    display: flex;
     align-items: center;
+    display: flex;
+    font-weight: bold;
 }
-
 
 .Form .Column .Field {
     flex-direction: column;

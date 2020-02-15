@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 
-import { Row } from '/ui/lib'
+import { Layout } from '/ui/lib'
 
 export default function View(props) {
-    return <Row className='RegionsView'>
+    return <Layout className='RegionsView'>
         etc
-    </Row>
+    </Layout>
 }

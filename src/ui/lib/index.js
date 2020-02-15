@@ -9,12 +9,6 @@ export function cls(...classNames) {
     }).join(' ')
 }
 
-export function Layout(props) {
-    const {className, ...textProps} = props
-    return <div className={cls(className, 'Layout')} {...textProps}>
-        {props.children}
-    </div>
-}
 
 // GENERIC WIDGETS ===============================================
 
@@ -43,23 +37,9 @@ export function Button(props) {
 
 // LAYOUT WIDGETS ===============================================
 
-export function Grid(props) {
-    const {className, ...gridProps} = props
-    return <div className={cls(className, 'Grid')} {...gridProps}>
-        {props.children}
-    </div>
-}
-
-export function Row(props) {
-    const {className, ...rowProps} = props
-    return <div className={cls(className, 'Row')} {...rowProps}>
-        {props.children}
-    </div>
-}
-
-export function Column(props) {
-    const {className, ...colProps} = props
-    return <div className={cls(className, 'Column')} {...colProps}>
+export function Layout(props) {
+    const {className, ...textProps} = props
+    return <div className={cls(className, 'Layout')} {...textProps}>
         {props.children}
     </div>
 }
@@ -68,7 +48,7 @@ export function Column(props) {
 // CANVAS WIDGET ===============================================
 
 export function Canvas(props) {
-    const painter = props.painter || (() => {})
+    const painter = props.painter || function() {}
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
 
@@ -79,7 +59,7 @@ export function Canvas(props) {
         painter(canvas.getContext('2d'), width, height, props.offset)
     })
 
-    return <div className="canvasWrapper" ref={viewportRef}>
+    return <div className="CanvasWrapper" ref={viewportRef}>
         <canvas ref={canvasRef} ></canvas>
     </div>
 }

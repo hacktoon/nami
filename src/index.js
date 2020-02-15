@@ -11,10 +11,10 @@ import "./index.css"
 
 
 const APPS = {
-    world: { name: 'World', component: <WorldApp /> },
-    regions: { name: 'Regions', component: <RegionsApp /> }
+    world: { id: 'world', name: 'World', component: <WorldApp /> },
+    regions: { id: 'regions', name: 'Regions', component: <RegionsApp /> }
 }
-const DEFAULT_APP = APPS.regions
+const DEFAULT_APP = APPS.world
 
 
 function Nami() {
@@ -58,7 +58,6 @@ function AppSelect({ apps, current, setApp }) {
         onChange={onChange}
     />
 }
-
 
 
 ReactDOM.render(<Nami />, document.getElementById('root'));

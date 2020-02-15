@@ -1,12 +1,12 @@
 import React from 'react'
 
 import { NumberField, SelectField, OutputField } from '/ui/lib/field'
-import { Form, Column } from '/ui/lib'
+import { Form, Layout } from '/ui/lib'
 
 
 export function ViewConfig(props) {
-    return <Form className="ViewConfig">
-        <Column>
+    return <Layout className="ViewConfig">
+        <Form>
             <OutputField label="Name" value={props.world.name} />
             <OutputField label="Seed" value={props.world.seed} />
             <NumberField
@@ -25,6 +25,6 @@ export function ViewConfig(props) {
                 biome: "Biome",
                 landmass: "Landmass",
             }} />
-        </Column>
-    </Form>
+        </Form>
+    </Layout>
 }
