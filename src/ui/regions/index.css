@@ -11,3 +11,40 @@
     background: #CCC;
     padding: 5px;
 }
+
+
+.RegionsApp .RegionsView {
+    background: black;
+    display: grid;
+    grid-template-columns: 15% auto;
+}
+
+.RegionsApp .RegionsView .ViewConfig {
+    background: #111;
+    color: #FFF;
+    padding: 5px;
+}
+
+.RegionsApp .RegionsView .Form.ViewConfig {
+    flex-direction: column;
+}
+
+.RegionsApp .RegionsView .ViewConfig .Field {
+    padding: 5px 0;
+}
+.RegionsApp .RegionsView .ViewConfig .Value {
+    color: #AAA;
+}
+
+.RegionsApp .RegionsView .Screen {
+    position: relative;
+}
+
+.RegionsApp .RegionsView .Screen .canvasWrapper {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}

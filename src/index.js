@@ -14,7 +14,7 @@ const APPS = {
     world: { name: 'World', component: <WorldApp /> },
     regions: { name: 'Regions', component: <RegionsApp /> }
 }
-const DEFAULT_APP = APPS.world
+const DEFAULT_APP = APPS.regions
 
 
 function Nami() {

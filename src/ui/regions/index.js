@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import { Layout } from '/ui/lib'
 import Config from './config'
+import View from './view'
 import "./index.css"
 
 
@@ -10,5 +11,6 @@ export default function RegionsApp(props) {
 
     return <Layout className='RegionsApp'>
         <Config onChange={onConfigChange} />
+        <View />
     </Layout>
 }

@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 
-import { TextField } from '../lib/field'
+import { NumberField } from '../lib/field'
 import { Form, Row, Button } from '../lib'
 
 
 export default function Config(props) {
-    let [seed, setSeed] = useState('')
+    let [points, setPoints] = useState(3)
 
-    const onSeedChange = event => setSeed(event.target.value.trim())
+    const onPointsChange = event => setPoints(Number(event.target.value))
 
     const onSubmit = event => {
         const config = {}
@@ -17,10 +17,13 @@ export default function Config(props) {
 
     return <Form className="RegionsConfig" onSubmit={onSubmit}>
         <Row>
-            <TextField  label="Seed" onChange={onSeedChange} />
+            <NumberField
+                label="Points"
+                value={points}
+                step={1}
+                min={1}
+                onChange={onPointsChange} />
             <Button onClick={onSubmit} text="Build" />
         </Row>
     </Form>
 }
-
-
