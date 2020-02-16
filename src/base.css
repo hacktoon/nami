@@ -53,7 +53,18 @@ canvas { display: block; }
 /* LAYOUT  ====================================== */
 
 .Layout {
-    display: grid;
+}
+
+.RowLayout {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+}
+
+.ColumnLayout {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
 
@@ -103,8 +114,4 @@ canvas { display: block; }
 
 .Button:active {
     background: rgb(133, 156, 141);
-}
-
-.Form .Row .Button {
-    height: 100%;
 }
