@@ -28,7 +28,7 @@ function Main() {
 
 function MainHeader({app, setApp}) {
     return <Component className="MainHeader">
-        <Text className="MainTitle">Main</Text>
+        <Text className="MainTitle">NAMI</Text>
         <MainMenu app={app} setApp={setApp} />
     </Component>
 }

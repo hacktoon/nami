@@ -1,8 +1,7 @@
 import React, { useRef, useState, useLayoutEffect } from 'react'
 
 import { Point } from '/lib/point'
-import { Canvas } from '/ui/lib'
-import { MouseTracking } from '/ui/lib'
+import { Canvas, MouseTracking } from '/ui/lib/canvas'
 
 
 export function View(props) {
