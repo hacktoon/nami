@@ -4,8 +4,8 @@ import { NumberField, SelectField, OutputField } from '/ui/lib/field'
 import { Form } from '/ui/lib'
 
 
-export function ViewMenu(props) {
-    return <Form className="ViewMenu">
+export function Menu(props) {
+    return <Form className="Menu">
         <OutputField label="Name" value={props.world.name} />
         <OutputField label="Seed" value={props.world.seed} />
         <NumberField

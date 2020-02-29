@@ -18,7 +18,7 @@
     grid-template-columns: 20% auto;
 }
 
-.WorldApp .WorldView .ViewMenu {
+.WorldApp .WorldView .Menu {
     background: #111;
     color: #FFF;
     padding: .5rem 1rem;
@@ -26,17 +26,17 @@
     flex-direction: column;
 }
 
-.WorldApp .WorldView .ViewMenu .Field {
+.WorldApp .WorldView .Menu .Field {
     padding: .5rem 0;
 }
 
-.WorldApp .WorldView .ViewMenu .FieldValue {
+.WorldApp .WorldView .Menu .FieldValue {
     color: #AAA;
     width: 100%;
 }
 
-.WorldApp .WorldView .ViewMenu input,
-.WorldApp .WorldView .ViewMenu select {
+.WorldApp .WorldView .Menu input,
+.WorldApp .WorldView .Menu select {
     background-color: #282828;
 }
 
