@@ -5,7 +5,7 @@ import { WorldConfig } from '/model/world'
 import { Form, Button } from '../lib'
 
 
-export default function WorldConfigPanel(props) {
+export default function WorldMenu(props) {
     let [roughness, setRoughness] = useState(WorldConfig.DEFAULT_ROUGHNESS)
     let [size, setSize] = useState(WorldConfig.DEFAULT_SIZE)
     let [seed, setSeed] = useState('')
@@ -31,7 +31,7 @@ export default function WorldConfigPanel(props) {
         65: 65,
     }
 
-    return <Form className="WorldConfigPanel" onSubmit={onSubmit}>
+    return <Form className="WorldMenu" onSubmit={onSubmit}>
         <SelectField label="Size" value={size}
             onChange={onSizeChange} options={sizeOptions} />
         <NumberField

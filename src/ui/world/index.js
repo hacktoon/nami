@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import World from '/model/world'
-import WorldConfigPanel from './config'
+import WorldMenu from './menu'
 import WorldView from './view'
 import { Component } from '/ui/lib'
 
@@ -14,7 +14,7 @@ export default function WorldApp(props) {
     const onConfigChange = config => setWorld(new World(config))
 
     return <Component className='WorldApp'>
-        <WorldConfigPanel onChange={onConfigChange} />
+        <WorldMenu onChange={onConfigChange} />
         <WorldView world={world} />
     </Component>
 }
