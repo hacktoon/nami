@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { NumberField } from '../lib/field'
-import { Form, Layout, Button } from '../lib'
+import { Form, Component, Button } from '../lib'
 
 
 export default function Config(props) {
@@ -15,7 +15,7 @@ export default function Config(props) {
         props.onChange(config)
     }
 
-    return <Layout className="RegionsConfig">
+    return <Component className="RegionsConfig">
         <Form onSubmit={onSubmit}>
             <NumberField
                 label="Points"
@@ -25,5 +25,5 @@ export default function Config(props) {
                 onChange={onPointsChange} />
             <Button onClick={onSubmit} text="Build" />
         </Form>
-    </Layout>
+    </Component>
 }

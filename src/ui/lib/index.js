@@ -12,6 +12,13 @@ export function cls(...classNames) {
 
 // GENERIC WIDGETS ===============================================
 
+export function Component(props) {
+    const {className, ...restProps} = props
+    return <section className={cls('Component', className)} {...restProps}>
+        {props.children}
+    </section>
+}
+
 export function Text(props) {
     const {className, ...textProps} = props
     return <p className={cls(className, 'Text')} {...textProps}>
@@ -35,14 +42,6 @@ export function Button(props) {
 }
 
 
-// LAYOUT WIDGETS ===============================================
-
-export function Layout(props) {
-    const {className, ...textProps} = props
-    return <div className={cls(className, 'Layout')} {...textProps}>
-        {props.children}
-    </div>
-}
 
 
 // CANVAS WIDGET ===============================================

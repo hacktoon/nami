@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { Screen } from './screen'
 import { ViewConfig } from './config'
-import { Layout } from '/ui/lib'
+import { Component } from '/ui/lib'
 import { Point } from '/lib/point'
 
 
@@ -17,14 +17,14 @@ export default function WorldView(props) {
         paintWorld(props.world, config)
     }
 
-    return <Layout className='WorldView'>
+    return <Component className='WorldView'>
         <ViewConfig
             onTilesizeChange={event => setTilesize(event.target.value)}
             world={props.world}
             tilesize={tilesize}
         />
         <Screen painter={painter} />
-    </Layout>
+    </Component>
 }
 
 

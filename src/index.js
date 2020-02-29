@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 
 import WorldApp from '/ui/world'
 import RegionsApp from '/ui/regions'
-import { Layout, Text } from '/ui/lib'
+import { Component, Text } from '/ui/lib'
 import { SelectField } from '/ui/lib/field'
 
 import "./base.css"
@@ -20,23 +20,23 @@ const DEFAULT_APP = APPS.world
 function Nami() {
     const [app, setApp] = useState(DEFAULT_APP)
 
-    return <Layout className="NamiApp">
+    return <Component className="NamiApp">
         <NamiHeader app={app} setApp={setApp} />
         {app.component}
-    </Layout>
+    </Component>
 }
 
 function NamiHeader({app, setApp}) {
-    return <Layout className="NamiHeader">
+    return <Component className="NamiHeader">
         <Text className="NamiTitle">Nami</Text>
         <NamiMenu app={app} setApp={setApp} />
-    </Layout>
+    </Component>
 }
 
 function NamiMenu({app, setApp}) {
-    return <Layout className="NamiMenu">
+    return <Component className="NamiMenu">
         <AppSelect apps={APPS} current={app} setApp={setApp} />
-    </Layout>
+    </Component>
 }
 
 function AppSelect({ apps, current, setApp }) {

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { TextField, NumberField, SelectField } from '../lib/field'
 import { WorldConfig } from '/model/world'
-import { Form, Layout, Button } from '../lib'
+import { Form, Button } from '../lib'
 
 
 export default function WorldConfigPanel(props) {
@@ -31,21 +31,19 @@ export default function WorldConfigPanel(props) {
         65: 65,
     }
 
-    return <Layout className="WorldConfig">
-        <Form onSubmit={onSubmit}>
-            <SelectField label="Size" value={size}
-                onChange={onSizeChange} options={sizeOptions} />
-            <NumberField
-                label="Roughness"
-                value={roughness}
-                onChange={onRoughnessChange}
-                step={1}
-                min={1}
-            />
-            <TextField  label="Seed" onChange={onSeedChange} />
-            <Button onClick={onSubmit} text="Build" />
-        </Form>
-    </Layout>
+    return <Form className="WorldConfigPanel" onSubmit={onSubmit}>
+        <SelectField label="Size" value={size}
+            onChange={onSizeChange} options={sizeOptions} />
+        <NumberField
+            label="Roughness"
+            value={roughness}
+            onChange={onRoughnessChange}
+            step={1}
+            min={1}
+        />
+        <TextField  label="Seed" onChange={onSeedChange} />
+        <Button onClick={onSubmit} text="Build" />
+    </Form>
 }
 
 

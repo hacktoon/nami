@@ -1,16 +1,17 @@
 import React, { useState } from 'react'
 
-import { Layout } from '/ui/lib'
+import { Component } from '/ui/lib'
 import Config from './config'
 import View from './view'
+
 import "./index.css"
 
 
 export default function RegionsApp(props) {
     const onConfigChange = config => console.log(config)
 
-    return <Layout className='RegionsApp'>
+    return <Component className='RegionsApp'>
         <Config onChange={onConfigChange} />
         <View />
-    </Layout>
+    </Component>
 }

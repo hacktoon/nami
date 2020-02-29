@@ -52,19 +52,7 @@ canvas { display: block; }
 
 /* LAYOUT  ====================================== */
 
-.Layout {
-}
-
-.RowLayout {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-}
-
-.ColumnLayout {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
+.Component {
 }
 
 
