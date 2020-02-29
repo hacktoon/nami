@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from 'react'
+import React, { useRef, useState, useLayoutEffect } from 'react'
 
 
 // HELPER FUNCTIONS ==============================================
@@ -57,4 +57,47 @@ export function Canvas(props) {
     return <div className="CanvasWrapper" ref={viewportRef}>
         <canvas ref={canvasRef} ></canvas>
     </div>
+}
+
+
+export function MouseTracking(props) {
+    const [dragOrigin, setDragOrigin] = useState(new Point(0, 0))
+    const [dragging, setDragging] = useState(false)
+    const [offset, setOffset] = useState(new Point(0, 0))
+
+    const onMouseMove = event => {
+        if (! dragging) return
+        const mousePoint = getMousePoint(event)
+        props.onDrag(getTotalOffset(mousePoint))
+    }
+
+    const onMouseDown = event => {
+        event.preventDefault()
+        setDragOrigin(getMousePoint(event))
+        setDragging(true)
+    }
+
+    const onMouseUp = event => {
+        const mousePoint = getMousePoint(event)
+        setOffset(getTotalOffset(mousePoint))
+        setDragging(false)
+    }
+
+    const getTotalOffset = point => {
+        return dragOrigin.minus(point).plus(offset)
+    }
+
+    const getMousePoint = event => {
+        const { offsetX: x, offsetY: y } = event.nativeEvent
+        return new Point(x, y)
+    }
+
+    return (
+        <div className="tracker"
+            onMouseLeave={() => setDragging(false)}
+            onMouseUp={onMouseUp}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}>
+        </div>
+    )
 }

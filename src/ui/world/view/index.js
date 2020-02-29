@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Screen } from './screen'
+import { View } from './view'
 import { ViewMenu } from './menu'
 import { Component } from '/ui/lib'
 import { Point } from '/lib/point'
@@ -23,7 +23,7 @@ export default function WorldView(props) {
             world={props.world}
             tilesize={tilesize}
         />
-        <Screen painter={painter} />
+        <View painter={painter} />
     </Component>
 }
 

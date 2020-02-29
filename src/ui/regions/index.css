@@ -2,39 +2,55 @@
 /* Regions ============================== */
 
 .RegionsApp {
-    background-color: #FFF;
     display: grid;
     grid-template-rows: 50px auto;
 }
 
-.RegionsApp .RegionsConfig {
+.RegionsApp .RegionsMenu {
+    display: flex;
     background: #CCC;
-    padding: 5px;
+    padding: .5rem;
 }
 
 .RegionsApp .RegionsView {
     background: black;
     display: grid;
-    grid-template-columns: 15% auto;
+    grid-template-columns: 20% auto;
 }
 
 .RegionsApp .RegionsView .ViewMenu {
     background: #111;
     color: #FFF;
-    padding: 5px;
-}
-
-.RegionsApp .RegionsView .Form.ViewMenu {
+    padding: .5rem 1rem;
+    display: flex;
     flex-direction: column;
 }
 
 .RegionsApp .RegionsView .ViewMenu .Field {
-    padding: 5px 0;
+    padding: .5rem 0;
 }
-.RegionsApp .RegionsView .ViewMenu .Value {
+
+.RegionsApp .RegionsView .ViewMenu .FieldValue {
     color: #AAA;
+}
+
+.RegionsApp .RegionsView .ViewMenu input,
+.RegionsApp .RegionsView .ViewMenu select {
+    background-color: #282828;
 }
 
 .RegionsApp .RegionsView .Screen {
     position: relative;
+}
+
+.RegionsApp .RegionsView .Screen .tracker {
+    color: #FFF;
+    cursor: pointer;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
 }
