@@ -25,7 +25,7 @@ function buildSelectOptions(options) {
 
 function LabeledField(props) {
     return <section className={cls(props.className, 'Field')}>
-        <label className='Label' htmlFor={props.id}>{props.label}</label>
+        <label className='FieldLabel' htmlFor={props.id}>{props.label}</label>
         {props.children}
     </section>
 }
@@ -68,7 +68,7 @@ export function SelectField({className, ...props}) {
 
 export function OutputField(props) {
     return <section className='Field'>
-        <output className='Label'>{props.label}</output>
+        <output className='FieldLabel'>{props.label}</output>
         <output className='FieldValue'>{props.value}</output>
     </section>
 }

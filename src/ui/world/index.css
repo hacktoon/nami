@@ -15,23 +15,19 @@
 .WorldApp .WorldView {
     background: black;
     display: grid;
-    grid-template-columns: 15% auto;
+    grid-template-columns: 20% auto;
 }
 
 .WorldApp .WorldView .ViewMenu {
     background: #111;
     color: #FFF;
-    padding: 5px;
+    padding: .5rem 1rem;
     display: flex;
     flex-direction: column;
 }
 
 .WorldApp .WorldView .ViewMenu .Field {
     padding: .5rem 0;
-}
-
-.WorldApp .WorldView .ViewMenu .Label {
-    padding-right: .5rem;
 }
 
 .WorldApp .WorldView .ViewMenu .FieldValue {
