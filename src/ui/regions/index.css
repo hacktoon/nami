@@ -18,7 +18,7 @@
     grid-template-columns: 20% auto;
 }
 
-.RegionsApp .RegionsView .ViewMenu {
+.RegionsApp .RegionsView .Menu {
     background: #111;
     color: #FFF;
     padding: .5rem 1rem;
@@ -26,17 +26,17 @@
     flex-direction: column;
 }
 
-.RegionsApp .RegionsView .ViewMenu .Field {
+.RegionsApp .RegionsView .Menu .Field {
     padding: .5rem 0;
 }
 
-.RegionsApp .RegionsView .ViewMenu .FieldValue {
+.RegionsApp .RegionsView .Menu .FieldValue {
     color: #AAA;
     width: 100%;
 }
 
-.RegionsApp .RegionsView .ViewMenu input,
-.RegionsApp .RegionsView .ViewMenu select {
+.RegionsApp .RegionsView .Menu input,
+.RegionsApp .RegionsView .Menu select {
     background-color: #282828;
 }
 
