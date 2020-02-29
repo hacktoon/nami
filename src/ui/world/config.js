@@ -5,7 +5,7 @@ import { WorldConfig } from '/model/world'
 import { Form, Layout, Button } from '../lib'
 
 
-export default function Config(props) {
+export default function WorldConfigPanel(props) {
     let [roughness, setRoughness] = useState(WorldConfig.DEFAULT_ROUGHNESS)
     let [size, setSize] = useState(WorldConfig.DEFAULT_SIZE)
     let [seed, setSeed] = useState('')
