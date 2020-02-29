@@ -3,7 +3,7 @@
 
 .RegionsApp {
     display: grid;
-    grid-template-rows: 50px auto;
+    grid-template-rows: 90px auto;
 }
 
 .RegionsApp .RegionsMenu {
