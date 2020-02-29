@@ -58,7 +58,7 @@ export function SelectField({className, ...props}) {
     const id = generateFieldID(label)
     let _class = cls('FieldValue', className)
 
-    return <LabeledField id={id} className={_class} label={label}>
+    return <LabeledField id={id} label={label}>
         <select id={id} className={_class} {...restProps}>
             {children}
         </select>

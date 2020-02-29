@@ -38,6 +38,11 @@
     color: #AAA;
 }
 
+.WorldApp .WorldView .ViewMenu input,
+.WorldApp .WorldView .ViewMenu select {
+    background-color: #282828;
+}
+
 .WorldApp .WorldView .Screen {
     position: relative;
 }
