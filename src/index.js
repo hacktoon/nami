@@ -17,24 +17,24 @@ const APPS = {
 const DEFAULT_APP = APPS.world
 
 
-function Nami() {
+function Main() {
     const [app, setApp] = useState(DEFAULT_APP)
 
-    return <Component className="NamiApp">
-        <NamiHeader app={app} setApp={setApp} />
+    return <Component className="MainApp">
+        <MainHeader app={app} setApp={setApp} />
         {app.component}
     </Component>
 }
 
-function NamiHeader({app, setApp}) {
-    return <Component className="NamiHeader">
-        <Text className="NamiTitle">Nami</Text>
-        <NamiMenu app={app} setApp={setApp} />
+function MainHeader({app, setApp}) {
+    return <Component className="MainHeader">
+        <Text className="MainTitle">Main</Text>
+        <MainMenu app={app} setApp={setApp} />
     </Component>
 }
 
-function NamiMenu({app, setApp}) {
-    return <Component className="NamiMenu">
+function MainMenu({app, setApp}) {
+    return <Component className="MainMenu">
         <AppSelect apps={APPS} current={app} setApp={setApp} />
     </Component>
 }
@@ -60,4 +60,4 @@ function AppSelect({ apps, current, setApp }) {
 }
 
 
-ReactDOM.render(<Nami />, document.getElementById('root'));
+ReactDOM.render(<Main />, document.getElementById('root'));

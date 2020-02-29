@@ -1,7 +1,5 @@
 
-/* Nami ============================== */
-
-.NamiApp {
+.MainApp {
     background: #111;
     color: #333;
     height: 100vh;
@@ -9,24 +7,24 @@
     grid-template-rows: 50px auto;
 }
 
-.NamiHeader {
-    display: grid;
-    padding: 5px 10px;
-    grid-template-columns: 100px auto;
+.MainHeader {
+    display: flex;
+    padding: .5rem;
 }
 
-.NamiTitle {
+.MainTitle {
     color: #FFF;
     display: flex;
     align-items: center;
     text-align: left;
     font-weight: bold;
-    font-size: 1.8em;
+    font-size: 2rem;
     text-transform: uppercase;
 }
 
-.NamiMenu {
-    display: flex;
+.MainMenu {
     color: #FFF;
+    display: flex;
+    flex-grow: 1;
     justify-content: flex-end;
 }
