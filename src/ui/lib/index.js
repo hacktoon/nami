@@ -4,35 +4,33 @@ import React, { useRef, useLayoutEffect } from 'react'
 // HELPER FUNCTIONS ==============================================
 
 export function cls(...classNames) {
-    return classNames.filter(name => {
-        return Boolean(name) && String(name).trim()
-    }).join(' ')
+    return classNames.join(' ')
+}
+
+
+// BASE COMPONENT ===============================================
+
+export function Component(props) {
+    return <section {...props}>
+        {props.children}
+    </section>
 }
 
 
 // GENERIC WIDGETS ===============================================
 
-export function Component(props) {
-    const {className, ...restProps} = props
-    return <section className={cls('Component', className)} {...restProps}>
-        {props.children}
-    </section>
-}
-
-export function Text(props) {
-    const {className, ...textProps} = props
-    return <p className={cls(className, 'Text')} {...textProps}>
+export function Text({className, ...props}) {
+    return <p className={cls('Text', className)} {...props}>
         {props.children}
     </p>
 }
 
 // GENERIC FORM WIDGETS ===============================================
 
-export function Form(props) {
-    const {className, ...formProps} = props
-    return <div className={cls(className, 'Form')} {...formProps}>
+export function Form({className, ...props}) {
+    return <form className={cls('Form', className)} {...props}>
         {props.children}
-    </div>
+    </form>
 }
 
 export function Button(props) {
@@ -42,9 +40,7 @@ export function Button(props) {
 }
 
 
-
-
-// CANVAS WIDGET ===============================================
+// CANVAS WIDGETS ===============================================
 
 export function Canvas(props) {
     const painter = props.painter || function() {}

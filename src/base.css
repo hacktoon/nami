@@ -2,35 +2,27 @@
     border: none;
     padding: 0;
     margin: 0;
-}
-
-*, *:before, *:after {
-    box-sizing: inherit;
-}
-
-html {
     box-sizing: border-box;
 }
 
 body {
     background: #FFF;
     color: #333;
-    font: normal 1.05rem monospace;
+    font: normal 1rem monospace;
 }
 
 select, input {
     background: #FFF;
-    border: 1px solid #CCC;
     display: block;
     font-size: 1em;
 }
 
 input {
-    padding: 10px;
+    padding: .5rem;
 }
 
 select {
-    padding: 0 5px;
+    padding: 0 .5rem;
 }
 
 button {
@@ -47,12 +39,6 @@ canvas { display: block; }
     left: 0;
     right: 0;
     bottom: 0;
-}
-
-
-/* LAYOUT  ====================================== */
-
-.Component {
 }
 
 
