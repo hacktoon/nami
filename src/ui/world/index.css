@@ -32,6 +32,7 @@
 
 .WorldApp .WorldView .ViewMenu .FieldValue {
     color: #AAA;
+    width: 100%;
 }
 
 .WorldApp .WorldView .ViewMenu input,

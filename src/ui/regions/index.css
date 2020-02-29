@@ -32,6 +32,7 @@
 
 .RegionsApp .RegionsView .ViewMenu .FieldValue {
     color: #AAA;
+    width: 100%;
 }
 
 .RegionsApp .RegionsView .ViewMenu input,
@@ -39,11 +40,11 @@
     background-color: #282828;
 }
 
-.RegionsApp .RegionsView .Screen {
+.RegionsApp .RegionsView .View {
     position: relative;
 }
 
-.RegionsApp .RegionsView .Screen .tracker {
+.RegionsApp .RegionsView .View .tracker {
     cursor: pointer;
     overflow: hidden;
     position: absolute;

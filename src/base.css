@@ -45,14 +45,13 @@ canvas { display: block; }
 .Field .FieldLabel {
     align-items: center;
     display: flex;
-    font-weight: bold;
     flex: 1 1 40%;
+    font-weight: bold;
     padding-right: .5rem;
 }
 
 .Field .FieldValue {
     display: flex;
-    width: 100%;
 }
 
 
