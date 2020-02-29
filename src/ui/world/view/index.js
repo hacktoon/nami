@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Screen } from './screen'
-import { ViewMenu } from './config'
+import { ViewMenu } from './menu'
 import { Component } from '/ui/lib'
 import { Point } from '/lib/point'
 

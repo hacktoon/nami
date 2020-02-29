@@ -15,14 +15,7 @@ select, input {
     background: #FFF;
     display: block;
     font-size: 1em;
-}
-
-input {
     padding: .5rem;
-}
-
-select {
-    padding: 0 .5rem;
 }
 
 button {
@@ -42,36 +35,24 @@ canvas { display: block; }
 }
 
 
-/* FORM WIDGETS ================================ */
-
-.Form {
-    display: flex;
-    flex: 1;
-}
+/* FIELD WIDGETS ================================ */
 
 .Field {
     display: flex;
     flex-direction: row;
+    padding-right: 1rem;
 }
 
 .Field .Label {
     align-items: center;
     display: flex;
     font-weight: bold;
+    padding-right: .5rem;
 }
 
-.Form .Column .Field {
-    flex-direction: column;
+.Field .FieldValue {
+    display: flex;
     width: 100%;
-}
-
-.Form .Row .Field {
-    flex-direction: row;
-    height: 100%;
-}
-
-.Form .Row .Field .Label {
-    padding: 0 5px 0 10px;
 }
 
 

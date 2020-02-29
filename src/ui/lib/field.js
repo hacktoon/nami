@@ -31,10 +31,11 @@ function LabeledField(props) {
 }
 
 function LabeledInputField(type, props) {
-    const id = generateFieldID(props.label)
-    const {label, ...inputProps} = props
+    let id = generateFieldID(props.label)
+    let {label, className, ...restProps} = props
+    let _class = cls('FieldValue', className)
     return <LabeledField id={id} label={label}>
-        <input id={id} type={type} {...inputProps} />
+        <input id={id} type={type} className={_class} {...restProps} />
     </LabeledField>
 }
 
@@ -45,18 +46,20 @@ export function TextField(props) {
     return LabeledInputField('text', props)
 }
 
+
 export function NumberField(props) {
     return LabeledInputField('number', props)
 }
 
 
-export function SelectField(props) {
-    const {label, options, ...selectProps} = props
+export function SelectField({className, ...props}) {
+    const {label, options, ...restProps} = props
     const children = useMemo(() => buildSelectOptions(options), [options])
     const id = generateFieldID(label)
+    let _class = cls('FieldValue', className)
 
-    return <LabeledField id={id} label={label}>
-        <select id={id} {...selectProps}>
+    return <LabeledField id={id} className={_class} label={label}>
+        <select id={id} className={_class} {...restProps}>
             {children}
         </select>
     </LabeledField>
@@ -66,6 +69,6 @@ export function SelectField(props) {
 export function OutputField(props) {
     return <section className='Field'>
         <output className='Label'>{props.label}</output>
-        <output className='Value'>{props.value}</output>
+        <output className='FieldValue'>{props.value}</output>
     </section>
 }

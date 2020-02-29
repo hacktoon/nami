@@ -7,6 +7,7 @@
 }
 
 .WorldApp .WorldMenu {
+    display: flex;
     background: #CCC;
     padding: .5rem;
 }
@@ -26,14 +27,14 @@
 }
 
 .WorldApp .WorldView .ViewMenu .Field {
-    padding: 5px 0;
+    padding: .5rem 0;
 }
 
 .WorldApp .WorldView .ViewMenu .Label {
-    padding-right: 5px;
+    padding-right: .5rem;
 }
 
-.WorldApp .WorldView .ViewMenu .Value {
+.WorldApp .WorldView .ViewMenu .FieldValue {
     color: #AAA;
 }
 
