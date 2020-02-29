@@ -17,19 +17,23 @@
     grid-template-columns: 15% auto;
 }
 
-.WorldApp .WorldView .ViewConfig {
+.WorldApp .WorldView .ViewMenu {
     background: #111;
     color: #FFF;
     padding: 5px;
     display: flex;
     flex-direction: column;
-    width: 100%;
 }
 
-.WorldApp .WorldView .ViewConfig .Field {
+.WorldApp .WorldView .ViewMenu .Field {
     padding: 5px 0;
 }
-.WorldApp .WorldView .ViewConfig .Value {
+
+.WorldApp .WorldView .ViewMenu .Label {
+    padding-right: 5px;
+}
+
+.WorldApp .WorldView .ViewMenu .Value {
     color: #AAA;
 }
 
@@ -38,11 +42,9 @@
 }
 
 .WorldApp .WorldView .Screen .tracker {
+    color: #FFF;
     cursor: pointer;
     overflow: hidden;
-    line-height: 30px;
-    padding: 0 10px;
-    color: #FFF;
     position: absolute;
     top: 0;
     left: 0;

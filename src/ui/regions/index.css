@@ -18,20 +18,20 @@
     grid-template-columns: 15% auto;
 }
 
-.RegionsApp .RegionsView .ViewConfig {
+.RegionsApp .RegionsView .ViewMenu {
     background: #111;
     color: #FFF;
     padding: 5px;
 }
 
-.RegionsApp .RegionsView .Form.ViewConfig {
+.RegionsApp .RegionsView .Form.ViewMenu {
     flex-direction: column;
 }
 
-.RegionsApp .RegionsView .ViewConfig .Field {
+.RegionsApp .RegionsView .ViewMenu .Field {
     padding: 5px 0;
 }
-.RegionsApp .RegionsView .ViewConfig .Value {
+.RegionsApp .RegionsView .ViewMenu .Value {
     color: #AAA;
 }
 

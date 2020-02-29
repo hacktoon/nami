@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Screen } from './screen'
-import { ViewConfig } from './config'
+import { ViewMenu } from './config'
 import { Component } from '/ui/lib'
 import { Point } from '/lib/point'
 
@@ -18,7 +18,7 @@ export default function WorldView(props) {
     }
 
     return <Component className='WorldView'>
-        <ViewConfig
+        <ViewMenu
             onTilesizeChange={event => setTilesize(event.target.value)}
             world={props.world}
             tilesize={tilesize}
