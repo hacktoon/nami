@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 
 import WorldApp from '/ui/world'
 import RegionsApp from '/ui/regions'
-import { Component, Text } from '/ui/lib'
+import { Text } from '/ui/lib'
 import { SelectField } from '/ui/lib/field'
 
 import "./base.css"
@@ -20,23 +20,23 @@ const DEFAULT_APP = APPS.world
 function Main() {
     const [app, setApp] = useState(DEFAULT_APP)
 
-    return <Component className="MainApp">
+    return <section className="MainApp">
         <MainHeader app={app} setApp={setApp} />
         {app.component}
-    </Component>
+    </section>
 }
 
 function MainHeader({app, setApp}) {
-    return <Component className="MainHeader">
+    return <section className="MainHeader">
         <Text className="MainTitle">NAMI</Text>
         <MainMenu app={app} setApp={setApp} />
-    </Component>
+    </section>
 }
 
 function MainMenu({app, setApp}) {
-    return <Component className="MainMenu">
+    return <section className="MainMenu">
         <AppSelect apps={APPS} current={app} setApp={setApp} />
-    </Component>
+    </section>
 }
 
 function AppSelect({ apps, current, setApp }) {

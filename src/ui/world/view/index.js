@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 
 import { View } from './view'
 import { Menu } from './menu'
-import { Component } from '/ui/lib'
 import { PaintConfig } from '/ui/lib/canvas'
 
 
@@ -17,14 +16,14 @@ export default function WorldView(props) {
         paintWorld(props.world, config)
     }
 
-    return <Component className='WorldView'>
+    return <section className='WorldView'>
         <Menu
             onTilesizeChange={event => setTilesize(event.target.value)}
             world={props.world}
             tilesize={tilesize}
         />
         <View painter={painter} />
-    </Component>
+    </section>
 }
 
 

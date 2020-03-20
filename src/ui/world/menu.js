@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
+import { Form, Button } from '../lib'
 import { TextField, NumberField, SelectField } from '../lib/field'
 import { WorldConfig } from '/model/world'
-import { Form, Button } from '../lib'
 
 
 export default function WorldMenu(props) {
@@ -11,12 +11,14 @@ export default function WorldMenu(props) {
     let [seed, setSeed] = useState('')
 
     const onSizeChange = event => setSize(Number(event.target.value))
+
     const onRoughnessChange = event => {
         const roughness = Number(event.target.value)
         const config = new WorldConfig({ size, roughness, seed })
         setRoughness(roughness)
         props.onChange(config)
     }
+
     const onSeedChange = event => setSeed(event.target.value.trim())
 
     const onSubmit = event => {

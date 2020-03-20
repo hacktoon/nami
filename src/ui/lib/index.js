@@ -8,15 +8,6 @@ export function cls(...classNames) {
 }
 
 
-// BASE COMPONENT ===============================================
-
-export function Component(props) {
-    return <section {...props}>
-        {props.children}
-    </section>
-}
-
-
 // GENERIC WIDGETS ===============================================
 
 export function Text({className, ...props}) {
