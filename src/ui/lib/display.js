@@ -3,7 +3,7 @@ import React, { useRef, useState, useLayoutEffect } from 'react'
 import { Point } from '/lib/point'
 
 
-export class PaintConfig {
+export class RenderConfig {
     constructor(config={}) {
         this.canvas = config.canvas || <canvas />
         this.offset = config.offset || new Point(0, 0)
@@ -29,7 +29,7 @@ export class PaintConfig {
 
 
 export function Canvas(props) {
-    const painter = props.painter || function() {}
+    const render = props.render || function() {}
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
 
@@ -37,16 +37,16 @@ export function Canvas(props) {
         const canvas = canvasRef.current
         const width = canvas.width = viewportRef.current.clientWidth
         const height = canvas.height = viewportRef.current.clientHeight
-        painter(canvas.getContext('2d'), width, height, props.offset)
+        render(canvas.getContext('2d'), width, height, props.offset)
     })
 
-    return <div className="CanvasWrapper" ref={viewportRef}>
+    return <div className="Canvas" ref={viewportRef}>
         <canvas ref={canvasRef} ></canvas>
     </div>
 }
 
 
-export function MouseTracking(props) {
+export function MouseTracker(props) {
     const [dragOrigin, setDragOrigin] = useState(new Point(0, 0))
     const [dragging, setDragging] = useState(false)
     const [offset, setOffset] = useState(new Point(0, 0))
@@ -79,7 +79,7 @@ export function MouseTracking(props) {
     }
 
     return (
-        <div className="tracker"
+        <div className="MouseTracker"
             onMouseLeave={() => setDragging(false)}
             onMouseUp={onMouseUp}
             onMouseDown={onMouseDown}

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { View } from './view'
 import { Menu } from './menu'
-import { PaintConfig } from '/ui/lib/canvas'
+import { RenderConfig } from '/ui/lib/display'
 
 
 const DEFAULT_TILE_SIZE = 10
@@ -11,9 +11,9 @@ const DEFAULT_TILE_SIZE = 10
 export default function WorldView(props) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
 
-    const painter = (canvas, width, height, offset) => {
-        const config = new PaintConfig({ canvas, width, height, offset, tilesize })
-        paintWorld(props.world, config)
+    const render = (canvas, width, height, offset) => {
+        const config = new RenderConfig({ canvas, width, height, offset, tilesize })
+        renderWorld(props.world, config)
     }
 
     return <section className='WorldView'>
@@ -22,12 +22,12 @@ export default function WorldView(props) {
             world={props.world}
             tilesize={tilesize}
         />
-        <View painter={painter} />
+        <View render={render} />
     </section>
 }
 
 
-function paintWorld(world, config){
+function renderWorld(world, config){
     const { canvas, tilesize, gridWidth, gridHeight } = config
     for(let i = 0; i < gridWidth; i++) {
         for(let j = 0; j < gridHeight; j++) {
