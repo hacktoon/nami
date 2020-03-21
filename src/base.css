@@ -27,6 +27,10 @@ canvas { display: block; }
 
 /* BASE COMPONENTS ================================ */
 
+.Display {
+    position: relative;
+}
+
 .Canvas {
     overflow: hidden;
     position: absolute;

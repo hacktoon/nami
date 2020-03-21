@@ -3,6 +3,16 @@ import React, { useRef, useState, useLayoutEffect } from 'react'
 import { Point } from '/lib/point'
 
 
+export function Display(props) {
+    const [offset, setOffset] = useState(new Point(0, 0))
+
+    return <section className="Display">
+        <MouseTracker onDrag={setOffset} />
+        <Canvas render={props.render} offset={offset} />
+    </section>
+}
+
+
 export class RenderConfig {
     constructor(config={}) {
         this.canvas = config.canvas || <canvas />

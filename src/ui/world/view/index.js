@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 
-import { View } from './view'
 import { Menu } from './menu'
-import { RenderConfig } from '/ui/lib/display'
+import { Display, RenderConfig } from '/ui/lib/display'
 
 
 const DEFAULT_TILE_SIZE = 10
@@ -22,7 +21,7 @@ export default function WorldView(props) {
             world={props.world}
             tilesize={tilesize}
         />
-        <View render={render} />
+        <Display render={render} />
     </section>
 }
 
