@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import { ScanlineFill } from '/lib/flood-fill'
 import Menu from './menu'
 import { Display, RenderConfig } from '/ui/lib/display'
 
@@ -15,10 +16,9 @@ export default function RegionsView(props) {
         renderRegions(props.regions, config)
     }
 
-    return <section className='RegionsView'>
+    return <section className="RegionsView">
         <Menu
             onTilesizeChange={event => setTilesize(event.target.value)}
-            world={props.world}
             tilesize={tilesize}
         />
         <Display render={render} />
@@ -28,15 +28,12 @@ export default function RegionsView(props) {
 
 function renderRegions(regions, config) {
     const { canvas, tilesize, gridWidth, gridHeight } = config
-    // for(let i = 0; i < gridWidth; i++) {
-    //     for(let j = 0; j < gridHeight; j++) {
-    //         const x = i * tilesize
-    //         const y = j * tilesize
-    //         const gridPoint = config.getGridPoint(i, j)
-    //         canvas.fillStyle = regions.getColor(gridPoint)
-    //         canvas.fillRect(x, y, tilesize, tilesize)
-    //     }
-    // }
-    canvas.fillStyle = 'white'
-    canvas.fillRect(0, 0, 100, 100)
+    for(let i = 0; i < gridWidth; i++) {
+        for(let j = 0; j < gridHeight; j++) {
+            const x = i * tilesize
+            const y = j * tilesize
+            canvas.fillStyle = 'white'
+            canvas.fillRect(x, y, tilesize, tilesize)
+        }
+    }
 }
