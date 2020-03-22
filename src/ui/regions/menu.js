@@ -1,25 +1,33 @@
 import React, { useState } from 'react'
 
-import { NumberField } from '../lib/field'
+import { SelectField, NumberField } from '../lib/field'
 import { Form, Button } from '../lib'
 
 
-export default function RegionsMenu(props) {
+export default function ConfigMenu(props) {
     let [points, setPoints] = useState(8)
+    let [size, setSize] = useState(257)
 
-    const onPointsChange = event => {
-        const points = Number(event.target.value)
-        setPoints(points)
-        // props.onChange(config)
+    const onSizeChange = event => setSize(Number(event.target.value))
+
+    let onSubmit = event => {
+        event.preventDefault()
+        props.onChange({points})
     }
 
-    let onSubmit = () => {}
+    const sizeOptions = {
+        257: 257,
+        129: 129,
+        65: 65,
+    }
 
-    return <Form className="RegionsMenu" onSubmit={onSubmit}>
+    return <Form className="ConfigMenu" onSubmit={onSubmit}>
+        <SelectField label="Size" value={size}
+            onChange={onSizeChange} options={sizeOptions} />
         <NumberField
             label="Points"
             value={points}
-            onChange={onPointsChange}
+            onChange={event => setPoints(event.target.value)}
             step={1}
             min={1}
         />

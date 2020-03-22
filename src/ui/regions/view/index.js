@@ -26,8 +26,17 @@ export default function RegionsView(props) {
 }
 
 
-function renderRegions(regions, config){
+function renderRegions(regions, config) {
     const { canvas, tilesize, gridWidth, gridHeight } = config
+    // for(let i = 0; i < gridWidth; i++) {
+    //     for(let j = 0; j < gridHeight; j++) {
+    //         const x = i * tilesize
+    //         const y = j * tilesize
+    //         const gridPoint = config.getGridPoint(i, j)
+    //         canvas.fillStyle = regions.getColor(gridPoint)
+    //         canvas.fillRect(x, y, tilesize, tilesize)
+    //     }
+    // }
     canvas.fillStyle = 'white'
     canvas.fillRect(0, 0, 100, 100)
 }

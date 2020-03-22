@@ -6,7 +6,7 @@
     grid-template-rows: 50px auto;
 }
 
-.RegionsApp .RegionsMenu {
+.RegionsApp .ConfigMenu {
     display: flex;
     background: #CCC;
     padding: .5rem;
