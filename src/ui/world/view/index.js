@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Menu } from './menu'
-import { Display, RenderConfig } from '/ui/lib/display'
+import { GridDisplay, RenderConfig } from '/ui/lib/display'
 
 
 const DEFAULT_TILE_SIZE = 10
@@ -21,7 +21,7 @@ export default function WorldView(props) {
             world={props.world}
             tilesize={tilesize}
         />
-        <Display render={render} />
+        <GridDisplay render={render} />
     </section>
 }
 

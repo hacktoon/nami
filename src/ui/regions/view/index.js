@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { FloodFill, ScanlineFill, ScanlineFill8 } from '/lib/flood-fill'
 import Menu from './menu'
-import { Display, RenderConfig } from '/ui/lib/display'
+import { GridDisplay, RenderConfig } from '/ui/lib/display'
 
 
 const DEFAULT_TILE_SIZE = 40
@@ -27,7 +27,7 @@ export default function RegionsView(props) {
             onTilesizeChange={event => setTilesize(event.target.value)}
             tilesize={tilesize}
         />
-        <Display render={render} />
+        <GridDisplay render={render} />
     </section>
 }
 

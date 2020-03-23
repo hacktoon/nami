@@ -27,7 +27,7 @@ canvas { display: block; }
 
 /* BASE COMPONENTS ================================ */
 
-.Display {
+.GridDisplay {
     position: relative;
 }
 
