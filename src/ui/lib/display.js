@@ -3,11 +3,15 @@ import React, { useRef, useState, useLayoutEffect } from 'react'
 import { Point } from '/lib/point'
 
 
-export function GridDisplay(props) {
+export function TiledDisplay(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
-    return <section className="GridDisplay">
-        <MouseTracker onDrag={setOffset} />
+    const onDrag = offset => {
+        setOffset(offset)
+    }
+
+    return <section className="TiledDisplay">
+        <MouseTracker onDrag={onDrag} />
         <Canvas render={props.render} offset={offset} />
     </section>
 }
@@ -64,7 +68,7 @@ export function MouseTracker(props) {
     const onMouseMove = event => {
         if (! dragging) return
         const mousePoint = getMousePoint(event)
-        props.onDrag(getTotalOffset(mousePoint))
+        props.onDrag(absoluteOffset(mousePoint))
     }
 
     const onMouseDown = event => {
@@ -75,17 +79,17 @@ export function MouseTracker(props) {
 
     const onMouseUp = event => {
         const mousePoint = getMousePoint(event)
-        setOffset(getTotalOffset(mousePoint))
+        setOffset(absoluteOffset(mousePoint))
         setDragging(false)
     }
 
-    const getTotalOffset = point => {
+    const absoluteOffset = point => {
         return dragOrigin.minus(point).plus(offset)
     }
 
     const getMousePoint = event => {
-        const { offsetX: x, offsetY: y } = event.nativeEvent
-        return new Point(x, y)
+        const { offsetX, offsetY } = event.nativeEvent
+        return new Point(offsetX, offsetY)
     }
 
     return (

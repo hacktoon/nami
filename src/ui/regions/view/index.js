@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { FloodFill, ScanlineFill, ScanlineFill8 } from '/lib/flood-fill'
 import Menu from './menu'
-import { GridDisplay, RenderConfig } from '/ui/lib/display'
+import { TiledDisplay, RenderConfig } from '/ui/lib/display'
 
 
 const DEFAULT_TILE_SIZE = 40
@@ -18,7 +18,7 @@ export default function RegionsView(props) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
 
     const render = (canvas, viewWidth, viewHeight, offset) => {
-        const config = new RenderConfig({ canvas, viewWidth, viewHeight, offset, tilesize })
+        const config = new RenderConfig({ canvas, viewWidth, viewHeight, offset,  tilesize })
         renderRegions(props.regions, config)
     }
 
@@ -27,13 +27,13 @@ export default function RegionsView(props) {
             onTilesizeChange={event => setTilesize(event.target.value)}
             tilesize={tilesize}
         />
-        <GridDisplay render={render} />
+        <TiledDisplay render={render} tilesize={tilesize} />
     </section>
 }
 
 
 function renderRegions(regions, config) {
-    const { canvas, tilesize, gridWidthSpan, gridHeightSpan, offset } = config
+    const { canvas, tilesize, gridWidthSpan, gridHeightSpan } = config
 
     const drawGridCell = (x, y, canvas, pt) => {
         const lineColor = '#EEE'
