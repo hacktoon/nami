@@ -17,17 +17,17 @@ export class RenderConfig {
     constructor(config={}) {
         this.canvas = config.canvas || <canvas />
         this.offset = config.offset || new Point(0, 0)
-        this.width = Number(config.width)
-        this.height = Number(config.height)
+        this.viewWidth = Number(config.viewWidth)
+        this.viewHeight = Number(config.viewHeight)
         this.tilesize = Number(config.tilesize)
     }
 
-    get gridWidth() {
-        return Math.ceil(this.width / this.tilesize)
+    get gridWidthSpan() {
+        return Math.ceil(this.viewWidth / this.tilesize)
     }
 
-    get gridHeight() {
-        return Math.ceil(this.height / this.tilesize)
+    get gridHeightSpan() {
+        return Math.ceil(this.viewHeight / this.tilesize)
     }
 
     getGridPoint(i, j) {

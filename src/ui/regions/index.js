@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Regions } from '/model/region'
+import { RegionsConfig, Regions } from '/model/region'
 import ConfigMenu from './menu'
 import RegionsView from './view'
 
@@ -8,7 +8,7 @@ import "./index.css"
 
 
 export default function RegionsApp() {
-    let [regions, setRegions] = useState(new Regions())
+    let [regions, setRegions] = useState(new Regions(new RegionsConfig()))
 
     const onConfigChange = config => setRegions(new Regions(config))
 

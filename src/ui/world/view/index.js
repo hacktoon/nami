@@ -10,8 +10,8 @@ const DEFAULT_TILE_SIZE = 10
 export default function WorldView(props) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
 
-    const render = (canvas, width, height, offset) => {
-        const config = new RenderConfig({ canvas, width, height, offset, tilesize })
+    const render = (canvas, viewWidth, viewHeight, offset) => {
+        const config = new RenderConfig({ canvas, viewWidth, viewHeight, offset, tilesize })
         renderWorld(props.world, config)
     }
 
@@ -27,9 +27,9 @@ export default function WorldView(props) {
 
 
 function renderWorld(world, config){
-    const { canvas, tilesize, gridWidth, gridHeight } = config
-    for(let i = 0; i < gridWidth; i++) {
-        for(let j = 0; j < gridHeight; j++) {
+    const { canvas, tilesize, gridWidthSpan, gridHeightSpan } = config
+    for(let i = 0; i < gridWidthSpan; i++) {
+        for(let j = 0; j < gridHeightSpan; j++) {
             const x = i * tilesize
             const y = j * tilesize
             const gridPoint = config.getGridPoint(i, j)

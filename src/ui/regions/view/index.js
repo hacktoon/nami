@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 
 import { FloodFill, ScanlineFill, ScanlineFill8 } from '/lib/flood-fill'
-import { Random } from '/lib/base'
-import { Grid } from '/lib/grid'
 import Menu from './menu'
 import { Display, RenderConfig } from '/ui/lib/display'
 
@@ -18,12 +16,10 @@ const methodOptions = {
 
 export default function RegionsView(props) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
-    let g
 
-    const render = (canvas, width, height, offset) => {
-        const config = new RenderConfig({ canvas, width, height, offset, tilesize })
-        g = g || new Grid(config.gridWidth, config.gridHeight, () => Random.choice(['green', 'blue']))
-        renderRegions(g, config)
+    const render = (canvas, viewWidth, viewHeight, offset) => {
+        const config = new RenderConfig({ canvas, viewWidth, viewHeight, offset, tilesize })
+        renderRegions(props.regions, config)
     }
 
     return <section className="RegionsView">
@@ -37,7 +33,7 @@ export default function RegionsView(props) {
 
 
 function renderRegions(regions, config) {
-    const { canvas, tilesize, gridWidth, gridHeight } = config
+    const { canvas, tilesize, gridWidthSpan, gridHeightSpan, offset } = config
 
     const drawGridCell = (x, y, canvas, pt) => {
         const lineColor = '#EEE'
@@ -52,29 +48,32 @@ function renderRegions(regions, config) {
         if (pt.x == 0) {
             canvas.fillStyle = axisColor
             canvas.fillRect(x, y, stroke, tilesize)
-        } else if (pt.x == gridWidth - 1) {
-            canvas.fillStyle = gridColor
-            canvas.fillRect(x+tilesize, y, stroke, tilesize)
         }
-
         if (pt.y == 0) {
             canvas.fillStyle = axisColor
             canvas.fillRect(x, y, tilesize, stroke)
-        } else if (pt.y == gridHeight - 1) {
+        }
+
+        if (pt.x == 20) {
             canvas.fillStyle = gridColor
-            canvas.fillRect(x, y+tilesize, tilesize, stroke)
+            canvas.fillRect(x + tilesize, y, stroke, tilesize)
+        }
+        if (pt.y == regions.grid.height - 1) {
+            canvas.fillStyle = gridColor
+            canvas.fillRect(x, y + tilesize, tilesize, stroke)
         }
     }
 
-    for(let i = 0; i < gridWidth; i++) {
-        for(let j = 0; j < gridHeight; j++) {
+    for(let i = 0; i < gridWidthSpan; i++) {
+        for(let j = 0; j < gridHeightSpan; j++) {
             const x = i * tilesize
             const y = j * tilesize
             const gridPoint = config.getGridPoint(i, j)
 
-            canvas.fillStyle = regions.get(gridPoint)
+            canvas.fillStyle = regions.grid.get(gridPoint)
             canvas.fillRect(x, y, tilesize, tilesize)
             drawGridCell(x, y, canvas, gridPoint)
         }
     }
+
 }

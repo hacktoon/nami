@@ -2,17 +2,18 @@ import React, { useState } from 'react'
 
 import { SelectField, NumberField } from '../lib/field'
 import { Form, Button } from '../lib'
+import { RegionsConfig } from '/model/region'
 
 
 export default function ConfigMenu(props) {
     let [points, setPoints] = useState(8)
-    let [size, setSize] = useState(257)
+    let [size, setSize] = useState(129)
 
     const onSizeChange = event => setSize(Number(event.target.value))
 
     let onSubmit = event => {
         event.preventDefault()
-        props.onChange({points})
+        props.onChange(new RegionsConfig({points, size}))
     }
 
     const sizeOptions = {
