@@ -11,8 +11,12 @@ export function TiledDisplay(props) {
     }
 
     return <section className="TiledDisplay">
-        <MouseTracker onDrag={onDrag} />
-        <Canvas render={props.render} offset={offset} />
+        <MouseTracker onDrag={onDrag} tilesize={props.tilesize} />
+        <Canvas
+            render={props.render}
+            tilesize={props.tilesize}
+            offset={offset}
+        />
     </section>
 }
 
