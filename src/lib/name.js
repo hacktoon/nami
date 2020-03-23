@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { Random } from './base';
 
 const personNames = {

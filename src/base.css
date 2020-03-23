@@ -81,6 +81,7 @@ canvas { display: block; }
     display: flex;
     font-weight: bold;
     padding: 0 1em;
+    margin: 0 .1em;
     text-transform: uppercase;
 }
 

@@ -1,5 +1,4 @@
 
-
 export class Region {
     constructor(points) {
         this.points = points

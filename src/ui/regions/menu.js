@@ -31,6 +31,7 @@ export default function ConfigMenu(props) {
             step={1}
             min={1}
         />
-        <Button  text="Build" />
+        <Button text="New" />
+        <Button text="Clear" />
     </Form>
 }
