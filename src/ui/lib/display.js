@@ -6,14 +6,17 @@ import { Point } from '/lib/point'
 export function GridDisplay(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
-    const onDrag = offset => {
-        setOffset(offset)
+    const onDrag = pixelOffset => {
+        //offset = Math.ceil(pixelOffset / props.tilesize)
+        setOffset(pixelOffset)
     }
 
     const render = (canvas, width, height) => {
-        props.render(new DisplayConfig({
+        const renderMap = new RenderMap({
             canvas, width, height, offset, tilesize: props.tilesize
-        }))
+        })
+        props.render(renderMap)
+        //props.render(painter)
     }
 
     return <section className="GridDisplay">
@@ -23,7 +26,7 @@ export function GridDisplay(props) {
 }
 
 
-export class DisplayConfig {
+export class RenderMap {
     constructor(config={}) {
         this.canvas   = config.canvas
         this.height   = Number(config.height)

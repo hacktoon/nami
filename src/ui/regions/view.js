@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 
 import { FloodFill, ScanlineFill, ScanlineFill8 } from '/lib/flood-fill'
-import Menu from './menu'
 import { GridDisplay } from '/ui/lib/display'
+import { Form } from '/ui/lib'
+import { NumberField, TextField } from '/ui/lib/field'
 
 
 const DEFAULT_TILE_SIZE = 40
@@ -64,4 +65,23 @@ function render(regions, config) {
         }
     }
 
+}
+
+
+function Menu(props) {
+    return <Form className="Menu">
+        <NumberField
+            label="Tile size"
+            value={props.tilesize}
+            onChange={props.onTilesizeChange}
+            step={1}
+            min={1}
+        />
+        <TextField
+            label="Fill color"
+        />
+        <TextField
+            label="Border color"
+        />
+    </Form>
 }
