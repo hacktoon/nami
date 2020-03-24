@@ -26,6 +26,8 @@ export default function RegionsView(props) {
         <GridDisplay
             render={point => props.regions.grid.get(point)}
             tilesize={tilesize}
+            drawGrid
+            drawPoints
         />
     </section>
 }
