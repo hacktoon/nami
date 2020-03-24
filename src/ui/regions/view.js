@@ -31,40 +31,18 @@ export default function RegionsView(props) {
 }
 
 
-function render(regions, config) {
-    const { canvas, tilesize, gridWidthSpan, gridHeightSpan } = config
+function render(regions, renderMap) {
+    for(let i = 0; i < renderMap.gridWidthSpan; i++) {
+        for(let j = 0; j < renderMap.gridHeightSpan; j++) {
+            const x = i * renderMap.tilesize
+            const y = j * renderMap.tilesize
+            const gridPoint = renderMap.getGridPoint(i, j)
 
-    const drawGridCell = (x, y, canvas, pt) => {
-        const lineColor = '#EEE'
-        const axisColor = '#222'
-        const stroke = 5
-
-        canvas.fillStyle = lineColor
-        canvas.fillRect(x, y, 1, tilesize)
-        canvas.fillRect(x, y, tilesize, 1)
-
-        if (pt.x == 0) {
-            canvas.fillStyle = axisColor
-            canvas.fillRect(x, y, stroke, tilesize)
-        }
-        if (pt.y == 0) {
-            canvas.fillStyle = axisColor
-            canvas.fillRect(x, y, tilesize, stroke)
+            renderMap.drawCell(x, y, regions.grid.get(gridPoint))
+            renderMap.drawBorders(x, y, gridPoint)
+            renderMap.drawText(x, y, "#FFF", gridPoint.hash())
         }
     }
-
-    for(let i = 0; i < gridWidthSpan; i++) {
-        for(let j = 0; j < gridHeightSpan; j++) {
-            const x = i * tilesize
-            const y = j * tilesize
-            const gridPoint = config.getGridPoint(i, j)
-
-            canvas.fillStyle = regions.grid.get(gridPoint)
-            canvas.fillRect(x, y, tilesize, tilesize)
-            drawGridCell(x, y, canvas, gridPoint)
-        }
-    }
-
 }
 
 

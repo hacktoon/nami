@@ -16,7 +16,6 @@ export function GridDisplay(props) {
             canvas, width, height, offset, tilesize: props.tilesize
         })
         props.render(renderMap)
-        //props.render(painter)
     }
 
     return <section className="GridDisplay">
@@ -33,6 +32,35 @@ export class RenderMap {
         this.offset   = config.offset || new Point(0, 0)
         this.tilesize = Number(config.tilesize)
         this.width    = Number(config.width)
+    }
+
+    drawCell(x, y, color) {
+        this.canvas.fillStyle = color
+        this.canvas.fillRect(x, y, this.tilesize, this.tilesize)
+    }
+
+    drawText(x, y, color, text) {
+        this.canvas.font = "10px Arial"
+        this.canvas.fillStyle = color
+        this.canvas.fillText(text, x+this.tilesize/5, y+this.tilesize/2)
+    }
+
+    drawBorders(x, y, point) {
+        const axisColor = '#222'
+        const stroke = 5
+
+        this.canvas.fillStyle = '#EEE'
+        this.canvas.fillRect(x, y, 1, this.tilesize)
+        this.canvas.fillRect(x, y, this.tilesize, 1)
+
+        if (point.x == 0) {
+            this.canvas.fillStyle = axisColor
+            this.canvas.fillRect(x, y, stroke, this.tilesize)
+        }
+        if (point.y == 0) {
+            this.canvas.fillStyle = axisColor
+            this.canvas.fillRect(x, y, this.tilesize, stroke)
+        }
     }
 
     get gridWidthSpan() {
