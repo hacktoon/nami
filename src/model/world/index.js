@@ -54,4 +54,8 @@ export default class World {
     get(point) {
         return this.grid.get(point)
     }
+
+    getColor(point) {
+        return this.reliefMap.codeMap.getColor(point)
+    }
 }

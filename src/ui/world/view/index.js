@@ -17,7 +17,7 @@ export default function WorldView({world}) {
             tilesize={tilesize}
         />
         <GridDisplay
-            render={point => world.reliefMap.codeMap.getColor(point)}
+            render={point => world.getColor(point)}
             tilesize={tilesize}
         />
     </section>

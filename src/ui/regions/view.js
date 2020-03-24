@@ -24,10 +24,9 @@ export default function RegionsView(props) {
             tilesize={tilesize}
         />
         <GridDisplay
+            drawGrid drawPoints
             render={point => props.regions.grid.get(point)}
             tilesize={tilesize}
-            drawGrid
-            drawPoints
         />
     </section>
 }
@@ -42,11 +41,7 @@ function Menu(props) {
             step={1}
             min={1}
         />
-        <TextField
-            label="Fill color"
-        />
-        <TextField
-            label="Border color"
-        />
+        <TextField label="Fill color" />
+        <TextField label="Border color" />
     </Form>
 }

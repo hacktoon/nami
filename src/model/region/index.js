@@ -30,6 +30,7 @@ export class Region {
 export class Regions {
     constructor(config) {
         this.points = config.points || 1
-        this.grid = new Grid(config.size, config.size, () => Random.choice(['green', 'blue']))
+        const initCell = () => Random.choice(['green', 'blue'])
+        this.grid = new Grid(config.size, config.size, initCell)
     }
 }
