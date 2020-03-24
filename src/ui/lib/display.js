@@ -3,14 +3,14 @@ import React, { useRef, useState, useLayoutEffect } from 'react'
 import { Point } from '/lib/point'
 
 
-export function TiledDisplay(props) {
+export function GridDisplay(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
     const onDrag = offset => {
         setOffset(offset)
     }
 
-    return <section className="TiledDisplay">
+    return <section className="GridDisplay">
         <MouseTracker onDrag={onDrag} tilesize={props.tilesize} />
         <Canvas
             render={props.render}
@@ -21,21 +21,21 @@ export function TiledDisplay(props) {
 }
 
 
-export class RenderConfig {
+export class DisplayConfig {
     constructor(config={}) {
         this.canvas = config.canvas || <canvas />
         this.offset = config.offset || new Point(0, 0)
-        this.viewWidth = Number(config.viewWidth)
-        this.viewHeight = Number(config.viewHeight)
+        this.width = Number(config.width)
+        this.height = Number(config.height)
         this.tilesize = Number(config.tilesize)
     }
 
     get gridWidthSpan() {
-        return Math.ceil(this.viewWidth / this.tilesize)
+        return Math.ceil(this.width / this.tilesize)
     }
 
     get gridHeightSpan() {
-        return Math.ceil(this.viewHeight / this.tilesize)
+        return Math.ceil(this.height / this.tilesize)
     }
 
     getGridPoint(i, j) {
@@ -55,7 +55,14 @@ export function Canvas(props) {
         const canvas = canvasRef.current
         const width = canvas.width = viewportRef.current.clientWidth
         const height = canvas.height = viewportRef.current.clientHeight
-        render(canvas.getContext('2d'), width, height, props.offset)
+        const config = new DisplayConfig({
+            canvas: canvas.getContext('2d'),
+            tilesize: props.tilesize,
+            offset: props.offset,
+            width,
+            height
+        })
+        render(config)
     })
 
     return <div className="Canvas" ref={viewportRef}>
