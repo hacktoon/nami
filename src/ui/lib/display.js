@@ -10,24 +10,26 @@ export function GridDisplay(props) {
         setOffset(offset)
     }
 
+    const render = (canvas, width, height) => {
+        props.render(new DisplayConfig({
+            canvas, width, height, offset, tilesize: props.tilesize
+        }))
+    }
+
     return <section className="GridDisplay">
         <MouseTracker onDrag={onDrag} tilesize={props.tilesize} />
-        <Canvas
-            render={props.render}
-            tilesize={props.tilesize}
-            offset={offset}
-        />
+        <Canvas render={render} />
     </section>
 }
 
 
 export class DisplayConfig {
     constructor(config={}) {
-        this.canvas = config.canvas || <canvas />
-        this.offset = config.offset || new Point(0, 0)
-        this.width = Number(config.width)
-        this.height = Number(config.height)
+        this.canvas   = config.canvas
+        this.height   = Number(config.height)
+        this.offset   = config.offset || new Point(0, 0)
         this.tilesize = Number(config.tilesize)
+        this.width    = Number(config.width)
     }
 
     get gridWidthSpan() {
@@ -47,7 +49,7 @@ export class DisplayConfig {
 
 
 export function Canvas(props) {
-    const render = props.render || function() {}
+    const render = props.render || new Function()
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
 
@@ -55,14 +57,7 @@ export function Canvas(props) {
         const canvas = canvasRef.current
         const width = canvas.width = viewportRef.current.clientWidth
         const height = canvas.height = viewportRef.current.clientHeight
-        const config = new DisplayConfig({
-            canvas: canvas.getContext('2d'),
-            tilesize: props.tilesize,
-            offset: props.offset,
-            width,
-            height
-        })
-        render(config)
+        render(canvas.getContext('2d'), width, height)
     })
 
     return <div className="Canvas" ref={viewportRef}>

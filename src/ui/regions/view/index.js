@@ -36,7 +36,6 @@ function render(regions, config) {
     const drawGridCell = (x, y, canvas, pt) => {
         const lineColor = '#EEE'
         const axisColor = '#222'
-        const gridColor = 'red'
         const stroke = 5
 
         canvas.fillStyle = lineColor
@@ -50,15 +49,6 @@ function render(regions, config) {
         if (pt.y == 0) {
             canvas.fillStyle = axisColor
             canvas.fillRect(x, y, tilesize, stroke)
-        }
-
-        if (pt.x == 20) {
-            canvas.fillStyle = gridColor
-            canvas.fillRect(x + tilesize, y, stroke, tilesize)
-        }
-        if (pt.y == regions.grid.height - 1) {
-            canvas.fillStyle = gridColor
-            canvas.fillRect(x, y + tilesize, tilesize, stroke)
         }
     }
 
