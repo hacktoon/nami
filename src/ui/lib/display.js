@@ -5,13 +5,19 @@ import { Point } from '/lib/point'
 
 export function GridDisplay(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
+    let prevOffset = offset
 
     const onDrag = pixelOffset => {
-        //offset = Math.ceil(pixelOffset / props.tilesize)
-        setOffset(pixelOffset)
+        let x = Math.floor(pixelOffset.x / props.tilesize)
+        let y = Math.floor(pixelOffset.y / props.tilesize)
+        const offset = new Point(x, y)
+        if (! offset.equals(prevOffset)) {
+            prevOffset = offset
+            setOffset(offset)
+        }
     }
 
-    const render = (canvas, width, height) => {
+    const onRender = (canvas, width, height) => {
         const renderMap = new RenderMap({
             canvas, width, height, offset, tilesize: props.tilesize
         })
@@ -35,7 +41,7 @@ export function GridDisplay(props) {
 
     return <section className="GridDisplay">
         <MouseTracker onDrag={onDrag} tilesize={props.tilesize} />
-        <Canvas render={render} />
+        <Canvas onRender={onRender} />
     </section>
 }
 
@@ -93,15 +99,13 @@ export class RenderMap {
     }
 
     getGridPoint(i, j) {
-        const x = Math.floor(this.offset.x / this.tilesize)
-        const y = Math.floor(this.offset.y / this.tilesize)
-        return new Point(x + i, y + j)
+        return new Point(this.offset.x + i, this.offset.y + j)
     }
 }
 
 
 export function Canvas(props) {
-    const render = props.render || new Function()
+    const render = props.onRender || new Function()
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
 

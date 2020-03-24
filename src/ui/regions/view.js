@@ -24,8 +24,8 @@ export default function RegionsView(props) {
             tilesize={tilesize}
         />
         <GridDisplay
-            drawGrid drawPoints
-            render={point => props.regions.grid.get(point)}
+            drawGrid
+            render={point => props.regions.getColor(point)}
             tilesize={tilesize}
         />
     </section>

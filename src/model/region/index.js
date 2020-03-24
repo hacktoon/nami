@@ -16,7 +16,6 @@ export class RegionsConfig {
         this.points = config.points
         this.size = config.size
     }
-
 }
 
 
@@ -32,5 +31,9 @@ export class Regions {
         this.points = config.points || 1
         const initCell = () => Random.choice(['green', 'blue'])
         this.grid = new Grid(config.size, config.size, initCell)
+    }
+
+    getColor(point) {
+        return this.grid.get(point)
     }
 }
