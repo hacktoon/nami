@@ -24,25 +24,10 @@ export default function RegionsView(props) {
             tilesize={tilesize}
         />
         <GridDisplay
-            render={config => render(props.regions, config)}
+            render={point => props.regions.grid.get(point)}
             tilesize={tilesize}
         />
     </section>
-}
-
-
-function render(regions, renderMap) {
-    for(let i = 0; i < renderMap.gridWidthSpan; i++) {
-        for(let j = 0; j < renderMap.gridHeightSpan; j++) {
-            const x = i * renderMap.tilesize
-            const y = j * renderMap.tilesize
-            const gridPoint = renderMap.getGridPoint(i, j)
-
-            renderMap.drawCell(x, y, regions.grid.get(gridPoint))
-            renderMap.drawBorders(x, y, gridPoint)
-            renderMap.drawText(x, y, gridPoint.hash())
-        }
-    }
 }
 
 

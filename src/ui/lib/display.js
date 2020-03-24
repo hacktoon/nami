@@ -15,7 +15,18 @@ export function GridDisplay(props) {
         const renderMap = new RenderMap({
             canvas, width, height, offset, tilesize: props.tilesize
         })
-        props.render(renderMap)
+
+        for(let i = 0; i < renderMap.gridWidthSpan; i++) {
+            for(let j = 0; j < renderMap.gridHeightSpan; j++) {
+                const gridPoint = renderMap.getGridPoint(i, j)
+                const x = i * renderMap.tilesize
+                const y = j * renderMap.tilesize
+
+                renderMap.drawCell(x, y, props.render(gridPoint))
+                renderMap.drawBorders(x, y, gridPoint)
+                renderMap.drawText(x, y, gridPoint.hash())
+            }
+        }
     }
 
     return <section className="GridDisplay">
