@@ -40,7 +40,7 @@ function render(regions, renderMap) {
 
             renderMap.drawCell(x, y, regions.grid.get(gridPoint))
             renderMap.drawBorders(x, y, gridPoint)
-            renderMap.drawText(x, y, "#FFF", gridPoint.hash())
+            renderMap.drawText(x, y, gridPoint.hash())
         }
     }
 }

@@ -39,10 +39,16 @@ export class RenderMap {
         this.canvas.fillRect(x, y, this.tilesize, this.tilesize)
     }
 
-    drawText(x, y, color, text) {
-        this.canvas.font = "10px Arial"
-        this.canvas.fillStyle = color
-        this.canvas.fillText(text, x+this.tilesize/5, y+this.tilesize/2)
+    drawText(x, y, text) {
+        let dx = x + this.tilesize / 5
+        let dy = y + this.tilesize / 2
+        this.canvas.font = "bold 10px Arial"
+        this.canvas.fillStyle = '#222'
+        this.canvas.fillText(text, dx + 1, dy + 1)
+
+        this.canvas.font = "normal 10px Arial"
+        this.canvas.fillStyle = '#FFF'
+        this.canvas.fillText(text, dx, dy)
     }
 
     drawBorders(x, y, point) {
