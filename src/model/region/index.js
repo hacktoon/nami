@@ -21,6 +21,8 @@ export class RegionsConfig {
 
 export class Region {
     constructor(points) {
+        this.center = center
+        this.layers = layers
         this.points = points
     }
 }
@@ -29,7 +31,7 @@ export class Region {
 export class Regions {
     constructor(config) {
         this.points = config.points || 1
-        const initCell = () => Random.choice(['green', 'blue'])
+        const initCell = () => Random.choice(['green', 'blue', 'darkblue'])
         this.grid = new Grid(config.size, config.size, initCell)
     }
 
