@@ -12,9 +12,9 @@ import "./index.css"
 
 const APPS = {
     world: { id: 'world', name: 'World', component: <WorldApp /> },
-    regions: { id: 'regions', name: 'RegionMap', component: <RegionMapApp /> }
+    regionMap: { id: 'regionMap', name: 'Region Map', component: <RegionMapApp /> }
 }
-const DEFAULT_APP = APPS.regions
+const DEFAULT_APP = APPS.regionMap
 
 
 function Main() {

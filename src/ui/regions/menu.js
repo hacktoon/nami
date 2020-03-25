@@ -6,8 +6,8 @@ import { RegionMapConfig } from '/model/region'
 
 
 export default function ConfigMenu(props) {
-    let [count, setCount] = useState(8)
-    let [size, setSize] = useState(129)
+    let [count, setCount] = useState(RegionMapConfig.DEFAULT_POINTS)
+    let [size, setSize] = useState(RegionMapConfig.DEFAULT_SIZE)
 
     const onSizeChange = event => setSize(Number(event.target.value))
 
@@ -28,7 +28,7 @@ export default function ConfigMenu(props) {
         <NumberField
             label="Count"
             value={count}
-            onChange={event => setCount(event.target.value)}
+            onChange={event => setCount(Number(event.target.value))}
             step={1}
             min={1}
         />
