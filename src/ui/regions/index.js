@@ -15,6 +15,7 @@ function buildRegion(config = new RegionsConfig()) {
 
 export default function RegionsApp() {
     const [regions, setRegions] = useState(buildRegion())
+
     const onConfigChange = config => setRegions(buildRegion(config))
 
     return <section className='RegionsApp'>
