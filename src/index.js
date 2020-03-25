@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 import WorldApp from '/ui/world'
-import RegionsApp from '/ui/regions'
+import RegionMapApp from '/ui/regions'
 import { Text } from '/ui/lib'
 import { SelectField } from '/ui/lib/field'
 
@@ -12,7 +12,7 @@ import "./index.css"
 
 const APPS = {
     world: { id: 'world', name: 'World', component: <WorldApp /> },
-    regions: { id: 'regions', name: 'Regions', component: <RegionsApp /> }
+    regions: { id: 'regions', name: 'RegionMap', component: <RegionMapApp /> }
 }
 const DEFAULT_APP = APPS.regions
 

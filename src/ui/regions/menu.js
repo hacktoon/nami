@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { SelectField, NumberField } from '../lib/field'
 import { Form, Button } from '../lib'
-import { RegionsConfig } from '/model/region'
+import { RegionMapConfig } from '/model/region'
 
 
 export default function ConfigMenu(props) {
@@ -13,7 +13,7 @@ export default function ConfigMenu(props) {
 
     let onSubmit = event => {
         event.preventDefault()
-        props.onChange(new RegionsConfig({count, size}))
+        props.onChange(new RegionMapConfig({count, size}))
     }
 
     const sizeOptions = {

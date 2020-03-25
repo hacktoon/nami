@@ -2,6 +2,10 @@ import { Random } from '/lib/base'
 import { Grid } from '/lib/grid'
 
 
+const EMPTY = 0
+const CENTER = 1
+
+
 export class Region {
     constructor(center) {
         this.center = center
@@ -11,12 +15,13 @@ export class Region {
 }
 
 
-export class Regions {
-    constructor(config) {
-        this.grid = new Grid(config.size, config.size, () => {
+export class RegionMap {
+    constructor({count, size}) {
+        this.grid = new Grid(size, size, () => {
             return Random.choice(['green', 'blue', 'darkblue'])
         })
-        this.count = config.count
+        this.count = count
+        this.size = size
     }
 
     getColor(point) {
@@ -25,14 +30,14 @@ export class Regions {
 }
 
 
-export class RegionsConfig {
-    static DEFAULT_POINTS = 5
+export class RegionMapConfig {
+    static DEFAULT_POINTS = 6
     static DEFAULT_SIZE = 257
 
     constructor(params={}) {
         const defaultParams = {
-            count: RegionsConfig.DEFAULT_POINTS,
-            size: RegionsConfig.DEFAULT_SIZE
+            count: RegionMapConfig.DEFAULT_POINTS,
+            size: RegionMapConfig.DEFAULT_SIZE
         }
         let config = Object.assign(defaultParams, params)
 

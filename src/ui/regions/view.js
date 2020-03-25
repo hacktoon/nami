@@ -6,7 +6,7 @@ import { Form } from '/ui/lib'
 import { NumberField, TextField } from '/ui/lib/field'
 
 
-const DEFAULT_TILE_SIZE = 40
+const DEFAULT_TILE_SIZE = 20
 
 const methodOptions = {
     flood: FloodFill,
@@ -15,16 +15,16 @@ const methodOptions = {
 }
 
 
-export default function RegionsView(props) {
+export default function RegionMapView(props) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
 
-    return <section className="RegionsView">
+    return <section className="RegionMapView">
         <Menu
             onTilesizeChange={event => setTilesize(event.target.value)}
             tilesize={tilesize}
         />
         <GridDisplay
-            colorAt={point => props.regions.getColor(point)}
+            colorAt={point => props.regionMap.getColor(point)}
             tilesize={tilesize}
             drawGrid
         />

@@ -1,24 +1,24 @@
 
-/* Regions ============================== */
+/* RegionMap ============================== */
 
-.RegionsApp {
+.RegionMapApp {
     display: grid;
     grid-template-rows: 50px auto;
 }
 
-.RegionsApp .ConfigMenu {
+.RegionMapApp .ConfigMenu {
     display: flex;
     background: #CCC;
     padding: .5rem;
 }
 
-.RegionsApp .RegionsView {
+.RegionMapApp .RegionMapView {
     background: black;
     display: grid;
     grid-template-columns: 20% auto;
 }
 
-.RegionsApp .RegionsView .Menu {
+.RegionMapApp .RegionMapView .Menu {
     background: #111;
     color: #FFF;
     padding: .5rem 1rem;
@@ -26,20 +26,20 @@
     flex-direction: column;
 }
 
-.RegionsApp .RegionsView .Menu .Field {
+.RegionMapApp .RegionMapView .Menu .Field {
     padding: .5rem 0;
 }
 
-.RegionsApp .RegionsView .Menu .FieldValue {
+.RegionMapApp .RegionMapView .Menu .FieldValue {
     color: #AAA;
     width: 100%;
 }
 
-.RegionsApp .RegionsView .Menu input,
-.RegionsApp .RegionsView .Menu select {
+.RegionMapApp .RegionMapView .Menu input,
+.RegionMapApp .RegionMapView .Menu select {
     background-color: #282828;
 }
 
-.RegionsApp .RegionsView .View {
+.RegionMapApp .RegionMapView .View {
     position: relative;
 }
