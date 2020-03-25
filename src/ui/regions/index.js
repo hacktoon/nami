@@ -7,10 +7,15 @@ import RegionsView from './view'
 import "./index.css"
 
 
-export default function RegionsApp() {
-    let [regions, setRegions] = useState(new Regions(new RegionsConfig()))
+function buildRegion(config = new RegionsConfig()) {
+    const regions = new Regions(config)
+    return regions
+}
 
-    const onConfigChange = config => setRegions(new Regions(config))
+
+export default function RegionsApp() {
+    const [regions, setRegions] = useState(buildRegion())
+    const onConfigChange = config => setRegions(buildRegion(config))
 
     return <section className='RegionsApp'>
         <ConfigMenu onChange={onConfigChange} />
