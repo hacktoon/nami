@@ -4,14 +4,6 @@ import { Grid } from '/lib/grid'
 
 const EMPTY = 0
 const CENTER = 1
-const defaultPoints = [
-    new Point(5, 7),
-    new Point(46, 12),
-    new Point(10, 20),
-    new Point(35, 1),
-    new Point(20, 29),
-]
-
 
 export class Region {
     constructor(center) {
@@ -26,18 +18,18 @@ export class RegionMap {
     constructor({count, size}) {
         const grid = new Grid(size, size, 'white')
 
-        this.regions = this.constructorRegions(grid, count)
         this.count = count
         this.grid = grid
         this.size = size
+        this.regions = this.constructorRegions(grid, count)
     }
 
     constructorRegions(grid, count) {
         let regions = []
         for(let i=0; i<count; i++) {
-            const point = defaultPoints[i]
-            regions.push(new Region(point))
-            grid.set(point, 'black')
+            const centerPoint = new Point(Random.int(30), Random.int(20))
+            regions.push(new Region(centerPoint))
+            grid.set(centerPoint, 'black')
         }
         return regions
     }
