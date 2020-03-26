@@ -5,6 +5,7 @@ import { Grid } from '/lib/grid'
 const EMPTY = 0
 const CENTER = 1
 
+
 export class Region {
     constructor(center) {
         this.center = center
@@ -27,11 +28,15 @@ export class RegionMap {
     constructorRegions(grid, count) {
         let regions = []
         for(let i=0; i<count; i++) {
-            const centerPoint = new Point(Random.int(30), Random.int(20))
+            const centerPoint = new Point(Random.int(30), Random.int(30))
             regions.push(new Region(centerPoint))
             grid.set(centerPoint, 'black')
         }
         return regions
+    }
+
+    isOccupied(point) {
+        return this.grid.has(point)
     }
 
     getColor(point) {
@@ -42,7 +47,7 @@ export class RegionMap {
 
 export class RegionMapConfig {
     static DEFAULT_POINTS = 5
-    static DEFAULT_SIZE = 257
+    static DEFAULT_SIZE = 65
 
     constructor(params={}) {
         const defaultParams = {
