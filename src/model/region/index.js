@@ -24,18 +24,20 @@ export class Region {
 
 export class RegionMap {
     constructor({count, size}) {
-        this.grid = new Grid(size, size, 'white')
+        const grid = new Grid(size, size, 'white')
+
+        this.regions = this.constructorRegions(grid, count)
         this.count = count
+        this.grid = grid
         this.size = size
-        this.regions = this.constructorRegions(count)
     }
 
-    constructorRegions(count) {
+    constructorRegions(grid, count) {
         let regions = []
         for(let i=0; i<count; i++) {
             const point = defaultPoints[i]
             regions.push(new Region(point))
-            this.grid.set(point, 'black')
+            grid.set(point, 'black')
         }
         return regions
     }
