@@ -1,24 +1,19 @@
 import React, { useState } from 'react'
 
-import { RegionMapConfig, RegionMap } from '/model/region'
+import { RegionMap } from '/model/region'
 import ConfigMenu from './menu'
 import RegionMapView from './view'
 
 import "./index.css"
 
 
-function buildRegion(config = new RegionMapConfig()) {
-    const regionMap = new RegionMap(config)
-    return regionMap
-}
-
-const defaultRegionMap = buildRegion()
+const DEFAULT_REGION_MAP = new RegionMap()
 
 
 export default function RegionMapApp() {
-    const [regionMap, setRegionMap] = useState(defaultRegionMap)
+    const [regionMap, setRegionMap] = useState(DEFAULT_REGION_MAP)
 
-    const onConfigChange = config => setRegionMap(buildRegion(config))
+    const onConfigChange = config => setRegionMap(new RegionMap(config))
 
     return <section className='RegionMapApp'>
         <ConfigMenu onChange={onConfigChange} />

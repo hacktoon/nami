@@ -6,14 +6,14 @@ import { RegionMapConfig } from '/model/region'
 
 
 export default function ConfigMenu(props) {
-    let [count, setCount] = useState(RegionMapConfig.DEFAULT_POINTS)
+    let [count, setCount] = useState(RegionMapConfig.DEFAULT_COUNT)
     let [size, setSize] = useState(RegionMapConfig.DEFAULT_SIZE)
 
     const onSizeChange = event => setSize(Number(event.target.value))
 
     let onSubmit = event => {
         event.preventDefault()
-        props.onChange(new RegionMapConfig({count, size}))
+        props.onChange({count, size})
     }
 
     const sizeOptions = {

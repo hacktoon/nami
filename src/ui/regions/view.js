@@ -1,18 +1,11 @@
 import React, { useState } from 'react'
 
-import { FloodFill, ScanlineFill, ScanlineFill8 } from '/lib/flood-fill'
 import { GridDisplay } from '/ui/lib/display'
 import { Form } from '/ui/lib'
 import { NumberField, TextField } from '/ui/lib/field'
 
 
 const DEFAULT_TILE_SIZE = 10
-
-const methodOptions = {
-    flood: FloodFill,
-    scan4: ScanlineFill,
-    scan8: ScanlineFill8,
-}
 
 
 export default function RegionMapView(props) {
