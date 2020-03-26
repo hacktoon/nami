@@ -1,10 +1,8 @@
-import _ from 'lodash'
-
 import { Point } from './point'
 
 
 export class Grid {
-    constructor(width, height, defaultValue) {
+    constructor(width, height, buildValue=()=>null) {
         this.width = width
         this.height = height
         this.matrix = []
@@ -12,10 +10,7 @@ export class Grid {
         for (let y = 0; y < this.height; y++) {
             this.matrix.push([])
             for (let x = 0; x < this.width; x++) {
-                let value = defaultValue
-                if (_.isFunction(defaultValue)) {
-                    value = defaultValue(new Point(x, y))
-                }
+                const value = buildValue(new Point(x, y))
                 this.matrix[y].push(value)
             }
         }

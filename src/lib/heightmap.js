@@ -57,7 +57,7 @@ export const MidpointDisplacement = (source, target, roughness, callback = _.noo
 export class HeightMap {
     constructor(size, roughness, values, mask) {
         this.scale  = roughness * (size - 1)
-        this.grid   = new Grid(size, size, EMPTY)
+        this.grid   = new Grid(size, size, () => EMPTY)
         this.max    = -Infinity
         this.min    = Infinity
         this.values = values || []

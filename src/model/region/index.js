@@ -17,7 +17,7 @@ export class Region {
 
 export class RegionMap {
     constructor({count, size}) {
-        const grid = new Grid(size, size, 'white')
+        const grid = new Grid(size, size, () => 'white')
 
         this.count = count
         this.grid = grid
