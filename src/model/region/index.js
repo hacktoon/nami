@@ -48,7 +48,7 @@ export class RegionMap {
         const regions = {}
         for(let i=0; i<points.length; i++) {
             regions[i] = new Region(points[i])
-            this.grid.set(points[i], i)
+            this.grid.set(points[i], String(i))
             this.fillers[i] = this._initRegionFiller(i)
         }
         return regions
@@ -64,7 +64,7 @@ export class RegionMap {
     }
 
     _initRegionFiller(index) {
-        const onFill = point => this.grid.set(point, index)
+        const onFill = point => this.grid.set(point, String(index))
         const isFillable = point => this.grid.get(point) === EMPTY
         return new FloodFill2(onFill, isFillable)
     }
@@ -73,7 +73,6 @@ export class RegionMap {
         for(let i=0; i<this.count; i++) {
             const currentLayer = this.regions[i].borderPoints()
             const newLayer = this.fillers[i].grow(currentLayer)
-            console.log("from ", currentLayer.length, 'to', newLayer.length)
             this.regions[i].grow(newLayer)
         }
     }

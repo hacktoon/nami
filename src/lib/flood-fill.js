@@ -11,19 +11,22 @@ export class FloodFill2 {
 
     grow(seedPoints) {
         let newPoints = []
-        const onFill = point => newPoints.push(point)
         seedPoints.forEach(point => {
-            this.fillNeighbors(point, onFill)
+            const neighbors = this.growNeighbors(point)
+            newPoints = newPoints.concat(neighbors)
         })
         return newPoints
     }
 
-    fillNeighbors(referencePoint, onFill) {
-        referencePoint.adjacentPoints(neighbor => {
-            if (this.isFillable(neighbor))
+    growNeighbors(point) {
+        const filledPoints = []
+        point.adjacentPoints(neighbor => {
+            if (this.isFillable(neighbor)){
                 this.onFill(neighbor)
-                onFill(neighbor)
+                filledPoints.push(neighbor)
+            }
         })
+        return filledPoints
     }
 }
 

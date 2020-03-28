@@ -17,8 +17,6 @@ export default function RegionMapView(props) {
             onGrow={() => {
                 props.regionMap.growAll()
                 setStep(step+1)
-                console.log(props.regionMap.regions[0]);
-
             }}
             onTilesizeChange={event => setTilesize(event.target.value)}
             tilesize={tilesize}
