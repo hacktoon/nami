@@ -74,7 +74,7 @@ export class RenderMap {
 
     drawBorders(x, y, point) {
         const axisColor = '#222'
-        const stroke = 5
+        const stroke = 3
 
         this.canvas.fillStyle = '#EEE'
         this.canvas.fillRect(x, y, 1, this.tilesize)

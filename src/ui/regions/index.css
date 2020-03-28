@@ -40,6 +40,10 @@
     background-color: #282828;
 }
 
+.RegionMapApp .RegionMapView .Menu button {
+    padding: .5rem;
+}
+
 .RegionMapApp .RegionMapView .View {
     position: relative;
 }

@@ -2,8 +2,7 @@ import { Random } from '/lib/base'
 import { Grid } from '/lib/grid'
 import { FloodFill2 } from '/lib/flood-fill'
 
-const EMPTY = 0
-const CENTER = 1
+const EMPTY = -1
 
 
 export class Region {
@@ -37,7 +36,7 @@ export class Region {
 export class RegionMap {
     constructor(params) {
         const config = new RegionMapConfig(params)
-        this.grid = new Grid(config.size, config.size, () => 'white')
+        this.grid = new Grid(config.size, config.size, () => EMPTY)
         this.count = config.count
         this.size = config.size
         this.fillers = {}
@@ -46,26 +45,36 @@ export class RegionMap {
 
     _initRegions() {
         const points = this._initPoints()
-        let regions = {}
-        for(let i=0; i<this.count; i++) {
+        const regions = {}
+        for(let i=0; i<points.length; i++) {
             regions[i] = new Region(points[i])
-            this.grid.set(points[i], 'green')
-            this.fillers[i] = new FloodFill2()
+            this.grid.set(points[i], i)
+            this.fillers[i] = this._initRegionFiller(i)
         }
         return regions
     }
 
     _initPoints() {
-        let points = []
+        const points = []
         for(let i=0; i<this.count; i++) {
-            points.push(new Point(Random.int(this.size), Random.int(this.size)))
+            const [x, y] = [Random.int(this.size), Random.int(this.size)]
+            points.push(new Point(x, y))
         }
         return points
     }
 
+    _initRegionFiller(index) {
+        const onFill = point => this.grid.set(point, index)
+        const isFillable = point => this.grid.get(point) == EMPTY
+        return new FloodFill2(onFill, isFillable)
+    }
+
     growAll() {
-        for(let i=0; i<count; i++) {
-            regions[i].grow([])
+        for(let i=0; i<this.count; i++) {
+            const currentLayer = this.regions[i].borderPoints()
+            const newLayer = this.fillers[i].grow(currentLayer)
+            console.log("from ", currentLayer.length, 'to', newLayer.length)
+            this.regions[i].grow(newLayer)
         }
     }
 
@@ -74,7 +83,18 @@ export class RegionMap {
     }
 
     getColor(point) {
-        return this.grid.get(point)
+        const index = this.grid.get(point)
+        return {
+            '-1': 'white',
+            '0': 'green',
+            '1': 'red',
+            '2': 'blue',
+            '3': 'brown',
+            '4': 'yellow',
+            '5': 'gray',
+            '6': 'purple',
+            '7': 'black'
+        }[index]
     }
 }
 
@@ -88,7 +108,7 @@ export class RegionMapConfig {
             count: RegionMapConfig.DEFAULT_COUNT,
             size: RegionMapConfig.DEFAULT_SIZE
         }
-        let config = Object.assign(defaultParams, params)
+        const config = Object.assign(defaultParams, params)
 
         this.count = config.count
         this.size = config.size

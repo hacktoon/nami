@@ -78,10 +78,9 @@ canvas { display: block; }
 .Button {
     background: rgb(6, 94, 6);
     color: #FFF;
-    display: flex;
     font-weight: bold;
-    padding: 0 1em;
     margin: 0 .1em;
+    padding: 0 1em;
     text-transform: uppercase;
 }
 

@@ -33,6 +33,5 @@ export default function ConfigMenu(props) {
             min={1}
         />
         <Button text="New" />
-        <Button text="Clear" />
     </Form>
 }

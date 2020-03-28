@@ -9,19 +9,31 @@ export class FloodFill2 {
         this.onFill = onFill
     }
 
-    grow(points) {
-        points.forEach(point => {
-            this.fillNeighborPoints(point)
+    grow(seedPoints) {
+        let newPoints = []
+        seedPoints.forEach(point => {
+            const neighbors = this.fillNeighbors(point)
+            newPoints = newPoints.concat(neighbors)
         })
+        return newPoints
     }
 
-    fillNeighborPoints(referencePoint) {
+    fillNeighbors(referencePoint) {
+        const filledPoints = []
         referencePoint.adjacentPoints(neighbor => {
-            let point = this.grid.wrap(neighbor)
-            if (this.isFillable(point, referencePoint, this.step))
-                this.onFill(point)
+            if (this.isFillable(neighbor))
+                this.onFill(neighbor)
+                filledPoints.push(neighbor)
         })
+        return filledPoints
     }
+}
+
+// TODO: create real test
+window.teste = () => {
+    const filler = new FloodFill2()
+    const newPoints = filler.grow([new Point(0, 0)])
+    console.log(newPoints.map(p => p.hash()))
 }
 
 
