@@ -3,6 +3,28 @@ import _ from 'lodash'
 import { Point } from './point'
 
 
+export class FloodFill2 {
+    constructor(onFill = _.noop, isFillable = _.stubTrue) {
+        this.isFillable = isFillable
+        this.onFill = onFill
+    }
+
+    grow(points) {
+        points.forEach(point => {
+            this.fillNeighborPoints(point)
+        })
+    }
+
+    fillNeighborPoints(referencePoint) {
+        referencePoint.adjacentPoints(neighbor => {
+            let point = this.grid.wrap(neighbor)
+            if (this.isFillable(point, referencePoint, this.step))
+                this.onFill(point)
+        })
+    }
+}
+
+
 export class FloodFill {
     constructor(grid, startPoint, onFill = _.noop, isFillable = _.stubTrue) {
         this.grid = grid

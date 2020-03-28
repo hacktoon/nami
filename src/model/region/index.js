@@ -1,6 +1,6 @@
 import { Random } from '/lib/base'
 import { Grid } from '/lib/grid'
-import { FloodFill } from '/lib/flood-fill'
+import { FloodFill2 } from '/lib/flood-fill'
 
 const EMPTY = 0
 const CENTER = 1
@@ -40,19 +40,27 @@ export class RegionMap {
         this.grid = new Grid(config.size, config.size, () => 'white')
         this.count = config.count
         this.size = config.size
-        this.fillers = new Array(this.count)
-        this.regions = this.constructorRegions()
+        this.fillers = {}
+        this.regions = this._initRegions()
     }
 
-    constructorRegions() {
+    _initRegions() {
+        const points = this._initPoints()
         let regions = {}
         for(let i=0; i<this.count; i++) {
-            const centerPoint = new Point(Random.int(30), Random.int(30))
-            regions[i] = new Region(centerPoint)
-            this.grid.set(centerPoint, 'green')
-            //this.fillers[i] = new FloodFill()
+            regions[i] = new Region(points[i])
+            this.grid.set(points[i], 'green')
+            this.fillers[i] = new FloodFill2()
         }
         return regions
+    }
+
+    _initPoints() {
+        let points = []
+        for(let i=0; i<this.count; i++) {
+            points.push(new Point(Random.int(this.size), Random.int(this.size)))
+        }
+        return points
     }
 
     growAll() {
