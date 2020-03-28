@@ -4,28 +4,26 @@ import { Point } from './point'
 
 
 export class FloodFill2 {
-    constructor(onFill = _.noop, isFillable = _.stubTrue) {
+    constructor(onFill, isFillable) {
         this.isFillable = isFillable
         this.onFill = onFill
     }
 
     grow(seedPoints) {
         let newPoints = []
+        const onFill = point => newPoints.push(point)
         seedPoints.forEach(point => {
-            const neighbors = this.fillNeighbors(point)
-            newPoints = newPoints.concat(neighbors)
+            this.fillNeighbors(point, onFill)
         })
         return newPoints
     }
 
-    fillNeighbors(referencePoint) {
-        const filledPoints = []
+    fillNeighbors(referencePoint, onFill) {
         referencePoint.adjacentPoints(neighbor => {
             if (this.isFillable(neighbor))
                 this.onFill(neighbor)
-                filledPoints.push(neighbor)
+                onFill(neighbor)
         })
-        return filledPoints
     }
 }
 

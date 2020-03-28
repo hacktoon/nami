@@ -65,7 +65,7 @@ export class RegionMap {
 
     _initRegionFiller(index) {
         const onFill = point => this.grid.set(point, index)
-        const isFillable = point => this.grid.get(point) == EMPTY
+        const isFillable = point => this.grid.get(point) === EMPTY
         return new FloodFill2(onFill, isFillable)
     }
 
