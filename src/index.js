@@ -14,7 +14,7 @@ const APPS = {
     world: { id: 'world', name: 'World', component: <WorldApp /> },
     regionMap: { id: 'regionMap', name: 'Region Map', component: <RegionMapApp /> }
 }
-const DEFAULT_APP = APPS.regionMap
+const DEFAULT_APP = APPS.world
 
 
 function Main() {
