@@ -1,30 +1,15 @@
 
+
 export class Random {
     static set seed(value) {
         let seed = String(value)
-        let numericSeed = Random._hashString(seed)
+        let numericSeed = _hashString(seed)
         Random.publicSeed = seed
-        Random._currentSeed = Random._hash(numericSeed)
+        Random._currentSeed = _hash(numericSeed)
     }
 
     static get seed() {
         return Random.publicSeed
-    }
-
-    static _hash(seed) {
-        let h = 61 ^ seed ^ seed >>> 16
-        h += h << 3
-        h = Math.imul(h, 668265261)
-        h ^= h >>> 15
-        return h >>> 0
-    }
-
-    static _hashString(string) {
-        var h = 0, len = string.length, i = 0
-        if (len > 0)
-            while (i < len)
-                h = (h << 5) - h + string.charCodeAt(i++) | 0
-        return h
     }
 
     static chance(percentage) {
@@ -72,4 +57,22 @@ export class Random {
         t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t
         return ((t ^ t >>> 14) >>> 0) / 2 ** 32
     }
+}
+
+
+function _hash(seed) {
+    let h = 61 ^ seed ^ seed >>> 16
+    h += h << 3
+    h = Math.imul(h, 668265261)
+    h ^= h >>> 15
+    return h >>> 0
+}
+
+
+function _hashString(string) {
+    var h = 0, len = string.length, i = 0
+    if (len > 0)
+        while (i < len)
+            h = (h << 5) - h + string.charCodeAt(i++) | 0
+    return h
 }
