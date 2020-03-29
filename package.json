@@ -7,9 +7,6 @@
     "lib": "lib"
   },
   "scripts": {
-    "flood-fill": "parcel src/demos/flood-fill/index.html -d build",
-    "meander": "parcel src/demos/meander/index.html -d build",
-    "astar": "parcel src/demos/astar/index.html -d build",
     "dev": "parcel src/index.html -d build",
     "build": "parcel build src/index.html -d build --no-source-maps"
   },
