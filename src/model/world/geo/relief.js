@@ -1,8 +1,5 @@
-import _ from 'lodash'
-
 import { Grid } from '/lib/grid'
 import { TileableHeightMap } from '/lib/heightmap'
-import { ColorGradient } from '/lib/color'
 
 export const VOLCANO_CHANCE = .006
 export const CAVE_CHANCE = .007

@@ -1,7 +1,5 @@
-import _ from 'lodash'
-
-import { Random } from './base'
-import { NumberInterpolation } from './base'
+import { Random } from '/lib/random'
+import { NumberInterpolation } from '/lib/number'
 
 
 export function RandomColor() {

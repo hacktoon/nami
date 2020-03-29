@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 import { Grid } from '/lib/grid'
 import { TileableHeightMap } from '/lib/heightmap'
 

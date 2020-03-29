@@ -1,14 +1,14 @@
-import _ from 'lodash'
+import { clamp, sum } from '/lib/number'
 
-import { Grid } from './grid'
-import { Point } from './point'
-import { Random } from './base'
+import { Grid } from '/lib/grid'
+import { Point } from '/lib/point'
+import { Random } from '/lib/random'
 
 
 const EMPTY = null
 
 
-export const MidpointDisplacement = (source, target, roughness, callback = _.noop) => {
+export const MidpointDisplacement = (source, target, roughness, callback=()=>{}) => {
     const deltaX = Math.abs(source.x - target.x)
     const deltaY = Math.abs(source.y - target.y)
     const fixedAxis = deltaX > deltaY ? 'x' : 'y'
@@ -131,13 +131,14 @@ export class HeightMap {
 
     _averagePoints(points) {
         const getValue = ([ x, y ]) => this.grid.get(new Point(x, y))
-        const values = points.map(getValue).filter(_.isNumber)
-        return _.sum(values) / values.length
+        // TODO: is this filter necessary?
+        const values = points.map(getValue).filter(n => typeof n == 'number')
+        return sum(values) / values.length
     }
 
     _set(point, value) {
         const size = this.size
-        const height = _.toInteger(_.clamp(value, -size, size))
+        const height = parseInt(clamp(value, -size, size), 10)
         this.grid.set(point, height)
         this._updateMinMax(height)
     }
@@ -152,7 +153,7 @@ export class HeightMap {
         if (this.mask) {
             const mask = this.mask.get(point)
             value -= (value * mask) / 100
-            value = _.clamp(value, this.min, this.max)
+            value = clamp(value, this.min, this.max)
         }
         return this.values.length ? this._normalize(value) : value
     }

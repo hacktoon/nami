@@ -1,7 +1,5 @@
-import _ from 'lodash'
-
-import { Random } from '/lib/base'
-import { Point } from './point'
+import { Random } from '/lib/random'
+import { Point } from '/lib/point'
 
 
 export class FloodFill2 {
@@ -33,7 +31,7 @@ export class FloodFill2 {
 
 
 export class FloodFill {
-    constructor(grid, startPoint, onFill = _.noop, isFillable = _.stubTrue) {
+    constructor(grid, startPoint, onFill, isFillable) {
         this.grid = grid
         this.seeds = []
         this.isFillable = isFillable
@@ -84,7 +82,7 @@ export class FloodFill {
 
 
 export class ScanlineFill {
-    constructor(grid, startPoint, onFill = _.noop, isFillable = _.stubTrue) {
+    constructor(grid, startPoint, onFill, isFillable) {
         this.startPoint = startPoint
         this.grid = grid
         this.rangeQueue = []

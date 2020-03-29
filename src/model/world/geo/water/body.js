@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 import { Grid } from '/lib/grid'
 import { Name } from '/lib/name'
 import { ScanlineFill8 } from '/lib/flood-fill'

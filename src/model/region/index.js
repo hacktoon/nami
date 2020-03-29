@@ -1,4 +1,4 @@
-import { Random } from '/lib/base'
+import { Random } from '/lib/random'
 import { RandomColor } from '/lib/color'
 import { Grid } from '/lib/grid'
 import { FloodFill2 } from '/lib/flood-fill'

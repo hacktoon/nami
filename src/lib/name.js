@@ -1,4 +1,4 @@
-import { Random } from './base';
+import { Random } from '/lib/random';
 
 const personNames = {
     first: [

@@ -1,5 +1,4 @@
-import _ from 'lodash'
-
+import { clamp } from '/lib/number'
 import { Grid } from '/lib/grid'
 import { MidpointDisplacement } from '/lib/heightmap'
 import { Point } from '/lib/point'
@@ -45,10 +44,10 @@ export class HeatMap {
             let p1 = new Point(0, zone.y)
             let p2 = new Point(this.size - 1, zone.y)
             let setPoint = point => {
-                if (zone.id == _.last(ZONE_TABLE).id) {
+                if (zone.id == ZONE_TABLE[ZONE_TABLE.length-1].id) {
                     point.y = zone.y
                 }
-                point.y = _.clamp(point.y, 0, this.size-1)
+                point.y = clamp(point.y, 0, this.size-1)
                 fillColumn(point, zone.heatId)
             }
             MidpointDisplacement(p1, p2, ROUGHNESS, setPoint)

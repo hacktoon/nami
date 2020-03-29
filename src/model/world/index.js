@@ -1,7 +1,7 @@
 import Tile from './tile'
 import { Grid } from '/lib/grid'
 import { Name } from '/lib/name'
-import { Random } from '/lib/base'
+import { Random } from '/lib/random'
 
 import { ReliefMap } from './geo/relief'
 import { WaterMap } from './geo/water'

@@ -1,6 +1,9 @@
-import _ from 'lodash'
+import { Direction } from '/lib/direction'
 
-import { Direction } from './base'
+
+function capitalize(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
 
 
 export class Point {
@@ -31,36 +34,34 @@ export class Point {
         return `${this.x},${this.y}`
     }
 
-    adjacentPoints(callback) {
+    adjacentPoints(callback=function(){}) {
         let points = [
             [new Point(this.x - 1, this.y), Direction.WEST],
             [new Point(this.x + 1, this.y), Direction.EAST],
             [new Point(this.x, this.y - 1), Direction.NORTH],
             [new Point(this.x, this.y + 1), Direction.SOUTH]
         ]
-        if (_.isFunction(callback))
-            for (let point of points) {
-                callback(point[0], point[1])
-            }
+        for (let point of points) {
+            callback(point[0], point[1])
+        }
         return points
     }
 
-    pointsAround(callback) {
+    pointsAround(callback=function(){}) {
         let points = this.adjacentPoints().concat([
             [new Point(this.x - 1, this.y - 1), Direction.NORTHWEST],
             [new Point(this.x + 1, this.y + 1), Direction.SOUTHEAST],
             [new Point(this.x + 1, this.y - 1), Direction.NORTHEAST],
             [new Point(this.x - 1, this.y + 1), Direction.SOUTHWEST]
         ])
-        if (_.isFunction(callback))
-            for (let point of points) {
-                callback(point[0], point[1])
-            }
+        for (let point of points) {
+            callback(point[0], point[1])
+        }
         return points
     }
 
     static at(point, direction) {
-        let name = "at" + _.capitalize(Direction.getName(direction))
+        let name = "at" + capitalize(Direction.getName(direction))
         return Point[name](point)
     }
 
