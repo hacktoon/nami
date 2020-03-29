@@ -11,7 +11,7 @@ export class Region {
         this.grid = grid
         this.center = center
         this.layers = [[center]]
-        this.color = Color.random()
+        this.color = new Color()
         this.pointIndex = {}
     }
 
@@ -126,7 +126,7 @@ export class RegionMap {
         if (region.isCenter(gridPoint)) return 'black'
         if (region.inOuterLayer(gridPoint)) return 'red'
 
-        return region.color
+        return region.color.toHex()
     }
 }
 

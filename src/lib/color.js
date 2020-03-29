@@ -1,61 +1,57 @@
 import { Random } from '/lib/random'
-import { NumberInterpolation } from '/lib/number'
+import { NumberInterpolation, clamp } from '/lib/number'
 
 
-
-export class Color {
-    static random() {
-        const r = Random.int(255)
-        const g = Random.int(255)
-        const b = Random.int(255)
-        return '#' + HexByte(r) + HexByte(g) + HexByte(b)
-    }
-}
+const CHARS = '0123456789ABCDEF'
 
 
-export function ColorGradient (_from, to, totalItems) {
-    let start = RGBTriplet(_from),
-        end = RGBTriplet(to),
-        red = NumberInterpolation(start[0], end[0], totalItems),
-        green = NumberInterpolation(start[1], end[1], totalItems),
-        blue = NumberInterpolation(start[2], end[2], totalItems),
+export function gradientColors(source, target, count) {
+    let start = Color.fromHex(source),
+        end = Color.fromHex(target)
+    let red = NumberInterpolation(start.red, end.red, count),
+        green = NumberInterpolation(start.green, end.green, count),
+        blue = NumberInterpolation(start.blue, end.blue, count),
         colors = []
 
-    for (let i = 0; i < totalItems; i++) {
-        colors.push(HTMLHex([red[i], green[i], blue[i]]))
+    for (let i = 0; i < count; i++) {
+        let color = new Color(red[i], green[i], blue[i])
+        colors.push(color.toHex())
     }
     return colors
 }
 
 
-function HexByte(number) {
-    const chars = '0123456789ABCDEF'
-    number = parseInt(number, 10)
-
-    if (number == 0 || isNaN(number)) { return '00' }
-
-    number = Math.min(Math.max(0, number), 255)
-    return chars.charAt((number - number % 16) / 16) + chars.charAt(number % 16)
-}
-
-
-function HTMLHex(RGB) {
-    /* Convert an RGB triplet to a hex string */
-    return '#' + HexByte(RGB[0]) + HexByte(RGB[1]) + HexByte(RGB[2])
-}
-
-
-function RGBTriplet(hexString) {
-    /* Convert a hex string to an RGB triplet */
-    hexString = hexString.replace('#', '')
-    if(hexString.length == 3){
-        hexString = hexString[0] + hexString[0] +
-                    hexString[1] + hexString[1] +
-                    hexString[2] + hexString[2]
+export class Color {
+    constructor(red=Random.int(255), green=Random.int(255), blue=Random.int(255)) {
+        this.red = clamp(red, 0, 255)
+        this.green = clamp(green, 0, 255)
+        this.blue = clamp(blue, 0, 255)
     }
+
+    toHex() {
+        const hex = n => CHARS.charAt((n - n % 16) / 16) + CHARS.charAt(n % 16)
+        return '#' + hex(this.red) + hex(this.green) + hex(this.blue)
+    }
+
+    static fromHex(string) {
+        let hex = string.replace('#', '')
+
+        if (hex.length == 3)
+            hex = expandShorthand(hex)
+
+        return new Color(
+            parseInt(hex.substring(0,2), 16),
+            parseInt(hex.substring(2,4), 16),
+            parseInt(hex.substring(4,6), 16)
+        )
+    }
+}
+
+
+const expandShorthand = hex => {
     return [
-        parseInt(hexString.substring(0, 2), 16),
-        parseInt(hexString.substring(2, 4), 16),
-        parseInt(hexString.substring(4, 6), 16)
-    ]
+        hex[0] + hex[0],
+        hex[1] + hex[1],
+        hex[2] + hex[2]
+    ].join('')
 }
