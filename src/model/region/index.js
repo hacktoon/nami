@@ -19,8 +19,10 @@ export class Region {
         let wrappedPoints = []
         points.forEach(rawPoint => {
             const point = this.grid.wrap(rawPoint)
-            this.pointIndex[point.hash()] = this.layers.length
-            wrappedPoints.push(point)
+            if (! this.hasPoint(point)) {
+                this.pointIndex[point.hash()] = this.layers.length
+                wrappedPoints.push(point)
+            }
         })
         this.layers.push(wrappedPoints)
     }
@@ -34,7 +36,7 @@ export class Region {
     }
 
     hasPoint(point) {
-        return Boolean(this.pointIndex[point.hash()])
+        return this.pointIndex.hasOwnProperty(point.hash())
     }
 
     isCenter(point) {
