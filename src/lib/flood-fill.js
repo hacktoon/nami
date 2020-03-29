@@ -31,13 +31,6 @@ export class FloodFill2 {
     }
 }
 
-// TODO: create real test
-window.teste = () => {
-    const filler = new FloodFill2()
-    const newPoints = filler.grow([new Point(0, 0)])
-    console.log(newPoints.map(p => p.hash()))
-}
-
 
 export class FloodFill {
     constructor(grid, startPoint, onFill = _.noop, isFillable = _.stubTrue) {

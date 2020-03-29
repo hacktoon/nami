@@ -59,8 +59,8 @@ export class RegionMap {
     _initPoints() {
         const points = []
         for(let i=0; i<this.count; i++) {
-            const [x, y] = [Random.int(this.size-1), Random.int(this.size-1)]
-            points.push(new Point(x, y))
+            const rand = () => Random.int(this.size-1)
+            points.push(new Point(rand(), rand()))
         }
         return points
     }
