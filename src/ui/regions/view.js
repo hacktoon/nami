@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
-import { GridDisplay } from '/ui/lib/display'
-import { Form, Button } from '/ui/lib'
-import { NumberField } from '/ui/lib/field'
+import { GridDisplay } from '/lib/ui/display'
+import { Form, Button } from '/lib/ui'
+import { NumberField } from '/lib/ui/field'
 
 
 const DEFAULT_TILE_SIZE = 15
@@ -16,7 +16,7 @@ export default function RegionMapView(props) {
         <Menu
             step={step}
             onGrow={() => {
-                props.regionMap.growAll()
+                props.regionMap.grow()
                 setStep(step+1)
             }}
             onGrowRandom={() => {

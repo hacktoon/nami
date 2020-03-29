@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Menu } from './menu'
-import { GridDisplay } from '/ui/lib/display'
+import { GridDisplay } from '/lib/ui/display'
 
 
 const DEFAULT_TILE_SIZE = 10

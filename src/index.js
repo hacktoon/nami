@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom'
 
 import WorldApp from '/ui/world'
 import RegionMapApp from '/ui/regions'
-import { Text } from '/ui/lib'
-import { SelectField } from '/ui/lib/field'
+import { Text } from '/lib/ui'
+import { SelectField } from '/lib/ui/field'
 
 import "./base.css"
 import "./index.css"

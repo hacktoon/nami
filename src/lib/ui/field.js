@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 
-import { cls } from '/ui/lib'
+import { cls } from '/lib/ui'
 
 
 // HELPER FUNCTIONS ===============================================

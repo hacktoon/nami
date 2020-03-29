@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import { SelectField, NumberField } from '../lib/field'
-import { Form, Button } from '../lib'
+import { SelectField, NumberField } from '/lib/ui/field'
+import { Form, Button } from '/lib/ui'
 import { RegionMapConfig } from '/model/region'
 
 

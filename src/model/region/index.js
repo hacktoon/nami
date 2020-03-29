@@ -101,7 +101,7 @@ export class RegionMap {
         return new FloodFill2(onFill, isFillable)
     }
 
-    growAll() {
+    grow() {
         for(let i=0; i<this.count; i++) {
             const currentLayer = this.regions[i].outerLayer()
             const newLayer = this.fillers[i].grow(currentLayer)

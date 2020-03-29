@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { Form } from '/ui/lib'
-import { NumberField, SelectField, OutputField } from '/ui/lib/field'
+import { Form } from '/lib/ui'
+import { NumberField, SelectField, OutputField } from '/lib/ui/field'
 
 
 export function Menu(props) {
