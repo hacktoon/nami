@@ -20,6 +20,8 @@ export default function ConfigMenu(props) {
         257: 257,
         129: 129,
         65: 65,
+        33: 33,
+        17: 17,
     }
 
     return <Form className="ConfigMenu" onSubmit={onSubmit}>

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 
+import { Random } from '/lib/base'
 import { Point } from './point'
 
 
@@ -9,24 +10,24 @@ export class FloodFill2 {
         this.onFill = onFill
     }
 
-    grow(seedPoints) {
-        let newPoints = []
-        seedPoints.forEach(point => {
-            const neighbors = this.growNeighbors(point)
-            newPoints = newPoints.concat(neighbors)
+    grow(seeds) {
+        let newSeeds = []
+        seeds.forEach(seed => {
+            seed.adjacentPoints(point => this.fillPoint(newSeeds, point))
         })
-        return newPoints
+        return newSeeds
     }
 
-    growNeighbors(point) {
-        const filledPoints = []
-        point.adjacentPoints(neighbor => {
-            if (this.isFillable(neighbor)){
-                this.onFill(neighbor)
-                filledPoints.push(neighbor)
-            }
-        })
-        return filledPoints
+    growRandom(seeds) {
+        let newSeeds = this.grow(seeds)
+        let extraSeeds = this.grow(newSeeds.filter(p => Random.chance(.4)))
+        return newSeeds.concat(extraSeeds)
+    }
+
+    fillPoint(nextSeeds, point) {
+        if (! this.isFillable(point)) return
+        this.onFill(point)
+        nextSeeds.push(point)
     }
 }
 

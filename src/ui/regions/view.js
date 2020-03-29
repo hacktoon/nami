@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { GridDisplay } from '/ui/lib/display'
 import { Form, Button } from '/ui/lib'
-import { NumberField, TextField } from '/ui/lib/field'
+import { NumberField } from '/ui/lib/field'
 
 
 const DEFAULT_TILE_SIZE = 10
@@ -14,8 +14,13 @@ export default function RegionMapView(props) {
 
     return <section className="RegionMapView">
         <Menu
+            step={step}
             onGrow={() => {
                 props.regionMap.growAll()
+                setStep(step+1)
+            }}
+            onGrowRandom={() => {
+                props.regionMap.growRandom()
                 setStep(step+1)
             }}
             onTilesizeChange={event => setTilesize(event.target.value)}
@@ -42,8 +47,7 @@ function Menu(props) {
             step={1}
             min={1}
         />
-        <TextField label="Fill color" />
-        <TextField label="Border color" />
         <Button text="Grow" onClick={props.onGrow}/>
+        <Button text="Grow random" onClick={props.onGrowRandom}/>
     </Form>
 }

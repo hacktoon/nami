@@ -42,6 +42,7 @@
 
 .RegionMapApp .RegionMapView .Menu button {
     padding: .5rem;
+    margin-bottom: 1em;
 }
 
 .RegionMapApp .RegionMapView .View {

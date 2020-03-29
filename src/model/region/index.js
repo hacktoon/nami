@@ -77,8 +77,12 @@ export class RegionMap {
         }
     }
 
-    growSome() {
-
+    growRandom() {
+        for(let i=0; i<this.count; i++) {
+            const currentLayer = this.regions[i].borderPoints()
+            const newLayer = this.fillers[i].growRandom(currentLayer)
+            this.regions[i].grow(newLayer)
+        }
     }
 
     getColor(point) {
