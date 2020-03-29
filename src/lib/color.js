@@ -5,8 +5,10 @@ import { NumberInterpolation } from './base'
 
 
 export function RandomColor() {
-    const number = (Random.float() * 0xFFFFFF << 0)
-    return `#${number.toString(16)}`
+    const r = Random.int(255)
+    const g = Random.int(255)
+    const b = Random.int(255)
+    return '#' + HexByte(r) + HexByte(g) + HexByte(b)
 }
 
 
@@ -32,20 +34,23 @@ function HexByte(number) {
     if (number == 0 || isNaN(number)) { return '00' }
 
     number = Math.min(Math.max(0, number), 255)
-    return chars.charAt((number - number % 16) / 16) + chars.charAt (number % 16)
+    return chars.charAt((number - number % 16) / 16) + chars.charAt(number % 16)
 }
 
-/* Convert an RGB triplet to a hex string */
+
 function HTMLHex(RGB) {
+    /* Convert an RGB triplet to a hex string */
     return '#' + HexByte(RGB[0]) + HexByte(RGB[1]) + HexByte(RGB[2])
 }
 
-/* Convert a hex string to an RGB triplet */
+
 function RGBTriplet(hexString) {
+    /* Convert a hex string to an RGB triplet */
     hexString = hexString.replace('#', '')
     if(hexString.length == 3){
         hexString = hexString[0] + hexString[0] +
-            hexString[1] + hexString[1] + hexString[2] + hexString[2]
+                    hexString[1] + hexString[1] +
+                    hexString[2] + hexString[2]
     }
     return [
         parseInt(hexString.substring(0, 2), 16),

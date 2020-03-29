@@ -87,10 +87,13 @@ export class RegionMap {
         }
     }
 
-    getColor(point) {
+    getColor(rawPoint) {
+        const point = this.grid.wrap(rawPoint)
         const index = this.grid.get(point)
+        const region = this.regions[index]
         if (index == EMPTY) return 'white'
-        return this.regions[index].color
+        if (region.center.equals(point)) return 'black'
+        return region.color
     }
 }
 
