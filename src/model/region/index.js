@@ -29,7 +29,7 @@ export class Region {
         return this.layers[layerIndex]
     }
 
-    borderPoints() {
+    outerLayer() {
         return this.layers[this.layers.length - 1]
     }
 }
@@ -59,7 +59,7 @@ export class RegionMap {
     _initPoints() {
         const points = []
         for(let i=0; i<this.count; i++) {
-            const [x, y] = [Random.int(this.size), Random.int(this.size)]
+            const [x, y] = [Random.int(this.size-1), Random.int(this.size-1)]
             points.push(new Point(x, y))
         }
         return points
@@ -73,7 +73,7 @@ export class RegionMap {
 
     growAll() {
         for(let i=0; i<this.count; i++) {
-            const currentLayer = this.regions[i].borderPoints()
+            const currentLayer = this.regions[i].outerLayer()
             const newLayer = this.fillers[i].grow(currentLayer)
             this.regions[i].grow(newLayer)
         }
@@ -81,7 +81,7 @@ export class RegionMap {
 
     growRandom() {
         for(let i=0; i<this.count; i++) {
-            const currentLayer = this.regions[i].borderPoints()
+            const currentLayer = this.regions[i].outerLayer()
             const newLayer = this.fillers[i].growRandom(currentLayer)
             this.regions[i].grow(newLayer)
         }
@@ -90,9 +90,17 @@ export class RegionMap {
     getColor(rawPoint) {
         const point = this.grid.wrap(rawPoint)
         const index = this.grid.get(point)
-        const region = this.regions[index]
         if (index == EMPTY) return 'white'
+        const region = this.regions[index]
         if (region.center.equals(point)) return 'black'
+
+        //TODO: make point search efficient
+        const regionOuterLayer = region.outerLayer()
+        for(let i=0; i<regionOuterLayer.length; i++) {
+            let outPt = this.grid.wrap(regionOuterLayer[i])
+            if (point.equals(outPt)) return 'red'
+        }
+
         return region.color
     }
 }
