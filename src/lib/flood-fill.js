@@ -20,8 +20,9 @@ export class FloodFill2 {
 
     growRandom(seeds) {
         let newSeeds = this.grow(seeds)
-        let extraSeeds = this.grow(newSeeds.filter(p => Random.chance(.4)))
-        return newSeeds.concat(extraSeeds)
+        let extraSeeds = this.grow(newSeeds.filter(p => Random.chance(.3)))
+        extraSeeds = newSeeds.concat(extraSeeds)
+        return extraSeeds
     }
 
     fillPoint(nextSeeds, point) {

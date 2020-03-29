@@ -5,7 +5,7 @@ import { Form, Button } from '/ui/lib'
 import { NumberField } from '/ui/lib/field'
 
 
-const DEFAULT_TILE_SIZE = 10
+const DEFAULT_TILE_SIZE = 15
 
 
 export default function RegionMapView(props) {

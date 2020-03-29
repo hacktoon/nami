@@ -1,4 +1,5 @@
 import { Random } from '/lib/base'
+import { RandomColor } from '/lib/color'
 import { Grid } from '/lib/grid'
 import { FloodFill2 } from '/lib/flood-fill'
 
@@ -9,6 +10,7 @@ export class Region {
     constructor(center) {
         this.center = center
         this.layers = [[center]]
+        this.color = RandomColor()
     }
 
     grow(points) {
@@ -48,7 +50,7 @@ export class RegionMap {
         const regions = {}
         for(let i=0; i<points.length; i++) {
             regions[i] = new Region(points[i])
-            this.grid.set(points[i], String(i))
+            this.grid.set(points[i], i)
             this.fillers[i] = this._initRegionFiller(i)
         }
         return regions
@@ -64,7 +66,7 @@ export class RegionMap {
     }
 
     _initRegionFiller(index) {
-        const onFill = point => this.grid.set(point, String(index))
+        const onFill = point => this.grid.set(point, index)
         const isFillable = point => this.grid.get(point) === EMPTY
         return new FloodFill2(onFill, isFillable)
     }
@@ -87,23 +89,14 @@ export class RegionMap {
 
     getColor(point) {
         const index = this.grid.get(point)
-        return {
-            '-1': 'white',
-            '0': 'green',
-            '1': 'red',
-            '2': 'blue',
-            '3': 'brown',
-            '4': 'yellow',
-            '5': 'gray',
-            '6': 'purple',
-            '7': 'black'
-        }[index]
+        if (index == EMPTY) return 'white'
+        return this.regions[index].color
     }
 }
 
 
 export class RegionMapConfig {
-    static DEFAULT_COUNT = 5
+    static DEFAULT_COUNT = 7
     static DEFAULT_SIZE = 65
 
     constructor(params={}) {

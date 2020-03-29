@@ -4,10 +4,26 @@ import { Random } from './base'
 import { NumberInterpolation } from './base'
 
 
-function RandomColor() {
-    const number = (Math.random() * 0xFFFFFF << 0)
+export function RandomColor() {
+    const number = (Random.float() * 0xFFFFFF << 0)
     return `#${number.toString(16)}`
 }
+
+
+export function ColorGradient (_from, to, totalItems) {
+    let start = RGBTriplet(_from),
+        end = RGBTriplet(to),
+        red = NumberInterpolation(start[0], end[0], totalItems),
+        green = NumberInterpolation(start[1], end[1], totalItems),
+        blue = NumberInterpolation(start[2], end[2], totalItems),
+        colors = []
+
+    for (let i = 0; i < totalItems; i++) {
+        colors.push(HTMLHex([red[i], green[i], blue[i]]))
+    }
+    return colors
+}
+
 
 function HexByte(number) {
     const chars = '0123456789ABCDEF'
@@ -36,18 +52,4 @@ function RGBTriplet(hexString) {
         parseInt(hexString.substring(2, 4), 16),
         parseInt(hexString.substring(4, 6), 16)
     ]
-}
-
-export function ColorGradient (_from, to, totalItems) {
-    let start = RGBTriplet(_from),
-        end = RGBTriplet(to),
-        red = NumberInterpolation(start[0], end[0], totalItems),
-        green = NumberInterpolation(start[1], end[1], totalItems),
-        blue = NumberInterpolation(start[2], end[2], totalItems),
-        colors = []
-
-    for (let i = 0; i < totalItems; i++) {
-        colors.push(HTMLHex([red[i], green[i], blue[i]]))
-    }
-    return colors
 }
