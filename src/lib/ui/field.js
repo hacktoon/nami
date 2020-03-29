@@ -40,11 +40,15 @@ function LabeledInputField(type, props) {
     </LabeledField>
 }
 
-
 // PUBLIC COMPONENTS ===============================================
 
 export function TextField(props) {
     return LabeledInputField('text', props)
+}
+
+
+export function SwitchField(props) {
+    return LabeledInputField('checkbox', props)
 }
 
 

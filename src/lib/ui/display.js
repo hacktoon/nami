@@ -35,7 +35,7 @@ export function GridDisplay(props) {
         const y = j * renderMap.tilesize
 
         renderMap.drawCell(x, y, props.colorAt(gridPoint))
-        if (props.drawGrid)   renderMap.drawBorders(x, y, gridPoint)
+        if (props.gridMode)   renderMap.drawBorders(x, y, gridPoint)
         if (props.drawPoints) renderMap.drawText(x, y, gridPoint.hash())
     }
 

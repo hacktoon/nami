@@ -120,9 +120,9 @@ export class RegionMap {
     getColor(rawPoint) {
         const point = this.grid.wrap(rawPoint)
         const regionID = this.grid.get(point)
-        if (regionID == EMPTY) return 'white'
-
         const region = this.regions[regionID]
+
+        if (regionID == EMPTY) return 'white'
         if (region.isCenter(point)) return 'black'
         if (region.inOuterLayer(point)) return 'red'
 
