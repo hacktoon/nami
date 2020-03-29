@@ -51,11 +51,11 @@ export class Region {
         return this.inLayer(point, this.layers.length - 1)
     }
 
-    layerPoints(layerIndex) {
+    pointsInLayer(layerIndex) {
         return this.layers[layerIndex]
     }
 
-    outerLayer() {
+    outerLayerPoints() {
         return this.layers[this.layers.length - 1]
     }
 
@@ -103,7 +103,7 @@ export class RegionMap {
 
     grow() {
         for(let i=0; i<this.count; i++) {
-            const currentLayer = this.regions[i].outerLayer()
+            const currentLayer = this.regions[i].outerLayerPoints()
             const newLayer = this.fillers[i].grow(currentLayer)
             this.regions[i].grow(newLayer)
         }
@@ -111,18 +111,18 @@ export class RegionMap {
 
     growRandom() {
         for(let i=0; i<this.count; i++) {
-            const currentLayer = this.regions[i].outerLayer()
+            const currentLayer = this.regions[i].outerLayerPoints()
             const newLayer = this.fillers[i].growRandom(currentLayer)
             this.regions[i].grow(newLayer)
         }
     }
 
     getColor(point) {
-        const index = this.grid.get(point)
-        if (index == EMPTY) return 'white'
+        const regionID = this.grid.get(point)
+        if (regionID == EMPTY) return 'white'
 
         const gridPoint = this.grid.wrap(point)
-        const region = this.regions[index]
+        const region = this.regions[regionID]
         if (region.isCenter(gridPoint)) return 'black'
         if (region.inOuterLayer(gridPoint)) return 'red'
 
