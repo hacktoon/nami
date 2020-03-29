@@ -2,11 +2,14 @@ import { Random } from '/lib/random'
 import { NumberInterpolation } from '/lib/number'
 
 
-export function RandomColor() {
-    const r = Random.int(255)
-    const g = Random.int(255)
-    const b = Random.int(255)
-    return '#' + HexByte(r) + HexByte(g) + HexByte(b)
+
+export class Color {
+    static random() {
+        const r = Random.int(255)
+        const g = Random.int(255)
+        const b = Random.int(255)
+        return '#' + HexByte(r) + HexByte(g) + HexByte(b)
+    }
 }
 
 

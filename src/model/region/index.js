@@ -1,7 +1,7 @@
 import { Random } from '/lib/random'
-import { RandomColor } from '/lib/color'
+import { Color } from '/lib/color'
 import { Grid } from '/lib/grid'
-import { FloodFill2 } from '/lib/flood-fill'
+import { SmartFloodFill } from '/lib/flood-fill'
 
 const EMPTY = -1
 
@@ -11,7 +11,7 @@ export class Region {
         this.grid = grid
         this.center = center
         this.layers = [[center]]
-        this.color = RandomColor()
+        this.color = Color.random()
         this.pointIndex = {}
     }
 
@@ -98,7 +98,7 @@ export class RegionMap {
     _initRegionFiller(index) {
         const onFill = point => this.grid.set(point, index)
         const isFillable = point => this.grid.get(point) === EMPTY
-        return new FloodFill2(onFill, isFillable)
+        return new SmartFloodFill(onFill, isFillable)
     }
 
     grow() {

@@ -1,6 +1,7 @@
-import { Random } from '/lib/random';
+import { Random } from '/lib/random'
 
-const personNames = {
+
+const PERSONS = {
     first: [
         'Joe', 'Mary', 'Zoe', 'La', 'Bo', 'Jack', 'Zedd', 'Will', 'Bill', 'Hassam', 'Jen', 'Eva', 'Adam', 'Moe', 'Liz', 'Walter', 'John', 'Mick', 'Ana', 'Luci', 'Ceci', 'Fran', 'Carol', 'James', 'Eric', 'Cesar', 'Rudi', 'May', 'Laila', 'Vic', 'Albert', 'Steve', 'Jane', 'Sara','Vivi', 'Liane', 'Ada', 'Cindy', 'Amora', 'Bea', 'Isobel', 'Iane', 'Hector', 'Mandy', 'Amanda', 'Bob', 'Liv', 'Licia', 'Obi', 'Dave', 'Pat', 'Ani', 'Bel'
     ],
@@ -10,40 +11,40 @@ const personNames = {
     ]
 }
 
-const landformNames = {
+const LANDFORMS = {
     first: [
         'Bre', 'Ad', 'Bren', 'Ard', 'Meso', 'Atla', 'Ar', 'Astr', 'Dra', 'Tre', 'In', 'Eud', 'Aud', 'Au', 'Zor', 'Is', 'Er', 'Eu', 'Ur', 'Ir', 'Cor', 'Gon', 'San',
-        'Zed', 'Arg', 'Ho', 'Re', 'Lam'
+        'Zed', 'Arg', 'Ho', 'Re', 'Lam', 'Wan', 'Her'
     ],
 
     last: [
-        'wana', 'inia', 'lum', 'meria', 'moria', 'ania', 'andia', 'icia', 'vedia', 'elia', 'ben', 'al', 'eb', 'ad', 'dor'
+        'wana', 'inia', 'lum', 'meria', 'moria', 'ania', 'andia', 'icia', 'vedia', 'alia', 'ben', 'al', 'eb', 'ad', 'dor', 'dom', 'eon', 'ano', 'aria'
     ]
 }
 
-const oceanNames = [
+const OCEANS = [
     'Ashu', 'Indran', 'Atlass', 'Amon', 'Aru', 'Andia', 'Barion', 'Ebo', 'Mu', 'Valis', 'Omer', 'Vau', 'Thea', 'Geon', 'Bhor', 'Sett', 'Orlan', 'Bhan', 'Ebb', 'Numer', 'Trachian', 'Vishnu', 'Adom', 'Isidor', 'Astor', 'Atenor', 'Hexamar', 'Blum', 'Red', 'Blue', 'Green', 'Black', 'Purple', 'White', 'Salt'
 ]
 
-const riverNames = [
+const RIVERS = [
     'Mandrian', 'Inu', 'Assad', 'Io', 'Asten', 'Miran', 'Basum', 'Vau', 'Indo', 'Merin', 'Sepid', 'Urlan', 'Axum', 'Zend', 'Icari', 'Ben', 'Otetis', 'Odd'
 ]
 
 
 export class Name {
     static createLandmassName () {
-        return Random.choice(landformNames.first) + Random.choice(landformNames.last)
+        return Random.choice(LANDFORMS.first) + Random.choice(LANDFORMS.last)
     }
 
     static createPersonName () {
-        return Random.choice(personNames.first) +' '+ Random.choice(personNames.last)
+        return Random.choice(PERSONS.first) +' '+ Random.choice(PERSONS.last)
     }
 
     static createWaterName() {
-        return Random.choice(oceanNames)
+        return Random.choice(OCEANS)
     }
 
     static createRiverName() {
-        return Random.choice(riverNames)
+        return Random.choice(RIVERS)
     }
 }

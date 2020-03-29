@@ -2,7 +2,7 @@ import { Random } from '/lib/random'
 import { Point } from '/lib/point'
 
 
-export class FloodFill2 {
+export class SmartFloodFill {
     constructor(onFill, isFillable) {
         this.isFillable = isFillable
         this.onFill = onFill
