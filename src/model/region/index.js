@@ -87,18 +87,19 @@ export class RegionMap {
         }
     }
 
-    getColor(rawPoint) {
-        const point = this.grid.wrap(rawPoint)
+    getColor(point) {
         const index = this.grid.get(point)
         if (index == EMPTY) return 'white'
+
+        const gridPoint = this.grid.wrap(point)
         const region = this.regions[index]
-        if (region.center.equals(point)) return 'black'
+        if (region.center.equals(gridPoint)) return 'black'
 
         //TODO: make point search efficient
-        const regionOuterLayer = region.outerLayer()
-        for(let i=0; i<regionOuterLayer.length; i++) {
-            let outPt = this.grid.wrap(regionOuterLayer[i])
-            if (point.equals(outPt)) return 'red'
+        const outerLayer = region.outerLayer()
+        for(let i=0; i<outerLayer.length; i++) {
+            const p = this.grid.wrap(outerLayer[i])
+            if (gridPoint.equals(p)) return 'red'
         }
 
         return region.color
