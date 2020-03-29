@@ -7,14 +7,22 @@ const EMPTY = -1
 
 
 export class Region {
-    constructor(center) {
+    constructor(grid, center) {
+        this.grid = grid
         this.center = center
         this.layers = [[center]]
         this.color = RandomColor()
+        this.pointIndex = {}
     }
 
     grow(points) {
-        this.layers.push(points)
+        let wrappedPoints = []
+        points.forEach(rawPoint => {
+            const point = this.grid.wrap(rawPoint)
+            this.pointIndex[point.hash()] = this.layers.length
+            wrappedPoints.push(point)
+        })
+        this.layers.push(wrappedPoints)
     }
 
     points() {
@@ -25,12 +33,32 @@ export class Region {
         return _points
     }
 
+    hasPoint(point) {
+        return Boolean(this.pointIndex[point.hash()])
+    }
+
+    isCenter(point) {
+        return point.equals(this.center)
+    }
+
+    inLayer(point, layer) {
+        return this.pointIndex[point.hash()] == layer
+    }
+
+    inOuterLayer(point) {
+        return this.inLayer(point, this.layers.length - 1)
+    }
+
     layerPoints(layerIndex) {
         return this.layers[layerIndex]
     }
 
     outerLayer() {
         return this.layers[this.layers.length - 1]
+    }
+
+    distFromCenter(point) {
+        return Point.euclidianDistance(this.center, point)
     }
 }
 
@@ -49,7 +77,7 @@ export class RegionMap {
         const points = this._initPoints()
         const regions = {}
         for(let i=0; i<points.length; i++) {
-            regions[i] = new Region(points[i])
+            regions[i] = new Region(this.grid, points[i])
             this.grid.set(points[i], i)
             this.fillers[i] = this._initRegionFiller(i)
         }
@@ -93,14 +121,8 @@ export class RegionMap {
 
         const gridPoint = this.grid.wrap(point)
         const region = this.regions[index]
-        if (region.center.equals(gridPoint)) return 'black'
-
-        //TODO: make point search efficient
-        const outerLayer = region.outerLayer()
-        for(let i=0; i<outerLayer.length; i++) {
-            const p = this.grid.wrap(outerLayer[i])
-            if (gridPoint.equals(p)) return 'red'
-        }
+        if (region.isCenter(gridPoint)) return 'black'
+        if (region.inOuterLayer(gridPoint)) return 'red'
 
         return region.color
     }
