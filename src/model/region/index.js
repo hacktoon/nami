@@ -117,14 +117,14 @@ export class RegionMap {
         }
     }
 
-    getColor(point) {
+    getColor(rawPoint) {
+        const point = this.grid.wrap(rawPoint)
         const regionID = this.grid.get(point)
         if (regionID == EMPTY) return 'white'
 
-        const gridPoint = this.grid.wrap(point)
         const region = this.regions[regionID]
-        if (region.isCenter(gridPoint)) return 'black'
-        if (region.inOuterLayer(gridPoint)) return 'red'
+        if (region.isCenter(point)) return 'black'
+        if (region.inOuterLayer(point)) return 'red'
 
         return region.color.toHex()
     }
@@ -132,7 +132,7 @@ export class RegionMap {
 
 
 export class RegionMapConfig {
-    static DEFAULT_COUNT = 7
+    static DEFAULT_COUNT = 12
     static DEFAULT_SIZE = 65
 
     constructor(params={}) {
