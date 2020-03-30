@@ -33,6 +33,22 @@ export class Color {
         return '#' + hex(this.red) + hex(this.green) + hex(this.blue)
     }
 
+    brighten(amount) {
+        return new Color(
+            this.red + amount,
+            this.green + amount,
+            this.blue + amount,
+        )
+    }
+
+    darken(amount) {
+        return new Color(
+            this.red - amount,
+            this.green - amount,
+            this.blue - amount,
+        )
+    }
+
     static fromHex(string) {
         let hex = string.replace('#', '')
 

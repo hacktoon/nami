@@ -43,8 +43,12 @@ export class Region {
         return point.equals(this.center)
     }
 
+    layerIndex(point) {
+        return this.pointIndex[point.hash()]
+    }
+
     inLayer(point, layer) {
-        return this.pointIndex[point.hash()] == layer
+        return this.layerIndex(point) == layer
     }
 
     inOuterLayer(point) {
@@ -126,7 +130,8 @@ export class RegionMap {
         if (region.isCenter(point)) return 'black'
         if (region.inOuterLayer(point)) return 'red'
 
-        return region.color.toHex()
+        let amount = region.layerIndex(point) * 10
+        return region.color.darken(amount).toHex()
     }
 }
 
