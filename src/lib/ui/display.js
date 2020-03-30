@@ -33,19 +33,18 @@ export function GridDisplay(props) {
         const point = renderMap.getGridPoint(i, j)
         const x = i * renderMap.tilesize
         const y = j * renderMap.tilesize
-        let color = props.colorAt(point)
-
-        if (! props.wrapMode && isOffGrid(point)) color = 'black'
+        const nowrap = isWrapDisabled(point)
+        let color = nowrap ? 'black' : props.colorAt(point)
 
         renderMap.drawCell(x, y, color)
         if (props.gridMode)   renderMap.drawBorders(x, y, point)
         if (props.drawPoints) renderMap.drawText(x, y, point.hash())
     }
 
-    const isOffGrid = point => {
+    const isWrapDisabled = point => {
         const offWidth = point.x < 0 || point.x >= props.width
         const offHeight = point.y < 0 || point.y >= props.height
-        return offWidth || offHeight
+        return ! props.wrapMode && (offWidth || offHeight)
     }
 
     return <section className="GridDisplay">
