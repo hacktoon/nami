@@ -30,23 +30,22 @@ export function GridDisplay(props) {
     }
 
     const renderCell = (i, j, renderMap) => {
-        const gridPoint = renderMap.getGridPoint(i, j)
+        const point = renderMap.getGridPoint(i, j)
         const x = i * renderMap.tilesize
         const y = j * renderMap.tilesize
+        let color = props.colorAt(point)
 
-        if (props.wrapMode) {
-            renderMap.drawCell(x, y, props.colorAt(gridPoint))
-        } else {
-            const offWidth = gridPoint.x >= 0 && gridPoint.x < props.width
-            const offHeight = gridPoint.y >= 0 && gridPoint.y < props.height
-            if (offWidth && offHeight) {
-                renderMap.drawCell(x, y, props.colorAt(gridPoint))
-            } else {
-                renderMap.drawCell(x, y, 'black')
-            }
-        }
-        if (props.gridMode)   renderMap.drawBorders(x, y, gridPoint)
-        if (props.drawPoints) renderMap.drawText(x, y, gridPoint.hash())
+        if (! props.wrapMode && isOffGrid(point)) color = 'black'
+
+        renderMap.drawCell(x, y, color)
+        if (props.gridMode)   renderMap.drawBorders(x, y, point)
+        if (props.drawPoints) renderMap.drawText(x, y, point.hash())
+    }
+
+    const isOffGrid = point => {
+        const offWidth = point.x < 0 || point.x >= props.width
+        const offHeight = point.y < 0 || point.y >= props.height
+        return offWidth || offHeight
     }
 
     return <section className="GridDisplay">
