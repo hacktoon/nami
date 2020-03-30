@@ -75,6 +75,8 @@ export class RegionMap {
         this.grid = new Grid(config.size, config.size, () => EMPTY)
         this.count = config.count
         this.size = config.size
+        this.width = config.size
+        this.height = config.size
         this.fillers = {}
         this.regions = this._initRegions()
     }

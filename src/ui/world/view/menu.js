@@ -13,6 +13,11 @@ export function Menu(props) {
             checked={props.gridMode}
             onChange={props.onGridModeChange}
         />
+        <SwitchField
+            label="Wrap grid"
+            checked={props.wrapMode}
+            onChange={props.onWrapModeChange}
+        />
         <NumberField
             label="Tile size"
             value={props.tilesize}

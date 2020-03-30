@@ -42,6 +42,8 @@ export default class World {
         this.name = Name.createLandmassName()
         this.seed = seed
         this.size = size
+        this.width = size
+        this.height = size
         this.area = size * size
         this.grid = new Grid(size, size, point => new Tile(point))
         this.reliefMap = new ReliefMap(size, roughness)

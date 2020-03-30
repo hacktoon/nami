@@ -8,30 +8,36 @@ import { NumberField, SwitchField } from '/lib/ui/field'
 const DEFAULT_TILE_SIZE = 10
 
 
-export default function RegionMapView(props) {
+export default function RegionMapView({regionMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [gridMode, setGridMode] = useState(false)
+    const [wrapMode, setWrapMode] = useState(false)
     const [step, setStep] = useState(0)
 
     return <section className="RegionMapView">
         <Menu
             onGrow={() => {
-                props.regionMap.grow()
+                regionMap.grow()
                 setStep(step + 1)
             }}
             onGrowRandom={() => {
-                props.regionMap.growRandom()
+                regionMap.growRandom()
                 setStep(step + 1)
             }}
             onTilesizeChange={event => setTilesize(event.target.value)}
             onGridModeChange={() => setGridMode(!gridMode)}
+            onWrapModeChange={() => setWrapMode(!wrapMode)}
             gridMode={gridMode}
+            wrapMode={wrapMode}
             tilesize={tilesize}
         />
         <GridDisplay
-            colorAt={point => props.regionMap.getColor(point)}
+            width={regionMap.width}
+            height={regionMap.height}
+            colorAt={point => regionMap.getColor(point)}
             tilesize={tilesize}
             gridMode={gridMode}
+            wrapMode={wrapMode}
         />
     </section>
 }
@@ -45,6 +51,11 @@ function Menu(props) {
             label="Draw grid"
             checked={props.gridMode}
             onChange={props.onGridModeChange}
+        />
+        <SwitchField
+            label="Wrap grid"
+            checked={props.wrapMode}
+            onChange={props.onWrapModeChange}
         />
         <NumberField
             label="Tile size"
