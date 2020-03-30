@@ -72,6 +72,21 @@ canvas { display: block; }
     display: flex;
 }
 
+.Field .FieldValue.CheckBox {
+    text-align: center;
+    color: #FFF;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+}
+.Field .FieldValue.CheckBox.Yes {
+    background-color: rgb(6, 49, 6);
+
+}
+.Field .FieldValue.CheckBox.No {
+    background-color: rgb(100, 15, 15);
+}
+
 
 /* BUTTONS ======================================= */
 

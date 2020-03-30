@@ -4,7 +4,7 @@ import React from 'react'
 // HELPER FUNCTIONS ==============================================
 
 export function cls(...classNames) {
-    return classNames.join(' ')
+    return classNames.join(' ').trim()
 }
 
 

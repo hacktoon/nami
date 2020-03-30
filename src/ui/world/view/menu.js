@@ -1,13 +1,18 @@
 import React from 'react'
 
 import { Form } from '/lib/ui'
-import { NumberField, SelectField, OutputField } from '/lib/ui/field'
+import { NumberField, SelectField, OutputField, SwitchField } from '/lib/ui/field'
 
 
 export function Menu(props) {
     return <Form className="Menu">
         <OutputField label="Name" value={props.world.name} />
         <OutputField label="Seed" value={props.world.seed} />
+        <SwitchField
+            label="Draw grid"
+            checked={props.gridMode}
+            onChange={props.onGridModeChange}
+        />
         <NumberField
             label="Tile size"
             value={props.tilesize}

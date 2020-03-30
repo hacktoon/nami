@@ -47,13 +47,20 @@ export function TextField(props) {
 }
 
 
-export function SwitchField(props) {
-    return LabeledInputField('checkbox', props)
+export function NumberField(props) {
+    return LabeledInputField('number', props)
 }
 
 
-export function NumberField(props) {
-    return LabeledInputField('number', props)
+export function SwitchField(props) {
+    let {label, className, ...restProps} = props
+    let enabled = props.checked ? 'Yes' : 'No'
+    let _className = cls(props.className, 'Field')
+    let onClick = event => restProps.onChange(event.target.checked)
+    return <section onClick={onClick} className={_className} {...restProps}>
+            <div className='FieldLabel'>{props.label}</div>
+            <div className={cls('FieldValue', 'CheckBox', enabled)}>{enabled}</div>
+    </section>
 }
 
 
