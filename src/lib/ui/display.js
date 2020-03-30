@@ -121,7 +121,7 @@ export function Canvas(props) {
         const canvas = canvasRef.current
         const width = canvas.width = viewportRef.current.clientWidth
         const height = canvas.height = viewportRef.current.clientHeight
-        render(canvas.getContext('2d'), width, height)
+        render(canvas.getContext('2d', {alpha: false}), width, height)
     })
 
     return <div className="Canvas" ref={viewportRef}>
