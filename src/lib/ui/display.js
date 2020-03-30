@@ -34,11 +34,14 @@ export function GridDisplay(props) {
         const x = i * renderMap.tilesize
         const y = j * renderMap.tilesize
 
-        renderMap.drawCell(x, y, props.colorAt(gridPoint))
-        if (!props.wrapMode) {
-            const checkWidth = gridPoint.x >= 0 && gridPoint.x < props.width
-            const checkHeight = gridPoint.y >= 0 && gridPoint.y < props.height
-            if (!checkWidth || !checkHeight) {
+        if (props.wrapMode) {
+            renderMap.drawCell(x, y, props.colorAt(gridPoint))
+        } else {
+            const offWidth = gridPoint.x >= 0 && gridPoint.x < props.width
+            const offHeight = gridPoint.y >= 0 && gridPoint.y < props.height
+            if (offWidth && offHeight) {
+                renderMap.drawCell(x, y, props.colorAt(gridPoint))
+            } else {
                 renderMap.drawCell(x, y, 'black')
             }
         }
@@ -56,10 +59,10 @@ export function GridDisplay(props) {
 export class RenderMap {
     constructor(config={}) {
         this.canvas   = config.canvas
+        this.width    = Number(config.width)
         this.height   = Number(config.height)
         this.offset   = config.offset || new Point(0, 0)
         this.tilesize = Number(config.tilesize)
-        this.width    = Number(config.width)
     }
 
     drawCell(x, y, color) {
