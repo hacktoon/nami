@@ -7,12 +7,8 @@ import RegionMapView from './view'
 import "./index.css"
 
 
-const DEFAULT_REGION_MAP = new RegionMap()
-
-
 export default function RegionMapApp() {
-    const [regionMap, setRegionMap] = useState(DEFAULT_REGION_MAP)
-
+    const [regionMap, setRegionMap] = useState(new RegionMap())
     const onConfigChange = config => setRegionMap(new RegionMap(config))
 
     return <section className='RegionMapApp'>

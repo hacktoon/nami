@@ -15,9 +15,9 @@ export default function WorldView({world}) {
         <Menu
             onTilesizeChange={event => setTilesize(event.target.value)}
             onGridModeChange={() => setGridMode(!gridMode)}
-            world={world}
             tilesize={tilesize}
             gridMode={gridMode}
+            world={world}
 
         />
         <GridDisplay
