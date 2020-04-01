@@ -2,7 +2,7 @@ import { Random } from '/lib/random'
 import { Point } from '/lib/point'
 
 
-export class SmartFloodFill {
+export class LightFloodFill {
     constructor(onFill, isFillable) {
         this.isFillable = isFillable
         this.onFill = onFill
@@ -17,10 +17,11 @@ export class SmartFloodFill {
     }
 
     growRandom(seeds) {
+        const chance = .3
         let newSeeds = this.grow(seeds)
-        let extraSeeds = this.grow(newSeeds.filter(() => Random.chance(.3)))
-        let extraSeeds2 = this.grow(extraSeeds.filter(() => Random.chance(.5)))
-        let extraSeeds3 = this.grow(extraSeeds2.filter(() => Random.chance(.7)))
+        let extraSeeds = this.grow(newSeeds.filter(() => Random.chance(chance)))
+        let extraSeeds2 = this.grow(extraSeeds.filter(() => Random.chance(chance)))
+        let extraSeeds3 = this.grow(extraSeeds2.filter(() => Random.chance(chance)))
         return newSeeds.concat(extraSeeds, extraSeeds2, extraSeeds3)
     }
 

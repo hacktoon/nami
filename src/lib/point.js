@@ -32,7 +32,7 @@ export class Point {
         return new Point(this.x - point.x, this.y - point.y)
     }
 
-    hash () {
+    get hash() {
         return `${this.x},${this.y}`
     }
 
@@ -112,20 +112,15 @@ window.Point = Point
 
 
 export class PointSet {
-    constructor(points=new Array()) {
-        this.set = new Set(points.map(p=>p.hash()))
-    }
-
-    add(point) {
-        this.set.add(point.hash())
-        return point.hash()
-    }
-
-    has(point) {
-        return this.set.has(point.hash())
+    constructor(points=[]) {
+        this.set = new Set(points.map(p=>p.hash))
     }
 
     get size() {
         return this.set.size
+    }
+
+    has(point) {
+        return this.set.has(point.hash)
     }
 }

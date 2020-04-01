@@ -38,7 +38,7 @@ export function GridDisplay(props) {
 
         renderMap.drawCell(x, y, color)
         if (props.gridMode)   renderMap.drawBorders(x, y, point)
-        if (props.drawPoints) renderMap.drawText(x, y, point.hash())
+        if (props.drawPoints) renderMap.drawText(x, y, point.hash)
     }
 
     const isWrapDisabled = point => {
