@@ -1,4 +1,4 @@
-import { Random } from '/lib/random'
+import { PointSet } from '/lib/point'
 import { Color } from '/lib/color'
 import { Grid } from '/lib/grid'
 import { SmartFloodFill } from '/lib/flood-fill'
@@ -12,7 +12,7 @@ export class Region {
         this.grid = grid   //TODO: REMOVE
         this.center = center
         this.layers = [[center]]
-        this.color = new Color()
+        this.color = new Color(0, 100, 0)
         this.pointIndex = {}
     }
 
@@ -26,14 +26,6 @@ export class Region {
             }
         })
         this.layers.push(wrappedPoints)
-    }
-
-    points() {
-        let _points = []
-        for(let i=0; i<this.layers.length; i++) {
-            _points = _points.concat(this.layers[i])
-        }
-        return _points
     }
 
     hasPoint(point) {
@@ -66,6 +58,21 @@ export class Region {
 }
 
 
+function grow(point, testPoint) {
+    return point.adjacents(testPoint)
+}
+
+function organic(point, testPoint) {
+    const grown = point.adjacents()
+    const final = [...grown]
+    grown.forEach(point => {
+        if (Random.chance(.5)) {
+            final = PointGrowth.normal(point)
+        }
+    })
+}
+
+
 export class RegionMap {
     constructor(params) {
         const config = new RegionMapConfig(params)
@@ -76,6 +83,11 @@ export class RegionMap {
         this.height = config.size
         this.fillers = {}
         this.regions = this._initRegions()
+    }
+
+    toGrid() {
+        let grid = new Grid(this.width, this.height, () => EMPTY)
+        return grid
     }
 
     _initRegions() {
@@ -92,8 +104,7 @@ export class RegionMap {
     _initPoints() {
         const points = []
         for(let i=0; i<this.count; i++) {
-            const rand = () => Random.int(this.size-1)
-            points.push(new Point(rand(), rand()))
+            points.push(Point.random(this.size))
         }
         return points
     }
@@ -129,7 +140,7 @@ export class RegionMap {
         if (region.isCenter(point)) return 'black'
         if (region.inOuterLayer(point)) return 'red'
 
-        let amount = region.layerIndex(point) * 5
+        let amount = region.layerIndex(point) * 10
         return region.color.darken(amount).toHex()
     }
 }

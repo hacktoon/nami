@@ -10,18 +10,6 @@ const ADJACENT_NEIGHBORHOOD = [
 ]
 
 
-export function grow(point, testPoint) {
-    return point.adjacents(testPoint)
-}
-window.grow = grow
-
-
-export function organicGrow(point, testPoint) {
-    return point.adjacents(testPoint)
-}
-window.grow = grow
-
-
 export class Point {
     constructor (x=0, y=0) {
         this.x = x
@@ -123,37 +111,21 @@ export class Point {
 window.Point = Point
 
 
-export class PointMap {
-    /*
-        A 2D geometric map of points
-    */
-
-    constructor() {
-        this.hashMap = new Map()
-        this.extremePoints = {
-            [Direction.NORTH]: new Point(),
-            [Direction.SOUTH]: new Point(),
-            [Direction.EAST]: new Point(),
-            [Direction.WEST]: new Point(),
-        }
+export class PointSet {
+    constructor(points=new Array()) {
+        this.set = new Set(points.map(p=>p.hash()))
     }
 
-    add(point, value) {
-        if (this.hashMap.has(point)) return
-        const key = point.hash()
-        this.hashMap.set(key, value)
+    add(point) {
+        this.set.add(point.hash())
+        return point.hash()
     }
 
-    updateExtremes(point) {
-
+    has(point) {
+        return this.set.has(point.hash())
     }
 
-    size() {
-        return this.hashMap.size
-    }
-
-    get(point, defaultValue=null) {
-        return this.hashMap.get(point.hash()) || defaultValue
+    get size() {
+        return this.set.size
     }
 }
-window.PointMap = PointMap

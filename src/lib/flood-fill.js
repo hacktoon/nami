@@ -18,8 +18,10 @@ export class SmartFloodFill {
 
     growRandom(seeds) {
         let newSeeds = this.grow(seeds)
-        let extraSeeds = this.grow(newSeeds.filter(() => Random.chance(.2)))
-        return newSeeds.concat(extraSeeds)
+        let extraSeeds = this.grow(newSeeds.filter(() => Random.chance(.3)))
+        let extraSeeds2 = this.grow(extraSeeds.filter(() => Random.chance(.5)))
+        let extraSeeds3 = this.grow(extraSeeds2.filter(() => Random.chance(.7)))
+        return newSeeds.concat(extraSeeds, extraSeeds2, extraSeeds3)
     }
 
     fillPoint(nextSeeds, point) {
