@@ -1,4 +1,5 @@
 import { Direction } from '/lib/direction'
+import { Random } from '/lib/random'
 
 
 const ADJACENT_NEIGHBORHOOD = [
@@ -9,13 +10,14 @@ const ADJACENT_NEIGHBORHOOD = [
 ]
 
 
-
-function capitalize(string) {
-    return string[0].toUpperCase() + string.slice(1);
+export function grow(point, testPoint) {
+    return point.adjacents(testPoint)
 }
+window.grow = grow
 
-export function grow(point, testPoint=()=>true) {
-    return point.OldAdjacentPoints(testPoint)
+
+export function organicGrow(point, testPoint) {
+    return point.adjacents(testPoint)
 }
 window.grow = grow
 
@@ -24,6 +26,10 @@ export class Point {
     constructor (x=0, y=0) {
         this.x = x
         this.y = y
+    }
+
+    static random(rangeSize) {
+        return new Point(Random.int(rangeSize), Random.int(rangeSize))
     }
 
     equals(point) {
@@ -62,7 +68,7 @@ export class Point {
                 points.push(point)
             }
         }
-        return points.map(p=>p.hash())
+        return points
     }
 
     //TODO: switch to new version adjacents
