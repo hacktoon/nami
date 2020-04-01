@@ -63,10 +63,6 @@ export class Region {
     outerLayerPoints() {
         return this.layers[this.layers.length - 1]
     }
-
-    distFromCenter(point) {
-        return Point.euclidianDistance(this.center, point)
-    }
 }
 
 

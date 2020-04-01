@@ -102,10 +102,10 @@ export class ScanlineFill {
 
     findRangeStart(originPoint) {
         let currentPoint = originPoint
-        let nextPoint = this.grid.wrap(Point.atWest(currentPoint))
+        let nextPoint = this.grid.wrap(currentPoint.atWest())
         while (this.isFillable(nextPoint) && nextPoint.x != originPoint.x) {
             currentPoint = nextPoint
-            nextPoint = this.grid.wrap(Point.atWest(nextPoint))
+            nextPoint = this.grid.wrap(nextPoint.atWest())
         }
         return currentPoint
     }
@@ -134,9 +134,9 @@ export class ScanlineFill {
 
         while (this.isFillable(point)) {
             this.onFill(point)
-            this.detectRangeAbove(Point.atNorth(point), range)
-            this.detectRangeBelow(Point.atSouth(point), range)
-            point = this.grid.wrap(Point.atEast(point))
+            this.detectRangeAbove(point.atNorth(), range)
+            this.detectRangeBelow(point.atSouth(), range)
+            point = this.grid.wrap(point.atEast())
         }
     }
 
@@ -172,13 +172,13 @@ export class ScanlineFill8 extends ScanlineFill {
 
         while (this.isFillable(point)) {
             this.onFill(point)
-            this.detectRangeAbove(Point.atNorthwest(point), range)
-            this.detectRangeAbove(Point.atNorth(point), range)
-            this.detectRangeAbove(Point.atNortheast(point), range)
-            this.detectRangeBelow(Point.atSouthwest(point), range)
-            this.detectRangeBelow(Point.atSouth(point), range)
-            this.detectRangeBelow(Point.atSoutheast(point), range)
-            point = this.grid.wrap(Point.atEast(point))
+            this.detectRangeAbove(point.atNorthwest(), range)
+            this.detectRangeAbove(point.atNorth(), range)
+            this.detectRangeAbove(point.atNortheast(), range)
+            this.detectRangeBelow(point.atSouthwest(), range)
+            this.detectRangeBelow(point.atSouth(), range)
+            this.detectRangeBelow(point.atSoutheast(), range)
+            point = this.grid.wrap(point.atEast())
         }
     }
 }

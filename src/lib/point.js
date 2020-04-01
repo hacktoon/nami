@@ -93,52 +93,24 @@ export class Point {
         return points
     }
 
-    static at(point, direction) {
-        let name = "at" + capitalize(Direction.getName(direction))
-        return Point[name](point)
-    }
+    atNorth() { return new Point(this.x, this.y - 1) }
+    atSouth() { return new Point(this.x, this.y + 1) }
+    atEast() { return new Point(this.x + 1, this.y) }
+    atWest() { return new Point(this.x - 1, this.y) }
+    atNortheast() { return new Point(this.x + 1, this.y - 1) }
+    atSoutheast() { return new Point(this.x + 1, this.y + 1) }
+    atNorthwest() { return new Point(this.x - 1, this.y - 1) }
+    atSouthwest() { return new Point(this.x - 1, this.y + 1) }
 
-    static atNorth(point) {
-        return new Point(point.x, point.y - 1)
-    }
-
-    static atSouth(point) {
-        return new Point(point.x, point.y + 1)
-    }
-
-    static atEast(point) {
-        return new Point(point.x + 1, point.y)
-    }
-
-    static atWest(point) {
-        return new Point(point.x - 1, point.y)
-    }
-
-    static atNortheast(point) {
-        return new Point(point.x + 1, point.y - 1)
-    }
-
-    static atSoutheast(point) {
-        return new Point(point.x + 1, point.y + 1)
-    }
-
-    static atNorthwest(point) {
-        return new Point(point.x - 1, point.y - 1)
-    }
-
-    static atSouthwest(point) {
-        return new Point(point.x - 1, point.y + 1)
-    }
-
-    static euclidianDistance (point1, point2) {
-        let deltaX = Math.pow(point2.x - point1.x, 2),
-            deltaY = Math.pow(point2.y - point1.y, 2)
+    distance(point) {
+        let deltaX = Math.pow(point.x - this.x, 2),
+            deltaY = Math.pow(point.y - this.y, 2)
         return Math.sqrt(deltaX + deltaY)
     }
 
-    static manhattanDistance (point1, point2) {
-        let deltaX = Math.abs(point2.x - point1.x),
-            deltaY = Math.abs(point2.y - point1.y)
+    manhattanDistance(point) {
+        let deltaX = Math.abs(point.x - this.x),
+            deltaY = Math.abs(point.y - this.y)
         return deltaX + deltaY
     }
 }

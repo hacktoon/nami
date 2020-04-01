@@ -53,7 +53,7 @@ class WaterFlowMap {
 
     _isIsolated(newPoint, sources) {
         for (let point of sources) {
-            let pointsDistance = Point.manhattanDistance(newPoint, point)
+            let pointsDistance = newPoint.manhattanDistance(point)
             if (pointsDistance <= SOURCE_ISOLATION)
                 return false
         }
@@ -67,7 +67,7 @@ class WaterFlowMap {
             let water = this.waterMap.get(point)
             if (! (water.isOcean || water.isSea))
                 return
-            const pointsDistance = Point.euclidianDistance(source, point)
+            const pointsDistance = source.distance(point)
             if (pointsDistance < nearestDistance) {
                 nearestDistance = pointsDistance
                 nearestPoint = point
