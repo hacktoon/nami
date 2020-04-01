@@ -1,21 +1,29 @@
 import { Direction } from '/lib/direction'
 
 
+const ADJACENT_NEIGHBORHOOD = [
+    [-1,  0, Direction.WEST],
+    [ 1,  0, Direction.EAST],
+    [ 0, -1, Direction.NORTH],
+    [ 0,  1, Direction.SOUTH]
+]
+
+
+
 function capitalize(string) {
     return string[0].toUpperCase() + string.slice(1);
 }
+
+export function grow(point, testPoint=()=>true) {
+    return point.OldAdjacentPoints(testPoint)
+}
+window.grow = grow
 
 
 export class Point {
     constructor (x=0, y=0) {
         this.x = x
         this.y = y
-    }
-
-    isNeighbor(point) {
-        let x = Math.abs(this.x - point.x)
-        let y = Math.abs(this.y - point.y)
-        return (x == 1 && y == 0) || (x == 0 && y == 1)
     }
 
     equals(point) {
@@ -34,7 +42,31 @@ export class Point {
         return `${this.x},${this.y}`
     }
 
-    adjacentPoints(callback=function(){}) {
+    test(predicate=()=>true) {
+        return predicate(this.x, this.y)
+    }
+
+    isPositive() { return this.x >= 0 && this.y >= 0 }
+
+    isAdjacent(point) {
+        const x = Math.abs(this.x - point.x)
+        const y = Math.abs(this.y - point.y)
+        return (x == 1 && y == 0) || (x == 0 && y == 1)
+    }
+
+    adjacents(predicate=()=>true) {
+        const points = []
+        for (let [x, y, direction] of ADJACENT_NEIGHBORHOOD) {
+            const point = new Point(this.x + x, this.y + y)
+            if (predicate(point, direction)) {
+                points.push(point)
+            }
+        }
+        return points.map(p=>p.hash())
+    }
+
+    //TODO: switch to new version adjacents
+    OldAdjacentPoints(callback=()=>{}) {
         let points = [
             [new Point(this.x - 1, this.y), Direction.WEST],
             [new Point(this.x + 1, this.y), Direction.EAST],
@@ -47,8 +79,9 @@ export class Point {
         return points
     }
 
+    //TODO: refactor
     pointsAround(callback=function(){}) {
-        let points = this.adjacentPoints().concat([
+        let points = this.OldAdjacentPoints().concat([
             [new Point(this.x - 1, this.y - 1), Direction.NORTHWEST],
             [new Point(this.x + 1, this.y + 1), Direction.SOUTHEAST],
             [new Point(this.x + 1, this.y - 1), Direction.NORTHEAST],
@@ -109,5 +142,40 @@ export class Point {
         return deltaX + deltaY
     }
 }
-
 window.Point = Point
+
+
+export class PointMap {
+    /*
+        A 2D geometric map of points
+    */
+
+    constructor() {
+        this.hashMap = new Map()
+        this.extremePoints = {
+            [Direction.NORTH]: new Point(),
+            [Direction.SOUTH]: new Point(),
+            [Direction.EAST]: new Point(),
+            [Direction.WEST]: new Point(),
+        }
+    }
+
+    add(point, value) {
+        if (this.hashMap.has(point)) return
+        const key = point.hash()
+        this.hashMap.set(key, value)
+    }
+
+    updateExtremes(point) {
+
+    }
+
+    size() {
+        return this.hashMap.size
+    }
+
+    get(point, defaultValue=null) {
+        return this.hashMap.get(point.hash()) || defaultValue
+    }
+}
+window.PointMap = PointMap

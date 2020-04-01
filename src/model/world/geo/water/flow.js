@@ -108,7 +108,7 @@ class WaterFlowMap {
     _flowShouldStop(river, currentPoint) {
         let flag = false
 
-        currentPoint.adjacentPoints(neighbor => {
+        currentPoint.OldAdjacentPoints(neighbor => {
             const notItself = this.grid.get(neighbor) != river.id
             if (notItself && this._reachedWater(river, neighbor)) {
                 flag = true
@@ -164,7 +164,7 @@ class WaterFlowMap {
             const relief = this.reliefMap.get(point)
             if (relief.isWater)
                 return
-            for (let [neighbor, _] of point.adjacentPoints()) {
+            for (let [neighbor, _] of point.OldAdjacentPoints()) {
                 // FIXME
                 // if (this.reliefMap.get(neighbor).isWater) {
                 //     relief.setRiverBank()

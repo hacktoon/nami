@@ -3,31 +3,17 @@ import { Color } from '/lib/color'
 import { Grid } from '/lib/grid'
 import { SmartFloodFill } from '/lib/flood-fill'
 
+
 const EMPTY = -1
-
-
-export class PointMap {
-    constructor() {
-        this.count = 0
-        this.center = center
-        this.hashIndex = {}
-        this.area = 1
-    }
-
-    add(point) {
-        this.hashIndex[point.hash()] = this.layers.length
-    }
-}
 
 
 export class Region {
     constructor(grid, center) {
-        this.grid = grid
+        this.grid = grid   //TODO: REMOVE
         this.center = center
         this.layers = [[center]]
         this.color = new Color()
         this.pointIndex = {}
-        this.area = 1
     }
 
     grow(points) {
@@ -37,7 +23,6 @@ export class Region {
             if (! this.hasPoint(point)) {
                 this.pointIndex[point.hash()] = this.layers.length
                 wrappedPoints.push(point)
-                this.area++
             }
         })
         this.layers.push(wrappedPoints)

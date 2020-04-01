@@ -72,7 +72,7 @@ class WaterGrid {
     }
 
     _detectShore(point, id) {
-        point.adjacentPoints(neighbor => {
+        point.OldAdjacentPoints(neighbor => {
             if (this.reliefMap.isLand(neighbor)) {
                 this.grid.set(point, -id)
             }

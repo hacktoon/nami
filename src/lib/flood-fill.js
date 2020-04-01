@@ -11,7 +11,7 @@ export class SmartFloodFill {
     grow(seeds) {
         let newSeeds = []
         seeds.forEach(seed => {
-            seed.adjacentPoints(point => this.fillPoint(newSeeds, point))
+            seed.OldAdjacentPoints(point => this.fillPoint(newSeeds, point))
         })
         return newSeeds
     }
@@ -67,7 +67,7 @@ export class FloodFill {
     }
 
     fillNeighborPoints(referencePoint) {
-        referencePoint.adjacentPoints(neighbor => {
+        referencePoint.OldAdjacentPoints(neighbor => {
             let point = this.grid.wrap(neighbor)
             if (this.isFillable(point, referencePoint, this.step))
                 this.fillPoint(point)
