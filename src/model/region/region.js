@@ -1,5 +1,5 @@
 import { LightFloodFill } from '/lib/flood-fill'
-import { PointSet } from '/lib/point'
+import { PointMap, PointSet } from '/lib/point'
 import { Color } from '/lib/color'
 
 
@@ -8,30 +8,6 @@ function growPoints(points) {
     const isFillable = point => true
     return new LightFloodFill(onFill, isFillable)
 }
-
-
-export class PointMap {
-    constructor(id, points) {
-        this.id = id
-        this.points = points
-        // points in region
-        this.set = new PointSet(points)
-        // point hash to id
-        this.hashToId = new Map(points.map(p=>[p.hash, id]))
-    }
-
-    grow(points) {
-    }
-
-    has(point) {
-        return this.set.has(point)
-    }
-
-    outerPoints(point) {
-        return this.layerPoints.get(point.hash)
-    }
-}
-
 
 
 export class Region {

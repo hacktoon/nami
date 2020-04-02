@@ -124,3 +124,59 @@ export class PointSet {
         return this.set.has(point.hash)
     }
 }
+
+
+export class PointMap {
+    constructor(points=[], callback=()=>true) {
+        this.map = new Map(points.map(p=>[p.hash, callback(p)]))
+    }
+
+    get size() {
+        return this.map.size
+    }
+
+    has(point) {
+        return this.map.has(point.hash)
+    }
+
+    get(point) {
+        return this.map.get(point.hash)
+    }
+}
+
+
+export class ExtremePoints {
+    constructor(points) {
+        this.north = new Point()
+        this.south = new Point()
+        this.east = new Point()
+        this.west =  new Point()
+        points.forEach(p => {
+            if (p.x >= this.east.x) this.east = p
+            if (p.x <= this.west.x) this.west = p
+            if (p.y >= this.north.y) this.north = p
+            if (p.y <= this.south.y) this.south = p
+        })
+    }
+}
+
+
+// get southern point, points in group, get median center, etc
+export class PointGroup {
+    constructor(points) {
+        this.points = points
+        this.set = new PointSet(points)
+    }
+
+    has(point) {
+        return this.set.has(point)
+    }
+
+    center() {
+        return this.points[0]
+    }
+
+    edges() {
+        return this.points
+    }
+}
