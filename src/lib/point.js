@@ -145,27 +145,13 @@ export class PointMap {
 }
 
 
-export class ExtremePoints {
-    constructor(points) {
-        this.north = new Point()
-        this.south = new Point()
-        this.east = new Point()
-        this.west =  new Point()
-        points.forEach(p => {
-            if (p.x >= this.east.x) this.east = p
-            if (p.x <= this.west.x) this.west = p
-            if (p.y >= this.north.y) this.north = p
-            if (p.y <= this.south.y) this.south = p
-        })
-    }
-}
-
-
-// get southern point, points in group, get median center, etc
+// get extreme points,
+// points in group, get median center, etc
+//x = new PointGroup([new Point(-5, 4), new Point(8, 2), new Point(2, -2), new Point(0, -10)])
 export class PointGroup {
     constructor(points) {
         this.points = points
-        this.set = new PointSet(points)
+        this.set    = new PointSet(points)
     }
 
     has(point) {
@@ -179,4 +165,19 @@ export class PointGroup {
     edges() {
         return this.points
     }
+
+    extremes() {
+        let north = new Point()
+        let south = new Point()
+        let east = new Point()
+        let west =  new Point()
+        this.points.forEach(p => {
+            if (p.x >= east.x) east = p
+            if (p.x <= west.x) west = p
+            if (p.y >= north.y) north = p
+            if (p.y <= south.y) south = p
+        })
+        return {north, south, east, west}
+    }
 }
+window.PointGroup = PointGroup
