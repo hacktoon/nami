@@ -1,3 +1,4 @@
+import { list } from '/lib/function'
 import { Direction } from '/lib/direction'
 import { Random } from '/lib/random'
 
@@ -111,6 +112,44 @@ export class Point {
 window.Point = Point
 
 
+// get extreme points,
+// points in group, get median center, etc
+//x = new PointGroup([new Point(-5, 4), new Point(8, 2), new Point(2, -2), new Point(0, -10)])
+export class PointGroup {
+    constructor(points) {
+        this.points = points
+        this.set    = new PointSet(points)
+        this._extremes = null
+    }
+
+    has(point) {
+        return this.set.has(point)
+    }
+
+    extremes() {
+        if (this._extremes != null) return this._extremes
+        let [north, south, east, west] = list(4, ()=>new Point())
+        for(let p of this.points) {
+            if (p.x >= east.x)  east  = p
+            if (p.x <= west.x)  west  = p
+            if (p.y <= north.y) north = p
+            if (p.y >= south.y) south = p
+        }
+        this._extremes = {north, south, east, west}
+        return this._extremes
+    }
+
+    center() {
+        return this.points[0]
+    }
+
+    edges() {
+        return this.points
+    }
+}
+window.PointGroup = PointGroup
+
+
 export class PointSet {
     constructor(points=[]) {
         this.set = new Set(points.map(p=>p.hash))
@@ -143,41 +182,3 @@ export class PointMap {
         return this.map.get(point.hash)
     }
 }
-
-
-// get extreme points,
-// points in group, get median center, etc
-//x = new PointGroup([new Point(-5, 4), new Point(8, 2), new Point(2, -2), new Point(0, -10)])
-export class PointGroup {
-    constructor(points) {
-        this.points = points
-        this.set    = new PointSet(points)
-    }
-
-    has(point) {
-        return this.set.has(point)
-    }
-
-    center() {
-        return this.points[0]
-    }
-
-    edges() {
-        return this.points
-    }
-
-    extremes() {
-        let north = new Point()
-        let south = new Point()
-        let east = new Point()
-        let west =  new Point()
-        this.points.forEach(p => {
-            if (p.x >= east.x) east = p
-            if (p.x <= west.x) west = p
-            if (p.y >= north.y) north = p
-            if (p.y <= south.y) south = p
-        })
-        return {north, south, east, west}
-    }
-}
-window.PointGroup = PointGroup
