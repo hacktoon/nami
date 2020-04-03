@@ -1,5 +1,5 @@
 
-export function callArray(num, callback) {
+export function repeat(num, callback) {
     let items = []
     for(let i=0; i<num; i++) {
         items.push(callback(i))

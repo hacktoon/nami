@@ -1,6 +1,7 @@
-import { callArray } from '/lib/function'
+import { repeat } from '/lib/function'
 import { Direction } from '/lib/direction'
 import { Random } from '/lib/random'
+import { LightFloodFill } from '/lib/flood-fill'
 
 
 const ADJACENT_NEIGHBORHOOD = [
@@ -119,7 +120,12 @@ export class PointGroup {
     constructor(points) {
         this.points = points
         this.set    = new PointSet(points)
-        this._extremes = null
+        this._cachedExtremes = null
+        this._cachedEdges = null
+    }
+
+    get size() {
+        return this.points.length
     }
 
     has(point) {
@@ -127,27 +133,38 @@ export class PointGroup {
     }
 
     extremes() {
-        if (this._extremes != null) return this._extremes
-        let [north, south, east, west] = callArray(4, ()=>new Point())
+        if (this._cachedExtremes != null) return this._cachedExtremes
+        let [north, south, east, west] = repeat(4, ()=>new Point())
         for(let p of this.points) {
             if (p.x >= east.x)  east  = p
             if (p.x <= west.x)  west  = p
             if (p.y <= north.y) north = p
             if (p.y >= south.y) south = p
         }
-        this._extremes = {north, south, east, west}
-        return this._extremes
+        this._cachedExtremes = {north, south, east, west}
+        return this._cachedExtremes
     }
 
     center() {
-        return this.points[0]
+        const extremes = this.extremes()
+        const xLength = extremes.east.x + extremes.west.x
+        const yLength = extremes.south.y + extremes.north.y
+        const x = Math.floor(xLength / 2)
+        const y = Math.floor(yLength / 2)
+        return new Point(x, y)
     }
 
     edges() {
+        if (this._cachedEdges != null) return this._cachedEdges
+        const extremes = this.extremes()
+        // floodfill the edges, each starting at each extreme, get 4 edge lists
         const _edges = []
-        for(let p of this.points){
-
+        const _initRegionFiller = () => {
+            const onFill = point => this.set.set(point, index)
+            const isFillable = point => this.set.has(point)
+            return new LightFloodFill(onFill, isFillable)
         }
+        //const points = p.adjacents()
         return _edges
     }
 }
