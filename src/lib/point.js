@@ -1,4 +1,4 @@
-import { list } from '/lib/function'
+import { callArray } from '/lib/function'
 import { Direction } from '/lib/direction'
 import { Random } from '/lib/random'
 
@@ -128,7 +128,7 @@ export class PointGroup {
 
     extremes() {
         if (this._extremes != null) return this._extremes
-        let [north, south, east, west] = list(4, ()=>new Point())
+        let [north, south, east, west] = callArray(4, ()=>new Point())
         for(let p of this.points) {
             if (p.x >= east.x)  east  = p
             if (p.x <= west.x)  west  = p
@@ -144,7 +144,11 @@ export class PointGroup {
     }
 
     edges() {
-        return this.points
+        const _edges = []
+        for(let p of this.points){
+
+        }
+        return _edges
     }
 }
 window.PointGroup = PointGroup
