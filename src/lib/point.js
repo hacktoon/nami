@@ -1,7 +1,6 @@
 import { repeat } from '/lib/function'
 import { Direction } from '/lib/direction'
 import { Random } from '/lib/random'
-import { LightFloodFill } from '/lib/flood-fill'
 
 
 const ADJACENT_NEIGHBORHOOD = [
@@ -113,23 +112,33 @@ export class Point {
 window.Point = Point
 
 
+// Group of Points
 // get extreme points,
-// points in group, get median center, etc
-//x = new PointGroup([new Point(-5, 4), new Point(8, 2), new Point(2, -2), new Point(0, -10)])
+// cheks if a point is present,
+// get median point, etc
+/*
+x = new PointGroup([
+    new Point(-5, 4),
+    new Point(8, 2),
+    new Point(2, -2),
+    new Point(0, -10)
+])
+*/
 export class PointGroup {
-    constructor(points) {
-        this.points = points
-        this.set    = new PointSet(points)
+    constructor(points, skipHash=new PointHash()) {
+        this.points   = points
+        this.skipHash = skipHash
+        this.hash     = new PointHash(points)
         this._cachedExtremes = null
         this._cachedEdges = null
     }
 
     get size() {
-        return this.points.length
+        return this.points.size
     }
 
     has(point) {
-        return this.set.has(point)
+        return this.hash.has(point)
     }
 
     extremes() {
@@ -156,24 +165,23 @@ export class PointGroup {
 
     edges() {
         if (this._cachedEdges != null) return this._cachedEdges
-        const extremes = this.extremes()
-        // floodfill the edges, each starting at each extreme, get 4 edge lists
         const _edges = []
-        const _initRegionFiller = () => {
-            const onFill = point => this.set.set(point, index)
-            const isFillable = point => this.set.has(point)
-            return new LightFloodFill(onFill, isFillable)
+        for(let point of this.points) {
+            const occupied = point.adjacents(p=>this.has(p))
+            if (occupied.length < 4) {
+                _edges.push(point)
+            }
         }
-        //const points = p.adjacents()
+        this._cachedEdges = _edges
         return _edges
     }
 }
 window.PointGroup = PointGroup
 
 
-export class PointSet {
+export class PointHash {
     constructor(points=[]) {
-        this.set = new Set(points.map(p=>p.hash))
+        this.set    = new Set(points.map(p=>p.hash))
     }
 
     get size() {

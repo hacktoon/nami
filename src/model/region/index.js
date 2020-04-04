@@ -90,7 +90,7 @@ export class RegionMap {
         if (region.isCenter(point)) return 'black'
         if (region.inOuterLayer(point)) return 'red'
 
-        let amount = region.layerIndex(point) * 10
+        let amount = region.layerIndex(point) * 5
         return region.color.darken(amount).toHex()
     }
 }

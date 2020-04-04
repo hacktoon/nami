@@ -1,5 +1,5 @@
 import { LightFloodFill } from '/lib/flood-fill'
-import { PointMap, PointSet } from '/lib/point'
+import { PointGroup } from '/lib/point'
 import { Color } from '/lib/color'
 
 
@@ -15,7 +15,7 @@ export class Region {
         this.grid = grid   //TODO: REMOVE
         this.center = center
         this.layers = [[center]]
-        this.color = new Color(0, 100, 0)
+        this.color = new Color()
         this.pointIndex = {}
     }
 
