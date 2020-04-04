@@ -117,7 +117,7 @@ export class PointGroup {
         this.points   = points
         this.hash     = new PointHash(points)
         this._cachedExtremes = null
-        this._cachedEdges = null
+        this._cachedBorders = null
     }
 
     get size() {
@@ -151,16 +151,16 @@ export class PointGroup {
     }
 
     borders() {
-        if (this._cachedEdges != null) return this._cachedEdges
-        const _edges = []
+        if (this._cachedBorders != null) return this._cachedBorders
+        const _borders = []
         for(let point of this.points) {
             const occupied = point.adjacents(p=>this.has(p))
             if (occupied.length < 4) {
-                _edges.push(point)
+                _borders.push(point)
             }
         }
-        this._cachedEdges = _edges
-        return _edges
+        this._cachedBorders = _borders
+        return _borders
     }
 }
 

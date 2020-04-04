@@ -1,8 +1,8 @@
 import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { LightFloodFill } from '/lib/flood-fill'
-
-import { Region } from './region'
+import { PointSet, PointGroup } from '/lib/point'
+import { Color } from '/lib/color'
 
 
 const EMPTY = -1
@@ -77,7 +77,8 @@ export class RegionMap {
 
         if (regionID == EMPTY) return 'white'
         if (region.isCenter(point)) return 'black'
-        if (region.inOuterLayer(point)) return 'red'
+        if (region.inOuterLayer(point))
+            return region.color.brighten(10).toHex()
 
         let amount = region.layerIndex(point) * 5
         return region.color.darken(amount).toHex()
@@ -98,5 +99,65 @@ export class RegionMapConfig {
 
         this.count = config.count
         this.size = config.size
+    }
+}
+
+
+export class GridRegion {
+    constructor(grid, center) {
+        this.grid = grid
+        this.center = center
+        this.points = new PointGroup([center])
+    }
+}
+
+
+export class Region {
+    constructor(grid, center) {
+        this.grid = grid
+        this.center = center
+        this.layers = [[center]]
+        this.color = new Color()
+        this.pointIndex = {}
+    }
+
+    grow(points) {
+        let wrappedPoints = []
+        points.forEach(rawPoint => {
+            const point = this.grid.wrap(rawPoint)
+            if (! this.hasPoint(point)) {
+                this.pointIndex[point.hash] = this.layers.length
+                wrappedPoints.push(point)
+            }
+        })
+        this.layers.push(wrappedPoints)
+    }
+
+    hasPoint(point) {
+        return this.pointIndex.hasOwnProperty(point.hash)
+    }
+
+    isCenter(point) {
+        return point.equals(this.center)
+    }
+
+    layerIndex(point) {
+        return this.pointIndex[point.hash]
+    }
+
+    inLayer(point, layer) {
+        return this.layerIndex(point) == layer
+    }
+
+    inOuterLayer(point) {
+        return this.inLayer(point, this.layers.length - 1)
+    }
+
+    pointsInLayer(layerIndex) {
+        return this.layers[layerIndex]
+    }
+
+    outerLayerPoints() {
+        return this.layers[this.layers.length - 1]
     }
 }
