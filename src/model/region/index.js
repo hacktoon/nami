@@ -78,7 +78,7 @@ export class RegionMap {
         if (regionID == EMPTY) return 'white'
         if (region.isCenter(point)) return 'black'
         if (region.inOuterLayer(point))
-            return region.color.brighten(10).toHex()
+            return region.color.brighten(15).toHex()
 
         let amount = region.layerIndex(point) * 5
         return region.color.darken(amount).toHex()
@@ -104,10 +104,18 @@ export class RegionMapConfig {
 
 
 export class GridRegion {
-    constructor(grid, center) {
-        this.grid = grid
-        this.center = center
-        this.points = new PointGroup([center])
+    constructor(points) {
+        this.center = points[0]
+        this.points = new PointGroup(points)
+    }
+
+    grow(newPoints) {
+        let points = newPoints.filter(point => !this.has(point))
+        return new GridRegion(points)
+    }
+
+    has(point) {
+        return this.points.has(point)
     }
 }
 
