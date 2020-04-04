@@ -112,22 +112,9 @@ export class Point {
 window.Point = Point
 
 
-// Group of Points
-// get extreme points,
-// cheks if a point is present,
-// get median point, etc
-/*
-x = new PointGroup([
-    new Point(-5, 4),
-    new Point(8, 2),
-    new Point(2, -2),
-    new Point(0, -10)
-])
-*/
 export class PointGroup {
-    constructor(points, skipHash=new PointHash()) {
+    constructor(points) {
         this.points   = points
-        this.skipHash = skipHash
         this.hash     = new PointHash(points)
         this._cachedExtremes = null
         this._cachedEdges = null
@@ -163,7 +150,7 @@ export class PointGroup {
         return new Point(x, y)
     }
 
-    edges() {
+    borders() {
         if (this._cachedEdges != null) return this._cachedEdges
         const _edges = []
         for(let point of this.points) {
@@ -176,7 +163,6 @@ export class PointGroup {
         return _edges
     }
 }
-window.PointGroup = PointGroup
 
 
 export class PointHash {
@@ -190,24 +176,5 @@ export class PointHash {
 
     has(point) {
         return this.set.has(point.hash)
-    }
-}
-
-
-export class PointMap {
-    constructor(points=[], callback=()=>true) {
-        this.map = new Map(points.map(p=>[p.hash, callback(p)]))
-    }
-
-    get size() {
-        return this.map.size
-    }
-
-    has(point) {
-        return this.map.has(point.hash)
-    }
-
-    get(point) {
-        return this.map.get(point.hash)
     }
 }
