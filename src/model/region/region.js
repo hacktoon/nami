@@ -1,5 +1,5 @@
 import { LightFloodFill } from '/lib/flood-fill'
-import { PointGroup } from '/lib/point'
+import { PointSet, PointGroup } from '/lib/point'
 import { Color } from '/lib/color'
 
 

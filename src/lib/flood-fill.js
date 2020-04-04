@@ -18,11 +18,13 @@ export class LightFloodFill {
 
     growRandom(seeds) {
         const chance = .3
+        let times = 10
         let newSeeds = this.grow(seeds)
-        let extraSeeds = this.grow(newSeeds.filter(() => Random.chance(chance)))
-        let extraSeeds2 = this.grow(extraSeeds.filter(() => Random.chance(chance)))
-        let extraSeeds3 = this.grow(extraSeeds2.filter(() => Random.chance(chance)))
-        return newSeeds.concat(extraSeeds, extraSeeds2, extraSeeds3)
+        const _grow = _seeds => this.grow(_seeds.filter(() => Random.chance(chance)))
+        while(times--) {
+            newSeeds = newSeeds.concat(_grow(newSeeds))
+        }
+        return newSeeds
     }
 
     fillPoint(nextSeeds, point) {
