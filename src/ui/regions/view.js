@@ -5,7 +5,7 @@ import { Form, Button } from '/lib/ui'
 import { NumberField, SwitchField } from '/lib/ui/field'
 
 
-const DEFAULT_TILE_SIZE = 10
+const DEFAULT_TILE_SIZE = 7
 
 
 export default function RegionMapView({regionMap}) {

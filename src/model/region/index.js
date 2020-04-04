@@ -1,3 +1,4 @@
+import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { LightFloodFill } from '/lib/flood-fill'
 
@@ -5,22 +6,6 @@ import { Region } from './region'
 
 
 const EMPTY = -1
-
-
-
-function grow(point, testPoint) {
-    return point.adjacents(testPoint)
-}
-
-function organic(point, testPoint) {
-    const grown = point.adjacents()
-    const final = [...grown]
-    grown.forEach(point => {
-        if (Random.chance(.5)) {
-            final = PointGrowth.normal(point)
-        }
-    })
-}
 
 
 export class RegionMap {
@@ -74,9 +59,13 @@ export class RegionMap {
     }
 
     growRandom() {
+        const chance = .2
+        const times = () => Random.choice([1, 2, 5, 10])
         for(let i=0; i<this.count; i++) {
             const currentLayer = this.regions[i].outerLayerPoints()
-            const newLayer = this.fillers[i].growRandom(currentLayer)
+            const newLayer = this.fillers[i].growRandom(
+                currentLayer, chance, times()
+            )
             this.regions[i].grow(newLayer)
         }
     }
@@ -90,15 +79,15 @@ export class RegionMap {
         if (region.isCenter(point)) return 'black'
         if (region.inOuterLayer(point)) return 'red'
 
-        let amount = region.layerIndex(point) * 10
+        let amount = region.layerIndex(point) * 5
         return region.color.darken(amount).toHex()
     }
 }
 
 
 export class RegionMapConfig {
-    static DEFAULT_COUNT = 12
-    static DEFAULT_SIZE = 65
+    static DEFAULT_COUNT = 15
+    static DEFAULT_SIZE = 129
 
     constructor(params={}) {
         const defaultParams = {

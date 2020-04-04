@@ -1,5 +1,4 @@
 import { Random } from '/lib/random'
-import { Point } from '/lib/point'
 
 
 export class LightFloodFill {
@@ -16,21 +15,19 @@ export class LightFloodFill {
         return newSeeds
     }
 
-    growRandom(seeds) {
-        const chance = .2
-        let times = Random.choice([5, 10, 20, 30, 40, 50])
-        let newSeeds = this.grow(seeds)
-        const _grow = _seeds => this.grow(_seeds.filter(() => Random.chance(chance)))
-        while(times--) {
-            newSeeds = newSeeds.concat(_grow(newSeeds))
-        }
-        return newSeeds
-    }
-
     fillPoint(nextSeeds, point) {
         if (! this.isFillable(point)) return
         this.onFill(point)
         nextSeeds.push(point)
+    }
+
+    growRandom(seeds, chance=0, times=1) {
+        const randomGrow = _seeds => this.grow(_seeds.filter(() => Random.chance(chance)))
+        let newSeeds = this.grow(seeds)
+        while(newSeeds.length && times--) {
+            newSeeds = newSeeds.concat(randomGrow(newSeeds))
+        }
+        return newSeeds
     }
 }
 
