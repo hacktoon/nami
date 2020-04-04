@@ -113,7 +113,7 @@ window.Point = Point
 
 
 export class PointGroup {
-    constructor(points) {
+    constructor(points=[]) {
         this.points   = points
         this.hash     = new PointHash(points)
         this._cachedExtremes = null
@@ -121,7 +121,7 @@ export class PointGroup {
     }
 
     get size() {
-        return this.points.size
+        return this.points.length
     }
 
     has(point) {

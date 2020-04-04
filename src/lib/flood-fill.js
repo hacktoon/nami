@@ -9,23 +9,23 @@ export class LightFloodFill {
 
     grow(seeds) {
         let newSeeds = []
+        const fill = point => {
+            if (! this.isFillable(point)) return
+            this.onFill(point)
+            return true
+        }
         seeds.forEach(seed => {
-            seed.OldAdjacentPoints(point => this.fillPoint(newSeeds, point))
+            const adjacents = seed.adjacents(point => fill(point))
+            newSeeds = newSeeds.concat(adjacents)
         })
         return newSeeds
     }
 
-    fillPoint(nextSeeds, point) {
-        if (! this.isFillable(point)) return
-        this.onFill(point)
-        nextSeeds.push(point)
-    }
-
     growRandom(seeds, chance=0, times=1) {
-        const randomGrow = _seeds => this.grow(_seeds.filter(() => Random.chance(chance)))
+        const partialGrow = _seeds => this.grow(_seeds.filter(() => Random.chance(chance)))
         let newSeeds = this.grow(seeds)
         while(newSeeds.length && times--) {
-            newSeeds = newSeeds.concat(randomGrow(newSeeds))
+            newSeeds = newSeeds.concat(partialGrow(newSeeds))
         }
         return newSeeds
     }

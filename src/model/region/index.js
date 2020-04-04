@@ -1,7 +1,7 @@
 import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { LightFloodFill } from '/lib/flood-fill'
-import { PointSet, PointGroup } from '/lib/point'
+import { PointGroup } from '/lib/point'
 import { Color } from '/lib/color'
 
 
@@ -104,20 +104,25 @@ export class RegionMapConfig {
 
 
 export class GridRegion {
-    constructor(points) {
+    constructor(points, baseGroup=new PointGroup()) {
+        this.group = new PointGroup(points)
+        this.baseGroup = baseGroup
         this.center = points[0]
-        this.points = new PointGroup(points)
     }
 
-    grow(newPoints) {
-        let points = newPoints.filter(point => !this.has(point))
-        return new GridRegion(points)
+    grow(points) {
+        return new GridRegion(points, this.group)
     }
 
     has(point) {
-        return this.points.has(point)
+        return this.group.has(point) || this.baseGroup.has(point)
+    }
+
+    get size() {
+        return this.group.size + this.baseGroup.size
     }
 }
+window.GridRegion = GridRegion
 
 
 export class Region {
