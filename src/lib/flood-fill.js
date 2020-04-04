@@ -17,8 +17,8 @@ export class LightFloodFill {
     }
 
     growRandom(seeds) {
-        const chance = .3
-        let times = 10
+        const chance = .2
+        let times = Random.choice([5, 10, 20, 30, 40, 50])
         let newSeeds = this.grow(seeds)
         const _grow = _seeds => this.grow(_seeds.filter(() => Random.chance(chance)))
         while(times--) {
