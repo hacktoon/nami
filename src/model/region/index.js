@@ -1,6 +1,6 @@
 import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
-import { LightFloodFill } from '/lib/flood-fill'
+import { OrganicFloodFill } from '/lib/flood-fill'
 import { PointGroup } from '/lib/point'
 import { Color } from '/lib/color'
 
@@ -47,7 +47,7 @@ export class RegionMap {
     _initRegionFiller(index) {
         const onFill = point => this.grid.set(point, index)
         const isFillable = point => this.grid.get(point) === EMPTY
-        return new LightFloodFill(onFill, isFillable)
+        return new OrganicFloodFill(onFill, isFillable)
     }
 
     grow() {
@@ -60,7 +60,7 @@ export class RegionMap {
 
     growRandom() {
         const chance = .2
-        const times = () => Random.choice([1, 2, 5, 10])
+        const times = () => Random.choice([1, 2, 5, 10, 20])
         for(let i=0; i<this.count; i++) {
             const currentLayer = this.regions[i].outerLayerPoints()
             const newLayer = this.fillers[i].growRandom(
@@ -80,7 +80,9 @@ export class RegionMap {
         if (region.inOuterLayer(point))
             return region.color.brighten(15).toHex()
 
-        let amount = region.layerIndex(point) * 5
+        const layerIndex = region.layerIndex(point) * 5
+        let amount = layerIndex
+        //let amount = layerIndex % 2 ? -layerIndex : layerIndex
         return region.color.darken(amount).toHex()
     }
 }
@@ -103,26 +105,63 @@ export class RegionMapConfig {
 }
 
 
-export class GridRegion {
+export class RegionGrowth {
     constructor(points, baseGroup=new PointGroup()) {
         this.group = new PointGroup(points)
         this.baseGroup = baseGroup
-        this.center = points[0]
     }
 
     grow(points) {
-        return new GridRegion(points, this.group)
+        return new RegionGrowth(points, this.group)
     }
 
     has(point) {
         return this.group.has(point) || this.baseGroup.has(point)
     }
 
+    get points() {
+        return [...this.group.points, ...this.baseGroup.points]
+    }
+
     get size() {
         return this.group.size + this.baseGroup.size
     }
 }
-window.GridRegion = GridRegion
+window.RegionGrowth = RegionGrowth
+
+
+export class Region2 {
+    constructor(center) {
+        this.center = center
+        this.layers = [[center]]
+        this.growth = new RegionGrowth([center])
+        this.color  = new Color()
+    }
+
+    has(point) {
+        return this.growth.has(point)
+    }
+
+    isCenter(point) {
+        return point.equals(this.center)
+    }
+
+    layerIndex(point) {
+        return this.pointIndex[point.hash]
+    }
+
+    inLayer(point, layer) {
+        return this.layerIndex(point) == layer
+    }
+
+    inOuterLayer(point) {
+        return this.inLayer(point, this.layers.length - 1)
+    }
+
+    outerLayerPoints() {
+        return this.layers[this.layers.length - 1]
+    }
+}
 
 
 export class Region {
@@ -164,10 +203,6 @@ export class Region {
 
     inOuterLayer(point) {
         return this.inLayer(point, this.layers.length - 1)
-    }
-
-    pointsInLayer(layerIndex) {
-        return this.layers[layerIndex]
     }
 
     outerLayerPoints() {

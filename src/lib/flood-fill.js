@@ -1,7 +1,7 @@
 import { Random } from '/lib/random'
 
 
-export class LightFloodFill {
+export class OrganicFloodFill {
     constructor(onFill, isFillable) {
         this.isFillable = isFillable
         this.onFill = onFill
