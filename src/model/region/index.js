@@ -88,58 +88,45 @@ export class RegionMap {
 }
 
 
-export class RegionMapConfig {
-    static DEFAULT_COUNT = 15
-    static DEFAULT_SIZE = 129
-
-    constructor(params={}) {
-        const defaultParams = {
-            count: RegionMapConfig.DEFAULT_COUNT,
-            size: RegionMapConfig.DEFAULT_SIZE
-        }
-        const config = Object.assign(defaultParams, params)
-
-        this.count = config.count
-        this.size = config.size
-    }
-}
-
-
-export class RegionGrowth {
-    constructor(points, baseGroup=new PointGroup()) {
-        this.group = new PointGroup(points)
-        this.baseGroup = baseGroup
-    }
-
-    grow(points) {
-        return new RegionGrowth(points, this.group)
-    }
-
-    has(point) {
-        return this.group.has(point) || this.baseGroup.has(point)
+export class Region2 {
+    constructor(points, baseLayers=[]) {
+        this.topLayer = new PointGroup(points)
+        this.baseLayers = baseLayers
+        this.layers = [...baseLayers, this.topLayer]
     }
 
     get points() {
-        return [...this.group.points, ...this.baseGroup.points]
+        const reducer = (prev, layer) => [...prev, ...layer.points]
+        return this.layers.reduce(reducer, [])
     }
 
     get size() {
-        return this.group.size + this.baseGroup.size
+        const layerSizes = this.layers.map(layer => layer.size)
+        return layerSizes.reduce((prev, current) => prev + current, 0)
     }
-}
-window.RegionGrowth = RegionGrowth
 
-
-export class Region2 {
-    constructor(center) {
-        this.center = center
-        this.layers = [[center]]
-        this.growth = new RegionGrowth([center])
-        this.color  = new Color()
+    get center() {
+        return this.layers[0].center()
     }
 
     has(point) {
-        return this.growth.has(point)
+        if (this.topLayer.has(point)) return true
+        for(let layer of this.layers) {
+            if (layer.has(point)) return true
+        }
+        return false
+    }
+
+    grow(points) {
+        return new Region2(points, this.layers)
+    }
+
+    layerPoints(index) {
+        return this.layers[index].points
+    }
+
+    topLayerPoints() {
+        return this.layerPoints(this.layers.length - 1)
     }
 
     isCenter(point) {
@@ -158,8 +145,25 @@ export class Region2 {
         return this.inLayer(point, this.layers.length - 1)
     }
 
-    outerLayerPoints() {
-        return this.layers[this.layers.length - 1]
+
+
+}
+window.Region2 = Region2
+
+
+export class RegionMapConfig {
+    static DEFAULT_COUNT = 15
+    static DEFAULT_SIZE = 129
+
+    constructor(params={}) {
+        const defaultParams = {
+            count: RegionMapConfig.DEFAULT_COUNT,
+            size: RegionMapConfig.DEFAULT_SIZE
+        }
+        const config = Object.assign(defaultParams, params)
+
+        this.count = config.count
+        this.size = config.size
     }
 }
 

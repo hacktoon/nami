@@ -21,6 +21,10 @@ export class Point {
         return new Point(Random.int(rangeSize), Random.int(rangeSize))
     }
 
+    get hash() {
+        return `${this.x},${this.y}`
+    }
+
     equals(point) {
         return this.x == point.x && this.y == point.y
     }
@@ -31,10 +35,6 @@ export class Point {
 
     minus(point) {
         return new Point(this.x - point.x, this.y - point.y)
-    }
-
-    get hash() {
-        return `${this.x},${this.y}`
     }
 
     test(predicate=()=>true) {
