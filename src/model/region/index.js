@@ -91,15 +91,12 @@ export class RegionMap {
 export class Region2 {
     constructor(points, baseLayers=[]) {
         this.layers = [...baseLayers, new PointGroup(points)]
+        this.center = this.layers[0].center()
     }
 
     get size() {
         const layerSizes = this.layers.map(layer => layer.size)
         return layerSizes.reduce((prev, current) => prev + current, 0)
-    }
-
-    get center() {
-        return this.layers[0].center()
     }
 
     points(layer=null) {

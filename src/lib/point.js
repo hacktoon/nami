@@ -124,24 +124,7 @@ export class PointGroup {
         return this.points.length
     }
 
-    has(point) {
-        return this.hash.has(point)
-    }
-
-    extremes() {
-        if (this._cachedExtremes != null) return this._cachedExtremes
-        let [north, south, east, west] = repeat(4, ()=>new Point())
-        for(let p of this.points) {
-            if (p.x >= east.x)  east  = p
-            if (p.x <= west.x)  west  = p
-            if (p.y <= north.y) north = p
-            if (p.y >= south.y) south = p
-        }
-        this._cachedExtremes = {north, south, east, west}
-        return this._cachedExtremes
-    }
-
-    center() {
+    get center() {
         const extremes = this.extremes()
         const xLength = extremes.east.x + extremes.west.x
         const yLength = extremes.south.y + extremes.north.y
@@ -150,17 +133,35 @@ export class PointGroup {
         return new Point(x, y)
     }
 
-    borders() {
-        if (this._cachedBorders != null) return this._cachedBorders
-        const _borders = []
+    has(point) {
+        return this.hash.has(point)
+    }
+
+    extremes() {
+        if (this._cachedExtremes != null) return this._cachedExtremes
+        let [north, south, east, west] = repeat(4, ()=>new Point())
         for(let point of this.points) {
-            const occupied = point.adjacents(p=>this.has(p))
-            if (occupied.length < 4) {
-                _borders.push(point)
+            if (point.x >= east.x)  east  = point
+            if (point.x <= west.x)  west  = point
+            if (point.y <= north.y) north = point
+            if (point.y >= south.y) south = point
+        }
+        this._cachedExtremes = {north, south, east, west}
+        return this._cachedExtremes
+    }
+
+    borders(filter=()=>true) {
+        if (this._cachedBorders != null) return this._cachedBorders
+        const borderPoints = []
+        const inGroup = p => this.has(p) && filter(p)
+        for(let point of this.points) {
+            const adjacentsInGroup = point.adjacents(inGroup)
+            if (adjacentsInGroup.length < 4) {
+                borderPoints.push(point)
             }
         }
-        this._cachedBorders = _borders
-        return _borders
+        this._cachedBorders = borderPoints
+        return borderPoints
     }
 }
 
