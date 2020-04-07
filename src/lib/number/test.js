@@ -1,14 +1,14 @@
 import { interpolateNumbers, clamp, sum } from '.'
 
 
-test('adds 1 + 2 to equal 3', () => {
+test('int array sum', () => {
     expect(sum([1, 2])).toBe(3)
 })
 
 
 test('number interpolation', () => {
     const list = interpolateNumbers(1, 4, 4)
-    expect(list).toStrictEqual([1, 2, 3, 4])
+    expect(list).toEqual([1, 2, 3, 4])
 })
 
 
