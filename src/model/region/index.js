@@ -90,14 +90,7 @@ export class RegionMap {
 
 export class Region2 {
     constructor(points, baseLayers=[]) {
-        this.topLayer = new PointGroup(points)
-        this.baseLayers = baseLayers
-        this.layers = [...baseLayers, this.topLayer]
-    }
-
-    get points() {
-        const reducer = (prev, layer) => [...prev, ...layer.points]
-        return this.layers.reduce(reducer, [])
+        this.layers = [...baseLayers, new PointGroup(points)]
     }
 
     get size() {
@@ -109,44 +102,44 @@ export class Region2 {
         return this.layers[0].center()
     }
 
+    points(layer=null) {
+        if (layer != null) {
+            const index = layer > 0 ? layer : this.layers.length + layer
+            return this.layers[index].points
+        }
+        return this.layers.reduce((prev, layer) => {
+            return [...prev, ...layer.points()]
+        }, [])
+    }
+
     has(point) {
-        if (this.topLayer.has(point)) return true
         for(let layer of this.layers) {
             if (layer.has(point)) return true
         }
         return false
     }
 
-    grow(points) {
-        return new Region2(points, this.layers)
-    }
-
-    layerPoints(index) {
-        return this.layers[index].points
-    }
-
-    topLayerPoints() {
-        return this.layerPoints(this.layers.length - 1)
+    layerIndex(point) {
+        let index = 0
+        for(let layer of this.layers) {
+            if (layer.has(point)) return index
+            index++
+        }
+        return index
     }
 
     isCenter(point) {
         return point.equals(this.center)
     }
 
-    layerIndex(point) {
-        return this.pointIndex[point.hash]
-    }
-
     inLayer(point, layer) {
-        return this.layerIndex(point) == layer
+        const index = layer > 0 ? layer : this.layers.length + layer
+        return this.layerIndex(point) === index
     }
 
-    inOuterLayer(point) {
-        return this.inLayer(point, this.layers.length - 1)
+    grow(points) {
+        return new Region2(points, this.layers)
     }
-
-
-
 }
 window.Region2 = Region2
 
