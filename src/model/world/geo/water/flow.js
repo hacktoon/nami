@@ -63,16 +63,16 @@ class WaterFlowMap {
     _getNearestRiverTarget(source) {
         let nearestDistance = Infinity
         let nearestPoint = undefined
-        _.each(this.waterMap.littoralPoints, point => {
-            let water = this.waterMap.get(point)
-            if (! (water.isOcean || water.isSea))
-                return
-            const pointsDistance = source.distance(point)
-            if (pointsDistance < nearestDistance) {
-                nearestDistance = pointsDistance
-                nearestPoint = point
-            }
-        })
+        // _.each(this.waterMap.littoralPoints, point => {
+        //     let water = this.waterMap.get(point)
+        //     if (! (water.isOcean || water.isSea))
+        //         return
+        //     const pointsDistance = source.distance(point)
+        //     if (pointsDistance < nearestDistance) {
+        //         nearestDistance = pointsDistance
+        //         nearestPoint = point
+        //     }
+        // })
         return nearestPoint
     }
 
@@ -207,7 +207,7 @@ class River {
     }
 
     get mouth() {
-        return _.last(this.points)
+        // return _.last(this.points)
     }
 
     get length() {

@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "parcel src/index.html -d build",
-    "build": "parcel build src/index.html -d build --no-source-maps"
+    "build": "parcel build src/index.html -d build --no-source-maps",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -24,7 +25,6 @@
     "@babel/cli": "^7.8.4",
     "@babel/preset-env": "^7.9.0",
     "babel-preset-react": "^6.24.1",
-    "lodash": "^4.17.15",
     "parcel-bundler": "^1.12.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

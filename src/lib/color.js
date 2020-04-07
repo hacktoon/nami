@@ -1,5 +1,5 @@
 import { Random } from '/lib/random'
-import { NumberInterpolation, clamp } from '/lib/number'
+import { interpolateNumbers, clamp } from '/lib/number'
 
 
 const CHARS = '0123456789ABCDEF'
@@ -8,9 +8,9 @@ const CHARS = '0123456789ABCDEF'
 export function gradientColors(source, target, count) {
     let start = Color.fromHex(source),
         end = Color.fromHex(target)
-    let red = NumberInterpolation(start.red, end.red, count),
-        green = NumberInterpolation(start.green, end.green, count),
-        blue = NumberInterpolation(start.blue, end.blue, count),
+    let red = interpolateNumbers(start.red, end.red, count),
+        green = interpolateNumbers(start.green, end.green, count),
+        blue = interpolateNumbers(start.blue, end.blue, count),
         colors = []
 
     for (let i = 0; i < count; i++) {
