@@ -17,6 +17,7 @@ export class RegionMap {
         this.width = config.size
         this.height = config.size
         this.fillers = {}
+        this.colors = {}
         this.regions = this._initRegions()
     }
 
@@ -29,7 +30,8 @@ export class RegionMap {
         const points = this._initPoints()
         const regions = {}
         for(let i=0; i<points.length; i++) {
-            regions[i] = new Region(this.grid, points[i])
+            regions[i] = new Region([points[i]])
+            this.colors[i] = new Color()
             this.grid.set(points[i], i)
             this.fillers[i] = this._initRegionFiller(i)
         }
@@ -52,9 +54,9 @@ export class RegionMap {
 
     grow() {
         for(let i=0; i<this.count; i++) {
-            const currentLayer = this.regions[i].outerLayerPoints()
+            const currentLayer = this.regions[i].points(-1)
             const newLayer = this.fillers[i].grow(currentLayer)
-            this.regions[i].grow(newLayer)
+            this.regions[i] = this.regions[i].grow(newLayer)
         }
     }
 
@@ -62,36 +64,33 @@ export class RegionMap {
         const chance = .2
         const times = () => Random.choice([1, 2, 5, 10, 20])
         for(let i=0; i<this.count; i++) {
-            const currentLayer = this.regions[i].outerLayerPoints()
+            const currentLayer = this.regions[i].points(-1)
             const newLayer = this.fillers[i].growRandom(
                 currentLayer, chance, times()
             )
-            this.regions[i].grow(newLayer)
+            this.regions[i] = this.regions[i].grow(newLayer)
         }
     }
 
-    getColor(rawPoint) {
-        const point = this.grid.wrap(rawPoint)
+    getColor(point) {
         const regionID = this.grid.get(point)
         const region = this.regions[regionID]
+        const color = this.colors[regionID]
 
         if (regionID == EMPTY) return 'white'
         if (region.isCenter(point)) return 'black'
-        if (region.inOuterLayer(point))
-            return region.color.brighten(15).toHex()
-
-        const layerIndex = region.layerIndex(point) * 5
+        const layerIndex = region.layerIndex(point) * 10
         let amount = layerIndex
         //let amount = layerIndex % 2 ? -layerIndex : layerIndex
-        return region.color.darken(amount).toHex()
+        return color.darken(amount).toHex()
     }
 }
 
 
-export class Region2 {
+export class Region {
     constructor(points, baseLayers=[]) {
         this.layers = [...baseLayers, new PointGroup(points)]
-        this.center = this.layers[0].center()
+        this.center = this.layers[0].center
     }
 
     get size() {
@@ -135,10 +134,9 @@ export class Region2 {
     }
 
     grow(points) {
-        return new Region2(points, this.layers)
+        return new Region(points, this.layers)
     }
 }
-window.Region2 = Region2
 
 
 export class RegionMapConfig {
@@ -154,52 +152,5 @@ export class RegionMapConfig {
 
         this.count = config.count
         this.size = config.size
-    }
-}
-
-
-export class Region {
-    constructor(grid, center) {
-        this.grid = grid
-        this.center = center
-        this.layers = [[center]]
-        this.color = new Color()
-        this.pointIndex = {}
-    }
-
-    grow(points) {
-        let wrappedPoints = []
-        points.forEach(rawPoint => {
-            const point = this.grid.wrap(rawPoint)
-            if (! this.hasPoint(point)) {
-                this.pointIndex[point.hash] = this.layers.length
-                wrappedPoints.push(point)
-            }
-        })
-        this.layers.push(wrappedPoints)
-    }
-
-    hasPoint(point) {
-        return this.pointIndex.hasOwnProperty(point.hash)
-    }
-
-    isCenter(point) {
-        return point.equals(this.center)
-    }
-
-    layerIndex(point) {
-        return this.pointIndex[point.hash]
-    }
-
-    inLayer(point, layer) {
-        return this.layerIndex(point) == layer
-    }
-
-    inOuterLayer(point) {
-        return this.inLayer(point, this.layers.length - 1)
-    }
-
-    outerLayerPoints() {
-        return this.layers[this.layers.length - 1]
     }
 }
