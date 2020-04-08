@@ -14,6 +14,9 @@ export default function RegionMapView({regionMap}) {
     const [wrapMode, setWrapMode] = useState(false)
     const [step, setStep] = useState(0)
 
+    /*
+        put a list of current regions info
+    */
     return <section className="RegionMapView">
         <Menu
             onGrow={() => {
