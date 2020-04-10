@@ -17,58 +17,29 @@ export class Region2 {
 }
 
 
-export class RegionMap2 {
-    constructor(width, height, points) {
-        this.grid = new Grid(width, height, () => EMPTY)
-        this.width  = width
-        this.height = height
-        this.regions = regions
-    }
+function createRegions(count, width, height) {
+    return repeat(count, () => new Region([Point.random(width, height)]))
 }
 
 
-export class RegionMapFrame {
-    constructor(regions) {
-        this.regions = regions
-    }
-
-    get size() {
-        return sum(this.regions.map(region => region.size))
-    }
-
-    get points() {
-        return this.regions.reduce((prevPoints, region) => {
-            return [...prevPoints, ...region.points]
-        }, [])
-    }
-
-    has(point) {
-        for(let region of this.regions) {
-            if (region.has(point)) return true
-        }
-        return false
-    }
-
-    grow(callback) {
-        const _grow = points => region.grow(callback(points))
-        const regions = this.regions.map(region => _grow(region.points))
-        return new RegionMapFrame(regions)
-    }
+export function createRegionMap(params={}) {
+    const config = new RegionMapConfig(params)
+    const regions = createRegions(config.count, config.width, config.height)
+    return new RegionMap(regions, config.width, config.height)
 }
 
 
 export class RegionMap {
-    constructor(params) {
-        const config = new RegionMapConfig(params)
-        this.grid = new Grid(config.width, config.height, () => EMPTY)
-        this.count = config.count
-        this.width = config.width
-        this.height = config.height
-        this.points = repeat(this.count, () => Point.random(this.width, this.height))
-        this.colors = this.points.map(() => new Color(0, 150, 0))
-        this.regions = this.points.map(point => new Region([point]))
+    constructor(regions, width, height) {
+        this.width = width
+        this.height = height
+        this.grid = new Grid(width, height, () => EMPTY)
+        this.regions = regions
 
-        this.fillers = this.points.map((_, index) => {
+        // obsolete
+        this.colors = this.regions.map(() => new Color(0, 150, 0))
+
+        this.fillers = this.regions.map((_, index) => {
             const onFill = point => this.grid.set(point, index)
             const isFillable = point => this.grid.get(point) === EMPTY
             return new OrganicFloodFill(onFill, isFillable)
@@ -76,7 +47,7 @@ export class RegionMap {
     }
 
     grow() {
-        for(let i=0; i<this.count; i++) {
+        for(let i=0; i<this.regions.length; i++) {
             const currentLayer = this.regions[i].layer(-1)
             const newLayer = this.fillers[i].grow(currentLayer)
             this.regions[i] = this.regions[i].grow(newLayer)
@@ -87,7 +58,7 @@ export class RegionMap {
         const chance = .2
         const times = () => Random.int(10)
         let totalPoints = 0
-        for(let i=0; i<this.count; i++) {
+        for(let i=0; i<this.regions.length; i++) {
             const filler = this.fillers[i]
             const topLayer = this.regions[i].layer(-1)
             const newLayer = filler.growRandom(topLayer, chance, times())
@@ -111,6 +82,13 @@ export class RegionMap {
 }
 
 
+export class RegionGroup {
+    constructor(count) {
+
+    }
+}
+
+
 export class Region {
     constructor(points, baseLayers=[]) {
         this.layers = [...baseLayers, new PointGroup(points)]
@@ -125,6 +103,10 @@ export class Region {
         return this.layers.reduce((prev, layer) => {
             return [...prev, ...layer.points()]
         }, [])
+    }
+
+    borders() {
+        return
     }
 
     layer(index) {
