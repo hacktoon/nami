@@ -8,6 +8,10 @@ import { Color } from '/lib/color'
 
 const EMPTY = -1
 
+export const DEFAULT_COUNT = 50
+export const DEFAULT_WIDTH = 200
+export const DEFAULT_HEIGHT = 100
+
 
 export class Region2 {
     constructor(frames, center) {
@@ -17,15 +21,25 @@ export class Region2 {
 }
 
 
+function createConfig(params={}) {
+    const defaultParams = {
+        count: DEFAULT_COUNT,
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT
+    }
+    return Object.assign(defaultParams, params)
+}
+
+
 function createRegions(count, width, height) {
     return repeat(count, () => new Region([Point.random(width, height)]))
 }
 
 
 export function createRegionMap(params={}) {
-    const config = new RegionMapConfig(params)
-    const regions = createRegions(config.count, config.width, config.height)
-    return new RegionMap(regions, config.width, config.height)
+    const {count, width, height} = createConfig(params)
+    const regions = createRegions(count, width, height)
+    return new RegionMap(regions, width, height)
 }
 
 
@@ -141,25 +155,5 @@ export class Region {
 
     grow(points) {
         return new Region(points, this.layers)
-    }
-}
-
-
-export class RegionMapConfig {
-    static DEFAULT_COUNT = 50
-    static DEFAULT_WIDTH = 200
-    static DEFAULT_HEIGHT = 100
-
-    constructor(params={}) {
-        const defaultParams = {
-            count: RegionMapConfig.DEFAULT_COUNT,
-            width: RegionMapConfig.DEFAULT_WIDTH,
-            height: RegionMapConfig.DEFAULT_HEIGHT
-        }
-        const config = Object.assign(defaultParams, params)
-
-        this.count = config.count
-        this.width = config.width
-        this.height = config.height
     }
 }

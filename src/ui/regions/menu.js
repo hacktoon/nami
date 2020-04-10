@@ -2,13 +2,17 @@ import React, { useState } from 'react'
 
 import { SelectField, NumberField } from '/lib/ui/field'
 import { Form, Button } from '/lib/ui'
-import { RegionMapConfig } from '/model/region'
+import {
+    DEFAULT_COUNT,
+    DEFAULT_WIDTH,
+    DEFAULT_HEIGHT
+} from '/model/region'
 
 
 export default function ConfigMenu(props) {
-    let [count, setCount] = useState(RegionMapConfig.DEFAULT_COUNT)
-    let [width, setWidth] = useState(RegionMapConfig.DEFAULT_WIDTH)
-    let [height, setHeight] = useState(RegionMapConfig.DEFAULT_HEIGHT)
+    let [count, setCount] = useState(DEFAULT_COUNT)
+    let [width, setWidth] = useState(DEFAULT_WIDTH)
+    let [height, setHeight] = useState(DEFAULT_HEIGHT)
     let [grow, setGrow] = useState('organic')
 
     const growOptions = {
