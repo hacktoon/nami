@@ -13,14 +13,6 @@ export const DEFAULT_WIDTH = 200
 export const DEFAULT_HEIGHT = 100
 
 
-export class Region2 {
-    constructor(frames, center) {
-        this.frames = frames
-        this.center = center
-    }
-}
-
-
 function createConfig(params={}) {
     const defaultParams = {
         count: DEFAULT_COUNT,
@@ -45,9 +37,9 @@ export function createRegionMap(params={}) {
 
 export class RegionMap {
     constructor(regions, width, height) {
+        this.grid = new Grid(width, height, () => EMPTY)
         this.width = width
         this.height = height
-        this.grid = new Grid(width, height, () => EMPTY)
         this.regions = regions
 
         // obsolete
@@ -92,13 +84,6 @@ export class RegionMap {
         let amount = layerIndex * 20
         //let amount = layerIndex % 2 ? -layerIndex : layerIndex
         return color.darken(amount).toHex()
-    }
-}
-
-
-export class RegionGroup {
-    constructor(count) {
-
     }
 }
 
