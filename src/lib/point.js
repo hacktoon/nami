@@ -17,8 +17,9 @@ export class Point {
         this.y = y
     }
 
-    static random(rangeSize) {
-        return new Point(Random.int(rangeSize), Random.int(rangeSize))
+    static random(rangeWidth, rangeHeight) {
+        const [x, y] = [Random.int(rangeWidth), Random.int(rangeHeight)]
+        return new Point(x, y)
     }
 
     get hash() {

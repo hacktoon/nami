@@ -9,8 +9,16 @@ import { Color } from '/lib/color'
 const EMPTY = -1
 
 
+export class Region2 {
+    constructor(frames, center) {
+        this.frames = frames
+        this.center = center
+    }
+}
+
+
 export class RegionMap2 {
-    constructor(width, height, regions) {
+    constructor(width, height, points) {
         this.grid = new Grid(width, height, () => EMPTY)
         this.width  = width
         this.height = height
@@ -25,7 +33,7 @@ export class RegionMapFrame {
     }
 
     get size() {
-        return this.pointGroup.size
+        return sum(this.regions.map(region => region.size))
     }
 
     get points() {
@@ -42,38 +50,9 @@ export class RegionMapFrame {
     }
 
     grow(callback) {
-        const regions = this.regions.map(region => {
-            return region.grow(callback(region.points))
-        })
+        const _grow = points => region.grow(callback(points))
+        const regions = this.regions.map(region => _grow(region.points))
         return new RegionMapFrame(regions)
-    }
-}
-
-
-export class Region2 {
-    constructor(points, center) {
-        this.pointGroup = new PointGroup(points)
-        this.center     = center
-    }
-
-    get size() {
-        return this.pointGroup.size
-    }
-
-    get points() {
-        return this.pointGroup.points
-    }
-
-    has(point) {
-        this.pointGroup.has(point)
-    }
-
-    isCenter(point) {
-        return this.center.equals(point)
-    }
-
-    grow(points) {
-        return new Region(points, this.center)
     }
 }
 
@@ -81,14 +60,14 @@ export class Region2 {
 export class RegionMap {
     constructor(params) {
         const config = new RegionMapConfig(params)
-        this.grid = new Grid(config.size, config.size, () => EMPTY)
+        this.grid = new Grid(config.width, config.height, () => EMPTY)
         this.count = config.count
-        this.size = config.size
-        this.width = config.size
-        this.height = config.size
-        this.points = repeat(this.count, () => Point.random(this.size))
-        this.colors = this.points.map(() => new Color())
+        this.width = config.width
+        this.height = config.height
+        this.points = repeat(this.count, () => Point.random(this.width, this.height))
+        this.colors = this.points.map(() => new Color(0, 150, 0))
         this.regions = this.points.map(point => new Region([point]))
+
         this.fillers = this.points.map((_, index) => {
             const onFill = point => this.grid.set(point, index)
             const isFillable = point => this.grid.get(point) === EMPTY
@@ -106,7 +85,7 @@ export class RegionMap {
 
     growRandom() {
         const chance = .2
-        const times = () => Random.int(20)
+        const times = () => Random.int(10)
         let totalPoints = 0
         for(let i=0; i<this.count; i++) {
             const filler = this.fillers[i]
@@ -125,7 +104,7 @@ export class RegionMap {
         if (regionID == EMPTY) return 'white'
         if (region.isCenter(point)) return 'black'
         const layerIndex = region.layerIndex(this.grid.wrap(point))
-        let amount = layerIndex * 10
+        let amount = layerIndex * 20
         //let amount = layerIndex % 2 ? -layerIndex : layerIndex
         return color.darken(amount).toHex()
     }
@@ -185,17 +164,20 @@ export class Region {
 
 
 export class RegionMapConfig {
-    static DEFAULT_COUNT = 15
-    static DEFAULT_SIZE = 129
+    static DEFAULT_COUNT = 50
+    static DEFAULT_WIDTH = 200
+    static DEFAULT_HEIGHT = 100
 
     constructor(params={}) {
         const defaultParams = {
             count: RegionMapConfig.DEFAULT_COUNT,
-            size: RegionMapConfig.DEFAULT_SIZE
+            width: RegionMapConfig.DEFAULT_WIDTH,
+            height: RegionMapConfig.DEFAULT_HEIGHT
         }
         const config = Object.assign(defaultParams, params)
 
         this.count = config.count
-        this.size = config.size
+        this.width = config.width
+        this.height = config.height
     }
 }
