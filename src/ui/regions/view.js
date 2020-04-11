@@ -2,10 +2,26 @@ import React, { useState } from 'react'
 
 import { GridDisplay } from '/lib/ui/display'
 import { Form, Button } from '/lib/ui'
+import { EMPTY } from '/model/region'
 import { NumberField, SwitchField } from '/lib/ui/field'
 
 
 const DEFAULT_TILE_SIZE = 7
+
+
+function getColor(regionMap, point) {
+    const regionID = regionMap.grid.get(point)
+    const region = regionMap.regions[regionID]
+    const color = regionMap.colors[regionID]
+
+    if (regionID == EMPTY) return 'white'
+    if (region.isCenter(point)) return 'black'
+    const layerIndex = region.layerIndex(regionMap.grid.wrap(point))
+    let amount = layerIndex * 20
+    //let amount = layerIndex % 2 ? -layerIndex : layerIndex
+    // return color.darken(amount).toHex()
+    return color.toHex()
+}
 
 
 export default function RegionMapView({regionMap}) {
@@ -37,7 +53,7 @@ export default function RegionMapView({regionMap}) {
         <GridDisplay
             width={regionMap.width}
             height={regionMap.height}
-            colorAt={point => regionMap.getColor(point)}
+            colorAt={point => getColor(regionMap, point)}
             tilesize={tilesize}
             gridMode={gridMode}
             wrapMode={wrapMode}

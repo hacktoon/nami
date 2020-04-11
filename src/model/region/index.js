@@ -6,7 +6,7 @@ import { PointGroup } from '/lib/point'
 import { Color } from '/lib/color'
 
 
-const EMPTY = -1
+export const EMPTY = -1
 
 export const DEFAULT_COUNT = 50
 export const DEFAULT_WIDTH = 200
@@ -43,7 +43,7 @@ export class RegionMap {
         this.regions = regions
 
         // obsolete
-        this.colors = this.regions.map(() => new Color(0, 150, 0))
+        this.colors = this.regions.map(() => new Color())
 
         this.fillers = this.regions.map((_, index) => {
             const onFill = point => this.grid.set(point, index)
@@ -71,19 +71,6 @@ export class RegionMap {
             this.regions[i] = this.regions[i].grow(newLayer)
             totalPoints += newLayer.length
         }
-    }
-
-    getColor(point) {
-        const regionID = this.grid.get(point)
-        const region = this.regions[regionID]
-        const color = this.colors[regionID]
-
-        if (regionID == EMPTY) return 'white'
-        if (region.isCenter(point)) return 'black'
-        const layerIndex = region.layerIndex(this.grid.wrap(point))
-        let amount = layerIndex * 20
-        //let amount = layerIndex % 2 ? -layerIndex : layerIndex
-        return color.darken(amount).toHex()
     }
 }
 
