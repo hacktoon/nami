@@ -4,15 +4,16 @@ import { GridDisplay } from '/lib/ui/display'
 import { Form, Button } from '/lib/ui'
 import { EMPTY } from '/model/region'
 import { NumberField, SwitchField } from '/lib/ui/field'
+import { Color } from '/lib/color'
 
 
 const DEFAULT_TILE_SIZE = 7
 
 
-function getColor(regionMap, point) {
+function getColor(regionMap, point, colors) {
     const regionID = regionMap.grid.get(point)
     const region = regionMap.regions[regionID]
-    const color = regionMap.colors[regionID]
+    const color = colors[regionID]
 
     if (regionID == EMPTY) return 'white'
     if (region.isCenter(point)) return 'black'
@@ -30,13 +31,14 @@ export default function RegionMapView({regionMap}) {
     const [wrapMode, setWrapMode] = useState(false)
     const [step, setStep] = useState(0)
 
+    const colors = regionMap.regions.map(() => new Color())
     /*
         put a list of current regions info
     */
     return <section className="RegionMapView">
         <Menu
             onGrow={() => {
-                regionMap.grow()
+                regionMap._grow()
                 setStep(step + 1)
             }}
             onGrowRandom={() => {
@@ -53,7 +55,7 @@ export default function RegionMapView({regionMap}) {
         <GridDisplay
             width={regionMap.width}
             height={regionMap.height}
-            colorAt={point => getColor(regionMap, point)}
+            colorAt={point => getColor(regionMap, point, colors)}
             tilesize={tilesize}
             gridMode={gridMode}
             wrapMode={wrapMode}

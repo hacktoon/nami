@@ -3,13 +3,12 @@ import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { OrganicFloodFill } from '/lib/flood-fill'
 import { PointGroup } from '/lib/point'
-import { Color } from '/lib/color'
 
 
 export const EMPTY = -1
 
 export const DEFAULT_COUNT = 50
-export const DEFAULT_WIDTH = 200
+export const DEFAULT_WIDTH = 120
 export const DEFAULT_HEIGHT = 100
 
 
@@ -29,21 +28,18 @@ function createRegions(count, width, height) {
 
 
 export function createRegionMap(params={}) {
-    const {count, width, height} = createConfig(params)
+    const {count, width, height, growth} = createConfig(params)
+    const grid = new Grid(width, height, () => EMPTY)
     const regions = createRegions(count, width, height)
-    return new RegionMap(regions, width, height)
+    return new RegionMap(regions, grid)
 }
 
 
 export class RegionMap {
-    constructor(regions, width, height) {
-        this.grid = new Grid(width, height, () => EMPTY)
-        this.width = width
-        this.height = height
+    constructor(regions, grid) {
+        this.grid = grid
         this.regions = regions
-
-        // obsolete
-        this.colors = this.regions.map(() => new Color())
+        this.frames = [regions]
 
         this.fillers = this.regions.map((_, index) => {
             const onFill = point => this.grid.set(point, index)
@@ -52,7 +48,11 @@ export class RegionMap {
         })
     }
 
-    grow() {
+    grow(mode) {
+
+    }
+
+    _grow() {
         for(let i=0; i<this.regions.length; i++) {
             const currentLayer = this.regions[i].layer(-1)
             const newLayer = this.fillers[i].grow(currentLayer)
