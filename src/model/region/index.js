@@ -30,22 +30,27 @@ function createRegions(count, width, height) {
 export function createRegionMap(params={}) {
     const {count, width, height, growth} = createConfig(params)
     const grid = new Grid(width, height, () => EMPTY)
+    const frames = []
     const regions = createRegions(count, width, height)
-    return new RegionMap(regions, grid)
+    // while(regions.size != 0) {
+    //     frames.push(regions)
+    // }
+    // return new RegionMap(frames, grid)
+    const fillers = regions.map((_, index) => {
+        const onFill = point => grid.set(point, index)
+        const isFillable = point => grid.get(point) === EMPTY
+        return new OrganicFloodFill(onFill, isFillable)
+    })
+    return new RegionMap(regions, grid, fillers)
 }
 
 
 export class RegionMap {
-    constructor(regions, grid) {
+    constructor(regions, grid, fillers) {
         this.grid = grid
         this.regions = regions
         this.frames = [regions]
-
-        this.fillers = this.regions.map((_, index) => {
-            const onFill = point => this.grid.set(point, index)
-            const isFillable = point => this.grid.get(point) === EMPTY
-            return new OrganicFloodFill(onFill, isFillable)
-        })
+        this.fillers = fillers
     }
 
     grow(mode) {
