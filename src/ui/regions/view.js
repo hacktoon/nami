@@ -16,9 +16,9 @@ function getColor(regionMap, point, colors) {
     const color = colors[regionID]
 
     if (regionID == EMPTY) return 'white'
-    if (region.isCenter(point)) return 'black'
-    const layerIndex = region.layerIndex(regionMap.grid.wrap(point))
-    let amount = layerIndex * 20
+    // if (region.isCenter(point)) return 'black'
+    // const layerIndex = region.layerIndex(point)
+    // let amount = layerIndex * 20
     //let amount = layerIndex % 2 ? -layerIndex : layerIndex
     // return color.darken(amount).toHex()
     return color.toHex()
