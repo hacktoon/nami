@@ -29,7 +29,7 @@ export default function RegionMapView({regionMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [gridMode, setGridMode] = useState(false)
     const [wrapMode, setWrapMode] = useState(false)
-    const [step, setStep] = useState(0)
+    const [layer, setLayer] = useState(0)
 
     const colors = regionMap.regions.map(() => new Color())
     /*
@@ -37,20 +37,14 @@ export default function RegionMapView({regionMap}) {
     */
     return <section className="RegionMapView">
         <Menu
-            onGrow={() => {
-                regionMap._grow()
-                setStep(step + 1)
-            }}
-            onGrowRandom={() => {
-                regionMap.growRandom()
-                setStep(step + 1)
-            }}
+            onLayerChange={() => setLayer(layer + 1)}
             onTilesizeChange={event => setTilesize(event.target.value)}
             onGridModeChange={() => setGridMode(!gridMode)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             gridMode={gridMode}
             wrapMode={wrapMode}
             tilesize={tilesize}
+            layer={layer}
         />
         <GridDisplay
             width={regionMap.width}
@@ -85,7 +79,12 @@ function Menu(props) {
             step={1}
             min={1}
         />
-        <Button text="Grow" onClick={props.onGrow}/>
-        <Button text="Grow random" onClick={props.onGrowRandom}/>
+        <NumberField
+            label="Layer"
+            value={props.layer}
+            onChange={props.onLayerChange}
+            step={1}
+            min={1}
+        />
     </Form>
 }
