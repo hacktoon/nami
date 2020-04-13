@@ -5,6 +5,7 @@ export class Grid {
     constructor(width, height, buildValue=()=>null) {
         this.width = width
         this.height = height
+        this.area = width * height
         this.matrix = []
 
         for (let y = 0; y < this.height; y++) {

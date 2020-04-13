@@ -25,7 +25,10 @@ function createConfig(params={}) {
 
 function createRegions(count, width, height) {
     const createPoint = () => Point.random(width, height)
-    return repeat(count, () => new Region([createPoint()]))
+    return repeat(count, () => {
+        const points = [createPoint()]
+        return new Region(points, points[0])
+    })
 }
 
 
@@ -33,28 +36,27 @@ export function createRegionMap(params={}) {
     const {count, width, height, growth} = createConfig(params)
     const grid = new Grid(width, height, () => EMPTY)
     const regions = createRegions(count, width, height)
+    let totalArea = 0
     const fillers = regions.map((_, index) => {
-        const onFill = point => grid.set(point, index)
+        const onFill = point => {
+            grid.set(point, index)
+            totalArea++
+        }
         const isFillable = point => grid.get(point) === EMPTY
         return new OrganicFloodFill(onFill, isFillable)
     })
-    const frames = [new RegionsFrame(regions)]
-    // let index = 0
-    // let totalArea = 0
-    // while(totalArea < width * height) {
-    //     const frame = frames[index]
-    //     const newFrame = frame.grow()
-    //     frames.push(newFrame)
-    // }
-    return new RegionMap(frames, regions, grid, fillers)
+    const regionMap = new RegionMap(regions, grid, fillers)
+    while(totalArea < grid.area) {
+        regionMap.growRandom()
+    }
+    return regionMap
 }
 
 
 export class RegionMap {
-    constructor(frames, _regions, grid, fillers) {
+    constructor(regions, grid, fillers) {
         this.grid = grid
-        this.regions = _regions
-        this.frames = frames
+        this.regions = regions
         this.fillers = fillers
     }
 
@@ -82,21 +84,10 @@ export class RegionMap {
 }
 
 
-export class RegionsFrame {
-    constructor(regions) {
-        this.regions = regions
-    }
-
-    get size() {
-        return sum(this.regions.map(region => region.size))
-    }
-}
-
-
 export class Region {
-    constructor(points, baseLayers=[]) {
+    constructor(points, origin, baseLayers=[]) {
         this.layers = [...baseLayers, new PointGroup(points)]
-        this.center = this.layers[0].center
+        this.origin = origin
     }
 
     get size() {
@@ -109,16 +100,16 @@ export class Region {
         }, [])
     }
 
-    layer(index) {
-        const validIndex = index > 0 ? index : this.layers.length + index
-        return this.layers[validIndex].points
-    }
-
     has(point) {
         for(let layer of this.layers) {
             if (layer.has(point)) return true
         }
         return false
+    }
+
+    layer(index) {
+        const validIndex = index > 0 ? index : this.layers.length + index
+        return this.layers[validIndex].points
     }
 
     layerIndex(point) {
@@ -130,16 +121,12 @@ export class Region {
         return index
     }
 
-    isCenter(point) {
-        return point.equals(this.center)
-    }
-
     inLayer(point, layer) {
         const index = layer > 0 ? layer : this.layers.length + layer
         return this.layerIndex(point) === index
     }
 
     grow(points) {
-        return new Region(points, this.layers)
+        return new Region(points, this.origin, this.layers)
     }
 }
