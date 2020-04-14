@@ -11,8 +11,7 @@ const DEFAULT_TILE_SIZE = 7
 
 
 function getColor(regionMap, point, colors) {
-    const regionID = regionMap.grid.get(point)
-    const region = regionMap.regions[regionID]
+    const regionID = regionMap.get(point)
     const color = colors[regionID]
 
     if (regionID == EMPTY) return 'white'

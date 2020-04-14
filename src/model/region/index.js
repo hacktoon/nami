@@ -17,7 +17,8 @@ function createConfig(params={}) {
     const defaultParams = {
         count: DEFAULT_COUNT,
         width: DEFAULT_WIDTH,
-        height: DEFAULT_HEIGHT
+        height: DEFAULT_HEIGHT,
+        growth: 'organic',
     }
     return Object.assign(defaultParams, params)
 }
@@ -27,7 +28,7 @@ function createRegions(count, width, height) {
     const createPoint = () => Point.random(width, height)
     return repeat(count, () => {
         const points = [createPoint()]
-        return new Region(points, points[0])
+        return new RegionHistory(points, points[0])
     })
 }
 
@@ -47,7 +48,7 @@ export function createRegionMap(params={}) {
     })
     const regionMap = new RegionMap(regions, grid, fillers)
     while(totalArea < grid.area) {
-        regionMap.growRandom()
+        regionMap.grow(growth)
     }
     return regionMap
 }
@@ -60,7 +61,19 @@ export class RegionMap {
         this.fillers = fillers
     }
 
-    _grow() {
+    get(point) {
+        return this.grid.get(point)
+    }
+
+    grow(growth) {
+        if(growth == 'organic') {
+            this.organic()
+        } else {
+            this.normal()
+        }
+    }
+
+    normal() {
         for(let i=0; i<this.regions.length; i++) {
             const currentLayer = this.regions[i].layer(-1)
             const newLayer = this.fillers[i].grow(currentLayer)
@@ -68,7 +81,7 @@ export class RegionMap {
         }
     }
 
-    growRandom() {
+    organic() {
         const chance = .2
         const times = () => Random.int(10)
         let totalPoints = 0
@@ -84,7 +97,7 @@ export class RegionMap {
 }
 
 
-export class Region {
+export class RegionHistory {
     constructor(points, origin, baseLayers=[]) {
         this.layers = [...baseLayers, new PointGroup(points)]
         this.origin = origin
@@ -127,6 +140,6 @@ export class Region {
     }
 
     grow(points) {
-        return new Region(points, this.origin, this.layers)
+        return new RegionHistory(points, this.origin, this.layers)
     }
 }
