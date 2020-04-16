@@ -3,14 +3,14 @@ import { sum } from '/lib/number'
 import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { OrganicFloodFill } from '/lib/flood-fill'
-import { PointGroup } from '/lib/point'
+import { PointHash, PointGroup } from '/lib/point'
 
 
 export const EMPTY = -1
 
-export const DEFAULT_COUNT = 50
-export const DEFAULT_WIDTH = 120
-export const DEFAULT_HEIGHT = 100
+export const DEFAULT_COUNT = 15
+export const DEFAULT_WIDTH = 250
+export const DEFAULT_HEIGHT = 250
 
 
 function createConfig(params={}) {
@@ -54,6 +54,61 @@ export function createRegionMap(params={}) {
 }
 
 
+// =========================== WIP
+export function createRegionMap2(params={}) {
+    let totalArea = 0
+    const {count, width, height, growth} = createConfig(params)
+    const grid = new Grid(width, height, () => EMPTY)
+    const regions = createRegions2(count, width, height)
+    const fillers = regions.map((_, index) => {
+        const onFill = point => {
+            grid.set(point, index)
+            totalArea++
+        }
+        const isFillable = point => grid.get(point) === EMPTY
+        return new OrganicFloodFill(onFill, isFillable)
+    })
+    const originLayer = new RegionMapLayer(regions, grid)
+    const layers = [originLayer]
+    while(totalArea < grid.area) {
+        const newRegions = regions.map(region => region.grow(growth))
+        layers.push(new RegionMapLayer(newRegions, grid))
+    }
+    return new RegionMap2(layers, grid)
+}
+
+
+function createRegions2(count, width, height) {
+    const points = repeat(count, () => Point.random(width, height))
+    return points.map(point => new Region([point], point))
+}
+
+
+export class RegionMap2 {
+    constructor(layers, grid) {
+        this.layers = layers
+        this.grid = grid
+    }
+}
+
+
+export class RegionMapLayer {
+    constructor(regions, grid) {
+        this.regions = regions
+        this.grid = grid
+    }
+}
+
+
+export class Region {
+    constructor(origin, points) {
+        this.origin = origin
+        this.hash = new PointHash(points)
+    }
+}
+
+//=========================================
+// APAGAR DAQUI PRA BAIXO
 export class RegionMap {
     constructor(regions, grid, fillers) {
         this.grid = grid
@@ -83,7 +138,7 @@ export class RegionMap {
 
     organic() {
         const chance = .2
-        const times = () => Random.int(10)
+        const times = () => Random.choice([5, 10, 20, 50, 60])
         let totalPoints = 0
         for(let i=0; i<this.regions.length; i++) {
             const region = this.regions[i]

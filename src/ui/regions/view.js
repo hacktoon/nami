@@ -7,7 +7,7 @@ import { NumberField, SwitchField } from '/lib/ui/field'
 import { Color } from '/lib/color'
 
 
-const DEFAULT_TILE_SIZE = 7
+const DEFAULT_TILE_SIZE = 4
 
 
 function getColor(regionMap, point, colors) {
@@ -20,7 +20,7 @@ function getColor(regionMap, point, colors) {
     // let amount = layerIndex * 20
     //let amount = layerIndex % 2 ? -layerIndex : layerIndex
     // return color.darken(amount).toHex()
-    return color.toHex()
+    return color
 }
 
 
@@ -30,7 +30,7 @@ export default function RegionMapView({regionMap}) {
     const [wrapMode, setWrapMode] = useState(false)
     const [layer, setLayer] = useState(0)
 
-    const colors = regionMap.regions.map(() => new Color())
+    const colors = regionMap.regions.map(() => new Color().toHex())
     /*
         put a list of current regions info
     */
