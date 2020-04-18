@@ -49,10 +49,6 @@ export default class World {
         this.reliefMap = new ReliefMap(size, roughness)
     }
 
-    iter(callback) {
-        this.grid.forEach(callback)
-    }
-
     get(point) {
         return this.grid.get(point)
     }

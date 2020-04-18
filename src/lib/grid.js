@@ -35,14 +35,4 @@ export class Grid {
         if (y < 0) { y = this.height - 1 - Math.abs(y + 1) % this.height }
         return new Point(x, y)
     }
-
-    forEach(callback) {
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                let point = new Point(x, y),
-                    value = this.get(point)
-                callback(value, point)
-            }
-        }
-    }
 }
