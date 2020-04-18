@@ -70,9 +70,13 @@ export function createRegionMap(params={}) {
         const isFillable = point => grid.get(point) === EMPTY
         return new OrganicFloodFill(onFill, isFillable)
     })
-    const regionMap = new RegionMap(regions, grid, fillers)
+    const regionMap = new RegionMap(regions, grid)
     while(totalArea < grid.area) {
-        regionMap.grow(growth)
+        if(growth == 'organic') {
+            organic(regions, fillers)
+        } else {
+            normal(regions, fillers)
+        }
     }
     return regionMap
 }
@@ -134,26 +138,15 @@ export class Region {
 
 
 
-
-
 //=========================================
 export class RegionMap {
-    constructor(regions, grid, fillers) {
+    constructor(regions, grid) {
         this.grid = grid
         this.regions = regions
-        this.fillers = fillers
     }
 
     get(point) {
         return this.grid.get(point)
-    }
-
-    grow(growth) {
-        if(growth == 'organic') {
-            organic(this.regions, this.fillers)
-        } else {
-            normal(this.regions, this.fillers)
-        }
     }
 }
 
