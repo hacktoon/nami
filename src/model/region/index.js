@@ -32,6 +32,30 @@ function createRegions(count, width, height) {
     })
 }
 
+function normal(regions, fillers) {
+    const newRegions = {}
+    for(let i=0; i<regions.length; i++) {
+        const currentLayer = regions[i].layer(-1)
+        const newLayer = fillers[i].grow(currentLayer)
+        newRegions[i] = regions[i].grow(newLayer)
+    }
+    return newRegions
+}
+
+function organic(regions, fillers) {
+    const chance = .2
+    const times = () => Random.choice([5, 10, 20, 50, 60])
+    let totalPoints = 0
+    for(let i=0; i<regions.length; i++) {
+        const region = regions[i]
+        const filler = fillers[i]
+        const topLayer = region.layer(-1)
+        const newLayer = filler.growRandom(topLayer, chance, times())
+        regions[i] = region.grow(newLayer)
+        totalPoints += newLayer.length
+    }
+}
+
 
 export function createRegionMap(params={}) {
     const {count, width, height, growth} = createConfig(params)
@@ -53,7 +77,7 @@ export function createRegionMap(params={}) {
     return regionMap
 }
 
-
+/*
 // =========================== WIP
 export function createRegionMap2(params={}) {
     let totalArea = 0
@@ -106,9 +130,13 @@ export class Region {
         this.hash = new PointHash(points)
     }
 }
+*/
+
+
+
+
 
 //=========================================
-// APAGAR DAQUI PRA BAIXO
 export class RegionMap {
     constructor(regions, grid, fillers) {
         this.grid = grid
@@ -122,31 +150,9 @@ export class RegionMap {
 
     grow(growth) {
         if(growth == 'organic') {
-            this.organic()
+            organic(this.regions, this.fillers)
         } else {
-            this.normal()
-        }
-    }
-
-    normal() {
-        for(let i=0; i<this.regions.length; i++) {
-            const currentLayer = this.regions[i].layer(-1)
-            const newLayer = this.fillers[i].grow(currentLayer)
-            this.regions[i] = this.regions[i].grow(newLayer)
-        }
-    }
-
-    organic() {
-        const chance = .2
-        const times = () => Random.choice([5, 10, 20, 50, 60])
-        let totalPoints = 0
-        for(let i=0; i<this.regions.length; i++) {
-            const region = this.regions[i]
-            const filler = this.fillers[i]
-            const topLayer = region.layer(-1)
-            const newLayer = filler.growRandom(topLayer, chance, times())
-            this.regions[i] = region.grow(newLayer)
-            totalPoints += newLayer.length
+            normal(this.regions, this.fillers)
         }
     }
 }
