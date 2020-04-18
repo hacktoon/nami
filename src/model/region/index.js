@@ -45,14 +45,12 @@ function normal(regions, fillers) {
 function organic(regions, fillers) {
     const chance = .2
     const times = () => Random.choice([5, 10, 20, 50, 60])
-    let totalPoints = 0
     for(let i=0; i<regions.length; i++) {
         const region = regions[i]
         const filler = fillers[i]
         const topLayer = region.layer(-1)
         const newLayer = filler.growRandom(topLayer, chance, times())
         regions[i] = region.grow(newLayer)
-        totalPoints += newLayer.length
     }
 }
 
