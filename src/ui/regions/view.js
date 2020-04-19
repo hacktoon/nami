@@ -14,9 +14,6 @@ function getColor(regionMap, point) {
     const color = region.color.toHex()
 
     // if (region.isCenter(point)) return 'black'
-    // const layerIndex = region.layerIndex(point)
-    // let amount = layerIndex * 20
-    //let amount = layerIndex % 2 ? -layerIndex : layerIndex
     // return color.darken(amount).toHex()
     return color
 }
