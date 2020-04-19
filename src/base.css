@@ -81,10 +81,12 @@ canvas { display: block; }
 }
 .Field .FieldValue.CheckBox.Yes {
     background-color: rgb(6, 49, 6);
+    outline: inset 2px rgb(23, 117, 23);
 
 }
 .Field .FieldValue.CheckBox.No {
     background-color: rgb(100, 15, 15);
+    outline: outset 2px rgb(114, 25, 25);
 }
 
 
