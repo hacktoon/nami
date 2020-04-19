@@ -4,13 +4,27 @@ import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { OrganicFloodFill } from '/lib/flood-fill'
 import { PointHash, PointGroup } from '/lib/point'
+import { Color } from '/lib/color'
 
 
 export const EMPTY_GRID_POINT = -1
-
 export const DEFAULT_COUNT = 15
-export const DEFAULT_WIDTH = 250
-export const DEFAULT_HEIGHT = 250
+export const DEFAULT_WIDTH = 150
+export const DEFAULT_HEIGHT = 150
+
+
+export class RegionMap {
+    constructor(regions, grid, layers) {
+        this.grid = grid
+        this.regions = regions
+        this.layers = layers
+    }
+
+    get(point) {
+        const id = this.grid.get(point)
+        return this.regions[id]
+    }
+}
 
 
 function createConfig(params={}) {
@@ -103,25 +117,12 @@ class RegionGrid {
 }
 
 
-export class RegionMap {
-    constructor(regions, grid, layers) {
-        this.grid = grid
-        this.regions = regions
-        this.layers = layers
-    }
-
-    get(point) {
-        return this.grid.get(point)
-    }
-}
-
-
-export class Region {
+class Region {
     constructor(id, points, origin, baseLayers=[]) {
         this.id = id
-        this.layers = [...baseLayers, new PointGroup(points)]
         this.origin = origin
-
+        this.color = new Color()
+        this.layers = [...baseLayers, new PointGroup(points)]
     }
 
     get size() {
@@ -166,7 +167,7 @@ export class Region {
 }
 
 
-export class MapLayer {
+class MapLayer {
     constructor(regions, grid) {
         this.regions = regions
         this.grid = grid
