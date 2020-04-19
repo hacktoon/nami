@@ -3,7 +3,7 @@ import { sum } from '/lib/number'
 import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { OrganicFloodFill } from '/lib/flood-fill'
-import { PointHash, PointGroup } from '/lib/point'
+import { PointHash } from '/lib/point'
 import { Color } from '/lib/color'
 
 
@@ -26,68 +26,11 @@ export class RegionMap {
     }
 }
 
-
-function createConfig(params={}) {
-    const defaultParams = {
-        count: DEFAULT_COUNT,
-        width: DEFAULT_WIDTH,
-        height: DEFAULT_HEIGHT,
-        growth: 'organic',
+class MapLayer {
+    constructor(regions, grid) {
+        this.regions = regions
+        this.grid = grid
     }
-    return Object.assign(defaultParams, params)
-}
-
-
-function createRegions(count, width, height) {
-    const createPoint = () => Point.random(width, height)
-    return repeat(count, id => {
-        const points = [createPoint()]
-        return new Region(id, points, points[0])
-    })
-}
-
-function normal(regions, fillers) {
-    const newRegions = {}
-    for(let i=0; i<regions.length; i++) {
-        const currentLayer = regions[i].layer(-1)
-        const newLayer = fillers[i].grow(currentLayer)
-        newRegions[i] = regions[i].grow(newLayer)
-    }
-    return newRegions
-}
-
-function organic(regions, fillers) {
-    const chance = .2
-    const times = () => Random.choice([5, 10, 20, 50, 60])
-    for(let i=0; i<regions.length; i++) {
-        const region = regions[i]
-        const filler = fillers[i]
-        const topLayer = region.layer(-1)
-        const newLayer = filler.growRandom(topLayer, chance, times())
-        regions[i] = region.grow(newLayer)
-    }
-}
-
-
-export function createRegionMap(params={}) {
-    const {count, width, height, growth} = createConfig(params)
-    const grid = new RegionGrid(width, height)
-    const regions = createRegions(count, width, height)
-    const fillers = regions.map((_, index) => {
-        const onFill = point => grid.set(point, index)
-        const isFillable = point => grid.isEmpty(point)
-        return new OrganicFloodFill(onFill, isFillable)
-    })
-    const layers = []
-    const regionMap = new RegionMap(regions, grid, layers)
-    while(grid.hasEmptyPoints()) {
-        if(growth == 'organic') {
-            organic(regions, fillers)
-        } else {
-            normal(regions, fillers)
-        }
-    }
-    return regionMap
 }
 
 
@@ -118,59 +61,92 @@ class RegionGrid {
 
 
 class Region {
-    constructor(id, points, origin, baseLayers=[]) {
+    constructor(id, origin, points) {
         this.id = id
         this.origin = origin
+        this.pointHash = new PointHash(points)
         this.color = new Color()
-        this.layers = [...baseLayers, new PointGroup(points)]
     }
 
     get size() {
-        return sum(this.layers.map(layer => layer.size))
+        return this.pointHash.size
     }
 
     get points() {
-        return this.layers.reduce((prev, layer) => {
-            return [...prev, ...layer.points()]
-        }, [])
+        return this.pointHash.points
     }
 
     has(point) {
-        for(let layer of this.layers) {
-            if (layer.has(point)) return true
-        }
-        return false
-    }
-
-    layer(index) {
-        const validIndex = index > 0 ? index : this.layers.length + index
-        return this.layers[validIndex].points
-    }
-
-    layerIndex(point) {
-        let index = 0
-        for(let layer of this.layers) {
-            if (layer.has(point)) return index
-            index++
-        }
-        return index
-    }
-
-    inLayer(point, layer) {
-        const index = layer > 0 ? layer : this.layers.length + layer
-        return this.layerIndex(point) === index
+        return this.pointHash.has(point)
     }
 
     grow(points) {
-        return new Region(this.id, points, this.origin, this.layers)
+        return new Region(this.id, this.origin, points)
     }
 }
 
 
-class MapLayer {
-    constructor(regions, grid) {
-        this.regions = regions
-        this.grid = grid
+// FUNCTIONS ===================================
+
+export function createRegionMap(params={}) {
+    const {count, width, height, growth} = createConfig(params)
+    const grid = new RegionGrid(width, height)
+    const regions = createRegions(count, width, height)
+    const fillers = regions.map((_, index) => {
+        const onFill = point => grid.set(point, index)
+        const isFillable = point => grid.isEmpty(point)
+        return new OrganicFloodFill(onFill, isFillable)
+    })
+    const layers = []
+    const regionMap = new RegionMap(regions, grid, layers)
+    while(grid.hasEmptyPoints()) {
+        if(growth == 'organic') {
+            organic(regions, fillers)
+        } else {
+            normal(regions, fillers)
+        }
     }
+    return regionMap
 }
 
+
+function createConfig(params={}) {
+    const defaultParams = {
+        count: DEFAULT_COUNT,
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT,
+        growth: 'organic',
+    }
+    return Object.assign(defaultParams, params)
+}
+
+
+function createRegions(count, width, height) {
+    const createPoint = () => Point.random(width, height)
+    return repeat(count, id => {
+        const center = createPoint()
+        return new Region(id, center, [center])
+    })
+}
+
+
+function normal(regions, fillers) {
+    const newRegions = {}
+    for(let i=0; i<regions.length; i++) {
+        const newLayer = fillers[i].grow(regions[i].points)
+        newRegions[i] = regions[i].grow(newLayer)
+    }
+    return newRegions
+}
+
+
+function organic(regions, fillers) {
+    const chance = .2
+    const times = () => Random.choice([5, 10, 20, 50, 60])
+    for(let i=0; i<regions.length; i++) {
+        const region = regions[i]
+        const filler = fillers[i]
+        const newLayer = filler.growRandom(region.points, chance, times())
+        regions[i] = region.grow(newLayer)
+    }
+}

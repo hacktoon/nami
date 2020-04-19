@@ -22,6 +22,11 @@ export class Point {
         return new Point(x, y)
     }
 
+    static fromHash(hash) {
+        const [x, y] = hash.split(',').map(h => parseInt(h, 10))
+        return new Point(x, y)
+    }
+
     get hash() {
         return `${this.x},${this.y}`
     }
@@ -113,67 +118,18 @@ export class Point {
 window.Point = Point
 
 
-export class PointGroup {
-    constructor(points=[]) {
-        this.points   = points
-        this.hash     = new PointHash(points)
-        this._cachedExtremes = null
-        this._cachedBorders = null
-    }
-
-    get size() {
-        return this.points.length
-    }
-
-    get center() {
-        const extremes = this.extremes()
-        const xLength = extremes.east.x + extremes.west.x
-        const yLength = extremes.south.y + extremes.north.y
-        const x = Math.floor(xLength / 2)
-        const y = Math.floor(yLength / 2)
-        return new Point(x, y)
-    }
-
-    has(point) {
-        return this.hash.has(point)
-    }
-
-    extremes() {
-        if (this._cachedExtremes != null) return this._cachedExtremes
-        let [north, south, east, west] = repeat(4, ()=>new Point())
-        for(let point of this.points) {
-            if (point.x >= east.x)  east  = point
-            if (point.x <= west.x)  west  = point
-            if (point.y <= north.y) north = point
-            if (point.y >= south.y) south = point
-        }
-        this._cachedExtremes = {north, south, east, west}
-        return this._cachedExtremes
-    }
-
-    borders(filter=()=>true) {
-        if (this._cachedBorders != null) return this._cachedBorders
-        const borderPoints = []
-        const inGroup = p => this.has(p) && filter(p)
-        for(let point of this.points) {
-            const adjacentsInGroup = point.adjacents(inGroup)
-            if (adjacentsInGroup.length < 4) {
-                borderPoints.push(point)
-            }
-        }
-        this._cachedBorders = borderPoints
-        return borderPoints
-    }
-}
-
-
 export class PointHash {
     constructor(points=[]) {
-        this.set    = new Set(points.map(p=>p.hash))
+        this.set = new Set(points.map(p=>p.hash))
     }
 
     get size() {
         return this.set.size
+    }
+
+    get points() {
+        const hashes = Array.from(this.set.values())
+        return hashes.map(h => Point.fromHash(h))
     }
 
     has(point) {
