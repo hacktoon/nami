@@ -13,7 +13,7 @@ function getColor(regionMap, point) {
     const region = regionMap.get(point)
     const color = region.color.toHex()
 
-    // if (region.isCenter(point)) return 'black'
+    if (region.isCenter(point)) return 'black'
     // return color.darken(amount).toHex()
     return color
 }

@@ -77,6 +77,10 @@ class Region {
         return this.pointHash.points
     }
 
+    isCenter(point) {
+        return this.origin.equals(point)
+    }
+
     has(point) {
         return this.pointHash.has(point)
     }
@@ -101,11 +105,13 @@ export function createRegionMap(params={}) {
     const layers = [new MapLayer(regions, grid)]
     const regionMap = new RegionMap(regions, grid, layers)
     while(grid.hasEmptyPoints()) {
+        const newRegions = null
         if(growth == 'organic') {
-            growOrganic(regions, fillers)
+            newRegions = growOrganic(regions, fillers)
         } else {
-            growNormal(regions, fillers)
+            newRegions = growNormal(regions, fillers)
         }
+        layers.push(new MapLayer(newRegions, grid))
     }
     return regionMap
 }
@@ -132,16 +138,17 @@ function createRegions(count, width, height) {
 
 
 function growNormal(regions, fillers) {
-    const newRegions = {}
+    const newRegions = []
     for(let i=0; i<regions.length; i++) {
         const newPoints = fillers[i].grow(regions[i].points)
-        newRegions[i] = regions[i].grow(newPoints)
+        newRegions.push(regions[i].grow(newPoints))
     }
     return newRegions
 }
 
 
 function growOrganic(regions, fillers) {
+    let newRegions = []
     const chance = .2
     const times = () => Random.choice([5, 10, 20, 50, 60])
     for(let i=0; i<regions.length; i++) {
@@ -149,5 +156,7 @@ function growOrganic(regions, fillers) {
         const filler = fillers[i]
         const newPoints = filler.growRandom(region.points, chance, times())
         regions[i] = region.grow(newPoints)
+        newRegions.push(regions[i])
     }
+    return newRegions
 }
