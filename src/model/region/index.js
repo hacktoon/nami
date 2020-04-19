@@ -6,37 +6,11 @@ import { OrganicFloodFill } from '/lib/flood-fill'
 import { PointHash, PointGroup } from '/lib/point'
 
 
-export const EMPTY = -1
+export const EMPTY_GRID_POINT = -1
 
 export const DEFAULT_COUNT = 15
 export const DEFAULT_WIDTH = 250
 export const DEFAULT_HEIGHT = 250
-
-
-class RegionGrid {
-    constructor(width, height) {
-        this.grid = new Grid(width, height, () => EMPTY)
-        this.emptyPoints = width * height
-    }
-
-    set(point, value) {
-        if (this.grid.get(point) != EMPTY) return
-        this.grid.set(point, value)
-        this.emptyPoints--
-    }
-
-    get(point) {
-        return this.grid.get(point)
-    }
-
-    isEmpty(point) {
-        return this.get(point) == EMPTY
-    }
-
-    hasEmptyPoints() {
-        return this.emptyPoints > 0
-    }
-}
 
 
 function createConfig(params={}) {
@@ -52,9 +26,9 @@ function createConfig(params={}) {
 
 function createRegions(count, width, height) {
     const createPoint = () => Point.random(width, height)
-    return repeat(count, () => {
+    return repeat(count, id => {
         const points = [createPoint()]
-        return new RegionHistory(points, points[0])
+        return new Region(id, points, points[0])
     })
 }
 
@@ -102,64 +76,33 @@ export function createRegionMap(params={}) {
     return regionMap
 }
 
-/*
-// =========================== WIP
-export function createRegionMap2(params={}) {
-    let totalArea = 0
-    const {count, width, height, growth} = createConfig(params)
-    const grid = new Grid(width, height, () => EMPTY)
-    const regions = createRegions2(count, width, height)
-    const fillers = regions.map((_, index) => {
-        const onFill = point => {
-            grid.set(point, index)
-            totalArea++
-        }
-        const isFillable = point => grid.get(point) === EMPTY
-        return new OrganicFloodFill(onFill, isFillable)
-    })
-    const originLayer = new RegionMapLayer(regions, grid)
-    const layers = [originLayer]
-    while(totalArea < grid.area) {
-        const newRegions = regions.map(region => region.grow(growth))
-        layers.push(new RegionMapLayer(newRegions, grid))
+
+class RegionGrid {
+    constructor(width, height) {
+        this.grid = new Grid(width, height, () => EMPTY_GRID_POINT)
+        this.emptyPoints = width * height
     }
-    return new RegionMap2(layers, grid)
-}
 
+    set(point, value) {
+        if (this.grid.get(point) != EMPTY_GRID_POINT) return
+        this.grid.set(point, value)
+        this.emptyPoints--
+    }
 
-function createRegions2(count, width, height) {
-    const points = repeat(count, () => Point.random(width, height))
-    return points.map(point => new Region([point], point))
-}
+    get(point) {
+        return this.grid.get(point)
+    }
 
+    isEmpty(point) {
+        return this.get(point) == EMPTY_GRID_POINT
+    }
 
-export class RegionMap2 {
-    constructor(layers, grid) {
-        this.layers = layers
-        this.grid = grid
+    hasEmptyPoints() {
+        return this.emptyPoints > 0
     }
 }
 
 
-export class RegionMapLayer {
-    constructor(regions, grid) {
-        this.regions = regions
-        this.grid = grid
-    }
-}
-
-
-export class Region {
-    constructor(origin, points) {
-        this.origin = origin
-        this.hash = new PointHash(points)
-    }
-}
-*/
-
-
-
-//=========================================
 export class RegionMap {
     constructor(regions, grid, layers) {
         this.grid = grid
@@ -173,10 +116,12 @@ export class RegionMap {
 }
 
 
-export class RegionHistory {
-    constructor(points, origin, baseLayers=[]) {
+export class Region {
+    constructor(id, points, origin, baseLayers=[]) {
+        this.id = id
         this.layers = [...baseLayers, new PointGroup(points)]
         this.origin = origin
+
     }
 
     get size() {
@@ -216,6 +161,15 @@ export class RegionHistory {
     }
 
     grow(points) {
-        return new RegionHistory(points, this.origin, this.layers)
+        return new Region(this.id, points, this.origin, this.layers)
     }
 }
+
+
+export class MapLayer {
+    constructor(regions, grid) {
+        this.regions = regions
+        this.grid = grid
+    }
+}
+
