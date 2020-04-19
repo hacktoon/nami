@@ -13,6 +13,32 @@ export const DEFAULT_WIDTH = 250
 export const DEFAULT_HEIGHT = 250
 
 
+class RegionGrid {
+    constructor(width, height) {
+        this.grid = new Grid(width, height, () => EMPTY)
+        this.emptyPoints = width * height
+    }
+
+    set(point, value) {
+        if (this.grid.get(point) != EMPTY) return
+        this.grid.set(point, value)
+        this.emptyPoints--
+    }
+
+    get(point) {
+        return this.grid.get(point)
+    }
+
+    isEmpty(point) {
+        return this.get(point) == EMPTY
+    }
+
+    hasEmptyPoints() {
+        return this.emptyPoints > 0
+    }
+}
+
+
 function createConfig(params={}) {
     const defaultParams = {
         count: DEFAULT_COUNT,
@@ -57,19 +83,16 @@ function organic(regions, fillers) {
 
 export function createRegionMap(params={}) {
     const {count, width, height, growth} = createConfig(params)
-    const grid = new Grid(width, height, () => EMPTY)
+    const grid = new RegionGrid(width, height)
     const regions = createRegions(count, width, height)
-    let totalArea = 0
     const fillers = regions.map((_, index) => {
-        const onFill = point => {
-            grid.set(point, index)
-            totalArea++
-        }
-        const isFillable = point => grid.get(point) === EMPTY
+        const onFill = point => grid.set(point, index)
+        const isFillable = point => grid.isEmpty(point)
         return new OrganicFloodFill(onFill, isFillable)
     })
-    const regionMap = new RegionMap(regions, grid)
-    while(totalArea < grid.area) {
+    const layers = []
+    const regionMap = new RegionMap(regions, grid, layers)
+    while(grid.hasEmptyPoints()) {
         if(growth == 'organic') {
             organic(regions, fillers)
         } else {
@@ -138,9 +161,10 @@ export class Region {
 
 //=========================================
 export class RegionMap {
-    constructor(regions, grid) {
+    constructor(regions, grid, layers) {
         this.grid = grid
         this.regions = regions
+        this.layers = layers
     }
 
     get(point) {
