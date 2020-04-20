@@ -1,6 +1,35 @@
 import { Random } from '/lib/random'
 
 
+export function organicFill(rules, seeds) {
+    let times = rules.times()
+    const partialGrow = _seeds => {
+        const randomSeeds = _seeds.filter(() => Random.chance(rules.chance))
+        return normalFill(randomSeeds)
+    }
+    let newSeeds = normalFill(seeds)
+    while(newSeeds.length && times--) {
+        newSeeds.push(...partialGrow(newSeeds))
+    }
+    return newSeeds
+}
+
+
+export function normalFill(seeds) {
+    let newSeeds = []
+    const fill = point => {
+        if (! this.isFillable(point)) return
+        this.onFill(point)
+        return true
+    }
+    seeds.forEach(seed => {
+        const adjacents = seed.adjacents(point => fill(point))
+        newSeeds.push(...adjacents)
+    })
+    return newSeeds
+}
+
+
 export class OrganicFloodFill {
     constructor(onFill, isFillable) {
         this.isFillable = isFillable
