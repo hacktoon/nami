@@ -1,13 +1,11 @@
 import { repeat } from '/lib/function'
-import { sum } from '/lib/number'
 import { Random } from '/lib/random'
-import { Grid } from '/lib/grid'
 import { OrganicFloodFill } from '/lib/flood-fill'
 import { PointHash } from '/lib/point'
 import { Color } from '/lib/color'
+import { RegionGrid } from './grid'
 
 
-export const EMPTY_GRID_POINT = -1
 export const DEFAULT_COUNT = 15
 export const DEFAULT_WIDTH = 150
 export const DEFAULT_HEIGHT = 150
@@ -34,31 +32,6 @@ class MapLayer {
     }
 }
 
-
-class RegionGrid {
-    constructor(width, height) {
-        this.grid = new Grid(width, height, () => EMPTY_GRID_POINT)
-        this.emptyPoints = width * height
-    }
-
-    set(point, value) {
-        if (this.grid.get(point) != EMPTY_GRID_POINT) return
-        this.grid.set(point, value)
-        this.emptyPoints--
-    }
-
-    get(point) {
-        return this.grid.get(point)
-    }
-
-    isEmpty(point) {
-        return this.get(point) == EMPTY_GRID_POINT
-    }
-
-    hasEmptyPoints() {
-        return this.emptyPoints > 0
-    }
-}
 
 
 class Region {
