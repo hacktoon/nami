@@ -11,7 +11,7 @@ export class RegionGrid {
     }
 
     set(point, value) {
-        if (this.grid.get(point) != EMPTY_GRID_POINT) return
+        if (! this.isEmpty(point)) return
         this.grid.set(point, value)
         this.emptyPoints--
     }

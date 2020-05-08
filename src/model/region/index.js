@@ -109,6 +109,7 @@ function createConfig(params={}) {
 }
 
 
+// CREATE REGIONS ===================================================
 function createRegions(count, width, height) {
     const createPoint = () => Point.random(width, height)
     return repeat(count, id => {
@@ -118,6 +119,7 @@ function createRegions(count, width, height) {
 }
 
 
+// CREATE LAYERS FROM REGIONS =======================================
 function createLayers(regions, growth, grid) {
     const layers = [new MapLayer(regions)]
     const fillers = regions.map((_, index) => {
@@ -137,7 +139,7 @@ function createLayers(regions, growth, grid) {
 }
 
 
-// REGIONS GROW FUNCTIONS ===================
+// REGIONS GROW FUNCTIONS ===========================================
 function growNormal(layer, regions) {
     const newRegions = []
     for(let i=0; i<regions.length; i++) {

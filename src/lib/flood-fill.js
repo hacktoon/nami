@@ -1,8 +1,8 @@
 import { Random } from '/lib/random'
 
 
-export function organicFill(rules, seeds) {
-    let times = rules.times()
+export function organicFill(rules) {
+    const {index, points, chance, times} = rules
     const partialGrow = _seeds => {
         const randomSeeds = _seeds.filter(() => Random.chance(rules.chance))
         return normalFill(randomSeeds)
@@ -15,14 +15,15 @@ export function organicFill(rules, seeds) {
 }
 
 
-export function normalFill(seeds) {
+export function normalFill(rules) {
+    const {index, points} = rules
     let newSeeds = []
     const fill = point => {
-        if (! this.isFillable(point)) return
-        this.onFill(point)
+        if (! rules.isFillable(point)) return
+        rules.onFill(point)
         return true
     }
-    seeds.forEach(seed => {
+    points.forEach(seed => {
         const adjacents = seed.adjacents(point => fill(point))
         newSeeds.push(...adjacents)
     })
