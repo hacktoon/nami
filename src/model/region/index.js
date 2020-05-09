@@ -48,7 +48,7 @@ class Region {
         return this.pointHash.points
     }
 
-    isCenter(point) {
+    isOrigin(point) {
         return this.origin.equals(point)
     }
 
@@ -58,31 +58,6 @@ class Region {
 
     grow(points) {
         return new Region(this.id, this.origin, points)
-    }
-}
-
-
-class GridFillRules {
-    constructor(grid) {
-        this.grid = grid
-        this.chance = .2
-        this.growthRate = [5, 10, 20, 50, 60]
-    }
-
-    times() {
-        return Random.choice(this.growthRate)
-    }
-
-    canFill(point) {
-        return this.grid.isEmpty(point)
-    }
-
-    fill(point, value) {
-        return this.grid.set(point, value)
-    }
-
-    isBorder(point, value) {
-        return this.grid.get(point) != value
     }
 }
 
@@ -125,14 +100,14 @@ function createLayers(regions, growth, grid) {
     const fillers = regions.map((_, index) => {
         const onFill = point => grid.set(point, index)
         const isFillable = point => grid.isEmpty(point)
-        const rules = new GridFillRules(grid)
+        // const rules = new GridFillRules(grid)
         return new OrganicFloodFill(onFill, isFillable)
     })
 
     while(grid.hasEmptyPoints()) {
         const grow = growth === 'organic' ? growOrganic : growNormal
-        const layer = new MapLayer(newRegions)
         const newRegions = grow(layer, regions, fillers)
+        const layer = new MapLayer(newRegions)
         layers.push(layer)
     }
     return layers
@@ -142,9 +117,9 @@ function createLayers(regions, growth, grid) {
 // REGIONS GROW FUNCTIONS ===========================================
 function growNormal(layer, regions) {
     const newRegions = []
-    for(let i=0; i<regions.length; i++) {
-        const newPoints = normalFill(regions[i].points)
-        newRegions.push(regions[i].grow(newPoints))
+    for(let region of regions) {
+        const newPoints = normalFill(region.points)
+        newRegions.push(region.grow(newPoints))
     }
     return newRegions
 }
@@ -152,14 +127,15 @@ function growNormal(layer, regions) {
 
 function growOrganic(layer, regions, fillers) {
     let newRegions = []
-    const chance = .2
-    const times = () => Random.int(70)
-    for(let i=0; i<regions.length; i++) {
-        const region = regions[i]
-        const rules = {points: region.points, chance, times: times()}
-        const newPoints = fillers[i].growRandom(rules)
-        regions[i] = region.grow(newPoints)
-        newRegions.push(regions[i])
+    for(let region of regions) {
+        const rules = {
+            points: region.points,
+            times: Random.int(80),
+            chance: .2,
+        }
+        const newPoints = fillers[region.id].growRandom(rules)
+        regions[region.id] = region.grow(newPoints)
+        newRegions.push(regions[region.id])
     }
     return newRegions
 }

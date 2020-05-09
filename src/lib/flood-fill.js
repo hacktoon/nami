@@ -1,15 +1,38 @@
 import { Random } from '/lib/random'
 
 
-export function organicFill(rules) {
-    const {index, points, chance, times} = rules
-    const partialGrow = _seeds => {
-        const randomSeeds = _seeds.filter(() => Random.chance(rules.chance))
-        return normalFill(randomSeeds)
+
+class GridFillRules {
+    constructor(params) {
+        this.grid = params.grid
+        this.chance = params.chance
+        this.growthRate = params.growthRate
     }
-    let newSeeds = normalFill(seeds)
+
+    times() {
+        return Random.choice(this.growthRate)
+    }
+
+    canFill(point) {
+        return this.grid.isEmpty(point)
+    }
+
+    fill(point, value) {
+        return this.grid.set(point, value)
+    }
+
+    isBorder(point, value) {
+        return this.grid.get(point) != value
+    }
+}
+
+
+
+export function organicFill({points, chance:chance=0, times:times=1}) {
+    const partialGrow = _seeds => normalFill(_seeds.filter(() => Random.chance(chance)))
+    let newSeeds = normalFill(points)
     while(newSeeds.length && times--) {
-        newSeeds.push(...partialGrow(newSeeds))
+        newSeeds = newSeeds.concat(partialGrow(newSeeds))
     }
     return newSeeds
 }
