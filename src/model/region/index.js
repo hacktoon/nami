@@ -97,16 +97,10 @@ function createRegions(count, width, height) {
 // CREATE LAYERS FROM REGIONS =======================================
 function createLayers(regions, growth, grid) {
     const layers = [new MapLayer(regions)]
-    const fillers = regions.map((_, index) => {
-        const onFill = point => grid.set(point, index)
-        const isFillable = point => grid.isEmpty(point)
-        // const rules = new GridFillRules(grid)
-        return new OrganicFloodFill(onFill, isFillable)
-    })
 
     while(grid.hasEmptyPoints()) {
         const grow = growth === 'organic' ? growOrganic : growNormal
-        const newRegions = grow(layer, regions, fillers)
+        const newRegions = grow(layer, regions, grid)
         const layer = new MapLayer(newRegions)
         layers.push(layer)
     }
@@ -125,7 +119,7 @@ function growNormal(layer, regions) {
 }
 
 
-function growOrganic(layer, regions, fillers) {
+function growOrganic(layer, regions, grid) {
     let newRegions = []
     for(let region of regions) {
         const rules = {
@@ -133,7 +127,12 @@ function growOrganic(layer, regions, fillers) {
             times: Random.int(80),
             chance: .2,
         }
-        const newPoints = fillers[region.id].growRandom(rules)
+        // const rules = new GridFillRules(grid)
+        const filler = new OrganicFloodFill(
+            point => grid.set(point, region.id),
+            point => grid.isEmpty(point)
+        )
+        const newPoints = filler.growRandom(rules)
         regions[region.id] = region.grow(newPoints)
         newRegions.push(regions[region.id])
     }
