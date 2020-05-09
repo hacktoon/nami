@@ -1,6 +1,6 @@
 import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
-import { normalFill, OrganicFloodFill } from '/lib/flood-fill'
+import { normalFill, organicFill } from '/lib/flood-fill'
 import { PointHash } from '/lib/point'
 import { Color } from '/lib/color'
 import { RegionGrid } from './grid'
@@ -13,9 +13,9 @@ export const DEFAULT_HEIGHT = 150
 
 export class RegionMap {
     constructor(regions, grid, layers) {
-        this.grid = grid
         this.regions = regions
         this.layers = layers
+        this.grid = grid
     }
 
     get(point) {
@@ -28,6 +28,12 @@ export class RegionMap {
 class MapLayer {
     constructor(regions) {
         this.regions = regions
+    }
+
+    grow(regions) {
+        const grow = growth === 'organic' ? growOrganic : growNormal
+        const newRegions = grow(layer, regions, grid)
+        return new MapLayer(newRegions)
     }
 }
 
@@ -88,8 +94,8 @@ function createConfig(params={}) {
 function createRegions(count, width, height) {
     const createPoint = () => Point.random(width, height)
     return repeat(count, id => {
-        const center = createPoint()
-        return new Region(id, center, [center])
+        const origin = createPoint()
+        return new Region(id, origin, [origin])
     })
 }
 
@@ -109,10 +115,15 @@ function createLayers(regions, growth, grid) {
 
 
 // REGIONS GROW FUNCTIONS ===========================================
-function growNormal(layer, regions) {
+
+function growNormal(layer, regions, grid) {
     const newRegions = []
     for(let region of regions) {
-        const newPoints = normalFill(region.points)
+        const rules = {
+            fill: point => grid.set(point, region.id),
+            canFill: point => grid.isEmpty(point)
+        }
+        const newPoints = normalFill(region.points, rules)
         newRegions.push(region.grow(newPoints))
     }
     return newRegions
@@ -123,16 +134,12 @@ function growOrganic(layer, regions, grid) {
     let newRegions = []
     for(let region of regions) {
         const rules = {
-            points: region.points,
             times: Random.int(80),
             chance: .2,
+            fill: point => grid.set(point, region.id),
+            canFill: point => grid.isEmpty(point)
         }
-        // const rules = new GridFillRules(grid)
-        const filler = new OrganicFloodFill(
-            point => grid.set(point, region.id),
-            point => grid.isEmpty(point)
-        )
-        const newPoints = filler.growRandom(rules)
+        const newPoints = organicFill(region.points, rules)
         regions[region.id] = region.grow(newPoints)
         newRegions.push(regions[region.id])
     }

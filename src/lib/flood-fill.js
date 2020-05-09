@@ -1,36 +1,13 @@
 import { Random } from '/lib/random'
 
 
-
-class GridFillRules {
-    constructor(params) {
-        this.grid = params.grid
-        this.chance = params.chance
-        this.growthRate = params.growthRate
-    }
-
-    times() {
-        return Random.choice(this.growthRate)
-    }
-
-    canFill(point) {
-        return this.grid.isEmpty(point)
-    }
-
-    fill(point, value) {
-        return this.grid.set(point, value)
-    }
-
-    isBorder(point, value) {
-        return this.grid.get(point) != value
-    }
-}
-
-
-
-export function organicFill({points, chance:chance=0, times:times=1}) {
-    const partialGrow = _seeds => normalFill(_seeds.filter(() => Random.chance(chance)))
-    let newSeeds = normalFill(points)
+export function organicFill(points, rules) {
+    let {chance:chance=0, times:times=1} = rules
+    const partialGrow = points => normalFill(
+        points.filter(() => Random.chance(chance)),
+        rules,
+    )
+    let newSeeds = normalFill(points, rules)
     while(newSeeds.length && times--) {
         newSeeds = newSeeds.concat(partialGrow(newSeeds))
     }
@@ -38,12 +15,11 @@ export function organicFill({points, chance:chance=0, times:times=1}) {
 }
 
 
-export function normalFill(rules) {
-    const {index, points} = rules
+export function normalFill(points, rules) {
     let newSeeds = []
     const fill = point => {
-        if (! rules.isFillable(point)) return
-        rules.onFill(point)
+        if (! rules.canFill(point)) return false
+        rules.fill(point)
         return true
     }
     points.forEach(seed => {
@@ -51,37 +27,6 @@ export function normalFill(rules) {
         newSeeds.push(...adjacents)
     })
     return newSeeds
-}
-
-
-export class OrganicFloodFill {
-    constructor(onFill, isFillable) {
-        this.isFillable = isFillable
-        this.onFill = onFill
-    }
-
-    grow(seeds) {
-        let newSeeds = []
-        const fill = point => {
-            if (! this.isFillable(point)) return
-            this.onFill(point)
-            return true
-        }
-        seeds.forEach(seed => {
-            const adjacents = seed.adjacents(point => fill(point))
-            newSeeds = newSeeds.concat(adjacents)
-        })
-        return newSeeds
-    }
-
-    growRandom({points, chance:chance=0, times:times=1}) {
-        const partialGrow = _seeds => this.grow(_seeds.filter(() => Random.chance(chance)))
-        let newSeeds = this.grow(points)
-        while(newSeeds.length && times--) {
-            newSeeds = newSeeds.concat(partialGrow(newSeeds))
-        }
-        return newSeeds
-    }
 }
 
 
