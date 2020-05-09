@@ -11,12 +11,15 @@
 
 ### Model
 
-#### RegionMap
-- Use FloodFill to discover region borders
-- Make FloodFill a composable function
-  - create rules and call `floodFill(rules)`
-
 #### TectonicsMap
+- RegionMap
+  - Store borders for each plate neighborhood
+  - Store plate adjacency matrix
+
+  - Use FloodFill to discover region borders
+  - create ridges separately in tectonics map, using total and start point of border points
+  - Make FloodFill a composable function
+    - create rules and call `floodFill(rules)`
 - Build regions adjacency table
 - Start geologic deformation in plate borders
 - For each point, draw a (asc|desc)ending height line opposed to the plate direction
@@ -26,16 +29,24 @@
 
 #### TerrainMap
 - Build distance map from coast borders
-
-#### LandMap
+- Property (water: bool)
 - Use ScanlineFill to discover areas
 - Set id's on Grid during scanline fill
 
-#### WaterMap
+#### OceanMap
 - Decide it's type when finished, set type on object WaterBody
 - Types: 0:none, 1:river, 2:lake, 3:sea, 5:ocean
   - WaterBody
     - Reference point - where fill started, used to scanline again for searches
+
+#### TemperatureMap
+- Value range: 0:100
+
+#### WindMap
+- Value range: 0:100, varies according to month
+
+#### RainMap
+- Value range: 0:100, varies according to month and windmap
 
 #### Other
 - Vegetation/wildlife density: adjusted by humidity, temperature and height
