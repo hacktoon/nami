@@ -156,7 +156,8 @@ function growOrganic(layer, regions, fillers) {
     const times = () => Random.int(70)
     for(let i=0; i<regions.length; i++) {
         const region = regions[i]
-        const newPoints = fillers[i].growRandom(region.points, chance, times())
+        const rules = {points: region.points, chance, times: times()}
+        const newPoints = fillers[i].growRandom(rules)
         regions[i] = region.grow(newPoints)
         newRegions.push(regions[i])
     }

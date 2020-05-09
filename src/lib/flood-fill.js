@@ -51,9 +51,9 @@ export class OrganicFloodFill {
         return newSeeds
     }
 
-    growRandom(seeds, chance=0, times=1) {
+    growRandom({points, chance:chance=0, times:times=1}) {
         const partialGrow = _seeds => this.grow(_seeds.filter(() => Random.chance(chance)))
-        let newSeeds = this.grow(seeds)
+        let newSeeds = this.grow(points)
         while(newSeeds.length && times--) {
             newSeeds = newSeeds.concat(partialGrow(newSeeds))
         }
