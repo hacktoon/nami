@@ -12,9 +12,9 @@ export const DEFAULT_HEIGHT = 150
 
 
 export class RegionMap {
-    constructor(layers, regions, grid) {
-        this.layers = layers
+    constructor(regions, layers, grid) {
         this.regions = regions
+        this.layers = layers
         this.grid = grid
     }
 
@@ -94,7 +94,7 @@ export function createRegionMap(params={}) {
     const points = createPoints(count, width, height)
     const regions = createRegions(points)
     const layers = createLayers(regions, grid, rules)
-    return new RegionMap(layers, regions, grid)
+    return new RegionMap(regions, layers, grid)
 }
 
 
