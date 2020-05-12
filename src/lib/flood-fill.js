@@ -19,7 +19,7 @@ export function normalFill(points, rules) {
     let newSeeds = []
     const fill = point => {
         if (! rules.canFill(point)) return false
-        rules.fill(point)
+        rules.fill(point, rules.fillValue)
         return true
     }
     points.forEach(seed => {

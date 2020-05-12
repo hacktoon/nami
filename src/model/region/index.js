@@ -12,15 +12,16 @@ export const DEFAULT_HEIGHT = 150
 
 
 export class RegionMap {
-    constructor(regions, grid, layers) {
-        this.regions = regions
+    constructor(layers, regions, grid) {
         this.layers = layers
+        this.regions = regions
         this.grid = grid
     }
 
     get(point) {
         const id = this.grid.get(point)
-        return this.regions[id]
+        const layer = this.layers[0]
+        return layer.regions[id]
     }
 }
 
@@ -30,9 +31,13 @@ class MapLayer {
         this.regions = regions
     }
 
-    grow(regions) {
-        const grow = growth === 'organic' ? growOrganic : growNormal
-        const newRegions = grow(layer, regions, grid)
+    grow(rules) {
+        let newRegions = []
+        for(let region of this.regions) {
+            rules.fillValue = region.id  // TODO: remove this
+            const newPoints = rules.growFunction(region.points, rules)
+            newRegions.push(region.grow(newPoints))
+        }
         return new MapLayer(newRegions)
     }
 }
@@ -73,9 +78,23 @@ class Region {
 export function createRegionMap(params={}) {
     const {count, width, height, growth} = createConfig(params)
     const grid = new RegionGrid(width, height)
-    const regions = createRegions(count, width, height)
-    const layers = createLayers(regions, growth, grid)
-    return new RegionMap(regions, grid, layers)
+    const normalRules = {
+        fill: (point, value) => grid.set(point, value),
+        canFill: point => grid.isEmpty(point),
+        growFunction: normalFill,
+        fillValue: 0
+    }
+    const organicRules = {
+        ...normalRules,
+        chance: .2,
+        times: Random.int(80),
+        growFunction: organicFill
+    }
+    const rules = growth === 'organic' ? organicRules : normalRules
+    const points = createPoints(count, width, height)
+    const regions = createRegions(points)
+    const layers = createLayers(regions, grid, rules)
+    return new RegionMap(layers, regions, grid)
 }
 
 
@@ -90,58 +109,22 @@ function createConfig(params={}) {
 }
 
 
-// CREATE REGIONS ===================================================
-function createRegions(count, width, height) {
-    const createPoint = () => Point.random(width, height)
-    return repeat(count, id => {
-        const origin = createPoint()
-        return new Region(id, origin, [origin])
-    })
+function createPoints(count, width, height) {
+    return repeat(count, () => Point.random(width, height))
 }
 
 
-// CREATE LAYERS FROM REGIONS =======================================
-function createLayers(regions, growth, grid) {
+function createRegions(points) {
+    return points.map((point, id) => new Region(id, point, [point]))
+}
+
+
+function createLayers(regions, grid, rules) {
     const layers = [new MapLayer(regions)]
 
     while(grid.hasEmptyPoints()) {
-        const grow = growth === 'organic' ? growOrganic : growNormal
-        const newRegions = grow(layer, regions, grid)
-        const layer = new MapLayer(newRegions)
-        layers.push(layer)
+        let currentLayer = layers[layers.length - 1]
+        layers.push(currentLayer.grow(rules))
     }
     return layers
-}
-
-
-// REGIONS GROW FUNCTIONS ===========================================
-
-function growNormal(layer, regions, grid) {
-    const newRegions = []
-    for(let region of regions) {
-        const rules = {
-            fill: point => grid.set(point, region.id),
-            canFill: point => grid.isEmpty(point)
-        }
-        const newPoints = normalFill(region.points, rules)
-        newRegions.push(region.grow(newPoints))
-    }
-    return newRegions
-}
-
-
-function growOrganic(layer, regions, grid) {
-    let newRegions = []
-    for(let region of regions) {
-        const rules = {
-            times: Random.int(80),
-            chance: .2,
-            fill: point => grid.set(point, region.id),
-            canFill: point => grid.isEmpty(point)
-        }
-        const newPoints = organicFill(region.points, rules)
-        regions[region.id] = region.grow(newPoints)
-        newRegions.push(regions[region.id])
-    }
-    return newRegions
 }

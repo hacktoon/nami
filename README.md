@@ -26,6 +26,8 @@
   - Line size is defined by plate speed
 - Height deformation line is defined by a list of constants
   - Ex: convergent subduction starts on lowest water level and rises [0, 1, 2, 3]
+- Iterate over region growth borders to distribute hills, cenotes, ravines, lakes, etc
+- First 2-3 layers are always land (cratons)
 
 #### TerrainMap
 - Build distance map from coast borders
