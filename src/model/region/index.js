@@ -12,33 +12,14 @@ export const DEFAULT_HEIGHT = 150
 
 
 export class RegionMap {
-    constructor(regions, layers, grid) {
+    constructor(regions, grid) {
         this.regions = regions
-        this.layers = layers
         this.grid = grid
     }
 
     get(point) {
         const id = this.grid.get(point)
-        const layer = this.layers[0]
-        return layer.regions[id]
-    }
-}
-
-
-class MapLayer {
-    constructor(regions) {
-        this.regions = regions
-    }
-
-    grow(rules) {
-        let newRegions = []
-        for(let region of this.regions) {
-            rules.fillValue = region.id  // TODO: remove this
-            const newPoints = rules.growFunction(region.points, rules)
-            newRegions.push(region.grow(newPoints))
-        }
-        return new MapLayer(newRegions)
+        return this.regions[id]
     }
 }
 
@@ -47,16 +28,16 @@ class Region {
     constructor(id, origin, points) {
         this.id = id
         this.origin = origin
-        this.pointHash = new PointHash(points)
+        this.layers = [new PointHash(points)]
         this.color = new Color()
     }
 
     get size() {
-        return this.pointHash.size
+        //return this.layers.size
     }
 
     get points() {
-        return this.pointHash.points
+        //return this.layers.points
     }
 
     isOrigin(point) {
@@ -64,11 +45,18 @@ class Region {
     }
 
     has(point) {
-        return this.pointHash.has(point)
+        return this.layers.has(point)
     }
 
-    grow(points) {
-        return new Region(this.id, this.origin, points)
+    grow(rules) {
+        rules.fillValue = this.id // TODO: remove
+        const newPoints = rules.growFunction(this.lastPoints, rules)
+        this.layers.push(new PointHash(newPoints))
+    }
+
+    get lastPoints() {
+        const lastIndex = this.layers.length - 1
+        return this.layers[lastIndex].points
     }
 }
 
@@ -93,8 +81,10 @@ export function createRegionMap(params={}) {
     const rules = growth === 'organic' ? organicRules : normalRules
     const points = createPoints(count, width, height)
     const regions = createRegions(points)
-    const layers = createLayers(regions, grid, rules)
-    return new RegionMap(regions, layers, grid)
+    while(grid.hasEmptyPoints()) {
+        growRegions(regions, rules)
+    }
+    return new RegionMap(regions, grid)
 }
 
 
@@ -119,12 +109,8 @@ function createRegions(points) {
 }
 
 
-function createLayers(regions, grid, rules) {
-    const layers = [new MapLayer(regions)]
-
-    while(grid.hasEmptyPoints()) {
-        let currentLayer = layers[layers.length - 1]
-        layers.push(currentLayer.grow(rules))
+function growRegions(regions, rules) {
+    for(let region of regions) {
+        region.grow(rules)
     }
-    return layers
 }
