@@ -13,16 +13,10 @@ export default function ConfigMenu(props) {
     let [count, setCount] = useState(DEFAULT_COUNT)
     let [width, setWidth] = useState(DEFAULT_WIDTH)
     let [height, setHeight] = useState(DEFAULT_HEIGHT)
-    let [growth, setGrowth] = useState('organic')
-
-    const growthOptions = {
-        normal: 'Normal',
-        organic: 'Organic',
-    }
 
     let onSubmit = event => {
         event.preventDefault()
-        props.onChange({count, width, height, growth})
+        props.onChange({count, width, height})
     }
 
     return <Form className="ConfigMenu" onSubmit={onSubmit}>
@@ -47,15 +41,6 @@ export default function ConfigMenu(props) {
             step={1}
             min={1}
         />
-        <SelectField label="Growth" value={growth}
-            onChange={event => setGrowth(event.target.value)}
-            options={growthOptions} />
-        {/* <NumberField
-            label="Overgrowth chance"
-            value={1}
-            step={1}
-            min={1}
-        /> */}
         <Button text="New" />
     </Form>
 }

@@ -86,10 +86,11 @@ function createConfig(params={}) {
 function createGridFill(grid) {
     return new OrganicFill({
         onFill:     (point, value) => grid.set(point, value),
-        //onBorder:   (point, value) => grid.setBorder(point, value),
         canFill:    point => grid.isEmpty(point),
+        //onOrigin: (point, value) => grid.setOrigin(point, value),
+        //onBorder: (point, value) => grid.setBorder(point, value),
+        maxFills:   Random.int(50),
         fillChance: .2,
-        maxFills:   Random.int(80)
     })
 }
 
@@ -99,14 +100,8 @@ function createPoints(count, width, height) {
 }
 
 
-function createRegions(points, grid) {
-    // mark the initial points in grid
-    return points.map((point, id) => {
-        const region = new Region(id, point, [point])
-        //grid.set(point, region.id)
-        //grid.setOrigin(point, region.id)
-        return region
-    })
+function createRegions(points) {
+    return points.map((point, id) => new Region(id, point, [point]))
 }
 
 
