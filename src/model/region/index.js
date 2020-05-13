@@ -65,26 +65,33 @@ class Region {
 
 export function createRegionMap(params={}) {
     const {count, width, height, growth} = createConfig(params)
-    const grid = new RegionGrid(width, height)
-    const normalRules = {
-        fill: (point, value) => grid.set(point, value),
-        canFill: point => grid.isEmpty(point),
-        growFunction: normalFill,
-        fillValue: 0
-    }
-    const organicRules = {
-        ...normalRules,
-        chance: .2,
-        times: Random.int(80),
-        growFunction: organicFill
-    }
-    const rules = growth === 'organic' ? organicRules : normalRules
     const points = createPoints(count, width, height)
+    const grid = new RegionGrid(width, height)
+    const rules = createRules(growth, grid)
     const regions = createRegions(points)
     while(grid.hasEmptyPoints()) {
         growRegions(regions, rules)
     }
     return new RegionMap(regions, grid)
+}
+
+
+function createRules(growth, grid) {
+    const defaultRules = {
+        fill: (point, value) => grid.set(point, value),
+        canFill: point => grid.isEmpty(point),
+        growFunction: normalFill,
+        fillValue: 0
+    }
+    if (growth === 'organic') {
+        return {
+            ...defaultRules,
+            chance: .2,
+            times: Random.int(80),
+            growFunction: organicFill
+        }
+    }
+    return defaultRules
 }
 
 
