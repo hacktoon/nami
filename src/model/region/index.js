@@ -1,6 +1,6 @@
 import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
-import { normalFill, organicFill } from '/lib/flood-fill'
+import { OrganicFill } from '/lib/flood-fill'
 import { PointHash } from '/lib/point'
 import { Color } from '/lib/color'
 import { RegionGrid } from './grid'
@@ -40,6 +40,11 @@ class Region {
         //return this.layers.points
     }
 
+    get lastPoints() {
+        const lastIndex = this.layers.length - 1
+        return this.layers[lastIndex].points
+    }
+
     isOrigin(point) {
         return this.origin.equals(point)
     }
@@ -48,15 +53,8 @@ class Region {
         return this.layers.has(point)
     }
 
-    grow(rules) {
-        rules.fillValue = this.id // TODO: remove
-        const newPoints = rules.growFunction(this.lastPoints, rules)
+    grow(newPoints=[]) {
         this.layers.push(new PointHash(newPoints))
-    }
-
-    get lastPoints() {
-        const lastIndex = this.layers.length - 1
-        return this.layers[lastIndex].points
     }
 }
 
@@ -64,45 +62,35 @@ class Region {
 // FUNCTIONS ===================================
 
 export function createRegionMap(params={}) {
-    const {count, width, height, growth} = createConfig(params)
+    const {count, width, height} = createConfig(params)
     const points = createPoints(count, width, height)
     const grid = new RegionGrid(width, height)
-    const rules = createRules(growth, grid)
-    const regions = createRegions(points)
+    const regions = createRegions(points, grid)
+    const gridFill = createGridFill(grid)
     while(grid.hasEmptyPoints()) {
-        growRegions(regions, rules)
+        growRegions(regions, gridFill)
     }
     return new RegionMap(regions, grid)
 }
 
 
-function createRules(growth, grid) {
-    const defaultRules = {
-        fill: (point, value) => grid.set(point, value),
-        canFill: point => grid.isEmpty(point),
-        growFunction: normalFill,
-        fillValue: 0
-    }
-    if (growth === 'organic') {
-        return {
-            ...defaultRules,
-            chance: .2,
-            times: Random.int(80),
-            growFunction: organicFill
-        }
-    }
-    return defaultRules
+function createConfig(params={}) {
+    return Object.assign({
+        count: DEFAULT_COUNT,
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT
+    }, params)
 }
 
 
-function createConfig(params={}) {
-    const defaultParams = {
-        count: DEFAULT_COUNT,
-        width: DEFAULT_WIDTH,
-        height: DEFAULT_HEIGHT,
-        growth: 'organic',
-    }
-    return Object.assign(defaultParams, params)
+function createGridFill(grid) {
+    return new OrganicFill({
+        onFill:     (point, value) => grid.set(point, value),
+        //onBorder:   (point, value) => grid.setBorder(point, value),
+        canFill:    point => grid.isEmpty(point),
+        fillChance: .2,
+        maxFills:   Random.int(80)
+    })
 }
 
 
@@ -111,13 +99,20 @@ function createPoints(count, width, height) {
 }
 
 
-function createRegions(points) {
-    return points.map((point, id) => new Region(id, point, [point]))
+function createRegions(points, grid) {
+    // mark the initial points in grid
+    return points.map((point, id) => {
+        const region = new Region(id, point, [point])
+        //grid.set(point, region.id)
+        //grid.setOrigin(point, region.id)
+        return region
+    })
 }
 
 
-function growRegions(regions, rules) {
+function growRegions(regions, gridFill) {
     for(let region of regions) {
-        region.grow(rules)
+        const newPoints = gridFill.fill(region.lastPoints, region.id)
+        region.grow(newPoints)
     }
 }
