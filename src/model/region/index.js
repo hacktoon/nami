@@ -87,9 +87,8 @@ function createGridFill(grid) {
     return new OrganicFill({
         onFill:     (point, value) => grid.set(point, value),
         canFill:    point => grid.isEmpty(point),
-        //onOrigin: (point, value) => grid.setOrigin(point, value),
         //onBorder: (point, value) => grid.setBorder(point, value),
-        maxFills:   Random.int(50),
+        maxFills:   () => Random.int(50),
         fillChance: .2,
     })
 }

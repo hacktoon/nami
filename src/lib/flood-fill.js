@@ -6,7 +6,7 @@ export class OrganicFill {
         this.onFill = onFill || function(){}
         this.canFill = canFill || (() => false)
         this.fillChance = fillChance || 1
-        this.maxFills = maxFills || 1
+        this.maxFills = maxFills || (() => 1)
     }
 
     fill(points, value) {
@@ -15,7 +15,7 @@ export class OrganicFill {
             value
         )
         let newPoints = this._adjacentFill(points, value)
-        let times_remaining = this.maxFills
+        let times_remaining = this.maxFills()
         while(newPoints.length && times_remaining--) {
             newPoints.push(...partialGrow(newPoints))
         }
