@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 
 import { GridDisplay } from '/lib/ui/display'
-import { Form, Button } from '/lib/ui'
-import { EMPTY } from '/model/region'
+import { Form } from '/lib/ui'
 import { NumberField, SwitchField } from '/lib/ui/field'
 
 
@@ -13,7 +12,9 @@ function getColor(regionMap, point) {
     const region = regionMap.get(point)
     const color = region.color.toHex()
 
-    if (region.isOrigin(point)) return 'black'
+    if (region.isOrigin(point)) {
+        return 'black'
+    }
     // return color.darken(amount).toHex()
     return color
 }
@@ -27,7 +28,7 @@ export default function RegionMapView({regionMap}) {
 
     return <section className="RegionMapView">
         <Menu
-            onLayerChange={() => setLayer(layer + 1)}
+            onLayerChange={event => setLayer(event.target.value)}
             onTilesizeChange={event => setTilesize(event.target.value)}
             onGridModeChange={() => setGridMode(!gridMode)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}

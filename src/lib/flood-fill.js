@@ -10,14 +10,12 @@ export class OrganicFill {
     }
 
     fill(points, value) {
-        const partialGrow = points => this._adjacentFill(
-            points.filter(() => Random.chance(this.fillChance)),
-            value
-        )
         let newPoints = this._adjacentFill(points, value)
         let times_remaining = this.maxFills()
         while(newPoints.length && times_remaining--) {
-            newPoints.push(...partialGrow(newPoints))
+            let randPoints = newPoints.filter(() => Random.chance(this.fillChance))
+            let newRandPoints = this._adjacentFill(randPoints, value)
+            newPoints.push(...newRandPoints)
         }
         return newPoints
     }
