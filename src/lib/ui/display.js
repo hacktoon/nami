@@ -6,16 +6,11 @@ import { MouseTracker } from '/lib/ui/mouse'
 
 export function GridDisplay(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
-    let prevOffset = offset
 
     const onDrag = pixelOffset => {
         let x = Math.floor(pixelOffset.x / props.tilesize)
         let y = Math.floor(pixelOffset.y / props.tilesize)
-        const offset = new Point(x, y)
-        if (! offset.equals(prevOffset)) {
-            prevOffset = offset
-            setOffset(offset)
-        }
+        setOffset(new Point(x, y))
     }
 
     const onRender = (canvas, width, height) => {
@@ -34,17 +29,10 @@ export function GridDisplay(props) {
         const point = gridRender.getGridPoint(i, j)
         const x = i * gridRender.tilesize
         const y = j * gridRender.tilesize
-        const nowrap = isWrapDisabled(point)
-        let color = nowrap ? 'black' : props.colorAt(point)
+        let color = props.colorAt(point)
 
         gridRender.drawCell(x, y, color)
-        if (props.gridMode)   gridRender.drawBorders(x, y, point)
-    }
-
-    const isWrapDisabled = point => {
-        const offWidth = point.x < 0 || point.x >= props.width
-        const offHeight = point.y < 0 || point.y >= props.height
-        return ! props.wrapMode && (offWidth || offHeight)
+        if (props.gridMode)  gridRender.drawBorders(x, y, point)
     }
 
     return <section className="GridDisplay">
