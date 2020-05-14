@@ -12,10 +12,21 @@ function getColor(regionMap, point) {
     const region = regionMap.get(point)
     const color = region.color.toHex()
 
-    if (region.isOrigin(point)) {
+    /*
+    TODO: set all possible info for each regionMap cell:
+    {
+        type:  normal|border|origin,
+        value: regionId
+    }
+    and refactor out this abomination:
+    */
+    if (region.isOrigin(regionMap.grid.grid.wrap(point))) {
         return 'black'
     }
+
+
     // return color.darken(amount).toHex()
+
     return color
 }
 

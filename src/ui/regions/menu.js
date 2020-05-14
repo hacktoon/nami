@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { SelectField, NumberField } from '/lib/ui/field'
+import { NumberField } from '/lib/ui/field'
 import { Form, Button } from '/lib/ui'
 import {
     DEFAULT_COUNT,

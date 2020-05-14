@@ -18,27 +18,26 @@ export function GridDisplay(props) {
     }
 
     const onRender = (canvas, width, height) => {
-        const renderMap = new RenderMap({
+        const gridRender = new GridRender({
             canvas, width, height, offset, tilesize: props.tilesize
         })
 
-        for(let i = 0; i < renderMap.gridWidthSpan; i++) {
-            for(let j = 0; j < renderMap.gridHeightSpan; j++) {
-                renderCell(i, j, renderMap)
+        for(let i = 0; i < gridRender.gridWidthSpan; i++) {
+            for(let j = 0; j < gridRender.gridHeightSpan; j++) {
+                renderCell(i, j, gridRender)
             }
         }
     }
 
-    const renderCell = (i, j, renderMap) => {
-        const point = renderMap.getGridPoint(i, j)
-        const x = i * renderMap.tilesize
-        const y = j * renderMap.tilesize
+    const renderCell = (i, j, gridRender) => {
+        const point = gridRender.getGridPoint(i, j)
+        const x = i * gridRender.tilesize
+        const y = j * gridRender.tilesize
         const nowrap = isWrapDisabled(point)
         let color = nowrap ? 'black' : props.colorAt(point)
 
-        renderMap.drawCell(x, y, color)
-        if (props.gridMode)   renderMap.drawBorders(x, y, point)
-        if (props.drawPoints) renderMap.drawText(x, y, point.hash)
+        gridRender.drawCell(x, y, color)
+        if (props.gridMode)   gridRender.drawBorders(x, y, point)
     }
 
     const isWrapDisabled = point => {
@@ -54,7 +53,7 @@ export function GridDisplay(props) {
 }
 
 
-export class RenderMap {
+class GridRender {
     constructor(config={}) {
         this.canvas   = config.canvas
         this.width    = Number(config.width)
@@ -66,18 +65,6 @@ export class RenderMap {
     drawCell(x, y, color) {
         this.canvas.fillStyle = color
         this.canvas.fillRect(x, y, this.tilesize, this.tilesize)
-    }
-
-    drawText(x, y, text) {
-        let dx = x + this.tilesize / 5
-        let dy = y + this.tilesize / 2
-        this.canvas.font = "bold 10px Arial"
-        this.canvas.fillStyle = '#222'
-        this.canvas.fillText(text, dx + 1, dy + 1)
-
-        this.canvas.font = "normal 10px Arial"
-        this.canvas.fillStyle = '#FFF'
-        this.canvas.fillText(text, dx, dy)
     }
 
     drawBorders(x, y, point) {
@@ -121,7 +108,8 @@ export function Canvas(props) {
         const canvas = canvasRef.current
         const width = canvas.width = viewportRef.current.clientWidth
         const height = canvas.height = viewportRef.current.clientHeight
-        render(canvas.getContext('2d', {alpha: false}), width, height)
+        const canvasContext = canvas.getContext('2d', {alpha: false})
+        render(canvasContext, width, height)
     })
 
     return <div className="Canvas" ref={viewportRef}>
