@@ -8,6 +8,8 @@ export class RegionGrid {
     constructor(width, height) {
         this.grid = new Grid(width, height, () => EMPTY_GRID_POINT)
         this.emptyPoints = width * height
+        this.width = width
+        this.height = height
     }
 
     set(point, value) {
