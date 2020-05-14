@@ -2,7 +2,7 @@ import React, { useRef, useLayoutEffect } from 'react'
 
 
 export function Canvas(props) {
-    const render = props.onRender || new Function()
+    const setup = props.onSetup || new Function()
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
 
@@ -10,8 +10,11 @@ export function Canvas(props) {
         const canvas = canvasRef.current
         const width = canvas.width = viewportRef.current.clientWidth
         const height = canvas.height = viewportRef.current.clientHeight
-        const canvasContext = canvas.getContext('2d', {alpha: false})
-        render(canvasContext, width, height)
+        setup({
+            context: canvas.getContext('2d'),
+            width,
+            height
+        })
     })
 
     return <div className="Canvas" ref={viewportRef}>

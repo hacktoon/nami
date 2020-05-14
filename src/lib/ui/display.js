@@ -14,10 +14,10 @@ export function GridDisplay(props) {
         setOffset(new Point(x, y))
     }
 
-    // TODO: canvas must return a wrapped context object instead like GridRender
-    const onRender = (canvas, width, height) => {
+    // TODO: canvas must return a wrapped context object
+    const onCanvasSetup = canvas => {
         const gridRender = new GridRender({
-            canvas, width, height, offset, tilesize: props.tilesize
+            canvas, offset, tilesize: props.tilesize
         })
 
         for(let i = 0; i < gridRender.gridWidthSpan; i++) {
@@ -38,16 +38,16 @@ export function GridDisplay(props) {
 
     return <section className="GridDisplay">
         <MouseTracker onDrag={onDrag} />
-        <Canvas onRender={onRender} />
+        <Canvas onSetup={onCanvasSetup} />
     </section>
 }
 
 
 class GridRender {
     constructor(config={}) {
-        this.canvas   = config.canvas
-        this.width    = Number(config.width)
-        this.height   = Number(config.height)
+        this.context   = config.canvas.context
+        this.width    = Number(config.canvas.width)
+        this.height   = Number(config.canvas.height)
         this.tilesize = Number(config.tilesize)
     }
 
@@ -60,8 +60,8 @@ class GridRender {
     }
 
     drawCell(x, y, color) {
-        this.canvas.fillStyle = color
-        this.canvas.fillRect(x, y, this.tilesize, this.tilesize)
+        this.context.fillStyle = color
+        this.context.fillRect(x, y, this.tilesize, this.tilesize)
     }
 }
 
