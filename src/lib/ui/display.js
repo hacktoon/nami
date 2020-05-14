@@ -26,13 +26,12 @@ export function GridDisplay(props) {
     }
 
     const renderCell = (i, j, gridRender) => {
-        const point = gridRender.getGridPoint(i, j)
+        const point = new Point(offset.x + i, offset.y + j)
         const x = i * gridRender.tilesize
         const y = j * gridRender.tilesize
         let color = props.colorAt(point)
 
         gridRender.drawCell(x, y, color)
-        if (props.gridMode)  gridRender.drawBorders(x, y, point)
     }
 
     return <section className="GridDisplay">
@@ -47,31 +46,7 @@ class GridRender {
         this.canvas   = config.canvas
         this.width    = Number(config.width)
         this.height   = Number(config.height)
-        this.offset   = config.offset || new Point(0, 0)
         this.tilesize = Number(config.tilesize)
-    }
-
-    drawCell(x, y, color) {
-        this.canvas.fillStyle = color
-        this.canvas.fillRect(x, y, this.tilesize, this.tilesize)
-    }
-
-    drawBorders(x, y, point) {
-        const axisColor = '#222'
-        const stroke = 3
-
-        this.canvas.fillStyle = '#EEE'
-        this.canvas.fillRect(x, y, 1, this.tilesize)
-        this.canvas.fillRect(x, y, this.tilesize, 1)
-
-        if (point.x == 0) {
-            this.canvas.fillStyle = axisColor
-            this.canvas.fillRect(x, y, stroke, this.tilesize)
-        }
-        if (point.y == 0) {
-            this.canvas.fillStyle = axisColor
-            this.canvas.fillRect(x, y, this.tilesize, stroke)
-        }
     }
 
     get gridWidthSpan() {
@@ -82,8 +57,9 @@ class GridRender {
         return Math.ceil(this.height / this.tilesize)
     }
 
-    getGridPoint(i, j) {
-        return new Point(this.offset.x + i, this.offset.y + j)
+    drawCell(x, y, color) {
+        this.canvas.fillStyle = color
+        this.canvas.fillRect(x, y, this.tilesize, this.tilesize)
     }
 }
 
