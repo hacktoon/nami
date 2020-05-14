@@ -47,7 +47,7 @@ export function GridDisplay(props) {
     }
 
     return <section className="GridDisplay">
-        <MouseTracker onDrag={onDrag} tilesize={props.tilesize} />
+        <MouseTracker onDrag={onDrag} />
         <Canvas onRender={onRender} />
     </section>
 }
