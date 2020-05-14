@@ -1,7 +1,8 @@
-import React, { useRef, useState, useLayoutEffect } from 'react'
+import React, { useState } from 'react'
 
 import { Point } from '/lib/point'
 import { MouseTracker } from '/lib/ui/mouse'
+import { Canvas } from '/lib/ui/canvas'
 
 
 export function GridDisplay(props) {
@@ -13,6 +14,7 @@ export function GridDisplay(props) {
         setOffset(new Point(x, y))
     }
 
+    // TODO: canvas must return a wrapped context object instead like GridRender
     const onRender = (canvas, width, height) => {
         const gridRender = new GridRender({
             canvas, width, height, offset, tilesize: props.tilesize
@@ -63,21 +65,3 @@ class GridRender {
     }
 }
 
-
-export function Canvas(props) {
-    const render = props.onRender || new Function()
-    const viewportRef = useRef(null)
-    const canvasRef = useRef(null)
-
-    useLayoutEffect(() => {
-        const canvas = canvasRef.current
-        const width = canvas.width = viewportRef.current.clientWidth
-        const height = canvas.height = viewportRef.current.clientHeight
-        const canvasContext = canvas.getContext('2d', {alpha: false})
-        render(canvasContext, width, height)
-    })
-
-    return <div className="Canvas" ref={viewportRef}>
-        <canvas ref={canvasRef} ></canvas>
-    </div>
-}
