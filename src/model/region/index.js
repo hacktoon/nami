@@ -20,7 +20,7 @@ export class RegionMap {
     }
 
     get(point) {
-        const id = this.grid.get(point)
+        const id = this.grid.get(point).value
         return this.regions[id]
     }
 }
@@ -67,7 +67,7 @@ export function createRegionMap(params={}) {
     const {count, width, height} = createConfig(params)
     const points = createPoints(count, width, height)
     const grid = new RegionGrid(width, height)
-    const regions = createRegions(points, grid)
+    const regions = createRegions(points)
     const gridFill = createGridFill(grid)
     while(grid.hasEmptyPoints()) {
         growRegions(regions, gridFill)
@@ -89,7 +89,7 @@ function createGridFill(grid) {
     return new OrganicFill({
         onFill:     (point, value) => grid.set(point, value),
         canFill:    point => grid.isEmpty(point),
-        //onBorder: (point, value) => grid.setBorder(point, value),
+        onBorder:   (point, value) => grid.setBorder(point, value),
         maxFills:   () => Random.int(50),
         fillChance: .2,
     })
