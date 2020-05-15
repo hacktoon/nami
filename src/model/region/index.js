@@ -16,8 +16,6 @@ export class RegionMap {
         this.regions = regions
         this.grid = grid
         this.width = grid.width
-        console.log(grid.width);
-
         this.height = grid.height
     }
 

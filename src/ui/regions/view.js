@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { GridDisplay } from '/lib/ui/display'
+import { GridDisplay } from '/lib/ui/grid'
 import { Form } from '/lib/ui'
 import { NumberField, SwitchField } from '/lib/ui/field'
 
