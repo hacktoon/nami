@@ -9,11 +9,6 @@ export function Menu(props) {
         <OutputField label="Name" value={props.world.name} />
         <OutputField label="Seed" value={props.world.seed} />
         <SwitchField
-            label="Draw grid"
-            checked={props.gridMode}
-            onChange={props.onGridModeChange}
-        />
-        <SwitchField
             label="Wrap grid"
             checked={props.wrapMode}
             onChange={props.onWrapModeChange}

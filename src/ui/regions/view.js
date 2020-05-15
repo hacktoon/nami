@@ -33,7 +33,6 @@ function getColor(regionMap, point) {
 
 export default function RegionMapView({regionMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
-    const [gridMode, setGridMode] = useState(false)
     const [wrapMode, setWrapMode] = useState(false)
     const [layer, setLayer] = useState(0)
 
@@ -41,9 +40,7 @@ export default function RegionMapView({regionMap}) {
         <Menu
             onLayerChange={event => setLayer(event.target.value)}
             onTilesizeChange={event => setTilesize(event.target.value)}
-            onGridModeChange={() => setGridMode(!gridMode)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
-            gridMode={gridMode}
             wrapMode={wrapMode}
             tilesize={tilesize}
             layer={layer}
@@ -53,7 +50,6 @@ export default function RegionMapView({regionMap}) {
             height={regionMap.height}
             colorAt={point => getColor(regionMap, point)}
             tilesize={tilesize}
-            gridMode={gridMode}
             wrapMode={wrapMode}
         />
     </section>
@@ -64,11 +60,6 @@ function Menu(props) {
     const onSubmit = event => event.preventDefault()
 
     return <Form className="Menu" onSubmit={onSubmit}>
-        <SwitchField
-            label="Draw grid"
-            checked={props.gridMode}
-            onChange={props.onGridModeChange}
-        />
         <SwitchField
             label="Wrap grid"
             checked={props.wrapMode}
