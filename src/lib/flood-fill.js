@@ -2,11 +2,13 @@ import { Random } from '/lib/random'
 
 
 export class OrganicFill {
-    constructor({onFill, canFill, fillChance, maxFills}) {
-        this.onFill = onFill || function(){}
-        this.canFill = canFill || (() => false)
-        this.fillChance = fillChance || 1
-        this.maxFills = maxFills || (() => 1)
+    constructor(params={}) {
+        this.onFill = params.onFill || function(){}
+        this.onBorder = params.onBorder || function(){}
+        this.isEmpty = params.isEmpty || (() => false)
+        this.isOccupied = params.isOccupied || (() => true)
+        this.fillChance = params.fillChance || 1
+        this.maxFills = params.maxFills || (() => 1)
     }
 
     fill(points, value) {
@@ -23,13 +25,17 @@ export class OrganicFill {
     _adjacentFill(points, value) {
         let newPoints = []
         points.forEach(point => {
+            let isBorder = false
             point.adjacents(adjacent => {
-                if (! this.canFill(adjacent))
-                    return false
-                this.onFill(adjacent, value)
-                newPoints.push(adjacent)
+                if (this.isEmpty(adjacent)) {
+                    this.onFill(adjacent, value)
+                    newPoints.push(adjacent)
+                } else if (this.isOccupied(adjacent, value)) {
+                    isBorder = true
+                }
                 return true
             })
+            if (isBorder) this.onBorder(point, value)
         })
         return newPoints
     }

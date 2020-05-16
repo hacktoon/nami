@@ -15,9 +15,9 @@ export class RegionGrid {
         this.height = height
     }
 
-    set(point, value, type=TYPE_NORMAL) {
+    set(point, value, type=TYPE_NORMAL, layer=0) {
         if (! this.isEmpty(point)) return
-        this.grid.set(point, new GridItem(value, type))
+        this.grid.set(point, new GridItem(value, type, layer))
         this.emptyPoints--
     }
 
@@ -25,8 +25,8 @@ export class RegionGrid {
         this.set(point, value, TYPE_ORIGIN)
     }
 
-    setBorder(point, value) {
-        this.set(point, value, TYPE_BORDER)
+    setBorder(point) {
+        this.get(point).type = TYPE_BORDER
     }
 
     get(point) {
@@ -44,8 +44,21 @@ export class RegionGrid {
 
 
 class GridItem {
-    constructor(value=EMPTY_VALUE, type=TYPE_NORMAL) {
+    constructor(value=EMPTY_VALUE, type=TYPE_NORMAL, layer=0) {
         this.value = value
         this.type = type
+        this.layer = layer
+    }
+
+    isOrigin() {
+        return this.type === TYPE_ORIGIN
+    }
+
+    isBorder() {
+        return this.type === TYPE_BORDER
+    }
+
+    isLayer(layer) {
+        return this.layer === layer
     }
 }
