@@ -24,8 +24,9 @@ export class RegionGrid {
     }
 
     setBorder(point) {
-        this.get(point).type = TYPE_BORDER
-
+        const item = this.get(point)
+        if (item.type != TYPE_ORIGIN)
+            item.type = TYPE_BORDER
     }
 
     setValue(point, value) {

@@ -96,9 +96,9 @@ function createGridFill(grid) {
             return !grid.isEmpty(point) && !grid.isValue(point, value)
         },
         setFill:    (point, value) => grid.setValue(point, value),
-        setBorder:  (point, value) => grid.setBorder(point, value),
+        setBorder:  (point) => grid.setBorder(point),
         maxFills:   () => Random.int(50),
-        fillChance: .2,
+        fillChance: .1,
     })
 }
 
