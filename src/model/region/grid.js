@@ -25,8 +25,8 @@ export class RegionGrid {
         this.set(point, value, TYPE_ORIGIN)
     }
 
-    setBorder(point) {
-        this.get(point).type = TYPE_BORDER
+    setBorder(point, value) {
+        this.set(point, value, TYPE_BORDER)
     }
 
     get(point) {

@@ -87,13 +87,13 @@ function createConfig(params={}) {
 
 function createGridFill(grid) {
     return new OrganicFill({
-        onFill:     (point, value) => grid.set(point, value),
-        isEmpty:    point => grid.isEmpty(point),
-        isOccupied: (point, currentValue) => {
+        isEmpty:    (point) => grid.isEmpty(point),
+        isBorder:   (point, value) => {
             const notEmpty = !grid.isEmpty(point)
-            return notEmpty && grid.get(point) !== currentValue
+            return notEmpty && grid.get(point) !== value
         },
-        onBorder:   point => grid.setBorder(point),
+        setFill:    (point, value) => grid.set(point, value),
+        setBorder:  (point, value) => grid.setBorder(point, value),
         maxFills:   () => Random.int(50),
         fillChance: .2,
     })

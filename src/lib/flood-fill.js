@@ -3,10 +3,10 @@ import { Random } from '/lib/random'
 
 export class OrganicFill {
     constructor(params={}) {
-        this.onFill = params.onFill || function(){}
-        this.onBorder = params.onBorder || function(){}
+        this.setFill = params.setFill || function(){}
+        this.setBorder = params.setBorder || function(){}
         this.isEmpty = params.isEmpty || (() => false)
-        this.isOccupied = params.isOccupied || (() => true)
+        this.isBorder = params.isBorder || (() => true)
         this.fillChance = params.fillChance || 1
         this.maxFills = params.maxFills || (() => 1)
     }
@@ -25,17 +25,14 @@ export class OrganicFill {
     _adjacentFill(points, value) {
         let newPoints = []
         points.forEach(point => {
-            let isBorder = false
             point.adjacents(adjacent => {
                 if (this.isEmpty(adjacent)) {
-                    this.onFill(adjacent, value)
+                    this.setFill(adjacent, value)
                     newPoints.push(adjacent)
-                } else if (this.isOccupied(adjacent, value)) {
-                    isBorder = true
+                } else if (this.isBorder(adjacent, value)) {
+                    this.setBorder(point, value)
                 }
-                return true
             })
-            if (isBorder) this.onBorder(point, value)
         })
         return newPoints
     }
