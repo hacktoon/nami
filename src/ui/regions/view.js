@@ -5,22 +5,20 @@ import { Form } from '/lib/ui'
 import { NumberField, SwitchField } from '/lib/ui/field'
 
 
-const DEFAULT_TILE_SIZE = 4
+const DEFAULT_TILE_SIZE = 5
 
 
-function getColor(regionMap, point) {
-    const region = regionMap.get(point)
-    const color = region.color.toHex()
+function getColor(regionMap, point, layer) {
+    const region = regionMap.get(point, layer)
+    const color = region.color
 
     if (regionMap.isBorder(point)) {
-        return 'red'
+        return color.darken(40).toHex()
     }
     if (regionMap.isOrigin(point)) {
         return 'black'
     }
-    // return color.darken(amount).toHex()
-
-    return color
+    return color.toHex()
 }
 
 
@@ -41,7 +39,7 @@ export default function RegionMapView({regionMap}) {
         <GridDisplay
             width={regionMap.width}
             height={regionMap.height}
-            colorAt={point => getColor(regionMap, point)}
+            colorAt={point => getColor(regionMap, point, layer)}
             tilesize={tilesize}
             wrapMode={wrapMode}
         />

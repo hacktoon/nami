@@ -19,7 +19,7 @@ export class RegionMap {
         this.height = grid.height
     }
 
-    get(point) {
+    get(point, layer) {
         const id = this.grid.get(point).value
         return this.regions[id]
     }
