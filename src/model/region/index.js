@@ -21,7 +21,8 @@ export class RegionMap {
 
     get(point) {
         const id = this.grid.get(point).value
-        return this.regions[id]
+        const isBorder = this.grid.isBorder(point)
+        return [this.regions[id], isBorder]
     }
 }
 
@@ -89,8 +90,7 @@ function createGridFill(grid) {
     return new OrganicFill({
         isEmpty:    (point) => grid.isEmpty(point),
         isBorder:   (point, value) => {
-            const notEmpty = !grid.isEmpty(point)
-            return notEmpty && grid.get(point) !== value
+            return !grid.isEmpty(point) && !grid.isValue(point, value)
         },
         setFill:    (point, value) => grid.set(point, value),
         setBorder:  (point, value) => grid.setBorder(point, value),

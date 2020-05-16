@@ -9,7 +9,7 @@ const DEFAULT_TILE_SIZE = 4
 
 
 function getColor(regionMap, point) {
-    const region = regionMap.get(point)
+    const [region, isBorder] = regionMap.get(point)
     const color = region.color.toHex()
 
     /*
@@ -22,6 +22,10 @@ function getColor(regionMap, point) {
     */
     if (region.isOrigin(regionMap.grid.grid.wrap(point))) {
         return 'black'
+    }
+
+    if (isBorder) {
+        return 'red'
     }
 
 

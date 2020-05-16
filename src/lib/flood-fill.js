@@ -25,14 +25,19 @@ export class OrganicFill {
     _adjacentFill(points, value) {
         let newPoints = []
         points.forEach(point => {
+            let isBorder = false
             point.adjacents(adjacent => {
                 if (this.isEmpty(adjacent)) {
                     this.setFill(adjacent, value)
                     newPoints.push(adjacent)
-                } else if (this.isBorder(adjacent, value)) {
-                    this.setBorder(point, value)
+                }
+                if (this.isBorder(adjacent, value)) {
+                    isBorder = true
                 }
             })
+            if (isBorder) {
+                this.setBorder(point)
+            }
         })
         return newPoints
     }

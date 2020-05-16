@@ -21,12 +21,13 @@ export class RegionGrid {
         this.emptyPoints--
     }
 
-    setOrigin(point, value) {
-        this.set(point, value, TYPE_ORIGIN)
+    setOrigin(point) {
+        this.get(point).type = TYPE_ORIGIN
     }
 
-    setBorder(point, value) {
-        this.set(point, value, TYPE_BORDER)
+    setBorder(point) {
+        this.get(point).type = TYPE_BORDER
+
     }
 
     get(point) {
@@ -35,6 +36,14 @@ export class RegionGrid {
 
     isEmpty(point) {
         return this.get(point).value === EMPTY_VALUE
+    }
+
+    isBorder(point) {
+        return this.get(point).type === TYPE_BORDER
+    }
+
+    isValue(point, value) {
+        return this.get(point).value === value
     }
 
     hasEmptyPoints() {
