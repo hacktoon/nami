@@ -21,8 +21,15 @@ export class RegionMap {
 
     get(point) {
         const id = this.grid.get(point).value
-        const isBorder = this.grid.isBorder(point)
-        return [this.regions[id], isBorder]
+        return this.regions[id]
+    }
+
+    isOrigin(point) {
+        return this.grid.isOrigin(point)
+    }
+
+    isBorder(point) {
+        return this.grid.isBorder(point)
     }
 }
 
@@ -48,10 +55,6 @@ class Region {
         return this.layers[lastIndex].points
     }
 
-    isOrigin(point) {
-        return this.origin.equals(point)
-    }
-
     has(point) {
         return this.layers.has(point)
     }
@@ -68,7 +71,7 @@ export function createRegionMap(params={}) {
     const {count, width, height} = createConfig(params)
     const points = createPoints(count, width, height)
     const grid = new RegionGrid(width, height)
-    const regions = createRegions(points)
+    const regions = createRegions(points, grid)
     const gridFill = createGridFill(grid)
     while(grid.hasEmptyPoints()) {
         growRegions(regions, gridFill)
@@ -92,7 +95,7 @@ function createGridFill(grid) {
         isBorder:   (point, value) => {
             return !grid.isEmpty(point) && !grid.isValue(point, value)
         },
-        setFill:    (point, value) => grid.set(point, value),
+        setFill:    (point, value) => grid.setValue(point, value),
         setBorder:  (point, value) => grid.setBorder(point, value),
         maxFills:   () => Random.int(50),
         fillChance: .2,
@@ -105,8 +108,11 @@ function createPoints(count, width, height) {
 }
 
 
-function createRegions(points) {
-    return points.map((point, id) => new Region(id, point, [point]))
+function createRegions(points, grid) {
+    return points.map((point, id) => {
+        grid.setOrigin(point)
+        return new Region(id, point, [point])
+    })
 }
 
 
