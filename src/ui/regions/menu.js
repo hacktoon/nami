@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { NumberField } from '/lib/ui/field'
+import { TextField, NumberField } from '/lib/ui/field'
 import { Form, Button } from '/lib/ui'
 import {
     DEFAULT_COUNT,
@@ -13,11 +13,14 @@ export default function ConfigMenu(props) {
     let [count, setCount] = useState(DEFAULT_COUNT)
     let [width, setWidth] = useState(DEFAULT_WIDTH)
     let [height, setHeight] = useState(DEFAULT_HEIGHT)
+    let [seed, setSeed] = useState('')
 
     let onSubmit = event => {
         event.preventDefault()
-        props.onChange({count, width, height})
+        props.onChange({count, width, height, seed})
     }
+
+    const onSeedChange = event => setSeed(event.target.value.trim())
 
     return <Form className="ConfigMenu" onSubmit={onSubmit}>
         <NumberField
@@ -41,6 +44,7 @@ export default function ConfigMenu(props) {
             step={1}
             min={1}
         />
+        <TextField  label="Seed" onChange={onSeedChange} />
         <Button text="New" />
     </Form>
 }

@@ -86,11 +86,20 @@ export function createRegionMap(params={}) {
 
 
 function createConfig(params={}) {
-    return Object.assign({
+    function _normalizeSeed(seed) {
+        seed = String(seed).length ? seed : Number(new Date())
+        Random.seed = seed
+        return seed
+    }
+
+    const config = Object.assign({
         count: DEFAULT_COUNT,
         width: DEFAULT_WIDTH,
-        height: DEFAULT_HEIGHT
+        height: DEFAULT_HEIGHT,
+        seed: ''
     }, params)
+    config.seed = _normalizeSeed(params.seed)
+    return config
 }
 
 
