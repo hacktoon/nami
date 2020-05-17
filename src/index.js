@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 import WorldApp from '/ui/world'
-import RegionMapApp from '/ui/regions'
+import RegionMapApp from '/ui/regionmap'
+import HeightMapApp from '/ui/heightmap'
+
 import { Text } from '/lib/ui'
 import { SelectField } from '/lib/ui/field'
 
@@ -12,9 +14,10 @@ import "./index.css"
 
 const APPS = {
     world: { id: 'world', name: 'World', component: <WorldApp /> },
-    regionMap: { id: 'regionMap', name: 'Region Map', component: <RegionMapApp /> }
+    regionMap: { id: 'regionMap', name: 'Region Map', component: <RegionMapApp /> },
+    heightMap: { id: 'heightMap', name: 'Height Map', component: <HeightMapApp /> }
 }
-const DEFAULT_APP = APPS.regionMap
+const DEFAULT_APP = APPS.heightMap
 
 
 function Main() {
