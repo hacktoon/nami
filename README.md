@@ -8,18 +8,19 @@
 
 ## ROADMAP
 
-
 ### Model
+
+#### HeightMap
+- Use Simplex Noise
+- Create color range input
+- Create color range input
 
 #### TectonicsMap
 - RegionMap
   - Store borders for each plate neighborhood
   - Store plate adjacency matrix
 
-  - Use FloodFill to discover region borders
   - create ridges separately in tectonics map, using total and start point of border points
-  - Make FloodFill a composable function
-    - create rules and call `floodFill(rules)`
 - Build regions adjacency table
 - Start geologic deformation in plate borders
 - For each point, draw a (asc|desc)ending height line opposed to the plate direction
