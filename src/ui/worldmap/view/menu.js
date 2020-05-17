@@ -6,8 +6,8 @@ import { NumberField, SelectField, OutputField, SwitchField } from '/lib/ui/fiel
 
 export function Menu(props) {
     return <Form className="Menu">
-        <OutputField label="Name" value={props.world.name} />
-        <OutputField label="Seed" value={props.world.seed} />
+        <OutputField label="Name" value={props.worldMap.name} />
+        <OutputField label="Seed" value={props.worldMap.seed} />
         <SwitchField
             label="Wrap grid"
             checked={props.wrapMode}

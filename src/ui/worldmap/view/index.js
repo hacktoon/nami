@@ -7,7 +7,7 @@ import { GridDisplay } from '/lib/ui/grid'
 const DEFAULT_TILE_SIZE = 10
 
 
-export default function WorldView({world}) {
+export default function WorldView({worldMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
 
@@ -17,13 +17,13 @@ export default function WorldView({world}) {
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             tilesize={tilesize}
             wrapMode={wrapMode}
-            world={world}
+            worldMap={worldMap}
 
         />
         <GridDisplay
-            width={world.width}
-            height={world.height}
-            colorAt={point => world.getColor(point)}
+            width={worldMap.width}
+            height={worldMap.height}
+            colorAt={point => worldMap.getColor(point)}
             tilesize={tilesize}
             wrapMode={wrapMode}
         />

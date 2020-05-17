@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
-import WorldApp from '/ui/world'
+import WorldMapApp from '/ui/worldmap'
 import RegionMapApp from '/ui/regionmap'
 import HeightMapApp from '/ui/heightmap'
 
@@ -13,7 +13,7 @@ import "./index.css"
 
 
 const APPS = {
-    world: { id: 'world', name: 'World', component: <WorldApp /> },
+    worldMap: { id: 'worldMap', name: 'World Map', component: <WorldMapApp /> },
     regionMap: { id: 'regionMap', name: 'Region Map', component: <RegionMapApp /> },
     heightMap: { id: 'heightMap', name: 'Height Map', component: <HeightMapApp /> }
 }

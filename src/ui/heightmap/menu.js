@@ -6,7 +6,7 @@ import {
     DEFAULT_RESOLUTION,
     DEFAULT_WIDTH,
     DEFAULT_HEIGHT
-} from '/model/regionmap'
+} from '/model/heightmap'
 
 
 export default function ConfigMenu(props) {
