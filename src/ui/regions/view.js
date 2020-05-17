@@ -9,9 +9,12 @@ const DEFAULT_TILE_SIZE = 5
 
 
 function getColor(regionMap, point, layer) {
-    const region = regionMap.get(point, layer)
+    const region = regionMap.get(point)
     const color = region.color
 
+    if (regionMap.getLayer(point) > Number(layer)) {
+        return 'white'
+    }
     if (regionMap.isBorder(point)) {
         return color.darken(40).toHex()
     }
@@ -29,7 +32,7 @@ export default function RegionMapView({regionMap}) {
 
     return <section className="RegionMapView">
         <Menu
-            onLayerChange={event => setLayer(event.target.value)}
+            onLayerChange={event => setLayer(Number(event.target.value))}
             onTilesizeChange={event => setTilesize(event.target.value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             wrapMode={wrapMode}
@@ -68,7 +71,7 @@ function Menu(props) {
             value={props.layer}
             onChange={props.onLayerChange}
             step={1}
-            min={1}
+            min={0}
         />
     </Form>
 }

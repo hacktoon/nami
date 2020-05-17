@@ -19,7 +19,7 @@ export class RegionMap {
         this.height = grid.height
     }
 
-    get(point, layer) {
+    get(point) {
         const id = this.grid.get(point).value
         return this.regions[id]
     }
@@ -30,6 +30,10 @@ export class RegionMap {
 
     isBorder(point) {
         return this.grid.isBorder(point)
+    }
+
+    getLayer(point) {
+        return this.grid.getLayer(point)
     }
 }
 
@@ -73,8 +77,9 @@ export function createRegionMap(params={}) {
     const grid = new RegionGrid(width, height)
     const regions = createRegions(points, grid)
     const gridFill = createGridFill(grid)
+    let layer = 0
     while(grid.hasEmptyPoints()) {
-        growRegions(regions, gridFill)
+        growRegions(layer++, regions, gridFill)
     }
     return new RegionMap(regions, grid)
 }
@@ -95,7 +100,10 @@ function createGridFill(grid) {
         isBorder:   (point, value) => {
             return !grid.isEmpty(point) && !grid.isValue(point, value)
         },
-        setFill:    (point, value) => grid.setValue(point, value),
+        setFill:    (point, value, layer) => {
+            grid.setValue(point, value)
+            grid.setLayer(point, layer)
+        },
         setBorder:  (point) => grid.setBorder(point),
         maxFills:   () => Random.int(50),
         fillChance: .1,
@@ -111,14 +119,16 @@ function createPoints(count, width, height) {
 function createRegions(points, grid) {
     return points.map((point, id) => {
         grid.setOrigin(point)
+        grid.setValue(point, id)
         return new Region(id, point, [point])
     })
 }
 
 
-function growRegions(regions, gridFill) {
+function growRegions(layer, regions, gridFill) {
     for(let region of regions) {
-        const newPoints = gridFill.fill(region.lastPoints, region.id)
+        const points = region.lastPoints
+        const newPoints = gridFill.fill(points, region.id, layer)
         region.grow(newPoints)
     }
 }

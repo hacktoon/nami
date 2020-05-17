@@ -11,24 +11,24 @@ export class OrganicFill {
         this.maxFills = params.maxFills || (() => 1)
     }
 
-    fill(points, value) {
-        let newPoints = this._adjacentFill(points, value)
+    fill(points, value, layer) {
+        let newPoints = this.adjacentFill(points, value, layer)
         let times_remaining = this.maxFills()
         while(newPoints.length && times_remaining--) {
             let randPoints = newPoints.filter(() => Random.chance(this.fillChance))
-            let newRandPoints = this._adjacentFill(randPoints, value)
+            let newRandPoints = this.adjacentFill(randPoints, value, layer)
             newPoints.push(...newRandPoints)
         }
         return newPoints
     }
 
-    _adjacentFill(points, value) {
+    adjacentFill(points, value, layer) {
         let newPoints = []
         points.forEach(point => {
             let isBorder = false
             point.adjacents(adjacent => {
                 if (this.isEmpty(adjacent)) {
-                    this.setFill(adjacent, value)
+                    this.setFill(adjacent, value, layer)
                     newPoints.push(adjacent)
                 }
                 if (this.isBorder(adjacent, value)) {

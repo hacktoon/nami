@@ -35,20 +35,28 @@ export class RegionGrid {
         this.emptyPoints--
     }
 
+    setLayer(point, layer) {
+        this.get(point).layer = layer
+    }
+
     isEmpty(point) {
         return this.get(point).value === EMPTY_VALUE
     }
 
     isOrigin(point) {
-        return this.get(point).type === TYPE_ORIGIN
+        return this.get(point).isOrigin()
     }
 
     isBorder(point) {
-        return this.get(point).type === TYPE_BORDER
+        return this.get(point).isBorder()
+    }
+
+    getLayer(point) {
+        return this.get(point).layer
     }
 
     isValue(point, value) {
-        return this.get(point).value === value
+        return this.get(point).isValue(value)
     }
 
     hasEmptyPoints() {
@@ -74,5 +82,9 @@ class GridItem {
 
     isLayer(layer) {
         return this.layer === layer
+    }
+
+    isValue(value) {
+        return this.value === value
     }
 }
