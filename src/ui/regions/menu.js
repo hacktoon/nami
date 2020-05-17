@@ -6,7 +6,7 @@ import {
     DEFAULT_COUNT,
     DEFAULT_WIDTH,
     DEFAULT_HEIGHT
-} from '/model/region'
+} from '/model/regionmap'
 
 
 export default function ConfigMenu(props) {

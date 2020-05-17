@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { createRegionMap } from '/model/region'
+import { createRegionMap } from '/model/regionmap'
 import ConfigMenu from './menu'
 import RegionMapView from './view'
 
