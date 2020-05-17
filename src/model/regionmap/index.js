@@ -11,8 +11,9 @@ export const DEFAULT_WIDTH = 150
 export const DEFAULT_HEIGHT = 150
 
 
-export class RegionMap {
-    constructor(regions, grid) {
+class RegionMap {
+    constructor(seed, regions, grid) {
+        this.seed = seed
         this.regions = regions
         this.grid = grid
         this.width = grid.width
@@ -72,7 +73,7 @@ class Region {
 // FUNCTIONS ===================================
 
 export function createRegionMap(params={}) {
-    const {count, width, height} = createConfig(params)
+    const {count, width, height, seed} = createConfig(params)
     const points = createPoints(count, width, height)
     const grid = new RegionGrid(width, height)
     const regions = createRegions(points, grid)
@@ -81,7 +82,7 @@ export function createRegionMap(params={}) {
     while(grid.hasEmptyPoints()) {
         growRegions(layer++, regions, gridFill)
     }
-    return new RegionMap(regions, grid)
+    return new RegionMap(seed, regions, grid)
 }
 
 
@@ -98,7 +99,7 @@ function createConfig(params={}) {
         height: DEFAULT_HEIGHT,
         seed: ''
     }, params)
-    config.seed = _normalizeSeed(params.seed)
+    config.seed = _normalizeSeed(config.seed)
     return config
 }
 

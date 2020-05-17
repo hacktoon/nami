@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { GridDisplay } from '/lib/ui/grid'
 import { Form } from '/lib/ui'
-import { NumberField, SwitchField } from '/lib/ui/field'
+import { OutputField, NumberField, SwitchField } from '/lib/ui/field'
 
 
 const DEFAULT_TILE_SIZE = 5
@@ -38,6 +38,7 @@ export default function RegionMapView({regionMap}) {
             wrapMode={wrapMode}
             tilesize={tilesize}
             layer={layer}
+            seed={regionMap.seed}
         />
         <GridDisplay
             width={regionMap.width}
@@ -54,6 +55,7 @@ function Menu(props) {
     const onSubmit = event => event.preventDefault()
 
     return <Form className="Menu" onSubmit={onSubmit}>
+        <OutputField label="Seed" value={props.seed} />
         <SwitchField
             label="Wrap grid"
             checked={props.wrapMode}
