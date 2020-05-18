@@ -1,18 +1,22 @@
 import React, { useState } from 'react'
 
+import { SimplexNoise } from '/lib/noise'
 import { GridDisplay } from '/lib/ui/grid'
 import { Form } from '/lib/ui'
+import { Color } from '/lib/color'
 import { OutputField, NumberField, SwitchField } from '/lib/ui/field'
 
 
 const DEFAULT_TILE_SIZE = 5
+const simplex = new SimplexNoise()
 
 
 function getColor(heightMap, point) {
     // const region = heightMap.get(point)
-    // const color = region.color
-
-    return 'blue'
+    let {x, y} = point
+    const scale = .01
+    const height = simplex.noise(8, x, y, .6, scale, 0, 255)
+    return new Color(height, height, height).toHex()
 }
 
 
