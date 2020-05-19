@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import { Form } from '/lib/ui'
+import { Color } from '/lib/color'
 import { GridDisplay } from '/lib/ui/grid'
 import {
     TextField,
@@ -12,27 +13,35 @@ import {
 
 const DEFAULT_TILE_SIZE = 5
 
+
+function buildColor(string) {
+    if (string === '') return
+    return Color.fromHex(string)
+}
+
+
 class Render {
-    constructor(regionMap, colorMap, bgColor) {
+    constructor(regionMap, colorMap, fgColor, bgColor) {
         this.regionMap = regionMap
         this.colorMap = colorMap
-        this.bgColor = bgColor
+        this.fgColor = buildColor(fgColor)
+        this.bgColor = buildColor(bgColor) || new Color()
     }
 
-    color(point, layer) {
+    colorAt(point, layer) {
         const region = this.regionMap.get(point)
-        const color = this.colorMap[region.id]
+        const fgColor = this.fgColor ? this.fgColor : this.colorMap[region.id]
 
         if (this.regionMap.getLayer(point) > Number(layer)) {
-            return this.bgColor
+            return this.bgColor.toHex()
         }
         if (this.regionMap.isBorder(point)) {
-            return color.darken(40).toHex()
+            return fgColor.darken(40).toHex()
         }
         if (this.regionMap.isOrigin(point)) {
-            return 'black'
+            return '#000'
         }
-        return color.toHex()
+        return fgColor.toHex()
     }
 }
 
@@ -40,18 +49,21 @@ class Render {
 export default function RegionMapView({regionMap, colorMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
+    const [fgColor, setFGColor] = useState('#461')
+    const [bgColor, setBGColor] = useState('#337')
     const [layer, setLayer] = useState(0)
-    const [bgColor, setBGColor] = useState('#FFF')
 
-    const render = new Render(regionMap, colorMap, bgColor)
+    const render = new Render(regionMap, colorMap, fgColor, bgColor)
 
     return <section className="RegionMapView">
         <Menu
             onLayerChange={event => setLayer(Number(event.target.value))}
             onTilesizeChange={event => setTilesize(event.target.value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
-            onBgColorChange={event => setBGColor(event.target.value)}
+            onFGColorChange={event => setFGColor(event.target.value)}
+            onBGColorChange={event => setBGColor(event.target.value)}
             wrapMode={wrapMode}
+            fgColor={fgColor}
             bgColor={bgColor}
             tilesize={tilesize}
             layer={layer}
@@ -60,7 +72,7 @@ export default function RegionMapView({regionMap, colorMap}) {
         <GridDisplay
             width={regionMap.width}
             height={regionMap.height}
-            colorAt={point => render.color(point, layer)}
+            colorAt={point => render.colorAt(point, layer)}
             tilesize={tilesize}
             wrapMode={wrapMode}
         />
@@ -93,9 +105,14 @@ function Menu(props) {
             min={0}
         />
         <TextField
+            label="FG color"
+            value={props.fgColor}
+            onChange={props.onFGColorChange}
+        />
+        <TextField
             label="BG color"
             value={props.bgColor}
-            onChange={props.onBgColorChange}
+            onChange={props.onBGColorChange}
         />
     </Form>
 }

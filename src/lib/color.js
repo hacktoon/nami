@@ -50,11 +50,12 @@ export class Color {
     }
 
     static fromHex(string) {
-        let hex = string.replace('#', '')
-
-        if (hex.length == 3)
+        let hex = string.trim().replace('#', '')
+        let length = hex.length
+        if (length !== 3 && length != 6)
+            return new Color(0, 0, 0)
+        if (length == 3)
             hex = expandShorthand(hex)
-
         return new Color(
             parseInt(hex.substring(0,2), 16),
             parseInt(hex.substring(2,4), 16),
