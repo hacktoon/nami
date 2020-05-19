@@ -2,7 +2,7 @@ import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { OrganicFill } from '/lib/flood-fill'
 import { PointHash } from '/lib/point'
-import { RegionGrid } from '/lib/grid/region'
+import { RegionGrid } from '/lib/grid'
 
 
 export const DEFAULT_COUNT = 15
@@ -10,7 +10,7 @@ export const DEFAULT_WIDTH = 150
 export const DEFAULT_HEIGHT = 150
 
 
-class RegionMap {
+class CityMap {
     constructor(seed, regions, grid) {
         this.seed = seed
         this.regions = regions
@@ -70,7 +70,7 @@ class Region {
 
 // FUNCTIONS ===================================
 
-export function createRegionMap(params={}) {
+export function createCityMap(params={}) {
     const {count, width, height, seed} = createConfig(params)
     const points = createPoints(count, width, height)
     const grid = new RegionGrid(width, height)
@@ -80,7 +80,7 @@ export function createRegionMap(params={}) {
     while(grid.hasEmptyPoints()) {
         growRegions(layer++, regions, gridFill)
     }
-    return new RegionMap(seed, regions, grid)
+    return new CityMap(seed, regions, grid)
 }
 
 
