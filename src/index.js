@@ -17,7 +17,7 @@ const APPS = {
     regionMap: { id: 'regionMap', name: 'Region Map', component: <RegionMapApp /> },
     heightMap: { id: 'heightMap', name: 'Height Map', component: <HeightMapApp /> }
 }
-const DEFAULT_APP = APPS.heightMap
+const DEFAULT_APP = APPS.regionMap
 
 
 function Main() {

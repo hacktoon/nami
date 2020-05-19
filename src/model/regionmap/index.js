@@ -2,7 +2,6 @@ import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { OrganicFill } from '/lib/flood-fill'
 import { PointHash } from '/lib/point'
-import { Color } from '/lib/color'
 import { RegionGrid } from './grid'
 
 
@@ -44,7 +43,6 @@ class Region {
         this.id = id
         this.origin = origin
         this.layers = [new PointHash(points)]
-        this.color = new Color()
     }
 
     get size() {

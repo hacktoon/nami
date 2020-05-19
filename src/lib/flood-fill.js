@@ -12,17 +12,21 @@ export class OrganicFill {
     }
 
     fill(points, value, layer) {
-        let newPoints = this.adjacentFill(points, value, layer)
+        let newPoints = this.fillAdjacents(points, value, layer)
         let times_remaining = this.maxFills()
         while(newPoints.length && times_remaining--) {
-            let randPoints = newPoints.filter(() => Random.chance(this.fillChance))
-            let newRandPoints = this.adjacentFill(randPoints, value, layer)
-            newPoints.push(...newRandPoints)
+            let randomPoints = this.fillRandomAdjacents(newPoints, value, layer)
+            newPoints.push(...randomPoints)
         }
         return newPoints
     }
 
-    adjacentFill(points, value, layer) {
+    fillRandomAdjacents(points, value, layer) {
+        let randPoints = points.filter(() => Random.chance(this.fillChance))
+        return this.fillAdjacents(randPoints, value, layer)
+    }
+
+    fillAdjacents(points, value, layer) {
         let newPoints = []
         points.forEach(point => {
             let isBorder = false
