@@ -2,7 +2,7 @@ import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { OrganicFill } from '/lib/flood-fill'
 import { PointHash } from '/lib/point'
-import { RegionGrid } from '/lib/grid'
+import { RegionGrid } from '/lib/grid/region'
 
 
 export const DEFAULT_COUNT = 15
@@ -12,11 +12,11 @@ export const DEFAULT_HEIGHT = 150
 
 class CityMap {
     constructor(seed, regions, grid) {
-        this.seed = seed
-        this.regions = regions
-        this.grid = grid
         this.width = grid.width
         this.height = grid.height
+        this.regions = regions
+        this.grid = grid
+        this.seed = seed
     }
 
     get(point) {

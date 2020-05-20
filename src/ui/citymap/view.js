@@ -14,7 +14,7 @@ function getColor(cityMap, point) {
 }
 
 
-export default function CityMapView({heightMap}) {
+export default function CityMapView({cityMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
 
@@ -25,12 +25,12 @@ export default function CityMapView({heightMap}) {
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             wrapMode={wrapMode}
             tilesize={tilesize}
-            seed={heightMap.seed}
+            seed={cityMap.seed}
         />
         <GridDisplay
-            width={heightMap.width}
-            height={heightMap.height}
-            colorAt={point => getColor(heightMap, point)}
+            width={cityMap.width}
+            height={cityMap.height}
+            colorAt={point => getColor(cityMap, point)}
             tilesize={tilesize}
             wrapMode={wrapMode}
         />
