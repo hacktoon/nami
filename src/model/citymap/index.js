@@ -1,7 +1,7 @@
 import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { OrganicFill } from '/lib/flood-fill'
-import { PointHash } from '/lib/point'
+import { Region } from '/model/region'
 import { RegionGrid } from '/lib/grid/region'
 
 
@@ -34,36 +34,6 @@ class CityMap {
 
     getLayer(point) {
         return this.grid.getLayer(point)
-    }
-}
-
-
-class Region {
-    constructor(id, origin, points) {
-        this.id = id
-        this.origin = origin
-        this.layers = [new PointHash(points)]
-    }
-
-    get size() {
-        //return this.layers.size
-    }
-
-    get points() {
-        //return this.layers.points
-    }
-
-    get lastPoints() {
-        const lastIndex = this.layers.length - 1
-        return this.layers[lastIndex].points
-    }
-
-    has(point) {
-        return this.layers.has(point)
-    }
-
-    grow(newPoints=[]) {
-        this.layers.push(new PointHash(newPoints))
     }
 }
 

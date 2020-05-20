@@ -10,18 +10,14 @@
 
 ### Model
 
-#### HeightMap
-- Use Simplex Noise
-- Create color range input
-- Create color range input
+#### RegionMap
+- Build regions adjacency table
 
 #### TectonicsMap
 - RegionMap
   - Store borders for each plate neighborhood
-  - Store plate adjacency matrix
 
   - create ridges separately in tectonics map, using total and start point of border points
-- Build regions adjacency table
 - Start geologic deformation in plate borders
 - For each point, draw a (asc|desc)ending height line opposed to the plate direction
   - Line size is defined by plate speed
@@ -31,10 +27,17 @@
 - First 2-3 layers are always land (cratons)
 
 #### TerrainMap
+- Build vector map
+  - Align subregions points to other regions plates that collide
 - Build distance map from coast borders
 - Property (water: bool)
 - Use ScanlineFill to discover areas
 - Set id's on Grid during scanline fill
+
+#### (MAYBE) ErosionMap
+- Eliminate hard/pointy edges - smooth terrain
+- discover river paths
+- Start from highest points, flood fill
 
 #### OceanMap
 - Decide it's type when finished, set type on object WaterBody
