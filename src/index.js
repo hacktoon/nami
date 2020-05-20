@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 
 import WorldMapApp  from '/ui/worldmap'
 import RegionMapApp from '/ui/regionmap'
-import HeightMapApp from '/ui/heightmap'
+import NoiseMapApp from '/ui/noisemap'
 import CityMapApp   from '/ui/citymap'
 
 import { Text } from '/lib/ui'
@@ -16,7 +16,7 @@ import "./index.css"
 const APPS = {
     worldMap: { id: 'worldMap', name: 'World Map', component: <WorldMapApp /> },
     regionMap: { id: 'regionMap', name: 'Region Map', component: <RegionMapApp /> },
-    heightMap: { id: 'heightMap', name: 'Height Map', component: <HeightMapApp /> },
+    noiseMap: { id: 'noiseMap', name: 'Noise Map', component: <NoiseMapApp /> },
     cityMap: { id: 'cityMap', name: 'City Map', component: <CityMapApp /> }
 }
 const DEFAULT_APP = APPS.regionMap

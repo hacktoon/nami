@@ -7,7 +7,7 @@ export const DEFAULT_WIDTH = 150
 export const DEFAULT_HEIGHT = 150
 
 
-class HeightMap {
+class NoiseMap {
     constructor(seed, grid, resolution) {
         this.seed = seed
         this.grid = grid
@@ -25,11 +25,11 @@ class HeightMap {
 
 // FUNCTIONS ===================================
 
-export function createHeightMap(params={}) {
+export function createNoiseMap(params={}) {
     const {resolution, width, height, seed} = createConfig(params)
     const grid = new Grid(width, height)
 
-    return new HeightMap(seed, grid, resolution)
+    return new NoiseMap(seed, grid, resolution)
 }
 
 

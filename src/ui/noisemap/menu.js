@@ -6,7 +6,7 @@ import {
     DEFAULT_RESOLUTION,
     DEFAULT_WIDTH,
     DEFAULT_HEIGHT
-} from '/model/heightmap'
+} from '/model/noisemap'
 
 
 export default function ConfigMenu(props) {
