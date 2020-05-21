@@ -3,7 +3,7 @@ import { Random } from '/lib/random'
 
 export class OrganicFill {
     constructor(params={}) {
-        this.setFill = params.setFill || function(){}
+        this.setValue = params.setValue || function(){}
         this.setBorder = params.setBorder || function(){}
         this.isEmpty = params.isEmpty || (() => false)
         this.isBorder = params.isBorder || (() => true)
@@ -12,38 +12,41 @@ export class OrganicFill {
     }
 
     fill(points, value, layer) {
-        let newPoints = this.fillAdjacents(points, value, layer)
-        let times_remaining = this.maxFills()
-        while(newPoints.length && times_remaining--) {
-            let randomPoints = this.fillRandomAdjacents(newPoints, value, layer)
-            newPoints.push(...randomPoints)
-        }
-        return newPoints
+        let filled = this.fillPoints(points, value, layer)
+        let seeds = this.getSeeds(filled, value)
+        // let times_remaining = this.maxFills
+        // while(seeds.length && times_remaining--) {
+        //     filled = this.fillRandomPoints(seeds, value, layer)
+        //     seeds = this.getSeeds(filled, value)
+        // }
+        return [filled, seeds]
     }
 
-    fillRandomAdjacents(points, value, layer) {
-        let randPoints = points.filter(() => Random.chance(this.fillChance))
-        return this.fillAdjacents(randPoints, value, layer)
+    fillRandomPoints(points, value, layer) {
+        let randomPoints = points.filter(() => Random.chance(this.fillChance))
+        return this.fillPoints(randomPoints, value, layer)
     }
 
-    fillAdjacents(points, value, layer) {
-        let newPoints = []
-        points.forEach(point => {
-            let isBorder = false
-            point.adjacents(adjacent => {
-                if (this.isEmpty(adjacent)) {
-                    this.setFill(adjacent, value, layer)
-                    newPoints.push(adjacent)
-                }
-                if (this.isBorder(adjacent, value)) {
-                    isBorder = true
-                }
-            })
-            if (isBorder) {
-                this.setBorder(point)
+    fillPoints(points, value, layer) {
+        return points.filter(point => {
+            if (this.isEmpty(point)) {
+                this.setValue(point, value, layer)
+                return true
             }
         })
-        return newPoints
+    }
+
+    getSeeds(points, value) {
+        let seeds = []
+        points.forEach(point => {
+            point.adjacents(seed => {
+                if (this.isEmpty(seed))
+                    seeds.push(seed)
+                if (this.isBorder(seed, value))
+                    this.setBorder(point)
+            })
+        })
+        return seeds
     }
 }
 

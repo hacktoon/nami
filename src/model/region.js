@@ -16,7 +16,7 @@ export class Region {
         //return this.layers.points
     }
 
-    get lastPoints() {
+    get seeds() {
         const lastIndex = this.layers.length - 1
         return this.layers[lastIndex].points
     }

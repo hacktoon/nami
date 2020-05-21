@@ -78,7 +78,7 @@ function createGridFill(grid) {
         isBorder:   (point, value) => {
             return !grid.isEmpty(point) && !grid.isValue(point, value)
         },
-        setFill:    (point, value, layer) => {
+        setValue:    (point, value, layer) => {
             grid.setValue(point, value)
             grid.setLayer(point, layer)
         },
@@ -105,7 +105,7 @@ function createRegions(points, grid) {
 
 function growRegions(layer, regions, gridFill) {
     for(let region of regions) {
-        const points = region.lastPoints
+        const points = region.seeds
         const newPoints = gridFill.fill(points, region.id, layer)
         region.grow(newPoints)
     }

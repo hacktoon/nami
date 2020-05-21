@@ -5,7 +5,7 @@ import { RegionGrid } from '/lib/grid/region'
 import { Region } from '/model/region'
 
 
-export const DEFAULT_COUNT = 15
+export const DEFAULT_COUNT = 1
 export const DEFAULT_WIDTH = 150
 export const DEFAULT_HEIGHT = 150
 
@@ -50,6 +50,8 @@ export function createRegionMap(params={}) {
     while(grid.hasEmptyPoints()) {
         growRegions(layer++, regions, gridFill)
     }
+    console.log('Created RegionMap: ', params);
+
     return new RegionMap(seed, regions, grid)
 }
 
@@ -78,7 +80,7 @@ function createGridFill(grid) {
         isBorder:   (point, value) => {
             return !grid.isEmpty(point) && !grid.isValue(point, value)
         },
-        setFill:    (point, value, layer) => {
+        setValue:    (point, value, layer) => {
             grid.setValue(point, value)
             grid.setLayer(point, layer)
         },
@@ -97,7 +99,6 @@ function createPoints(count, width, height) {
 function createRegions(points, grid) {
     return points.map((point, id) => {
         grid.setOrigin(point)
-        grid.setValue(point, id)
         return new Region(id, point, [point])
     })
 }
@@ -105,8 +106,9 @@ function createRegions(points, grid) {
 
 function growRegions(layer, regions, gridFill) {
     for(let region of regions) {
-        const points = region.lastPoints
-        const newPoints = gridFill.fill(points, region.id, layer)
-        region.grow(newPoints)
+        const [filled, seeds] = gridFill.fill(region.seeds, region.id, layer)
+        // if (filled.length <= 12)
+        //     console.log(`baseseeds ${region.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
+        region.grow(seeds)
     }
 }

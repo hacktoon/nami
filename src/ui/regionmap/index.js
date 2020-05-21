@@ -9,7 +9,7 @@ import "./index.css"
 
 
 export default function RegionMapApp() {
-    const [regionMap, setRegionMap] = useState(createRegionMap())
+    const [regionMap, setRegionMap] = useState(prev => prev || createRegionMap())
     const onConfigChange = config => setRegionMap(createRegionMap(config))
 
     const colorMap = Object.fromEntries(
