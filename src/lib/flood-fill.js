@@ -1,14 +1,21 @@
 import { Random } from '/lib/random'
 
 
+function h(pts) {
+    return pts.map(p => p.hash)
+}
+
 export class OrganicFill {
     constructor(originPoint, params={}) {
         this.layer = 0
         this.seeds = [originPoint]
         this.setOrigin = params.setOrigin || function(){}
         this.setValue = params.setValue || function(){}
+        this.setSeed = params.setSeed || function(){}
+        this.unsetSeed = params.unsetSeed || function(){}
         this.setLayer = params.setLayer || function(){}
         this.setBorder = params.setBorder || function(){}
+        this.isSeed = params.isSeed || (() => true)
         this.isEmpty = params.isEmpty || (() => false)
         this.isBlocked = params.isBlocked || (() => true)
         this.fillChance = params.fillChance || 1
@@ -18,17 +25,22 @@ export class OrganicFill {
     }
 
     fill() {
-        let filled = this.fillPoints(this.seeds)
-        let newSeeds = this.getSeeds(filled)
+        if (this.seeds.length == 0)
+            return
+        const filled = this.fillPoints(this.seeds)
+        let seeds = this.nextSeeds(filled)
+        // if (filled.length < 8)
+        //     console.log(h(filled), h(seeds));
+
         // let times_remaining = this.maxFills
         // while(seeds.length && times_remaining--) {
         //     filled = this.fillRandomPoints(seeds, value, layer)
-        //     seeds = this.getSeeds(filled, value)
+        //     seeds = this.nextSeeds(filled, value)
         // }
         this.layer++
-        this.seeds = newSeeds
+        this.seeds = seeds
         // console.log(`baseseeds ${region.gridFill.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
-        return [filled, newSeeds]
+        return filled
     }
 
     fillPoints(points) {
@@ -47,14 +59,19 @@ export class OrganicFill {
         return this.fillPoints(randomPoints)
     }
 
-    getSeeds(points) {
+    nextSeeds(filledPoints) {
         let seeds = []
-        points.forEach(point => {
+        if (filledPoints.length < 14)
+            console.log(h(filledPoints))
+        filledPoints.forEach(point => {
             point.adjacents(seed => {
-                if (this.isEmpty(seed))
+                if (this.isEmpty(seed) && !this.isSeed(seed)) {
+                    this.setSeed(seed)
                     seeds.push(seed)
-                if (this.isBlocked(seed))
+                }
+                if (this.isBlocked(seed)) {
                     this.setBorder(point)
+                }
             })
         })
         return seeds

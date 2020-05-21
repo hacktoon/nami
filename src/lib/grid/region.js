@@ -2,6 +2,7 @@ import { Grid } from './'
 
 
 const EMPTY_VALUE = null
+const NON_SEED_VALUE = null
 const TYPE_NORMAL = 1
 const TYPE_ORIGIN = 2
 const TYPE_BORDER = 3
@@ -39,6 +40,14 @@ export class RegionGrid {
         this.get(point).layer = layer
     }
 
+    setSeed(point, id) {
+        this.get(point).seed = id
+    }
+
+    isSeed(point) {
+        return this.get(point).seed !== NON_SEED_VALUE
+    }
+
     isEmpty(point) {
         return this.get(point).value === EMPTY_VALUE
     }
@@ -70,6 +79,7 @@ class GridCell {
         this.value = value
         this.type = type
         this.layer = layer
+        this.seed = NON_SEED_VALUE
     }
 
     isOrigin() {
