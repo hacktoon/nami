@@ -27,6 +27,7 @@ export class OrganicFill {
         // }
         this.layer++
         this.seeds = newSeeds
+        // console.log(`baseseeds ${region.gridFill.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
         return [filled, newSeeds]
     }
 

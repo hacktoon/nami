@@ -129,10 +129,14 @@ export class PointHash {
 
     get points() {
         const hashes = Array.from(this.set.values())
-        return hashes.map(h => Point.fromHash(h))
+        return hashes.map(hash => Point.fromHash(hash))
     }
 
     has(point) {
         return this.set.has(point.hash)
+    }
+
+    add(points) {
+        points.forEach(point => this.set.add(point.hash))
     }
 }

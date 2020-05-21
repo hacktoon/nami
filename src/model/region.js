@@ -23,7 +23,8 @@ export class Region {
     }
 
     grow() {
-        return this.gridFill.fill()
+        const [filled, ] = this.gridFill.fill()
+        this.pointHash.add(filled)
     }
 }
 

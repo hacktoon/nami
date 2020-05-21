@@ -40,13 +40,10 @@ class RegionMap {
 // FUNCTIONS ===================================
 
 export function createRegionMap(params={}) {
-    const {count, width, height, seed} = createConfig(params)
-    const points = createPoints(count, width, height)
+    const {seed, count, width, height} = createConfig(params)
     const grid = new RegionGrid(width, height)
+    const points = createPoints(count, width, height)
     const regions = createRegions(points, grid)
-    while(grid.hasEmptyPoints()) {
-        growRegions(regions)
-    }
     return new RegionMap(seed, regions, grid)
 }
 
@@ -75,14 +72,9 @@ function createPoints(count, width, height) {
 
 
 function createRegions(points, grid) {
-    return points.map((point, id) => new Region(id, point, grid))
-}
-
-
-function growRegions(regions) {
-    for(let region of regions) {
-        const [filled, seeds] = region.grow()
-        if (filled.length <= 12)
-            console.log(`baseseeds ${region.gridFill.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
+    const regions = points.map((point, id) => new Region(id, point, grid))
+    while(grid.hasEmptyPoints()) {
+        regions.forEach(region => region.grow())
     }
+    return regions
 }
