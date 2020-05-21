@@ -1,6 +1,5 @@
 import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
-import { OrganicFill } from '/lib/flood-fill'
 import { RegionGrid } from '/lib/grid/region'
 import { Region } from '/model/region'
 
@@ -45,13 +44,10 @@ export function createRegionMap(params={}) {
     const points = createPoints(count, width, height)
     const grid = new RegionGrid(width, height)
     const regions = createRegions(points, grid)
-    const gridFill = createGridFill(grid)
     let layer = 0
     while(grid.hasEmptyPoints()) {
-        growRegions(layer++, regions, gridFill)
+        growRegions(layer++, regions)
     }
-    console.log('Created RegionMap: ', params);
-
     return new RegionMap(seed, regions, grid)
 }
 
@@ -74,23 +70,6 @@ function createConfig(params={}) {
 }
 
 
-function createGridFill(grid) {
-    return new OrganicFill({
-        isEmpty:    (point) => grid.isEmpty(point),
-        isBorder:   (point, value) => {
-            return !grid.isEmpty(point) && !grid.isValue(point, value)
-        },
-        setValue:    (point, value, layer) => {
-            grid.setValue(point, value)
-            grid.setLayer(point, layer)
-        },
-        setBorder:  (point) => grid.setBorder(point),
-        maxFills:   () => Random.int(50),
-        fillChance: .1,
-    })
-}
-
-
 function createPoints(count, width, height) {
     return repeat(count, () => Point.random(width, height))
 }
@@ -99,16 +78,16 @@ function createPoints(count, width, height) {
 function createRegions(points, grid) {
     return points.map((point, id) => {
         grid.setOrigin(point)
-        return new Region(id, point, [point])
+        return new Region(id, point, grid)
     })
 }
 
 
-function growRegions(layer, regions, gridFill) {
+function growRegions(layer, regions) {
     for(let region of regions) {
-        const [filled, seeds] = gridFill.fill(region.seeds, region.id, layer)
-        // if (filled.length <= 12)
-        //     console.log(`baseseeds ${region.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
-        region.grow(seeds)
+        const [filled, seeds] = region.grow(layer)
+        if (filled.length <= 12)
+            console.log(`baseseeds ${region.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
+        region.addSeeds(seeds)
     }
 }
