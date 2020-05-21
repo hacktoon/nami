@@ -2,40 +2,46 @@ import { Random } from '/lib/random'
 
 
 export class OrganicFill {
-    constructor(params={}) {
+    constructor(originPoint, params={}) {
+        this.layer = 0
+        this.seeds = [originPoint]
+        this.setOrigin = params.setOrigin || function(){}
         this.setValue = params.setValue || function(){}
         this.setLayer = params.setLayer || function(){}
         this.setBorder = params.setBorder || function(){}
         this.isEmpty = params.isEmpty || (() => false)
-        this.isBorder = params.isBorder || (() => true)
+        this.isBlocked = params.isBlocked || (() => true)
         this.fillChance = params.fillChance || 1
         this.maxFills = params.maxFills || (() => 1)
+
+        this.setOrigin(originPoint)
     }
 
-    fill(points, layer) {
-        let filled = this.fillPoints(points, layer)
+    fill(points) {
+        let filled = this.fillPoints(points)
         let seeds = this.getSeeds(filled)
         // let times_remaining = this.maxFills
         // while(seeds.length && times_remaining--) {
         //     filled = this.fillRandomPoints(seeds, value, layer)
         //     seeds = this.getSeeds(filled, value)
         // }
+        this.layer++
         return [filled, seeds]
     }
 
-    fillRandomPoints(points, layer) {
-        let randomPoints = points.filter(() => Random.chance(this.fillChance))
-        return this.fillPoints(randomPoints, layer)
-    }
-
-    fillPoints(points, layer) {
+    fillPoints(points) {
         return points.filter(point => {
             if (this.isEmpty(point)) {
                 this.setValue(point)
-                this.setLayer(point, layer)
+                this.setLayer(point, this.layer)
                 return true
             }
         })
+    }
+
+    fillRandomPoints(points) {
+        let randomPoints = points.filter(() => Random.chance(this.fillChance))
+        return this.fillPoints(randomPoints)
     }
 
     getSeeds(points) {
@@ -44,7 +50,7 @@ export class OrganicFill {
             point.adjacents(seed => {
                 if (this.isEmpty(seed))
                     seeds.push(seed)
-                if (this.isBorder(seed))
+                if (this.isBlocked(seed))
                     this.setBorder(point)
             })
         })
