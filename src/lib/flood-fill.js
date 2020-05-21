@@ -17,19 +17,21 @@ export class OrganicFill {
         this.setOrigin(originPoint)
     }
 
-    fill(points) {
-        let filled = this.fillPoints(points)
-        let seeds = this.getSeeds(filled)
+    fill() {
+        let filled = this.fillPoints(this.seeds)
+        let newSeeds = this.getSeeds(filled)
         // let times_remaining = this.maxFills
         // while(seeds.length && times_remaining--) {
         //     filled = this.fillRandomPoints(seeds, value, layer)
         //     seeds = this.getSeeds(filled, value)
         // }
         this.layer++
-        return [filled, seeds]
+        this.seeds = newSeeds
+        return [filled, newSeeds]
     }
 
     fillPoints(points) {
+        // return only filled points
         return points.filter(point => {
             if (this.isEmpty(point)) {
                 this.setValue(point)

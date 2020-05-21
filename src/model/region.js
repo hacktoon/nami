@@ -7,32 +7,23 @@ export class Region {
         this.id = id
         this.origin = origin
         this.gridFill = createOrganicFill(id, origin, grid)
-        this.layers = [new PointHash([origin])]
+        this.pointHash = new PointHash([origin])
     }
 
     get size() {
-        //return this.layers.size
+        return this.pointHash.size
     }
 
     get points() {
-        //return this.layers.points
-    }
-
-    get seeds() {
-        const lastIndex = this.layers.length - 1
-        return this.layers[lastIndex].points
+        return this.pointHash.points
     }
 
     has(point) {
-        return this.layers.has(point)
+        return this.pointHash.has(point)
     }
 
     grow() {
-        return this.gridFill.fill(this.seeds)
-    }
-
-    addSeeds(points=[]) {
-        this.layers.push(new PointHash(points))
+        return this.gridFill.fill()
     }
 }
 

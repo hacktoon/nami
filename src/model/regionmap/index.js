@@ -83,7 +83,6 @@ function growRegions(regions) {
     for(let region of regions) {
         const [filled, seeds] = region.grow()
         if (filled.length <= 12)
-            console.log(`baseseeds ${region.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
-        region.addSeeds(seeds)
+            console.log(`baseseeds ${region.gridFill.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
     }
 }
