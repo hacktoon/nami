@@ -4,6 +4,7 @@ import { Random } from '/lib/random'
 export class OrganicFill {
     constructor(params={}) {
         this.setValue = params.setValue || function(){}
+        this.setLayer = params.setLayer || function(){}
         this.setBorder = params.setBorder || function(){}
         this.isEmpty = params.isEmpty || (() => false)
         this.isBorder = params.isBorder || (() => true)
@@ -11,9 +12,9 @@ export class OrganicFill {
         this.maxFills = params.maxFills || (() => 1)
     }
 
-    fill(points, value, layer) {
-        let filled = this.fillPoints(points, value, layer)
-        let seeds = this.getSeeds(filled, value)
+    fill(points, layer) {
+        let filled = this.fillPoints(points, layer)
+        let seeds = this.getSeeds(filled)
         // let times_remaining = this.maxFills
         // while(seeds.length && times_remaining--) {
         //     filled = this.fillRandomPoints(seeds, value, layer)
@@ -22,27 +23,28 @@ export class OrganicFill {
         return [filled, seeds]
     }
 
-    fillRandomPoints(points, value, layer) {
+    fillRandomPoints(points, layer) {
         let randomPoints = points.filter(() => Random.chance(this.fillChance))
-        return this.fillPoints(randomPoints, value, layer)
+        return this.fillPoints(randomPoints, layer)
     }
 
-    fillPoints(points, value, layer) {
+    fillPoints(points, layer) {
         return points.filter(point => {
             if (this.isEmpty(point)) {
-                this.setValue(point, value, layer)
+                this.setValue(point)
+                this.setLayer(point, layer)
                 return true
             }
         })
     }
 
-    getSeeds(points, value) {
+    getSeeds(points) {
         let seeds = []
         points.forEach(point => {
             point.adjacents(seed => {
                 if (this.isEmpty(seed))
                     seeds.push(seed)
-                if (this.isBorder(seed, value))
+                if (this.isBorder(seed))
                     this.setBorder(point)
             })
         })

@@ -6,8 +6,9 @@ export class Region {
     constructor(id, origin, grid) {
         this.id = id
         this.origin = origin
-        this.gridFill = createGridFill(grid)
+        this.gridFill = createGridFill(id, origin, grid)
         this.layers = [new PointHash([origin])]
+        this.layer = 0
     }
 
     get size() {
@@ -27,8 +28,8 @@ export class Region {
         return this.layers.has(point)
     }
 
-    grow(layer) {
-        return this.gridFill.fill(this.seeds, this.id, layer)
+    grow() {
+        return this.gridFill.fill(this.seeds, this.layer++)
     }
 
     addSeeds(points=[]) {
@@ -37,17 +38,14 @@ export class Region {
 }
 
 
-function createGridFill(grid) {
+function createGridFill(id, point, grid) {
+    grid.setOrigin(point)
     return new OrganicFill({
-        isEmpty:    (point) => grid.isEmpty(point),
-        isBorder:   (point, value) => {
-            return !grid.isEmpty(point) && !grid.isValue(point, value)
-        },
-        setValue:    (point, value, layer) => {
-            grid.setValue(point, value)
-            grid.setLayer(point, layer)
-        },
-        setBorder:  (point) => grid.setBorder(point),
+        isEmpty:    point => grid.isEmpty(point),
+        isBorder:   point => !grid.isEmpty(point) && !grid.isValue(point, id),
+        setValue:   point => grid.setValue(point, id),
+        setLayer:   (point, layer) => grid.setLayer(point, layer),
+        setBorder:  point => grid.setBorder(point),
         maxFills:   () => Random.int(50),
         fillChance: .1,
     })

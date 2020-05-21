@@ -44,9 +44,8 @@ export function createRegionMap(params={}) {
     const points = createPoints(count, width, height)
     const grid = new RegionGrid(width, height)
     const regions = createRegions(points, grid)
-    let layer = 0
     while(grid.hasEmptyPoints()) {
-        growRegions(layer++, regions)
+        growRegions(regions)
     }
     return new RegionMap(seed, regions, grid)
 }
@@ -76,16 +75,13 @@ function createPoints(count, width, height) {
 
 
 function createRegions(points, grid) {
-    return points.map((point, id) => {
-        grid.setOrigin(point)
-        return new Region(id, point, grid)
-    })
+    return points.map((point, id) => new Region(id, point, grid))
 }
 
 
-function growRegions(layer, regions) {
+function growRegions(regions) {
     for(let region of regions) {
-        const [filled, seeds] = region.grow(layer)
+        const [filled, seeds] = region.grow()
         if (filled.length <= 12)
             console.log(`baseseeds ${region.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
         region.addSeeds(seeds)

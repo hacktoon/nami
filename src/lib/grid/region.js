@@ -9,7 +9,7 @@ const TYPE_BORDER = 3
 
 export class RegionGrid {
     constructor(width, height) {
-        this.grid = new Grid(width, height, () => new Cell())
+        this.grid = new Grid(width, height, () => new GridCell())
         this.emptyPoints = width * height
         this.width = width
         this.height = height
@@ -65,7 +65,7 @@ export class RegionGrid {
 }
 
 
-class Cell {
+class GridCell {
     constructor(value=EMPTY_VALUE, type=TYPE_NORMAL, layer=0) {
         this.value = value
         this.type = type
