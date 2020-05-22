@@ -19,7 +19,7 @@ export class OrganicFill {
         this.isEmpty = params.isEmpty || (() => false)
         this.isBlocked = params.isBlocked || (() => true)
         this.fillChance = params.fillChance || 1
-        this.maxFills = params.maxFills || (() => 1)
+        this.maxFills = params.maxFills || 1
 
         this.setOrigin(originPoint)
     }
@@ -27,43 +27,46 @@ export class OrganicFill {
     fill() {
         if (this.seeds.length == 0)
             return
-        const filled = this.fillPoints(this.seeds)
-        let seeds = this.nextSeeds(filled)
-        // if (filled.length < 8)
-        //     console.log(h(filled), h(seeds));
+        if (this.seeds.length < 6)
+            console.log(h(this.seeds));
 
-        // let times_remaining = this.maxFills
+        const filled = this.fillPoints(this.seeds)
+        const seeds = this.nextSeeds(filled)
+        let times_remaining = Random.int(this.maxFills)
         // while(seeds.length && times_remaining--) {
-        //     filled = this.fillRandomPoints(seeds, value, layer)
-        //     seeds = this.nextSeeds(filled, value)
+        //     seeds.push(...this.nextRandomSeeds(seeds))
+        //     console.log(seeds.length, times_remaining)
         // }
         this.layer++
         this.seeds = seeds
-        // console.log(`baseseeds ${region.gridFill.seeds.length}, filled ${filled.length}, seeds ${seeds.length}`);
         return filled
     }
 
     fillPoints(points) {
         // return only filled points
         return points.filter(point => {
-            if (this.isEmpty(point)) {
-                this.setValue(point)
-                this.setLayer(point, this.layer)
-                return true
-            }
+            if (! this.isEmpty(point))
+                return false
+            this.setValue(point)
+            this.unsetSeed(point)
+            this.setLayer(point, this.layer)
+            return true
         })
     }
 
     fillRandomPoints(points) {
-        let randomPoints = points.filter(() => Random.chance(this.fillChance))
-        return this.fillPoints(randomPoints)
+        return this.fillPoints(points.filter(() => {
+            Random.chance(this.fillChance)
+        }))
     }
 
-    nextSeeds(filledPoints) {
+    nextRandomSeeds(points) {
+        return points.filter(() => Random.chance(this.fillChance))
+    }
+
+    nextSeeds(points) {
         let seeds = []
-        if (filledPoints.length < 14)
-            console.log(h(filledPoints))
-        filledPoints.forEach(point => {
+        points.forEach(point => {
             point.adjacents(seed => {
                 if (this.isEmpty(seed) && !this.isSeed(seed)) {
                     this.setSeed(seed)

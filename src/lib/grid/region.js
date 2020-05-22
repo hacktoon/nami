@@ -40,8 +40,12 @@ export class RegionGrid {
         this.get(point).layer = layer
     }
 
-    setSeed(point, id) {
-        this.get(point).seed = id
+    setSeed(point, value) {
+        this.get(point).seed = value
+    }
+
+    unsetSeed(point) {
+        this.get(point).seed = NON_SEED_VALUE
     }
 
     isSeed(point) {
@@ -60,12 +64,12 @@ export class RegionGrid {
         return this.get(point).isBorder()
     }
 
-    getLayer(point) {
-        return this.get(point).layer
-    }
-
     isValue(point, value) {
         return this.get(point).isValue(value)
+    }
+
+    getLayer(point) {
+        return this.get(point).layer
     }
 
     hasEmptyPoints() {

@@ -29,17 +29,18 @@ export class Region {
 }
 
 
-function createOrganicFill(id, point, grid) {
-    return new OrganicFill(point, {
-        isEmpty:    point => grid.isEmpty(point),
-        isBlocked:  point => !grid.isEmpty(point) && !grid.isValue(point, id),
-        setValue:   point => grid.setValue(point, id),
+function createOrganicFill(id, originPoint, grid) {
+    return new OrganicFill(originPoint, {
         setSeed:    point => grid.setSeed(point, id),
-        isSeed:     point => grid.isSeed(point),
+        setValue:   point => grid.setValue(point, id),
         setLayer:   (point, layer) => grid.setLayer(point, layer),
         setBorder:  point => grid.setBorder(point),
         setOrigin:  point => grid.setOrigin(point),
-        maxFills:   () => Random.int(50),
+        unsetSeed:  point => grid.unsetSeed(point),
+        isSeed:     point => grid.isSeed(point),
+        isEmpty:    point => grid.isEmpty(point),
+        isBlocked:  point => !grid.isEmpty(point) && !grid.isValue(point, id),
+        maxFills:   50,
         fillChance: .1,
     })
 }
