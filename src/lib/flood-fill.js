@@ -2,7 +2,7 @@ import { Random } from '/lib/random'
 
 
 function h(pts) {
-    return pts.map(p => p.hash)
+    return pts.map(p => p.hash).join(' | ')
 }
 
 export class OrganicFill {

@@ -5,8 +5,8 @@ import { Region } from '/model/region'
 
 
 export const DEFAULT_COUNT = 1
-export const DEFAULT_WIDTH = 150
-export const DEFAULT_HEIGHT = 150
+export const DEFAULT_WIDTH = 50
+export const DEFAULT_HEIGHT = 50
 
 
 class RegionMap {
