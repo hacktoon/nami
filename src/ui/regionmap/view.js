@@ -32,6 +32,10 @@ class Render {
         const region = this.regionMap.get(point)
         const fgColor = this.fgColor ? this.fgColor : this.colorMap[region.id]
 
+        if (this.regionMap.isSeed(point)) {
+            return "#FF0"
+        }
+
         if (this.regionMap.getLayer(point) > Number(layer)) {
             return this.bgColor.toHex()
         }

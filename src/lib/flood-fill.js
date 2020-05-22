@@ -27,11 +27,14 @@ export class OrganicFill {
     fill() {
         if (this.seeds.length == 0)
             return
-        if (this.seeds.length < 6)
-            console.log(h(this.seeds));
+        // if (this.seeds.length < 9)
+        //     console.log(this.seeds.length, h(this.seeds));
 
         const filled = this.fillPoints(this.seeds)
         const seeds = this.nextSeeds(filled)
+        if (seeds.length < 9)
+            console.log(seeds)
+
         let times_remaining = Random.int(this.maxFills)
         // while(seeds.length && times_remaining--) {
         //     seeds.push(...this.nextRandomSeeds(seeds))
@@ -54,16 +57,6 @@ export class OrganicFill {
         })
     }
 
-    fillRandomPoints(points) {
-        return this.fillPoints(points.filter(() => {
-            Random.chance(this.fillChance)
-        }))
-    }
-
-    nextRandomSeeds(points) {
-        return points.filter(() => Random.chance(this.fillChance))
-    }
-
     nextSeeds(points) {
         let seeds = []
         points.forEach(point => {
@@ -78,6 +71,16 @@ export class OrganicFill {
             })
         })
         return seeds
+    }
+
+    fillRandomPoints(points) {
+        return this.fillPoints(points.filter(() => {
+            Random.chance(this.fillChance)
+        }))
+    }
+
+    nextRandomSeeds(points) {
+        return points.filter(() => Random.chance(this.fillChance))
     }
 }
 
