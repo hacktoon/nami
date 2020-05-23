@@ -12,7 +12,7 @@ import {
 
 
 const DEFAULT_TILE_SIZE = 5
-const DEFAULT_LAYER = 6
+const DEFAULT_LAYER = 0
 
 
 function buildColor(string) {
@@ -35,17 +35,17 @@ class Render {
         const fgColor = this.fgColor ? this.fgColor : this.colorMap[id]
         const pointLayer = this.regionMap.getLayer(point)
 
-        if (pointLayer > viewlayer) {
-            return this.bgColor.toHex()
-        }
         if (this.regionMap.isBorder(point)) {
             return fgColor.darken(40).toHex()
         }
         if (this.regionMap.isOrigin(point)) {
             return fgColor.darken(50).toHex()
         }
-        if (this.regionMap.isSeed(point, id) && pointLayer == viewlayer) {
+        if (pointLayer == viewlayer) {
             return fgColor.brighten(50).toHex()
+        }
+        if (pointLayer > viewlayer) {
+            return this.bgColor.toHex()
         }
         return fgColor.toHex()
     }
