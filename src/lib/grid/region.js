@@ -60,6 +60,12 @@ export class RegionGrid {
         return this.get(point).isBorder()
     }
 
+    isBlocked(point, value) {
+        let isFilled = !this.isEmpty(point)
+        let otherSeed = !this.isSeed(point, value) && !this.isSeed(point, EMPTY_SEED)
+        return isFilled && otherSeed
+    }
+
     isValue(point, value) {
         return this.get(point).isValue(value)
     }

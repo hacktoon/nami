@@ -5,7 +5,8 @@ import { Form, Button } from '/lib/ui'
 import {
     DEFAULT_COUNT,
     DEFAULT_WIDTH,
-    DEFAULT_HEIGHT
+    DEFAULT_HEIGHT,
+    DEFAULT_SEED,
 } from '/model/regionmap'
 
 
@@ -13,7 +14,7 @@ export default function ConfigMenu(props) {
     let [count, setCount] = useState(DEFAULT_COUNT)
     let [width, setWidth] = useState(DEFAULT_WIDTH)
     let [height, setHeight] = useState(DEFAULT_HEIGHT)
-    let [seed, setSeed] = useState('')
+    let [seed, setSeed] = useState(DEFAULT_SEED)
 
     let onSubmit = event => {
         event.preventDefault()
@@ -44,7 +45,7 @@ export default function ConfigMenu(props) {
             step={1}
             min={1}
         />
-        <TextField  label="Seed" onChange={onSeedChange} />
+        <TextField  label="Seed" onChange={onSeedChange} value={seed} />
         <Button text="New" />
     </Form>
 }

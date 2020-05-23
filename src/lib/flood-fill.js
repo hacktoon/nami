@@ -52,13 +52,12 @@ export class OrganicFill {
     fillSeeds(points) {
         let seeds = []
         points.forEach(point => {
-            point.adjacents(seed => {
-                if (this.isEmpty(seed) && !this.isSeed(seed)) {
-                    this.setSeed(seed)
-                    this.setLayer(seed, this.layer)
-                    seeds.push(seed)
-                }
-                if (this.isBlocked(seed)) {
+            point.adjacents(neighbor => {
+                if (this.isEmpty(neighbor) && !this.isSeed(neighbor)) {
+                    this.setSeed(neighbor)
+                    this.setLayer(neighbor, this.layer)
+                    seeds.push(neighbor)
+                } else if (this.isBlocked(neighbor)) {
                     this.setBorder(point)
                 }
             })

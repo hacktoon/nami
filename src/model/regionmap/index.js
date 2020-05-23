@@ -4,9 +4,10 @@ import { RegionGrid } from '/lib/grid/region'
 import { Region } from '/model/region'
 
 
-export const DEFAULT_COUNT = 15
-export const DEFAULT_WIDTH = 130
-export const DEFAULT_HEIGHT = 130
+export const DEFAULT_COUNT = 2
+export const DEFAULT_WIDTH = 20
+export const DEFAULT_HEIGHT = 20
+export const DEFAULT_SEED = 'a'
 
 
 class RegionMap {
@@ -69,7 +70,7 @@ function createConfig(params={}) {
         count: DEFAULT_COUNT,
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
-        seed: ''
+        seed: DEFAULT_SEED
     }, params)
     config.seed = _normalizeSeed(config.seed)
     return config

@@ -38,7 +38,7 @@ function createOrganicFill(id, originPoint, grid) {
         setLayer:   (point, layer) => grid.setLayer(point, layer),
         isEmpty:    point => grid.isEmpty(point),
         isSeed:     point => grid.isSeed(point, id),
-        isBlocked:  point => !grid.isEmpty(point) && !grid.isValue(point, id),
+        isBlocked:  point => grid.isBlocked(point, id),
         maxFills:   50,
         fillChance: .1,
     })

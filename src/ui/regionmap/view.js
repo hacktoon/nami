@@ -11,7 +11,7 @@ import {
 } from '/lib/ui/field'
 
 
-const DEFAULT_TILE_SIZE = 5
+const DEFAULT_TILE_SIZE = 20
 const DEFAULT_LAYER = 0
 
 
@@ -39,7 +39,7 @@ class Render {
             return fgColor.darken(40).toHex()
         }
         if (this.regionMap.isOrigin(point)) {
-            return fgColor.darken(50).toHex()
+            return fgColor.darken(60).toHex()
         }
         if (pointLayer == viewlayer) {
             return fgColor.brighten(50).toHex()
@@ -55,7 +55,7 @@ class Render {
 export default function RegionMapView({regionMap, colorMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
-    const [fgColor, setFGColor] = useState('#461')
+    const [fgColor, setFGColor] = useState('')
     const [bgColor, setBGColor] = useState('#337')
     const [layer, setLayer] = useState(DEFAULT_LAYER)
 
