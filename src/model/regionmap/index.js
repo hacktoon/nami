@@ -7,7 +7,7 @@ import { Region } from '/model/region'
 export const DEFAULT_COUNT = 15
 export const DEFAULT_WIDTH = 150
 export const DEFAULT_HEIGHT = 150
-export const DEFAULT_SEED = ''
+export const DEFAULT_SEED = 'a'
 
 
 class RegionMap {
@@ -44,6 +44,14 @@ class RegionMap {
 
     getLayer(point) {
         return this.grid.getLayer(point)
+    }
+
+    isLayer(point, layer) {
+        return this.grid.isLayer(point, layer)
+    }
+
+    overLayer(point, layer) {
+        return this.getLayer(point) > layer
     }
 }
 

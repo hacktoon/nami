@@ -56,6 +56,10 @@ export class RegionGrid {
         return this.get(point).isBorder()
     }
 
+    isLayer(point, layer) {
+        return this.get(point).isLayer(layer)
+    }
+
     getLayer(point) {
         return this.get(point).layer
     }

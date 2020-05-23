@@ -12,7 +12,7 @@ import {
 
 
 const DEFAULT_TILE_SIZE = 5
-const DEFAULT_LAYER = 0
+const DEFAULT_LAYER = 1
 const DEFAULT_FG = ''
 const DEFAULT_BG = '#336'
 
@@ -31,25 +31,27 @@ class Render {
         this.bgColor = buildColor(bgColor) || new Color()
     }
 
-    colorAt(point, viewlayer) {
+    colorAt(point, viewlayer, border) {
         const region = this.regionMap.get(point)
         const id = region.id
         const fgColor = this.fgColor ? this.fgColor : this.colorMap[id]
         const pointLayer = this.regionMap.getLayer(point)
 
-        if (this.regionMap.isBorder(point)) {
+        if (border && this.regionMap.isBorder(point)) {
             return fgColor.darken(40).toHex()
         }
         if (this.regionMap.isOrigin(point)) {
-            return fgColor.darken(60).toHex()
+            return fgColor.invert().toHex()
         }
-        if (pointLayer == viewlayer) {
+        // draw seed
+        if (this.regionMap.isLayer(point, viewlayer)) {
             return fgColor.brighten(50).toHex()
         }
-        if (pointLayer > viewlayer) {
+        // invert this check to get remaining spaces
+        if (this.regionMap.overLayer(point, viewlayer)) {
             return this.bgColor.toHex()
         }
-        return fgColor.toHex()
+        return fgColor.darken(pointLayer*10).toHex()
     }
 }
 
@@ -60,12 +62,14 @@ export default function RegionMapView({regionMap, colorMap}) {
     const [fgColor, setFGColor] = useState(DEFAULT_FG)
     const [bgColor, setBGColor] = useState(DEFAULT_BG)
     const [layer, setLayer] = useState(DEFAULT_LAYER)
+    const [border, setBorder] = useState(false)
 
     const render = new Render(regionMap, colorMap, fgColor, bgColor)
 
     return <section className="RegionMapView">
         <Menu
             onLayerChange={({value}) => setLayer(value)}
+            onBorderChange={() => setBorder(!border)}
             onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             onFGColorChange={event => setFGColor(event.target.value)}
@@ -75,12 +79,13 @@ export default function RegionMapView({regionMap, colorMap}) {
             bgColor={bgColor}
             tilesize={tilesize}
             layer={layer}
+            border={border}
             seed={regionMap.seed}
         />
         <GridDisplay
             width={regionMap.width}
             height={regionMap.height}
-            colorAt={point => render.colorAt(point, layer)}
+            colorAt={point => render.colorAt(point, layer, border)}
             tilesize={tilesize}
             wrapMode={wrapMode}
         />
@@ -97,6 +102,11 @@ function Menu(props) {
             label="Wrap grid"
             checked={props.wrapMode}
             onChange={props.onWrapModeChange}
+        />
+        <SwitchField
+            label="Show border"
+            checked={props.border}
+            onChange={props.onBorderChange}
         />
         <NumberField
             label="Tile size"

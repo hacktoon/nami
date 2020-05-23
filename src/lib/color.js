@@ -33,6 +33,14 @@ export class Color {
         return '#' + hex(this.red) + hex(this.green) + hex(this.blue)
     }
 
+    invert() {
+        return new Color(
+            255 - this.red,
+            255 - this.green,
+            255 - this.blue,
+        )
+    }
+
     brighten(amount) {
         return new Color(
             this.red + amount,
