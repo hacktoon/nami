@@ -31,7 +31,7 @@ class Render {
         this.bgColor = buildColor(bgColor) || new Color()
     }
 
-    colorAt(point, viewlayer, border) {
+    colorAt(point, viewlayer, border, origin) {
         const region = this.regionMap.get(point)
         const id = region.id
         const fgColor = this.fgColor ? this.fgColor : this.colorMap[id]
@@ -40,7 +40,7 @@ class Render {
         if (border && this.regionMap.isBorder(point)) {
             return fgColor.darken(40).toHex()
         }
-        if (this.regionMap.isOrigin(point)) {
+        if (origin && this.regionMap.isOrigin(point)) {
             return fgColor.invert().toHex()
         }
         // draw seed
@@ -63,6 +63,7 @@ export default function RegionMapView({regionMap, colorMap}) {
     const [bgColor, setBGColor] = useState(DEFAULT_BG)
     const [layer, setLayer] = useState(DEFAULT_LAYER)
     const [border, setBorder] = useState(false)
+    const [origin, setOrigin] = useState(false)
 
     const render = new Render(regionMap, colorMap, fgColor, bgColor)
 
@@ -70,6 +71,7 @@ export default function RegionMapView({regionMap, colorMap}) {
         <Menu
             onLayerChange={({value}) => setLayer(value)}
             onBorderChange={() => setBorder(!border)}
+            onOriginChange={() => setOrigin(!origin)}
             onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             onFGColorChange={event => setFGColor(event.target.value)}
@@ -80,12 +82,13 @@ export default function RegionMapView({regionMap, colorMap}) {
             tilesize={tilesize}
             layer={layer}
             border={border}
+            origin={origin}
             seed={regionMap.seed}
         />
         <GridDisplay
             width={regionMap.width}
             height={regionMap.height}
-            colorAt={point => render.colorAt(point, layer, border)}
+            colorAt={point => render.colorAt(point, layer, border, origin)}
             tilesize={tilesize}
             wrapMode={wrapMode}
         />
@@ -107,6 +110,11 @@ function Menu(props) {
             label="Show border"
             checked={props.border}
             onChange={props.onBorderChange}
+        />
+        <SwitchField
+            label="Show origin"
+            checked={props.origin}
+            onChange={props.onOriginChange}
         />
         <NumberField
             label="Tile size"
