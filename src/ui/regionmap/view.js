@@ -13,6 +13,8 @@ import {
 
 const DEFAULT_TILE_SIZE = 20
 const DEFAULT_LAYER = 0
+const DEFAULT_FG = ''
+const DEFAULT_BG = '#336'
 
 
 function buildColor(string) {
@@ -55,16 +57,16 @@ class Render {
 export default function RegionMapView({regionMap, colorMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
-    const [fgColor, setFGColor] = useState('')
-    const [bgColor, setBGColor] = useState('#337')
+    const [fgColor, setFGColor] = useState(DEFAULT_FG)
+    const [bgColor, setBGColor] = useState(DEFAULT_BG)
     const [layer, setLayer] = useState(DEFAULT_LAYER)
 
     const render = new Render(regionMap, colorMap, fgColor, bgColor)
 
     return <section className="RegionMapView">
         <Menu
-            onLayerChange={event => setLayer(Number(event.target.value))}
-            onTilesizeChange={event => setTilesize(event.target.value)}
+            onLayerChange={({value}) => setLayer(value)}
+            onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             onFGColorChange={event => setFGColor(event.target.value)}
             onBGColorChange={event => setBGColor(event.target.value)}

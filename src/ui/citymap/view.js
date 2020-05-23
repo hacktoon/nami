@@ -20,8 +20,7 @@ export default function CityMapView({cityMap}) {
 
     return <section className="CityMapView">
         <Menu
-            onLayerChange={event => setLayer(Number(event.target.value))}
-            onTilesizeChange={event => setTilesize(event.target.value)}
+            onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             wrapMode={wrapMode}
             tilesize={tilesize}

@@ -26,8 +26,7 @@ export default function NoiseMapView({noiseMap}) {
 
     return <section className="NoiseMapView">
         <Menu
-            onLayerChange={event => setLayer(Number(event.target.value))}
-            onTilesizeChange={event => setTilesize(event.target.value)}
+            onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             wrapMode={wrapMode}
             tilesize={tilesize}

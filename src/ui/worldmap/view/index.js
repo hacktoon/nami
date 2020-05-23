@@ -13,7 +13,7 @@ export default function WorldView({worldMap}) {
 
     return <section className='WorldView'>
         <Menu
-            onTilesizeChange={event => setTilesize(event.target.value)}
+            onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             tilesize={tilesize}
             wrapMode={wrapMode}

@@ -47,8 +47,12 @@ export function TextField(props) {
 }
 
 
-export function NumberField(props) {
-    return LabeledInputField('number', props)
+export function NumberField({onChange, ...props}) {
+    const _onChange = event => onChange({
+        value: Math.max(props.min, Number(event.target.value)),
+        event,
+    })
+    return LabeledInputField('number', {onChange: _onChange, ...props})
 }
 
 

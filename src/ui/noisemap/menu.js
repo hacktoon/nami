@@ -26,7 +26,7 @@ export default function ConfigMenu(props) {
         <NumberField
             label="Width"
             value={width}
-            onChange={event => setWidth(Number(event.target.value))}
+            onChange={({value}) => setWidth(value)}
             step={1}
             min={1}
             max={1000}
@@ -34,7 +34,7 @@ export default function ConfigMenu(props) {
         <NumberField
             label="Height"
             value={height}
-            onChange={event => setHeight(Number(event.target.value))}
+            onChange={({value}) => setHeight(value)}
             step={1}
             min={1}
             max={1000}
@@ -42,7 +42,7 @@ export default function ConfigMenu(props) {
         <NumberField
             label="Resolution"
             value={resolution}
-            onChange={event => setResolution(Number(event.target.value))}
+            onChange={({value}) => setResolution(value)}
             step={1}
             min={1}
             max={10}

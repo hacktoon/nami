@@ -27,21 +27,21 @@ export default function ConfigMenu(props) {
         <NumberField
             label="Width"
             value={width}
-            onChange={event => setWidth(Number(event.target.value))}
+            onChange={({value}) => setWidth(value)}
             step={1}
             min={1}
         />
         <NumberField
             label="Height"
             value={height}
-            onChange={event => setHeight(Number(event.target.value))}
+            onChange={({value}) => setHeight(value)}
             step={1}
             min={1}
         />
         <NumberField
             label="Count"
             value={count}
-            onChange={event => setCount(Number(event.target.value))}
+            onChange={({value}) => setCount(value)}
             step={1}
             min={1}
         />

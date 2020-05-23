@@ -12,10 +12,9 @@ export default function WorldMenu(props) {
 
     const onSizeChange = event => setSize(Number(event.target.value))
 
-    const onRoughnessChange = event => {
-        const roughness = Number(event.target.value)
-        const config = new WorldConfig({ size, roughness, seed })
-        setRoughness(roughness)
+    const onRoughnessChange = ({value}) => {
+        const config = new WorldConfig({ size, value, seed })
+        setRoughness(value)
         props.onChange(config)
     }
 
