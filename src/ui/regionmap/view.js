@@ -12,6 +12,7 @@ import {
 
 
 const DEFAULT_TILE_SIZE = 5
+const DEFAULT_LAYER = 6
 
 
 function buildColor(string) {
@@ -41,10 +42,10 @@ class Render {
             return fgColor.darken(40).toHex()
         }
         if (this.regionMap.isOrigin(point)) {
-            return fgColor.darken(40).toHex()
+            return fgColor.darken(50).toHex()
         }
         if (this.regionMap.isSeed(point, id) && pointLayer == viewlayer) {
-            return "#FF0"
+            return fgColor.brighten(50).toHex()
         }
         return fgColor.toHex()
     }
@@ -56,7 +57,7 @@ export default function RegionMapView({regionMap, colorMap}) {
     const [wrapMode, setWrapMode] = useState(false)
     const [fgColor, setFGColor] = useState('#461')
     const [bgColor, setBGColor] = useState('#337')
-    const [layer, setLayer] = useState(0)
+    const [layer, setLayer] = useState(DEFAULT_LAYER)
 
     const render = new Render(regionMap, colorMap, fgColor, bgColor)
 

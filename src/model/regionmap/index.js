@@ -4,9 +4,9 @@ import { RegionGrid } from '/lib/grid/region'
 import { Region } from '/model/region'
 
 
-export const DEFAULT_COUNT = 1
-export const DEFAULT_WIDTH = 100
-export const DEFAULT_HEIGHT = 100
+export const DEFAULT_COUNT = 15
+export const DEFAULT_WIDTH = 130
+export const DEFAULT_HEIGHT = 130
 
 
 class RegionMap {
