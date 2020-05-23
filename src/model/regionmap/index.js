@@ -27,8 +27,14 @@ class RegionMap {
         return this.grid.isOrigin(point)
     }
 
-    isSeed(point) {
-        return this.grid.isSeed(point)
+    isSeed(point, value) {
+        if (this.isEmpty(point))
+            return false
+        return this.grid.isSeed(point, value)
+    }
+
+    isEmpty(point) {
+        return this.grid.isEmpty(point)
     }
 
     isBorder(point) {

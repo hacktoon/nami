@@ -28,22 +28,23 @@ class Render {
         this.bgColor = buildColor(bgColor) || new Color()
     }
 
-    colorAt(point, layer) {
+    colorAt(point, viewlayer) {
         const region = this.regionMap.get(point)
-        const fgColor = this.fgColor ? this.fgColor : this.colorMap[region.id]
+        const id = region.id
+        const fgColor = this.fgColor ? this.fgColor : this.colorMap[id]
+        const pointLayer = this.regionMap.getLayer(point)
 
-        if (this.regionMap.isSeed(point)) {
-            return "#FF0"
-        }
-
-        if (this.regionMap.getLayer(point) > Number(layer)) {
+        if (pointLayer > viewlayer) {
             return this.bgColor.toHex()
         }
         if (this.regionMap.isBorder(point)) {
             return fgColor.darken(40).toHex()
         }
         if (this.regionMap.isOrigin(point)) {
-            return '#000'
+            return fgColor.darken(40).toHex()
+        }
+        if (this.regionMap.isSeed(point, id) && pointLayer == viewlayer) {
+            return "#FF0"
         }
         return fgColor.toHex()
     }

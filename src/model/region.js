@@ -31,14 +31,13 @@ export class Region {
 
 function createOrganicFill(id, originPoint, grid) {
     return new OrganicFill(originPoint, {
+        setBorder:  point => grid.setBorder(point),
+        setOrigin:  point => grid.setOrigin(point),
         setSeed:    point => grid.setSeed(point, id),
         setValue:   point => grid.setValue(point, id),
         setLayer:   (point, layer) => grid.setLayer(point, layer),
-        setBorder:  point => grid.setBorder(point),
-        setOrigin:  point => grid.setOrigin(point),
-        unsetSeed:  point => grid.unsetSeed(point),
-        isSeed:     point => grid.isSeed(point),
         isEmpty:    point => grid.isEmpty(point),
+        isSeed:     point => grid.isSeed(point, id),
         isBlocked:  point => !grid.isEmpty(point) && !grid.isValue(point, id),
         maxFills:   50,
         fillChance: .1,
