@@ -11,6 +11,14 @@ const ADJACENT_NEIGHBORHOOD = [
 ]
 
 
+const AROUND_NEIGHBORHOOD = ADJACENT_NEIGHBORHOOD.concat([
+    [-1, -1, Direction.NORTHWEST],
+    [ 1,  1, Direction.SOUTHEAST],
+    [ 1, -1, Direction.NORTHEAST],
+    [-1,  1, Direction.SOUTHWEST],
+])
+
+
 export class Point {
     constructor (x=0, y=0) {
         this.x = x
@@ -58,6 +66,17 @@ export class Point {
     adjacents(predicate=()=>true) {
         const points = []
         for (let [x, y, direction] of ADJACENT_NEIGHBORHOOD) {
+            const point = new Point(this.x + x, this.y + y)
+            if (predicate(point, direction)) {
+                points.push(point)
+            }
+        }
+        return points
+    }
+
+    around(predicate=()=>true) {
+        const points = []
+        for (let [x, y, direction] of AROUND_NEIGHBORHOOD) {
             const point = new Point(this.x + x, this.y + y)
             if (predicate(point, direction)) {
                 points.push(point)

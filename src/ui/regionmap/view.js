@@ -11,7 +11,7 @@ import {
 } from '/lib/ui/field'
 
 
-const DEFAULT_TILE_SIZE = 20
+const DEFAULT_TILE_SIZE = 5
 const DEFAULT_LAYER = 0
 const DEFAULT_FG = ''
 const DEFAULT_BG = '#336'

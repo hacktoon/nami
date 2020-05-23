@@ -31,9 +31,9 @@ export class OrganicFill {
         const filled = this.fillValues(this.seeds)
         const seeds = this.fillSeeds(filled)
         let times_remaining = Random.int(this.maxFills)
-        // while(seeds.length && times_remaining--) {
-        //     seeds.push(...this.fillRandomSeeds(seeds))
-        // }
+        while(seeds.length && times_remaining--) {
+            seeds.push(...this.fillRandomSeeds(seeds))
+        }
         this.layer++
         this.seeds = seeds
         return filled
@@ -74,9 +74,8 @@ export class OrganicFill {
     }
 
     fillRandomSeeds(points) {
-        return this.fillSeeds(points.filter(() => {
-            Random.chance(this.fillChance)
-        }))
+        const randPoints = points.filter(() => Random.chance(this.fillChance))
+        return this.fillSeeds(randPoints)
     }
 }
 
