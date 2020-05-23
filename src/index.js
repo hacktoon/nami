@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom'
 import WorldMapApp  from '/ui/worldmap'
 import RegionMapApp from '/ui/regionmap'
 import NoiseMapApp from '/ui/noisemap'
-import CityMapApp   from '/ui/citymap'
 
 import { Text } from '/lib/ui'
 import { SelectField } from '/lib/ui/field'
@@ -17,7 +16,6 @@ const APPS = {
     worldMap: { id: 'worldMap', name: 'World Map', component: <WorldMapApp /> },
     regionMap: { id: 'regionMap', name: 'Region Map', component: <RegionMapApp /> },
     // noiseMap: { id: 'noiseMap', name: 'Noise Map', component: <NoiseMapApp /> },
-    // cityMap: { id: 'cityMap', name: 'City Map', component: <CityMapApp /> }
 }
 const DEFAULT_APP = APPS.regionMap
 
