@@ -11,7 +11,7 @@ import {
 } from '/lib/ui/field'
 
 
-const DEFAULT_TILE_SIZE = 10
+const DEFAULT_TILE_SIZE = 5
 
 
 function buildColor(string) {
