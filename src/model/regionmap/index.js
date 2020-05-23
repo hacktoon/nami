@@ -5,9 +5,9 @@ import { Region } from '/model/region'
 
 
 export const DEFAULT_COUNT = 2
-export const DEFAULT_WIDTH = 20
+export const DEFAULT_WIDTH = 50
 export const DEFAULT_HEIGHT = 20
-export const DEFAULT_SEED = 'a'
+export const DEFAULT_SEED = 'b'
 
 
 class RegionMap {

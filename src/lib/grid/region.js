@@ -48,10 +48,6 @@ export class RegionGrid {
         return this.get(point).isSeed(value)
     }
 
-    isEmpty(point) {
-        return this.get(point).isValue(EMPTY_VALUE)
-    }
-
     isOrigin(point) {
         return this.get(point).isOrigin()
     }
@@ -60,22 +56,26 @@ export class RegionGrid {
         return this.get(point).isBorder()
     }
 
-    isBlocked(point, value) {
-        let isFilled = !this.isEmpty(point)
-        let otherSeed = !this.isSeed(point, value) && !this.isSeed(point, EMPTY_SEED)
-        return isFilled && otherSeed
-    }
-
-    isValue(point, value) {
-        return this.get(point).isValue(value)
-    }
-
     getLayer(point) {
         return this.get(point).layer
     }
 
     hasEmptyPoints() {
         return this.emptyPoints > 0
+    }
+
+    isBlocked(point, value) {
+        let isFilled = !this.isEmpty(point) && !this.isValue(point, value)
+        let otherSeed = !this.isSeed(point, EMPTY_SEED) && !this.isSeed(point, value)
+        return isFilled || otherSeed
+    }
+
+    isEmpty(point) {
+        return this.get(point).isValue(EMPTY_VALUE)
+    }
+
+    isValue(point, value) {
+        return this.get(point).isValue(value)
     }
 }
 
