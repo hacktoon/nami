@@ -4,7 +4,7 @@ import { RegionGrid } from '/lib/grid/region'
 import { Region } from '/model/region'
 
 
-export const DEFAULT_COUNT = 1
+export const DEFAULT_COUNT = 2
 export const DEFAULT_WIDTH = 50
 export const DEFAULT_HEIGHT = 50
 
