@@ -14,7 +14,7 @@ import {
 const DEFAULT_TILE_SIZE = 5
 const DEFAULT_LAYER = 1
 const DEFAULT_FG = ''
-const DEFAULT_BG = '#336'
+const DEFAULT_BG = '#114'
 
 
 function buildColor(string) {
