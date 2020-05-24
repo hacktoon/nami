@@ -55,23 +55,31 @@ canvas { display: block; }
 /* FIELD WIDGETS ================================ */
 
 .Field {
-    display: flex;
-    flex-direction: row;
-    padding-right: 1rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    justify-content: start;
+    gap: .3rem;
 }
 
 .Field .FieldLabel {
+    display: grid;
     align-items: center;
-    display: flex;
-    flex: 1 1 40%;
+    text-align: right;
     font-weight: bold;
-    padding-right: .5rem;
+    text-overflow: ellipsis;
+    overflow-wrap: break-word;
 }
 
 .Field .FieldValue {
     display: flex;
 }
 
+.Field input.FieldValue,
+.Field select.FieldValue {
+    width: 100%;
+}
+
+/* remove these classes, add hidden checkbox  */
 .Field .FieldValue.CheckBox {
     text-align: center;
     color: #FFF;
@@ -101,4 +109,59 @@ canvas { display: block; }
 
 .Button:active {
     background: rgb(133, 156, 141);
+}
+
+
+/* WIDGETS ======================================= */
+
+.MapApp {
+    display: grid;
+    grid-template-rows: min-content auto;
+}
+
+.AppMenu {
+    display: grid;
+    grid-auto-flow: column;
+    background: #AAA;
+    padding: .5rem;
+    gap: 1rem;
+}
+
+
+.MapApp .AppMapView {
+    background: black;
+    display: grid;
+    grid-template-columns: 20% auto;
+}
+
+.MapApp .AppMapView .Menu {
+    background: #111;
+    color: #FFF;
+    display: grid;
+    grid-auto-rows: min-content;
+    grid-auto-flow: row;
+    padding: .5rem 1rem;
+}
+
+.MapApp .AppMapView .Menu .Field {
+    padding: .5rem 0;
+}
+
+.MapApp .AppMapView .Menu .FieldValue {
+    width: 100%;
+}
+
+.MapApp .AppMapView .Menu input,
+.MapApp .AppMapView .Menu select {
+    background-color: #282828;
+    color: #BBB;
+}
+
+.MapApp .AppMapView .Menu .Button {
+    padding: .5rem;
+    margin-bottom: 1em;
+}
+
+.MapApp .AppMapView .View {
+    position: relative;
 }

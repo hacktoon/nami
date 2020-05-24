@@ -11,7 +11,7 @@ export default function WorldView({worldMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
 
-    return <section className='WorldView'>
+    return <section className='AppMapView'>
         <Menu
             onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}

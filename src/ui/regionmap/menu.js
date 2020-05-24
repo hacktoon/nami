@@ -11,7 +11,7 @@ import {
 } from '/model/regionmap'
 
 
-export default function ConfigMenu(props) {
+export default function AppMenu(props) {
     let [count, setCount] = useState(DEFAULT_COUNT)
     let [width, setWidth] = useState(DEFAULT_WIDTH)
     let [height, setHeight] = useState(DEFAULT_HEIGHT)
@@ -25,7 +25,7 @@ export default function ConfigMenu(props) {
 
     const onSeedChange = event => setSeed(event.target.value.trim())
 
-    return <Form className="ConfigMenu" onSubmit={onSubmit}>
+    return <Form className="AppMenu" onSubmit={onSubmit}>
         <NumberField
             label="Width"
             value={width}

@@ -24,7 +24,7 @@ export default function NoiseMapView({noiseMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
 
-    return <section className="NoiseMapView">
+    return <section className="AppMapView">
         <Menu
             onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}

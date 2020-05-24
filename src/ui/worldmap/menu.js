@@ -32,7 +32,7 @@ export default function WorldMenu(props) {
         65: 65,
     }
 
-    return <Form className="WorldMenu" onSubmit={onSubmit}>
+    return <Form className="AppMenu" onSubmit={onSubmit}>
         <SelectField label="Size" value={size}
             onChange={onSizeChange} options={sizeOptions} />
         <NumberField
