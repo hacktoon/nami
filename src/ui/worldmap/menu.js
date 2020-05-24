@@ -43,8 +43,6 @@ export default function WorldMenu(props) {
             min={1}
         />
         <TextField  label="Seed" onChange={onSeedChange} />
-        <Button onClick={onSubmit} text="Build" />
+        <Button onClick={onSubmit} text="New" />
     </Form>
 }
-
-
