@@ -20,11 +20,11 @@ function getColor(noiseMap, point) {
 }
 
 
-export default function NoiseMapView({noiseMap}) {
+export default function MapAppView({noiseMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
 
-    return <section className="AppMapView">
+    return <section className="MapAppView">
         <Menu
             onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}

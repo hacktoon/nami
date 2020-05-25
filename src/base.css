@@ -128,13 +128,13 @@ canvas { display: block; }
 }
 
 
-.MapApp .AppMapView {
+.MapApp .MapAppView {
     background: black;
     display: grid;
     grid-template-columns: 20% auto;
 }
 
-.MapApp .AppMapView .Menu {
+.MapApp .MapAppView .Menu {
     background: #111;
     color: #FFF;
     display: grid;
@@ -143,25 +143,25 @@ canvas { display: block; }
     padding: .5rem 1rem;
 }
 
-.MapApp .AppMapView .Menu .Field {
+.MapApp .MapAppView .Menu .Field {
     padding: .5rem 0;
 }
 
-.MapApp .AppMapView .Menu .FieldValue {
+.MapApp .MapAppView .Menu .FieldValue {
     width: 100%;
 }
 
-.MapApp .AppMapView .Menu input,
-.MapApp .AppMapView .Menu select {
+.MapApp .MapAppView .Menu input,
+.MapApp .MapAppView .Menu select {
     background-color: #282828;
     color: #BBB;
 }
 
-.MapApp .AppMapView .Menu .Button {
+.MapApp .MapAppView .Menu .Button {
     padding: .5rem;
     margin-bottom: 1em;
 }
 
-.MapApp .AppMapView .View {
+.MapApp .MapAppView .View {
     position: relative;
 }

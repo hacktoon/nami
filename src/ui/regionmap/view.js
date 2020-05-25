@@ -67,7 +67,7 @@ export default function RegionMapView({regionMap, colorMap}) {
 
     const render = new Render(regionMap, colorMap, fgColor, bgColor)
 
-    return <section className="AppMapView">
+    return <section className="MapAppView">
         <Menu
             onLayerChange={({value}) => setLayer(value)}
             onBorderChange={() => setBorder(!border)}

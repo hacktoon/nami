@@ -5,7 +5,7 @@ import { PointHash } from '/lib/point'
 import { RegionGrid } from '/lib/grid/region'
 
 export const DEFAULT_COUNT = 15
-export const DEFAULT_WIDTH = 150
+export const DEFAULT_WIDTH = 200
 export const DEFAULT_HEIGHT = 150
 export const DEFAULT_SEED = ''
 export const DEFAULT_LAYER_SIZE = 50

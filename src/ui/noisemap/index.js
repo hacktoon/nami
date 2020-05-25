@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { createNoiseMap } from '/model/noisemap'
 import MapAppMenu from './menu'
-import HeightMapView from './view'
+import MapAppView from './view'
 
 
 export default function NoiseMapApp() {
@@ -11,6 +11,6 @@ export default function NoiseMapApp() {
 
     return <section className='MapApp'>
         <MapAppMenu onChange={onConfigChange} />
-        <HeightMapView noiseMap={noiseMap} />
+        <MapAppView noiseMap={noiseMap} />
     </section>
 }
