@@ -20,15 +20,6 @@ const APPS = {
 const DEFAULT_APP = APPS.regionMap
 
 
-function Main() {
-    const [app, setApp] = useState(DEFAULT_APP)
-
-    return <section className="App">
-        <AppHeader app={app} setApp={setApp} />
-        {app.component}
-    </section>
-}
-
 function AppHeader({app, setApp}) {
     return <section className="AppHeader">
         <Text className="AppTitle">NAMI</Text>
@@ -62,5 +53,14 @@ function AppSelect({ apps, current, setApp }) {
     />
 }
 
+function RootComponent() {
+    const [app, setApp] = useState(DEFAULT_APP)
 
-ReactDOM.render(<Main />, document.getElementById('main'));
+    return <section className="App">
+        <AppHeader app={app} setApp={setApp} />
+        {app.component}
+    </section>
+}
+
+
+ReactDOM.render(<RootComponent />, document.getElementById('main'));
