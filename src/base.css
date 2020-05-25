@@ -119,7 +119,7 @@ canvas { display: block; }
     grid-template-rows: min-content auto;
 }
 
-.AppMenu {
+.MapAppMenu {
     display: grid;
     grid-auto-flow: column;
     background: #AAA;

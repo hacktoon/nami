@@ -15,7 +15,7 @@ import "./index.css"
 const APPS = {
     worldMap: { id: 'worldMap', name: 'World Map', component: <WorldMapApp /> },
     regionMap: { id: 'regionMap', name: 'Region Map', component: <RegionMapApp /> },
-    // noiseMap: { id: 'noiseMap', name: 'Noise Map', component: <NoiseMapApp /> },
+    noiseMap: { id: 'noiseMap', name: 'Noise Map', component: <NoiseMapApp /> },
 }
 const DEFAULT_APP = APPS.regionMap
 

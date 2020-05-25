@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { Color } from '/lib/color'
 import { createRegionMap } from '/model/regionmap'
-import AppMenu from './menu'
+import MapAppMenu from './menu'
 import RegionMapView from './view'
 
 
@@ -17,7 +17,7 @@ export default function RegionMapApp() {
     )
 
     return <section className='MapApp'>
-        <AppMenu onChange={onConfigChange} />
+        <MapAppMenu onChange={onConfigChange} />
         <RegionMapView regionMap={regionMap} colorMap={colorMap} />
     </section>
 }
