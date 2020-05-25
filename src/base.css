@@ -18,10 +18,6 @@ select, input {
     padding: .5rem;
 }
 
-button {
-    cursor: pointer;
-}
-
 canvas { display: block; }
 
 
@@ -32,7 +28,6 @@ canvas { display: block; }
 }
 
 .Canvas {
-    overflow: hidden;
     position: absolute;
     top: 0;
     left: 0;
@@ -42,7 +37,6 @@ canvas { display: block; }
 
 .MouseTracker {
     cursor: pointer;
-    overflow: hidden;
     position: absolute;
     top: 0;
     left: 0;
