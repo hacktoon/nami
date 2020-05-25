@@ -140,26 +140,14 @@ canvas { display: block; }
     display: grid;
     grid-auto-rows: min-content;
     grid-auto-flow: row;
-    padding: .5rem 1rem;
-}
-
-.MapApp .MapAppView .Menu .Field {
-    padding: .5rem 0;
-}
-
-.MapApp .MapAppView .Menu .FieldValue {
-    width: 100%;
+    padding: .5rem;
+    gap: 1rem;
 }
 
 .MapApp .MapAppView .Menu input,
 .MapApp .MapAppView .Menu select {
     background-color: #282828;
     color: #BBB;
-}
-
-.MapApp .MapAppView .Menu .Button {
-    padding: .5rem;
-    margin-bottom: 1em;
 }
 
 .MapApp .MapAppView .View {

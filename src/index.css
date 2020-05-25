@@ -1,5 +1,5 @@
 
-.MainApp {
+.App {
     background: #111;
     color: #333;
     height: 100vh;
@@ -7,12 +7,12 @@
     grid-template-rows: 50px auto;
 }
 
-.MainHeader {
+.AppHeader {
     display: flex;
     padding: .5rem;
 }
 
-.MainTitle {
+.AppTitle {
     color: #FFF;
     display: flex;
     align-items: center;

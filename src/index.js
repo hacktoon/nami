@@ -23,15 +23,15 @@ const DEFAULT_APP = APPS.regionMap
 function Main() {
     const [app, setApp] = useState(DEFAULT_APP)
 
-    return <section className="MainApp">
-        <MainHeader app={app} setApp={setApp} />
+    return <section className="App">
+        <AppHeader app={app} setApp={setApp} />
         {app.component}
     </section>
 }
 
-function MainHeader({app, setApp}) {
-    return <section className="MainHeader">
-        <Text className="MainTitle">NAMI</Text>
+function AppHeader({app, setApp}) {
+    return <section className="AppHeader">
+        <Text className="AppTitle">NAMI</Text>
         <MainMenu app={app} setApp={setApp} />
     </section>
 }
