@@ -17,7 +17,7 @@ export class OrganicFill {
         this.isSeed = params.isSeed || (() => true)
         this.isEmpty = params.isEmpty || (() => false)
         this.isBlocked = params.isBlocked || (() => true)
-        this.fillChance = params.fillChance || 1
+        this.growthChance = params.growthChance || 1
         this.layerGrowth = params.layerGrowth || 1
 
         this.setOrigin(originPoint)
@@ -69,12 +69,12 @@ export class OrganicFill {
 
     fillRandomValues(points) {
         return this.fillValues(points.filter(() => {
-            Random.chance(this.fillChance)
+            Random.chance(this.growthChance)
         }))
     }
 
     fillRandomSeeds(points) {
-        const randPoints = points.filter(() => Random.chance(this.fillChance))
+        const randPoints = points.filter(() => Random.chance(this.growthChance))
         return this.fillSeeds(randPoints)
     }
 }

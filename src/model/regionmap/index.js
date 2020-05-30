@@ -9,6 +9,7 @@ export const DEFAULT_WIDTH = 200
 export const DEFAULT_HEIGHT = 150
 export const DEFAULT_SEED = 'a'
 export const DEFAULT_LAYER_GROWTH = 20
+export const DEFAULT_GROWTH_CHANCE = .1
 
 
 class RegionMap {
@@ -58,11 +59,11 @@ class RegionMap {
 
 
 class Region {
-    constructor(id, origin, grid, layerGrowth) {
+    constructor(id, origin, grid, layerGrowth, growthChance) {
         this.id = id
         this.origin = origin
         this.organicFill = createOrganicFill({
-            id, origin, grid, layerGrowth
+            id, origin, grid, layerGrowth, growthChance
         })
         this.pointHash = new PointHash([origin])
     }
@@ -89,10 +90,12 @@ class Region {
 // FUNCTIONS ===================================
 
 export function createRegionMap(params={}) {
-    const {seed, count, width, height, layerGrowth} = createConfig(params)
+    const {
+        seed, count, width, height, layerGrowth, growthChance
+    } = createConfig(params)
     const grid = new RegionGrid(width, height)
     const points = createPoints(count, width, height)
-    const regions = createRegions(points, grid, layerGrowth)
+    const regions = createRegions(points, grid, layerGrowth, growthChance)
     while(grid.hasEmptyPoints()) {
         regions.forEach(region => region.grow())
     }
@@ -112,7 +115,8 @@ function createConfig(params={}) {
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
         seed: DEFAULT_SEED,
-        layerGrowth: DEFAULT_LAYER_GROWTH
+        layerGrowth: DEFAULT_LAYER_GROWTH,
+        growthChance: DEFAULT_GROWTH_CHANCE
     }, params)
     config.seed = _normalizeSeed(config.seed)
     return config
@@ -124,8 +128,10 @@ function createPoints(count, width, height) {
 }
 
 
-function createRegions(points, grid, layerGrowth) {
-    return points.map((point, id) => new Region(id, point, grid, layerGrowth))
+function createRegions(points, grid, layerGrowth, growthChance) {
+    return points.map((point, id) => new Region(
+        id, point, grid, layerGrowth, growthChance
+    ))
 }
 
 
@@ -133,7 +139,8 @@ function createOrganicFill({
         id,
         origin,
         grid,
-        layerGrowth
+        layerGrowth,
+        growthChance
     }) {
     return new OrganicFill(origin, {
         setBorder:  point => grid.setBorder(point),
@@ -145,6 +152,6 @@ function createOrganicFill({
         isSeed:     point => grid.isSeed(point, id),
         isBlocked:  point => grid.isBlocked(point, id),
         layerGrowth:  layerGrowth,
-        fillChance: Random.choice([.4, .2, .1, .08, .04, .02]),
+        growthChance: growthChance,
     })
 }

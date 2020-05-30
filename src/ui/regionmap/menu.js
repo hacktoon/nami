@@ -8,6 +8,7 @@ import {
     DEFAULT_HEIGHT,
     DEFAULT_SEED,
     DEFAULT_LAYER_GROWTH,
+    DEFAULT_GROWTH_CHANCE
 } from '/model/regionmap'
 
 
@@ -17,10 +18,11 @@ export default function MapAppMenu(props) {
     let [height, setHeight] = useState(DEFAULT_HEIGHT)
     let [seed, setSeed] = useState(DEFAULT_SEED)
     let [layerGrowth, setLayerGrowth] = useState(DEFAULT_LAYER_GROWTH)
+    let [growthChance, setGrowthChance] = useState(DEFAULT_GROWTH_CHANCE)
 
     let onSubmit = event => {
         event.preventDefault()
-        props.onChange({count, width, height, seed, layerGrowth})
+        props.onChange({count, width, height, seed, layerGrowth, growthChance})
     }
 
     const onSeedChange = event => setSeed(event.target.value.trim())
@@ -53,6 +55,13 @@ export default function MapAppMenu(props) {
             onChange={({value}) => setLayerGrowth(value)}
             step={1}
             min={1}
+        />
+        <NumberField
+            label="Growth chance"
+            value={growthChance}
+            onChange={({value}) => setGrowthChance(value)}
+            step={.01}
+            min={0.0}
         />
         <TextField  label="Seed" onChange={onSeedChange} value={seed} />
         <Button text="New" />
