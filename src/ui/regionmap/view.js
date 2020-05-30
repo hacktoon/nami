@@ -12,8 +12,8 @@ import {
 
 
 const DEFAULT_TILE_SIZE = 5
-const DEFAULT_LAYER = 1
-const DEFAULT_FG = ''
+const DEFAULT_LAYER = 15
+const DEFAULT_FG = '#361'
 const DEFAULT_BG = '#114'
 
 

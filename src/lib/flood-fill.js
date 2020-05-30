@@ -18,7 +18,7 @@ export class OrganicFill {
         this.isEmpty = params.isEmpty || (() => false)
         this.isBlocked = params.isBlocked || (() => true)
         this.fillChance = params.fillChance || 1
-        this.layerSize = params.layerSize || 1
+        this.layerGrowth = params.layerGrowth || 1
 
         this.setOrigin(originPoint)
         this.setSeed(originPoint)
@@ -30,7 +30,7 @@ export class OrganicFill {
             return []
         const filled = this.fillValues(this.seeds)
         const seeds = this.fillSeeds(filled)
-        let times_remaining = Random.int(this.layerSize)
+        let times_remaining = Random.int(this.layerGrowth)
         while(seeds.length && times_remaining--) {
             seeds.push(...this.fillRandomSeeds(seeds))
         }
