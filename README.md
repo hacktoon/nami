@@ -17,7 +17,17 @@
 - RegionMap
   - Store borders for each plate neighborhood
 
-  - create ridges separately in tectonics map, using total and start point of border points
+- Convergent
+  - OO : Oceanic >< Oceanic
+  - OC : Oceanic >< Continental
+  - CC : Continental >< Continental
+
+- Divergent
+  - OO : Oceanic <> Oceanic
+  - CC : Continental <> Continental
+
+
+- create ridges separately in tectonics map, using total and start point of border points
 - Start geologic deformation in plate borders
 - For each point, draw a (asc|desc)ending height line opposed to the plate direction
   - Line size is defined by plate speed

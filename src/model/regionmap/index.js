@@ -59,12 +59,10 @@ class RegionMap {
 
 
 class Region {
-    constructor(id, origin, grid, layerGrowth, growthChance) {
+    constructor(id, origin, organicFill) {
         this.id = id
         this.origin = origin
-        this.organicFill = createOrganicFill({
-            id, origin, grid, layerGrowth, growthChance
-        })
+        this.organicFill = organicFill
         this.pointHash = new PointHash([origin])
     }
 
@@ -129,9 +127,12 @@ function createPoints(count, width, height) {
 
 
 function createRegions(points, grid, layerGrowth, growthChance) {
-    return points.map((point, id) => new Region(
-        id, point, grid, layerGrowth, growthChance
-    ))
+    return points.map((point, id) => {
+        const organicFill = createOrganicFill({
+            id, origin, grid, layerGrowth, growthChance
+        })
+        return new Region(id, point, organicFill)
+    })
 }
 
 
