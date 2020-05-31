@@ -1,5 +1,7 @@
 import { Random } from '/lib/random'
 
+import { createRegionMap } from '/model/regionmap'
+
 
 export const DEFAULT_WIDTH = 200
 export const DEFAULT_HEIGHT = 150
@@ -16,7 +18,7 @@ export class TectonicMap {
     }
 
     get(point) {
-        const id = this.grid.get(point).value
+        const id = this.regionMap.get(point).value
         return this.regions[id]
     }
 
@@ -33,8 +35,10 @@ class Plate {
 
 export function createTectonicMap(params={}) {
     const {seed, width, height} = createConfig(params)
+    const regionMap = createRegionMap({width, height, seed})
+    console.log(regionMap);
 
-    return new TectonicMap(seed, null)
+    return new TectonicMap(seed, regionMap)
 }
 
 
@@ -54,3 +58,4 @@ function createConfig(params={}) {
     config.seed = _normalizeSeed(config.seed)
     return config
 }
+

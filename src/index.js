@@ -19,7 +19,7 @@ const APPS = {
     noiseMap: { id: 'noiseMap', name: 'Noise Map', component: <NoiseMapApp /> },
     tectonicMap: { id: 'tectonicMap', name: 'Tectonic Map', component: <TectonicMapApp /> },
 }
-const DEFAULT_APP = APPS.regionMap
+const DEFAULT_APP = APPS.tectonicMap
 
 
 function AppHeader({app, setApp}) {
