@@ -52,7 +52,7 @@ canvas { display: block; }
     display: grid;
     grid-template-columns: auto 1fr;
     justify-content: start;
-    gap: .3rem;
+    gap: .5rem;
 }
 
 .Field .FieldLabel {
@@ -65,11 +65,6 @@ canvas { display: block; }
 }
 
 .Field .FieldValue {
-    display: flex;
-}
-
-.Field input.FieldValue,
-.Field select.FieldValue {
     width: 100%;
 }
 
@@ -80,6 +75,7 @@ canvas { display: block; }
     cursor: pointer;
     justify-content: center;
     align-items: center;
+    padding: .5rem 0;
 }
 .Field .FieldValue.CheckBox.Yes {
     background-color: rgb(6, 49, 6);

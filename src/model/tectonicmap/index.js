@@ -1,9 +1,9 @@
 import { Random } from '/lib/random'
 
 
-export const DEFAULT_COUNT = 14
 export const DEFAULT_WIDTH = 200
 export const DEFAULT_HEIGHT = 150
+export const DEFAULT_COUNT = 14
 export const DEFAULT_SEED = ''
 
 
@@ -31,9 +31,9 @@ class Plate {
 }
 
 
-
 export function createTectonicMap(params={}) {
     const {seed, width, height} = createConfig(params)
+
     return new TectonicMap(seed, null)
 }
 
@@ -46,9 +46,9 @@ function createConfig(params={}) {
     }
 
     const config = Object.assign({
-        count: DEFAULT_COUNT,
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
+        count: DEFAULT_COUNT,
         seed: DEFAULT_SEED,
     }, params)
     config.seed = _normalizeSeed(config.seed)
