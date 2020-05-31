@@ -46,6 +46,7 @@
     - Reference point - where fill started, used to scanline again for searches
 
 #### TemperatureMap
+- Use two opposite points on regionMap
 - Value range: 0:100
 
 #### WindMap
