@@ -12,27 +12,19 @@
 
 #### RegionMap
 - Build regions adjacency table
+- Store borders for each plate neighborhood
 
 #### TectonicsMap
-- RegionMap
-  - Store borders for each plate neighborhood
-
 - Convergent
-  - OO : Oceanic >< Oceanic
-  - OC : Oceanic >< Continental
-  - CC : Continental >< Continental
+  - OO : Oceanic -><- Oceanic
+  - OC : Oceanic -><- Continental
+  - CC : Continental -><- Continental
 
 - Divergent
-  - OO : Oceanic <> Oceanic
-  - CC : Continental <> Continental
-
+  - OO : Oceanic <--> Oceanic
+  - CC : Continental <--> Continental
 
 - create ridges separately in tectonics map, using total and start point of border points
-- Start geologic deformation in plate borders
-- For each point, draw a (asc|desc)ending height line opposed to the plate direction
-  - Line size is defined by plate speed
-- Height deformation line is defined by a list of constants
-  - Ex: convergent subduction starts on lowest water level and rises [0, 1, 2, 3]
 - Iterate over region growth borders to distribute hills, cenotes, ravines, lakes, etc
 - First 2-3 layers are always land (cratons)
 
@@ -57,13 +49,13 @@
 
 #### TemperatureMap
 - Use two opposite points on regionMap
-- Value range: 0:100
+- Value range: -50:50
 
 #### WindMap
-- Value range: 0:100, varies according to month
+- Value range: 0:10, varies according to month
 
 #### RainMap
-- Value range: 0:100, varies according to month and windmap
+- Value range: 0:10, varies according to month and windmap
 
 #### Other
 - Vegetation/wildlife density: adjusted by humidity, temperature and height
