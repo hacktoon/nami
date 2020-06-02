@@ -17,16 +17,3 @@ export function Text({className, ...props}) {
 }
 
 
-// GENERIC FORM WIDGETS ===============================================
-
-export function Form({className, ...props}) {
-    return <form className={cls('Form', className)} {...props}>
-        {props.children}
-    </form>
-}
-
-export function Button(props) {
-    return <button className="Button" onClick={props.onClick}>
-        {props.text}
-    </button>
-}

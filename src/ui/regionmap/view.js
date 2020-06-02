@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Form } from '/lib/ui'
+import { Form, Button } from '/lib/ui/form'
 import { Color } from '/lib/color'
 import { GridDisplay } from '/lib/ui/grid'
 import {
@@ -97,9 +97,7 @@ export default function RegionMapView({regionMap, colorMap}) {
 
 
 function Menu(props) {
-    const onSubmit = event => event.preventDefault()
-
-    return <Form className="Menu" onSubmit={onSubmit}>
+    return <Form className="Menu">
         <OutputField label="Seed" value={props.seed} />
         <SwitchField
             label="Wrap grid"
@@ -140,5 +138,6 @@ function Menu(props) {
             value={props.bgColor}
             onChange={props.onBGColorChange}
         />
+        <Button text="Update" />
     </Form>
 }
