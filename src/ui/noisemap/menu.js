@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { TextField, NumberField } from '/lib/ui/field'
+import { TextField, NumberField } from '/lib/ui/form/field'
 import { Form, Button } from '/lib/ui/form'
 import {
     DEFAULT_RESOLUTION,

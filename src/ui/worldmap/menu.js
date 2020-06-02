@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import { Form, Button } from '/lib/ui'
-import { TextField, NumberField, SelectField } from '/lib/ui/field'
+import { Form, Button } from '/lib/ui/form'
+import { TextField, NumberField, SelectField } from '/lib/ui/form/field'
 import { WorldConfig } from '/model/worldmap'
 
 

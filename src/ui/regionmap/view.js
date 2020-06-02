@@ -8,7 +8,7 @@ import {
     OutputField,
     NumberField,
     SwitchField
-} from '/lib/ui/field'
+} from '/lib/ui/form/field'
 
 
 const DEFAULT_TILE_SIZE = 5
@@ -48,7 +48,7 @@ class Render {
             return fgColor.brighten(50).toHex()
         }
         // invert this check to get remaining spaces
-        if (this.regionMap.overLayer(point, viewlayer)) {
+        if (this.regionMap.isOverLayer(point, viewlayer)) {
             return this.bgColor.toHex()
         }
         return fgColor.darken(pointLayer*10).toHex()

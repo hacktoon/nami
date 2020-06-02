@@ -66,6 +66,7 @@
 
 
 ### Interface
+- Every object created must be valid according to object spec
 - Add/use URL with parameters
 - Make better inputs
 - Optimize canvas rendering

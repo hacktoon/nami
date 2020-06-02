@@ -7,7 +7,7 @@ import NoiseMapApp from '/ui/noisemap'
 import TectonicMapApp from '/ui/tectonicmap'
 
 import { Text } from '/lib/ui'
-import { SelectField } from '/lib/ui/field'
+import { SelectField } from '/lib/ui/form/field'
 
 import "./base.css"
 import "./index.css"
@@ -29,31 +29,26 @@ function AppHeader({app, setApp}) {
     </section>
 }
 
+
 function MainMenu({app, setApp}) {
+    const onChange = event => setApp(APPS[event.target.value])
+    const appOptions = Object.fromEntries(
+        Object.entries(APPS).map(entry => {
+            const [id, app] = entry
+            return [id, app.name]
+        })
+    )
+
     return <section className="MainMenu">
-        <AppSelect apps={APPS} current={app} setApp={setApp} />
+        <SelectField
+            label="App"
+            value={app.id}
+            options={appOptions}
+            onChange={onChange}
+        />
     </section>
 }
 
-function AppSelect({ apps, current, setApp }) {
-    const onChange = event => {
-        const id = event.target.value
-        setApp(apps[id])
-    }
-
-    const appOptions = Object.fromEntries(
-        Object.entries(apps).map(entry => {
-            const [id, app] = entry
-            return [id, app.name]
-        }))
-
-    return <SelectField
-        label="App"
-        value={current.id}
-        options={appOptions}
-        onChange={onChange}
-    />
-}
 
 function RootComponent() {
     const [app, setApp] = useState(DEFAULT_APP)

@@ -12,13 +12,31 @@ export const DEFAULT_LAYER_GROWTH = 50
 export const DEFAULT_GROWTH_CHANCE = .1
 
 
+
+class RegionMapSpec {
+    constructor(regionMap) {
+        this.regionMap = regionMap
+    }
+
+    width() {
+
+    }
+}
+
+
 class RegionMap {
     constructor(seed, regions, grid) {
-        this.width = grid.width
-        this.height = grid.height
         this.regions = regions
         this.seed = seed
         this.grid = grid
+    }
+
+    get width() {
+        return this.grid.width
+    }
+
+    get height() {
+        return this.grid.height
     }
 
     get(point) {
@@ -52,7 +70,7 @@ class RegionMap {
         return this.grid.isLayer(point, layer)
     }
 
-    overLayer(point, layer) {
+    isOverLayer(point, layer) {
         return this.getLayer(point) > layer
     }
 }

@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 
-import { Form } from '/lib/ui'
-import { Color } from '/lib/color'
+import { Form } from '/lib/ui/form'
 import { GridDisplay } from '/lib/ui/grid'
 import {
     TextField,
     OutputField,
     NumberField,
     SwitchField
-} from '/lib/ui/field'
+} from '/lib/ui/form/field'
 
 
 const DEFAULT_TILE_SIZE = 5

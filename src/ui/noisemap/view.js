@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 
 import { SimplexNoise } from '/lib/noise'
 import { GridDisplay } from '/lib/ui/grid'
-import { Form } from '/lib/ui'
+import { Form } from '/lib/ui/form'
 import { Color } from '/lib/color'
-import { OutputField, NumberField, SwitchField } from '/lib/ui/field'
+import { OutputField, NumberField, SwitchField } from '/lib/ui/form/field'
 
 
 const DEFAULT_TILE_SIZE = 5
