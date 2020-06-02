@@ -127,11 +127,11 @@ function createPoints(count, width, height) {
 
 
 function createRegions(points, grid, layerGrowth, growthChance) {
-    return points.map((point, id) => {
+    return points.map((origin, id) => {
         const organicFill = createOrganicFill({
             id, origin, grid, layerGrowth, growthChance
         })
-        return new Region(id, point, organicFill)
+        return new Region(id, origin, organicFill)
     })
 }
 

@@ -16,13 +16,13 @@
 
 #### TectonicsMap
 - Convergent
-  - OO : Oceanic -><- Oceanic
-  - OC : Oceanic -><- Continental
-  - CC : Continental -><- Continental
+  - OO : Island Arc
+  - OC : Trench + Mountain
+  - CC : Mountain + Volcano
 
 - Divergent
-  - OO : Oceanic <--> Oceanic
-  - CC : Continental <--> Continental
+  - OO : Ridge
+  - CC : Rift
 
 - create ridges separately in tectonics map, using total and start point of border points
 - Iterate over region growth borders to distribute hills, cenotes, ravines, lakes, etc
