@@ -6,7 +6,7 @@ import {
     TextField,
     OutputField,
     NumberField,
-    SwitchField
+    BooleanField
 } from '/lib/ui/form/field'
 
 
@@ -56,7 +56,7 @@ function Menu(props) {
 
     return <Form className="Menu" onSubmit={onSubmit}>
         <OutputField label="Seed" value={props.seed} />
-        <SwitchField
+        <BooleanField
             label="Wrap grid"
             checked={props.wrapMode}
             onChange={props.onWrapModeChange}

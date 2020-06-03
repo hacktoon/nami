@@ -4,7 +4,7 @@ import { SimplexNoise } from '/lib/noise'
 import { GridDisplay } from '/lib/ui/grid'
 import { Form } from '/lib/ui/form'
 import { Color } from '/lib/color'
-import { OutputField, NumberField, SwitchField } from '/lib/ui/form/field'
+import { OutputField, NumberField, BooleanField } from '/lib/ui/form/field'
 
 
 const DEFAULT_TILE_SIZE = 5
@@ -48,7 +48,7 @@ function Menu(props) {
 
     return <Form className="Menu" onSubmit={onSubmit}>
         <OutputField label="Seed" value={props.seed} />
-        <SwitchField
+        <BooleanField
             label="Wrap grid"
             checked={props.wrapMode}
             onChange={props.onWrapModeChange}

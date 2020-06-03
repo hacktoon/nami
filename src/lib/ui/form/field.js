@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 
+
 import { cls } from '/lib/ui'
 
 
@@ -24,47 +25,20 @@ function buildSelectOptions(options) {
 
 // GENERIC FIELDS ===============================================
 
-function LabeledField(props) {
+function Field(props) {
     return <section className={cls(props.className, 'Field')}>
         <label className='FieldLabel' htmlFor={props.id}>{props.label}</label>
         {props.children}
     </section>
 }
 
-function LabeledInputField(type, props) {
-    let id = generateFieldID(props.label)
-    let {label, className, ...restProps} = props
+
+function InputField({type, label, className, ...props}) {
+    let id = generateFieldID(label)
     let _class = cls('FieldValue', className)
-    return <LabeledField id={id} label={label}>
-        <input id={id} type={type} className={_class} {...restProps} />
-    </LabeledField>
-}
-
-// PUBLIC COMPONENTS ===============================================
-
-export function TextField(props) {
-    return LabeledInputField('text', props)
-}
-
-
-export function NumberField({onChange, ...props}) {
-    const _onChange = event => onChange({
-        value: Math.max(props.min, Number(event.target.value)),
-        event,
-    })
-    return LabeledInputField('number', {onChange: _onChange, ...props})
-}
-
-
-export function SwitchField(props) {
-    let {label, className, ...restProps} = props
-    let enabled = props.checked ? 'Yes' : 'No'
-    let _className = cls(props.className, 'Field')
-    let onClick = event => restProps.onChange(event.target.checked)
-    return <section onClick={onClick} className={_className} {...restProps}>
-            <div className='FieldLabel'>{props.label}</div>
-            <div className={cls('FieldValue', 'CheckBox', enabled)}>{enabled}</div>
-    </section>
+    return <Field id={id} label={label}>
+        <input id={id} type={type} className={_class} {...props} />
+    </Field>
 }
 
 
@@ -74,11 +48,39 @@ export function SelectField({className, ...props}) {
     const id = generateFieldID(label)
     let _class = cls('FieldValue', className)
 
-    return <LabeledField id={id} label={label}>
+    return <Field id={id} label={label}>
         <select id={id} className={_class} {...restProps}>
             {children}
         </select>
-    </LabeledField>
+    </Field>
+}
+
+
+// PUBLIC COMPONENTS ===============================================
+
+export function TextField(props) {
+    return <InputField type='text' {...props} />
+}
+
+
+export function NumberField({onChange, ...props}) {
+    const _onChange = event => onChange({
+        value: Math.max(props.min, Number(event.target.value)),
+        event,
+    })
+    return <InputField type='number' onChange={_onChange} {...props} />
+}
+
+
+export function BooleanField(props) {
+    let {label, className, ...restProps} = props
+    let enabled = props.checked ? 'Yes' : 'No'
+    let _className = cls(props.className, 'Field')
+    let onClick = event => restProps.onChange(event.target.checked)
+    return <section onClick={onClick} className={_className} {...restProps}>
+            <div className='FieldLabel'>{props.label}</div>
+            <div className={cls('FieldValue', 'CheckBox', enabled)}>{enabled}</div>
+    </section>
 }
 
 

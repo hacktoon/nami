@@ -1,9 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 
-function cls(...classNames) {
-    return classNames.join(' ').trim()
-}
+import { cls } from '/lib/ui'
 
 
 export function Form({className, ...props}) {

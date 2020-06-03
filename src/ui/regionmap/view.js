@@ -7,7 +7,7 @@ import {
     TextField,
     OutputField,
     NumberField,
-    SwitchField
+    BooleanField
 } from '/lib/ui/form/field'
 
 
@@ -99,17 +99,17 @@ export default function RegionMapView({regionMap, colorMap}) {
 function Menu(props) {
     return <Form className="Menu">
         <OutputField label="Seed" value={props.seed} />
-        <SwitchField
+        <BooleanField
             label="Wrap grid"
             checked={props.wrapMode}
             onChange={props.onWrapModeChange}
         />
-        <SwitchField
+        <BooleanField
             label="Show border"
             checked={props.border}
             onChange={props.onBorderChange}
         />
-        <SwitchField
+        <BooleanField
             label="Show origin"
             checked={props.origin}
             onChange={props.onOriginChange}
