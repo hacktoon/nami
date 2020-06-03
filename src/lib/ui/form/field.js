@@ -15,7 +15,6 @@ function generateFieldID(label) {
 
 function buildSelectOptions(options) {
     const entries = Object.entries(options)
-
     return entries.map((option, index) => {
         const [value, label] = option
         return <option key={index} value={value}>{label}</option>
@@ -25,33 +24,26 @@ function buildSelectOptions(options) {
 
 // GENERIC FIELDS ===============================================
 
-function Field(props) {
-    return <section className={cls(props.className, 'Field')}>
-        <label className='FieldLabel' htmlFor={props.id}>{props.label}</label>
-        {props.children}
+function Field({label, className, children}) {
+    let id = generateFieldID(label)
+    return <section className={cls(className, 'Field')}>
+        <label className='FieldLabel' htmlFor={id}>{label}</label>
+        <div id={id} className='FieldValue' >{children}</div>
     </section>
 }
 
 
-function InputField({type, label, className, ...props}) {
-    let id = generateFieldID(label)
-    let _class = cls('FieldValue', className)
-    return <Field id={id} label={label}>
-        <input id={id} type={type} className={_class} {...props} />
+function InputField({type, label, ...props}) {
+    return <Field label={label}>
+        <input type={type} {...props} />
     </Field>
 }
 
 
-export function SelectField({className, ...props}) {
-    const {label, options, ...restProps} = props
+export function SelectField({label, options, ...props}) {
     const children = useMemo(() => buildSelectOptions(options), [options])
-    const id = generateFieldID(label)
-    let _class = cls('FieldValue', className)
-
-    return <Field id={id} label={label}>
-        <select id={id} className={_class} {...restProps}>
-            {children}
-        </select>
+    return <Field label={label}>
+        <select {...props}>{children}</select>
     </Field>
 }
 
@@ -72,15 +64,14 @@ export function NumberField({onChange, ...props}) {
 }
 
 
-export function BooleanField(props) {
-    let {label, className, ...restProps} = props
-    let enabled = props.checked ? 'Yes' : 'No'
-    let _className = cls(props.className, 'Field')
-    let onClick = event => restProps.onChange(event.target.checked)
-    return <section onClick={onClick} className={_className} {...restProps}>
-            <div className='FieldLabel'>{props.label}</div>
-            <div className={cls('FieldValue', 'CheckBox', enabled)}>{enabled}</div>
-    </section>
+export function BooleanField({onChange, ...props}) {
+    let _onChange = event => onChange(event.target.checked)
+    return <InputField
+        type='checkbox'
+        onChange={_onChange}
+        checked={props.checked}
+        {...props}
+    />
 }
 
 

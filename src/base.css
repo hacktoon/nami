@@ -64,7 +64,7 @@ canvas { display: block; }
     overflow-wrap: break-word;
 }
 
-.Field .FieldValue {
+.Field .FieldValue > * {
     width: 100%;
 }
 
