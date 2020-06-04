@@ -1,9 +1,6 @@
 import React, { useMemo } from 'react'
 
 
-import { cls } from '/lib/ui'
-
-
 // HELPER FUNCTIONS ===============================================
 
 function generateFieldID(label) {
@@ -24,26 +21,26 @@ function buildSelectOptions(options) {
 
 // GENERIC FIELDS ===============================================
 
-function Field({label, className, children}) {
+function Field({label, type, children}) {
     let id = generateFieldID(label)
-    return <section className={cls(className, 'Field')}>
+    return <section className={`Field ${type}`}>
         <label className='FieldLabel' htmlFor={id}>{label}</label>
-        <div id={id} className='FieldValue' >{children}</div>
+        <div className='FieldValue'>{children(id)}</div>
     </section>
 }
 
 
-function InputField({type, label, ...props}) {
-    return <Field label={label}>
-        <input type={type} {...props} />
+function InputField({label, type, ...props}) {
+    return <Field type={type} label={label}>
+        {id => <input id={id} type={type} {...props} />}
     </Field>
 }
 
 
 export function SelectField({label, options, ...props}) {
     const children = useMemo(() => buildSelectOptions(options), [options])
-    return <Field label={label}>
-        <select {...props}>{children}</select>
+    return <Field type={'select'} label={label}>
+        {id => <select id={id} {...props}>{children}</select>}
     </Field>
 }
 

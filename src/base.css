@@ -13,7 +13,6 @@ body {
 
 select, input {
     background: #FFF;
-    display: block;
     font-size: 1em;
     padding: .5rem;
 }
@@ -64,25 +63,34 @@ canvas { display: block; }
     overflow-wrap: break-word;
 }
 
-.Field .FieldValue > * {
+.Field .FieldValue input,
+.Field .FieldValue select {
     width: 100%;
 }
 
-/* remove these classes, add hidden checkbox  */
-.Field .FieldValue.CheckBox {
+.Field.checkbox .FieldValue input {
+    display: none;
+}
+
+.Field.checkbox .FieldValue:after {
+    content: 'Yes';
     text-align: center;
     color: #FFF;
     cursor: pointer;
     justify-content: center;
     align-items: center;
-    padding: .5rem 0;
+    display: flex;
+    width: 100%;
+    height: 30px;
+    z-index: 1;
+    background-color: rgb(100, 15, 15);
 }
 .Field .FieldValue.CheckBox.Yes {
     background-color: rgb(6, 49, 6);
 
 }
 .Field .FieldValue.CheckBox.No {
-    background-color: rgb(100, 15, 15);
+
 }
 
 
