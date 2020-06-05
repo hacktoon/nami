@@ -10,16 +10,14 @@
 .AppHeader {
     display: grid;
     grid-template-columns: min-content auto;
+    padding: .5rem;
 }
 
 .AppTitle {
-    align-items: center;
     color: #FFF;
-    display: flex;
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: bold;
-    text-align: left;
-    padding: 0 .5rem;
+    text-align: center;
 }
 
 .MainMenu {
@@ -27,7 +25,6 @@
     display: grid;
     grid-template-columns: auto;
     justify-content: end;
-    padding-right: .5rem;
 }
 
 
@@ -44,31 +41,22 @@
     display: grid;
     gap: 1rem;
     grid-auto-flow: column;
+    padding: .5rem;
 }
 
 
 .MapApp .MapAppView {
     background: black;
     display: grid;
-    grid-template-columns: 20% auto;
+    grid-template-columns: min-content auto;
 }
 
 .MapApp .MapAppView .Menu {
     background: #111;
     color: #FFF;
     display: grid;
-    gap: 1rem;
+    gap: .5rem;
     grid-auto-rows: min-content;
     grid-auto-flow: row;
     padding: .5rem;
-}
-
-.MapApp .MapAppView .Menu input,
-.MapApp .MapAppView .Menu select {
-    background-color: #282828;
-    color: #BBB;
-}
-
-.MapApp .MapAppView .View {
-    position: relative;
 }

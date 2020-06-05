@@ -6,7 +6,7 @@ import RegionMapApp from '/ui/regionmap'
 import NoiseMapApp from '/ui/noisemap'
 import TectonicMapApp from '/ui/tectonicmap'
 
-import { Text } from '/lib/ui'
+import { Title } from '/lib/ui'
 import { SelectField } from '/lib/ui/form/field'
 
 import "./style/base.css"
@@ -24,7 +24,7 @@ const DEFAULT_APP = APPS.regionMap
 
 function AppHeader({app, setApp}) {
     return <section className="AppHeader">
-        <Text className="AppTitle">NAMI</Text>
+        <Title className="AppTitle">NAMI</Title>
         <MainMenu app={app} setApp={setApp} />
     </section>
 }

@@ -15,6 +15,7 @@ select, input {
     background: #FFF;
     font-size: 1em;
     padding: .5rem;
+    width: 100%;
 }
 
 canvas { display: block; }
@@ -68,13 +69,12 @@ canvas { display: block; }
     text-overflow: ellipsis;
 }
 
-.Field .FieldValue {
-    padding: .5rem 0;
-}
-
-.Field .FieldValue input,
-.Field .FieldValue select {
-    width: 100%;
+.Field output.FieldValue {
+    background-color: #222;
+    color: #AAA;
+    display: flex;
+    align-items: center;
+    padding: .5rem;
 }
 
 
@@ -86,9 +86,9 @@ canvas { display: block; }
     color: #FFF;
     cursor: pointer;
     display: flex;
+    padding: .5rem 0;
     justify-content: center;
     text-align: center;
-    width: 100%;
 }
 .Field.checkbox.true .FieldValue {
     background-color: rgb(6, 94, 6);

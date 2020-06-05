@@ -17,3 +17,10 @@ export function Text({className, ...props}) {
 }
 
 
+export function Title({className, ...props}) {
+    return <section className={cls('Title', className)} {...props}>
+        {props.children}
+    </section>
+}
+
+
