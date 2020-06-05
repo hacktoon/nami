@@ -9,8 +9,8 @@ import TectonicMapApp from '/ui/tectonicmap'
 import { Text } from '/lib/ui'
 import { SelectField } from '/lib/ui/form/field'
 
-import "./base.css"
-import "./index.css"
+import "./style/base.css"
+import "./style/index.css"
 
 
 const APPS = {

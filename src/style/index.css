@@ -1,0 +1,74 @@
+
+.App {
+    color: #333;
+    background: #111;
+    display: grid;
+    grid-template-rows: 50px auto;
+    height: 100vh;
+}
+
+.AppHeader {
+    display: grid;
+    grid-template-columns: min-content auto;
+}
+
+.AppTitle {
+    align-items: center;
+    color: #FFF;
+    display: flex;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: left;
+    padding: 0 .5rem;
+}
+
+.MainMenu {
+    color: #FFF;
+    display: grid;
+    grid-template-columns: auto;
+    justify-content: end;
+    padding-right: .5rem;
+}
+
+
+
+/* WIDGETS ======================================= */
+
+.MapApp {
+    display: grid;
+    grid-template-rows: min-content auto;
+}
+
+.MapApp .MapAppMenu {
+    background: #AAA;
+    display: grid;
+    gap: 1rem;
+    grid-auto-flow: column;
+}
+
+
+.MapApp .MapAppView {
+    background: black;
+    display: grid;
+    grid-template-columns: 20% auto;
+}
+
+.MapApp .MapAppView .Menu {
+    background: #111;
+    color: #FFF;
+    display: grid;
+    gap: 1rem;
+    grid-auto-rows: min-content;
+    grid-auto-flow: row;
+    padding: .5rem;
+}
+
+.MapApp .MapAppView .Menu input,
+.MapApp .MapAppView .Menu select {
+    background-color: #282828;
+    color: #BBB;
+}
+
+.MapApp .MapAppView .View {
+    position: relative;
+}
