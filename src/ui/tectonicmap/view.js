@@ -58,7 +58,7 @@ function Menu(props) {
         <OutputField label="Seed" value={props.seed} />
         <BooleanField
             label="Wrap grid"
-            checked={props.wrapMode}
+            value={props.wrapMode}
             onChange={props.onWrapModeChange}
         />
         <NumberField

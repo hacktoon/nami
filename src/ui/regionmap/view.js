@@ -101,17 +101,17 @@ function Menu(props) {
         <OutputField label="Seed" value={props.seed} />
         <BooleanField
             label="Wrap grid"
-            checked={props.wrapMode}
+            value={props.wrapMode}
             onChange={props.onWrapModeChange}
         />
         <BooleanField
             label="Show border"
-            checked={props.border}
+            value={props.border}
             onChange={props.onBorderChange}
         />
         <BooleanField
             label="Show origin"
-            checked={props.origin}
+            value={props.origin}
             onChange={props.onOriginChange}
         />
         <NumberField

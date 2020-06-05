@@ -22,7 +22,7 @@ function buildSelectOptions(options) {
 // GENERIC FIELDS ===============================================
 
 function Field({label, type, children}) {
-    let id = generateFieldID(label)
+    const id = generateFieldID(label)
     return <section className={`Field ${type}`}>
         <label className='FieldLabel' htmlFor={id}>{label}</label>
         <div className='FieldValue'>{children(id)}</div>
@@ -30,17 +30,21 @@ function Field({label, type, children}) {
 }
 
 
-function InputField({label, type, ...props}) {
-    return <Field type={type} label={label}>
-        {id => <input id={id} type={type} {...props} />}
-    </Field>
+function OptionalField({label, type, ...props}) {
+    const id = generateFieldID(label)
+    const checked = Boolean(props.value)
+    return <label className={`Field ${type} ${String(checked)}`} htmlFor={id}>
+        <span className='FieldLabel'>{label}</span>
+        <span className='FieldValue'>
+            <input id={id} type={type} className='hidden' checked={checked} {...props} />
+        </span>
+    </label>
 }
 
 
-export function SelectField({label, options, ...props}) {
-    const children = useMemo(() => buildSelectOptions(options), [options])
-    return <Field type={'select'} label={label}>
-        {id => <select id={id} {...props}>{children}</select>}
+function InputField({label, type, ...props}) {
+    return <Field type={type} label={label}>
+        {id => <input id={id} type={type} {...props} />}
     </Field>
 }
 
@@ -61,14 +65,17 @@ export function NumberField({onChange, ...props}) {
 }
 
 
+export function SelectField({label, options, ...props}) {
+    const children = useMemo(() => buildSelectOptions(options), [options])
+    return <Field type='select' label={label}>
+        {id => <select id={id} {...props}>{children}</select>}
+    </Field>
+}
+
+
 export function BooleanField({onChange, ...props}) {
-    let _onChange = event => onChange(event.target.checked)
-    return <InputField
-        type='checkbox'
-        onChange={_onChange}
-        checked={props.checked}
-        {...props}
-    />
+    const _onChange = event => onChange(Boolean(event.target.checked))
+    return <OptionalField type='checkbox' onChange={_onChange} {...props} />
 }
 
 

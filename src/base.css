@@ -20,6 +20,11 @@ select, input {
 canvas { display: block; }
 
 
+/* BASE CLASSES ================================ */
+
+.hidden { display: none; }
+
+
 /* BASE COMPONENTS ================================ */
 
 .GridDisplay {
@@ -68,12 +73,11 @@ canvas { display: block; }
     width: 100%;
 }
 
-.Field.checkbox .FieldValue input {
-    display: none;
-}
 
-.Field.checkbox .FieldValue:after {
-    content: 'Yes';
+/* CHECKBOX FIELD ============================== */
+
+.Field.checkbox .FieldValue {
+    background-color: rgb(100, 15, 15);
     text-align: center;
     color: #FFF;
     cursor: pointer;
@@ -81,17 +85,14 @@ canvas { display: block; }
     align-items: center;
     display: flex;
     width: 100%;
-    height: 30px;
-    z-index: 1;
-    background-color: rgb(100, 15, 15);
+    padding: .5rem 0;
 }
-.Field .FieldValue.CheckBox.Yes {
-    background-color: rgb(6, 49, 6);
+.Field.checkbox.true .FieldValue {
+    background-color: rgb(6, 94, 6);
+}
+.Field.checkbox.false .FieldValue:after { content: 'No'; }
+.Field.checkbox.true .FieldValue:after { content: 'Yes'; }
 
-}
-.Field .FieldValue.CheckBox.No {
-
-}
 
 
 /* BUTTONS ======================================= */
