@@ -54,18 +54,22 @@ canvas { display: block; }
 
 .Field {
     display: grid;
+    gap: .5rem;
     grid-template-columns: auto 1fr;
     justify-content: start;
-    gap: .5rem;
 }
 
 .Field .FieldLabel {
-    display: grid;
     align-items: center;
-    text-align: right;
+    display: grid;
     font-weight: bold;
-    text-overflow: ellipsis;
     overflow-wrap: break-word;
+    text-align: right;
+    text-overflow: ellipsis;
+}
+
+.Field .FieldValue {
+    padding: .5rem 0;
 }
 
 .Field .FieldValue input,
@@ -77,15 +81,14 @@ canvas { display: block; }
 /* CHECKBOX FIELD ============================== */
 
 .Field.checkbox .FieldValue {
+    align-items: center;
     background-color: rgb(100, 15, 15);
-    text-align: center;
     color: #FFF;
     cursor: pointer;
-    justify-content: center;
-    align-items: center;
     display: flex;
+    justify-content: center;
+    text-align: center;
     width: 100%;
-    padding: .5rem 0;
 }
 .Field.checkbox.true .FieldValue {
     background-color: rgb(6, 94, 6);
@@ -102,7 +105,7 @@ canvas { display: block; }
     color: #FFF;
     font-weight: bold;
     margin: 0 .1em;
-    padding: 0 1em;
+    padding: .5rem 1rem;
     text-transform: uppercase;
 }
 
@@ -119,11 +122,10 @@ canvas { display: block; }
 }
 
 .MapAppMenu {
-    display: grid;
-    grid-auto-flow: column;
     background: #AAA;
-    padding: .5rem;
+    display: grid;
     gap: 1rem;
+    grid-auto-flow: column;
 }
 
 
@@ -137,10 +139,10 @@ canvas { display: block; }
     background: #111;
     color: #FFF;
     display: grid;
+    gap: 1rem;
     grid-auto-rows: min-content;
     grid-auto-flow: row;
     padding: .5rem;
-    gap: 1rem;
 }
 
 .MapApp .MapAppView .Menu input,
