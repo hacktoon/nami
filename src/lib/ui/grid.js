@@ -21,8 +21,9 @@ export function GridDisplay(props) {
 
         for(let i = 0; i < totalColumns; i++) {
             for(let j = 0; j < totalRows; j++) {
+                const defaultColor = (j + i) % 2 ? '#DDD' : '#FFF'
                 const point = new Point(offset.x + i, offset.y + j)
-                const color = isWrappable(point) ? props.colorAt(point) : 'black'
+                const color = isWrappable(point) ? props.colorAt(point) : defaultColor
                 renderCell(canvas.context, i, j, color, props.tilesize)
             }
         }
