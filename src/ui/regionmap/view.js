@@ -148,6 +148,5 @@ function Menu(props) {
             value={props.borderColor}
             onChange={props.onBorderColorChange}
         />
-        <Button text="Update" />
     </Form>
 }

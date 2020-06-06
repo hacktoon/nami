@@ -7,22 +7,19 @@ import { Canvas } from '/lib/ui/canvas'
 
 export function GridView(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
-
-    const onDrag = pixelOffset => {
-        let x = Math.floor(pixelOffset.x / props.tilesize)
-        let y = Math.floor(pixelOffset.y / props.tilesize)
-        setOffset(new Point(x, y))
-    }
+    const onDrag = offset => setOffset(new Point(offset.x, offset.y))
 
     // TODO: canvas param must be an object which wraps CanvasContext
     const onCanvasSetup = canvas => {
         let totalColumns = Math.ceil(canvas.width / props.tilesize)
         let totalRows = Math.ceil(canvas.height / props.tilesize)
+        let offsetX = Math.floor(offset.x / props.tilesize)
+        let offsetY = Math.floor(offset.y / props.tilesize)
 
         for(let i = 0; i < totalColumns; i++) {
             for(let j = 0; j < totalRows; j++) {
-                const defaultColor = (j + i) % 2 ? '#DDD' : '#FFF'
-                const point = new Point(offset.x + i, offset.y + j)
+                const defaultColor = (i+ j) % 2 ? '#DDD' : '#FFF'
+                const point = new Point(offsetX + i, offsetY + j)
                 const color = isWrappable(point) ? props.colorAt(point) : defaultColor
                 renderCell(canvas.context, i, j, color, props.tilesize)
             }
