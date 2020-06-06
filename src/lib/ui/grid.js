@@ -9,15 +9,20 @@ export function GridView(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
 
+    const getWindow = canvas => {
+        let x = Math.ceil(canvas.width / props.tilesize)
+        let y = Math.ceil(canvas.height / props.tilesize)
+        return new Point(x, y)
+    }
+
     // TODO: canvas param must be an object which wraps CanvasContext
     const onCanvasSetup = canvas => {
-        let totalColumns = Math.ceil(canvas.width / props.tilesize)
-        let totalRows = Math.ceil(canvas.height / props.tilesize)
+        let window = getWindow(canvas)
         let offsetX = Math.floor(offset.x / props.tilesize)
         let offsetY = Math.floor(offset.y / props.tilesize)
 
-        for(let i = 0; i < totalColumns; i++) {
-            for(let j = 0; j < totalRows; j++) {
+        for(let i = 0; i < window.x; i++) {
+            for(let j = 0; j < window.y; j++) {
                 const point = new Point(offsetX + i, offsetY + j)
                 if (isWrappable(point)) {
                     const color = props.colorAt(point)
@@ -28,10 +33,9 @@ export function GridView(props) {
     }
 
     const onBackgroundCanvasSetup = canvas => {
-        let totalColumns = Math.ceil(canvas.width / props.tilesize)
-        let totalRows = Math.ceil(canvas.height / props.tilesize)
-        for(let i = 0; i < totalColumns; i++) {
-            for(let j = 0; j < totalRows; j++) {
+        let total = getWindow(canvas)
+        for(let i = 0; i < total.x; i++) {
+            for(let j = 0; j < total.y; j++) {
                 const color = (i+ j) % 2 ? '#DDD' : '#FFF'
                 renderCell(canvas.context, i, j, color, props.tilesize)
             }
