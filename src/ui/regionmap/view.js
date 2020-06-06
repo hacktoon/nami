@@ -12,9 +12,9 @@ import {
 
 
 const DEFAULT_TILE_SIZE = 5
-const DEFAULT_LAYER = 15
-const DEFAULT_FG = ''
-const DEFAULT_BG = '#114'
+const DEFAULT_LAYER = 5
+const DEFAULT_FG = '#06F'
+const DEFAULT_BG = '#251'
 
 
 function buildColor(string) {
@@ -48,10 +48,10 @@ class Render {
             return fgColor.brighten(50).toHex()
         }
         // invert this check to get remaining spaces
-        if (this.regionMap.isOverLayer(point, viewlayer)) {
+        if (!this.regionMap.isOverLayer(point, viewlayer)) {
             return this.bgColor.toHex()
         }
-        return fgColor.darken(pointLayer*10).toHex()
+        return fgColor.brighten(pointLayer*10).toHex()
     }
 }
 

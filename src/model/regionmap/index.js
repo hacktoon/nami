@@ -8,7 +8,7 @@ export const DEFAULT_COUNT = 14
 export const DEFAULT_WIDTH = 200
 export const DEFAULT_HEIGHT = 150
 export const DEFAULT_SEED = ''
-export const DEFAULT_LAYER_GROWTH = 50
+export const DEFAULT_LAYER_GROWTH = 40
 export const DEFAULT_GROWTH_CHANCE = .1
 
 
