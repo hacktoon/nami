@@ -18,12 +18,28 @@ export function GridView(props) {
 
         for(let i = 0; i < totalColumns; i++) {
             for(let j = 0; j < totalRows; j++) {
-                const defaultColor = (i+ j) % 2 ? '#DDD' : '#FFF'
                 const point = new Point(offsetX + i, offsetY + j)
-                const color = isWrappable(point) ? props.colorAt(point) : defaultColor
+                if (isWrappable(point)) {
+                    const color = props.colorAt(point)
+                    renderCell(canvas.context, i, j, color, props.tilesize)
+                }
+            }
+        }
+    }
+
+    const onBackgroundCanvasSetup = canvas => {
+        let totalColumns = Math.ceil(canvas.width / props.tilesize)
+        let totalRows = Math.ceil(canvas.height / props.tilesize)
+        for(let i = 0; i < totalColumns; i++) {
+            for(let j = 0; j < totalRows; j++) {
+                const color = (i+ j) % 2 ? '#DDD' : '#FFF'
                 renderCell(canvas.context, i, j, color, props.tilesize)
             }
         }
+    }
+
+    const buildCanvas = point => {
+
     }
 
     const isWrappable = point => {
@@ -36,7 +52,6 @@ export function GridView(props) {
     const renderCell = (context, i, j, color, tilesize) => {
         const x = i * tilesize
         const y = j * tilesize
-
         context.fillStyle = color
         context.fillRect(x, y, tilesize, tilesize)
     }
@@ -45,5 +60,8 @@ export function GridView(props) {
         {/* <GridTracker onMove={onMove} /> */}
         <MouseTracker onDrag={onDrag} />
         <Canvas onSetup={onCanvasSetup} />
+        <div className="BackgroundCanvas">
+            <Canvas onSetup={onBackgroundCanvasSetup} />
+        </div>
     </section>
 }
