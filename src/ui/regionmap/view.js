@@ -15,6 +15,7 @@ const DEFAULT_TILE_SIZE = 5
 const DEFAULT_LAYER = 5
 const DEFAULT_FG = '#06F'
 const DEFAULT_BG = '#251'
+const DEFAULT_BORDER = '#944'
 
 
 function buildColor(string) {
@@ -24,11 +25,12 @@ function buildColor(string) {
 
 
 class Render {
-    constructor(regionMap, colorMap, fgColor, bgColor) {
+    constructor(regionMap, colorMap, fgColor, bgColor, borderColor) {
         this.regionMap = regionMap
         this.colorMap = colorMap
         this.fgColor = buildColor(fgColor)
         this.bgColor = buildColor(bgColor) || new Color()
+        this.borderColor = buildColor(borderColor) || this.fgColor.darken(40)
     }
 
     colorAt(point, viewlayer, border, origin) {
@@ -38,7 +40,7 @@ class Render {
         const pointLayer = this.regionMap.getLayer(point)
 
         if (border && this.regionMap.isBorder(point)) {
-            return fgColor.darken(40).toHex()
+            return this.borderColor.toHex()
         }
         if (origin && this.regionMap.isOrigin(point)) {
             return fgColor.invert().toHex()
@@ -61,11 +63,12 @@ export default function RegionMapView({regionMap, colorMap}) {
     const [wrapMode, setWrapMode] = useState(false)
     const [fgColor, setFGColor] = useState(DEFAULT_FG)
     const [bgColor, setBGColor] = useState(DEFAULT_BG)
+    const [borderColor, setBorderColor] = useState(DEFAULT_BORDER)
     const [layer, setLayer] = useState(DEFAULT_LAYER)
-    const [border, setBorder] = useState(false)
+    const [border, setBorder] = useState(true)
     const [origin, setOrigin] = useState(false)
 
-    const render = new Render(regionMap, colorMap, fgColor, bgColor)
+    const render = new Render(regionMap, colorMap, fgColor, bgColor, borderColor)
 
     return <section className="MapAppView">
         <Menu
@@ -76,9 +79,11 @@ export default function RegionMapView({regionMap, colorMap}) {
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             onFGColorChange={event => setFGColor(event.target.value)}
             onBGColorChange={event => setBGColor(event.target.value)}
+            onBorderColorChange={event => setBorderColor(event.target.value)}
             wrapMode={wrapMode}
             fgColor={fgColor}
             bgColor={bgColor}
+            borderColor={borderColor}
             tilesize={tilesize}
             layer={layer}
             border={border}
@@ -137,6 +142,11 @@ function Menu(props) {
             label="BG color"
             value={props.bgColor}
             onChange={props.onBGColorChange}
+        />
+        <TextField
+            label="Border color"
+            value={props.borderColor}
+            onChange={props.onBorderColorChange}
         />
         <Button text="Update" />
     </Form>

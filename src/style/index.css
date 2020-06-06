@@ -48,7 +48,7 @@
 .MapApp .MapAppView {
     background: black;
     display: grid;
-    grid-template-columns: min-content auto;
+    grid-template-columns: 20% auto;
 }
 
 .MapApp .MapAppView .Menu {
