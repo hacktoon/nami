@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { Form, Button } from '/lib/ui/form'
 import { Color } from '/lib/color'
-import { GridDisplay } from '/lib/ui/grid'
+import { GridView } from '/lib/ui/grid'
 import {
     TextField,
     OutputField,
@@ -90,7 +90,7 @@ export default function RegionMapView({regionMap, colorMap}) {
             origin={origin}
             seed={regionMap.seed}
         />
-        <GridDisplay
+        <GridView
             width={regionMap.width}
             height={regionMap.height}
             colorAt={point => render.colorAt(point, layer, border, origin)}

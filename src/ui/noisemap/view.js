@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { SimplexNoise } from '/lib/noise'
-import { GridDisplay } from '/lib/ui/grid'
+import { GridView } from '/lib/ui/grid'
 import { Form } from '/lib/ui/form'
 import { Color } from '/lib/color'
 import { OutputField, NumberField, BooleanField } from '/lib/ui/form/field'
@@ -32,7 +32,7 @@ export default function MapAppView({noiseMap}) {
             tilesize={tilesize}
             seed={noiseMap.seed}
         />
-        <GridDisplay
+        <GridView
             width={noiseMap.width}
             height={noiseMap.height}
             colorAt={point => getColor(noiseMap, point)}

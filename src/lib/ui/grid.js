@@ -5,7 +5,7 @@ import { MouseTracker } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
 
 
-export function GridDisplay(props) {
+export function GridView(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
     const onDrag = pixelOffset => {
@@ -44,7 +44,7 @@ export function GridDisplay(props) {
         context.fillRect(x, y, tilesize, tilesize)
     }
 
-    return <section className="GridDisplay">
+    return <section className="GridView">
         {/* <GridTracker onMove={onMove} /> */}
         <MouseTracker onDrag={onDrag} />
         <Canvas onSetup={onCanvasSetup} />
