@@ -106,6 +106,7 @@ canvas { display: block; }
     font-weight: bold;
     margin: 0 .1em;
     padding: .5rem 1rem;
+    cursor: pointer;
     text-transform: uppercase;
 }
 

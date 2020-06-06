@@ -4,7 +4,7 @@ import { OrganicFill } from '/lib/flood-fill'
 import { PointHash } from '/lib/point'
 import { RegionGrid } from '/lib/grid/region'
 
-export const DEFAULT_COUNT = 12
+export const DEFAULT_COUNT = 10
 export const DEFAULT_WIDTH = 200
 export const DEFAULT_HEIGHT = 150
 export const DEFAULT_SEED = ''
@@ -77,7 +77,7 @@ class RegionMap {
 
 
 class Region {
-    constructor(id, origin, organicFill) {
+    constructor(id, origin, organicFill) { // TODO: remove organicFill
         this.id = id
         this.origin = origin
         this.organicFill = organicFill

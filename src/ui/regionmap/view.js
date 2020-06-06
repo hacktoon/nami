@@ -53,7 +53,7 @@ class Render {
         if (!this.regionMap.isOverLayer(point, viewlayer)) {
             return this.bgColor.toHex()
         }
-        return fgColor.brighten(pointLayer*10).toHex()
+        return fgColor.darken(pointLayer*10).toHex()
     }
 }
 
