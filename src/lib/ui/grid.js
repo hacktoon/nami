@@ -15,32 +15,45 @@ export function GridView(props) {
         return new Point(x, y)
     }
 
-    // TODO: canvas param must be an object which wraps CanvasContext
     const onCanvasSetup = canvas => {
         let window = getWindow(canvas)
-        let offsetX = Math.floor(offset.x / props.tilesize)
-        let offsetY = Math.floor(offset.y / props.tilesize)
-
         for(let i = 0; i < window.x; i++) {
             for(let j = 0; j < window.y; j++) {
-                const point = new Point(offsetX + i, offsetY + j)
-                if (isWrappable(point)) {
-                    const color = props.colorAt(point)
-                    renderCell(canvas.context, i, j, color, props.tilesize)
-                }
+                onCanvasSetupFunction(i, j, canvas)
+            }
+
+        }
+    }
+    const onBackgroundCanvasSetup = canvas => {
+        let window = getWindow(canvas)
+        for(let i = 0; i < window.x; i++) {
+            for(let j = 0; j < window.y; j++) {
+                onBackgroundCanvasSetupFunction(i, j, canvas)
             }
         }
     }
 
-    const onBackgroundCanvasSetup = canvas => {
-        let total = getWindow(canvas)
-        for(let i = 0; i < total.x; i++) {
-            for(let j = 0; j < total.y; j++) {
-                const color = (i+ j) % 2 ? '#DDD' : '#FFF'
-                renderCell(canvas.context, i, j, color, props.tilesize)
-            }
+    const onCanvasSetupFunction = (i, j, canvas) => {
+        let [offsetX, offsetY] = gridOffset()
+        const point = new Point(offsetX + i, offsetY + j)
+        if (isWrappable(point)) {
+            const color = props.colorAt(point)
+            renderCell(canvas.context, i, j, color, props.tilesize)
         }
     }
+
+    const onBackgroundCanvasSetupFunction = (i, j, canvas) => {
+        let [offsetX, offsetY] = gridOffset()
+        const point = new Point(offsetX + i, offsetY + j)
+        if (isWrappable(point)) return
+        const color = (i+ j) % 2 ? '#DDD' : '#FFF'
+        renderCell(canvas.context, i, j, color, props.tilesize)
+    }
+
+    const gridOffset = () => [
+        Math.floor(offset.x / props.tilesize),
+        Math.floor(offset.y / props.tilesize)
+    ]
 
     const buildCanvas = point => {
 
