@@ -5,9 +5,31 @@ import { MouseTracker } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
 
 
+function createCanvas(originalCanvas) {
+    const canvas = document.createElement('canvas')
+    canvas.width = myCanvas.width
+    canvas.height = myCanvas.height
+
+    canvas.getContext('2d').drawImage(originalCanvas, 0, 0)
+    return canvas
+}
+
+
 export function GridView(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
+    const render = props.render
+
+    const renderOffscreenCanvas = canvas => {
+        for(let i = 0; i < render.xCount; i++) {
+            for(let j = 0; j < render.yCount; j++) {
+                let [offsetX, offsetY] = gridOffset()
+                const point = new Point(offsetX + i, offsetY + j)
+                const color = props.colorAt(point)
+                renderCell(canvas.context, i, j, color, props.tilesize)
+            }
+        }
+    }
 
     const getWindow = canvas => {
         let x = Math.ceil(canvas.width / props.tilesize)
@@ -19,21 +41,13 @@ export function GridView(props) {
         let window = getWindow(canvas)
         for(let i = 0; i < window.x; i++) {
             for(let j = 0; j < window.y; j++) {
-                onCanvasSetupFunction(i, j, canvas)
-            }
-
-        }
-    }
-    const onBackgroundCanvasSetup = canvas => {
-        let window = getWindow(canvas)
-        for(let i = 0; i < window.x; i++) {
-            for(let j = 0; j < window.y; j++) {
-                onBackgroundCanvasSetupFunction(i, j, canvas)
+                renderBackground(i, j, canvas)
+                renderForeground(i, j, canvas)
             }
         }
     }
 
-    const onCanvasSetupFunction = (i, j, canvas) => {
+    const renderForeground = (i, j, canvas) => {
         let [offsetX, offsetY] = gridOffset()
         const point = new Point(offsetX + i, offsetY + j)
         if (isWrappable(point)) {
@@ -42,11 +56,12 @@ export function GridView(props) {
         }
     }
 
-    const onBackgroundCanvasSetupFunction = (i, j, canvas) => {
+    const renderBackground = (i, j, canvas) => {
         let [offsetX, offsetY] = gridOffset()
         const point = new Point(offsetX + i, offsetY + j)
-        if (isWrappable(point)) return
-        const color = (i+ j) % 2 ? '#DDD' : '#FFF'
+        if (isWrappable(point))
+            return
+        const color = (i + j) % 2 ? '#DDD' : '#FFF'
         renderCell(canvas.context, i, j, color, props.tilesize)
     }
 
@@ -78,7 +93,7 @@ export function GridView(props) {
         <MouseTracker onDrag={onDrag} />
         <Canvas onSetup={onCanvasSetup} />
         <div className="BackgroundCanvas">
-            <Canvas onSetup={onBackgroundCanvasSetup} />
+            <Canvas onSetup={onCanvasSetup} />
         </div>
     </section>
 }

@@ -93,6 +93,7 @@ export default function RegionMapView({regionMap, colorMap}) {
         <GridView
             width={regionMap.width}
             height={regionMap.height}
+            render={render}
             colorAt={point => render.colorAt(point, layer, border, origin)}
             tilesize={tilesize}
             wrapMode={wrapMode}
