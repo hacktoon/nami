@@ -1,24 +1,23 @@
 import React, { useState } from 'react'
 
-import { Menu } from './menu'
+import { MapMenu } from './menu'
 import { MapView } from '/lib/ui/map'
 
 
 const DEFAULT_TILE_SIZE = 10
 
 
-export default function WorldView({worldMap}) {
+export default function WorldMapView({worldMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
 
     return <section className='MapAppView'>
-        <Menu
+        <MapMenu
             onTilesizeChange={({value}) => setTilesize(value)}
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             tilesize={tilesize}
             wrapMode={wrapMode}
             worldMap={worldMap}
-
         />
         <MapView
             width={worldMap.width}

@@ -51,7 +51,7 @@
     grid-template-columns: 20% auto;
 }
 
-.MapApp .MapAppView .Menu {
+.MapApp .MapAppView .MapMenu {
     background: #111;
     color: #FFF;
     display: grid;

@@ -58,6 +58,18 @@ class Render {
 }
 
 
+// TODO: refactor to this
+export function RegionMapView2({regionMap}) {
+    let [config, setConfig] = useState(regionMap.DEFAULT_CONFIG)
+
+    return <section className="MapAppView">
+        <MapMenu config={config} onChange={cfg => setConfig(cfg)} />
+        <MapView config={config} map={regionMap} />
+    </section>
+}
+
+
+
 export default function RegionMapView({regionMap, colorMap}) {
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
@@ -71,7 +83,7 @@ export default function RegionMapView({regionMap, colorMap}) {
     const render = new Render(regionMap, colorMap, fgColor, bgColor, borderColor)
 
     return <section className="MapAppView">
-        <Menu
+        <MapMenu
             onLayerChange={({value}) => setLayer(value)}
             onBorderChange={() => setBorder(!border)}
             onOriginChange={() => setOrigin(!origin)}
@@ -102,8 +114,8 @@ export default function RegionMapView({regionMap, colorMap}) {
 }
 
 
-function Menu(props) {
-    return <Form className="Menu">
+function MapMenu(props) {
+    return <Form className="MapMenu">
         <OutputField label="Seed" value={props.seed} />
         <BooleanField
             label="Wrap grid"

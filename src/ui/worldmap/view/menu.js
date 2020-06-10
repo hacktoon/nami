@@ -9,8 +9,8 @@ import {
 } from '/lib/ui/form/field'
 
 
-export function Menu(props) {
-    return <Form className="Menu">
+export function MapMenu(props) {
+    return <Form className="MapMenu">
         <OutputField label="Name" value={props.worldMap.name} />
         <OutputField label="Seed" value={props.worldMap.seed} />
         <BooleanField

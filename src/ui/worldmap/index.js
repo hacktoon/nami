@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import WorldMap from '/model/worldmap'
 import WorldMenu from './menu'
-import WorldView from './view'
+import WorldMapView from './view'
 
 
 export default function WorldMapApp() {
@@ -12,6 +12,6 @@ export default function WorldMapApp() {
 
     return <section className='MapApp'>
         <WorldMenu onChange={onConfigChange} />
-        <WorldView worldMap={worldMap} />
+        <WorldMapView worldMap={worldMap} />
     </section>
 }
