@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Point } from '/lib/point'
-import { MouseTracker } from '/lib/ui/mouse'
+import { MouseView } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
 
 
@@ -15,7 +15,7 @@ function createCanvas(originalCanvas) {
 }
 
 
-export function GridView(props) {
+export function MapView(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
     const render = props.render
@@ -88,9 +88,9 @@ export function GridView(props) {
         context.fillRect(x, y, tilesize, tilesize)
     }
 
-    return <section className="GridView">
+    return <section className="MapView">
         {/* <GridTracker onMove={onMove} /> */}
-        <MouseTracker onDrag={onDrag} />
+        <MouseView onDrag={onDrag} />
         <Canvas onSetup={onCanvasSetup} />
         <div className="BackgroundCanvas">
             <Canvas onSetup={onCanvasSetup} />

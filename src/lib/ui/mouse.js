@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 
-export function MouseTracker(props) {
+export function MouseView(props) {
     const [dragOrigin, setDragOrigin] = useState(new Point(0, 0))
     const [dragging, setDragging] = useState(false)
     const [offset, setOffset] = useState(new Point(0, 0))
@@ -29,7 +29,7 @@ export function MouseTracker(props) {
     }
 
     return (
-        <div className="MouseTracker"
+        <div className="MouseView"
             onMouseLeave={() => setDragging(false)}
             onMouseUp={onMouseUp}
             onMouseDown={onMouseDown}

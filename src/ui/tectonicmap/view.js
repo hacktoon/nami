@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Form } from '/lib/ui/form'
-import { GridView } from '/lib/ui/grid'
+import { MapView } from '/lib/ui/map'
 import {
     TextField,
     OutputField,
@@ -40,7 +40,7 @@ export default function TectonicMapView({tectonicMap}) {
             tilesize={tilesize}
             seed={tectonicMap.seed}
         />
-        <GridView
+        <MapView
             width={tectonicMap.width}
             height={tectonicMap.height}
             colorAt={point => render.colorAt(point)}

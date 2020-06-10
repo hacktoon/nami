@@ -28,7 +28,7 @@ canvas { display: block; }
 
 /* BASE COMPONENTS ================================ */
 
-.GridView {
+.MapView {
     position: relative;
 }
 
@@ -46,7 +46,7 @@ canvas { display: block; }
     z-index: 0;
 }
 
-.MouseTracker {
+.MouseView {
     cursor: pointer;
     position: absolute;
     top: 0;

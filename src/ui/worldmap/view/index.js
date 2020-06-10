@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Menu } from './menu'
-import { GridView } from '/lib/ui/grid'
+import { MapView } from '/lib/ui/map'
 
 
 const DEFAULT_TILE_SIZE = 10
@@ -20,7 +20,7 @@ export default function WorldView({worldMap}) {
             worldMap={worldMap}
 
         />
-        <GridView
+        <MapView
             width={worldMap.width}
             height={worldMap.height}
             colorAt={point => worldMap.getColor(point)}
