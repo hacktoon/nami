@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { MapMenu } from './menu'
-import { MapView } from '/lib/ui/map'
+import { MapImage } from '/lib/ui/map'
 
 
 const DEFAULT_TILE_SIZE = 10
@@ -19,7 +19,7 @@ export default function WorldMapView({worldMap}) {
             wrapMode={wrapMode}
             worldMap={worldMap}
         />
-        <MapView
+        <MapImage
             width={worldMap.width}
             height={worldMap.height}
             colorAt={point => worldMap.getColor(point)}

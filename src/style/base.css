@@ -28,7 +28,7 @@ canvas { display: block; }
 
 /* BASE COMPONENTS ================================ */
 
-.MapView {
+.MapImage {
     position: relative;
 }
 

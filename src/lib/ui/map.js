@@ -15,7 +15,7 @@ function createCanvas(originalCanvas) {
 }
 
 
-export function MapView(props) {
+export function MapImage(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
     const render = props.render
@@ -88,7 +88,7 @@ export function MapView(props) {
         context.fillRect(x, y, tilesize, tilesize)
     }
 
-    return <section className="MapView">
+    return <section className="MapImage">
         {/* <GridTracker onMove={onMove} /> */}
         <MouseView onDrag={onDrag} />
         <Canvas onSetup={onCanvasSetup} />

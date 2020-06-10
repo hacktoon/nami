@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 
-import { Form, Button } from '/lib/ui/form'
-import { Color } from '/lib/color'
-import { MapView } from '/lib/ui/map'
+import { Form } from '/lib/ui/form'
+import { MapImage } from '/lib/ui/map'
 import {
     TextField,
     OutputField,
@@ -18,59 +17,19 @@ const DEFAULT_BG = '#251'
 const DEFAULT_BORDER = '#944'
 
 
-function buildColor(string) {
-    if (string === '') return
-    return Color.fromHex(string)
-}
-
-
-class Render {
-    constructor(regionMap, colorMap, fgColor, bgColor, borderColor) {
-        this.regionMap = regionMap
-        this.colorMap = colorMap
-        this.fgColor = buildColor(fgColor)
-        this.bgColor = buildColor(bgColor) || new Color()
-        this.borderColor = buildColor(borderColor) || this.fgColor.darken(40)
-    }
-
-    colorAt(point, viewlayer, border, origin) {
-        const region = this.regionMap.get(point)
-        const id = region.id
-        const fgColor = this.fgColor ? this.fgColor : this.colorMap[id]
-        const pointLayer = this.regionMap.getLayer(point)
-
-        if (border && this.regionMap.isBorder(point)) {
-            return this.borderColor.toHex()
-        }
-        if (origin && this.regionMap.isOrigin(point)) {
-            return fgColor.invert().toHex()
-        }
-        // draw seed
-        if (this.regionMap.isLayer(point, viewlayer)) {
-            return fgColor.brighten(50).toHex()
-        }
-        // invert this check to get remaining spaces
-        if (!this.regionMap.isOverLayer(point, viewlayer)) {
-            return this.bgColor.toHex()
-        }
-        return fgColor.darken(pointLayer*10).toHex()
-    }
-}
-
-
 // TODO: refactor to this
-export function RegionMapView2({regionMap}) {
-    let [config, setConfig] = useState(regionMap.DEFAULT_CONFIG)
+// export function _MapView({map}) {
+//     let [config, setConfig] = useState(map.DEFAULT_CONFIG)
 
-    return <section className="MapAppView">
-        <MapMenu config={config} onChange={cfg => setConfig(cfg)} />
-        <MapView config={config} map={regionMap} />
-    </section>
-}
+//     return <section className="MapImage">
+//         <MapMenu config={config} onChange={cfg => setConfig(cfg)} />
+//         <MapImage config={config} map={map} />
+//     </section>
+// }
 
 
-
-export default function RegionMapView({regionMap, colorMap}) {
+export default function RegionMapView({regionMap}) {
+    //render options
     const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
     const [wrapMode, setWrapMode] = useState(false)
     const [fgColor, setFGColor] = useState(DEFAULT_FG)
@@ -80,7 +39,7 @@ export default function RegionMapView({regionMap, colorMap}) {
     const [border, setBorder] = useState(true)
     const [origin, setOrigin] = useState(false)
 
-    const render = new Render(regionMap, colorMap, fgColor, bgColor, borderColor)
+    const view = regionMap.view(fgColor, bgColor, borderColor)
 
     return <section className="MapAppView">
         <MapMenu
@@ -102,11 +61,10 @@ export default function RegionMapView({regionMap, colorMap}) {
             origin={origin}
             seed={regionMap.seed}
         />
-        <MapView
+        <MapImage
             width={regionMap.width}
             height={regionMap.height}
-            render={render}
-            colorAt={point => render.colorAt(point, layer, border, origin)}
+            colorAt={point => view.colorAt(point, layer, border, origin)}
             tilesize={tilesize}
             wrapMode={wrapMode}
         />
