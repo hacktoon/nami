@@ -2,8 +2,9 @@ import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { Color } from '/lib/color'
 import { OrganicFill } from '/lib/flood-fill'
-import { PointHash } from '/lib/point'
 import { RegionGrid } from '/lib/grid/region'
+import { Region } from './region'
+
 
 export const DEFAULT_COUNT = 10
 export const DEFAULT_WIDTH = 200
@@ -111,33 +112,6 @@ class RegionMapView {
             return this.bgColor.toHex()
         }
         return fgColor.darken(pointLayer*10).toHex()
-    }
-}
-
-
-class Region {
-    constructor(id, origin, organicFill) { // TODO: remove organicFill
-        this.id = id
-        this.origin = origin
-        this.organicFill = organicFill
-        this.pointHash = new PointHash([origin])
-    }
-
-    get size() {
-        return this.pointHash.size
-    }
-
-    get points() {
-        return this.pointHash.points
-    }
-
-    has(point) {
-        return this.pointHash.has(point)
-    }
-
-    grow() {
-        const filled = this.organicFill.fill()
-        this.pointHash.add(filled)
     }
 }
 
