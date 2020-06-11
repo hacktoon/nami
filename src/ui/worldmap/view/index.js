@@ -17,11 +17,10 @@ export default function WorldMapView({worldMap}) {
             onWrapModeChange={() => setWrapMode(!wrapMode)}
             tilesize={tilesize}
             wrapMode={wrapMode}
-            worldMap={worldMap}
+            map={worldMap}
         />
         <MapImage
-            width={worldMap.width}
-            height={worldMap.height}
+            map={worldMap}
             colorAt={point => worldMap.getColor(point)}
             tilesize={tilesize}
             wrapMode={wrapMode}

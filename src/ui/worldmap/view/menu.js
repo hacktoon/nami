@@ -11,8 +11,8 @@ import {
 
 export function MapMenu(props) {
     return <Form className="MapMenu">
-        <OutputField label="Name" value={props.worldMap.name} />
-        <OutputField label="Seed" value={props.worldMap.seed} />
+        <OutputField label="Name" value={props.map.name} />
+        <OutputField label="Seed" value={props.map.seed} />
         <BooleanField
             label="Wrap grid"
             value={props.wrapMode}
@@ -26,13 +26,7 @@ export function MapMenu(props) {
             min={1}
         />
         <SelectField label="Layer" options={{
-            heightmap: "Heightmap",
-            relief: "Relief",
-            heat: "Heat",
-            moisture: "Moisture",
-            water: "Water",
-            biome: "Biome",
-            landmass: "Landmass",
+            heightmap: "Height map",
         }} />
     </Form>
 }

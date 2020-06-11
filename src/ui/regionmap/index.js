@@ -11,6 +11,6 @@ export default function RegionMapApp() {
 
     return <section className='MapApp'>
         <MapAppMenu onChange={onConfigChange} />
-        <RegionMapView regionMap={regionMap} />
+        <RegionMapView map={regionMap} />
     </section>
 }

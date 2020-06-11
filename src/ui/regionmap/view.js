@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Form } from '/lib/ui/form'
+import { Button, Form } from '/lib/ui/form'
 import { MapImage } from '/lib/ui/map'
 import {
     TextField,
@@ -19,30 +19,37 @@ const DEFAULT_BORDER = '#944'
 
 // TODO: refactor to this
 // export function _MapView({map}) {
-//     let [config, setConfig] = useState(map.DEFAULT_CONFIG)
+//     let [config, setConfig] = useState(map.view.DEFAULT_CONFIG)
 
 //     return <section className="MapImage">
 //         <MapMenu config={config} onChange={cfg => setConfig(cfg)} />
 //         <MapImage config={config} map={map} />
 //     </section>
 // }
+// createMapView
+// bundles all base properties together
+// implement the protocol
 
 
-export default function RegionMapView({regionMap}) {
-    //render options
-    const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
-    const [wrapMode, setWrapMode] = useState(false)
+export default function RegionMapView({map}) {
+    //REMOVE BELOW
     const [fgColor, setFGColor] = useState(DEFAULT_FG)
     const [bgColor, setBGColor] = useState(DEFAULT_BG)
     const [borderColor, setBorderColor] = useState(DEFAULT_BORDER)
+    const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
+    const [wrapMode, setWrapMode] = useState(false)
     const [layer, setLayer] = useState(DEFAULT_LAYER)
-    const [border, setBorder] = useState(true)
+    const [border, setBorder] = useState(false)
     const [origin, setOrigin] = useState(false)
+    //END REMOVE
 
-    const view = regionMap.view(fgColor, bgColor, borderColor)
+    let [config, setConfig] = useState({fgColor, bgColor, borderColor})
+    const view = map.view(config)
+    //const view = map.view.build(config)
 
     return <section className="MapAppView">
-        <MapMenu
+        <MapMenu map={map} onChange={cfg => setConfig(cfg)}
+            // REMOVE BELOW=====================================
             onLayerChange={({value}) => setLayer(value)}
             onBorderChange={() => setBorder(!border)}
             onOriginChange={() => setOrigin(!origin)}
@@ -59,11 +66,9 @@ export default function RegionMapView({regionMap}) {
             layer={layer}
             border={border}
             origin={origin}
-            seed={regionMap.seed}
         />
-        <MapImage
-            width={regionMap.width}
-            height={regionMap.height}
+        <MapImage map={map}
+            //REMOVE BELOW=====================================
             colorAt={point => view.colorAt(point, layer, border, origin)}
             tilesize={tilesize}
             wrapMode={wrapMode}
@@ -73,21 +78,30 @@ export default function RegionMapView({regionMap}) {
 
 
 function MapMenu(props) {
-    return <Form className="MapMenu">
-        <OutputField label="Seed" value={props.seed} />
+    function handleSubmit(event) {
+        event.preventDefault();
+        console.log(event.currentTarget.wrapField.value);
+
+    }
+
+    return <Form className="MapMenu" onSubmit={handleSubmit}>
+        <OutputField label="Seed" value={props.map.seed} />
         <BooleanField
             label="Wrap grid"
             value={props.wrapMode}
+            name="wrapField"
             onChange={props.onWrapModeChange}
         />
         <BooleanField
             label="Show border"
             value={props.border}
+            name="borderField"
             onChange={props.onBorderChange}
         />
         <BooleanField
             label="Show origin"
             value={props.origin}
+            name="originField"
             onChange={props.onOriginChange}
         />
         <NumberField
@@ -96,6 +110,7 @@ function MapMenu(props) {
             onChange={props.onTilesizeChange}
             step={1}
             min={1}
+            name="tilesizeField"
         />
         <NumberField
             label="Layer"
@@ -103,21 +118,26 @@ function MapMenu(props) {
             onChange={props.onLayerChange}
             step={1}
             min={0}
+            name="layerField"
         />
         <TextField
             label="FG color"
             value={props.fgColor}
             onChange={props.onFGColorChange}
+            name="fgColorField"
         />
         <TextField
             label="BG color"
             value={props.bgColor}
             onChange={props.onBGColorChange}
+            name="bgColorField"
         />
         <TextField
             label="Border color"
             value={props.borderColor}
             onChange={props.onBorderColorChange}
+            name="borderColorField"
         />
+        <Button text="Update" />
     </Form>
 }

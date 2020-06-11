@@ -22,8 +22,8 @@ class RegionMap {
         this.colorMap = buildColorMap(this)
     }
 
-    view(...params) {
-        return new RegionMapView(this, ...params)
+    view(params) {
+        return new RegionMapView(this, params)
     }
 
     get width() {
@@ -83,12 +83,12 @@ class RegionMapSpec {
 
 
 class RegionMapView {
-    constructor(regionMap, fgColor, bgColor, borderColor) {
+    constructor(regionMap, {fgColor, bgColor, borderColor}) {
+        this.regionMap = regionMap
         this.bgColor = buildColor(bgColor) || new Color()
         this.borderColor = buildColor(borderColor) || this.fgColor.darken(40)
         this.colorMap = regionMap.colorMap
         this.fgColor = buildColor(fgColor)
-        this.regionMap = regionMap
     }
 
     colorAt(point, viewlayer, border, origin) {

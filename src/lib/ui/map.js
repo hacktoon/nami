@@ -76,8 +76,8 @@ export function MapImage(props) {
 
     const isWrappable = point => {
         if (props.wrapMode) return true
-        const col = point.x >= 0 && point.x < props.width
-        const row = point.y >= 0 && point.y < props.height
+        const col = point.x >= 0 && point.x < props.map.width
+        const row = point.y >= 0 && point.y < props.map.height
         return col && row
     }
 
