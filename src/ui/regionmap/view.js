@@ -25,15 +25,15 @@ import {
 
 
 export default function RegionMapView({map}) {
-    //REMOVE BELOW
+    //REMOVE
     const [fgColor, setFGColor] = useState(map.view.fgColor)
     const [bgColor, setBGColor] = useState(map.view.bgColor)
     const [borderColor, setBorderColor] = useState(map.view.borderColor)
     const [tilesize, setTilesize] = useState(map.view.tilesize)
-    const [wrapMode, setWrapMode] = useState(false)
+    const [wrapMode, setWrapMode] = useState(map.view.wrapMode)
     const [layer, setLayer] = useState(map.view.layer)
-    const [border, setBorder] = useState(false)
-    const [origin, setOrigin] = useState(false)
+    const [border, setBorder] = useState(map.view.border)
+    const [origin, setOrigin] = useState(map.view.origin)
     //END REMOVE
 
     let [config, setConfig] = useState({fgColor, bgColor, borderColor})
