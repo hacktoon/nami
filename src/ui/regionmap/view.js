@@ -10,13 +10,6 @@ import {
 } from '/lib/ui/form/field'
 
 
-const DEFAULT_TILE_SIZE = 5
-const DEFAULT_LAYER = 5
-const DEFAULT_FG = '#06F'
-const DEFAULT_BG = '#251'
-const DEFAULT_BORDER = '#944'
-
-
 // TODO: refactor to this
 // export function _MapView({map}) {
 //     let [config, setConfig] = useState(map.view.DEFAULT_CONFIG)
@@ -33,18 +26,18 @@ const DEFAULT_BORDER = '#944'
 
 export default function RegionMapView({map}) {
     //REMOVE BELOW
-    const [fgColor, setFGColor] = useState(DEFAULT_FG)
-    const [bgColor, setBGColor] = useState(DEFAULT_BG)
-    const [borderColor, setBorderColor] = useState(DEFAULT_BORDER)
-    const [tilesize, setTilesize] = useState(DEFAULT_TILE_SIZE)
+    const [fgColor, setFGColor] = useState(map.view.fgColor)
+    const [bgColor, setBGColor] = useState(map.view.bgColor)
+    const [borderColor, setBorderColor] = useState(map.view.borderColor)
+    const [tilesize, setTilesize] = useState(map.view.tilesize)
     const [wrapMode, setWrapMode] = useState(false)
-    const [layer, setLayer] = useState(DEFAULT_LAYER)
+    const [layer, setLayer] = useState(map.view.layer)
     const [border, setBorder] = useState(false)
     const [origin, setOrigin] = useState(false)
     //END REMOVE
 
     let [config, setConfig] = useState({fgColor, bgColor, borderColor})
-    const view = map.view(config)
+    const view = map.buildView(config)
     //const view = map.view.build(config)
 
     return <section className="MapAppView">

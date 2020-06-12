@@ -20,9 +20,10 @@ class RegionMap {
         this.regions = regions
         this.seed = seed
         this.grid = grid
+        this.view = new RegionMapView(this, {})
     }
 
-    view(params) {
+    buildView(params) {
         return new RegionMapView(this, params)
     }
 
