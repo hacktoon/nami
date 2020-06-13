@@ -1,4 +1,6 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
+
+import { Color } from '/lib/color'
 
 
 // HELPER FUNCTIONS ===============================================
@@ -49,10 +51,14 @@ function InputField({label, type, ...props}) {
 }
 
 
-// PUBLIC COMPONENTS ===============================================
+// GENERIC COMPONENTS ===============================================
 
-export function TextField(props) {
-    return <InputField type='text' {...props} />
+export function TextField({onChange, ...props}) {
+    const _onChange = event => onChange({
+        value: String(event.target.value),
+        event,
+    })
+    return <InputField type='text' onChange={_onChange} {...props} />
 }
 
 
@@ -73,15 +79,27 @@ export function SelectField({label, options, ...props}) {
 }
 
 
-export function BooleanField({onChange, ...props}) {
-    const _onChange = event => onChange(Boolean(event.target.checked))
-    return <OptionalField type='checkbox' onChange={_onChange} {...props} />
-}
-
-
 export function OutputField(props) {
     return <section className='Field'>
         <output className='FieldLabel'>{props.label}</output>
         <output className='FieldValue'>{props.value}</output>
     </section>
+}
+
+
+// SPECIALIZED COMPONENTS ===============================================
+
+export function BooleanField({onChange, ...props}) {
+    return <OptionalField
+        type='checkbox'
+        onChange={event => onChange(Boolean(event.target.checked))}
+        {...props}
+    />
+}
+
+export function ColorField({onChange, value, ...props}) {
+    return <TextField
+        onChange={({value, e}) => onChange({value: Color.fromHex(value), e})}
+        defaultValue={value.toHex()} {...props}
+    />
 }
