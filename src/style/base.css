@@ -96,6 +96,7 @@ canvas { display: block; }
     justify-content: center;
     text-align: center;
 }
+.Field.checkbox .FieldValue [type="checkbox"] { display: none; }
 .Field.checkbox.true .FieldValue {
     background-color: rgb(6, 94, 6);
 }

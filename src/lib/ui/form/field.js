@@ -1,16 +1,9 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 
 import { Color } from '/lib/color'
 
 
 // HELPER FUNCTIONS ===============================================
-
-function generateFieldID(label) {
-    // create unique id based on label and current timestamp
-    const id = label.toLowerCase().replace(/\s+/g, '-')
-    const hash = new Date().valueOf() / Math.random()
-    return `${id}Field${hash}`
-}
 
 function buildSelectOptions(options) {
     const entries = Object.entries(options)
@@ -21,26 +14,26 @@ function buildSelectOptions(options) {
 }
 
 
-// GENERIC FIELDS ===============================================
+// GENERIC FIELD ===============================================
 
-function Field({label, type, children}) {
-    const id = generateFieldID(label)
-    return <section className={`Field ${type}`}>
-        <label className='FieldLabel' htmlFor={id}>{label}</label>
+function Field({label, type, status='', children}) {
+    const slug = label.toLowerCase().replace(/\s+/g, '')
+    const id = `${slug}-field-${Number(new Date())}`
+
+    return <label className={`Field ${type} ${status}`}>
+        <span className='FieldLabel' htmlFor={id}>{label}</span>
         <div className='FieldValue'>{children(id)}</div>
-    </section>
+    </label>
 }
 
 
+// SPECIAL GENERIC FIELDS ===============================================
+
 function OptionalField({label, type, ...props}) {
-    const id = generateFieldID(label)
     const checked = Boolean(props.value)
-    return <label className={`Field ${type} ${String(checked)}`} htmlFor={id}>
-        <span className='FieldLabel'>{label}</span>
-        <span className='FieldValue'>
-            <input id={id} type={type} className='hidden' checked={checked} {...props} />
-        </span>
-    </label>
+    return <Field type={type} label={label} status={String(checked)}>
+        {id => <input id={id} type={type} checked={checked} {...props} />}
+    </Field>
 }
 
 
@@ -51,23 +44,42 @@ function InputField({label, type, ...props}) {
 }
 
 
-// GENERIC COMPONENTS ===============================================
+// FIELD COMPONENTS ===============================================
+
+export function ColorField({onChange, value, ...props}) {
+    return <InputField type="text"
+        onChange={event => onChange({
+            value: Color.fromHex(event.target.value),
+            event
+        })}
+        defaultValue={value.toHex()}
+        {...props}
+    />
+}
+
+
+export function BooleanField({onChange, ...props}) {
+    return <OptionalField type='checkbox'
+        onChange={event => onChange({value: event.target.checked, event})}
+        {...props}
+    />
+}
+
 
 export function TextField({onChange, ...props}) {
-    const _onChange = event => onChange({
-        value: String(event.target.value),
-        event,
-    })
-    return <InputField type='text' onChange={_onChange} {...props} />
+    return <InputField type='text'
+        onChange={event => onChange({value: String(event.target.value), event})}
+        {...props}
+    />
 }
 
 
 export function NumberField({onChange, ...props}) {
-    const _onChange = event => onChange({
-        value: Math.max(props.min, Number(event.target.value)),
-        event,
-    })
-    return <InputField type='number' onChange={_onChange} {...props} />
+    let value = event => Math.max(props.min, Number(event.target.value))
+    return <InputField type='number'
+        onChange={event => onChange({value: value(event), event})}
+        {...props}
+    />
 }
 
 
@@ -84,22 +96,4 @@ export function OutputField(props) {
         <output className='FieldLabel'>{props.label}</output>
         <output className='FieldValue'>{props.value}</output>
     </section>
-}
-
-
-// SPECIALIZED COMPONENTS ===============================================
-
-export function BooleanField({onChange, ...props}) {
-    return <OptionalField
-        type='checkbox'
-        onChange={event => onChange(Boolean(event.target.checked))}
-        {...props}
-    />
-}
-
-export function ColorField({onChange, value, ...props}) {
-    return <TextField
-        onChange={({value, e}) => onChange({value: Color.fromHex(value), e})}
-        defaultValue={value.toHex()} {...props}
-    />
 }

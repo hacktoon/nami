@@ -4,7 +4,6 @@ import { Button, Form } from '/lib/ui/form'
 import { ColorField } from '/lib/ui/form/field'
 import { MapImage } from '/lib/ui/map'
 import {
-    TextField,
     OutputField,
     NumberField,
     BooleanField
@@ -15,7 +14,7 @@ import {
 // export function _MapView({map}) {
 //     let [config, setConfig] = useState(map.view.DEFAULT_CONFIG)
 
-//     return <section className="MapImage">
+//     return <section className="MapView">
 //         <MapMenu config={config} onChange={cfg => setConfig(cfg)} />
 //         <MapImage config={config} map={map} />
 //     </section>
@@ -40,10 +39,9 @@ export default function RegionMapView({map}) {
     let [config, setConfig] = useState({fgColor, bgColor, borderColor})
 
     const view = map.buildView(config)
-    //const view = map.view.build(config)
 
     return <section className="MapAppView">
-        <MapMenu map={map} onChange={cfg => setConfig(cfg)}
+        <MapMenu map={map} config={config} onChange={cfg => setConfig(cfg)}
             // REMOVE BELOW=====================================
             onLayerChange={({value}) => setLayer(value)}
             onBorderChange={({value}) => setBorder(value)}
@@ -74,12 +72,34 @@ export default function RegionMapView({map}) {
 
 function MapMenu(props) {
     function handleSubmit(event) {
-        event.preventDefault();
-        console.log(event.currentTarget.wrapField.value);
-
+        event.preventDefault()
+        props.onChange({
+            fgColor: event.currentTarget.fgColorField.value,
+            bgColor: event.currentTarget.bgColorField.value,
+            borderColor: event.currentTarget.borderColorField.value,
+            wrapMode: event.currentTarget.wrapModeField.value,
+            border: event.currentTarget.borderField.value,
+            origin: event.currentTarget.originField.value,
+            layer: event.currentTarget.layerField.value,
+            tilesize: event.currentTarget.tilesizeField.value,
+        })
     }
 
-    return <Form className="MapMenu" onSubmit={handleSubmit}>
+    function handleChange(event) {
+        event.preventDefault()
+        props.onChange({
+            fgColor: event.currentTarget.fgColorField.value,
+            bgColor: event.currentTarget.bgColorField.value,
+            borderColor: event.currentTarget.borderField.value,
+            wrapMode: event.currentTarget.wrapField.value,
+            border: event.currentTarget.borderField.value,
+            origin: event.currentTarget.originField.value,
+            layer: event.currentTarget.layerField.value,
+            tilesize: event.currentTarget.tilesizeField.value,
+        })
+    }
+
+    return <Form className="MapMenu" onSubmit={handleSubmit} onChange={handleChange}>
         <OutputField label="Seed" value={props.map.seed} />
         <BooleanField
             name="wrapField"

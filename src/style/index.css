@@ -37,7 +37,7 @@
 }
 
 .MapApp .MapAppMenu {
-    background: #AAA;
+    background: #CCC;
     display: grid;
     gap: 1rem;
     grid-auto-flow: column;

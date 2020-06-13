@@ -25,7 +25,7 @@ export default function MapAppMenu(props) {
         props.onChange({count, width, height, seed, layerGrowth, growthChance})
     }
 
-    const onSeedChange = event => setSeed(event.target.value.trim())
+    const onSeedChange = ({value}) => setSeed(value.trim())
 
     return <Form className="MapAppMenu" onSubmit={onSubmit}>
         <NumberField
