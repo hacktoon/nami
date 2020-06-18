@@ -25,69 +25,42 @@ import {
 
 
 export default function RegionMapView({map}) {
-    //REMOVE
-    const [bgColor, setBGColor] = useState(map.view.bgColor)
-    const [border, setBorder] = useState(map.view.border)
-    const [borderColor, setBorderColor] = useState(map.view.borderColor)
-    const [fgColor, setFGColor] = useState(map.view.fgColor)
-    const [layer, setLayer] = useState(map.view.layer)
-    const [origin, setOrigin] = useState(map.view.origin)
-    const [tilesize, setTilesize] = useState(map.view.tilesize)
-    const [wrapMode, setWrapMode] = useState(map.view.wrapMode)
-    //END REMOVE
-
-    let [config, setConfig] = useState({fgColor, bgColor, borderColor})
+    let [config, setConfig] = useState({
+        bgColor: map.view.bgColor,
+        border: map.view.border,
+        borderColor: map.view.borderColor,
+        fgColor: map.view.fgColor,
+        layer: map.view.layer,
+        origin: map.view.origin,
+        tilesize: map.view.tilesize,
+        wrapMode: map.view.wrapMode,
+    })
 
     const view = map.buildView(config)
 
     return <section className="MapAppView">
-        <MapMenu map={map} config={config} onChange={cfg => setConfig(cfg)}
-            // REMOVE BELOW=====================================
-            onLayerChange={({value}) => setLayer(value)}
-            onBorderChange={({value}) => setBorder(value)}
-            onOriginChange={({value}) => setOrigin(value)}
-            onTilesizeChange={({value}) => setTilesize(value)}
-            onWrapModeChange={({value}) => setWrapMode(value)}
-            onFGColorChange={({value}) => setFGColor(value)}
-            onBGColorChange={({value}) => setBGColor(value)}
-            onBorderColorChange={({value}) => setBorderColor(value)}
-            wrapMode={wrapMode}
-            fgColor={fgColor}
-            bgColor={bgColor}
-            borderColor={borderColor}
-            tilesize={tilesize}
-            layer={layer}
-            border={border}
-            origin={origin}
-        />
+        <MapMenu config={config} onChange={cfg => setConfig(cfg)} />
         <MapImage map={map}
             //REMOVE BELOW=====================================
-            colorAt={point => view.colorAt(point, layer, border, origin)}
-            tilesize={tilesize}
-            wrapMode={wrapMode}
+            colorAt={point => view.colorAt(point, config.layer, config.border, config.origin)}
+            tilesize={config.tilesize}
+            wrapMode={config.wrapMode}
         />
     </section>
 }
 
 
-function MapMenu(props) {
-    function handleSubmit(event) {
-        event.preventDefault()
-        props.onChange({
-            fgColor: event.currentTarget.fgColorField.value,
-            bgColor: event.currentTarget.bgColorField.value,
-            borderColor: event.currentTarget.borderColorField.value,
-            wrapMode: event.currentTarget.wrapModeField.value,
-            border: event.currentTarget.borderField.value,
-            origin: event.currentTarget.originField.value,
-            layer: event.currentTarget.layerField.value,
-            tilesize: event.currentTarget.tilesizeField.value,
-        })
-    }
-
+function MapMenu({config, onChange}) {
     function handleChange(event) {
         event.preventDefault()
-        props.onChange({
+        const newConfig = readForm(event)
+        console.log(newConfig)
+
+        //onChange(newConfig)
+    }
+
+    function readForm(event) {
+        return {
             fgColor: event.currentTarget.fgColorField.value,
             bgColor: event.currentTarget.bgColorField.value,
             borderColor: event.currentTarget.borderField.value,
@@ -96,37 +69,34 @@ function MapMenu(props) {
             origin: event.currentTarget.originField.value,
             layer: event.currentTarget.layerField.value,
             tilesize: event.currentTarget.tilesizeField.value,
-        })
+        }
     }
+
 
     const fields = [
         {
             type: BooleanField,
             name: "wrapField",
             label: "Wrap grid",
-            value: props.wrapMode,
-            onChange: props.onWrapModeChange
+            value: config.wrapMode,
         },
         {
             type: BooleanField,
             name: "borderField",
             label: "Show border",
-            value: props.border,
-            onChange: props.onBorderChange,
+            value: config.border,
         },
         {
             type: BooleanField,
             name: "originField",
             label: "Show origin",
-            value: props.origin,
-            onChange: props.onOriginChange,
+            value: config.origin,
         },
         {
             type: NumberField,
             name: "tilesizeField",
             label: "Tile size",
-            value: props.tilesize,
-            onChange: props.onTilesizeChange,
+            value: config.tilesize,
             step: 1,
             min: 1,
         },
@@ -134,8 +104,7 @@ function MapMenu(props) {
             type: NumberField,
             name: "layerField",
             label: "Layer",
-            value: props.layer,
-            onChange: props.onLayerChange,
+            value: config.layer,
             step: 1,
             min: 0,
         },
@@ -143,28 +112,27 @@ function MapMenu(props) {
             type: ColorField,
             name: "fgColorField",
             label: "FG color",
-            value: props.fgColor,
-            onChange: props.onFGColorChange,
+            value: config.fgColor,
         },
         {
             type: ColorField,
             name: "bgColorField",
             label: "BG color",
-            value: props.bgColor,
-            onChange: props.onBGColorChange,
+            value: config.bgColor,
         },
         {
             type: ColorField,
             name: "borderColorField",
             label: "Border color",
-            value: props.borderColor,
-            onChange: props.onBorderColorChange,
+            value: config.borderColor,
         }
     ]
 
-    return <Form className="MapMenu" onChange={handleChange}>
-        <OutputField label="Seed" value={props.map.seed} />
+    return <Form className="MapMenu" onSubmit={handleChange}>
         {buildFields(fields)}
         <Button text="Update" />
     </Form>
 }
+
+// show output field in a specific grid view component
+// <OutputField label="Seed" value={props.map.seed} />

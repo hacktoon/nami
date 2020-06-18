@@ -35,56 +35,17 @@ function Field({label, type, status='', children}) {
 // SPECIAL GENERIC FIELDS ===============================================
 
 function OptionalField({label, type, ...props}) {
-    const checked = Boolean(props.value)
-    return <Field type={type} label={label} status={String(checked)}>
-        {id => <input id={id} type={type} checked={checked} {...props} />}
+    const value = Boolean(props.value)
+    return <Field type={type} label={label} status={String(value)}>
+        {id => <input id={id} type={type} defaultChecked={value} {...props} />}
     </Field>
 }
 
 
-function InputField({label, type, ...props}) {
+export function InputField({value, label, type, ...props}) {
     return <Field type={type} label={label}>
-        {id => <input id={id} type={type} {...props} />}
+        {id => <input id={id} type={type} defaultValue={value} {...props} />}
     </Field>
-}
-
-
-// FIELD COMPONENTS ===============================================
-
-export function ColorField({onChange, value, ...props}) {
-    return <InputField type="text"
-        onChange={event => onChange({
-            value: Color.fromHex(event.target.value),
-            event
-        })}
-        defaultValue={value.toHex()}
-        {...props}
-    />
-}
-
-
-export function BooleanField({onChange, ...props}) {
-    return <OptionalField type='checkbox'
-        onChange={event => onChange({value: event.target.checked, event})}
-        {...props}
-    />
-}
-
-
-export function TextField({onChange, ...props}) {
-    return <InputField type='text'
-        onChange={event => onChange({value: String(event.target.value), event})}
-        {...props}
-    />
-}
-
-
-export function NumberField({onChange, ...props}) {
-    let value = event => Math.max(props.min, Number(event.target.value))
-    return <InputField type='number'
-        onChange={event => onChange({value: value(event), event})}
-        {...props}
-    />
 }
 
 
@@ -94,6 +55,22 @@ export function SelectField({label, options, ...props}) {
         {id => <select id={id} {...props}>{children}</select>}
     </Field>
 }
+
+
+// FIELD COMPONENTS ===============================================
+
+export function ColorField({value, ...props}) {
+    return <TextField value={value.toHex()} {...props} />
+}
+
+
+export const BooleanField = props => <OptionalField type='checkbox' {...props} />
+
+
+export const TextField = props => <InputField type='text' {...props}/>
+
+
+export const NumberField = props => <InputField type='number' {...props} />
 
 
 export function OutputField(props) {
