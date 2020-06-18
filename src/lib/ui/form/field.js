@@ -14,14 +14,19 @@ function buildSelectOptions(options) {
 }
 
 
+export function buildFields(fields) {
+    return fields.map(({type, ...props}, key) => type({key, ...props}))
+}
+
+
 // GENERIC FIELD ===============================================
 
 function Field({label, type, status='', children}) {
     const slug = label.toLowerCase().replace(/\s+/g, '')
     const id = `${slug}-field-${Number(new Date())}`
 
-    return <label className={`Field ${type} ${status}`}>
-        <span className='FieldLabel' htmlFor={id}>{label}</span>
+    return <label htmlFor={id} className={`Field ${type} ${status}`}>
+        <span className='FieldLabel'>{label}</span>
         <div className='FieldValue'>{children(id)}</div>
     </label>
 }

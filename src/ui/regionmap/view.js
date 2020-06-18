@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Button, Form } from '/lib/ui/form'
-import { ColorField } from '/lib/ui/form/field'
+import { buildFields, ColorField } from '/lib/ui/form/field'
 import { MapImage } from '/lib/ui/map'
 import {
     OutputField,
@@ -99,60 +99,72 @@ function MapMenu(props) {
         })
     }
 
-    return <Form className="MapMenu" onSubmit={handleSubmit} onChange={handleChange}>
+    const fields = [
+        {
+            type: BooleanField,
+            name: "wrapField",
+            label: "Wrap grid",
+            value: props.wrapMode,
+            onChange: props.onWrapModeChange
+        },
+        {
+            type: BooleanField,
+            name: "borderField",
+            label: "Show border",
+            value: props.border,
+            onChange: props.onBorderChange,
+        },
+        {
+            type: BooleanField,
+            name: "originField",
+            label: "Show origin",
+            value: props.origin,
+            onChange: props.onOriginChange,
+        },
+        {
+            type: NumberField,
+            name: "tilesizeField",
+            label: "Tile size",
+            value: props.tilesize,
+            onChange: props.onTilesizeChange,
+            step: 1,
+            min: 1,
+        },
+        {
+            type: NumberField,
+            name: "layerField",
+            label: "Layer",
+            value: props.layer,
+            onChange: props.onLayerChange,
+            step: 1,
+            min: 0,
+        },
+        {
+            type: ColorField,
+            name: "fgColorField",
+            label: "FG color",
+            value: props.fgColor,
+            onChange: props.onFGColorChange,
+        },
+        {
+            type: ColorField,
+            name: "bgColorField",
+            label: "BG color",
+            value: props.bgColor,
+            onChange: props.onBGColorChange,
+        },
+        {
+            type: ColorField,
+            name: "borderColorField",
+            label: "Border color",
+            value: props.borderColor,
+            onChange: props.onBorderColorChange,
+        }
+    ]
+
+    return <Form className="MapMenu" onChange={handleChange}>
         <OutputField label="Seed" value={props.map.seed} />
-        <BooleanField
-            name="wrapField"
-            label="Wrap grid"
-            value={props.wrapMode}
-            onChange={props.onWrapModeChange}
-        />
-        <BooleanField
-            name="borderField"
-            label="Show border"
-            value={props.border}
-            onChange={props.onBorderChange}
-        />
-        <BooleanField
-            name="originField"
-            label="Show origin"
-            value={props.origin}
-            onChange={props.onOriginChange}
-        />
-        <NumberField
-            name="tilesizeField"
-            label="Tile size"
-            value={props.tilesize}
-            onChange={props.onTilesizeChange}
-            step={1}
-            min={1}
-        />
-        <NumberField
-            name="layerField"
-            label="Layer"
-            value={props.layer}
-            onChange={props.onLayerChange}
-            step={1}
-            min={0}
-        />
-        <ColorField
-            name="fgColorField"
-            label="FG color"
-            value={props.fgColor}
-            onChange={props.onFGColorChange}
-        />
-        <ColorField
-            name="bgColorField"
-            label="BG color"
-            value={props.bgColor}
-            onChange={props.onBGColorChange}
-        />
-        <ColorField
-            name="borderColorField"
-            label="Border color"
-            value={props.borderColor}
-            onChange={props.onBorderColorChange}
-        />
+        {buildFields(fields)}
         <Button text="Update" />
     </Form>
 }
