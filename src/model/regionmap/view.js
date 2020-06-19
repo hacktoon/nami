@@ -21,25 +21,25 @@ export class RegionMapView {
         this.fields = [
             {
                 type: BooleanField,
-                name: "wrapField",
+                name: "wrapMode",
                 label: "Wrap grid",
                 value: this.wrapMode,
             },
             {
                 type: BooleanField,
-                name: "borderField",
+                name: "border",
                 label: "Show border",
                 value: this.border,
             },
             {
                 type: BooleanField,
-                name: "originField",
+                name: "origin",
                 label: "Show origin",
                 value: this.origin,
             },
             {
                 type: NumberField,
-                name: "tilesizeField",
+                name: "tilesize",
                 label: "Tile size",
                 value: this.tilesize,
                 step: 1,
@@ -47,7 +47,7 @@ export class RegionMapView {
             },
             {
                 type: NumberField,
-                name: "layerField",
+                name: "layer",
                 label: "Layer",
                 value: this.layer,
                 step: 1,
@@ -55,19 +55,19 @@ export class RegionMapView {
             },
             {
                 type: ColorField,
-                name: "fgColorField",
+                name: "fgColor",
                 label: "FG color",
                 value: this.fgColor,
             },
             {
                 type: ColorField,
-                name: "bgColorField",
+                name: "bgColor",
                 label: "BG color",
                 value: this.bgColor,
             },
             {
                 type: ColorField,
-                name: "borderColorField",
+                name: "borderColor",
                 label: "Border color",
                 value: this.borderColor,
             }
@@ -75,19 +75,12 @@ export class RegionMapView {
     }
 
     get defaultValues() {
-        return {
-            bgColor: this.bgColor,
-            border: this.border,
-            borderColor: this.borderColor,
-            fgColor: this.fgColor,
-            layer: this.layer,
-            origin: this.origin,
-            tilesize: this.tilesize,
-            wrapMode: this.wrapMode,
-        }
+        return Object.fromEntries(this.fields.map(
+            field => [field.name, field.value]
+        ))
     }
 
-    colorAt(point, layer, border, origin) {
+    colorAt(point, {layer, border, origin}) {
         const region = this.regionMap.get(point)
         const id = region.id
         const fgColor = this.fgColor ? this.fgColor : this.colorMap[id]

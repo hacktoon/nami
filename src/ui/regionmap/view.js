@@ -25,10 +25,10 @@ export default function RegionMapView({map}) {
     const view = map.buildView(config)
 
     return <section className="MapAppView">
-        <MapMenu map={map} config={config} onChange={cfg => setConfig(cfg)} />
+        <MapMenu map={map} onChange={cfg => setConfig(cfg)} />
         <MapImage map={map}
             //REMOVE BELOW=====================================
-            colorAt={point => view.colorAt(point, config.layer, config.border, config.origin)}
+            colorAt={point => view.colorAt(point, config)}
             tilesize={config.tilesize}
             wrapMode={config.wrapMode}
         />
@@ -36,25 +36,18 @@ export default function RegionMapView({map}) {
 }
 
 
-function MapMenu({map, config, onChange}) {
+function MapMenu({map, onChange}) {
     function handleChange(event) {
         event.preventDefault()
-        const newConfig = readForm(event)
+        const newConfig = formData(event)
         console.log(newConfig)
         // onChange(newConfig)
     }
 
-    function readForm(event) {
-        return {
-            fgColor: event.currentTarget.fgColorField.value,
-            bgColor: event.currentTarget.bgColorField.value,
-            borderColor: event.currentTarget.borderColorField.value,
-            wrapMode: event.currentTarget.wrapField.value,
-            border: event.currentTarget.borderField.value,
-            origin: event.currentTarget.originField.value,
-            layer: event.currentTarget.layerField.value,
-            tilesize: event.currentTarget.tilesizeField.value,
-        }
+    function formData(event) {
+        return Object.fromEntries(map.view.fields.map(
+            field => [field.name, event.currentTarget[field.name].value]
+        ))
     }
 
     return <Form className="MapMenu" onChange={handleChange} onSubmit={handleChange}>
