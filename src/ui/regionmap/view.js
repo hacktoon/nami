@@ -1,12 +1,8 @@
 import React, { useState } from 'react'
 
 import { SubmitButton, Form } from '/lib/ui/form'
-import { buildFields, ColorField } from '/lib/ui/form/field'
+import { buildFields } from '/lib/ui/form/field'
 import { MapImage } from '/lib/ui/map'
-import {
-    NumberField,
-    BooleanField
-} from '/lib/ui/form/field'
 
 
 // TODO: refactor to this
@@ -29,7 +25,7 @@ export default function RegionMapView({map}) {
     const view = map.buildView(config)
 
     return <section className="MapAppView">
-        <MapMenu config={config} onChange={cfg => setConfig(cfg)} />
+        <MapMenu map={map} config={config} onChange={cfg => setConfig(cfg)} />
         <MapImage map={map}
             //REMOVE BELOW=====================================
             colorAt={point => view.colorAt(point, config.layer, config.border, config.origin)}
@@ -40,7 +36,7 @@ export default function RegionMapView({map}) {
 }
 
 
-function MapMenu({config, onChange}) {
+function MapMenu({map, config, onChange}) {
     function handleChange(event) {
         event.preventDefault()
         const newConfig = readForm(event)
@@ -61,63 +57,8 @@ function MapMenu({config, onChange}) {
         }
     }
 
-    const fields = [
-        {
-            type: BooleanField,
-            name: "wrapField",
-            label: "Wrap grid",
-            value: config.wrapMode,
-        },
-        {
-            type: BooleanField,
-            name: "borderField",
-            label: "Show border",
-            value: config.border,
-        },
-        {
-            type: BooleanField,
-            name: "originField",
-            label: "Show origin",
-            value: config.origin,
-        },
-        {
-            type: NumberField,
-            name: "tilesizeField",
-            label: "Tile size",
-            value: config.tilesize,
-            step: 1,
-            min: 1,
-        },
-        {
-            type: NumberField,
-            name: "layerField",
-            label: "Layer",
-            value: config.layer,
-            step: 1,
-            min: 0,
-        },
-        {
-            type: ColorField,
-            name: "fgColorField",
-            label: "FG color",
-            value: config.fgColor,
-        },
-        {
-            type: ColorField,
-            name: "bgColorField",
-            label: "BG color",
-            value: config.bgColor,
-        },
-        {
-            type: ColorField,
-            name: "borderColorField",
-            label: "Border color",
-            value: config.borderColor,
-        }
-    ]
-
     return <Form className="MapMenu" onChange={handleChange} onSubmit={handleChange}>
-        {buildFields(fields)}
+        {buildFields(map.view.fields)}
         <SubmitButton text="Update" />
     </Form>
 }

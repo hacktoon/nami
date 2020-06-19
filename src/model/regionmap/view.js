@@ -1,23 +1,77 @@
 import { Color } from '/lib/color'
-
-
-const DEFAULT_FG = '#06F'
-const DEFAULT_BG = '#251'
-const DEFAULT_BORDER = '#944'
+import {
+    NumberField,
+    BooleanField,
+    ColorField
+} from '/lib/ui/form/field'
 
 
 export class RegionMapView {
     constructor(regionMap) {
         this.regionMap = regionMap
         this.colorMap = buildColorMap(regionMap)
-        this.fgColor = buildColor(DEFAULT_FG) || new Color()
-        this.bgColor = buildColor(DEFAULT_BG) || new Color()
-        this.borderColor = buildColor(DEFAULT_BORDER) || this.fgColor.darken(40)
+        this.fgColor = Color.fromHex('#06F')
+        this.bgColor = Color.fromHex('#251')
+        this.borderColor = this.fgColor.darken(40)
         this.tilesize = 5
         this.layer = 5
         this.wrapMode = false
         this.border = true
         this.origin = false
+        this.fields = [
+            {
+                type: BooleanField,
+                name: "wrapField",
+                label: "Wrap grid",
+                value: this.wrapMode,
+            },
+            {
+                type: BooleanField,
+                name: "borderField",
+                label: "Show border",
+                value: this.border,
+            },
+            {
+                type: BooleanField,
+                name: "originField",
+                label: "Show origin",
+                value: this.origin,
+            },
+            {
+                type: NumberField,
+                name: "tilesizeField",
+                label: "Tile size",
+                value: this.tilesize,
+                step: 1,
+                min: 1,
+            },
+            {
+                type: NumberField,
+                name: "layerField",
+                label: "Layer",
+                value: this.layer,
+                step: 1,
+                min: 0,
+            },
+            {
+                type: ColorField,
+                name: "fgColorField",
+                label: "FG color",
+                value: this.fgColor,
+            },
+            {
+                type: ColorField,
+                name: "bgColorField",
+                label: "BG color",
+                value: this.bgColor,
+            },
+            {
+                type: ColorField,
+                name: "borderColorField",
+                label: "Border color",
+                value: this.borderColor,
+            }
+        ]
     }
 
     get defaultValues() {
@@ -55,12 +109,6 @@ export class RegionMapView {
         }
         return fgColor.darken(pointLayer*10).toHex()
     }
-}
-
-
-function buildColor(string) {
-    if (string === '') return
-    return Color.fromHex(string)
 }
 
 
