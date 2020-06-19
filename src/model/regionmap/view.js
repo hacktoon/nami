@@ -20,7 +20,20 @@ export class RegionMapView {
         this.origin = false
     }
 
-    colorAt(point, viewlayer, border, origin) {
+    get defaultValues() {
+        return {
+            bgColor: this.bgColor,
+            border: this.border,
+            borderColor: this.borderColor,
+            fgColor: this.fgColor,
+            layer: this.layer,
+            origin: this.origin,
+            tilesize: this.tilesize,
+            wrapMode: this.wrapMode,
+        }
+    }
+
+    colorAt(point, layer, border, origin) {
         const region = this.regionMap.get(point)
         const id = region.id
         const fgColor = this.fgColor ? this.fgColor : this.colorMap[id]
@@ -33,11 +46,11 @@ export class RegionMapView {
             return fgColor.invert().toHex()
         }
         // draw seed
-        if (this.regionMap.isLayer(point, viewlayer)) {
+        if (this.regionMap.isLayer(point, layer)) {
             return fgColor.brighten(50).toHex()
         }
         // invert this check to get remaining spaces
-        if (!this.regionMap.isOverLayer(point, viewlayer)) {
+        if (!this.regionMap.isOverLayer(point, layer)) {
             return this.bgColor.toHex()
         }
         return fgColor.darken(pointLayer*10).toHex()

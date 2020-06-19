@@ -21,3 +21,9 @@ export function Button(props) {
         {props.text}
     </button>
 }
+
+export function SubmitButton(props) {
+    return <button className="Button" type="submit">
+        {props.text}
+    </button>
+}

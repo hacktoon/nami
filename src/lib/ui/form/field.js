@@ -5,15 +5,6 @@ import { Color } from '/lib/color'
 
 // HELPER FUNCTIONS ===============================================
 
-function buildSelectOptions(options) {
-    const entries = Object.entries(options)
-    return entries.map((option, index) => {
-        const [value, label] = option
-        return <option key={index} value={value}>{label}</option>
-    })
-}
-
-
 export function buildFields(fields) {
     return fields.map(({type, ...props}, key) => type({key, ...props}))
 }
@@ -42,17 +33,25 @@ function OptionalField({label, type, ...props}) {
 }
 
 
-export function InputField({value, label, type, ...props}) {
+function InputField({value, label, type, ...props}) {
     return <Field type={type} label={label}>
         {id => <input id={id} type={type} defaultValue={value} {...props} />}
     </Field>
 }
 
 
-export function SelectField({label, options, ...props}) {
+export function SelectField({value, label, options, ...props}) {
+    function buildSelectOptions(options) {
+        const entries = Object.entries(options)
+        return entries.map((option, index) => {
+            const [value, label] = option
+            return <option key={index} value={value}>{label}</option>
+        })
+    }
+
     const children = useMemo(() => buildSelectOptions(options), [options])
     return <Field type='select' label={label}>
-        {id => <select id={id} {...props}>{children}</select>}
+        {id => <select id={id} defaultValue={value} {...props}>{children}</select>}
     </Field>
 }
 

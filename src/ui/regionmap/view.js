@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 
-import { Button, Form } from '/lib/ui/form'
+import { SubmitButton, Form } from '/lib/ui/form'
 import { buildFields, ColorField } from '/lib/ui/form/field'
 import { MapImage } from '/lib/ui/map'
 import {
-    OutputField,
     NumberField,
     BooleanField
 } from '/lib/ui/form/field'
@@ -25,16 +24,7 @@ import {
 
 
 export default function RegionMapView({map}) {
-    let [config, setConfig] = useState({
-        bgColor: map.view.bgColor,
-        border: map.view.border,
-        borderColor: map.view.borderColor,
-        fgColor: map.view.fgColor,
-        layer: map.view.layer,
-        origin: map.view.origin,
-        tilesize: map.view.tilesize,
-        wrapMode: map.view.wrapMode,
-    })
+    let [config, setConfig] = useState(map.view.defaultValues)
 
     const view = map.buildView(config)
 
@@ -55,15 +45,14 @@ function MapMenu({config, onChange}) {
         event.preventDefault()
         const newConfig = readForm(event)
         console.log(newConfig)
-
-        //onChange(newConfig)
+        // onChange(newConfig)
     }
 
     function readForm(event) {
         return {
             fgColor: event.currentTarget.fgColorField.value,
             bgColor: event.currentTarget.bgColorField.value,
-            borderColor: event.currentTarget.borderField.value,
+            borderColor: event.currentTarget.borderColorField.value,
             wrapMode: event.currentTarget.wrapField.value,
             border: event.currentTarget.borderField.value,
             origin: event.currentTarget.originField.value,
@@ -71,7 +60,6 @@ function MapMenu({config, onChange}) {
             tilesize: event.currentTarget.tilesizeField.value,
         }
     }
-
 
     const fields = [
         {
@@ -128,11 +116,8 @@ function MapMenu({config, onChange}) {
         }
     ]
 
-    return <Form className="MapMenu" onSubmit={handleChange}>
+    return <Form className="MapMenu" onChange={handleChange} onSubmit={handleChange}>
         {buildFields(fields)}
-        <Button text="Update" />
+        <SubmitButton text="Update" />
     </Form>
 }
-
-// show output field in a specific grid view component
-// <OutputField label="Seed" value={props.map.seed} />
