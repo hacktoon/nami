@@ -22,13 +22,13 @@ import { MapImage } from '/lib/ui/map'
 export default function RegionMapView({map}) {
     let [config, setConfig] = useState(map.view.defaultValues)
 
-    const view = map.buildView(config)
+    const renderMap = map.view.build(config)
 
     return <section className="MapAppView">
         <MapMenu map={map} onChange={cfg => setConfig(cfg)} />
-        <MapImage map={map}
+        <MapImage map={map} renderMap={renderMap}
             //REMOVE BELOW=====================================
-            colorAt={point => view.colorAt(point, config)}
+            colorAt={point => renderMap.colorAt(point, config)}
             tilesize={config.tilesize}
             wrapMode={config.wrapMode}
         />
@@ -37,17 +37,10 @@ export default function RegionMapView({map}) {
 
 
 function MapMenu({map, onChange}) {
-    function handleChange(event) {
+    function handleChange(data) {
         event.preventDefault()
-        const newConfig = formData(event)
-        console.log(newConfig)
-        // onChange(newConfig)
-    }
-
-    function formData(event) {
-        return Object.fromEntries(map.view.fields.map(
-            field => [field.name, event.currentTarget[field.name].value]
-        ))
+        // console.log(data)
+        //onChange(newConfig)
     }
 
     return <Form className="MapMenu" onChange={handleChange} onSubmit={handleChange}>

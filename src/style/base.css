@@ -75,6 +75,10 @@ canvas { display: block; }
     text-overflow: ellipsis;
 }
 
+.Field .FieldValue:hover {
+    opacity: .9
+}
+
 .Field output.FieldValue {
     background-color: #222;
     color: #AAA;
@@ -84,25 +88,24 @@ canvas { display: block; }
 }
 
 
-/* CHECKBOX FIELD ============================== */
+/* BOOLEAN FIELD ============================== */
 
-.Field.checkbox .FieldValue {
-    align-items: center;
-    background-color: rgb(100, 15, 15);
+.Field.boolean .FieldValue button {
     color: #FFF;
+    width: 100%;
     cursor: pointer;
-    display: flex;
+    display: block;
     padding: .5rem 0;
     justify-content: center;
     text-align: center;
 }
-.Field.checkbox .FieldValue [type="checkbox"] { display: none; }
-.Field.checkbox.true .FieldValue {
+.Field.boolean .FieldValue input { display: none }
+.Field.boolean.true .FieldValue button {
     background-color: rgb(6, 94, 6);
 }
-.Field.checkbox.false .FieldValue:after { content: 'No'; }
-.Field.checkbox.true .FieldValue:after { content: 'Yes'; }
-
+.Field.boolean.false .FieldValue button {
+    background-color: rgb(100, 15, 15);
+}
 
 
 /* BUTTONS ======================================= */

@@ -1,46 +1,48 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import { Color } from '/lib/color'
 
 
-// HELPER FUNCTIONS ===============================================
-
-export function buildFields(fields) {
-    return fields.map(({type, ...props}, key) => type({key, ...props}))
-}
-
-
-// GENERIC FIELD ===============================================
-
-function Field({label, type, status='', children}) {
-    const slug = label.toLowerCase().replace(/\s+/g, '')
-    const id = `${slug}-field-${Number(new Date())}`
-
-    return <label htmlFor={id} className={`Field ${type} ${status}`}>
-        <span className='FieldLabel'>{label}</span>
-        <div className='FieldValue'>{children(id)}</div>
-    </label>
-}
-
-
-// SPECIAL GENERIC FIELDS ===============================================
-
-function OptionalField({label, type, ...props}) {
-    const value = Boolean(props.value)
-    return <Field type={type} label={label} status={String(value)}>
-        {id => <input id={id} type={type} defaultChecked={value} {...props} />}
+export function BooleanField({ id, label, value, onChange, ...props }) {
+    const [status, setStatus] = useState(Boolean(value))
+    const onClick = () => {
+        props.onChange(!status)
+        setStatus(!status)
+    }
+    return <Field key={id} type='boolean' label={label} status={status}>
+        <button onClick={onClick}>{status ? 'Yes' : 'No'}</button>
+        <input type='checkbox' checked={status} onChange={()=>{}} {...props} />
     </Field>
 }
 
 
-function InputField({value, label, type, ...props}) {
-    return <Field type={type} label={label}>
-        {id => <input id={id} type={type} defaultValue={value} {...props} />}
+export function NumberField({ id, value, label, onChange, ...props }) {
+    const handleChange = event => onChange(Number(event.currentTarget.value))
+    return <Field key={id} type='number' label={label} {...props}>
+        <input type='number' defaultValue={value} onChange={handleChange} {...props} />
     </Field>
 }
 
 
-export function SelectField({value, label, options, ...props}) {
+export function TextField({id, value, label, ...props }) {
+    const onChange = event => props.onChange(String(event.currentTarget.value))
+    return <Field key={id} type='text' label={label}>
+        <input type='text' defaultValue={value} onChange={onChange} {...props} />
+    </Field>
+}
+
+
+export function ColorField({id, value, label, ...props }) {
+    const onChange = event => props.onChange(Color.fromHex(event.currentTarget.value))
+    return <Field key={id} type='text' label={label}>
+        <div className='ColorFieldValue'>
+            <input type='text' defaultValue={value.toHex()} onChange={onChange} {...props} />
+        </div>
+    </Field>
+}
+
+
+export function SelectField({id, value, label, options, ...props }) {
     function buildSelectOptions(options) {
         const entries = Object.entries(options)
         return entries.map((option, index) => {
@@ -48,33 +50,44 @@ export function SelectField({value, label, options, ...props}) {
             return <option key={index} value={value}>{label}</option>
         })
     }
-
-    const children = useMemo(() => buildSelectOptions(options), [options])
-    return <Field type='select' label={label}>
-        {id => <select id={id} defaultValue={value} {...props}>{children}</select>}
+    return <Field key={id} type='select' label={label}>
+        <select defaultValue={value} {...props}>
+            {useMemo(() => buildSelectOptions(options), [options])}
+        </select>
     </Field>
 }
 
-
-// FIELD COMPONENTS ===============================================
-
-export function ColorField({value, ...props}) {
-    return <TextField value={value.toHex()} {...props} />
+// TODO: remove
+export function OutputField({ label, value }) {
+    return <section className='Field'>
+        <output className='FieldLabel'>{label}</output>
+        <output className='FieldValue'>{value}</output>
+    </section>
 }
 
 
-export const BooleanField = props => <OptionalField type='checkbox' {...props} />
+// BASE FIELD COMPONENT ===============================================
+
+function Field({ label, type, status = '', children, ...props }) {
+    return <label className={`Field ${type} ${status}`} {...props}>
+        <span className='FieldLabel'>{label}</span>
+        <span className='FieldValue'>{children}</span>
+    </label>
+}
 
 
-export const TextField = props => <InputField type='text' {...props}/>
+// HELPER FUNCTIONS ===============================================
 
+export function buildFields(fields) {
+    return fields.map(({ type, ...props }, id) => {
+        const FieldComponent = TYPE_FIELD_MAP[type]
+        return FieldComponent({ id, onChange: () => { }, ...props })
+    })
+}
 
-export const NumberField = props => <InputField type='number' {...props} />
-
-
-export function OutputField(props) {
-    return <section className='Field'>
-        <output className='FieldLabel'>{props.label}</output>
-        <output className='FieldValue'>{props.value}</output>
-    </section>
+const TYPE_FIELD_MAP = {
+    boolean: BooleanField,
+    number: NumberField,
+    text: TextField,
+    color: ColorField,
 }

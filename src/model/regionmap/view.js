@@ -1,44 +1,39 @@
 import { Color } from '/lib/color'
-import {
-    NumberField,
-    BooleanField,
-    ColorField
-} from '/lib/ui/form/field'
 
 
 export class RegionMapView {
-    constructor(regionMap) {
+    constructor(regionMap, config={}) {
         this.regionMap = regionMap
         this.colorMap = buildColorMap(regionMap)
         this.fgColor = Color.fromHex('#06F')
         this.bgColor = Color.fromHex('#251')
         this.borderColor = this.fgColor.darken(40)
-        this.tilesize = 5
-        this.layer = 5
-        this.wrapMode = false
-        this.border = true
-        this.origin = false
+        this.tilesize = Number(config.tilesize) || 5
+        this.layer = Number(config.layer) || 5
+        this.wrapMode = config.wrapMode != undefined ? config.wrapMode : false
+        this.border = config.border != undefined ? config.border : true
+        this.origin = config.origin != undefined ? config.origin : false
         this.fields = [
             {
-                type: BooleanField,
+                type: "boolean",
                 name: "wrapMode",
                 label: "Wrap grid",
                 value: this.wrapMode,
             },
             {
-                type: BooleanField,
+                type: "boolean",
                 name: "border",
                 label: "Show border",
                 value: this.border,
             },
             {
-                type: BooleanField,
+                type: "boolean",
                 name: "origin",
                 label: "Show origin",
                 value: this.origin,
             },
             {
-                type: NumberField,
+                type: "number",
                 name: "tilesize",
                 label: "Tile size",
                 value: this.tilesize,
@@ -46,7 +41,7 @@ export class RegionMapView {
                 min: 1,
             },
             {
-                type: NumberField,
+                type: "number",
                 name: "layer",
                 label: "Layer",
                 value: this.layer,
@@ -54,24 +49,31 @@ export class RegionMapView {
                 min: 0,
             },
             {
-                type: ColorField,
+                type: "color",
                 name: "fgColor",
                 label: "FG color",
                 value: this.fgColor,
             },
             {
-                type: ColorField,
+                type: "color",
                 name: "bgColor",
                 label: "BG color",
                 value: this.bgColor,
             },
             {
-                type: ColorField,
+                type: "color",
                 name: "borderColor",
                 label: "Border color",
                 value: this.borderColor,
             }
         ]
+    }
+
+    build(config) {
+        // TODO: return canvas render map
+        console.log(config);
+        return new RegionMapView(this.regionMap, config)
+
     }
 
     get defaultValues() {
@@ -80,6 +82,7 @@ export class RegionMapView {
         ))
     }
 
+    // TODO: remove the second parameter
     colorAt(point, {layer, border, origin}) {
         const region = this.regionMap.get(point)
         const id = region.id
