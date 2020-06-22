@@ -80,11 +80,26 @@ canvas { display: block; }
 }
 
 .Field output.FieldValue {
+    align-items: center;
     background-color: #222;
     color: #AAA;
     display: flex;
-    align-items: center;
     padding: .5rem;
+}
+
+
+/* COLOR FIELD ============================== */
+
+.Field.color .FieldValue { position: relative; }
+.Field.color .FieldValue input { padding-left: 35px; }
+.Field.color .FieldValue .ColorView {
+    background-color: red;
+    position: absolute;
+    height: 22px;
+    left: .4rem;
+    top: .4rem;
+    width: 22px;
+    z-index: 1;
 }
 
 
