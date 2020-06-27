@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 
-import { SubmitButton, Form } from '/lib/ui/form'
-import { buildFields } from '/lib/ui/form/field'
+import { SubmitButton, Form2 } from '/lib/ui/form'
 import { MapImage } from '/lib/ui/map'
 
 
@@ -43,8 +42,11 @@ function MapMenu({map, onChange}) {
         //onChange(newConfig)
     }
 
-    return <Form className="MapMenu" onChange={handleChange} onSubmit={handleChange}>
-        {buildFields(map.view.fields)}
+    return <Form2
+        className="MapMenu"
+        onChange={handleChange}
+        onSubmit={handleChange}
+        fields={map.view.fields}>
         <SubmitButton text="Update" />
-    </Form>
+    </Form2>
 }

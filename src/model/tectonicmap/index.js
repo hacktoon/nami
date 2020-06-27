@@ -45,7 +45,6 @@ export function createTectonicMap(params={}) {
     const {seed, width, height} = createConfig(params)
     const regionMap = createRegionMap({width, height, seed})
     const grid = new Grid(width, height)
-    console.log(regionMap.regions)
     const plates = createPlates(regionMap.regions, grid)
 
     return new TectonicMap(seed, plates, grid)

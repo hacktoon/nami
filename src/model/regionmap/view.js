@@ -71,7 +71,6 @@ export class RegionMapView {
 
     build(config) {
         // TODO: return canvas render map
-        console.log(config);
         return new RegionMapView(this.regionMap, config)
 
     }

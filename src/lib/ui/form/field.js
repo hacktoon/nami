@@ -72,16 +72,7 @@ function Field({ label, type, status = '', children, ...props}) {
 }
 
 
-// HELPER FUNCTIONS ===============================================
-
-export function buildFields(fields) {
-    return fields.map(({ type, ...props }, id) => {
-        const FieldComponent = TYPE_FIELD_MAP[type]
-        return FieldComponent({id, onChange: ()=>{}, ...props})
-    })
-}
-
-const TYPE_FIELD_MAP = {
+export const TYPE_FIELD_MAP = {
     boolean: BooleanField,
     number: NumberField,
     text: TextField,
