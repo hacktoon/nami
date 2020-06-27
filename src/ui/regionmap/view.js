@@ -37,11 +37,13 @@ export default function RegionMapView({map}) {
 
 
 function MapMenu({map, onChange}) {
+    const props = {
+        fields: map.view.fields,
+        onSubmit: onChange,
+        onChange,
+    }
     return (
-        <Form2 className="MapMenu"
-                onChange={onChange}
-                onSubmit={onChange}
-                fields={map.view.fields}>
+        <Form2 className="MapMenu" {...props}>
             <SubmitButton text="Update" />
         </Form2>
     )
