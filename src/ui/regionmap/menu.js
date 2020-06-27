@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 
 import { TextField, NumberField } from '/lib/ui/form/field'
-import { Form, Button } from '/lib/ui/form'
+import { Form } from '/lib/ui/form'
+import { Button } from '/lib/ui/form/button'
 import {
     DEFAULT_COUNT,
     DEFAULT_WIDTH,

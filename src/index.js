@@ -27,7 +27,7 @@ function AppHeader({app, setApp}) {
 
 
 function MainMenu({app, setApp}) {
-    const onChange = event => setApp(APPS[event.target.value])
+    const onChange = value => setApp(APPS[value])
     const appOptions = Object.fromEntries(
         Object.entries(APPS).map(entry => {
             const [id, app] = entry

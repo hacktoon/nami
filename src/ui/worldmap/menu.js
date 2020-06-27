@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
-import { Form, Button } from '/lib/ui/form'
+import { Form } from '/lib/ui/form'
+import { Button } from '/lib/ui/form/button'
 import { TextField, NumberField, SelectField } from '/lib/ui/form/field'
 import { WorldConfig } from '/model/worldmap'
 
@@ -10,7 +11,7 @@ export default function WorldMenu(props) {
     let [size, setSize] = useState(WorldConfig.DEFAULT_SIZE)
     let [seed, setSeed] = useState('')
 
-    const onSizeChange = event => setSize(Number(event.target.value))
+    const onSizeChange = value => setSize(Number(value))
 
     const onRoughnessChange = ({value}) => {
         const config = new WorldConfig({ size, value, seed })

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
-import { SubmitButton, Form2 } from '/lib/ui/form'
+import { Form2 } from '/lib/ui/form'
+import { SubmitButton } from '/lib/ui/form/button'
 import { MapImage } from '/lib/ui/map'
 
 
@@ -36,17 +37,12 @@ export default function RegionMapView({map}) {
 
 
 function MapMenu({map, onChange}) {
-    function handleChange(data) {
-        event.preventDefault()
-        // console.log(data)
-        //onChange(newConfig)
-    }
-
-    return <Form2
-        className="MapMenu"
-        onChange={handleChange}
-        onSubmit={handleChange}
-        fields={map.view.fields}>
-        <SubmitButton text="Update" />
-    </Form2>
+    return (
+        <Form2 className="MapMenu"
+                onChange={onChange}
+                onSubmit={onChange}
+                fields={map.view.fields}>
+            <SubmitButton text="Update" />
+        </Form2>
+    )
 }

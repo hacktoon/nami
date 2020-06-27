@@ -4,7 +4,7 @@ import { Color } from '/lib/color'
 
 
 export function NumberField({id, value, label, onChange, ...props}) {
-    const handleChange = event => onChange(Number(event.currentTarget.value))
+    const handleChange = event => onChange(props.name, Number(event.currentTarget.value))
     return <Field key={id} type='number' label={label} {...props}>
         <input type='number' defaultValue={value} onChange={handleChange} {...props} />
     </Field>
@@ -12,14 +12,14 @@ export function NumberField({id, value, label, onChange, ...props}) {
 
 
 export function TextField({id, value, label, onChange, ...props}) {
-    const handleChange = event => onChange(String(event.currentTarget.value))
+    const handleChange = event => onChange(props.name, String(event.currentTarget.value).trim())
     return <Field key={id} type='text' label={label}>
         <input type='text' defaultValue={value} {...props} onChange={handleChange} />
     </Field>
 }
 
 
-export function SelectField({id, value, label, options, ...props}) {
+export function SelectField({id, value, label, onChange, options, ...props}) {
     function buildSelectOptions(options) {
         const entries = Object.entries(options)
         return entries.map((option, index) => {
@@ -27,8 +27,9 @@ export function SelectField({id, value, label, options, ...props}) {
             return <option key={index} value={value}>{label}</option>
         })
     }
+    const handleChange = event => onChange(props.name, event.currentTarget.value)
     return <Field key={id} type='select' label={label}>
-        <select defaultValue={value} {...props}>
+        <select defaultValue={value} {...props} onChange={handleChange}>
             {useMemo(() => buildSelectOptions(options), [options])}
         </select>
     </Field>
@@ -38,7 +39,7 @@ export function SelectField({id, value, label, options, ...props}) {
 export function BooleanField({id, label, value, onChange, ...props}) {
     const [status, setStatus] = useState(Boolean(value))
     const onClick = () => {
-        onChange(!status)
+        onChange(props.name, !status)
         setStatus(!status)
     }
     return <Field key={id} type='boolean' label={label} status={status}>
@@ -52,7 +53,7 @@ export function ColorField({id, value, label, onChange, ...props}) {
     const [color, setColor] = useState(value)
     const handleChange = event => {
         const newColor = Color.fromHex(event.currentTarget.value)
-        onChange(newColor)
+        onChange(props.name, newColor)
         setColor(newColor)
     }
     return <Field key={id} type='color' label={label}>
