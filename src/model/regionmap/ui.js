@@ -5,14 +5,14 @@ export class RegionMapUI {
     constructor(regionMap, config={}) {
         this.regionMap = regionMap
         this.colorMap = buildColorMap(regionMap)
-        this.fgColor = config.fgColor !== undefined ? config.fgColor : Color.fromHex('#06F')
-        this.bgColor = config.bgColor !== undefined ? config.bgColor : Color.fromHex('#251')
-        this.borderColor = config.borderColor !== undefined ? config.borderColor : this.fgColor.darken(40)
-        this.tilesize = config.tilesize !== undefined ? config.tilesize : 5
-        this.layer = config.layer !== undefined ? config.layer : 0
-        this.wrapMode = config.wrapMode !== undefined ? config.wrapMode : false
-        this.border = config.border !== undefined ? config.border : true
-        this.origin = config.origin !== undefined ? config.origin : false
+        this.fgColor = config.fgColor ?? Color.fromHex('#06F')
+        this.bgColor = config.bgColor ?? Color.fromHex('#251')
+        this.borderColor = config.borderColor ?? this.fgColor.darken(40)
+        this.tilesize = config.tilesize ?? 5
+        this.layer = config.layer ?? 0
+        this.wrapMode = config.wrapMode ?? false
+        this.border = config.border ?? true
+        this.origin = config.origin ?? false
         this.fields = [
             {
                 type: "boolean",
