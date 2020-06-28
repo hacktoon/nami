@@ -1,7 +1,7 @@
 import { Color } from '/lib/color'
 
 
-export class RegionMapUI {
+export class RegionMapFormUI {
     constructor(regionMap, config={}) {
         this.regionMap = regionMap
         this.colorMap = buildColorMap(regionMap)
@@ -19,24 +19,28 @@ export class RegionMapUI {
                 name: "wrapMode",
                 label: "Wrap grid",
                 value: this.wrapMode,
+                defaultValue: false,
             },
             {
                 type: "boolean",
                 name: "border",
                 label: "Show border",
                 value: this.border,
+                defaultValue: true,
             },
             {
                 type: "boolean",
                 name: "origin",
                 label: "Show origin",
                 value: this.origin,
+                defaultValue: false,
             },
             {
                 type: "number",
                 name: "tilesize",
                 label: "Tile size",
                 value: this.tilesize,
+                defaultValue: this.tilesize,
                 step: 1,
                 min: 1,
             },
@@ -45,6 +49,7 @@ export class RegionMapUI {
                 name: "layer",
                 label: "Layer",
                 value: this.layer,
+                defaultValue: this.layer,
                 step: 1,
                 min: 0,
             },
@@ -53,18 +58,21 @@ export class RegionMapUI {
                 name: "fgColor",
                 label: "FG color",
                 value: this.fgColor,
+                defaultValue: this.fgColor,
             },
             {
                 type: "color",
                 name: "bgColor",
                 label: "BG color",
                 value: this.bgColor,
+                defaultValue: this.bgColor,
             },
             {
                 type: "color",
                 name: "borderColor",
                 label: "Border color",
                 value: this.borderColor,
+                defaultValue: this.borderColor,
             }
         ]
     }
@@ -72,7 +80,7 @@ export class RegionMapUI {
     buildRender(config) {
         // TODO: remove this method, move to renderMap
         // TODO: return canvas render map
-        return new RegionMapUI(this.regionMap, config)
+        return new RegionMapFormUI(this.regionMap, config)
     }
 
     get defaultValues() {
@@ -88,6 +96,9 @@ export class RegionMapUI {
         const fgColor = this.fgColor ? this.fgColor : this.colorMap[id]
         const pointLayer = this.regionMap.getLayer(point)
 
+        if (point.x == 0 || point.y == 0) {
+            return fgColor.darken(pointLayer*10).toHex()
+        }
         if (this.border && this.regionMap.isBorder(point)) {
             return this.borderColor.toHex()
         }
@@ -102,7 +113,7 @@ export class RegionMapUI {
         if (!this.regionMap.isOverLayer(point, this.layer)) {
             return this.bgColor.toHex()
         }
-        return fgColor.darken(pointLayer*10).toHex()
+        return fgColor.darken(pointLayer*5).toHex()
     }
 }
 

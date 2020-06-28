@@ -3,7 +3,7 @@ import { Random } from '/lib/random'
 import { OrganicFill } from '/lib/flood-fill'
 import { RegionGrid } from '/lib/grid/region'
 import { Region } from './region'
-import { RegionMapUI } from './ui'
+import { RegionMapFormUI } from './ui'
 
 
 export const DEFAULT_COUNT = 10
@@ -20,7 +20,7 @@ class RegionMap {
         this.regions = regions
         this.seed = seed
         this.grid = grid
-        this.ui = new RegionMapUI(this)
+        this.ui = new RegionMapFormUI(this)
     }
 
     get width() {
