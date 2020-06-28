@@ -1,18 +1,18 @@
 import { Color } from '/lib/color'
 
 
-export class RegionMapView {
+export class RegionMapUI {
     constructor(regionMap, config={}) {
         this.regionMap = regionMap
         this.colorMap = buildColorMap(regionMap)
-        this.fgColor = Color.fromHex('#06F')
-        this.bgColor = Color.fromHex('#251')
-        this.borderColor = this.fgColor.darken(40)
-        this.tilesize = Number(config.tilesize) || 5
-        this.layer = Number(config.layer) || 5
-        this.wrapMode = config.wrapMode != undefined ? config.wrapMode : false
-        this.border = config.border != undefined ? config.border : true
-        this.origin = config.origin != undefined ? config.origin : false
+        this.fgColor = config.fgColor !== undefined ? config.fgColor : Color.fromHex('#06F')
+        this.bgColor = config.bgColor !== undefined ? config.bgColor : Color.fromHex('#251')
+        this.borderColor = config.borderColor !== undefined ? config.borderColor : this.fgColor.darken(40)
+        this.tilesize = config.tilesize !== undefined ? Number(config.tilesize) : 5
+        this.layer = config.layer !== undefined ? Number(config.layer) : 0
+        this.wrapMode = config.wrapMode !== undefined ? config.wrapMode : false
+        this.border = config.border !== undefined ? config.border : true
+        this.origin = config.origin !== undefined ? config.origin : false
         this.fields = [
             {
                 type: "boolean",
@@ -69,10 +69,10 @@ export class RegionMapView {
         ]
     }
 
-    build(config) {
+    buildRender(config) {
+        // TODO: remove this method, move to renderMap
         // TODO: return canvas render map
-        return new RegionMapView(this.regionMap, config)
-
+        return new RegionMapUI(this.regionMap, config)
     }
 
     get defaultValues() {
@@ -82,24 +82,24 @@ export class RegionMapView {
     }
 
     // TODO: remove the second parameter
-    colorAt(point, {layer, border, origin}) {
+    colorAt(point) {
         const region = this.regionMap.get(point)
         const id = region.id
         const fgColor = this.fgColor ? this.fgColor : this.colorMap[id]
         const pointLayer = this.regionMap.getLayer(point)
 
-        if (border && this.regionMap.isBorder(point)) {
+        if (this.border && this.regionMap.isBorder(point)) {
             return this.borderColor.toHex()
         }
-        if (origin && this.regionMap.isOrigin(point)) {
+        if (this.origin && this.regionMap.isOrigin(point)) {
             return fgColor.invert().toHex()
         }
         // draw seed
-        if (this.regionMap.isLayer(point, layer)) {
+        if (this.regionMap.isLayer(point, this.layer)) {
             return fgColor.brighten(50).toHex()
         }
         // invert this check to get remaining spaces
-        if (!this.regionMap.isOverLayer(point, layer)) {
+        if (!this.regionMap.isOverLayer(point, this.layer)) {
             return this.bgColor.toHex()
         }
         return fgColor.darken(pointLayer*10).toHex()

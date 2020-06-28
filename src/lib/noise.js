@@ -1,10 +1,6 @@
-import { Random } from '/lib/random'
 
 
-function dot(g, x, y) {
-    return g[0]*x + g[1]*y;
-}
-
+// example:  simplex.noise(8, x, y, .6, scale, 0, 255)
 
 export class SimplexNoise {
     constructor() {
@@ -103,4 +99,9 @@ export class SimplexNoise {
         // The result is scaled to return values in the interval [-1,1].
         return 70.0 * (n0 + n1 + n2)
       }
+}
+
+
+function dot(g, x, y) {
+    return g[0]*x + g[1]*y;
 }
