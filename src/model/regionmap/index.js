@@ -148,7 +148,7 @@ function createOrganicFill({
         isEmpty:    point => grid.isEmpty(point),
         isSeed:     point => grid.isSeed(point, id),
         isBlocked:  point => grid.isBlocked(point, id),
-        layerGrowth:  layerGrowth,
-        growthChance: growthChance,
+        layerGrowth,
+        growthChance,
     })
 }

@@ -20,27 +20,27 @@ export function MapImage(props) {
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
     const renderMap = props.renderMap
 
-    const renderOffscreenCanvas = canvas => {
-        for(let i = 0; i < renderMap.xCount; i++) {
-            for(let j = 0; j < renderMap.yCount; j++) {
-                let [offsetX, offsetY] = gridOffset()
-                const point = new Point(offsetX + i, offsetY + j)
-                const color = renderMap.colorAt(point)
-                renderCell(canvas.context, i, j, color, renderMap.tilesize)
-            }
-        }
-    }
+    // const renderOffscreenCanvas = canvas => {
+    //     for(let i = 0; i < renderMap.xCount; i++) {
+    //         for(let j = 0; j < renderMap.yCount; j++) {
+    //             let [offsetX, offsetY] = gridOffset()
+    //             const point = new Point(offsetX + i, offsetY + j)
+    //             const color = renderMap.colorAt(point)
+    //             renderCell(canvas.context, i, j, color, renderMap.tilesize)
+    //         }
+    //     }
+    // }
 
     const getWindow = canvas => {
-        let x = Math.ceil(canvas.width / renderMap.tilesize)
-        let y = Math.ceil(canvas.height / renderMap.tilesize)
-        return new Point(x, y)
+        let width = Math.ceil(canvas.width / renderMap.tilesize)
+        let height = Math.ceil(canvas.height / renderMap.tilesize)
+        return [width, height]
     }
 
     const onCanvasSetup = canvas => {
-        let window = getWindow(canvas)
-        for(let i = 0; i < window.x; i++) {
-            for(let j = 0; j < window.y; j++) {
+        let [width, height] = getWindow(canvas)
+        for(let i = 0; i < width; i++) {
+            for(let j = 0; j < height; j++) {
                 renderBackground(i, j, canvas)
                 renderForeground(i, j, canvas)
             }

@@ -29,7 +29,5 @@ function MapMenu({map, onChange}) {
         onSubmit: onChange,
         onChange,
     }
-    return (
-        <Form2 className="MapMenu" {...props}></Form2>
-    )
+    return <Form2 className="MapMenu" {...props}></Form2>
 }
