@@ -13,7 +13,7 @@ const SPEC = [
         type: "boolean",
         name: "border",
         label: "Show border",
-        value: true,
+        value: false,
     },
     {
         type: "boolean",
@@ -33,7 +33,7 @@ const SPEC = [
         type: "number",
         name: "layer",
         label: "Layer",
-        value: 3,
+        value: 10,
         step: 1,
         min: 0,
     },
@@ -41,13 +41,13 @@ const SPEC = [
         type: "color",
         name: "fgColor",
         label: "FG color",
-        value: Color.fromHex('#06F'),
+        value: Color.fromHex('#251'),
     },
     {
         type: "color",
         name: "bgColor",
         label: "BG color",
-        value: Color.fromHex('#251'),
+        value: Color.fromHex('#06F'),
     },
     {
         type: "color",
