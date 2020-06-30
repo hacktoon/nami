@@ -6,14 +6,6 @@ import { Region } from './region'
 import { RegionMapImage } from './image'
 
 
-export const DEFAULT_COUNT = 10
-export const DEFAULT_WIDTH = 200
-export const DEFAULT_HEIGHT = 150
-export const DEFAULT_SEED = ''
-export const DEFAULT_LAYER_GROWTH = 40
-export const DEFAULT_GROWTH_CHANCE = .1
-
-
 // TODO: embed all high properties
 //  regionMap.image
 //  regionMap.field
@@ -70,13 +62,32 @@ class RegionMap {
 }
 
 
+export const DEFAULT_COUNT = 10
+export const DEFAULT_WIDTH = 200
+export const DEFAULT_HEIGHT = 150
+export const DEFAULT_SEED = ''
+export const DEFAULT_LAYER_GROWTH = 40
+export const DEFAULT_GROWTH_CHANCE = .1
+
 class RegionMapSpec {
-    constructor(regionMap) {
-        this.regionMap = regionMap
+    constructor(config={}) {
+        this.width = config.width ?? 200
+        this.height = config.height ?? 150
+        this.fields = [
+            {
+                type: "boolean",
+                name: "wrapMode",
+                label: "Wrap grid",
+                value: 1,
+                default: false,
+            },
+        ]
     }
 
-    width() {
-
+    get defaultValues() {
+        return Object.fromEntries(this.fields.map(
+            field => [field.name, field.value]
+        ))
     }
 }
 

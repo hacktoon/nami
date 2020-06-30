@@ -9,6 +9,8 @@
 ## ROADMAP
 
 ### Model
+- Add Form2 to RegionMap
+- Remove Form2 dups
 
 #### RegionMap
 - Build regions adjacency table

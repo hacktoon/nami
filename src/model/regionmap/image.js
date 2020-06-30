@@ -1,6 +1,62 @@
 import { Color } from '/lib/color'
 
 
+const SPEC = [
+    {
+        type: "boolean",
+        name: "wrapMode",
+        label: "Wrap grid",
+        value: false,
+    },
+    {
+        type: "boolean",
+        name: "border",
+        label: "Show border",
+        value: true,
+    },
+    {
+        type: "boolean",
+        name: "origin",
+        label: "Show origin",
+        value: false,
+    },
+    {
+        type: "number",
+        name: "tilesize",
+        label: "Tile size",
+        value: 6,
+        step: 1,
+        min: 1,
+    },
+    {
+        type: "number",
+        name: "layer",
+        label: "Layer",
+        value: 3,
+        step: 1,
+        min: 0,
+    },
+    {
+        type: "color",
+        name: "fgColor",
+        label: "FG color",
+        value: Color.fromHex('#06F'),
+    },
+    {
+        type: "color",
+        name: "bgColor",
+        label: "BG color",
+        value: Color.fromHex('#251'),
+    },
+    {
+        type: "color",
+        name: "borderColor",
+        label: "Border color",
+        value: Color.fromHex('#04D'),
+    }
+]
+
+
 export class RegionMapImage {
     constructor(regionMap, config={}) {
         this.spec = new RegionMapImageSpec(config)
@@ -17,7 +73,7 @@ export class RegionMapImage {
     }
 
     build(config) {
-        // TODO: return canvas render map
+        // TODO: return ColorMap
         return new RegionMapImage(this.regionMap, config)
     }
 
@@ -48,78 +104,12 @@ export class RegionMapImage {
 }
 
 
-export class RegionMapImageSpec {
-    constructor(config={}) {
-        this.fgColor = config.fgColor ?? Color.fromHex('#06F')
-        this.bgColor = config.bgColor ?? Color.fromHex('#251')
-        this.borderColor = config.borderColor ?? Color.fromHex('#04D')
-        this.tilesize = config.tilesize ?? 5
-        this.layer = config.layer ?? 0
-        this.wrapMode = config.wrapMode ?? false
-        this.border = config.border ?? true
-        this.origin = config.origin ?? false
-        this.fields = [
-            {
-                type: "boolean",
-                name: "wrapMode",
-                label: "Wrap grid",
-                value: this.wrapMode,
-                default: false,
-            },
-            {
-                type: "boolean",
-                name: "border",
-                label: "Show border",
-                value: this.border,
-                default: true,
-            },
-            {
-                type: "boolean",
-                name: "origin",
-                label: "Show origin",
-                value: this.origin,
-                default: false,
-            },
-            {
-                type: "number",
-                name: "tilesize",
-                label: "Tile size",
-                value: this.tilesize,
-                default: this.tilesize,
-                step: 1,
-                min: 1,
-            },
-            {
-                type: "number",
-                name: "layer",
-                label: "Layer",
-                value: this.layer,
-                default: this.layer,
-                step: 1,
-                min: 0,
-            },
-            {
-                type: "color",
-                name: "fgColor",
-                label: "FG color",
-                value: this.fgColor,
-                default: this.fgColor,
-            },
-            {
-                type: "color",
-                name: "bgColor",
-                label: "BG color",
-                value: this.bgColor,
-                default: this.bgColor,
-            },
-            {
-                type: "color",
-                name: "borderColor",
-                label: "Border color",
-                value: this.borderColor,
-                default: this.borderColor,
-            }
-        ]
+class RegionMapImageSpec {
+    constructor(config={}, spec=SPEC) {
+        this.fields =spec.map(field => {
+            this[field.name] = config[field.name] ?? field.value
+            return field
+        })
     }
 
     get defaultValues() {
