@@ -12,20 +12,20 @@ import { MapImage } from '/lib/ui/map'
 
 
 export default function RegionMapView({map}) {
-    let [config, setConfig] = useState(map.ui.defaultValues)
+    let [config, setConfig] = useState(map.image.defaultValues)
 
-    const renderMap = map.ui.buildRender(config)
+    const image = map.image.build(config)
 
     return <section className="MapAppView">
         <MapMenu map={map} onChange={cfg => setConfig(cfg)} />
-        <MapImage map={map} renderMap={renderMap} />
+        <MapImage map={map} image={image} />
     </section>
 }
 
 
 function MapMenu({map, onChange}) {
     const props = {
-        fields: map.ui.fields,
+        fields: map.image.fields,
         onSubmit: onChange,
         onChange,
     }

@@ -15,25 +15,26 @@ function createCanvas(originalCanvas) {
 }
 
 
+// TODO: rename to MapCanvas or something
 export function MapImage(props) {
     const [offset, setOffset] = useState(new Point(0, 0))
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
-    const renderMap = props.renderMap
 
     // const renderOffscreenCanvas = canvas => {
-    //     for(let i = 0; i < renderMap.xCount; i++) {
-    //         for(let j = 0; j < renderMap.yCount; j++) {
+    //     for(let i = 0; i < props.image.spec.xCount; i++) {
+    //         for(let j = 0; j < props.image.spec.yCount; j++) {
     //             let [offsetX, offsetY] = gridOffset()
     //             const point = new Point(offsetX + i, offsetY + j)
-    //             const color = renderMap.colorAt(point)
-    //             renderCell(canvas.context, i, j, color, renderMap.tilesize)
+    //             const color = props.image.spec.colorAt(point)
+    //             renderCell(canvas.context, i, j, color, props.image.spec.tilesize)
     //         }
     //     }
     // }
 
+    // TODO: remove reference to props.image.spec.tilesize
     const getWindow = canvas => {
-        let width = Math.ceil(canvas.width / renderMap.tilesize)
-        let height = Math.ceil(canvas.height / renderMap.tilesize)
+        let width = Math.ceil(canvas.width / props.image.spec.tilesize)
+        let height = Math.ceil(canvas.height / props.image.spec.tilesize)
         return [width, height]
     }
 
@@ -51,8 +52,8 @@ export function MapImage(props) {
         let [offsetX, offsetY] = gridOffset()
         const point = new Point(offsetX + i, offsetY + j)
         if (isWrappable(point)) {
-            const color = renderMap.colorAt(point)
-            renderCell(canvas.context, i, j, color, renderMap.tilesize)
+            const color = props.image.colorAt(point)
+            renderCell(canvas.context, i, j, color, props.image.spec.tilesize)
         }
     }
 
@@ -62,20 +63,16 @@ export function MapImage(props) {
         if (isWrappable(point))
             return
         const color = (i + j) % 2 ? '#DDD' : '#FFF'
-        renderCell(canvas.context, i, j, color, renderMap.tilesize)
+        renderCell(canvas.context, i, j, color, props.image.spec.tilesize)
     }
 
     const gridOffset = () => [
-        Math.floor(offset.x / renderMap.tilesize),
-        Math.floor(offset.y / renderMap.tilesize)
+        Math.floor(offset.x / props.image.spec.tilesize),
+        Math.floor(offset.y / props.image.spec.tilesize)
     ]
 
-    const buildCanvas = point => {
-
-    }
-
     const isWrappable = point => {
-        if (renderMap.wrapMode) return true
+        if (props.image.spec.wrapMode) return true
         const col = point.x >= 0 && point.x < props.map.width
         const row = point.y >= 0 && point.y < props.map.height
         return col && row
