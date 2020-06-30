@@ -1,4 +1,5 @@
 import { Color } from '/lib/color'
+import { Grid } from '/lib/grid'
 
 
 const SPEC = [
@@ -58,58 +59,60 @@ const SPEC = [
 
 
 export class RegionMapImage {
-    constructor(regionMap, config={}) {
-        this.spec = new RegionMapImageSpec(config)
+    constructor(regionMap) {
+        this.spec = new RegionMapImageSpec()
         this.regionMap = regionMap
-        this.colorMap = buildColorMap(regionMap)
     }
 
-    get fields() {
-        return this.spec.fields
-    }
+    buildRenderMap(config) {
+        const regionMap = this.regionMap
+        const colorMap = Object.fromEntries(
+            this.regionMap.regions.map(region => [
+                region.id, new Color()
+            ])
+        )
 
-    get defaultValues() {
-        return this.spec.defaultValues
-    }
+        function init(point) {
+            const region = regionMap.get(point)
+            const fgColor = config.fgColor ?? colorMap[region.id]
+            const pointLayer = regionMap.getLayer(point)
 
-    build(config) {
-        // TODO: return ColorMap
-        return new RegionMapImage(this.regionMap, config)
-    }
+            if (point.x == 0 || point.y == 0) {
+                return fgColor.darken(pointLayer*10).toHex()
+            }
+            if (config.border && regionMap.isBorder(point)) {
+                return config.borderColor.toHex()
+            }
+            if (config.origin && regionMap.isOrigin(point)) {
+                return fgColor.invert().toHex()
+            }
+            // draw seed
+            if (regionMap.isLayer(point, config.layer)) {
+                return fgColor.brighten(50).toHex()
+            }
+            // invert this check to get remaining spaces
+            if (!regionMap.isOverLayer(point, config.layer)) {
+                return config.bgColor.toHex()
+            }
+            return fgColor.darken(pointLayer*5).toHex()
+        }
 
-    colorAt(point) {
-        const region = this.regionMap.get(point)
-        const fgColor = this.spec.fgColor ?? this.colorMap[region.id]
-        const pointLayer = this.regionMap.getLayer(point)
+        const grid = new Grid(this.regionMap.width, this.regionMap.height, init)
 
-        if (point.x == 0 || point.y == 0) {
-            return fgColor.darken(pointLayer*10).toHex()
+        return {
+            wrapMode: config.wrapMode,
+            tilesize: config.tilesize,
+            width: this.regionMap.width,
+            height: this.regionMap.height,
+            get: point => grid.get(point)
         }
-        if (this.spec.border && this.regionMap.isBorder(point)) {
-            return this.spec.borderColor.toHex()
-        }
-        if (this.spec.origin && this.regionMap.isOrigin(point)) {
-            return fgColor.invert().toHex()
-        }
-        // draw seed
-        if (this.regionMap.isLayer(point, this.spec.layer)) {
-            return fgColor.brighten(50).toHex()
-        }
-        // invert this check to get remaining spaces
-        if (!this.regionMap.isOverLayer(point, this.spec.layer)) {
-            return this.spec.bgColor.toHex()
-        }
-        return fgColor.darken(pointLayer*5).toHex()
     }
 }
 
 
 class RegionMapImageSpec {
-    constructor(config={}, spec=SPEC) {
-        this.fields =spec.map(field => {
-            this[field.name] = config[field.name] ?? field.value
-            return field
-        })
+    constructor() {
+        this.fields = SPEC
     }
 
     get defaultValues() {
@@ -117,13 +120,4 @@ class RegionMapImageSpec {
             field => [field.name, field.value]
         ))
     }
-}
-
-
-function buildColorMap(regionMap) {
-    return Object.fromEntries(
-        regionMap.regions.map(region => [
-            region.id, new Color()
-        ])
-    )
 }
