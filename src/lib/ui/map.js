@@ -38,16 +38,6 @@ export function MapImage(props) {
         return [width, height]
     }
 
-    const onCanvasSetup = canvas => {
-        let [width, height] = getWindow(canvas)
-        for(let i = 0; i < width; i++) {
-            for(let j = 0; j < height; j++) {
-                renderBackground(i, j, canvas)
-                renderForeground(i, j, canvas)
-            }
-        }
-    }
-
     const renderForeground = (i, j, canvas) => {
         let [offsetX, offsetY] = gridOffset()
         const point = new Point(offsetX + i, offsetY + j)
@@ -85,12 +75,30 @@ export function MapImage(props) {
         context.fillRect(x, y, tilesize, tilesize)
     }
 
+    const onCanvasSetup = canvas => {
+        let [width, height] = getWindow(canvas)
+        for(let i = 0; i < width; i++) {
+            for(let j = 0; j < height; j++) {
+                renderForeground(i, j, canvas)
+            }
+        }
+    }
+
+    const onBackgroundCanvasSetup = canvas => {
+        let [width, height] = getWindow(canvas)
+        for(let i = 0; i < width; i++) {
+            for(let j = 0; j < height; j++) {
+                renderBackground(i, j, canvas)
+            }
+        }
+    }
+
     return <section className="MapImage">
         {/* <GridTracker onMove={onMove} /> */}
         <MouseView onDrag={onDrag} />
         <Canvas onSetup={onCanvasSetup} />
         <div className="BackgroundCanvas">
-            <Canvas onSetup={onCanvasSetup} />
+            <Canvas onSetup={onBackgroundCanvasSetup} />
         </div>
     </section>
 }

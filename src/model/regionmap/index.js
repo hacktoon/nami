@@ -14,7 +14,9 @@ export const DEFAULT_LAYER_GROWTH = 40
 export const DEFAULT_GROWTH_CHANCE = .1
 
 
-
+// TODO: embed all high properties
+//  regionMap.image
+//  regionMap.field
 class RegionMap {
     constructor(seed, regions, grid) {
         this.regions = regions
