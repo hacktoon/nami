@@ -11,14 +11,14 @@ export function Form({className, schema, onSubmit, onChange, ...props}) {
         event.preventDefault()
         onSubmit(data)
     }
-    const handleFieldChange = (name, value) => {
+    const handleChange = (name, value) => {
         const newData = {...data, [name]: value}
         setData(newData)
         onChange(newData)
     }
     const _className = cls('Form', className)
     return <form className={_className} onSubmit={handleSubmit} {...props}>
-        {buildFields(schema.fields, handleFieldChange)}
+        {buildFields(schema.fields, handleChange)}
         {props.children}
     </form>
 }
@@ -27,7 +27,7 @@ export function Form({className, schema, onSubmit, onChange, ...props}) {
 export function buildFields(fields, onChange) {
     return fields.map(({type, sanitize, ...props}, id) => {
         const FieldComponent = TYPE_FIELD_MAP[type]
-        const _onChange = value => onChange(sanitize(value))
+        const _onChange = (name ,value) => onChange(name, sanitize(value))
         return FieldComponent({id, onChange: _onChange, ...props})
     })
 }

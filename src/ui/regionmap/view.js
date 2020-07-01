@@ -25,8 +25,7 @@ function MapImageForm({map, onChange}) {
     const props = {
         schema: map.image.schema,
         onSubmit: onChange,
-        onChange: onChange,
-        className: "MapImageForm"
+        onChange: onChange
     }
-    return <Form {...props}></Form>
+    return <Form className="MapImageForm" {...props}></Form>
 }
