@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Form2 } from '/lib/ui/form'
+import { Form } from '/lib/ui/form'
 import { MapDisplay } from '/lib/ui/map'
 
 
@@ -11,7 +11,7 @@ import { MapDisplay } from '/lib/ui/map'
 
 
 export default function RegionMapView({map}) {
-    const [config, setConfig] = useState(map.image.spec.defaultValues)
+    const [config, setConfig] = useState(map.image.spec.defaults)
     const renderMap = map.image.buildRenderMap(config)
 
     return <section className="MapAppView">
@@ -23,9 +23,10 @@ export default function RegionMapView({map}) {
 
 function MapImageForm({map, onChange}) {
     const props = {
-        fields: map.image.spec.fields,
+        schema: map.image.spec,
         onSubmit: onChange,
-        onChange,
+        onChange: onChange,
+        className: "MapImageForm"
     }
-    return <Form2 className="MapImageForm" {...props}></Form2>
+    return <Form {...props}></Form>
 }

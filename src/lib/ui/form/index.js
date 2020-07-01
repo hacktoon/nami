@@ -5,21 +5,8 @@ import { cls } from '/lib/ui'
 import { TYPE_FIELD_MAP } from './field'
 
 
-export function Form({className, ...props}) {
-    const onSubmit = event => {
-        event.preventDefault()
-    }
-    const _className = cls('Form', className)
-
-    return <form className={_className} onSubmit={onSubmit} {...props}>
-        {props.children}
-    </form>
-}
-
-
-
-export function Form2({className, fields, onSubmit, onChange, ...props}) {
-    const [data, setData] = useState(buildState(fields))
+export function Form({className, schema, onSubmit, onChange, ...props}) {
+    const [data, setData] = useState(schema.defaults)
     const handleSubmit = event => {
         event.preventDefault()
         onSubmit(data)
@@ -31,7 +18,7 @@ export function Form2({className, fields, onSubmit, onChange, ...props}) {
     }
     const _className = cls('Form', className)
     return <form className={_className} onSubmit={handleSubmit} {...props}>
-        {buildFields(fields, handleFieldChange)}
+        {buildFields(schema.fields, handleFieldChange)}
         {props.children}
     </form>
 }
@@ -43,11 +30,3 @@ export function buildFields(fields, onChange) {
         return FieldComponent({id, onChange, ...props})
     })
 }
-
-
-function buildState(fields) {
-    return Object.fromEntries(fields.map(
-        field => [field.name, field.value]
-    ))
-}
-

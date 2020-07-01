@@ -1,5 +1,6 @@
 import { Color } from '/lib/color'
 import { Grid } from '/lib/grid'
+import { Schema } from '/lib/schema'
 
 
 const SPEC = [
@@ -60,7 +61,7 @@ const SPEC = [
 
 export class RegionMapImage {
     constructor(regionMap) {
-        this.spec = new RegionMapImageSpec()
+        this.spec = new Schema(SPEC)
         this.regionMap = regionMap
     }
 
@@ -106,18 +107,5 @@ export class RegionMapImage {
             height: this.regionMap.height,
             get: point => grid.get(point)
         }
-    }
-}
-
-
-class RegionMapImageSpec {
-    constructor() {
-        this.fields = SPEC
-    }
-
-    get defaultValues() {
-        return Object.fromEntries(this.fields.map(
-            field => [field.name, field.value]
-        ))
     }
 }

@@ -4,25 +4,65 @@ import { OrganicFill } from '/lib/flood-fill'
 import { RegionGrid } from '/lib/grid/region'
 import { Region } from './region'
 import { RegionMapImage } from './image'
+import { Schema } from '/lib/schema'
 
 
-// TODO: embed all high properties
-//  regionMap.image
-//  regionMap.field
-class RegionMap {
-    constructor(seed, regions, grid) {
+const SPEC = [
+    {
+        type: "number",
+        name: "width",
+        label: "Width",
+        value: 200,
+    },
+    {
+        type: "number",
+        name: "height",
+        label: "Height",
+        value: 150,
+    },
+    {
+        type: "number",
+        name: "count",
+        label: "Count",
+        value: 8,
+    },
+    {
+        type: "number",
+        name: "layerGrowth",
+        label: "Layer growth",
+        value: 40,
+        step: 1,
+        min: 1
+    },
+    {
+        type: "number",
+        name: "growthChance",
+        label: "Growth chance",
+        value: 0.1,
+        step: 0.2,
+        min: 0.01
+    },
+    {
+        type: "text",
+        name: "seed",
+        label: "Seed",
+        value: '',
+        sanitize: value => value.length ? value : Number(new Date())
+    }
+]
+
+
+export class RegionMap {
+    static schema = new Schema(SPEC)
+
+    constructor(regions, grid, config) {
+        this.width = config.width
+        this.height = config.height
         this.regions = regions
-        this.seed = seed
         this.grid = grid
+        this.seed = config.seed
         this.image = new RegionMapImage(this)
-    }
-
-    get width() {
-        return this.grid.width
-    }
-
-    get height() {
-        return this.grid.height
+        Random.seed = config.seed
     }
 
     get(point) {
@@ -62,71 +102,19 @@ class RegionMap {
 }
 
 
-export const DEFAULT_COUNT = 10
-export const DEFAULT_WIDTH = 200
-export const DEFAULT_HEIGHT = 150
-export const DEFAULT_SEED = ''
-export const DEFAULT_LAYER_GROWTH = 40
-export const DEFAULT_GROWTH_CHANCE = .1
-
-class RegionMapSpec {
-    constructor(config={}) {
-        this.width = config.width ?? 200
-        this.height = config.height ?? 150
-        this.fields = [
-            {
-                type: "boolean",
-                name: "wrapMode",
-                label: "Wrap grid",
-                value: 1,
-                default: false,
-            },
-        ]
-    }
-
-    get defaultValues() {
-        return Object.fromEntries(this.fields.map(
-            field => [field.name, field.value]
-        ))
-    }
-}
-
-
-
 // FUNCTIONS ===================================
 
 
-export function createRegionMap(params={}) {
-    const {
-        seed, count, width, height, layerGrowth, growthChance
-    } = createConfig(params)
-    const grid = new RegionGrid(width, height)
-    const points = createPoints(count, width, height)
-    const regions = createRegions(points, grid, layerGrowth, growthChance)
+export function createRegionMap(config) {
+    const grid = new RegionGrid(config.width, config.height)
+    const points = createPoints(config.count, config.width, config.height)
+    const regions = createRegions(points, grid, config.layerGrowth, config.growthChance)
+
     while(grid.hasEmptyPoints()) {
         regions.forEach(region => region.grow())
     }
-    return new RegionMap(seed, regions, grid)
-}
 
-
-function createConfig(params={}) {
-    function _normalizeSeed(seed) {
-        seed = String(seed).length ? seed : Number(new Date())
-        Random.seed = seed
-        return seed
-    }
-
-    const config = Object.assign({
-        count: DEFAULT_COUNT,
-        width: DEFAULT_WIDTH,
-        height: DEFAULT_HEIGHT,
-        seed: DEFAULT_SEED,
-        layerGrowth: DEFAULT_LAYER_GROWTH,
-        growthChance: DEFAULT_GROWTH_CHANCE
-    }, params)
-    config.seed = _normalizeSeed(config.seed)
-    return config
+    return new RegionMap(regions, grid, config)
 }
 
 
@@ -140,6 +128,7 @@ function createRegions(points, grid, layerGrowth, growthChance) {
         const organicFill = createOrganicFill({
             id, origin, grid, layerGrowth, growthChance
         })
+        // TODO: remove fill from region args
         return new Region(id, origin, organicFill)
     })
 }

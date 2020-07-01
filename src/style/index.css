@@ -36,7 +36,7 @@
     grid-template-rows: min-content auto;
 }
 
-.MapApp .MapAppMenu {
+.MapApp .MapImageForm {
     background: #CCC;
     display: grid;
     gap: 1rem;
