@@ -14,6 +14,8 @@ export class Schema {
 
 function buildFields(spec) {
     return spec.map(({sanitize, ...field}) => {
-        return {sanitize: sanitize ?? (x => x), ...field}
+        return {
+            sanitize: sanitize ?? (x => x),
+            ...field}
     })
 }

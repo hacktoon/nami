@@ -3,29 +3,19 @@ import React, { useState } from 'react'
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
 
-import { RegionMap, createRegionMap } from '/model/regionmap'
-import RegionMapView from './view'
+import { RegionMap } from '/model/regionmap'
+import { MapImage } from '/lib/ui/map'
 
 
 export default function RegionMapApp() {
     const [config, setConfig] = useState(RegionMap.schema.defaults)
-    const regionMap = createRegionMap(config)
+    const regionMap = RegionMap.create(config)
+    const schema = RegionMap.schema
 
     return <section className='MapApp'>
-        <RegionMapForm schema={RegionMap.schema} onChange={cfg => setConfig(cfg)}  />
-        <RegionMapView map={regionMap} />
+        <Form schema={schema} onSubmit={setConfig} onChange={setConfig}>
+            <Button text="New" />
+        </Form>
+        <MapImage map={regionMap} />
     </section>
-}
-
-
-function RegionMapForm({schema, onChange}) {
-    const props = {
-        schema: schema,
-        onSubmit: onChange,
-        onChange: onChange,
-        className: "MapImageForm"
-    }
-    return <Form {...props}>
-        <Button text="New" />
-    </Form>
 }

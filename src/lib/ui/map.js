@@ -3,15 +3,18 @@ import React, { useState } from 'react'
 import { Point } from '/lib/point'
 import { MouseView } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
+import { Form } from '/lib/ui/form'
 
 
-function createCanvas(originalCanvas) {
-    const canvas = document.createElement('canvas')
-    canvas.width = myCanvas.width
-    canvas.height = myCanvas.height
+export function MapImage({map}) {
+    const [config, setConfig] = useState(map.image.schema.defaults)
+    const renderMap = map.image.renderMap(config)
+    const schema = map.image.schema
 
-    canvas.getContext('2d').drawImage(originalCanvas, 0, 0)
-    return canvas
+    return <section className="MapAppView">
+        <Form schema={schema} onSubmit={setConfig} onChange={setConfig}></Form>
+        <MapDisplay renderMap={renderMap} />
+    </section>
 }
 
 
@@ -88,4 +91,14 @@ export function MapDisplay({renderMap}) {
             <Canvas onSetup={onBackgroundCanvasSetup} />
         </div>
     </section>
+}
+
+
+function createCanvas(originalCanvas) {
+    const canvas = document.createElement('canvas')
+    canvas.width = myCanvas.width
+    canvas.height = myCanvas.height
+
+    canvas.getContext('2d').drawImage(originalCanvas, 0, 0)
+    return canvas
 }

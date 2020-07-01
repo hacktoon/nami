@@ -39,21 +39,32 @@ const SPEC = [
         name: "growthChance",
         label: "Growth chance",
         value: 0.1,
-        step: 0.2,
+        step: 0.1,
         min: 0.01
     },
     {
-        type: "text",
+        type: "seed",
         name: "seed",
         label: "Seed",
         value: '',
-        sanitize: value => value.length ? value : Number(new Date())
     }
 ]
 
 
 export class RegionMap {
     static schema = new Schema(SPEC)
+
+    static create(config) {
+        Random.seed = config.seed
+        const grid = new RegionGrid(config.width, config.height)
+        const points = createPoints(config.count, config.width, config.height)
+        const regions = createRegions(points, grid, config.layerGrowth, config.growthChance)
+
+        while(grid.hasEmptyPoints()) {
+            regions.forEach(region => region.grow())
+        }
+        return new RegionMap(regions, grid, config)
+    }
 
     constructor(regions, grid, config) {
         this.width = config.width
@@ -102,21 +113,6 @@ export class RegionMap {
 
 
 // FUNCTIONS ===================================
-
-
-export function createRegionMap(config) {
-    Random.seed = config.seed
-    const grid = new RegionGrid(config.width, config.height)
-    const points = createPoints(config.count, config.width, config.height)
-    const regions = createRegions(points, grid, config.layerGrowth, config.growthChance)
-
-    while(grid.hasEmptyPoints()) {
-        regions.forEach(region => region.grow())
-    }
-
-    return new RegionMap(regions, grid, config)
-}
-
 
 function createPoints(count, width, height) {
     return repeat(count, () => Point.random(width, height))

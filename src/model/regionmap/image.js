@@ -65,7 +65,7 @@ export class RegionMapImage {
         this.regionMap = regionMap
     }
 
-    buildRenderMap(config) {
+    renderMap(config) {
         const regionMap = this.regionMap
         const colorMap = Object.fromEntries(
             this.regionMap.regions.map(region => [

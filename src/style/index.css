@@ -36,7 +36,7 @@
     grid-template-rows: min-content auto;
 }
 
-.MapApp .MapImageForm {
+.MapApp .Form {
     background: #CCC;
     display: grid;
     gap: 1rem;
@@ -51,7 +51,7 @@
     grid-template-columns: 20% auto;
 }
 
-.MapApp .MapAppView .MapImageForm {
+.MapApp .MapAppView .Form {
     background: #111;
     color: #FFF;
     display: grid;
