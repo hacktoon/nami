@@ -39,7 +39,7 @@ const SPEC = [
         name: "growthChance",
         label: "Growth chance",
         value: 0.1,
-        step: 0.1,
+        step: 0.01,
         min: 0.01
     },
     {

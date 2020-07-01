@@ -60,8 +60,9 @@ const SPEC = [
 
 
 export class RegionMapImage {
+
     constructor(regionMap) {
-        this.schema = new Schema(SPEC)
+        this.schema = new Schema(SPEC) //TODO: remove
         this.regionMap = regionMap
     }
 
