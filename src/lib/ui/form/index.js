@@ -25,8 +25,9 @@ export function Form({className, schema, onSubmit, onChange, ...props}) {
 
 
 export function buildFields(fields, onChange) {
-    return fields.map(({type, ...props}, id) => {
+    return fields.map(({type, sanitize, ...props}, id) => {
         const FieldComponent = TYPE_FIELD_MAP[type]
-        return FieldComponent({id, onChange, ...props})
+        const _onChange = value => onChange(sanitize(value))
+        return FieldComponent({id, onChange: _onChange, ...props})
     })
 }

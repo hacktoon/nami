@@ -1,7 +1,7 @@
 
 export class Schema {
     constructor(spec) {
-        this.fields = spec
+        this.fields = buildFields(spec)
     }
 
     get defaults() {
@@ -9,4 +9,11 @@ export class Schema {
             field => [field.name, field.value]
         ))
     }
+}
+
+
+function buildFields(spec) {
+    return spec.map(({sanitize, ...field}) => {
+        return {sanitize: sanitize ?? (x => x), ...field}
+    })
 }
