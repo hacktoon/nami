@@ -11,7 +11,7 @@ import { MapDisplay } from '/lib/ui/map'
 
 
 export default function RegionMapView({map}) {
-    const [config, setConfig] = useState(map.image.spec.defaults)
+    const [config, setConfig] = useState(map.image.schema.defaults)
     const renderMap = map.image.buildRenderMap(config)
 
     return <section className="MapAppView">
@@ -23,7 +23,7 @@ export default function RegionMapView({map}) {
 
 function MapImageForm({map, onChange}) {
     const props = {
-        schema: map.image.spec,
+        schema: map.image.schema,
         onSubmit: onChange,
         onChange: onChange,
         className: "MapImageForm"

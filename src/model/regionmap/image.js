@@ -61,7 +61,7 @@ const SPEC = [
 
 export class RegionMapImage {
     constructor(regionMap) {
-        this.spec = new Schema(SPEC)
+        this.schema = new Schema(SPEC)
         this.regionMap = regionMap
     }
 

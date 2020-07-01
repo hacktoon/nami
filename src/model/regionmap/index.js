@@ -62,7 +62,6 @@ export class RegionMap {
         this.grid = grid
         this.seed = config.seed
         this.image = new RegionMapImage(this)
-        Random.seed = config.seed
     }
 
     get(point) {
@@ -106,6 +105,7 @@ export class RegionMap {
 
 
 export function createRegionMap(config) {
+    Random.seed = config.seed
     const grid = new RegionGrid(config.width, config.height)
     const points = createPoints(config.count, config.width, config.height)
     const regions = createRegions(points, grid, config.layerGrowth, config.growthChance)
