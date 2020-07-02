@@ -6,10 +6,9 @@ import { Canvas } from '/lib/ui/canvas'
 import { Form } from '/lib/ui/form'
 
 
-export function MapImage({map}) {
-    const [config, setConfig] = useState(map.image.schema.defaults)
+export function MapImage({schema, map}) {
+    const [config, setConfig] = useState(schema.defaults)
     const renderMap = map.image.renderMap(config)
-    const schema = map.image.schema
 
     return <section className="MapAppView">
         <Form schema={schema} onSubmit={setConfig} onChange={setConfig}></Form>

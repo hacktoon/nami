@@ -7,7 +7,7 @@ import { RegionGrid } from './grid'
 import { Schema } from '/lib/schema'
 
 
-const SPEC = [
+const SPEC = new Schema([
     {
         type: "number",
         name: "width",
@@ -48,11 +48,12 @@ const SPEC = [
         label: "Seed",
         value: '',
     }
-]
+])
 
 
 export class RegionMap {
-    static schema = new Schema(SPEC)
+    static schema = SPEC
+    static Image = RegionMapImage
 
     static create(config) {
         Random.seed = config.seed
@@ -72,7 +73,7 @@ export class RegionMap {
         this.regions = regions
         this.grid = grid
         this.seed = config.seed
-        this.image = new RegionMapImage(this)
+        this.image = new RegionMap.Image(this)
     }
 
     get(point) {

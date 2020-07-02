@@ -10,12 +10,11 @@ import { MapImage } from '/lib/ui/map'
 export default function RegionMapApp() {
     const [config, setConfig] = useState(RegionMap.schema.defaults)
     const regionMap = RegionMap.create(config)
-    const schema = RegionMap.schema
 
     return <section className='MapApp'>
-        <Form schema={schema} onSubmit={setConfig} onChange={setConfig}>
+        <Form schema={RegionMap.schema} onSubmit={setConfig} onChange={setConfig}>
             <Button label="New" />
         </Form>
-        <MapImage map={regionMap} />
+        <MapImage schema={RegionMap.Image.schema} map={regionMap} />
     </section>
 }

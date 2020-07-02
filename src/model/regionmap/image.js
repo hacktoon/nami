@@ -3,7 +3,7 @@ import { Grid } from '/lib/grid'
 import { Schema } from '/lib/schema'
 
 
-const SPEC = [
+const SPEC = new Schema([
     {
         type: "boolean",
         name: "wrapMode",
@@ -56,12 +56,13 @@ const SPEC = [
         label: "Border color",
         value: Color.fromHex('#04D'),
     }
-]
+])
 
 
 export class RegionMapImage {
+    static schema = SPEC
+
     constructor(regionMap) {
-        this.schema = new Schema(SPEC) //TODO: remove
         this.regionMap = regionMap
     }
 
