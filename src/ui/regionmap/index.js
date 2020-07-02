@@ -14,7 +14,7 @@ export default function RegionMapApp() {
 
     return <section className='MapApp'>
         <Form schema={schema} onSubmit={setConfig} onChange={setConfig}>
-            <Button text="New" />
+            <Button label="New" />
         </Form>
         <MapImage map={regionMap} />
     </section>

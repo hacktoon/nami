@@ -14,7 +14,7 @@ const SPEC = [
         type: "boolean",
         name: "border",
         label: "Show border",
-        value: false,
+        value: true,
     },
     {
         type: "boolean",
@@ -60,7 +60,6 @@ const SPEC = [
 
 
 export class RegionMapImage {
-
     constructor(regionMap) {
         this.schema = new Schema(SPEC) //TODO: remove
         this.regionMap = regionMap
@@ -79,9 +78,6 @@ export class RegionMapImage {
             const fgColor = config.fgColor ?? colorMap[region.id]
             const pointLayer = regionMap.getLayer(point)
 
-            if (point.x == 0 || point.y == 0) {
-                return fgColor.darken(pointLayer*10).toHex()
-            }
             if (config.border && regionMap.isBorder(point)) {
                 return config.borderColor.toHex()
             }
@@ -90,7 +86,7 @@ export class RegionMapImage {
             }
             // draw seed
             if (regionMap.isLayer(point, config.layer)) {
-                return fgColor.brighten(50).toHex()
+                return fgColor.brighten(40).toHex()
             }
             // invert this check to get remaining spaces
             if (!regionMap.isOverLayer(point, config.layer)) {
@@ -99,13 +95,14 @@ export class RegionMapImage {
             return fgColor.darken(pointLayer*5).toHex()
         }
 
-        const grid = new Grid(this.regionMap.width, this.regionMap.height, init)
+        const {width, height} = this.regionMap
+        const grid = new Grid(width, height, init)
 
         return {
             wrapMode: config.wrapMode,
             tilesize: config.tilesize,
-            width: this.regionMap.width,
-            height: this.regionMap.height,
+            width: width,
+            height: height,
             get: point => grid.get(point)
         }
     }
