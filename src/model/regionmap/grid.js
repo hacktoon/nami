@@ -1,4 +1,4 @@
-import { Grid } from './'
+import { Grid } from '/lib/grid'
 
 
 const EMPTY_VALUE = null

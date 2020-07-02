@@ -1,9 +1,9 @@
 import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { OrganicFill } from '/lib/flood-fill'
-import { RegionGrid } from '/lib/grid/region'
 import { Region } from './region'
 import { RegionMapImage } from './image'
+import { RegionGrid } from './grid'
 import { Schema } from '/lib/schema'
 
 
