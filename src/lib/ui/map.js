@@ -6,24 +6,24 @@ import { Canvas } from '/lib/ui/canvas'
 import { Form } from '/lib/ui/form'
 
 
-export function MapImage({schema, map}) {
-    const [config, setConfig] = useState(schema.defaults)
-    const renderMap = map.image.renderMap(config)
+export function MapImage({type, map}) {
+    const [config, setConfig] = useState(type.schema.defaults)
+    const image = (new type(map)).renderMap(config)
 
     return <section className="MapAppView">
-        <Form schema={schema} onSubmit={setConfig} onChange={setConfig}></Form>
-        <MapDisplay renderMap={renderMap} />
+        <Form type={type} onSubmit={setConfig} onChange={setConfig}></Form>
+        <MapDisplay image={image} />
     </section>
 }
 
 
-export function MapDisplay({renderMap}) {
+export function MapDisplay({image}) {
     const [offset, setOffset] = useState(new Point(0, 0))
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
 
     const getWindow = canvas => {
-        let width = Math.ceil(canvas.width / renderMap.tilesize)
-        let height = Math.ceil(canvas.height / renderMap.tilesize)
+        let width = Math.ceil(canvas.width / image.tilesize)
+        let height = Math.ceil(canvas.height / image.tilesize)
         return [width, height]
     }
 
@@ -31,8 +31,8 @@ export function MapDisplay({renderMap}) {
         let [offsetX, offsetY] = gridOffset()
         const point = new Point(offsetX + i, offsetY + j)
         if (isWrappable(point)) {
-            const color = renderMap.get(point)
-            renderCell(canvas.context, i, j, color, renderMap.tilesize)
+            const color = image.get(point)
+            renderCell(canvas.context, i, j, color, image.tilesize)
         }
     }
 
@@ -42,18 +42,18 @@ export function MapDisplay({renderMap}) {
         if (isWrappable(point))
             return
         const color = (i + j) % 2 ? '#DDD' : '#FFF'
-        renderCell(canvas.context, i, j, color, renderMap.tilesize)
+        renderCell(canvas.context, i, j, color, image.tilesize)
     }
 
     const gridOffset = () => [
-        Math.floor(offset.x / renderMap.tilesize),
-        Math.floor(offset.y / renderMap.tilesize)
+        Math.floor(offset.x / image.tilesize),
+        Math.floor(offset.y / image.tilesize)
     ]
 
     const isWrappable = point => {
-        if (renderMap.wrapMode) return true
-        const col = point.x >= 0 && point.x < renderMap.width
-        const row = point.y >= 0 && point.y < renderMap.height
+        if (image.wrapMode) return true
+        const col = point.x >= 0 && point.x < image.width
+        const row = point.y >= 0 && point.y < image.height
         return col && row
     }
 
