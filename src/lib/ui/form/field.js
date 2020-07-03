@@ -63,17 +63,6 @@ export function ColorField({id, value, label, onChange, ...props}) {
 }
 
 
-export function SeedField({id, value, label, onChange, ...props}) {
-    const handleChange = event => {
-        const value = String(event.currentTarget.value).trim()
-        onChange(props.name, value.length ? value : Number(new Date()))
-    }
-    return <Field key={id} type='text' label={label}>
-        <input type='text' defaultValue={value} {...props} onChange={handleChange} />
-    </Field>
-}
-
-
 // BASE FIELD COMPONENT ===============================================
 
 function Field({ label, type, status = '', children, ...props}) {
@@ -88,6 +77,5 @@ export const TYPE_FIELD_MAP = {
     boolean: BooleanField,
     number: NumberField,
     text: TextField,
-    color: ColorField,
-    seed: SeedField,
+    color: ColorField
 }

@@ -7,7 +7,7 @@ import { RegionGrid } from './grid'
 import { Schema } from '/lib/schema'
 
 
-const SPEC = new Schema([
+const SCHEMA = new Schema([
     {
         type: "number",
         name: "width",
@@ -43,16 +43,17 @@ const SPEC = new Schema([
         min: 0.01
     },
     {
-        type: "seed",
+        type: "text",
         name: "seed",
         label: "Seed",
         value: '',
+        sanitize: value => value.length ? value : String(new Date())
     }
 ])
 
 
 export class RegionMap {
-    static schema = SPEC
+    static schema = SCHEMA
     static Image = RegionMapImage
 
     static create(config) {
@@ -60,10 +61,6 @@ export class RegionMap {
         const grid = new RegionGrid(config.width, config.height)
         const points = createPoints(config.count, config.width, config.height)
         const regions = createRegions(points, grid, config.layerGrowth, config.growthChance)
-
-        while(grid.hasEmptyPoints()) {
-            regions.forEach(region => region.grow())
-        }
         return new RegionMap(regions, grid, config)
     }
 
@@ -72,8 +69,6 @@ export class RegionMap {
         this.height = config.height
         this.regions = regions
         this.grid = grid
-        this.seed = config.seed
-        this.image = new RegionMap.Image(this)
     }
 
     get(point) {
@@ -121,13 +116,17 @@ function createPoints(count, width, height) {
 
 
 function createRegions(points, grid, layerGrowth, growthChance) {
-    return points.map((origin, id) => {
+    const regions = points.map((origin, id) => {
         const organicFill = createOrganicFill({
             id, origin, grid, layerGrowth, growthChance
         })
         // TODO: remove fill from region args
         return new Region(id, origin, organicFill)
     })
+    while(grid.hasEmptyPoints()) {
+        regions.forEach(region => region.grow())
+    }
+    return regions
 }
 
 

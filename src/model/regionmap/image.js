@@ -3,7 +3,7 @@ import { Grid } from '/lib/grid'
 import { Schema } from '/lib/schema'
 
 
-const SPEC = new Schema([
+const SCHEMA = new Schema([
     {
         type: "boolean",
         name: "wrapMode",
@@ -14,7 +14,7 @@ const SPEC = new Schema([
         type: "boolean",
         name: "border",
         label: "Show border",
-        value: true,
+        value: false,
     },
     {
         type: "boolean",
@@ -48,7 +48,7 @@ const SPEC = new Schema([
         type: "color",
         name: "bgColor",
         label: "BG color",
-        value: Color.fromHex('#06F'),
+        value: Color.fromHex('#059'),
     },
     {
         type: "color",
@@ -60,51 +60,35 @@ const SPEC = new Schema([
 
 
 export class RegionMapImage {
-    static schema = SPEC
+    static schema = SCHEMA
 
-    constructor(regionMap) {
+    constructor(regionMap, config) {
         this.regionMap = regionMap
-    }
-
-    renderMap(config) {
-        const regionMap = this.regionMap
-        const colorMap = Object.fromEntries(
-            this.regionMap.regions.map(region => [
-                region.id, new Color()
-            ])
-        )
-
-        function init(point) {
-            const region = regionMap.get(point)
-            const fgColor = config.fgColor ?? colorMap[region.id]
-            const pointLayer = regionMap.getLayer(point)
-
+        this.width = regionMap.width
+        this.height = regionMap.height
+        this.wrapMode = config.wrapMode
+        this.tilesize = config.tilesize
+        this.grid = new Grid(regionMap.width, regionMap.height, point => {
             if (config.border && regionMap.isBorder(point)) {
                 return config.borderColor.toHex()
             }
             if (config.origin && regionMap.isOrigin(point)) {
-                return fgColor.invert().toHex()
+                return config.fgColor.invert().toHex()
             }
             // draw seed
             if (regionMap.isLayer(point, config.layer)) {
-                return fgColor.brighten(40).toHex()
+                return config.fgColor.brighten(40).toHex()
             }
             // invert this check to get remaining spaces
             if (!regionMap.isOverLayer(point, config.layer)) {
                 return config.bgColor.toHex()
             }
-            return fgColor.darken(pointLayer*5).toHex()
-        }
+            const pointLayer = regionMap.getLayer(point)
+            return config.fgColor.darken(pointLayer*5).toHex()
+        })
+    }
 
-        const {width, height} = this.regionMap
-        const grid = new Grid(width, height, init)
-
-        return {
-            wrapMode: config.wrapMode,
-            tilesize: config.tilesize,
-            width: width,
-            height: height,
-            get: point => grid.get(point)
-        }
+    get(point) {
+        return this.grid.get(point)
     }
 }

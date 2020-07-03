@@ -7,7 +7,7 @@ export function Form({type, onSubmit, onChange, ...props}) {
     const [data, setData] = useState(type.schema.defaults)
     const handleSubmit = event => {
         event.preventDefault()
-        onSubmit(data)
+        onSubmit && onSubmit(data)
     }
     const handleChange = (name, value) => {
         const newData = {...data, [name]: value}
@@ -21,7 +21,7 @@ export function Form({type, onSubmit, onChange, ...props}) {
 }
 
 
-export function buildFields(fields, handleChange) {
+function buildFields(fields, handleChange) {
     return fields.map((field, id) => {
         const {type, sanitize, ...props} = field
         const FieldComponent = TYPE_FIELD_MAP[type]
