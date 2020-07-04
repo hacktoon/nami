@@ -7,7 +7,7 @@ import { Form } from '/lib/ui/form'
 
 
 export function MapImage({type, map}) {
-    const [config, setConfig] = useState(type.schema.defaults)
+    const [config, setConfig] = useState(type.schema.defaultConfig)
     return <section className="MapAppView">
         <Form type={type} onSubmit={setConfig} onChange={setConfig}></Form>
         <MapDisplay image={new type(map, config)} />

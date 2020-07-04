@@ -4,7 +4,7 @@ export class Schema {
         this.fields = buildFields(spec)
     }
 
-    get defaults() {
+    get defaultConfig() {
         return Object.fromEntries(this.fields.map(
             field => [field.name, field.value]
         ))
@@ -14,8 +14,6 @@ export class Schema {
 
 function buildFields(spec) {
     return spec.map(({sanitize, ...field}) => {
-        return {
-            sanitize: sanitize ?? (x => x),
-            ...field}
+        return {...field}
     })
 }
