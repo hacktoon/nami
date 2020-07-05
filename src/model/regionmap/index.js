@@ -4,6 +4,8 @@ import { OrganicFill } from '/lib/flood-fill'
 import { Region } from './region'
 import { RegionMapImage } from './image'
 import { RegionGrid } from './grid'
+
+// typology
 import { Schema } from '/lib/schema'
 
 
@@ -46,8 +48,7 @@ const SCHEMA = new Schema([
         type: "text",
         name: "seed",
         label: "Seed",
-        value: '',
-        sanitize: value => value.length ? value : String(new Date())
+        value: ''
     }
 ])
 

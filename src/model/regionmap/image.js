@@ -80,11 +80,12 @@ export class RegionMapImage {
                 return config.fgColor.brighten(40).toHex()
             }
             // invert this check to get remaining spaces
-            if (!regionMap.isOverLayer(point, config.layer)) {
-                return config.bgColor.toHex()
-            }
             const pointLayer = regionMap.getLayer(point)
-            return config.fgColor.darken(pointLayer*5).toHex()
+            if (regionMap.isOverLayer(point, config.layer)) {
+                return config.bgColor.darken(pointLayer*5).toHex()
+            } else {
+                return config.fgColor.darken(pointLayer*5).toHex()
+            }
         })
     }
 

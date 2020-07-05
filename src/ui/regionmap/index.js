@@ -12,7 +12,8 @@ export default function RegionMapApp() {
     const regionMap = RegionMap.create(config)
 
     const handle = data => {
-        setConfig(data)
+        const newConfig = RegionMap.schema.createConfig(data)
+        setConfig(newConfig)
     }
 
     return <section className='MapApp'>

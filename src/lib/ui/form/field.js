@@ -37,7 +37,7 @@ export function SelectField({id, value, label, onChange, options, ...props}) {
 
 
 export function BooleanField({id, label, value, onChange, ...props}) {
-    const [status, setStatus] = useState(Boolean(value))
+    const [status, setStatus] = useState(value)
     const onClick = () => {
         onChange(props.name, !status)
         setStatus(!status)

@@ -17,14 +17,14 @@ export function Form({type, onSubmit, onChange, ...props}) {
         // TODO: get errors here from onChange
     }
     return <form className="Form" onSubmit={handleSubmit} {...props}>
-        {buildFields(type.schema.fields, handleChange)}
+        {buildFields(type.schema, handleChange)}
         {props.children}
     </form>
 }
 
 
-function buildFields(fields, onChange) {
-    return fields.map(({type, ...props}, id) => {
+function buildFields(schema, onChange) {
+    return schema.types.map(({type, ...props}, id) => {
         const FieldComponent = TYPE_FIELD_MAP[type]
         return FieldComponent({id, onChange, ...props})
     })
