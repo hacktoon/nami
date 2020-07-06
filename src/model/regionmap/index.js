@@ -9,48 +9,14 @@ import { RegionGrid } from './grid'
 import { Schema } from '/lib/schema'
 
 
-const SCHEMA = new Schema([
-    {
-        type: "number",
-        name: "width",
-        label: "Width",
-        value: 200,
-    },
-    {
-        type: "number",
-        name: "height",
-        label: "Height",
-        value: 150,
-    },
-    {
-        type: "number",
-        name: "count",
-        label: "Count",
-        value: 8,
-    },
-    {
-        type: "number",
-        name: "layerGrowth",
-        label: "Layer growth",
-        value: 40,
-        step: 1,
-        min: 1
-    },
-    {
-        type: "number",
-        name: "growthChance",
-        label: "Growth chance",
-        value: 0.1,
-        step: 0.01,
-        min: 0.01
-    },
-    {
-        type: "text",
-        name: "seed",
-        label: "Seed",
-        value: ''
-    }
-])
+const SCHEMA = new Schema(
+    Schema.number("Width", 200),
+    Schema.number("Height", 150),
+    Schema.number("Count", 8),
+    Schema.number("Layer growth", 40, {step: 1, min: 1}),
+    Schema.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
+    Schema.seed("Seed", '')
+)
 
 
 export class RegionMap {

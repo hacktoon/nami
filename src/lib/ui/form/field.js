@@ -52,9 +52,8 @@ export function BooleanField({id, label, value, onChange, ...props}) {
 export function ColorField({id, value, label, onChange, ...props}) {
     const [color, setColor] = useState(value)
     const handleChange = event => {
-        const newColor = Color.fromHex(event.currentTarget.value)
-        onChange(props.name, newColor)
-        setColor(newColor)
+        onChange(props.name, event.currentTarget.value)
+        setColor(event.currentTarget.value)
     }
     return <Field key={id} type='color' label={label}>
         <span className="ColorView" style={{backgroundColor: color.toHex()}}></span>
