@@ -2,7 +2,6 @@ import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { OrganicFill } from '/lib/flood-fill'
 import { Region } from './region'
-import { RegionMapImage } from './image'
 import { RegionGrid } from './grid'
 
 // typology
@@ -21,7 +20,6 @@ const SCHEMA = new Schema(
 
 export class RegionMap {
     static schema = SCHEMA
-    static Image = RegionMapImage
 
     static create(data) {
         const config = RegionMap.schema.parse(data)
