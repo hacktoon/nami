@@ -25,8 +25,6 @@ export class RegionMap {
 
     static create(data) {
         const config = RegionMap.schema.parse(data)
-
-        console.log('data', data, '\nconfig', config);
         Random.seed = config.seed
         const grid = new RegionGrid(config.width, config.height)
         const points = createPoints(config.count, config.width, config.height)

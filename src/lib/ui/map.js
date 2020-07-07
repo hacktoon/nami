@@ -7,13 +7,11 @@ import { Form } from '/lib/ui/form'
 
 
 export function MapImage({Type, map}) {
-    const [config, setConfig] = useState(Type.schema.defaultConfig)
+    const [config, setConfig] = useState(null)
     const image = Type.create(map, config)
-    // TODO: use the mapimage as state
 
     return <section className="MapAppView">
         <Form schema={Type.schema}
-              config={config}
               onSubmit={setConfig}
               onChange={setConfig}>
         </Form>

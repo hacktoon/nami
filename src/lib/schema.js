@@ -3,7 +3,7 @@ import { Color } from '/lib/color'
 
 // let's create our own type system
 class Type {
-    constructor(type, label, value, ...props) {
+    constructor(type, label, value, props) {
         this.type = type
         this.label = label ?? type
         this.name = normalizeLabel(label)
@@ -15,8 +15,8 @@ class Type {
 
 
 export class NumberType extends Type {
-    constructor(label, value, ...props) {
-        super('number', label, value, ...props)
+    constructor(label, value, props) {
+        super('number', label, value, props)
     }
 
     sanitize(value) {
@@ -26,8 +26,8 @@ export class NumberType extends Type {
 
 
 export class TextType extends Type {
-    constructor(label, value, ...props) {
-        super('text', label, value, ...props)
+    constructor(label, value, props) {
+        super('text', label, value, props)
     }
 
     sanitize(value) {
@@ -37,8 +37,8 @@ export class TextType extends Type {
 
 
 export class SeedType extends Type {
-    constructor(label, value, ...props) {
-        super('text', label, value, ...props)
+    constructor(label, value, props) {
+        super('text', label, value, props)
     }
 
     sanitize(value) {
@@ -49,8 +49,8 @@ export class SeedType extends Type {
 
 
 export class ColorType extends Type {
-    constructor(label, value, ...props) {
-        super('color', label, value, ...props)
+    constructor(label, value, props) {
+        super('color', label, value, props)
     }
 
     sanitize(value) {
@@ -60,8 +60,8 @@ export class ColorType extends Type {
 
 
 export class BooleanType extends Type {
-    constructor(label, value, ...props) {
-        super('boolean', label, value, ...props)
+    constructor(label, value, props) {
+        super('boolean', label, value, props)
     }
 
     sanitize(value) {
@@ -87,16 +87,17 @@ export class Schema {
         ))
     }
 
-    get names() {
+    get nameMap() {
         return Object.fromEntries(this.types.map(
             type => [type.name, type]
         ))
     }
 
-    parse(data) {
+    parse(raw_data) {
+        const data = raw_data ?? this.defaultConfig
         const map = {}
         for(let [name, value] of Object.entries(data)) {
-            map[name] = this.names[name].sanitize(value)
+            map[name] = this.nameMap[name].sanitize(value)
         }
         return map
     }
@@ -115,5 +116,5 @@ function normalizeLabel(label) {
 
 
 function buildType(_Type) {
-    return (...props) => new _Type(...props)
+    return (label, value, props={}) => new _Type(label, value, props)
 }

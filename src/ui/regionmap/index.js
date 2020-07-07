@@ -8,16 +8,14 @@ import { RegionMap } from '/model/regionmap'
 
 
 export default function RegionMapApp() {
-    const [config, setConfig] = useState(RegionMap.schema.defaultConfig)
-    const regionMap = RegionMap.create(config)
-
+    const [map, setMap] = useState(RegionMap.create())
+    const handle = config => setMap(RegionMap.create(config))
     return <section className='MapApp'>
         <Form schema={RegionMap.schema}
-              config={config}
-              onSubmit={setConfig}
-              onChange={setConfig}>
+              onSubmit={handle}
+              onChange={handle}>
             <Button label="New" />
         </Form>
-        <MapImage Type={RegionMap.Image} map={regionMap} />
+        <MapImage Type={RegionMap.Image} map={map} />
     </section>
 }
