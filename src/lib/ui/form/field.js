@@ -50,14 +50,10 @@ export function BooleanField({id, label, value, onChange, ...props}) {
 
 
 export function ColorField({id, value, label, onChange, ...props}) {
-    const [color, setColor] = useState(value)
-    const handleChange = event => {
-        onChange(props.name, event.currentTarget.value)
-        setColor(event.currentTarget.value)
-    }
+    const handleChange = event => onChange(props.name, event.currentTarget.value)
     return <Field key={id} type='color' label={label}>
-        <span className="ColorView" style={{backgroundColor: color}}></span>
-        <input type='text' defaultValue={color} onChange={handleChange} {...props} />
+        <span className="ColorView" style={{backgroundColor: value}}></span>
+        <input type='text' defaultValue={value} onChange={handleChange} {...props} />
     </Field>
 }
 
