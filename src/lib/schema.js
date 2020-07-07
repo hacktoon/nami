@@ -106,7 +106,7 @@ export class Schema {
 
 function normalizeLabel(label) {
     const capitalWords = label.split(' ').map((word, index) => {
-        const lowerCase = word.toLowerCase()
+        const lowerCase = word.toLowerCase().replace(/[^a-zA-Z0-9]/g, '')
         if (index > 0)
             return lowerCase[0].toUpperCase() + lowerCase.substring(1)
         return lowerCase
