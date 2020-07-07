@@ -17,6 +17,13 @@ const SCHEMA = new Schema(
 export class RegionMapImage {
     static schema = SCHEMA
 
+    static create(regionMap, data) {
+        const config = RegionMapImage.schema.parse(data)
+        console.log('data', data, '\nconfig', config);
+
+        return new RegionMapImage(regionMap, config)
+    }
+
     constructor(regionMap, config) {
         this.regionMap = regionMap
         this.width = regionMap.width

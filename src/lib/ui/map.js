@@ -6,19 +6,17 @@ import { Canvas } from '/lib/ui/canvas'
 import { Form } from '/lib/ui/form'
 
 
-export function MapImage({type, map}) {
-    const [config, setConfig] = useState(type.schema.defaultConfig)
-    const image = new type(map, config)
-    //console.log('MapImage config: ', config);
-
-
-    const handle = data => {
-        const newConfig = type.schema.createConfig(data)
-        setConfig(newConfig)
-    }
+export function MapImage({Type, map}) {
+    const [config, setConfig] = useState(Type.schema.defaultConfig)
+    const image = Type.create(map, config)
+    // TODO: use the mapimage as state
 
     return <section className="MapAppView">
-        <Form type={type} onSubmit={handle} onChange={handle}></Form>
+        <Form schema={Type.schema}
+              config={config}
+              onSubmit={setConfig}
+              onChange={setConfig}>
+        </Form>
         <MapDisplay image={image} />
     </section>
 }

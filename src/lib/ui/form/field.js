@@ -4,7 +4,7 @@ import { Color } from '/lib/color'
 
 
 export function NumberField({id, value, label, onChange, ...props}) {
-    const handleChange = event => onChange(props.name, Number(event.currentTarget.value))
+    const handleChange = event => onChange(props.name, event.currentTarget.value)
     return <Field key={id} type='number' label={label} {...props}>
         <input type='number' defaultValue={value} onChange={handleChange} {...props} />
     </Field>
@@ -12,7 +12,7 @@ export function NumberField({id, value, label, onChange, ...props}) {
 
 
 export function TextField({id, value, label, onChange, ...props}) {
-    const handleChange = event => onChange(props.name, String(event.currentTarget.value).trim())
+    const handleChange = event => onChange(props.name, event.currentTarget.value)
     return <Field key={id} type='text' label={label}>
         <input type='text' defaultValue={value} {...props} onChange={handleChange} />
     </Field>
@@ -56,8 +56,8 @@ export function ColorField({id, value, label, onChange, ...props}) {
         setColor(event.currentTarget.value)
     }
     return <Field key={id} type='color' label={label}>
-        <span className="ColorView" style={{backgroundColor: color.toHex()}}></span>
-        <input type='text' defaultValue={color.toHex()} onChange={handleChange} {...props} />
+        <span className="ColorView" style={{backgroundColor: color}}></span>
+        <input type='text' defaultValue={color} onChange={handleChange} {...props} />
     </Field>
 }
 

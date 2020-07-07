@@ -26,14 +26,14 @@ class NoiseMap {
 // FUNCTIONS ===================================
 
 export function createNoiseMap(params={}) {
-    const {resolution, width, height, seed} = createConfig(params)
+    const {resolution, width, height, seed} = parse(params)
     const grid = new Grid(width, height)
 
     return new NoiseMap(seed, grid, resolution)
 }
 
 
-function createConfig(params={}) {
+function parse(params={}) {
     function _normalizeSeed(seed) {
         seed = String(seed).length ? seed : Number(new Date())
         Random.seed = seed

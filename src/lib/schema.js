@@ -11,10 +11,6 @@ class Type {
         this.props = props
         this.description = props.description ?? `A ${type}.`
     }
-
-    sanitize(value) {
-        return String(value).trim()
-    }
 }
 
 
@@ -33,6 +29,10 @@ export class TextType extends Type {
     constructor(label, value, ...props) {
         super('text', label, value, ...props)
     }
+
+    sanitize(value) {
+        return String(value).trim()
+    }
 }
 
 
@@ -42,7 +42,8 @@ export class SeedType extends Type {
     }
 
     sanitize(value) {
-        return value.length ? value : String(new Date())
+        const seed = String(value).trim()
+        return seed.length ? seed : String(Number(new Date()))
     }
 }
 
@@ -54,10 +55,6 @@ export class ColorType extends Type {
 
     sanitize(value) {
         return Color.fromHex(value)
-    }
-
-    value(color) {
-        return color.toHex()
     }
 }
 
@@ -74,26 +71,34 @@ export class BooleanType extends Type {
 
 
 export class Schema {
-    static boolean = (...props) => new BooleanType(...props)
-    static text = (...props) => new TextType(...props)
-    static number = (...props) => new NumberType(...props)
-    static color = (...props) => new ColorType(...props)
-    static seed = (...props) => new SeedType(...props)
+    static boolean = buildType(BooleanType)
+    static text = buildType(TextType)
+    static number = buildType(NumberType)
+    static color = buildType(ColorType)
+    static seed = buildType(SeedType)
 
     constructor(...types) {
-        console.log('build schema', types);
-        this.types = types.map(type => ({...type, value: type.sanitize(type.value)}))
-        this.defaultConfig = Object.fromEntries(types.map(
-            type => [type.name, type.sanitize(type.value)]
+        this.types = types
+    }
+
+    get defaultConfig() {
+        return Object.fromEntries(this.types.map(
+            type => [type.name, type.value]
         ))
     }
 
-    createConfig(data) {
-        // console.log('data', data, '\n', this.types);
-
-        return Object.fromEntries(this.types.map( // TODO: types has no sanitize
-            type => [type.name, this.types[type.name].sanitize(data[type.name])]
+    get names() {
+        return Object.fromEntries(this.types.map(
+            type => [type.name, type]
         ))
+    }
+
+    parse(data) {
+        const map = {}
+        for(let [name, value] of Object.entries(data)) {
+            map[name] = this.names[name].sanitize(value)
+        }
+        return map
     }
 }
 
@@ -106,4 +111,9 @@ function normalizeLabel(label) {
         return lowerCase
     })
     return capitalWords.join('')
+}
+
+
+function buildType(_Type) {
+    return (...props) => new _Type(...props)
 }

@@ -22,6 +22,20 @@ export function gradientColors(source, target, count) {
 
 
 export class Color {
+    static fromHex(value) {
+        let hex = String(value).trim().replace('#', '')
+        let length = hex.length
+        if (length !== 3 && length != 6)
+            return new Color(0, 0, 0)
+        if (length == 3)
+            hex = expandShorthand(hex)
+        return new Color(
+            parseInt(hex.substring(0,2), 16),
+            parseInt(hex.substring(2,4), 16),
+            parseInt(hex.substring(4,6), 16)
+        )
+    }
+
     constructor(red=Random.int(255), green=Random.int(255), blue=Random.int(255)) {
         this.red = clamp(red, 0, 255)
         this.green = clamp(green, 0, 255)
@@ -54,20 +68,6 @@ export class Color {
             this.red - amount,
             this.green - amount,
             this.blue - amount,
-        )
-    }
-
-    static fromHex(string) {
-        let hex = string.trim().replace('#', '')
-        let length = hex.length
-        if (length !== 3 && length != 6)
-            return new Color(0, 0, 0)
-        if (length == 3)
-            hex = expandShorthand(hex)
-        return new Color(
-            parseInt(hex.substring(0,2), 16),
-            parseInt(hex.substring(2,4), 16),
-            parseInt(hex.substring(4,6), 16)
         )
     }
 }

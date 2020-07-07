@@ -3,8 +3,8 @@ import React, { useState } from 'react'
 import { TYPE_FIELD_MAP } from './field'
 
 
-export function Form({type, onSubmit, onChange, ...props}) {
-    const [data, setData] = useState(type.schema.defaultConfig)
+export function Form({schema, config, onSubmit, onChange, ...props}) {
+    const [data, setData] = useState(config)
     const handleSubmit = event => {
         event.preventDefault()
         onSubmit && onSubmit(data)
@@ -17,7 +17,7 @@ export function Form({type, onSubmit, onChange, ...props}) {
         // TODO: get errors here from onChange
     }
     return <form className="Form" onSubmit={handleSubmit} {...props}>
-        {buildFields(type.schema, handleChange)}
+        {buildFields(schema, handleChange)}
         {props.children}
     </form>
 }
