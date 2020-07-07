@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from 'react'
 
-import { Color } from '/lib/color'
-
 
 export function NumberField({id, value, label, onChange, ...props}) {
     const handleChange = event => onChange(props.name, event.currentTarget.value)
