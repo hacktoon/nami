@@ -81,7 +81,7 @@ export class Schema {
 
 export class Meta {
     constructor(name, ...schema) {
-        this.name = name
+        this.name = removeSymbols(name).replace(' ', '')
         this.schema = schema
     }
 
@@ -110,12 +110,17 @@ export class Meta {
 
 function normalizeLabel(label) {
     const capitalWords = label.split(' ').map((word, index) => {
-        const lowerCase = word.toLowerCase().replace(/[^a-zA-Z0-9]/g, '')
+        const lowerCase = removeSymbols(word.toLowerCase())
         if (index > 0)
             return lowerCase[0].toUpperCase() + lowerCase.substring(1)
         return lowerCase
     })
     return capitalWords.join('')
+}
+
+
+function removeSymbols(text) {
+    return text.replace(/[^a-zA-Z0-9]/g, '')
 }
 
 

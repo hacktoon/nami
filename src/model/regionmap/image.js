@@ -14,12 +14,12 @@ const META = new Meta('RegionMapImage',
 )
 
 
-export class RegionMapImage {
+export class Image {
     static meta = META
 
     static create(regionMap, data) {
         const config = META.parse(data)
-        return new RegionMapImage(regionMap, config)
+        return new Image(regionMap, config)
     }
 
     constructor(regionMap, config) {
