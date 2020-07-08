@@ -29,6 +29,7 @@ canvas { display: block; }
 /* BASE COMPONENTS ================================ */
 
 .MapDisplay {
+    background: black;
     position: relative;
 }
 

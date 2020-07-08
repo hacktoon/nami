@@ -76,19 +76,23 @@ export class Schema {
     static number = buildType(NumberType)
     static color = buildType(ColorType)
     static seed = buildType(SeedType)
+}
 
-    constructor(...types) {
-        this.types = types
+
+export class Meta {
+    constructor(name, ...schema) {
+        this.name = name
+        this.schema = schema
     }
 
     get defaultConfig() {
-        return Object.fromEntries(this.types.map(
+        return Object.fromEntries(this.schema.map(
             type => [type.name, type.value]
         ))
     }
 
     get nameMap() {
-        return Object.fromEntries(this.types.map(
+        return Object.fromEntries(this.schema.map(
             type => [type.name, type]
         ))
     }

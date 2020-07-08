@@ -34,29 +34,28 @@
 .MapApp {
     display: grid;
     grid-template-rows: min-content auto;
+    grid-template-columns: 20% 1fr;
 }
 
 .MapApp .Form {
-    background: #CCC;
-    display: grid;
-    gap: 1rem;
-    grid-auto-flow: column;
     padding: .5rem;
-}
-
-
-.MapApp .MapAppView {
-    background: black;
+    gap: 1rem;
     display: grid;
-    grid-template-columns: 20% auto;
 }
 
-.MapApp .MapAppView .Form {
+.MapApp .Form.RegionMap  {
+    background: #CCC;
+    grid-auto-flow: column;
+    grid-row: 1;
+    grid-column: span 2;
+}
+
+.MapApp .Form.RegionMapImage {
     background: #111;
     color: #FFF;
-    display: grid;
     gap: .5rem;
-    grid-auto-rows: min-content;
     grid-auto-flow: row;
-    padding: .5rem;
+    grid-auto-rows: min-content;
+    grid-row: 2;
+
 }

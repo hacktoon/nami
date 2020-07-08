@@ -1,14 +1,13 @@
 import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { OrganicFill } from '/lib/flood-fill'
+import { Meta, Schema } from '/lib/meta'
+
 import { Region } from './region'
 import { RegionGrid } from './grid'
 
-// typology
-import { Schema } from '/lib/schema'
 
-
-const SCHEMA = new Schema(
+const META = new Meta('RegionMap',
     Schema.number("Width", 200),
     Schema.number("Height", 150),
     Schema.number("Count", 8),
@@ -19,10 +18,10 @@ const SCHEMA = new Schema(
 
 
 export class RegionMap {
-    static schema = SCHEMA
+    static meta = META
 
     static create(data) {
-        const config = RegionMap.schema.parse(data)
+        const config = META.parse(data)
         Random.seed = config.seed
         const grid = new RegionGrid(config.width, config.height)
         const points = createPoints(config.count, config.width, config.height)

@@ -10,14 +10,21 @@ import { RegionMapImage } from '/model/regionmap/image'
 
 export default function RegionMapApp() {
     const [map, setMap] = useState(RegionMap.create())
-    const handle = config => setMap(RegionMap.create(config))
+    const [image, setImage] = useState(RegionMapImage.create(map))
+
+    const handleMap = config => setMap(RegionMap.create(config))
+    const handleImage = config => setImage(RegionMapImage.create(map, config))
 
     return <section className='MapApp'>
-        <Form schema={RegionMap.schema}
-              onSubmit={handle}
-              onChange={handle}>
+        <Form meta={RegionMap.meta}
+              onSubmit={handleMap}
+              onChange={handleMap}>
             <Button label="New" />
         </Form>
-        <MapImage Type={RegionMapImage} map={map} />
+        <Form meta={RegionMapImage.meta}
+              onSubmit={handleImage}
+              onChange={handleImage}>
+        </Form>
+        <MapImage image={image} />
     </section>
 }

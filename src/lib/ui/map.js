@@ -3,24 +3,9 @@ import React, { useState } from 'react'
 import { Point } from '/lib/point'
 import { MouseView } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
-import { Form } from '/lib/ui/form'
 
 
-export function MapImage({Type, map}) {
-    const [config, setConfig] = useState(null)
-    const image = Type.create(map, config)
-
-    return <section className="MapAppView">
-        <Form schema={Type.schema}
-              onSubmit={setConfig}
-              onChange={setConfig}>
-        </Form>
-        <MapDisplay image={image} />
-    </section>
-}
-
-
-export function MapDisplay({image}) {
+export function MapImage({image}) {
     const [offset, setOffset] = useState(new Point(0, 0))
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
 

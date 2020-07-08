@@ -1,10 +1,10 @@
 import { Grid } from '/lib/grid'
-import { Schema } from '/lib/schema'
+import { Meta, Schema } from '/lib/meta'
 
 
-const SCHEMA = new Schema(
+const META = new Meta('RegionMapImage',
     Schema.boolean("Wrap grid", false),
-    Schema.boolean("Show border", false),
+    Schema.boolean("Show border", true),
     Schema.boolean("Show origin", false),
     Schema.number("Tile size", 6, {step: 1, min: 1}),
     Schema.number("Layer", 10, {step: 1, min: 0}),
@@ -15,10 +15,10 @@ const SCHEMA = new Schema(
 
 
 export class RegionMapImage {
-    static schema = SCHEMA
+    static meta = META
 
     static create(regionMap, data) {
-        const config = RegionMapImage.schema.parse(data)
+        const config = META.parse(data)
         return new RegionMapImage(regionMap, config)
     }
 
