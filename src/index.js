@@ -9,8 +9,8 @@ import RegionMap from '/model/regionmap'
 import { Title } from '/lib/ui'
 import { SelectField } from '/lib/ui/form/field'
 
-import "./style/base.css"
-import "./style/index.css"
+import "/ui/css/base.css"
+import "/ui/css/index.css"
 
 
 const APPS = {
