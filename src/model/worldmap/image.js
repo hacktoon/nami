@@ -21,7 +21,7 @@ export class Image {
         this.width = worldMap.width
         this.height = worldMap.height
         this.wrapMode = config.wrapGrid
-        this.tilesize = config.tileSize
+        this.tileSize = config.tileSize
 
         this.grid = new Grid(worldMap.width, worldMap.height, point => {
             return this.worldMap.reliefMap.codeMap.getColor(point)

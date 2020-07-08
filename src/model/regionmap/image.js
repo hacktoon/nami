@@ -27,7 +27,7 @@ export class Image {
         this.width = regionMap.width
         this.height = regionMap.height
         this.wrapMode = config.wrapGrid
-        this.tilesize = config.tileSize
+        this.tileSize = config.tileSize
 
         this.grid = new Grid(regionMap.width, regionMap.height, point => {
             if (config.showBorder && regionMap.isBorder(point)) {

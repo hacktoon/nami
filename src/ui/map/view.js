@@ -10,8 +10,8 @@ export function MapView({image}) {
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
 
     const getWindow = canvas => {
-        let width = Math.ceil(canvas.width / image.tilesize)
-        let height = Math.ceil(canvas.height / image.tilesize)
+        let width = Math.ceil(canvas.width / image.tileSize)
+        let height = Math.ceil(canvas.height / image.tileSize)
         return [width, height]
     }
 
@@ -20,7 +20,7 @@ export function MapView({image}) {
         const point = new Point(offsetX + i, offsetY + j)
         if (isWrappable(point)) {
             const color = image.get(point)
-            renderCell(canvas.context, i, j, color, image.tilesize)
+            renderCell(canvas.context, i, j, color, image.tileSize)
         }
     }
 
@@ -30,12 +30,12 @@ export function MapView({image}) {
         if (isWrappable(point))
             return
         const color = (i + j) % 2 ? '#DDD' : '#FFF'
-        renderCell(canvas.context, i, j, color, image.tilesize)
+        renderCell(canvas.context, i, j, color, image.tileSize)
     }
 
     const gridOffset = () => [
-        Math.floor(offset.x / image.tilesize),
-        Math.floor(offset.y / image.tilesize)
+        Math.floor(offset.x / image.tileSize),
+        Math.floor(offset.y / image.tileSize)
     ]
 
     const isWrappable = point => {
@@ -45,11 +45,11 @@ export function MapView({image}) {
         return col && row
     }
 
-    const renderCell = (context, i, j, color, tilesize) => {
-        const x = i * tilesize
-        const y = j * tilesize
+    const renderCell = (context, i, j, color, tileSize) => {
+        const x = i * tileSize
+        const y = j * tileSize
         context.fillStyle = color
-        context.fillRect(x, y, tilesize, tilesize)
+        context.fillRect(x, y, tileSize, tileSize)
     }
 
     const onCanvasSetup = canvas => {
