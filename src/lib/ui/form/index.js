@@ -17,8 +17,9 @@ export function Form({meta, onSubmit, onChange, ...props}) {
         onChange && onChange(newData)
         // TODO: get errors here from onChange
     }
-    const cls = `Form ${meta.name}`
-    return <form className={cls} onSubmit={handleSubmit} {...props}>
+
+    const cls = `Form ${props.className}`
+    return <form className={cls} onSubmit={handleSubmit}>
         {buildFields(meta, handleChange)}
         {props.children}
     </form>

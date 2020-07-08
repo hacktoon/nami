@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
-import WorldMapApp  from '/ui/worldmap'
-import MapApp from '/ui/regionmap'
+import { MapApp } from '/ui/map'
 
 import RegionMap from '/model/regionmap'
 
@@ -15,7 +14,7 @@ import "./style/index.css"
 
 const APPS = {
     // worldMap: { id: 'worldMap', name: 'World Map', component: <WorldMapApp /> },
-    regionMap: { id: 0, model: RegionMap, component: MapApp },
+    regionMap: { model: RegionMap, component: MapApp },
 }
 const DEFAULT_APP = APPS.regionMap
 
@@ -53,7 +52,7 @@ function RootComponent() {
 
     return <section className="App">
         <AppHeader app={app} setApp={setApp} />
-        {app.component({Map: app.model})}
+        {app.component(app.model)}
     </section>
 }
 
