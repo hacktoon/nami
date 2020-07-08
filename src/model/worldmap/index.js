@@ -2,58 +2,43 @@ import Tile from './tile'
 import { Grid } from '/lib/grid'
 import { Name } from '/lib/name'
 import { Random } from '/lib/random'
+import { Meta, Schema } from '/lib/meta'
 
 import { ReliefMap } from './geo/relief'
-import { WaterMap } from './geo/water'
-import { HeatMap } from './atm/heat'
-import { MoistureMap } from './atm/moisture'
-import { BiomeMap } from './bio/biome'
+import { Image } from './image'
+
+
+const META = new Meta('WorldMap',
+    Schema.number("Roughness", 8),
+    Schema.number("Size", 257, {min: 1, step: 1}),
+    Schema.seed("Seed", '')
+)
 
 
 export default class WorldMap {
-    constructor(config) {
-        const {size, roughness, seed} = new WorldConfig(config)
+    static meta = META
+    static Image = Image
+
+    static create(data) {
+        const config = META.parse(data)
+        Random.seed = config.seed
+        const reliefMap = new ReliefMap(config.size, config.roughness)
+        const grid = new Grid(config.size, config.size, point => new Tile(point))
+        return new WorldMap(reliefMap, grid, config)
+    }
+
+    constructor(reliefMap, grid, config) {
         this.name = Name.createLandmassName()
-        this.seed = seed
-        this.size = size
-        this.width = size
-        this.height = size
-        this.area = size * size
-        this.grid = new Grid(size, size, point => new Tile(point))
-        this.reliefMap = new ReliefMap(size, roughness)
+        this.seed = config.seed
+        this.size = config.size
+        this.width = config.size
+        this.height = config.size
+        this.area = config.size * config.size
+        this.grid = grid
+        this.reliefMap = reliefMap
     }
 
     get(point) {
         return this.grid.get(point)
-    }
-
-    getColor(point) {
-        return this.reliefMap.codeMap.getColor(point)
-    }
-}
-
-
-export class WorldConfig {
-    static DEFAULT_ROUGHNESS = 8  // TODO: move attr to HeightMap
-    static DEFAULT_SIZE = 257
-    static get DEFAULT_SEED() { return Number(new Date()) }
-
-    constructor(params={}) {
-        const defaultParams = {
-            size: WorldConfig.DEFAULT_SIZE,
-            roughness: WorldConfig.DEFAULT_ROUGHNESS,
-            seed: WorldConfig.DEFAULT_SEED
-        }
-        let config = Object.assign(defaultParams, params)
-
-        this.seed = this._normalizeSeed(config.seed)
-        this.roughness = Number(config.roughness)
-        this.size = Number(config.size)
-    }
-
-    _normalizeSeed(seed='') {
-        seed = String(seed).length ? seed : WorldConfig.DEFAULT_SEED
-        Random.seed = seed
-        return seed
     }
 }

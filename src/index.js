@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 
 import { MapApp } from '/ui/map'
 
+import WorldMap from '/model/worldmap'
 import RegionMap from '/model/regionmap'
 
 import { Title } from '/lib/ui'
@@ -13,10 +14,10 @@ import "./style/index.css"
 
 
 const APPS = {
-    // worldMap: { id: 'worldMap', name: 'World Map', component: <WorldMapApp /> },
-    regionMap: { model: RegionMap, component: MapApp },
+    WorldMap: { id: 'WorldMap', component: () => <MapApp Map={WorldMap} /> },
+    RegionMap: { id: 'RegionMap', component:  () => <MapApp Map={RegionMap} /> },
 }
-const DEFAULT_APP = APPS.regionMap
+const DEFAULT_APP = APPS.RegionMap
 
 
 function AppHeader({app, setApp}) {
@@ -31,10 +32,10 @@ function MainMenu({app, setApp}) {
     const appOptions = Object.fromEntries(
         Object.entries(APPS).map(entry => {
             const [id, app] = entry
-            return [id, app.model.meta.name]
+            return [id, app.id]
         })
     )
-    const onChange = value => setApp(APPS[value])
+    const onChange = (_, value) => setApp(APPS[value])
 
     return <section className="MainMenu">
         <SelectField
@@ -49,10 +50,9 @@ function MainMenu({app, setApp}) {
 
 function RootComponent() {
     const [app, setApp] = useState(DEFAULT_APP)
-
     return <section className="App">
         <AppHeader app={app} setApp={setApp} />
-        {app.component(app.model)}
+        <app.component />
     </section>
 }
 

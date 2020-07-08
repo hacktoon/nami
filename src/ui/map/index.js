@@ -5,7 +5,7 @@ import { Button } from '/lib/ui/form/button'
 import { MapView } from './view'
 
 
-export function MapApp(Map) {
+export function MapApp({Map}) {
     const [map, setMap] = useState(Map.create())
     const handleMap = config => setMap(Map.create(config))
     return <section className='MapApp'>
