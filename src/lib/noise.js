@@ -10,7 +10,7 @@ export class SimplexNoise {
                       [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
         const p = [];
         for (let i=0; i<256; i++) {
-            p[i] = Math.floor(Random.float() * 256)
+            p[i] = Random.int(255)
         }
         // To remove the need for index wrapping, double the permutation table length
         this.perm = [];
