@@ -1,51 +1,44 @@
 import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
+import { SimplexNoise } from '/lib/noise'
+import { Meta, Schema } from '/lib/meta'
+
+import { Image } from './image'
 
 
-export const DEFAULT_RESOLUTION = 5
-export const DEFAULT_WIDTH = 150
-export const DEFAULT_HEIGHT = 150
+const META = new Meta('NoiseMap',
+    Schema.number("Width", 150),
+    Schema.number("Height", 150),
+    Schema.number("Resolution", 5, {step: 1, min: 1}),
+    Schema.seed("Seed", '')
+)
 
 
-class NoiseMap {
-    constructor(seed, grid, resolution) {
-        this.seed = seed
+export default class NoiseMap {
+    static meta = META
+    static Image = Image
+
+    static create(data) {
+        const config = META.parse(data)
+        Random.seed = config.seed
+        const noiseGenerator = new SimplexNoise()
+        const grid = new Grid(config.width, config.height, point => {
+            let {x, y} = point
+            const scale = .01
+            return noiseGenerator.noise(8, x, y, .6, scale, 0, 255)
+        })
+        return new NoiseMap(grid, config)
+    }
+
+    constructor(grid, {width, height, resolution, seed}) {
         this.grid = grid
+        this.width = width
+        this.height = height
         this.resolution = resolution
-        this.width = grid.width
-        this.height = grid.height
+        this.seed = seed
     }
 
     get(point) {
-        const height = this.grid.get(point)
-        return height
+        return this.grid.get(point)
     }
-}
-
-
-// FUNCTIONS ===================================
-
-export function createNoiseMap(params={}) {
-    const {resolution, width, height, seed} = parse(params)
-    const grid = new Grid(width, height)
-
-    return new NoiseMap(seed, grid, resolution)
-}
-
-
-function parse(params={}) {
-    function _normalizeSeed(seed) {
-        seed = String(seed).length ? seed : Number(new Date())
-        Random.seed = seed
-        return seed
-    }
-
-    const config = Object.assign({
-        width: DEFAULT_WIDTH,
-        height: DEFAULT_HEIGHT,
-        resolution: DEFAULT_RESOLUTION,
-        seed: '',
-    }, params)
-    config.seed = _normalizeSeed(config.seed)
-    return config
 }

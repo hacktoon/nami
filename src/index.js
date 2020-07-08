@@ -1,23 +1,25 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
-import { MapApp } from '/ui/map'
+import { SelectField } from '/lib/ui/form/field'
+import { Title } from '/lib/ui'
 
+import { MapApp } from '/ui/map'
+import NoiseMap from '/model/noisemap'
 import WorldMap from '/model/worldmap'
 import RegionMap from '/model/regionmap'
 
-import { Title } from '/lib/ui'
-import { SelectField } from '/lib/ui/form/field'
 
 import "/ui/css/base.css"
 import "/ui/css/index.css"
 
 
 const APPS = {
+    NoiseMap: { id: 'NoiseMap', component: () => <MapApp Map={NoiseMap} /> },
     WorldMap: { id: 'WorldMap', component: () => <MapApp Map={WorldMap} /> },
     RegionMap: { id: 'RegionMap', component:  () => <MapApp Map={RegionMap} /> },
 }
-const DEFAULT_APP = APPS.RegionMap
+const DEFAULT_APP = APPS.NoiseMap
 
 
 function AppHeader({app, setApp}) {
