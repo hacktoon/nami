@@ -1,3 +1,4 @@
+import { Random } from '/lib/random'
 
 
 // example:  simplex.noise(8, x, y, .6, scale, 0, 255)
@@ -9,7 +10,7 @@ export class SimplexNoise {
                       [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
         const p = [];
         for (let i=0; i<256; i++) {
-            p[i] = Math.floor(Math.random()*256);
+            p[i] = Math.floor(Random.float() * 256)
         }
         // To remove the need for index wrapping, double the permutation table length
         this.perm = [];
@@ -38,9 +39,10 @@ export class SimplexNoise {
     }
 
     _noise(xin, yin) {
-        let n0, n1, n2 // Noise contributions from the three corners
         // Skew the input space to determine which simplex cell we're in
-        let F2 = 0.5*(Math.sqrt(3.0)-1.0)
+        const F2 = 0.5*(Math.sqrt(3.0)-1.0)
+        // Noise contributions from the three corners
+        let n0, n1, n2
         let s = (xin + yin) * F2 // Hairy factor for 2D
         let i = Math.floor(xin+s)
         let j = Math.floor(yin+s)

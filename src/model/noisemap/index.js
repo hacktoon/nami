@@ -9,8 +9,9 @@ import { Image } from './image'
 const META = new Meta('NoiseMap',
     Schema.number("Width", 150),
     Schema.number("Height", 150),
-    Schema.number("Resolution", 5, {step: 1, min: 1}),
-    Schema.seed("Seed", '')
+    Schema.number("Resolution", .8, {step: 0.1, min: 0.1}),
+    Schema.number("Scale", .01, {step: 0.01, min: 0.01}),
+    Schema.seed("Seed", 'a')
 )
 
 
@@ -20,17 +21,18 @@ export default class NoiseMap {
 
     static create(data) {
         const config = META.parse(data)
-        Random.seed = config.seed
-        const noiseGenerator = new SimplexNoise()
-        const grid = new Grid(config.width, config.height, point => {
+        const {width, height, resolution, scale, seed} = config
+        Random.seed = seed
+        const simplex = new SimplexNoise()
+        const grid = new Grid(width, height, point => {
             let {x, y} = point
-            const scale = .01
-            return noiseGenerator.noise(8, x, y, .6, scale, 0, 255)
+            return simplex.noise(8, x, y, resolution, scale, 0, 255)
         })
         return new NoiseMap(grid, config)
     }
 
     constructor(grid, {width, height, resolution, seed}) {
+        console.log('seed: ', seed);
         this.grid = grid
         this.width = width
         this.height = height

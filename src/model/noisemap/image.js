@@ -4,7 +4,6 @@ import { Color } from '/lib/color'
 
 
 const META = new Meta('NoiseMapImage',
-    Schema.boolean("Wrap grid", false),
     Schema.number("Tile size", 6, {step: 1, min: 1}),
 )
 
@@ -21,7 +20,7 @@ export class Image {
         this.map = map
         this.width = map.width
         this.height = map.height
-        this.wrapMode = config.wrapGrid
+        this.wrapMode = false
         this.tileSize = config.tileSize
 
         this.grid = new Grid(map.width, map.height, point => {
