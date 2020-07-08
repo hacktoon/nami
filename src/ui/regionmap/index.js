@@ -12,9 +12,7 @@ export default function RegionMapApp() {
     const [map, setMap] = useState(RegionMap.create())
     const handleMap = config => setMap(RegionMap.create(config))
     return <section className='MapApp'>
-        <Form meta={RegionMap.meta}
-              onSubmit={handleMap}
-              onChange={handleMap}>
+        <Form meta={RegionMap.meta} onSubmit={handleMap} onChange={handleMap}>
             <Button label="New" />
         </Form>
         <RegionMapView Image={RegionMapImage} map={map} />
@@ -26,10 +24,7 @@ function RegionMapView({Image, map}) {
     const [config, setConfig] = useState(null)
     const image = Image.create(map, config)
     return <>
-        <Form meta={Image.meta}
-            onSubmit={setConfig}
-            onChange={setConfig}>
-        </Form>
+        <Form meta={Image.meta} onSubmit={setConfig} onChange={setConfig} />
         <MapView image={image} />
     </>
 }
