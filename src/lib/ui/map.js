@@ -5,7 +5,7 @@ import { MouseView } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
 
 
-export function MapImage({image}) {
+export function MapView({image}) {
     const [offset, setOffset] = useState(new Point(0, 0))
     const onDrag = offset => setOffset(new Point(offset.x, offset.y))
 
@@ -70,7 +70,7 @@ export function MapImage({image}) {
         }
     }
 
-    return <section className="MapDisplay">
+    return <section className="MapView">
         {/* <GridTracker onMove={onMove} /> */}
         <MouseView onDrag={onDrag} />
         <Canvas onSetup={onCanvasSetup} />
