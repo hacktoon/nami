@@ -5,9 +5,9 @@ import { SelectField } from '/lib/ui/form/field'
 import { Title } from '/lib/ui'
 
 import { MapApp } from '/ui/map'
-import NoiseMap from '/model/noisemap'
-import WorldMap from '/model/worldmap'
+import WorldMap from '/model/world/worldmap'
 import RegionMap from '/model/regionmap'
+import NoiseMap from '/model/noisemap'
 
 
 import "/ui/css/base.css"
@@ -15,11 +15,11 @@ import "/ui/css/index.css"
 
 
 const APPS = {
-    NoiseMap: { id: 'NoiseMap', component: () => <MapApp Map={NoiseMap} /> },
     WorldMap: { id: 'WorldMap', component: () => <MapApp Map={WorldMap} /> },
     RegionMap: { id: 'RegionMap', component:  () => <MapApp Map={RegionMap} /> },
+    NoiseMap: { id: 'NoiseMap', component: () => <MapApp Map={NoiseMap} /> },
 }
-const DEFAULT_APP = APPS.NoiseMap
+const DEFAULT_APP = APPS.RegionMap
 
 
 function AppHeader({app, setApp}) {

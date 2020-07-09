@@ -8,12 +8,9 @@
 
 ## ROADMAP
 
-### Model
-
-
 #### RegionMap
-- Build regions adjacency table
 - Store borders for each plate neighborhood
+- (MAYBE) Build regions adjacency table
 
 #### TectonicsMap
 - Convergent
@@ -67,13 +64,8 @@
 
 
 ### Interface
-- Every object created must be valid according to object spec
-- Add/use URL with parameters
-- Make better inputs
+- Fix dragging outside bug
 - Optimize canvas rendering
   - Use offscreen canvas when `map.size <  screen.size`
   - Add tool to live-test drawing functions on console
-- Build Menu component using model metadata
-  - Maps class attribute to a Field, setup the event handlers
-  - Inherit from Model abstract class
-    - Method `Model.metadata()`
+- Add/use URL with parameters

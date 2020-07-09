@@ -9,8 +9,8 @@ import { Image } from './image'
 const META = new Meta('NoiseMap',
     Schema.number("Width", 150),
     Schema.number("Height", 150),
-    Schema.number("Detail", 6, {step: 1, min: 1, max: 20}),
-    Schema.number("Resolution", .8, {step: 0.1, min: 0.1}),
+    Schema.number("Detail", 8, {step: 1, min: 1, max: 20}),
+    Schema.number("Resolution", .5, {step: 0.1, min: 0.1}),
     Schema.number("Scale", .01, {step: 0.01, min: 0.01}),
     Schema.seed("Seed", '')
 )
