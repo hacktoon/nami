@@ -2,40 +2,35 @@ import React, { useState } from 'react'
 
 
 export function MouseView(props) {
-    // const [mx, my] = useMousePosition
-    const [dragOrigin, setDragOrigin] = useState(new Point(0, 0))
-    const [dragging, setDragging] = useState(false)
-    const [offset, setOffset] = useState(new Point(0, 0))
+    const [dragPoint, setDragPoint] = useState(new Point(0, 0))
+    const [dragging, setDragging]   = useState(false)
+    const [offset, setOffset]       = useState(new Point(0, 0))
+
+    const onMouseDown = event => {
+        event.preventDefault()
+        setDragging(true)
+        setDragPoint(getMousePoint(event))
+    }
 
     const onMouseMove = event => {
         if (! dragging) return
         const mousePoint = getMousePoint(event)
-        props.onDrag(absoluteOffset(mousePoint))
-    }
-
-    const onMouseDown = event => {
-        event.preventDefault()
-        setDragOrigin(getMousePoint(event))
-        setDragging(true)
+        props.onDrag(calcOffset(mousePoint))
     }
 
     const onMouseUp = event => {
+        if (! dragging) return
         const mousePoint = getMousePoint(event)
-        setOffset(absoluteOffset(mousePoint))
         setDragging(false)
+        setOffset(calcOffset(mousePoint))
     }
 
-    const onMouseOut = () => setDragging(false)
-
-    const absoluteOffset = point => {
-        return dragOrigin.minus(point).plus(offset)
-    }
+    const calcOffset = point => dragPoint.minus(point).plus(offset)
 
     return (
         <div className="MouseView"
-            onMouseLeave={() => setDragging(false)}
             onMouseUp={onMouseUp}
-            onMouseOut={onMouseOut}
+            onMouseLeave={onMouseUp}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}>
         </div>
