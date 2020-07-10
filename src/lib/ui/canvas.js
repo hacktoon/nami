@@ -1,20 +1,30 @@
-import React, { useRef, useLayoutEffect } from 'react'
+import React, { useState, useRef, useLayoutEffect } from 'react'
 
 
-export function Canvas(props) {
-    const setup = props.onSetup || new Function()
+function useWindowSize() {
+    const [size, setSize] = useState([0, 0])
+    useLayoutEffect(() => {
+      const updateSize = () => setSize([window.innerWidth, window.innerHeight])
+      window.addEventListener('resize', updateSize)
+      updateSize()
+      return () => window.removeEventListener('resize', updateSize)
+    }, [])
+    return size
+  }
+
+
+export function Canvas({onSetup}) {
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
 
+    useWindowSize()
     useLayoutEffect(() => {
         const canvas = canvasRef.current
-        const width = canvas.width = viewportRef.current.clientWidth
-        const height = canvas.height = viewportRef.current.clientHeight
-        setup({
-            context: canvas.getContext('2d'),
-            width,
-            height
-        })
+        const context = canvas.getContext('2d')
+        const viewport = viewportRef.current
+        const width = canvas.width = viewport.clientWidth
+        const height = canvas.height = viewport.clientHeight
+        onSetup({context, width, height})
     })
 
     return <div className="Canvas" ref={viewportRef}>
