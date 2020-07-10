@@ -24,6 +24,8 @@ export function MouseView(props) {
         setDragging(false)
     }
 
+    const onMouseOut = () => setDragging(false)
+
     const absoluteOffset = point => {
         return dragOrigin.minus(point).plus(offset)
     }
@@ -32,6 +34,7 @@ export function MouseView(props) {
         <div className="MouseView"
             onMouseLeave={() => setDragging(false)}
             onMouseUp={onMouseUp}
+            onMouseOut={onMouseOut}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}>
         </div>
