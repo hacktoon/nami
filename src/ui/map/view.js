@@ -27,10 +27,9 @@ export function MapView({image}) {
     const renderBackground = (i, j, canvas) => {
         let [offsetX, offsetY] = gridOffset()
         const point = new Point(offsetX + i, offsetY + j)
-        if (isWrappable(point))
-            return
-        const color = (i + j) % 2 ? '#DDD' : '#FFF'
-        renderCell(canvas.context, i, j, color, image.tileSize)
+        if (!isWrappable(point) && (i + j) % 2) {
+            renderCell(canvas.context, i, j, '#FFF', image.tileSize)
+        }
     }
 
     const gridOffset = () => [
@@ -71,7 +70,6 @@ export function MapView({image}) {
     }
 
     return <section className="MapView">
-        {/* <GridTracker onMove={onMove} /> */}
         <MouseView onDrag={onDrag} />
         <Canvas onSetup={onCanvasSetup} />
         <div className="BackgroundCanvas">

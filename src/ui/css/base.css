@@ -29,7 +29,7 @@ canvas { display: block; }
 /* BASE COMPONENTS ================================ */
 
 .MapView {
-    background: black;
+    background: #DDD;
     position: relative;
 }
 

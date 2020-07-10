@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 
 export function MouseView(props) {
+    // const [mx, my] = useMousePosition
     const [dragOrigin, setDragOrigin] = useState(new Point(0, 0))
     const [dragging, setDragging] = useState(false)
     const [offset, setOffset] = useState(new Point(0, 0))

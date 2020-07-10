@@ -65,7 +65,7 @@
 
 ### Interface
 - Fix dragging outside bug
-  - Create FocusPoint property to render map view centered on that
+  - Create "Focus" property to render map view centered on that
 - Optimize canvas rendering
   - Use offscreen canvas when `map.size <  screen.size`
   - Add tool to live-test drawing functions on console
