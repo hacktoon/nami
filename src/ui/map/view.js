@@ -71,9 +71,9 @@ export function MapView({image}) {
 
     return <section className="MapView">
         <MouseView onDrag={onDrag} />
-        <Canvas onSetup={onCanvasSetup} />
+        <Canvas onInit={onCanvasSetup} />
         <div className="BackgroundCanvas">
-            <Canvas onSetup={onBackgroundCanvasSetup} />
+            <Canvas onInit={onBackgroundCanvasSetup} />
         </div>
     </section>
 }

@@ -13,7 +13,7 @@ function useWindowSize() {
   }
 
 
-export function Canvas({onSetup}) {
+export function Canvas({onInit}) {
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
 
@@ -24,7 +24,7 @@ export function Canvas({onSetup}) {
         const viewport = viewportRef.current
         const width = canvas.width = viewport.clientWidth
         const height = canvas.height = viewport.clientHeight
-        onSetup({context, width, height})
+        onInit({context, width, height})
     })
 
     return <div className="Canvas" ref={viewportRef}>
