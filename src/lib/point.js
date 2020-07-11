@@ -40,7 +40,11 @@ export class Point {
     }
 
     equals(point) {
-        return this.x == point.x && this.y == point.y
+        return this.x === point.x && this.y === point.y
+    }
+
+    differs(point) {
+        return this.x !== point.x || this.y !== point.y
     }
 
     plus(point) {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 
-export function MouseView(props) {
+export function GridMouseTrack(props) {
     const [dragPoint, setDragPoint] = useState(new Point(0, 0))
     const [dragging, setDragging]   = useState(false)
     const [offset, setOffset]       = useState(new Point(0, 0))
@@ -28,7 +28,7 @@ export function MouseView(props) {
     const calcOffset = point => dragPoint.minus(point).plus(offset)
 
     return (
-        <div className="MouseView"
+        <div className="GridMouseTrack"
             onMouseUp={onMouseUp}
             onMouseLeave={onMouseUp}
             onMouseDown={onMouseDown}

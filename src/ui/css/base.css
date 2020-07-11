@@ -47,7 +47,7 @@ canvas { display: block; }
     z-index: 0;
 }
 
-.MouseView {
+.GridMouseTrack {
     cursor: pointer;
     position: absolute;
     top: 0;
