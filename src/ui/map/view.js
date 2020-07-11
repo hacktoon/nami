@@ -6,16 +6,17 @@ import { Canvas } from '/lib/ui/canvas'
 
 
 export function MapView({image}) {
+    // TODO: get focus point in props
     const [focus, setFocus] = useState(new Point(0, 0))
 
     return <section className="MapView">
-        <Layer image={image} />
-        <BGLayer image={image} />
+        <Foreground image={image} />
+        <Background image={image} />
     </section>
 }
 
 
-function Layer({image}) {
+function Foreground({image}) {
     const [offset, setOffset] = useState(new Point(70, 70))
     const onDrag = dragOffset => {
         setOffset(dragOffset)
@@ -23,20 +24,23 @@ function Layer({image}) {
 
     const onCanvasSetup = canvas => {
         let [width, height] = getTileWindow(canvas, image)
+        const gridOffset = new Point(
+            Math.floor(offset.x / image.tileSize),
+            Math.floor(offset.y / image.tileSize)
+        )
         for(let i = 0; i < width; i++) {
             for(let j = 0; j < height; j++) {
-                const canvasPoint = new Point(i, j)
-                renderForeground(image, offset, canvasPoint, canvas)
+                const gridPoint = new Point(i, j)
+                renderForeground(image, gridOffset, gridPoint, canvas)
             }
         }
     }
 
-    const renderForeground = (image, offset, canvasPoint, canvas) => {
-        const _offset = calcGridOffset(offset, image)
-        const point = _offset.plus(canvasPoint)
+    const renderForeground = (image, gridOffset, gridPoint, canvas) => {
+        const point = gridOffset.plus(gridPoint)
         if (isWrappable(image, point)) {
             const color = image.get(point)
-            renderCell(canvas.context, canvasPoint, color, image.tileSize)
+            renderCell(canvas.context, gridPoint, color, image.tileSize)
         }
     }
 
@@ -46,28 +50,21 @@ function Layer({image}) {
     </>
 }
 
-function calcGridOffset(offset, image) {
-    return new Point(
-        Math.floor(offset.x / image.tileSize),
-        Math.floor(offset.y / image.tileSize)
-    )
-}
 
-
-function BGLayer({image}) {
+function Background({image}) {
     const onBackgroundCanvasSetup = canvas => {
         let [width, height] = getTileWindow(canvas, image)
         for(let i = 0; i < width; i++) {
             for(let j = 0; j < height; j++) {
-                const canvasPoint = new Point(i, j)
-                renderBackground(image, canvasPoint, canvas)
+                const gridPoint = new Point(i, j)
+                renderBackground(image, gridPoint, canvas)
             }
         }
     }
 
-    const renderBackground = (image, canvasPoint, canvas) => {
-        if ((canvasPoint.x + canvasPoint.y) % 2) {
-            renderCell(canvas.context, canvasPoint, '#FFF', image.tileSize)
+    const renderBackground = (image, gridPoint, canvas) => {
+        if ((gridPoint.x + gridPoint.y) % 2) {
+            renderCell(canvas.context, gridPoint, '#FFF', image.tileSize)
         }
     }
 
