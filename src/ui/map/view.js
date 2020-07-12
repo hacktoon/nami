@@ -6,7 +6,7 @@ import { Canvas } from '/lib/ui/canvas'
 
 
 export function MapView({image}) {
-    // TODO: get focus point in props
+    // TODO: get focus point via image
     const [focus, setFocus] = useState(new Point(0, 0))
 
     return <section className="MapView">
@@ -17,13 +17,12 @@ export function MapView({image}) {
 
 
 function Foreground({image}) {
-    const [offset, setOffset] = useState(new Point(70, 70))
-    const onDrag = dragOffset => {
-        setOffset(dragOffset)
-    }
+    const [offset, setOffset] = useState(new Point(0, 0))
 
-    const onCanvasSetup = canvas => {
-        let [width, height] = getTileWindow(canvas, image)
+    const onDrag = dragOffset => setOffset(dragOffset)
+
+    const handleInit = canvas => {
+        const [width, height] = getTileWindow(canvas, image)
         const gridOffset = new Point(
             Math.floor(offset.x / image.tileSize),
             Math.floor(offset.y / image.tileSize)
@@ -31,12 +30,12 @@ function Foreground({image}) {
         for(let i = 0; i < width; i++) {
             for(let j = 0; j < height; j++) {
                 const gridPoint = new Point(i, j)
-                renderForeground(image, gridOffset, gridPoint, canvas)
+                render(image, gridOffset, gridPoint, canvas)
             }
         }
     }
 
-    const renderForeground = (image, gridOffset, gridPoint, canvas) => {
+    const render = (image, gridOffset, gridPoint, canvas) => {
         const point = gridOffset.plus(gridPoint)
         if (isWrappable(image, point)) {
             const color = image.get(point)
@@ -46,30 +45,29 @@ function Foreground({image}) {
 
     return <>
         <GridMouseTrack onDrag={onDrag} tileSize={image.tileSize} />
-        <Canvas onInit={onCanvasSetup} />
+        <Canvas onInit={handleInit} />
     </>
 }
 
 
 function Background({image}) {
-    const onBackgroundCanvasSetup = canvas => {
-        let [width, height] = getTileWindow(canvas, image)
+    const handleInit = canvas => {
+        const [width, height] = getTileWindow(canvas, image)
         for(let i = 0; i < width; i++) {
             for(let j = 0; j < height; j++) {
-                const gridPoint = new Point(i, j)
-                renderBackground(image, gridPoint, canvas)
+                render(image, new Point(i, j), canvas)
             }
         }
     }
 
-    const renderBackground = (image, gridPoint, canvas) => {
+    const render = (image, gridPoint, canvas) => {
         if ((gridPoint.x + gridPoint.y) % 2) {
             renderCell(canvas.context, gridPoint, '#FFF', image.tileSize)
         }
     }
 
     return <div className="BackgroundCanvas">
-        <Canvas onInit={onBackgroundCanvasSetup} />
+        <Canvas onInit={handleInit} />
     </div>
 }
 
@@ -91,9 +89,10 @@ function isWrappable(image, point) {
 
 
 function getTileWindow(canvas, image) {
-    const width = Math.ceil(canvas.width / image.tileSize)
-    const height = Math.ceil(canvas.height / image.tileSize)
-    return [width, height]
+    return [
+        Math.ceil(canvas.width / image.tileSize),
+        Math.ceil(canvas.height / image.tileSize)
+    ]
 }
 
 
