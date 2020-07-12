@@ -10,18 +10,18 @@ export function MapView({image}) {
     const [focus, setFocus] = useState(new Point(0, 0))
 
     return <section className="MapView">
-        <Foreground image={image} />
-        <Background image={image} />
+        <Foreground image={image} focus={focus} />
+        <Background image={image} focus={focus} />
     </section>
 }
 
 
-function Foreground({image}) {
+function Foreground({image, focus}) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
     const onDrag = dragOffset => setOffset(dragOffset)
 
-    const handleInit = canvas => {
+    const render = canvas => {
         const [width, height] = getTileWindow(canvas, image)
         const gridOffset = new Point(
             Math.floor(offset.x / image.tileSize),
@@ -30,12 +30,12 @@ function Foreground({image}) {
         for(let i = 0; i < width; i++) {
             for(let j = 0; j < height; j++) {
                 const gridPoint = new Point(i, j)
-                render(image, gridOffset, gridPoint, canvas)
+                renderPoint(image, gridOffset, gridPoint, canvas)
             }
         }
     }
 
-    const render = (image, gridOffset, gridPoint, canvas) => {
+    const renderPoint = (image, gridOffset, gridPoint, canvas) => {
         const point = gridOffset.plus(gridPoint)
         if (isWrappable(image, point)) {
             const color = image.get(point)
@@ -45,29 +45,29 @@ function Foreground({image}) {
 
     return <>
         <GridMouseTrack onDrag={onDrag} tileSize={image.tileSize} />
-        <Canvas onInit={handleInit} />
+        <Canvas onInit={render} />
     </>
 }
 
 
-function Background({image}) {
-    const handleInit = canvas => {
+function Background({image, focus}) {
+    const render = canvas => {
         const [width, height] = getTileWindow(canvas, image)
         for(let i = 0; i < width; i++) {
             for(let j = 0; j < height; j++) {
-                render(image, new Point(i, j), canvas)
+                renderPoint(image, new Point(i, j), canvas)
             }
         }
     }
 
-    const render = (image, gridPoint, canvas) => {
+    const renderPoint = (image, gridPoint, canvas) => {
         if ((gridPoint.x + gridPoint.y) % 2) {
             renderCell(canvas.context, gridPoint, '#FFF', image.tileSize)
         }
     }
 
     return <div className="BackgroundCanvas">
-        <Canvas onInit={handleInit} />
+        <Canvas onInit={render} />
     </div>
 }
 
