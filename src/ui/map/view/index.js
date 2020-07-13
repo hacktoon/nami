@@ -19,8 +19,6 @@ export function MapView({image}) {
 function Foreground({image, focus}) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
-    const onDrag = dragOffset => setOffset(dragOffset)
-
     const render = canvas => {
         const [width, height] = getTileWindow(canvas, image)
         const gridOffset = new Point(
@@ -36,6 +34,7 @@ function Foreground({image, focus}) {
     }
 
     const renderPoint = (image, gridOffset, gridPoint, canvas) => {
+        // TODO: remove this plus, use focus offset point
         const point = gridOffset.plus(gridPoint)
         if (isWrappable(image, point)) {
             const color = image.get(point)
@@ -44,7 +43,7 @@ function Foreground({image, focus}) {
     }
 
     return <>
-        <GridMouseTrack onDrag={onDrag} tileSize={image.tileSize} />
+        <GridMouseTrack onDrag={setOffset} tileSize={image.tileSize} />
         <Canvas onInit={render} />
     </>
 }
