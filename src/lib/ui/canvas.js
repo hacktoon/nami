@@ -1,7 +1,12 @@
 import React, { useState, useRef, useLayoutEffect } from 'react'
 
 
-export function Canvas({onInit}) {
+class Render {
+
+}
+
+
+export function Canvas({onInit, tileSize, className='Canvas'}) {
     const [, setSize] = useState([0, 0])
     const viewportRef = useRef(null)
     const canvasRef = useRef(null)
@@ -19,7 +24,7 @@ export function Canvas({onInit}) {
         return () => window.removeEventListener('resize', updateSize)
     })
 
-    return <div className="Canvas" ref={viewportRef}>
+    return <div className={className} ref={viewportRef}>
         <canvas ref={canvasRef} ></canvas>
     </div>
 }

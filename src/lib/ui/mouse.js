@@ -1,28 +1,28 @@
 import React, { useState } from 'react'
 
 
-export function GridMouseTrack(props) {
+export function GridMouseTrack({onDrag, tileSize}) {
     const [dragPoint, setDragPoint] = useState(new Point(0, 0))
     const [dragging, setDragging]   = useState(false)
     const [offset, setOffset]       = useState(new Point(0, 0))
 
     const onMouseDown = event => {
         event.preventDefault()
-        setDragging(true)
         setDragPoint(getMousePoint(event))
+        setDragging(true)
     }
 
     const onMouseMove = event => {
         if (! dragging) return
         const mousePoint = getMousePoint(event)
-        props.onDrag(calcOffset(mousePoint))
+        onDrag(calcOffset(mousePoint))
     }
 
     const onMouseUp = event => {
         if (! dragging) return
         const mousePoint = getMousePoint(event)
-        setDragging(false)
         setOffset(calcOffset(mousePoint))
+        setDragging(false)
     }
 
     const calcOffset = point => dragPoint.minus(point).plus(offset)

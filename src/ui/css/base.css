@@ -34,7 +34,7 @@ canvas { display: block; }
 }
 
 .Canvas,
-.BackgroundCanvas {
+.BGCanvas {
     position: absolute;
     top: 0;
     left: 0;
@@ -43,7 +43,7 @@ canvas { display: block; }
     z-index: 1;
 }
 
-.BackgroundCanvas {
+.BGCanvas {
     z-index: 0;
 }
 

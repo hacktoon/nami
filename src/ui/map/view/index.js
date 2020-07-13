@@ -19,7 +19,7 @@ export function MapView({image}) {
 function Foreground({image, focus}) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
-    const render = canvas => {
+    const onInit = canvas => {
         const [width, height] = getTileWindow(canvas, image)
         const gridOffset = new Point(
             Math.floor(offset.x / image.tileSize),
@@ -44,13 +44,13 @@ function Foreground({image, focus}) {
 
     return <>
         <GridMouseTrack onDrag={setOffset} tileSize={image.tileSize} />
-        <Canvas onInit={render} />
+        <Canvas onInit={onInit} tileSize={image.tileSize} />
     </>
 }
 
 
-function Background({image, focus}) {
-    const render = canvas => {
+function Background({image}) {
+    const onInit = canvas => {
         const [width, height] = getTileWindow(canvas, image)
         for(let i = 0; i < width; i++) {
             for(let j = 0; j < height; j++) {
@@ -65,9 +65,7 @@ function Background({image, focus}) {
         }
     }
 
-    return <div className="BackgroundCanvas">
-        <Canvas onInit={render} />
-    </div>
+    return <Canvas className="BGCanvas" onInit={onInit} tileSize={image.tileSize} />
 }
 
 
