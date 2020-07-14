@@ -38,3 +38,13 @@ class CanvasContext {
         this.context.fillRect(x, y, size, size)
     }
 }
+
+
+function createCanvas(originalCanvas) {
+    const canvas = document.createElement('canvas')
+    canvas.width = myCanvas.width
+    canvas.height = myCanvas.height
+
+    canvas.getContext('2d').drawImage(originalCanvas, 0, 0)
+    return canvas
+}

@@ -55,8 +55,8 @@ export class Point {
         return new Point(this.x - point.x, this.y - point.y)
     }
 
-    test(predicate=()=>true) {
-        return predicate(this.x, this.y)
+    apply(func=()=>{}) {
+        return new Point(func(this.x), func(this.y))
     }
 
     isPositive() { return this.x >= 0 && this.y >= 0 }

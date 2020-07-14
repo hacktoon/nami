@@ -5,6 +5,13 @@ import { GridMouseTrack } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
 
 
+class Camera {
+    constructor(focus) {
+        this.focus = focus
+    }
+}
+
+
 export function MapView({image}) {
     // TODO: get focus point via image
     const [focus, setFocus] = useState(new Point(0, 0))
@@ -20,20 +27,18 @@ function Foreground({image, focus}) {
     const [offset, setOffset] = useState(new Point(0, 0))
 
     const onInit = canvas => {
+        // const camera =  new Camera(focus, offset)
         const [width, height] = getTileWindow(canvas, image)
-        const gridOffset = new Point(
-            Math.floor(offset.x / image.tileSize),
-            Math.floor(offset.y / image.tileSize)
-        )
+
         for(let i = 0; i < width; i++) {
             for(let j = 0; j < height; j++) {
-                const gridPoint = new Point(i, j)
-                renderPoint(image, gridOffset, gridPoint, canvas)
+                renderPoint(image, new Point(i, j), canvas)
             }
         }
     }
 
-    const renderPoint = (image, gridOffset, point, canvas) => {
+    const renderPoint = (image, point, canvas) => {
+        const gridOffset = offset.apply(xy => Math.floor(xy / image.tileSize))
         // TODO: remove this plus, use focus offset point
         const gridPoint = gridOffset.plus(point)
         if (isWrappable(image, gridPoint)) {
@@ -69,14 +74,6 @@ function Background({image}) {
 }
 
 
-function isWrappable(image, point) {
-    if (image.wrapMode) return true
-    const col = point.x >= 0 && point.x < image.width
-    const row = point.y >= 0 && point.y < image.height
-    return col && row
-}
-
-
 function getTileWindow(canvas, image) {
     return [
         Math.ceil(canvas.width / image.tileSize),
@@ -85,11 +82,9 @@ function getTileWindow(canvas, image) {
 }
 
 
-function createCanvas(originalCanvas) {
-    const canvas = document.createElement('canvas')
-    canvas.width = myCanvas.width
-    canvas.height = myCanvas.height
-
-    canvas.getContext('2d').drawImage(originalCanvas, 0, 0)
-    return canvas
+function isWrappable(image, point) {
+    if (image.wrapMode) return true
+    const col = point.x >= 0 && point.x < image.width
+    const row = point.y >= 0 && point.y < image.height
+    return col && row
 }
