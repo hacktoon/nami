@@ -33,18 +33,18 @@ function Foreground({image, focus}) {
         }
     }
 
-    const renderPoint = (image, gridOffset, gridPoint, canvas) => {
+    const renderPoint = (image, gridOffset, point, canvas) => {
         // TODO: remove this plus, use focus offset point
-        const point = gridOffset.plus(gridPoint)
-        if (isWrappable(image, point)) {
-            const color = image.get(point)
-            renderCell(canvas.context, gridPoint, color, image.tileSize)
+        const gridPoint = gridOffset.plus(point)
+        if (isWrappable(image, gridPoint)) {
+            const color = image.get(gridPoint)
+            canvas.rect(image.tileSize, point, color)
         }
     }
 
     return <>
         <GridMouseTrack onDrag={setOffset} tileSize={image.tileSize} />
-        <Canvas onInit={onInit} tileSize={image.tileSize} />
+        <Canvas onInit={onInit} />
     </>
 }
 
@@ -61,19 +61,11 @@ function Background({image}) {
 
     const renderPoint = (image, gridPoint, canvas) => {
         if ((gridPoint.x + gridPoint.y) % 2) {
-            renderCell(canvas.context, gridPoint, '#FFF', image.tileSize)
+            canvas.rect(image.tileSize, gridPoint, '#FFF')
         }
     }
 
-    return <Canvas className="BGCanvas" onInit={onInit} tileSize={image.tileSize} />
-}
-
-
-function renderCell(context, point, color, tileSize) {
-    const x = point.x * tileSize
-    const y = point.y * tileSize
-    context.fillStyle = color
-    context.fillRect(x, y, tileSize, tileSize)
+    return <Canvas className="BGCanvas" onInit={onInit} />
 }
 
 
