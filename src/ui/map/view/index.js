@@ -13,12 +13,19 @@ class Camera {
 
     drawFocus(canvas) {
         const tileSize = this.image.tileSize
-        const realX = Math.floor(canvas.width / 2) - tileSize
-        const realY = Math.floor(canvas.height / 2) - tileSize
-        const xa = realX + Math.floor(realX / tileSize)
-        const ya = realY + Math.floor(realY / tileSize)
+        const halfX = Math.floor(canvas.width / 2) - tileSize
+        const halfY = Math.floor(canvas.height / 2) - tileSize
+        const x = halfX + Math.floor(halfX / tileSize)
+        const y = halfY + Math.floor(halfY / tileSize)
+        canvas.rect(tileSize, new Point(x, y), 'red')
+    }
 
-        canvas.rect(tileSize, new Point(xa, ya), 'red')
+
+    tileWindow(canvas) {
+        return [
+            Math.ceil(canvas.width / this.image.tileSize),
+            Math.ceil(canvas.height / this.image.tileSize)
+        ]
     }
 }
 
@@ -36,10 +43,10 @@ export function MapView({image}) {
 
 function Foreground({image, focus}) {
     const [offset, setOffset] = useState(new Point(0, 0))
-    const camera =  new Camera(image, offset)
+    const camera = new Camera(image, offset)
 
     const onInit = canvas => {
-        const [width, height] = getTileWindow(canvas, image)
+        const [width, height] = camera.tileWindow(canvas)
 
         for(let i = 0; i < width; i++) {
             for(let j = 0; j < height; j++) {
