@@ -32,8 +32,7 @@ class CanvasContext {
     }
 
     rect(size, point, color) {
-        const x = point.x * size
-        const y = point.y * size
+        const {x, y} = point
         this.context.fillStyle = color
         this.context.fillRect(x, y, size, size)
     }

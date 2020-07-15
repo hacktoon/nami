@@ -6,8 +6,19 @@ import { Canvas } from '/lib/ui/canvas'
 
 
 class Camera {
-    constructor(focus) {
-        this.focus = focus
+    constructor(image, offset) {
+        this.image = image
+        this.offset = offset
+    }
+
+    drawFocus(canvas) {
+        const tileSize = this.image.tileSize
+        const realX = Math.floor(canvas.width / 2) - tileSize
+        const realY = Math.floor(canvas.height / 2) - tileSize
+        const xa = realX + Math.floor(realX / tileSize)
+        const ya = realY + Math.floor(realY / tileSize)
+
+        canvas.rect(tileSize, new Point(xa, ya), 'red')
     }
 }
 
@@ -25,9 +36,9 @@ export function MapView({image}) {
 
 function Foreground({image, focus}) {
     const [offset, setOffset] = useState(new Point(0, 0))
+    const camera =  new Camera(image, offset)
 
     const onInit = canvas => {
-        // const camera =  new Camera(focus, offset)
         const [width, height] = getTileWindow(canvas, image)
 
         for(let i = 0; i < width; i++) {
@@ -35,6 +46,7 @@ function Foreground({image, focus}) {
                 renderPoint(image, new Point(i, j), canvas)
             }
         }
+        camera.drawFocus(canvas)
     }
 
     const renderPoint = (image, point, canvas) => {
@@ -43,7 +55,11 @@ function Foreground({image, focus}) {
         const gridPoint = gridOffset.plus(point)
         if (isWrappable(image, gridPoint)) {
             const color = image.get(gridPoint)
-            canvas.rect(image.tileSize, point, color)
+            const canvasPoint = new Point(
+                point.x * image.tileSize,
+                point.y * image.tileSize,
+            )
+            canvas.rect(image.tileSize, canvasPoint, color)
         }
     }
 
@@ -66,7 +82,11 @@ function Background({image}) {
 
     const renderPoint = (image, gridPoint, canvas) => {
         if ((gridPoint.x + gridPoint.y) % 2) {
-            canvas.rect(image.tileSize, gridPoint, '#FFF')
+            const canvasPoint = new Point(
+                gridPoint.x * image.tileSize,
+                gridPoint.y * image.tileSize,
+            )
+            canvas.rect(image.tileSize, canvasPoint, '#FFF')
         }
     }
 
