@@ -36,6 +36,12 @@ class CanvasContext {
         this.context.fillStyle = color
         this.context.fillRect(x, y, size, size)
     }
+
+    stroke(size, point) {
+        const {x, y} = point
+        this.context.strokeStyle = '#FFF'
+        this.context.strokeRect(x, y, size, size)
+    }
 }
 
 

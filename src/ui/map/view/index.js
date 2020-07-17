@@ -1,77 +1,49 @@
 import React, { useState } from 'react'
 
 import { Point } from '/lib/point'
-import { GridMouseTrack } from '/lib/ui/mouse'
+import { TileMouseTrack } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
+import { Camera } from '/lib/ui/camera'
 
 
-class Camera {
-    constructor(image, offset) {
-        this.image = image
-        this.offset = offset
-    }
 
-    drawFocus(canvas) {
-        const tileSize = this.image.tileSize
-        const halfX = Math.floor(canvas.width / 2) - tileSize
-        const halfY = Math.floor(canvas.height / 2) - tileSize
-        const x = halfX + Math.floor(halfX / tileSize)
-        const y = halfY + Math.floor(halfY / tileSize)
-        canvas.rect(tileSize, new Point(x, y), 'red')
-    }
-
-
-    tileWindow(canvas) {
-        return [
-            Math.ceil(canvas.width / this.image.tileSize),
-            Math.ceil(canvas.height / this.image.tileSize)
-        ]
-    }
-}
-
-
-export function MapView({image}) {
-    // TODO: get focus point via image
-    const [focus, setFocus] = useState(new Point(0, 0))
+export function MapView({image, focus = new Point(0, 0)}) {
+    // TODO: tilesize =>  camera.zoom
+    const camera = new Camera(image, focus)
 
     return <section className="MapView">
-        <Foreground image={image} focus={focus} />
-        <Background image={image} focus={focus} />
+        <Foreground image={image} camera={camera} />
+        <Background image={image} camera={camera} />
     </section>
 }
 
 
-function Foreground({image, focus}) {
-    const [offset, setOffset] = useState(new Point(0, 0))
-    const camera = new Camera(image, offset)
+function Foreground({image, camera}) {
+    const [focus, setFocus] = useState(camera.focus)
+    const handleDrag = point => {
+        setFocus(point)
+    }
+    const onInit = canvas => {  // TODO: return camera here
+        const tileSize = image.tileSize
+        const {width, height} = canvas
+        const {origin, target, offset} = camera.gridRect(width, height)
 
-    const onInit = canvas => {
-        const [width, height] = camera.tileWindow(canvas)
-
-        for(let i = 0; i < width; i++) {
-            for(let j = 0; j < height; j++) {
-                renderPoint(image, new Point(i, j), canvas)
+        for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
+            for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {
+                const gridPoint = new Point(i, j)
+                const color = image.get(gridPoint)
+                if (isWrappable(image, gridPoint)) {
+                    const point = new Point(x, y).minus(offset)
+                    canvas.rect(image.tileSize, point, color)
+                }
             }
         }
-        camera.drawFocus(canvas)
-    }
-
-    const renderPoint = (image, point, canvas) => {
-        const gridOffset = offset.apply(xy => Math.floor(xy / image.tileSize))
-        // TODO: remove this plus, use focus offset point
-        const gridPoint = gridOffset.plus(point)
-        if (isWrappable(image, gridPoint)) {
-            const color = image.get(gridPoint)
-            const canvasPoint = new Point(
-                point.x * image.tileSize,
-                point.y * image.tileSize,
-            )
-            canvas.rect(image.tileSize, canvasPoint, color)
-        }
+        const pixelFocus = camera.pixelFocus(width, height)
+        canvas.stroke(image.tileSize, pixelFocus)
     }
 
     return <>
-        <GridMouseTrack onDrag={setOffset} tileSize={image.tileSize} />
+        <TileMouseTrack onDrag={handleDrag} tileSize={image.tileSize} />
         <Canvas onInit={onInit} />
     </>
 }
