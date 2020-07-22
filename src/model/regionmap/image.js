@@ -51,6 +51,15 @@ export class Image {
     }
 
     get(point) {
-        return this.grid.get(point)
+        if (this.isWrappable(point))
+            return this.grid.get(point)
+        return 'transparent'
+    }
+
+    isWrappable(point) {
+        if (this.wrapMode) return true
+        const col = point.x >= 0 && point.x < this.width
+        const row = point.y >= 0 && point.y < this.height
+        return col && row
     }
 }

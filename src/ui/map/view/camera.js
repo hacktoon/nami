@@ -35,13 +35,13 @@ export class Camera {
         return {origin, target, offset}
     }
 
-    render({width, height}, callback) {
+    render({width, height}, focus, callback) {
         const tileSize = this.image.tileSize
         const {origin, target, offset} = this.gridRect(width, height)
 
         for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {
-                const gridPoint = new Point(i, j)
+                const gridPoint = new Point(i, j).plus(focus)
                 const color = this.image.get(gridPoint)
                 const point = new Point(x, y).minus(offset)
                 callback(gridPoint, point, color)

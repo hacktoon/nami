@@ -21,15 +21,17 @@ export function MapView({image, focus = new Point(0, 0)}) {
 function Foreground({image, camera}) {
     const [focus, setFocus] = useState(camera.focus)
     const handleDrag = point => {
-        setFocus(point)
+        const x = Math.round(point.x / image.tileSize)
+        const y = Math.round(point.y / image.tileSize)
+        setFocus(new Point(x, y))
     }
     const onInit = canvas => {
-        camera.render(canvas, (gridPoint, point, color) => {
+        camera.render(canvas, focus, (gridPoint, point, color) => {
             // TODO: move if to image tile filter
+            // image is a render rules object
             // define tiles as drawable or not, or filters like translate
-            if (isWrappable(image, gridPoint)) {
-                canvas.rect(image.tileSize, point, color)
-            }
+            // image here should be a list of tiles to render
+            canvas.rect(image.tileSize, point, color)
         })
     }
 
@@ -71,10 +73,3 @@ function getTileWindow(canvas, image) {
     ]
 }
 
-
-function isWrappable(image, point) {
-    if (image.wrapMode) return true
-    const col = point.x >= 0 && point.x < image.width
-    const row = point.y >= 0 && point.y < image.height
-    return col && row
-}
