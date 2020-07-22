@@ -1,6 +1,5 @@
 
-
-export class Camera {
+export class View {
     constructor(image, focus) {
         this.focus = focus
         this.image = image

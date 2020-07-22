@@ -3,30 +3,30 @@ import React, { useState } from 'react'
 import { Point } from '/lib/point'
 import { TileMouseTrack } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
-import { Camera } from '/lib/ui/camera'
+import { View } from './view'
 
 
 
 export function MapView({image, focus = new Point(0, 0)}) {
-    // TODO: tilesize =>  camera.zoom
-    const camera = new Camera(image, focus)
+    // TODO: tilesize =>  view.zoom
+    const view = new View(image, focus)
 
     return <section className="MapView">
-        <Foreground image={image} camera={camera} />
-        <Background image={image} camera={camera} />
+        <Foreground image={image} view={view} />
+        <Background image={image} view={view} />
     </section>
 }
 
 
-function Foreground({image, camera}) {
-    const [focus, setFocus] = useState(camera.focus)
+function Foreground({image, view}) {
+    const [focus, setFocus] = useState(view.focus)
     const handleDrag = point => {
         setFocus(point)
     }
-    const onInit = canvas => {  // TODO: return camera here
+    const onInit = canvas => {
         const tileSize = image.tileSize
         const {width, height} = canvas
-        const {origin, target, offset} = camera.gridRect(width, height)
+        const {origin, target, offset} = view.gridRect(width, height)
 
         for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {
@@ -38,7 +38,7 @@ function Foreground({image, camera}) {
                 }
             }
         }
-        const pixelFocus = camera.pixelFocus(width, height)
+        const pixelFocus = view.pixelFocus(width, height)
         canvas.stroke(image.tileSize, pixelFocus)
     }
 
