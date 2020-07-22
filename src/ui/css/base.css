@@ -34,18 +34,16 @@ canvas { display: block; }
 }
 
 .Canvas,
-.BGCanvas {
+.BackgroundCanvas {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 1;
 }
 
-.BGCanvas {
-    z-index: 0;
-}
+.Canvas { z-index: 1 }
+.BackgroundCanvas { z-index: 0 }
 
 .MouseTrack {
     cursor: pointer;

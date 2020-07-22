@@ -12,29 +12,17 @@ export function MapView({image, focus = new Point(0, 0)}) {
     // TODO: tilesize =>  camera.zoom
     const camera = new Camera(image, focus)
 
+    // TODO: Add more basic layers like effects, dialogs, etc
     return <section className="MapView">
         <Foreground image={image} camera={camera} />
-        <Background image={image} camera={camera} />
+        <Background camera={camera} />
     </section>
 }
 
-
 function Foreground({image, camera}) {
     const [focus, setFocus] = useState(camera.focus)
-    const handleDrag = point => {
-        const x = Math.round(point.x / image.tileSize)
-        const y = Math.round(point.y / image.tileSize)
-        setFocus(new Point(x, y))
-    }
-    const onInit = canvas => {
-        camera.render(canvas, focus, (point, color) => {
-            // TODO: move if to image tile filter
-            // image is a render rules object
-            // define tiles as drawable or not, or filters like translate
-            // image here should be a list of tiles to render
-            canvas.rect(image.tileSize, point, color)
-        })
-    }
+    const handleDrag = point => setFocus(point)
+    const onInit = canvas => camera.render(canvas, focus)
 
     return <>
         <MouseTrack
@@ -47,34 +35,7 @@ function Foreground({image, camera}) {
 }
 
 
-function Background({image}) {
-    const onInit = canvas => {
-        const [width, height] = getTileWindow(canvas, image)
-        for(let i = 0; i < width; i++) {
-            for(let j = 0; j < height; j++) {
-                renderPoint(image, new Point(i, j), canvas)
-            }
-        }
-    }
-
-    const renderPoint = (image, gridPoint, canvas) => {
-        if ((gridPoint.x + gridPoint.y) % 2) {
-            const canvasPoint = new Point(
-                gridPoint.x * image.tileSize,
-                gridPoint.y * image.tileSize,
-            )
-            canvas.rect(image.tileSize, canvasPoint, '#FFF')
-        }
-    }
-
-    return <Canvas className="BGCanvas" onInit={onInit} />
+function Background({camera}) {
+    const onInit = canvas => camera.renderBackground(canvas, camera.focus)
+    return <Canvas className="BackgroundCanvas" onInit={onInit} />
 }
-
-
-function getTileWindow(canvas, image) {
-    return [
-        Math.ceil(canvas.width / image.tileSize),
-        Math.ceil(canvas.height / image.tileSize)
-    ]
-}
-

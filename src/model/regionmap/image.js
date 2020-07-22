@@ -14,6 +14,11 @@ const META = new Meta('RegionMapImage',
 )
 
 
+// TODO: image should be a tile filter
+    // image is a render rules object
+    // define tiles as drawable or not, or filters like translate
+    // image here should be a list of tiles to render
+
 export class Image {
     static meta = META
 

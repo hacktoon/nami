@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 
 export function MouseTrack({onDrag, tileSize}) {
-    const [dragPoint, setDragPoint] = useState(new Point(0, 0))
+    const [dragStart, setDragPoint] = useState(new Point(0, 0))
     const [dragging, setDragging]   = useState(false)
     const [offset, setOffset]       = useState(new Point(0, 0))
 
@@ -15,17 +15,19 @@ export function MouseTrack({onDrag, tileSize}) {
     const onMouseMove = event => {
         if (! dragging) return
         const mousePoint = getMousePoint(event)
-        onDrag(calcOffset(mousePoint))
+        const pixelPoint = pixelOffset(mousePoint)
+        const point = pixelPoint.apply(coord => Math.round(coord / tileSize))
+        onDrag(point)
     }
 
     const onMouseUp = event => {
         if (! dragging) return
         const mousePoint = getMousePoint(event)
-        setOffset(calcOffset(mousePoint))
+        setOffset(pixelOffset(mousePoint))
         setDragging(false)
     }
 
-    const calcOffset = point => dragPoint.minus(point).plus(offset)
+    const pixelOffset = mousePoint => dragStart.minus(mousePoint).plus(offset)
 
     return (
         <div className="MouseTrack"

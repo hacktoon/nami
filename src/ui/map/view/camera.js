@@ -35,7 +35,8 @@ export class Camera {
         return {origin, target, offset}
     }
 
-    render({width, height}, focus, callback) {
+    render(canvas, focus) {
+        const {width, height} = canvas
         const tileSize = this.image.tileSize
         const {origin, target, offset} = this.gridRect(width, height)
 
@@ -44,7 +45,23 @@ export class Camera {
                 const gridPoint = new Point(i, j).plus(focus)
                 const color = this.image.get(gridPoint)
                 const point = new Point(x, y).minus(offset)
-                callback(point, color)
+                canvas.rect(this.image.tileSize, point, color)
+            }
+        }
+    }
+
+    renderBackground(canvas, focus) {
+        const {width, height} = canvas
+        const tileSize = this.image.tileSize
+        const {origin, target, offset} = this.gridRect(width, height)
+
+        for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
+            for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {
+                const gridPoint = new Point(i, j).plus(focus)
+                if ((gridPoint.x + gridPoint.y) % 2) {
+                    const point = new Point(x, y).minus(offset)
+                    canvas.rect(this.image.tileSize, point, '#FFF')
+                }
             }
         }
     }
