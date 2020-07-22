@@ -3,43 +3,34 @@ import React, { useState } from 'react'
 import { Point } from '/lib/point'
 import { TileMouseTrack } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
-import { View } from './view'
+import { Camera } from './camera'
 
 
 
 export function MapView({image, focus = new Point(0, 0)}) {
-    // TODO: tilesize =>  view.zoom
-    const view = new View(image, focus)
+    // TODO: tilesize =>  camera.zoom
+    const camera = new Camera(image, focus)
 
     return <section className="MapView">
-        <Foreground image={image} view={view} />
-        <Background image={image} view={view} />
+        <Foreground image={image} camera={camera} />
+        <Background image={image} camera={camera} />
     </section>
 }
 
 
-function Foreground({image, view}) {
-    const [focus, setFocus] = useState(view.focus)
+function Foreground({image, camera}) {
+    const [focus, setFocus] = useState(camera.focus)
     const handleDrag = point => {
         setFocus(point)
     }
     const onInit = canvas => {
-        const tileSize = image.tileSize
-        const {width, height} = canvas
-        const {origin, target, offset} = view.gridRect(width, height)
-
-        for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
-            for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {
-                const gridPoint = new Point(i, j)
-                const color = image.get(gridPoint)
-                if (isWrappable(image, gridPoint)) {
-                    const point = new Point(x, y).minus(offset)
-                    canvas.rect(image.tileSize, point, color)
-                }
+        camera.render(canvas, (gridPoint, point, color) => {
+            // TODO: move if to image tile filter
+            // define tiles as drawable or not, or filters like translate
+            if (isWrappable(image, gridPoint)) {
+                canvas.rect(image.tileSize, point, color)
             }
-        }
-        const pixelFocus = view.pixelFocus(width, height)
-        canvas.stroke(image.tileSize, pixelFocus)
+        })
     }
 
     return <>
