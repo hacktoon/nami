@@ -5,6 +5,7 @@ export function MouseTrack({onDrag, tileSize}) {
     const [dragStart, setDragPoint] = useState(new Point(0, 0))
     const [dragging, setDragging]   = useState(false)
     const [offset, setOffset]       = useState(new Point(0, 0))
+    const [mapOffset, setMapOffset] = useState(new Point(0, 0))
 
     const onMouseDown = event => {
         event.preventDefault()
@@ -17,7 +18,10 @@ export function MouseTrack({onDrag, tileSize}) {
         const mousePoint = getMousePoint(event)
         const pixelPoint = pixelOffset(mousePoint)
         const point = pixelPoint.apply(coord => Math.round(coord / tileSize))
-        onDrag(point)
+        if (mapOffset.differs(point)) {
+            setMapOffset(point)
+            onDrag(point)
+        }
     }
 
     const onMouseUp = event => {

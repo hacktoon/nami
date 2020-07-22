@@ -36,6 +36,6 @@ function Foreground({image, camera}) {
 
 
 function Background({camera}) {
-    const onInit = canvas => camera.renderBackground(canvas, camera.focus)
+    const onInit = canvas => camera.renderBackground(canvas)
     return <Canvas className="BackgroundCanvas" onInit={onInit} />
 }
