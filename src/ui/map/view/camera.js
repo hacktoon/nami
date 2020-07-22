@@ -44,7 +44,7 @@ export class Camera {
                 const gridPoint = new Point(i, j).plus(focus)
                 const color = this.image.get(gridPoint)
                 const point = new Point(x, y).minus(offset)
-                callback(gridPoint, point, color)
+                callback(point, color)
             }
         }
     }

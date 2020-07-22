@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 
 import { Point } from '/lib/point'
-import { TileMouseTrack } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
+
 import { Camera } from './camera'
+import { MouseTrack } from './mouse'
 
 
 
@@ -26,7 +27,7 @@ function Foreground({image, camera}) {
         setFocus(new Point(x, y))
     }
     const onInit = canvas => {
-        camera.render(canvas, focus, (gridPoint, point, color) => {
+        camera.render(canvas, focus, (point, color) => {
             // TODO: move if to image tile filter
             // image is a render rules object
             // define tiles as drawable or not, or filters like translate
@@ -36,7 +37,11 @@ function Foreground({image, camera}) {
     }
 
     return <>
-        <TileMouseTrack onDrag={handleDrag} tileSize={image.tileSize} />
+        <MouseTrack
+            onClick={handleDrag}
+            onDrag={handleDrag}
+            tileSize={image.tileSize}
+        />
         <Canvas onInit={onInit} />
     </>
 }
