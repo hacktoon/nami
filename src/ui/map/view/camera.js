@@ -1,6 +1,13 @@
+import { Point } from '/lib/point'
+
+
+class Geometry {
+
+}
+
 
 export class Camera {
-    constructor(image, focus) {
+    constructor(image, focus = new Point(0, 0)) {
         this.image = image
         this.focus = focus
     }
@@ -64,6 +71,18 @@ export class Camera {
             }
         }
     }
+
+    mouseTile(mousePoint, focus) {
+
+        // console.log(mousePoint, focus);
+    }
+
+    // focusOffset(focus, pixelOffset) {
+    //     const point = pixelOffset.apply(c => Math.floor(c / this.image.tileSize))
+    //     console.log(point);
+    //     // const newFocus = point.plus(focus)
+    //     // return newFocus.differs(focus) ? newFocus : focus
+    // }
 }
 
 

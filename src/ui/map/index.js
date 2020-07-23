@@ -29,6 +29,6 @@ function InteractiveMapView({Image, map}) {
               meta={Image.meta}
               onSubmit={setConfig}
               onChange={setConfig} />
-        <MapView map={map} image={image} />
+        <MapView image={image} />
     </>
 }

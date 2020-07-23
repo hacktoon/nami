@@ -10,8 +10,8 @@ import RegionMap from '/model/regionmap'
 import NoiseMap from '/model/noisemap'
 
 
-import "/ui/css/base.css"
-import "/ui/css/index.css"
+import "./css/base.css"
+import "./css/index.css"
 
 
 const APPS = {

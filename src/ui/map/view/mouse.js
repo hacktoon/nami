@@ -1,50 +1,43 @@
 import React, { useState } from 'react'
 
+import { Point } from '/lib/point'
 
-export function MouseTrack({onDrag, tileSize}) {
-    const [dragStart, setDragPoint] = useState(new Point(0, 0))
+
+export function MouseTrack({onDrag, onMove}) {
+    const [dragStart, setDragStart] = useState(new Point(0, 0))
     const [dragging, setDragging]   = useState(false)
-    const [offset, setOffset]       = useState(new Point(0, 0))
-    const [mapOffset, setMapOffset] = useState(new Point(0, 0))
 
-    const onMouseDown = event => {
+    // const handleClick = event => onClick(getMousePoint(event))
+
+    const handleMouseDown = event => {
         event.preventDefault()
-        setDragPoint(getMousePoint(event))
+        setDragStart(getMousePoint(event))
         setDragging(true)
     }
 
-    const onMouseMove = event => {
-        if (! dragging) return
+    const handleMouseMove = event => {
         const mousePoint = getMousePoint(event)
-        const pixelPoint = pixelOffset(mousePoint)
-        const point = pixelPoint.apply(coord => Math.round(coord / tileSize))
-        if (mapOffset.differs(point)) {
-            setMapOffset(point)
-            onDrag(point)
-        }
+        if (dragging) onDrag(dragStart.minus(mousePoint))
+        onMove(mousePoint)
     }
 
-    const onMouseUp = event => {
+    const handleMouseUp = () => {
         if (! dragging) return
-        const mousePoint = getMousePoint(event)
-        setOffset(pixelOffset(mousePoint))
         setDragging(false)
     }
 
-    const pixelOffset = mousePoint => dragStart.minus(mousePoint).plus(offset)
+    function getMousePoint(event) {
+        const { offsetX, offsetY } = event.nativeEvent
+        return new Point(offsetX, offsetY)
+    }
 
     return (
         <div className="MouseTrack"
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseUp}
-            onMouseDown={onMouseDown}
-            onMouseMove={onMouseMove}>
+            // onClick={handleClick}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}>
         </div>
     )
-}
-
-
-const getMousePoint = event => {
-    const { offsetX, offsetY } = event.nativeEvent
-    return new Point(offsetX, offsetY)
 }

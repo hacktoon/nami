@@ -1,5 +1,6 @@
 import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
+import { Point } from '/lib/point'
 import { OrganicFill } from '/lib/flood-fill'
 import { Meta, Schema } from '/lib/meta'
 
