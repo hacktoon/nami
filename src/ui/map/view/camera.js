@@ -7,17 +7,8 @@ class Geometry {
 
 
 export class Camera {
-    constructor(image, focus = new Point(0, 0)) {
+    constructor(image) {
         this.image = image
-        this.focus = focus
-    }
-
-    pixelFocus(width, height) {
-        // get the pixel point in canvas
-        const tileSize = this.image.tileSize
-        const x = Math.floor(width / 2 - tileSize / 2)
-        const y = Math.floor(height / 2 - tileSize / 2)
-        return new Point(x, y)
     }
 
     gridRect(width, height, focus) {
@@ -56,10 +47,10 @@ export class Camera {
         }
     }
 
-    renderBackground(canvas) {
+    renderBackground(canvas, focus) {
         const {width, height} = canvas
         const tileSize = this.image.tileSize
-        const {origin, target, offset} = this.gridRect(width, height, this.focus)
+        const {origin, target, offset} = this.gridRect(width, height, focus)
 
         for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {

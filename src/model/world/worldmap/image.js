@@ -2,18 +2,18 @@ import { Grid } from '/lib/grid'
 import { Meta, Schema } from '/lib/meta'
 
 
-const META = new Meta('WorldMapImage',
+const META = new Meta('WorldMapDiagram',
     Schema.boolean("Wrap grid", false),
     Schema.number("Tile size", 6, {step: 1, min: 1}),
 )
 
 
-export class Image {
+export class Diagram {
     static meta = META
 
     static create(worldMap, data) {
         const config = META.parse(data)
-        return new Image(worldMap, config)
+        return new Diagram(worldMap, config)
     }
 
     constructor(worldMap, config) {

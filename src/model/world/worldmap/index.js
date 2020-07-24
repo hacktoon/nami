@@ -5,7 +5,7 @@ import { Random } from '/lib/random'
 import { Meta, Schema } from '/lib/meta'
 
 import { ReliefMap } from './geo/relief'
-import { Image } from './image'
+import { Diagram } from './image'
 
 
 const META = new Meta('WorldMap',
@@ -17,7 +17,7 @@ const META = new Meta('WorldMap',
 
 export default class WorldMap {
     static meta = META
-    static Image = Image
+    static Diagram = Diagram
 
     static create(data) {
         const config = META.parse(data)

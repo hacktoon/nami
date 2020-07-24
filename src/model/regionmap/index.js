@@ -6,7 +6,7 @@ import { Meta, Schema } from '/lib/meta'
 
 import { Region } from './region'
 import { RegionGrid } from './grid'
-import { Image } from './image'
+import { Diagram } from './diagram'
 
 
 const META = new Meta('RegionMap',
@@ -21,7 +21,7 @@ const META = new Meta('RegionMap',
 
 export default class RegionMap {
     static meta = META
-    static Image = Image
+    static Diagram = Diagram
 
     static create(data) {
         const config = META.parse(data)

@@ -15,18 +15,18 @@ export function MapApp({Map}) {
               onChange={handleMap}>
             <Button label="New" />
         </Form>
-        <InteractiveMapView Image={Map.Image} map={map} />
+        <InteractiveMapView Diagram={Map.Diagram} map={map} />
     </section>
 }
 
 
-function InteractiveMapView({Image, map}) {
+function InteractiveMapView({Diagram, map}) {
     const [config, setConfig] = useState(null)
-    const image = Image.create(map, config)
+    const image = Diagram.create(map, config)
 
     return <>
-        <Form className="Image"
-              meta={Image.meta}
+        <Form className="Diagram"
+              meta={Diagram.meta}
               onSubmit={setConfig}
               onChange={setConfig} />
         <MapView image={image} />

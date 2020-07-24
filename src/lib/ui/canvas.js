@@ -50,6 +50,6 @@ function createCanvas(originalCanvas) {
     canvas.width = myCanvas.width
     canvas.height = myCanvas.height
 
-    canvas.getContext('2d').drawImage(originalCanvas, 0, 0)
+    canvas.getContext('2d').drawDiagram(originalCanvas, 0, 0)
     return canvas
 }

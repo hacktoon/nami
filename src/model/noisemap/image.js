@@ -3,17 +3,17 @@ import { Meta, Schema } from '/lib/meta'
 import { Color } from '/lib/color'
 
 
-const META = new Meta('NoiseMapImage',
+const META = new Meta('NoiseMapDiagram',
     Schema.number("Tile size", 6, {step: 1, min: 1}),
 )
 
 
-export class Image {
+export class Diagram {
     static meta = META
 
     static create(map, data) {
         const config = META.parse(data)
-        return new Image(map, config)
+        return new Diagram(map, config)
     }
 
     constructor(map, config) {

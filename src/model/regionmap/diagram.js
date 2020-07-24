@@ -2,7 +2,7 @@ import { Grid } from '/lib/grid'
 import { Meta, Schema } from '/lib/meta'
 
 
-const META = new Meta('RegionMapImage',
+const META = new Meta('RegionMapDiagram',
     Schema.boolean("Wrap grid", false),
     Schema.boolean("Show border", true),
     Schema.boolean("Show origin", false),
@@ -14,17 +14,17 @@ const META = new Meta('RegionMapImage',
 )
 
 
-// TODO: image should be a tile filter
-    // image is a render rules object
+// TODO: diagram should be a tile filter
+    // diagram is a render rules object
     // define tiles as drawable or not, or filters like translate
-    // image here should be a list of tiles to render
+    // diagram here should be a list of tiles to render
 
-export class Image {
+export class Diagram {
     static meta = META
 
     static create(regionMap, data) {
         const config = META.parse(data)
-        return new Image(regionMap, config)
+        return new Diagram(regionMap, config)
     }
 
     constructor(regionMap, config) {

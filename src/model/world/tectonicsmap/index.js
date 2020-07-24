@@ -3,7 +3,7 @@ import { Grid } from '/lib/grid'
 
 import { RegionMap } from '/model/regionmap'
 
-import { Image } from './image'
+import { Diagram } from './image'
 
 
 const META = new Meta('TectonicsMap',
@@ -16,7 +16,7 @@ const META = new Meta('TectonicsMap',
 
 export default class TectonicsMap {
     static meta = META
-    static Image = Image
+    static Diagram = Diagram
 
     static create(data) {
         const config = META.parse(data)

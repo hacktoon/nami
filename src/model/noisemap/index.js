@@ -3,7 +3,7 @@ import { Grid } from '/lib/grid'
 import { SimplexNoise } from '/lib/noise'
 import { Meta, Schema } from '/lib/meta'
 
-import { Image } from './image'
+import { Diagram } from './image'
 
 
 const META = new Meta('NoiseMap',
@@ -18,7 +18,7 @@ const META = new Meta('NoiseMap',
 
 export default class NoiseMap {
     static meta = META
-    static Image = Image
+    static Diagram = Diagram
 
     static create(data) {
         const config = META.parse(data)
