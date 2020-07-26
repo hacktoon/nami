@@ -7,35 +7,37 @@ class Geometry {
 
 
 export class Camera {
-    constructor(diagram) {
+    constructor(diagram, width, height) {
         this.diagram = diagram
+        this.width = width
+        this.height = height
+
+        const tileSize = this.diagram.tileSize
+        this.eastSide = Math.floor(width / 2 - tileSize / 2)
+        this.northSide = Math.floor(height / 2 - tileSize / 2)
+        this.westSide = width - this.eastSide - tileSize
+        this.southSide = height - this.northSide - tileSize
     }
 
-    gridRect(width, height, focus) {
+    gridRect(focus) {
         const tileSize = this.diagram.tileSize
-        const eastSide = Math.floor(width / 2 - tileSize / 2)
-        const northSide = Math.floor(height / 2 - tileSize / 2)
-        const westSide = width - eastSide - tileSize
-        const southSide = height - northSide - tileSize
-
-        const eastTileCount = tilesPerLength(eastSide, tileSize)
-        const northTileCount = tilesPerLength(northSide, tileSize)
-        const westTileCount = tilesPerLength(westSide, tileSize)
-        const southTileCount = tilesPerLength(southSide, tileSize)
+        const eastTileCount = Math.ceil(this.eastSide / tileSize)
+        const northTileCount = Math.ceil(this.northSide / tileSize)
+        const westTileCount = Math.ceil(this.westSide / tileSize)
+        const southTileCount = Math.ceil(this.southSide / tileSize)
 
         const origin = focus.minus(new Point(eastTileCount, northTileCount))
         const target = focus.plus(new Point(westTileCount, southTileCount))
         const offset = new Point(
-            (eastTileCount * tileSize) - eastSide,
-            (northTileCount * tileSize) - northSide
+            (eastTileCount * tileSize) - this.eastSide,
+            (northTileCount * tileSize) - this.northSide
         )
-        return { origin, target, offset}
+        return {origin, target, offset}
     }
 
     render(canvas, focus) {
-        const {width, height} = canvas
         const tileSize = this.diagram.tileSize
-        const {origin, target, offset} = this.gridRect(width, height, focus)
+        const {origin, target, offset} = this.gridRect(focus)
 
         for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {
@@ -48,9 +50,8 @@ export class Camera {
     }
 
     renderBackground(canvas, focus) {
-        const {width, height} = canvas
         const tileSize = this.diagram.tileSize
-        const {origin, target, offset} = this.gridRect(width, height, focus)
+        const {origin, target, offset} = this.gridRect(focus)
 
         for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {
@@ -63,20 +64,7 @@ export class Camera {
         }
     }
 
-    mouseTile(mousePoint, focus) {
-
-        // console.log(mousePoint, focus);
+    mouseTile(pixelDrag, mousePoint) {
+        console.log(pixelDrag, mousePoint);
     }
-
-    // focusOffset(focus, pixelOffset) {
-    //     const point = pixelOffset.apply(c => Math.floor(c / this.diagram.tileSize))
-    //     console.log(point);
-    //     // const newFocus = point.plus(focus)
-    //     // return newFocus.differs(focus) ? newFocus : focus
-    // }
-}
-
-
-function tilesPerLength(pixelSize, tileSize) {
-    return Math.ceil(pixelSize / tileSize)
 }
