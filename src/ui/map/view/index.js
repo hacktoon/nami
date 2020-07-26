@@ -21,7 +21,7 @@ export function MapView({diagram, focus = new Point(0, 0)}) {
 function Foreground({camera, focus}) {
     const [offsetFocus, setOffsetFocus] = useState(focus)
 
-    const handleDrag = pixelOffset => {
+    const handleDrag = (pixelOffset, mousePoint) => {
         // setFocus(newFocus)
     }
     const handleMove = mousePoint => {
