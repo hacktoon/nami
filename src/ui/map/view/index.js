@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useLayoutEffect, useRef } from 'react'
 
 import { Point } from '/lib/point'
 import { Canvas } from '/lib/ui/canvas'
@@ -8,12 +8,30 @@ import { MouseTrack } from './mouse'
 
 export function MapView({diagram, focus = new Point(0, 0)}) {
     // TODO: tilesize =>  camera.zoom
+    const viewportRef = useRef(null)
+    const [, setSize] = useState([0, 0])
     const camera = new Camera(diagram)
 
+    useLayoutEffect(() => {
+        const {clientWidth: width, clientHeight: height} = viewportRef.current
+        const updateSize = () => setSize([width, height])
+
+        console.log(width, height);
+        updateSize(width, height)
+        window.addEventListener('resize', updateSize)
+        return () => window.removeEventListener('resize', updateSize)
+    }, [])
+
+    function render() {
+        return <>
+            <Foreground camera={camera} focus={focus} />
+            <Background camera={camera} focus={focus} />
+        </>
+    }
+
     // TODO: Add more basic layers like effects, dialogs, etc
-    return <section className="MapView">
-        <Foreground camera={camera} focus={focus} />
-        <Background camera={camera} focus={focus} />
+    return <section className="MapView" ref={viewportRef}>
+        {viewportRef.current && render()}
     </section>
 }
 
