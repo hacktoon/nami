@@ -30,7 +30,6 @@ canvas { display: block; }
 
 .MapView {
     background: #DDD;
-    box-shadow: inset 0 0 5px #000;
     position: relative;
 }
 
@@ -47,6 +46,7 @@ canvas { display: block; }
 .BackgroundCanvas { z-index: 0 }
 
 .MouseTrack {
+    box-shadow: inset 0 0 5px #000;
     cursor: pointer;
     position: absolute;
     top: 0;
