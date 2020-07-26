@@ -22,13 +22,13 @@ export function MapApp({Map}) {
 
 function InteractiveMapView({Diagram, map}) {
     const [config, setConfig] = useState(null)
-    const image = Diagram.create(map, config)
+    const diagram = Diagram.create(map, config)
 
     return <>
         <Form className="Diagram"
               meta={Diagram.meta}
               onSubmit={setConfig}
               onChange={setConfig} />
-        <MapView image={image} />
+        <MapView diagram={diagram} />
     </>
 }

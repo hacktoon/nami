@@ -6,9 +6,9 @@ import { Camera } from './camera'
 import { MouseTrack } from './mouse'
 
 
-export function MapView({image, focus = new Point(0, 0)}) {
+export function MapView({diagram, focus = new Point(0, 0)}) {
     // TODO: tilesize =>  camera.zoom
-    const camera = new Camera(image)
+    const camera = new Camera(diagram)
 
     // TODO: Add more basic layers like effects, dialogs, etc
     return <section className="MapView">
