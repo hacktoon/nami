@@ -26,6 +26,9 @@
 - Iterate over region growth borders to distribute hills, cenotes, ravines, lakes, etc
 - First 2-3 layers are always land (cratons)
 
+#### BasinMap
+- determine rivers using ghaph
+
 #### TerrainMap
 - Build vector map
   - Align subregions points to other regions plates that collide
