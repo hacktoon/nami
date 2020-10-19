@@ -7,7 +7,7 @@ import { Camera } from './camera'
 import { MouseTrack } from './mouse'
 
 
-export function MapView({diagram, focus = new Point(0, 0)}) {
+export function MapView({diagram, focus = new Point(4, 0)}) {
     // TODO: tilesize =>  camera.zoom
     const viewportRef = useRef(null)
     const [width, height] = useResize(viewportRef)
@@ -29,15 +29,26 @@ export function MapView({diagram, focus = new Point(0, 0)}) {
 
 function Foreground({camera, focus}) {
     const [currentFocus, setCurrentFocus] = useState(focus)
+    const [cursorPoint, setCursorPoint] = useState(focus)
 
-    const handleDrag = (pixelDrag, mousePoint) => {
-        // setCurrentFocus(newFocus)
-        camera.mouseTile(pixelDrag, mousePoint)
+    const handleDrag = (startPoint, endPoint, offset) => {
+        // const startTilePoint = camera.tilePoint(currentFocus, startPoint)
+        // const endTilePoint = camera.tilePoint(currentFocus, endPoint)
+        // const dragPoint = camera.dragPoint(currentFocus, offset)
+        // console.log(dragPoint)
+
+        // setCurrentFocus(dragPoint)
     }
-    const handleMove = mousePoint => {
+
+    const handleMove = (mousePoint, ) => {
+        const tilePoint = camera.tilePoint(currentFocus, mousePoint)
+        if (tilePoint.differs(cursorPoint)) {
+            console.log(tilePoint)
+            setCursorPoint(tilePoint)
+        }
     }
     // TODO: camera.render should return <Canvas>
-    const handleInit = canvas => camera.render(canvas, currentFocus)
+    const handleInit = canvas => camera.render(canvas, currentFocus, cursorPoint)
 
     return <>
         <MouseTrack onDrag={handleDrag} onMove={handleMove} />
