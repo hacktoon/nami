@@ -40,20 +40,40 @@ function Foreground({camera, focus}) {
         // setCurrentFocus(dragPoint)
     }
 
-    const handleMove = (mousePoint, ) => {
-        const tilePoint = camera.tilePoint(currentFocus, mousePoint)
-        if (tilePoint.differs(cursorPoint)) {
-            console.log(tilePoint)
-            setCursorPoint(tilePoint)
-        }
+    const handleMove = point => {
+        setCursorPoint(point)
     }
     // TODO: camera.render should return <Canvas>
     const handleInit = canvas => camera.render(canvas, currentFocus, cursorPoint)
 
     return <>
-        <MouseTrack onDrag={handleDrag} onMove={handleMove} />
+        <TileTrack camera={camera} focus={focus} onDrag={handleDrag} onMove={handleMove} />
         <Canvas width={camera.width} height={camera.height} onInit={handleInit} />
     </>
+}
+
+function TileTrack({camera, focus, onDrag, onMove}) {
+    const [tilePoint, setTilePoint] = useState(focus)
+    const [dragOffset, setDragOffset] = useState(new Point())
+
+    const handleDrag = (startPoint, endPoint, offset) => {
+        const startTilePoint = camera.tilePoint(focus, startPoint)
+        const endTilePoint = camera.tilePoint(focus, endPoint)
+        const newOffset = startTilePoint.minus(endTilePoint)
+        if (newOffset.differs(dragOffset)) {
+            console.log(newOffset)
+            setDragOffset(newOffset)
+        }
+    }
+
+    const handleMove = mousePoint => {
+        const newTilePoint = camera.tilePoint(focus, mousePoint)
+        if (newTilePoint.differs(tilePoint)) {
+            setTilePoint(newTilePoint)
+            onMove(newTilePoint)
+        }
+    }
+    return <MouseTrack onDrag={handleDrag} onMove={handleMove} />
 }
 
 
