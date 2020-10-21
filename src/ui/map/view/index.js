@@ -12,44 +12,36 @@ export function MapView({diagram, baseFocus=new Point(4, 0)}) {
     const viewportRef = useRef(null)
     const [width, height] = useResize(viewportRef)
     const [focus, setFocus] = useState(baseFocus)
+    const [cursorPoint, setCursorPoint] = useState(baseFocus)
+    // const [frame,] = useState(new Frame(diagram, width, height))
 
-    function Layers() {
-        const camera = new Camera(diagram, width, height, focus)
-        return <>
-            <Foreground camera={camera} setFocus={setFocus} />
-            <Background camera={camera} focus={focus} />
-        </>
-    }
-
-    // TODO: Add more basic layers like effects, dialogs, etc
-    return <section className="MapView" ref={viewportRef}>
-        {viewportRef.current && <Layers />}
-    </section>
-}
-
-
-function Foreground({camera, setFocus}) {
-    const [cursorPoint, setCursorPoint] = useState(camera.focus)
+    const camera = new Camera(diagram, width, height, focus)
+    // const frame = new Frame(diagram.tileSize, width, height)
+    // const camera = new Camera(diagram, frame, focus)
 
     const handleDrag = offset => {
         const newFocus = camera.focus.plus(offset)
-        setFocus(newFocus)
+        // setFocus(newFocus)
+        console.log(newFocus);
     }
 
-    const handleMove = point => setCursorPoint(point)
+    const handleMove = point => {
+        // setCursorPoint(point)
+    }
 
     // TODO: camera.render should return <Canvas>
     const handleInit = canvas => camera.render(canvas, cursorPoint)
 
-    return <>
-        <TileTrack camera={camera} onDrag={handleDrag} onMove={handleMove} />
-        <Canvas width={camera.width} height={camera.height} onInit={handleInit} />
-    </>
+    // TODO: Add more basic layers like effects, dialogs, etc
+    return <section className="MapView" ref={viewportRef}>
+        <MapMouseTrack camera={camera} onDrag={handleDrag} onMove={handleMove} />
+        {viewportRef.current && <MapCanvas camera={camera} onInit={handleInit} />}
+    </section>
 }
 
 
-function TileTrack({camera, onDrag, onMove}) {
-    const [tilePoint, setTilePoint] = useState(camera.focus)
+function MapMouseTrack({camera, onDrag, onMove}) {
+    const [cursorPoint, setCursorPoint] = useState(new Point())
     const [dragOffset, setDragOffset] = useState(new Point())
 
     const handleDrag = (startPoint, endPoint) => {
@@ -63,22 +55,24 @@ function TileTrack({camera, onDrag, onMove}) {
     }
 
     const handleMove = mousePoint => {
-        const newTilePoint = camera.tilePoint(mousePoint)
-        if (newTilePoint.differs(tilePoint)) {
-            setTilePoint(newTilePoint)
-            onMove(newTilePoint)
+        const point = camera.tilePoint(mousePoint)
+        if (point.differs(cursorPoint)) {
+            setCursorPoint(point)
+            onMove(point)
         }
     }
     return <MouseTrack onDrag={handleDrag} onMove={handleMove} />
 }
 
 
-function Background({camera}) {
-    const handleInit = canvas => camera.renderBackground(canvas)
-    return <Canvas
-        width={camera.width}
-        height={camera.height}
-        className="BackgroundCanvas"
-        onInit={handleInit}
-     />
+function MapCanvas({camera, onInit}) {
+    return <>
+        <Canvas width={camera.width} height={camera.height} onInit={onInit} />
+        <Canvas
+            className="BackgroundCanvas"
+            width={camera.width}
+            height={camera.height}
+            onInit={canvas => camera.renderBackground(canvas)}
+        />
+    </>
 }
