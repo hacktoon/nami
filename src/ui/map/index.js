@@ -10,10 +10,10 @@ export function MapApp({Map}) {
     const handleMap = config => setMap(Map.create(config))
     return <section className='MapApp'>
         <Form className="Map"
-              meta={Map.meta}
-              onSubmit={handleMap}
-              onChange={handleMap}>
-            <Button label="New" />
+            meta={Map.meta}
+            onSubmit={handleMap}
+            onChange={handleMap}>
+                <Button label="New" />
         </Form>
         <InteractiveMapView Diagram={Map.Diagram} map={map} />
     </section>

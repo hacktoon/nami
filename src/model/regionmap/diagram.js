@@ -15,9 +15,9 @@ const META = new Meta('RegionMapDiagram',
 
 
 // TODO: diagram should be a tile filter
-    // diagram is a render rules object
-    // define tiles as drawable or not, or filters like translate
-    // diagram here should be a list of tiles to render
+// diagram is a render rules object
+// define tiles as drawable or not, or filters like translate
+// diagram here should be a list of tiles to render
 
 export class Diagram {
     static meta = META
