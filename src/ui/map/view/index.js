@@ -7,38 +7,60 @@ import { Camera, Frame } from './camera'
 import { MouseTrack } from './mouse'
 
 
-export function MapView({diagram, baseFocus=new Point(4, 0)}) {
-    // TODO: tilesize =>  camera.zoom
+export function MapView({diagram, focus = new Point(0, 0)}) {
     const viewportRef = useRef(null)
     const [width, height] = useResize(viewportRef)
-    const [focus, setFocus] = useState(baseFocus)
-    const [cursorPoint, setCursorPoint] = useState(baseFocus)
 
-    const frame = new Frame(diagram.tileSize, width, height)
-    const camera = new Camera(diagram, frame, focus)
-
-    const handleDrag = offset => {
-        const newFocus = camera.focus.plus(offset)
-        // setFocus(newFocus)
-        console.log(offset)
+    function render() {
+        const frame = new Frame(diagram.tileSize, width, height)
+        return <MapFocusView diagram={diagram} frame={frame} baseFocus={focus} />
     }
+
+    return <section className="MapView" ref={viewportRef}>
+        {viewportRef.current && render()}
+    </section>
+}
+
+// let x = new Point()
+function MapFocusView({diagram, frame, baseFocus}) {
+    const [cursorPoint, setCursorPoint] = useState(baseFocus)
+    const [offset, setOffset] = useState(new Point())
+    const [focus, setFocus] = useState(baseFocus)
+
+    const camera = new Camera(diagram, frame)
 
     const handleMove = point => {
         // setCursorPoint(point)
     }
 
-    // TODO: camera.render should return <Canvas>
-    const handleInit = canvas => camera.render(canvas)
+    const handleDrag = offset => {
+        const newFocus = offset
+        //setOffset(newFocus)
+        // x = x.plus(newFocus)
+        console.log('drag', offset)
+    }
 
-    // TODO: Add more basic layers like effects, dialogs, etc
-    return <section className="MapView" ref={viewportRef}>
-        <MapMouseTrack frame={frame} onDrag={handleDrag} onMove={handleMove} />
-        {viewportRef.current && <MapCanvas camera={camera} onInit={handleInit} />}
-    </section>
+    const handleDragEnd = point => {
+        //setOffset(newFocus)
+        console.log('end', point)
+    }
+
+    // TODO: camera.render should return <Canvas>
+    const handleInit = canvas => camera.render(canvas, focus)
+
+    // TODO: add MapMouseCanvas to draw cursor
+    return <>
+        <MapMouseTrack
+            frame={frame}
+            onDrag={handleDrag}
+            onDragEnd={handleDragEnd}
+            onMove={handleMove} />
+        <MapCanvas camera={camera} onInit={handleInit} />
+    </>
 }
 
 
-function MapMouseTrack({frame, onDrag, onMove}) {
+function MapMouseTrack({frame, onDrag, onDragEnd, onMove}) {
     const [cursorPoint, setCursorPoint] = useState(new Point())
     const [dragOffset, setDragOffset] = useState(new Point())
 
@@ -52,6 +74,12 @@ function MapMouseTrack({frame, onDrag, onMove}) {
         }
     }
 
+    const handleDragEnd = (startPoint, endPoint) => {
+        const startTilePoint = frame.tilePoint(startPoint)
+        const endTilePoint = frame.tilePoint(endPoint)
+        onDragEnd(startTilePoint.minus(endTilePoint))
+    }
+
     const handleMove = mousePoint => {
         const point = frame.tilePoint(mousePoint)
         if (point.differs(cursorPoint)) {
@@ -59,7 +87,8 @@ function MapMouseTrack({frame, onDrag, onMove}) {
             onMove(point)
         }
     }
-    return <MouseTrack onDrag={handleDrag} onMove={handleMove} />
+
+    return <MouseTrack onDrag={handleDrag} onDragEnd={handleDragEnd} onMove={handleMove} />
 }
 
 
