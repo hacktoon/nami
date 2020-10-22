@@ -21,32 +21,31 @@ export function MapView({diagram, focus = new Point(0, 0)}) {
     </section>
 }
 
-// let x = new Point()
+
 function MapFocusView({diagram, frame, baseFocus}) {
     const [cursorPoint, setCursorPoint] = useState(baseFocus)
     const [offset, setOffset] = useState(new Point())
     const [focus, setFocus] = useState(baseFocus)
 
-    const camera = new Camera(diagram, frame)
+    const camera = new Camera(diagram, frame, focus)
 
     const handleMove = point => {
         // setCursorPoint(point)
     }
 
     const handleDrag = offset => {
-        const newFocus = offset
-        //setOffset(newFocus)
-        // x = x.plus(newFocus)
+        setOffset(offset)
         console.log('drag', offset)
     }
 
     const handleDragEnd = point => {
-        //setOffset(newFocus)
+        // setFocus(pointnewFocus)
+        setOffset(new Point())
         console.log('end', point)
     }
 
     // TODO: camera.render should return <Canvas>
-    const handleInit = canvas => camera.render(canvas, focus)
+    const handleInit = canvas => camera.render(canvas)
 
     // TODO: add MapMouseCanvas to draw cursor
     return <>

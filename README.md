@@ -9,8 +9,9 @@
 ## ROADMAP
 
 #### RegionMap
-- Store borders for each plate neighborhood
-- (MAYBE) Build regions adjacency table
+- Store borders for each region
+- Build regions adjacency table to know
+  - tiles 4,2 (r1) - 4,1 (r2)   ->  r1: left,  r2: right
 
 #### TectonicsMap
 - Convergent

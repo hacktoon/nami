@@ -25,10 +25,11 @@ export function MouseTrack({onMove, onDrag, onDragEnd}) {
     }
 
     const handleMouseUp = event => {
-        if (! dragging) return
         const mousePoint = createMousePoint(event)
         setDragging(false)
-        onDragEnd(dragStart, mousePoint)
+        if (dragging) {
+            onDragEnd(dragStart, mousePoint)
+        }
     }
 
     function createMousePoint(event) {
