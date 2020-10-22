@@ -39,13 +39,6 @@ export class Frame {
         const y = Math.floor(mouse.y / this.scale)
         return new Point(x, y).plus(origin)
     }
-
-    dragPoint(dragOffset) {
-        const dragged = this.offset.plus(dragOffset)
-        const x = Math.floor(dragged.x / this.scale)
-        const y = Math.floor(dragged.y / this.scale)
-        return new Point(x, y)
-    }
 }
 
 
@@ -59,33 +52,34 @@ export class Camera {
         this.focus = focus
     }
 
-    render(canvas, offset) {
-        const {origin, target} = this.frame.rect(this.focus.plus(offset))
+    renderFrame(callback, offset) {
+        const {origin, target} = this.frame.rect(offset)
         for(let i = origin.x, x = 0; i <= target.x; i++, x += this.tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += this.tileSize) {
-                const gridPoint = new Point(i, j)
-                const color = this.diagram.get(gridPoint)
+                const tilePoint = new Point(i, j)
                 const canvasPoint = new Point(x, y).minus(this.frame.offset)
-                if (color == 'transparent') {
-                    canvas.clear(this.tileSize, canvasPoint)
-                } else {
-                    canvas.rect(this.tileSize, canvasPoint, color)
-                }
-
+                callback(tilePoint, canvasPoint)
             }
         }
     }
 
-    renderBackground(canvas) {
-        const {origin, target} = this.frame.rect()
-        for(let i = origin.x, x = 0; i <= target.x; i++, x += this.tileSize) {
-            for(let j = origin.y, y = 0; j <= target.y; j++, y += this.tileSize) {
-                const gridPoint = new Point(i, j)
-                const canvasPoint = new Point(x, y).minus(this.frame.offset)
-                const isEven = (gridPoint.x + gridPoint.y) % 2
-                const color = isEven ? '#DDD' : '#FFF'
+    render(canvas, offset) {
+        const focusOffset = this.focus.plus(offset)
+        this.renderFrame((tilePoint, canvasPoint) => {
+            const color = this.diagram.get(tilePoint)
+            if (color == 'transparent') {
+                canvas.clear(this.tileSize, canvasPoint)
+            } else {
                 canvas.rect(this.tileSize, canvasPoint, color)
             }
-        }
+        }, focusOffset)
+    }
+
+    renderBackground(canvas) {
+        this.renderFrame((tilePoint, canvasPoint) => {
+            const isEven = (tilePoint.x + tilePoint.y) % 2
+            const color = isEven ? '#DDD' : '#FFF'
+            canvas.rect(this.tileSize, canvasPoint, color)
+        })
     }
 }

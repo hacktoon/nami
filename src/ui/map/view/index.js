@@ -23,19 +23,17 @@ export function MapView({diagram, focus = new Point(0, 0)}) {
 
 
 function MapFocusView({diagram, frame, baseFocus}) {
-    const [cursorPoint, setCursorPoint] = useState(baseFocus)
+    const [cursor, setCursor] = useState(baseFocus)
     const [offset, setOffset] = useState(new Point())
     const [focus, setFocus] = useState(baseFocus)
 
     const camera = new Camera(diagram, frame, focus)
 
     const handleMove = point => {
-        // setCursorPoint(point)
+        // setCursor(point)
     }
 
-    const handleDrag = point => {
-        setOffset(point)
-    }
+    const handleDrag = point => setOffset(point)
 
     const handleDragEnd = point => {
         setOffset(new Point())
@@ -44,7 +42,7 @@ function MapFocusView({diagram, frame, baseFocus}) {
 
     // TODO: camera.render should return <Canvas>
     const handleInit = canvas => camera.render(canvas, offset)
-    const handleBGInit = canvas => camera.renderBackground(canvas, offset)
+    const handleBGInit = canvas => camera.renderBackground(canvas)
 
     // TODO: add MapMouseCanvas to draw cursor
     return <>
@@ -52,14 +50,15 @@ function MapFocusView({diagram, frame, baseFocus}) {
             frame={frame}
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
-            onMove={handleMove} />
+            onMove={handleMove}
+        />
         <MapCanvas camera={camera} onInit={handleInit} onBGInit={handleBGInit}/>
     </>
 }
 
 
 function MapMouseTrack({frame, onDrag, onDragEnd, onMove}) {
-    const [cursorPoint, setCursorPoint] = useState(new Point())
+    const [cursor, setCursor] = useState(new Point())
     const [dragOffset, setDragOffset] = useState(new Point())
 
     const handleDrag = (startPoint, endPoint) => {
@@ -80,8 +79,8 @@ function MapMouseTrack({frame, onDrag, onDragEnd, onMove}) {
 
     const handleMove = mousePoint => {
         const point = frame.tilePoint(mousePoint)
-        if (point.differs(cursorPoint)) {
-            setCursorPoint(point)
+        if (point.differs(cursor)) {
+            setCursor(point)
             onMove(point)
         }
     }
