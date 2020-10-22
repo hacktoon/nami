@@ -13,7 +13,7 @@ export function MapView({diagram, focus = new Point(0, 0)}) {
 
     function render() {
         const frame = new Frame(diagram.tileSize, width, height)
-        return <MapFocusView diagram={diagram} frame={frame} baseFocus={focus} />
+        return <MapViewFrame diagram={diagram} frame={frame} baseFocus={focus} />
     }
 
     return <section className="MapView" ref={viewportRef}>
@@ -22,7 +22,7 @@ export function MapView({diagram, focus = new Point(0, 0)}) {
 }
 
 
-function MapFocusView({diagram, frame, baseFocus}) {
+function MapViewFrame({diagram, frame, baseFocus}) {
     const [cursor, setCursor] = useState(baseFocus)
     const [offset, setOffset] = useState(new Point())
     const [focus, setFocus] = useState(baseFocus)
@@ -30,6 +30,10 @@ function MapFocusView({diagram, frame, baseFocus}) {
     const camera = new Camera(diagram, frame, focus)
 
     const handleMove = point => {
+        // setCursor(point)
+    }
+
+    const handleWheel = direction => {
         // setCursor(point)
     }
 
@@ -51,13 +55,14 @@ function MapFocusView({diagram, frame, baseFocus}) {
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
             onMove={handleMove}
+            onWheel={handleWheel}
         />
         <MapCanvas camera={camera} onInit={handleInit} onBGInit={handleBGInit}/>
     </>
 }
 
 
-function MapMouseTrack({frame, onDrag, onDragEnd, onMove}) {
+function MapMouseTrack({frame, onDrag, onDragEnd, onMove, onWheel}) {
     const [cursor, setCursor] = useState(new Point())
     const [dragOffset, setDragOffset] = useState(new Point())
 
@@ -85,7 +90,12 @@ function MapMouseTrack({frame, onDrag, onDragEnd, onMove}) {
         }
     }
 
-    return <MouseTrack onDrag={handleDrag} onDragEnd={handleDragEnd} onMove={handleMove} />
+    return <MouseTrack
+        onDrag={handleDrag}
+        onDragEnd={handleDragEnd}
+        onMove={handleMove}
+        onWheel={onWheel}
+    />
 }
 
 
