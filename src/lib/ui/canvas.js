@@ -24,6 +24,11 @@ class CanvasContext {
         this.context.fillRect(x, y, size, size)
     }
 
+    clear(size, point) {
+        const {x, y} = point
+        this.context.clearRect(x, y, size, size)
+    }
+
     rectBorder(size, point) {
         const {x, y} = point
         this.context.fillStyle = 'rgba(0, 0, 0, 0.3)'

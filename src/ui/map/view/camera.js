@@ -51,22 +51,27 @@ export class Frame {
 
 export class Camera {
     constructor(diagram, frame, focus) {
-        this.tileSize = diagram.tileSize
         this.diagram = diagram
+        this.tileSize = diagram.tileSize
         this.width = frame.width
         this.height = frame.height
         this.frame = frame
         this.focus = focus
     }
 
-    render(canvas) {
-        const {origin, target} = this.frame.rect(this.focus)
+    render(canvas, offset) {
+        const {origin, target} = this.frame.rect(this.focus.plus(offset))
         for(let i = origin.x, x = 0; i <= target.x; i++, x += this.tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += this.tileSize) {
                 const gridPoint = new Point(i, j)
                 const color = this.diagram.get(gridPoint)
                 const canvasPoint = new Point(x, y).minus(this.frame.offset)
-                canvas.rect(this.tileSize, canvasPoint, color)
+                if (color == 'transparent') {
+                    canvas.clear(this.tileSize, canvasPoint)
+                } else {
+                    canvas.rect(this.tileSize, canvasPoint, color)
+                }
+
             }
         }
     }
@@ -76,10 +81,10 @@ export class Camera {
         for(let i = origin.x, x = 0; i <= target.x; i++, x += this.tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += this.tileSize) {
                 const gridPoint = new Point(i, j)
-                if ((gridPoint.x + gridPoint.y) % 2) {
-                    const canvasPoint = new Point(x, y).minus(this.frame.offset)
-                    canvas.rect(this.tileSize, canvasPoint, '#FFF')
-                }
+                const canvasPoint = new Point(x, y).minus(this.frame.offset)
+                const isEven = (gridPoint.x + gridPoint.y) % 2
+                const color = isEven ? '#DDD' : '#FFF'
+                canvas.rect(this.tileSize, canvasPoint, color)
             }
         }
     }

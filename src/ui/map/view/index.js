@@ -33,19 +33,18 @@ function MapFocusView({diagram, frame, baseFocus}) {
         // setCursorPoint(point)
     }
 
-    const handleDrag = offset => {
-        setOffset(offset)
-        console.log('drag', offset)
+    const handleDrag = point => {
+        setOffset(point)
     }
 
     const handleDragEnd = point => {
-        // setFocus(pointnewFocus)
         setOffset(new Point())
-        console.log('end', point)
+        setFocus(focus.plus(point))
     }
 
     // TODO: camera.render should return <Canvas>
-    const handleInit = canvas => camera.render(canvas)
+    const handleInit = canvas => camera.render(canvas, offset)
+    const handleBGInit = canvas => camera.renderBackground(canvas, offset)
 
     // TODO: add MapMouseCanvas to draw cursor
     return <>
@@ -54,7 +53,7 @@ function MapFocusView({diagram, frame, baseFocus}) {
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
             onMove={handleMove} />
-        <MapCanvas camera={camera} onInit={handleInit} />
+        <MapCanvas camera={camera} onInit={handleInit} onBGInit={handleBGInit}/>
     </>
 }
 
@@ -91,14 +90,10 @@ function MapMouseTrack({frame, onDrag, onDragEnd, onMove}) {
 }
 
 
-function MapCanvas({camera, onInit}) {
+function MapCanvas({camera, onInit, onBGInit}) {
+    const {width, height} = camera
     return <>
-        <Canvas width={camera.width} height={camera.height} onInit={onInit} />
-        <Canvas
-            className="BackgroundCanvas"
-            width={camera.width}
-            height={camera.height}
-            onInit={canvas => camera.renderBackground(canvas)}
-        />
+        <Canvas width={width} height={height} onInit={onInit} />
+        <Canvas className="BackgroundCanvas" width={width} height={height} onInit={onBGInit} />
     </>
 }
