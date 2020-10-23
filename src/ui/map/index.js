@@ -25,7 +25,7 @@ function MapAppView({Diagram, map}) {
     const diagram = Diagram.create(map, config)
 
     const handleZoom = amount => {
-        const newConfig = {...config, tileSize: diagram.tileSize + amount}
+        const newConfig = {...diagram.config, tileSize: diagram.tileSize + amount}
         setConfig(newConfig)
     }
 

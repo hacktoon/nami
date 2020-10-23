@@ -29,6 +29,7 @@ export class Diagram {
 
     constructor(regionMap, config) {
         this.regionMap = regionMap
+        this.config = config
         this.width = regionMap.width
         this.height = regionMap.height
         this.wrapMode = config.wrapGrid
