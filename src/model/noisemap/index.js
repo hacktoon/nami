@@ -1,7 +1,8 @@
 import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { SimplexNoise } from '/lib/noise'
-import { MetaClass, Schema } from '/lib/meta'
+import { Schema } from '/lib/type'
+import { MetaClass } from '/lib/meta'
 
 import { Diagram } from './image'
 

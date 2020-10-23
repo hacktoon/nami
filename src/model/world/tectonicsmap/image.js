@@ -1,5 +1,6 @@
 import { Grid } from '/lib/grid'
-import { MetaClass, Schema } from '/lib/meta'
+import { Schema } from '/lib/type'
+import { MetaClass } from '/lib/meta'
 
 
 export class Diagram {

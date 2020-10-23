@@ -1,5 +1,5 @@
-import { Grid } from '/lib/grid'
-import { MetaClass, Schema } from '/lib/meta'
+import { Schema } from '/lib/type'
+import { MetaClass } from '/lib/meta'
 
 
 // TODO: diagram should be a tile filter
