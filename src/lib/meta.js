@@ -85,19 +85,19 @@ function buildType(TypeClass) {
 
 
 export class Meta {
-    constructor(name, ...schema) {
+    constructor(name, ...types) {
         this.name = removeSymbols(name).replace(' ', '')
-        this.schema = schema
+        this.types = types
     }
 
     get defaultConfig() {
-        return Object.fromEntries(this.schema.map(
+        return Object.fromEntries(this.types.map(
             type => [type.name, type.value]
         ))
     }
 
     get nameMap() {
-        return Object.fromEntries(this.schema.map(
+        return Object.fromEntries(this.types.map(
             type => [type.name, type]
         ))
     }
