@@ -15,12 +15,12 @@ export function MapApp({Map}) {
             onChange={handleMap}>
                 <Button label="New" />
         </Form>
-        <InteractiveMapView Diagram={Map.Diagram} map={map} />
+        <MapAppView Diagram={Map.Diagram} map={map} />
     </section>
 }
 
 
-function InteractiveMapView({Diagram, map}) {
+function MapAppView({Diagram, map}) {
     const [config, setConfig] = useState(null)
     const diagram = Diagram.create(map, config)
 
