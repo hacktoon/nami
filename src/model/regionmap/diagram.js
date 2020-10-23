@@ -1,8 +1,8 @@
 import { Grid } from '/lib/grid'
-import { Meta, Schema } from '/lib/meta'
+import { MetaClass, Schema } from '/lib/meta'
 
 
-const META = new Meta('RegionMapDiagram',
+const meta = new MetaClass('RegionMapDiagram',
     Schema.boolean("Wrap grid", false),
     Schema.boolean("Show border", true),
     Schema.boolean("Show origin", false),
@@ -20,10 +20,10 @@ const META = new Meta('RegionMapDiagram',
 // diagram here should be a list of tiles to render
 
 export class Diagram {
-    static meta = META
+    static meta = meta
 
-    static create(regionMap, data) {
-        const config = META.parse(data)
+    static create(regionMap, rawConfig) {
+        const config = meta.parse(rawConfig)
         return new Diagram(regionMap, config)
     }
 
@@ -33,33 +33,33 @@ export class Diagram {
         this.width = regionMap.width
         this.height = regionMap.height
         this.wrapMode = config.wrapGrid
-        this.tileSize = config.tileSize // TODO: move to camera.zoom
-
-        this.grid = new Grid(regionMap.width, regionMap.height, point => {
-            if (config.showBorder && regionMap.isBorder(point)) {
-                return config.borderColor.toHex()
-            }
-            if (config.showOrigin && regionMap.isOrigin(point)) {
-                return config.foreground.invert().toHex()
-            }
-            // draw seed
-            if (regionMap.isLayer(point, config.layer)) {
-                return config.foreground.brighten(40).toHex()
-            }
-            // invert this check to get remaining spaces
-            const pointLayer = regionMap.getLayer(point)
-            if (regionMap.isOverLayer(point, config.layer)) {
-                return config.background.darken(pointLayer*5).toHex()
-            } else {
-                return config.foreground.darken(pointLayer*5).toHex()
-            }
-        })
+        this.tileSize = config.tileSize
     }
 
     get(point) {
         if (this.isWrappable(point))
-            return this.grid.get(point)
+            return this.getColor(this.config, this.regionMap, point)
         return 'transparent'
+    }
+
+    getColor(config, regionMap, point) {
+        if (config.showBorder && regionMap.isBorder(point)) {
+            return config.borderColor.toHex()
+        }
+        if (config.showOrigin && regionMap.isOrigin(point)) {
+            return config.foreground.invert().toHex()
+        }
+        // draw seed
+        if (regionMap.isLayer(point, config.layer)) {
+            return config.foreground.brighten(40).toHex()
+        }
+        // invert this check to get remaining spaces
+        const pointLayer = regionMap.getLayer(point)
+        if (regionMap.isOverLayer(point, config.layer)) {
+            return config.background.darken(pointLayer*5).toHex()
+        } else {
+            return config.foreground.darken(pointLayer*5).toHex()
+        }
     }
 
     isWrappable(point) {

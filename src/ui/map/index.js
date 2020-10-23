@@ -21,17 +21,18 @@ export function MapApp({Map}) {
 
 
 function MapAppView({Diagram, map}) {
-    const [config, setConfig] = useState(null)
+    const [config, setConfig] = useState({})
     const diagram = Diagram.create(map, config)
 
     const handleZoom = amount => {
-        const newConfig = {...diagram.config, tileSize: diagram.tileSize + amount}
-        setConfig(newConfig)
+        const tileSize = diagram.tileSize + amount
+        setConfig({...config, tileSize})
     }
 
     return <>
         <Form className="Diagram"
               meta={Diagram.meta}
+              values={diagram.config}
               onSubmit={setConfig}
               onChange={setConfig} />
         <MapView diagram={diagram} onZoom={handleZoom} />

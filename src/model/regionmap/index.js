@@ -2,14 +2,14 @@ import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { Point } from '/lib/point'
 import { OrganicFill } from '/lib/flood-fill'
-import { Meta, Schema } from '/lib/meta'
+import { MetaClass, Schema } from '/lib/meta'
 
 import { Region } from './region'
 import { RegionGrid } from './grid'
 import { Diagram } from './diagram'
 
 
-const META = new Meta('RegionMap',
+const META = new MetaClass('RegionMap',
     Schema.number("Width", 200),
     Schema.number("Height", 150),
     Schema.number("Count", 8),

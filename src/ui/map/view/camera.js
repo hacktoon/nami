@@ -2,29 +2,29 @@ import { Point } from '/lib/point'
 
 
 export class Frame {
-    constructor(scale, width, height) {
-        this.scale = scale
+    constructor(tileSize, width, height) {
+        this.tileSize = tileSize
         this.width = width
         this.height = height
-        this.eastPad = Math.floor(width / 2 - scale / 2)
-        this.northPad = Math.floor(height / 2 - scale / 2)
-        this.westPad = width - this.eastPad - scale
-        this.southPad = height - this.northPad - scale
+        this.eastPad = Math.floor(width / 2 - tileSize / 2)
+        this.northPad = Math.floor(height / 2 - tileSize / 2)
+        this.westPad = width - this.eastPad - tileSize
+        this.southPad = height - this.northPad - tileSize
     }
 
     get offset() {
-        const eastTileCount = Math.ceil(this.eastPad / this.scale)
-        const northTileCount = Math.ceil(this.northPad / this.scale)
-        const x = (eastTileCount * this.scale) - this.eastPad
-        const y = (northTileCount * this.scale) - this.northPad
+        const eastTileCount = Math.ceil(this.eastPad / this.tileSize)
+        const northTileCount = Math.ceil(this.northPad / this.tileSize)
+        const x = (eastTileCount * this.tileSize) - this.eastPad
+        const y = (northTileCount * this.tileSize) - this.northPad
         return new Point(x, y)
     }
 
     rect(offset=new Point()) {
-        const eastTileCount = Math.ceil(this.eastPad / this.scale)
-        const northTileCount = Math.ceil(this.northPad / this.scale)
-        const westTileCount = Math.ceil(this.westPad / this.scale)
-        const southTileCount = Math.ceil(this.southPad / this.scale)
+        const eastTileCount = Math.ceil(this.eastPad / this.tileSize)
+        const northTileCount = Math.ceil(this.northPad / this.tileSize)
+        const westTileCount = Math.ceil(this.westPad / this.tileSize)
+        const southTileCount = Math.ceil(this.southPad / this.tileSize)
         const topLeftPoint = new Point(eastTileCount, northTileCount)
         const bottomRightPoint = new Point(westTileCount, southTileCount)
         const origin = offset.minus(topLeftPoint)
@@ -35,8 +35,8 @@ export class Frame {
     tilePoint(mousePoint) {
         const {origin} = this.rect()
         const mouse = mousePoint.plus(this.offset)
-        const x = Math.floor(mouse.x / this.scale)
-        const y = Math.floor(mouse.y / this.scale)
+        const x = Math.floor(mouse.x / this.tileSize)
+        const y = Math.floor(mouse.y / this.tileSize)
         return new Point(x, y).plus(origin)
     }
 }

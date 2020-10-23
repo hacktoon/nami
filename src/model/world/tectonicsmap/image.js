@@ -1,8 +1,8 @@
 import { Grid } from '/lib/grid'
-import { Meta, Schema } from '/lib/meta'
+import { MetaClass, Schema } from '/lib/meta'
 
 
-const META = new Meta('RegionMapDiagram',
+const META = new MetaClass('RegionMapDiagram',
     Schema.boolean("Wrap grid", false),
     Schema.boolean("Show border", true),
     Schema.number("Tile size", 6, {step: 1, min: 1}),

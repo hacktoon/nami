@@ -1,12 +1,12 @@
 import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { SimplexNoise } from '/lib/noise'
-import { Meta, Schema } from '/lib/meta'
+import { MetaClass, Schema } from '/lib/meta'
 
 import { Diagram } from './image'
 
 
-const META = new Meta('NoiseMap',
+const META = new MetaClass('NoiseMap',
     Schema.number("Width", 150),
     Schema.number("Height", 150),
     Schema.number("Detail", 8, {step: 1, min: 1, max: 20}),

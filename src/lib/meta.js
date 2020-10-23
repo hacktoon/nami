@@ -1,8 +1,12 @@
 import { Color } from '/lib/color'
 
 
-// let's create our own type system
-class Type {
+// let's create our own type system, it's fun
+class TypeClass {
+    static instance(TypeClass) {
+        return (label, value, props={}) => new TypeClass(label, value, props)
+    }
+
     constructor(type, label, value, props) {
         this.type = type
         this.label = label ?? type
@@ -14,7 +18,7 @@ class Type {
 }
 
 
-export class NumberType extends Type {
+export class NumberType extends TypeClass {
     constructor(label, value, props) {
         super('number', label, value, props)
     }
@@ -25,7 +29,7 @@ export class NumberType extends Type {
 }
 
 
-export class TextType extends Type {
+export class TextType extends TypeClass {
     constructor(label, value, props) {
         super('text', label, value, props)
     }
@@ -36,7 +40,7 @@ export class TextType extends Type {
 }
 
 
-export class SeedType extends Type {
+export class SeedType extends TypeClass {
     constructor(label, value, props) {
         super('text', label, value, props)
     }
@@ -48,7 +52,7 @@ export class SeedType extends Type {
 }
 
 
-export class ColorType extends Type {
+export class ColorType extends TypeClass {
     constructor(label, value, props) {
         super('color', label, value, props)
     }
@@ -59,7 +63,7 @@ export class ColorType extends Type {
 }
 
 
-export class BooleanType extends Type {
+export class BooleanType extends TypeClass {
     constructor(label, value, props) {
         super('boolean', label, value, props)
     }
@@ -71,35 +75,28 @@ export class BooleanType extends Type {
 
 
 export class Schema {
-    static boolean = buildType(BooleanType)
-    static text = buildType(TextType)
-    static number = buildType(NumberType)
-    static color = buildType(ColorType)
-    static seed = buildType(SeedType)
+    static boolean = TypeClass.instance(BooleanType)
+    static text = TypeClass.instance(TextType)
+    static number = TypeClass.instance(NumberType)
+    static color = TypeClass.instance(ColorType)
+    static seed = TypeClass.instance(SeedType)
 }
 
 
-function buildType(TypeClass) {
-    return (label, value, props={}) => new TypeClass(label, value, props)
-}
-
-
-export class Meta {
-    constructor(name, ...types) {
+export class MetaClass {
+    constructor(name, ...schema) {
         this.name = removeSymbols(name).replace(' ', '')
-        this.types = types
+        this.schema = schema
     }
 
     get defaultConfig() {
-        return Object.fromEntries(this.types.map(
-            type => [type.name, type.value]
-        ))
+        const entries = this.schema.map(type => [type.name, type.value])
+        return Object.fromEntries(entries)
     }
 
     get nameMap() {
-        return Object.fromEntries(this.types.map(
-            type => [type.name, type]
-        ))
+        const entries = this.schema.map(type => [type.name, type])
+        return Object.fromEntries(entries)
     }
 
     parse(raw_data) {

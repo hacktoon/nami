@@ -1,4 +1,4 @@
-import { Meta, Schema } from '/lib/meta'
+import { MetaClass, Schema } from '/lib/meta'
 import { Grid } from '/lib/grid'
 
 import { RegionMap } from '/model/regionmap'
@@ -6,7 +6,7 @@ import { RegionMap } from '/model/regionmap'
 import { Diagram } from './image'
 
 
-const META = new Meta('TectonicsMap',
+const META = new MetaClass('TectonicsMap',
     Schema.number("Width", 200),
     Schema.number("Height", 150),
     Schema.number("Plates", 8),

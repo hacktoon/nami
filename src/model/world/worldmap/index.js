@@ -2,13 +2,13 @@ import Tile from './tile'
 import { Grid } from '/lib/grid'
 import { Name } from '/lib/name'
 import { Random } from '/lib/random'
-import { Meta, Schema } from '/lib/meta'
+import { MetaClass, Schema } from '/lib/meta'
 
 import { ReliefMap } from './geo/relief'
 import { Diagram } from './image'
 
 
-const META = new Meta('WorldMap',
+const META = new MetaClass('WorldMap',
     Schema.number("Roughness", 8),
     Schema.number("Size", 257, {min: 1, step: 1}),
     Schema.seed("Seed", '')
