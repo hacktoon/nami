@@ -24,11 +24,16 @@ function MapAppView({Diagram, map}) {
     const [config, setConfig] = useState(null)
     const diagram = Diagram.create(map, config)
 
+    const handleZoom = amount => {
+        const newConfig = {...config, tileSize: diagram.tileSize + amount}
+        setConfig(newConfig)
+    }
+
     return <>
         <Form className="Diagram"
               meta={Diagram.meta}
               onSubmit={setConfig}
               onChange={setConfig} />
-        <MapView diagram={diagram} />
+        <MapView diagram={diagram} onZoom={handleZoom} />
     </>
 }

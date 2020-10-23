@@ -79,6 +79,11 @@ export class Schema {
 }
 
 
+function buildType(TypeClass) {
+    return (label, value, props={}) => new TypeClass(label, value, props)
+}
+
+
 export class Meta {
     constructor(name, ...schema) {
         this.name = removeSymbols(name).replace(' ', '')
@@ -98,11 +103,13 @@ export class Meta {
     }
 
     parse(raw_data) {
-        const data = raw_data ?? this.defaultConfig
+        const data = Object.assign(this.defaultConfig, raw_data)
         const map = {}
+
         for(let [name, value] of Object.entries(data)) {
             map[name] = this.nameMap[name].sanitize(value)
         }
+
         return map
     }
 }
@@ -121,9 +128,4 @@ function normalizeLabel(label) {
 
 function removeSymbols(text) {
     return text.replace(/[^a-zA-Z0-9]/g, '')
-}
-
-
-function buildType(_Type) {
-    return (label, value, props={}) => new _Type(label, value, props)
 }

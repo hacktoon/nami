@@ -7,13 +7,18 @@ import { Camera, Frame } from './camera'
 import { MouseTrack } from './mouse'
 
 
-export function MapView({diagram, focus = new Point(0, 0)}) {
+export function MapView({diagram, focus = new Point(0, 0), onZoom}) {
     const viewportRef = useRef(null)
     const [width, height] = useResize(viewportRef)
 
     function render() {
         const frame = new Frame(diagram.tileSize, width, height)
-        return <MapViewFrame diagram={diagram} frame={frame} baseFocus={focus} />
+        return <MapViewFrame
+            diagram={diagram}
+            frame={frame}
+            baseFocus={focus}
+            onZoom={onZoom}
+        />
     }
 
     return <section className="MapView" ref={viewportRef}>
@@ -22,18 +27,14 @@ export function MapView({diagram, focus = new Point(0, 0)}) {
 }
 
 
-function MapViewFrame({diagram, frame, baseFocus}) {
-    const [cursor, setCursor] = useState(baseFocus)
+function MapViewFrame({diagram, frame, baseFocus, onZoom}) {
     const [offset, setOffset] = useState(new Point())
+    const [cursor, setCursor] = useState(baseFocus)
     const [focus, setFocus] = useState(baseFocus)
 
     const camera = new Camera(diagram, frame, focus)
 
     const handleMove = point => {
-        // setCursor(point)
-    }
-
-    const handleWheel = direction => {
         // setCursor(point)
     }
 
@@ -55,7 +56,7 @@ function MapViewFrame({diagram, frame, baseFocus}) {
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
             onMove={handleMove}
-            onWheel={handleWheel}
+            onWheel={onZoom}
         />
         <MapCanvas camera={camera} onInit={handleInit} onBGInit={handleBGInit}/>
     </>
