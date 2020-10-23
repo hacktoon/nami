@@ -3,16 +3,13 @@ import { MetaClass, Schema } from '/lib/meta'
 import { Color } from '/lib/color'
 
 
-const META = new MetaClass('NoiseMapDiagram',
-    Schema.number("Tile size", 6, {step: 1, min: 1}),
-)
-
-
 export class Diagram {
-    static meta = META
+    static meta = new MetaClass(
+        Schema.number("Tile size", 6, {step: 1, min: 1}),
+    )
 
     static create(map, data) {
-        const config = META.parse(data)
+        const config = Diagram.meta.parseConfig(data)
         return new Diagram(map, config)
     }
 

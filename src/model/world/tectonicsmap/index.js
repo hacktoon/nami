@@ -2,24 +2,20 @@ import { MetaClass, Schema } from '/lib/meta'
 import { Grid } from '/lib/grid'
 
 import { RegionMap } from '/model/regionmap'
-
 import { Diagram } from './image'
 
 
-const META = new MetaClass('TectonicsMap',
-    Schema.number("Width", 200),
-    Schema.number("Height", 150),
-    Schema.number("Plates", 8),
-    Schema.seed("Seed", '')
-)
-
-
 export default class TectonicsMap {
-    static meta = META
+    static meta = new MetaClass(
+        Schema.number("Width", 200),
+        Schema.number("Height", 150),
+        Schema.number("Plates", 8),
+        Schema.seed("Seed", '')
+    )
     static Diagram = Diagram
 
     static create(data) {
-        const config = META.parse(data)
+        const config = TectonicsMap.meta.parseConfig(data)
         const regionMap = createRegionMap(config)
         const borders = []
         const grid = new Grid(config.width, config.height, point => {

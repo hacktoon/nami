@@ -9,22 +9,19 @@ import { RegionGrid } from './grid'
 import { Diagram } from './diagram'
 
 
-const META = new MetaClass('RegionMap',
-    Schema.number("Width", 200),
-    Schema.number("Height", 150),
-    Schema.number("Count", 8),
-    Schema.number("Layer growth", 40, {step: 1, min: 1}),
-    Schema.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
-    Schema.seed("Seed", '')
-)
-
-
 export default class RegionMap {
-    static meta = META
+    static meta = new MetaClass(
+        Schema.number("Width", 200),
+        Schema.number("Height", 150),
+        Schema.number("Count", 8),
+        Schema.number("Layer growth", 40, {step: 1, min: 1}),
+        Schema.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
+        Schema.seed("Seed", '')
+    )
     static Diagram = Diagram
 
     static create(data) {
-        const config = META.parse(data)
+        const config = RegionMap.meta.parseConfig(data)
         Random.seed = config.seed
         const grid = new RegionGrid(config.width, config.height)
         const points = createPoints(config.count, config.width, config.height)

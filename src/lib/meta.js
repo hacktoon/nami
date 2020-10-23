@@ -84,8 +84,7 @@ export class Schema {
 
 
 export class MetaClass {
-    constructor(name, ...schema) {
-        this.name = removeSymbols(name).replace(' ', '')
+    constructor(...schema) {
         this.schema = schema
     }
 
@@ -99,7 +98,7 @@ export class MetaClass {
         return Object.fromEntries(entries)
     }
 
-    parse(raw_data) {
+    parseConfig(raw_data) {
         const data = Object.assign(this.defaultConfig, raw_data)
         const map = {}
 

@@ -2,18 +2,15 @@ import { Grid } from '/lib/grid'
 import { MetaClass, Schema } from '/lib/meta'
 
 
-const META = new MetaClass('RegionMapDiagram',
-    Schema.boolean("Wrap grid", false),
-    Schema.boolean("Show border", true),
-    Schema.number("Tile size", 6, {step: 1, min: 1}),
-)
-
-
 export class Diagram {
-    static meta = META
+    static meta = new MetaClass(
+        Schema.boolean("Wrap grid", false),
+        Schema.boolean("Show border", true),
+        Schema.number("Tile size", 6, {step: 1, min: 1}),
+    )
 
     static create(tectonicsMap, data) {
-        const config = META.parse(data)
+        const config = Diagram.meta.parseConfig(data)
         return new Diagram(tectonicsMap, config)
     }
 

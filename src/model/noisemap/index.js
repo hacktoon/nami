@@ -6,22 +6,19 @@ import { MetaClass, Schema } from '/lib/meta'
 import { Diagram } from './image'
 
 
-const META = new MetaClass('NoiseMap',
-    Schema.number("Width", 150),
-    Schema.number("Height", 150),
-    Schema.number("Detail", 8, {step: 1, min: 1, max: 20}),
-    Schema.number("Resolution", .5, {step: 0.1, min: 0.1}),
-    Schema.number("Scale", .01, {step: 0.01, min: 0.01}),
-    Schema.seed("Seed", '')
-)
-
-
 export default class NoiseMap {
-    static meta = META
+    static meta = new MetaClass(
+        Schema.number("Width", 150),
+        Schema.number("Height", 150),
+        Schema.number("Detail", 8, {step: 1, min: 1, max: 20}),
+        Schema.number("Resolution", .5, {step: 0.1, min: 0.1}),
+        Schema.number("Scale", .01, {step: 0.01, min: 0.01}),
+        Schema.seed("Seed", '')
+    )
     static Diagram = Diagram
 
     static create(data) {
-        const config = META.parse(data)
+        const config = NoiseMap.meta.parseConfig(data)
         const {width, height, detail, resolution, scale, seed} = config
         Random.seed = seed
         const simplex = new SimplexNoise()

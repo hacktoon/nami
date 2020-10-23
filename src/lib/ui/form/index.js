@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { TYPE_FIELD_MAP } from './field'
 
 
-export function Form({meta, onSubmit, onChange, ...props}) {
+export function Form({meta, values, onSubmit, onChange, ...props}) {
     const [data, setData] = useState(meta.defaultConfig)
 
     const handleSubmit = event => {
@@ -22,13 +22,13 @@ export function Form({meta, onSubmit, onChange, ...props}) {
     const className = `Form ${props.className}`
 
     return <form className={className} onSubmit={handleSubmit}>
-        {buildFields(meta, handleChange)}
+        {buildFields(meta, values, handleChange)}
         {props.children}
     </form>
 }
 
 
-function buildFields(meta, onChange) {
+function buildFields(meta, values, onChange) {
     return meta.schema.map((typeClass, id) => {
         const {type, props, ...rest} = typeClass
         const FieldComponent = TYPE_FIELD_MAP[type]
