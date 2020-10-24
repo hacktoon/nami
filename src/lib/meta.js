@@ -1,16 +1,16 @@
 
 export class MetaClass {
-    constructor(...schema) {
-        this.schema = schema
+    constructor(...types) {
+        this.types = types
     }
 
     get defaultConfig() {
-        const entries = this.schema.map(type => [type.name, type.defaultValue])
+        const entries = this.types.map(type => [type.name, type.value])
         return Object.fromEntries(entries)
     }
 
     get nameMap() {
-        const entries = this.schema.map(type => [type.name, type])
+        const entries = this.types.map(type => [type.name, type])
         return Object.fromEntries(entries)
     }
 
@@ -19,8 +19,8 @@ export class MetaClass {
         const types = Object.entries(data)
         const map = {}
 
-        for(let [name, defaultValue] of types) {
-            map[name] = this.nameMap[name].sanitize(defaultValue)
+        for(let [name, value] of types) {
+            map[name] = this.nameMap[name].sanitize(value)
         }
 
         return map

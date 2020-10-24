@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from 'react'
 
 
-export function NumberField({id, label, defaultValue, onChange, ...props}) {
+export function NumberField({id, label, value, onChange, ...props}) {
     const handleChange = event => onChange(props.name, event.currentTarget.value)
 
     return <Field key={id} type='number' label={label} {...props}>
         <input
             type='number'
-            defaultValue={defaultValue}
+            defaultValue={value}
             onChange={handleChange}
             {...props}
         />
@@ -15,13 +15,13 @@ export function NumberField({id, label, defaultValue, onChange, ...props}) {
 }
 
 
-export function TextField({id, label, defaultValue, onChange, ...props}) {
+export function TextField({id, label, value, onChange, ...props}) {
     const handleChange = event => onChange(props.name, event.currentTarget.value)
 
     return <Field key={id} type='text' label={label}>
         <input
             type='text'
-            defaultValue={defaultValue}
+            defaultValue={value}
             onChange={handleChange}
             {...props}
         />
@@ -29,7 +29,7 @@ export function TextField({id, label, defaultValue, onChange, ...props}) {
 }
 
 
-export function SelectField({id, label, defaultValue, onChange, options, ...props}) {
+export function SelectField({id, label, value, onChange, options, ...props}) {
     const handleChange = event => onChange(props.name, event.currentTarget.value)
 
     function buildSelectOptions(options) {
@@ -41,15 +41,15 @@ export function SelectField({id, label, defaultValue, onChange, options, ...prop
     }
 
     return <Field key={id} type='select' label={label}>
-        <select defaultValue={defaultValue} {...props} onChange={handleChange}>
+        <select defaultValue={value} {...props} onChange={handleChange}>
             {useMemo(() => buildSelectOptions(options), [options])}
         </select>
     </Field>
 }
 
 
-export function BooleanField({id, label, defaultValue, onChange, ...props}) {
-    const [status, setStatus] = useState(defaultValue)
+export function BooleanField({id, label, value, onChange, ...props}) {
+    const [status, setStatus] = useState(value)
     const onClick = () => {
         onChange(props.name, !status)
         setStatus(!status)
@@ -62,8 +62,8 @@ export function BooleanField({id, label, defaultValue, onChange, ...props}) {
 }
 
 
-export function ColorField({id, label, defaultValue, onChange, ...props}) {
-    const [color, setColor] = useState(defaultValue)
+export function ColorField({id, label, value, onChange, ...props}) {
+    const [color, setColor] = useState(value)
     const handleChange = event => {
         const newColor = event.currentTarget.value
         setColor(newColor)

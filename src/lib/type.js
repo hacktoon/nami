@@ -4,16 +4,16 @@ import { Color } from '/lib/color'
 // let's create our own type system, it's fun
 class AbstractType {
     static create(AbstractType) {
-        return (label, defaultValue, props={}) => {
-            return new AbstractType(label, defaultValue, props)
+        return (label, value, props={}) => {
+            return new AbstractType(label, value, props)
         }
     }
 
-    constructor(type, label, defaultValue, props) {
+    constructor(type, label, value, props) {
         this.type = type
         this.label = label
         this.name = normalizeLabel(label)
-        this.defaultValue = defaultValue
+        this.value = value
         this.props = props
         this.description = props.description ?? `${type}(${label})`
     }
