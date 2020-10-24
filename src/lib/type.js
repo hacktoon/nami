@@ -17,6 +17,10 @@ class AbstractType {
         this.props = props
         this.description = props.description ?? `${type}(${label})`
     }
+
+    sanitize(value) {
+        return value
+    }
 }
 
 
@@ -65,10 +69,6 @@ export class ColorType extends AbstractType {
 
     constructor(label, value, props) {
         super(ColorType.type, label, value, props)
-    }
-
-    sanitize(value) {
-        return Color.fromHex(value)
     }
 }
 

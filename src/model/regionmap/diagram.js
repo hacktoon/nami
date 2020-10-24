@@ -1,5 +1,6 @@
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
+import { Color } from '/lib/color'
 
 
 // TODO: diagram should be a tile filter
@@ -14,9 +15,9 @@ export class Diagram {
         Type.boolean("Show origin", false),
         Type.number("Tile size", 80, {step: 1, min: 1}),
         Type.number("Layer", 10, {step: 1, min: 0}),
-        Type.color("Foreground", '#251'),
-        Type.color("Background", '#059'),
-        Type.color("Border color", '#04D'),
+        Type.color("Foreground", Color.fromHex('#251')),
+        Type.color("Background", Color.fromHex('#059')),
+        Type.color("Border color", Color.fromHex('#04D')),
     )
 
     static create(regionMap, rawConfig) {

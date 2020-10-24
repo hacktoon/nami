@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react'
 
+import { Color } from '/lib/color'
+
 
 export function NumberField({id, label, value, onChange, ...props}) {
     const handleChange = event => onChange(props.name, event.currentTarget.value)
@@ -65,16 +67,19 @@ export function BooleanField({id, label, value, onChange, ...props}) {
 export function ColorField({id, label, value, onChange, ...props}) {
     const [color, setColor] = useState(value)
     const handleChange = event => {
-        const newColor = event.currentTarget.value
+        const newColor = Color.fromHex(event.currentTarget.value)
         setColor(newColor)
         onChange(props.name, newColor)
     }
 
     return <Field key={id} type='color' label={label}>
-        <span className="ColorView" style={{backgroundColor: color}}></span>
+        <span
+            className="ColorView"
+            style={{backgroundColor: color.toHex()}}>
+        </span>
         <input
             type='text'
-            defaultValue={color}
+            defaultValue={color.toHex()}
             onChange={handleChange}
             {...props}
         />
