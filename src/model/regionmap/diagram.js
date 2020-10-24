@@ -1,4 +1,4 @@
-import { Schema } from '/lib/type'
+import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
 
@@ -9,14 +9,14 @@ import { MetaClass } from '/lib/meta'
 
 export class Diagram {
     static meta = new MetaClass(
-        Schema.boolean("Wrap grid", false),
-        Schema.boolean("Show border", true),
-        Schema.boolean("Show origin", false),
-        Schema.number("Tile size", 80, {step: 1, min: 1}),
-        Schema.number("Layer", 10, {step: 1, min: 0}),
-        Schema.color("Foreground", '#251'),
-        Schema.color("Background", '#059'),
-        Schema.color("Border color", '#04D'),
+        Type.boolean("Wrap grid", false),
+        Type.boolean("Show border", true),
+        Type.boolean("Show origin", false),
+        Type.number("Tile size", 80, {step: 1, min: 1}),
+        Type.number("Layer", 10, {step: 1, min: 0}),
+        Type.color("Foreground", '#251'),
+        Type.color("Background", '#059'),
+        Type.color("Border color", '#04D'),
     )
 
     static create(regionMap, rawConfig) {

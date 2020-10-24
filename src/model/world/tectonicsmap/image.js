@@ -1,13 +1,13 @@
 import { Grid } from '/lib/grid'
-import { Schema } from '/lib/type'
+import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
 
 export class Diagram {
     static meta = new MetaClass(
-        Schema.boolean("Wrap grid", false),
-        Schema.boolean("Show border", true),
-        Schema.number("Tile size", 6, {step: 1, min: 1}),
+        Type.boolean("Wrap grid", false),
+        Type.boolean("Show border", true),
+        Type.number("Tile size", 6, {step: 1, min: 1}),
     )
 
     static create(tectonicsMap, data) {

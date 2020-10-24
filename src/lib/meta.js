@@ -5,7 +5,7 @@ export class MetaClass {
     }
 
     get defaultConfig() {
-        const entries = this.schema.map(type => [type.name, type.value])
+        const entries = this.schema.map(type => [type.name, type.defaultValue])
         return Object.fromEntries(entries)
     }
 
@@ -19,8 +19,8 @@ export class MetaClass {
         const types = Object.entries(data)
         const map = {}
 
-        for(let [name, value] of types) {
-            map[name] = this.nameMap[name].sanitize(value)
+        for(let [name, defaultValue] of types) {
+            map[name] = this.nameMap[name].sanitize(defaultValue)
         }
 
         return map

@@ -1,4 +1,4 @@
-import { Schema } from '/lib/type'
+import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 import { Grid } from '/lib/grid'
 
@@ -8,10 +8,10 @@ import { Diagram } from './image'
 
 export default class TectonicsMap {
     static meta = new MetaClass(
-        Schema.number("Width", 200),
-        Schema.number("Height", 150),
-        Schema.number("Plates", 8),
-        Schema.seed("Seed", '')
+        Type.number("Width", 200),
+        Type.number("Height", 150),
+        Type.number("Plates", 8),
+        Type.seed("Seed", '')
     )
     static Diagram = Diagram
 

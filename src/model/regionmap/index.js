@@ -2,7 +2,7 @@ import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
 import { Point } from '/lib/point'
 import { OrganicFill } from '/lib/flood-fill'
-import { Schema } from '/lib/type'
+import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
 import { Region } from './region'
@@ -12,12 +12,12 @@ import { Diagram } from './diagram'
 
 export default class RegionMap {
     static meta = new MetaClass(
-        Schema.number("Width", 200),
-        Schema.number("Height", 150),
-        Schema.number("Count", 8),
-        Schema.number("Layer growth", 40, {step: 1, min: 1}),
-        Schema.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
-        Schema.seed("Seed", '')
+        Type.number("Width", 200),
+        Type.number("Height", 150),
+        Type.number("Count", 8),
+        Type.number("Layer growth", 40, {step: 1, min: 1}),
+        Type.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
+        Type.seed("Seed", '')
     )
     static Diagram = Diagram
 
@@ -36,6 +36,7 @@ export default class RegionMap {
         this.height = config.height
         this.regions = regions
         this.grid = grid
+        this.config = config
     }
 
     get(point) {

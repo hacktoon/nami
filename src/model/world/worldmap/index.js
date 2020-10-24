@@ -2,7 +2,7 @@ import Tile from './tile'
 import { Grid } from '/lib/grid'
 import { Name } from '/lib/name'
 import { Random } from '/lib/random'
-import { Schema } from '/lib/type'
+import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
 import { ReliefMap } from './geo/relief'
@@ -11,9 +11,9 @@ import { Diagram } from './image'
 
 export default class WorldMap {
     static meta = new MetaClass(
-        Schema.number("Roughness", 8),
-        Schema.number("Size", 257, {min: 1, step: 1}),
-        Schema.seed("Seed", '')
+        Type.number("Roughness", 8),
+        Type.number("Size", 257, {min: 1, step: 1}),
+        Type.seed("Seed", '')
     )
     static Diagram = Diagram
 

@@ -1,12 +1,12 @@
 import { Grid } from '/lib/grid'
-import { Schema } from '/lib/type'
+import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 import { Color } from '/lib/color'
 
 
 export class Diagram {
     static meta = new MetaClass(
-        Schema.number("Tile size", 6, {step: 1, min: 1}),
+        Type.number("Tile size", 6, {step: 1, min: 1}),
     )
 
     static create(map, data) {

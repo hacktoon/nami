@@ -1,7 +1,7 @@
 import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { SimplexNoise } from '/lib/noise'
-import { Schema } from '/lib/type'
+import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
 import { Diagram } from './image'
@@ -9,12 +9,12 @@ import { Diagram } from './image'
 
 export default class NoiseMap {
     static meta = new MetaClass(
-        Schema.number("Width", 150),
-        Schema.number("Height", 150),
-        Schema.number("Detail", 8, {step: 1, min: 1, max: 20}),
-        Schema.number("Resolution", .5, {step: 0.1, min: 0.1}),
-        Schema.number("Scale", .01, {step: 0.01, min: 0.01}),
-        Schema.seed("Seed", '')
+        Type.number("Width", 150),
+        Type.number("Height", 150),
+        Type.number("Detail", 8, {step: 1, min: 1, max: 20}),
+        Type.number("Resolution", .5, {step: 0.1, min: 0.1}),
+        Type.number("Scale", .01, {step: 0.01, min: 0.01}),
+        Type.seed("Seed", '')
     )
     static Diagram = Diagram
 

@@ -8,9 +8,11 @@ import { MapView } from './view'
 export function MapApp({Map}) {
     const [map, setMap] = useState(prev => prev ?? Map.create())
     const handleMap = config => setMap(Map.create(config))
+
     return <section className='MapApp'>
         <Form className="Map"
             meta={Map.meta}
+            values={map.config}
             onSubmit={handleMap}
             onChange={handleMap}>
                 <Button label="New" />

@@ -2,23 +2,25 @@ import { Color } from '/lib/color'
 
 
 // let's create our own type system, it's fun
-class TypeClass {
-    static instance(TypeClass) {
-        return (label, value, props={}) => new TypeClass(label, value, props)
+class AbstractType {
+    static create(AbstractType) {
+        return (label, defaultValue, props={}) => {
+            return new AbstractType(label, defaultValue, props)
+        }
     }
 
-    constructor(type, label, value, props) {
+    constructor(type, label, defaultValue, props) {
         this.type = type
-        this.label = label ?? type
+        this.label = label
         this.name = normalizeLabel(label)
-        this.value = value
+        this.defaultValue = defaultValue
         this.props = props
-        this.description = props.description ?? `A ${type}.`
+        this.description = props.description ?? `${type}(${label})`
     }
 }
 
 
-export class NumberType extends TypeClass {
+export class NumberType extends AbstractType {
     static type = 'number'
 
     constructor(label, value, props) {
@@ -31,7 +33,7 @@ export class NumberType extends TypeClass {
 }
 
 
-export class TextType extends TypeClass {
+export class TextType extends AbstractType {
     static type = 'text'
 
     constructor(label, value, props) {
@@ -44,7 +46,7 @@ export class TextType extends TypeClass {
 }
 
 
-export class SeedType extends TypeClass {
+export class SeedType extends AbstractType {
     static type = 'text'
 
     constructor(label, value, props) {
@@ -58,7 +60,7 @@ export class SeedType extends TypeClass {
 }
 
 
-export class ColorType extends TypeClass {
+export class ColorType extends AbstractType {
     static type = 'color'
 
     constructor(label, value, props) {
@@ -71,7 +73,7 @@ export class ColorType extends TypeClass {
 }
 
 
-export class BooleanType extends TypeClass {
+export class BooleanType extends AbstractType {
     static type = 'boolean'
 
     constructor(label, value, props) {
@@ -84,12 +86,12 @@ export class BooleanType extends TypeClass {
 }
 
 
-export class Schema {
-    static boolean = TypeClass.instance(BooleanType)
-    static text = TypeClass.instance(TextType)
-    static number = TypeClass.instance(NumberType)
-    static color = TypeClass.instance(ColorType)
-    static seed = TypeClass.instance(SeedType)
+export class Type {
+    static boolean = AbstractType.create(BooleanType)
+    static text = AbstractType.create(TextType)
+    static number = AbstractType.create(NumberType)
+    static color = AbstractType.create(ColorType)
+    static seed = AbstractType.create(SeedType)
 }
 
 
