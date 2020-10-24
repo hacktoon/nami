@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 
 
-export function NumberField({id, value, label, onChange, ...props}) {
+export function NumberField({id, label, value, onChange, ...props}) {
     const handleChange = event => onChange(props.name, event.currentTarget.value)
     return <Field key={id} type='number' label={label} {...props}>
         <input type='number' defaultValue={value} onChange={handleChange} {...props} />
@@ -9,7 +9,7 @@ export function NumberField({id, value, label, onChange, ...props}) {
 }
 
 
-export function TextField({id, value, label, onChange, ...props}) {
+export function TextField({id, label, value, onChange, ...props}) {
     const handleChange = event => onChange(props.name, event.currentTarget.value)
     return <Field key={id} type='text' label={label}>
         <input type='text' defaultValue={value} {...props} onChange={handleChange} />
@@ -17,7 +17,7 @@ export function TextField({id, value, label, onChange, ...props}) {
 }
 
 
-export function SelectField({id, value, label, onChange, options, ...props}) {
+export function SelectField({id, label, value, onChange, options, ...props}) {
     function buildSelectOptions(options) {
         const entries = Object.entries(options)
         return entries.map((option, index) => {
@@ -47,7 +47,7 @@ export function BooleanField({id, label, value, onChange, ...props}) {
 }
 
 
-export function ColorField({id, value, label, onChange, ...props}) {
+export function ColorField({id, label, value, onChange, ...props}) {
     const [color, setColor] = useState(value)
     const handleChange = event => {
         const newColor = event.currentTarget.value

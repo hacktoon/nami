@@ -19,8 +19,10 @@ class TypeClass {
 
 
 export class NumberType extends TypeClass {
+    static type = 'number'
+
     constructor(label, value, props) {
-        super('number', label, value, props)
+        super(NumberType.type, label, value, props)
     }
 
     sanitize(value) {
@@ -30,8 +32,10 @@ export class NumberType extends TypeClass {
 
 
 export class TextType extends TypeClass {
+    static type = 'text'
+
     constructor(label, value, props) {
-        super('text', label, value, props)
+        super(TextType.type, label, value, props)
     }
 
     sanitize(value) {
@@ -41,8 +45,10 @@ export class TextType extends TypeClass {
 
 
 export class SeedType extends TypeClass {
+    static type = 'text'
+
     constructor(label, value, props) {
-        super('text', label, value, props)
+        super(SeedType.type, label, value, props)
     }
 
     sanitize(value) {
@@ -53,8 +59,10 @@ export class SeedType extends TypeClass {
 
 
 export class ColorType extends TypeClass {
+    static type = 'color'
+
     constructor(label, value, props) {
-        super('color', label, value, props)
+        super(ColorType.type, label, value, props)
     }
 
     sanitize(value) {
@@ -64,8 +72,10 @@ export class ColorType extends TypeClass {
 
 
 export class BooleanType extends TypeClass {
+    static type = 'boolean'
+
     constructor(label, value, props) {
-        super('boolean', label, value, props)
+        super(BooleanType.type, label, value, props)
     }
 
     sanitize(value) {
