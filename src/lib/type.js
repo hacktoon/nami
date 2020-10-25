@@ -51,7 +51,7 @@ export class TextType extends AbstractType {
 
 
 export class SeedType extends AbstractType {
-    static type = 'text'
+    static type = 'seed'
 
     constructor(label, value, props) {
         super(SeedType.type, label, value, props)

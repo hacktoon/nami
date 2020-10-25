@@ -23,10 +23,20 @@ export function TextField({id, label, value, onChange, ...props}) {
     return <Field key={id} type='text' label={label}>
         <input
             type='text'
-            defaultValue={value}
+            value={value}
             onChange={handleChange}
             {...props}
         />
+    </Field>
+}
+
+
+// TODO: receive typeClass in args
+export function SeedField({id, label, value, onChange, ...props}) {
+    const handleChange = event => onChange(props.name, event.currentTarget.value)
+
+    return <Field key={id} type='text' label={label}>
+        <input type='text' onChange={handleChange} {...props} />
     </Field>
 }
 
@@ -101,5 +111,6 @@ export const TYPE_FIELD_MAP = {
     boolean: BooleanField,
     number: NumberField,
     text: TextField,
+    seed: SeedField,
     color: ColorField
 }
