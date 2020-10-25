@@ -8,10 +8,7 @@ export function Form({meta, values, onSubmit, onChange, ...props}) {
 
     const handleSubmit = event => {
         event.preventDefault()
-        const newData = {...values, ...cache}
-        console.log(newData)
-        // console.log(newData);
-        onSubmit && onSubmit(newData)
+        onSubmit && onSubmit(cache)
         // TODO: get errors here from onSubmit
     }
 
