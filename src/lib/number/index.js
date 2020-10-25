@@ -1,6 +1,6 @@
 
 
-export const interpolateNumbers = function(from, to, totalItems){
+export const interpolateNumbers = (from, to, totalItems) => {
     var totalNumbers = to - from + 1,
         stepValue = totalNumbers / totalItems,
         numbers = [from],
@@ -15,9 +15,7 @@ export const interpolateNumbers = function(from, to, totalItems){
 }
 
 
-export const clamp = function(number, min, max) {
-    return Math.max(min, Math.min(number, max))
-}
+export const clamp = (value, min, max) => Math.max(min, Math.min(value, max))
 
 
 export const sum = arr => arr.reduce((a,b) => a + b, 0)

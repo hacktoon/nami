@@ -9,6 +9,7 @@ export function Form({meta, values, onSubmit, onChange, ...props}) {
     const handleSubmit = event => {
         event.preventDefault()
         onSubmit && onSubmit(cache)
+        // console.log(cache);
         // TODO: get errors here from onSubmit
     }
 
@@ -22,18 +23,16 @@ export function Form({meta, values, onSubmit, onChange, ...props}) {
     const className = `Form ${props.className}`
 
     return <form className={className} onSubmit={handleSubmit}>
-        {buildFields(meta, values, handleChange)}
+        {buildFields(meta.types, values, handleChange)}
         {props.children}
     </form>
 }
 
 
-function buildFields(meta, values, onChange) {
-    return meta.types.map((typeClass, id) => {
+function buildFields(types, values, onChange) {
+    return types.map((typeClass, id) => {
         const {type, name, label, value, fieldAttrs, ...rest} = typeClass
         const FieldComponent = TYPE_FIELD_MAP[type]
-        // console.log(values[name]);
-
         return FieldComponent({
             id, name, label, value: values[name], onChange, ...fieldAttrs, ...rest
         })

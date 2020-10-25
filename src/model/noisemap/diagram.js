@@ -16,6 +16,7 @@ export class Diagram {
 
     constructor(map, config) {
         this.map = map
+        this.config = config
         this.width = map.width
         this.height = map.height
         this.wrapMode = false

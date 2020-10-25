@@ -4,7 +4,7 @@ import { SimplexNoise } from '/lib/noise'
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
-import { Diagram } from './image'
+import { Diagram } from './diagram'
 
 
 export default class NoiseMap {
@@ -30,13 +30,14 @@ export default class NoiseMap {
         return new NoiseMap(grid, config)
     }
 
-    constructor(grid, {width, height, detail, resolution, seed}) {
+    constructor(grid, config) {
         this.grid = grid
-        this.width = width
-        this.height = height
-        this.detail = detail
-        this.resolution = resolution
-        this.seed = seed
+        this.config = config
+        this.width = config.width
+        this.height = config.height
+        this.detail = config.detail
+        this.resolution = config.resolution
+        this.seed = config.seed
     }
 
     get(point) {
