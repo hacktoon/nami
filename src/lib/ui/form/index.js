@@ -4,7 +4,7 @@ import { TYPE_FIELD_MAP } from './field'
 
 
 export function Form({meta, values, onSubmit, onChange, ...props}) {
-    const [data, setData] = useState(meta.defaultConfig)
+    const [data, setData] = useState(values)
 
     const handleSubmit = event => {
         event.preventDefault()
@@ -28,12 +28,14 @@ export function Form({meta, values, onSubmit, onChange, ...props}) {
 }
 
 
-function buildFields(meta, values, onChange) {
+function buildFields(meta, data, onChange) {
     return meta.types.map((typeClass, id) => {
-        const {type, name, props, ...rest} = typeClass
-        // const values =
-        console.log(name, rest.value, values[name])
+        const {type, name, label, value, fieldAttrs, ...rest} = typeClass
         const FieldComponent = TYPE_FIELD_MAP[type]
-        return FieldComponent({id, name, onChange, ...props, ...rest})
+        // console.log(data[name]);
+
+        return FieldComponent({
+            id, name, label, value: data[name], onChange, ...fieldAttrs, ...rest
+        })
     })
 }

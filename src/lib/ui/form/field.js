@@ -9,7 +9,7 @@ export function NumberField({id, label, value, onChange, ...props}) {
     return <Field key={id} type='number' label={label} {...props}>
         <input
             type='number'
-            defaultValue={value}
+            value={value}
             onChange={handleChange}
             {...props}
         />

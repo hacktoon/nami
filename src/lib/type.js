@@ -9,13 +9,13 @@ class AbstractType {
         }
     }
 
-    constructor(type, label, value, props) {
+    constructor(type, label, value, fieldAttrs) {
         this.type = type
         this.label = label
         this.name = normalizeLabel(label)
         this.value = value
-        this.props = props
-        this.description = props.description ?? `${type}(${label})`
+        this.fieldAttrs = fieldAttrs
+        this.description = fieldAttrs.description ?? `${type}(${label})`
     }
 
     sanitize(value) {
