@@ -13,7 +13,7 @@ export class Diagram {
         Type.boolean("Wrap grid", false),
         Type.boolean("Show border", true),
         Type.boolean("Show origin", false),
-        Type.number("Tile size", 80, {step: 1, min: 1}),
+        Type.number("Tile size", 4, {step: 1, min: 1}),
         Type.number("Layer", 10, {step: 1, min: 0}),
         Type.color("Foreground", Color.fromHex('#251')),
         Type.color("Background", Color.fromHex('#059')),

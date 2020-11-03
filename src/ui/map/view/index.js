@@ -7,7 +7,7 @@ import { Camera, Frame } from './camera'
 import { MouseTrack } from './mouse'
 
 
-export function MapView({diagram, focus = new Point(0, 0), onZoom}) {
+export function MapView({diagram, focus = new Point(100, 74), onZoom}) {
     const viewportRef = useRef(null)
     const [width, height] = useResize(viewportRef)
 

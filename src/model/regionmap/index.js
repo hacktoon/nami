@@ -36,7 +36,7 @@ export default class RegionMap {
         this.height = config.height
         this.regions = regions
         this.grid = grid
-        this.config = config
+        this.config = {...config, seed: ''} // FIXME: abstract this on meta
     }
 
     get(point) {

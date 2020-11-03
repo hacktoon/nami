@@ -6,10 +6,8 @@ import { MapView } from './view'
 
 
 export function MapApp({Map}) {
-    const [config, setConfig] = useState({})
-    const map = Map.create(config)
-
-    const handleMap = config => setConfig(config)
+    const [map, setMap] = useState(Map.create())
+    const handleMap = config => setMap(Map.create(config))
 
     return <section className='MapApp'>
         <Form className="Map"
