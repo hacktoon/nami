@@ -1,24 +1,24 @@
 import { Random } from '/lib/random'
 
-
 function h(pts) {
     return pts.map(p => p.hash).join(' | ')
 }
+
 
 export class OrganicFill {
     constructor(originPoint, params={}) {
         this.layer = 0
         this.seeds = [originPoint]
-        this.setOrigin = params.setOrigin || function(){}
-        this.setValue = params.setValue || function(){}
-        this.setSeed = params.setSeed || function(){}
-        this.setLayer = params.setLayer || function(){}
-        this.setBorder = params.setBorder || function(){}
-        this.isSeed = params.isSeed || (() => true)
-        this.isEmpty = params.isEmpty || (() => false)
-        this.isBlocked = params.isBlocked || (() => true)
-        this.growthChance = params.growthChance || 1
-        this.layerGrowth = params.layerGrowth || 1
+        this.setOrigin = params.setOrigin ?? (()=>{})
+        this.setValue = params.setValue ?? (()=>{})
+        this.setSeed = params.setSeed ?? (()=>{})
+        this.setLayer = params.setLayer ?? (()=>{})
+        this.setBorder = params.setBorder ?? (()=>{})
+        this.isSeed = params.isSeed ?? (() => true)
+        this.isEmpty = params.isEmpty ?? (() => false)
+        this.isBlocked = params.isBlocked ?? (() => true)
+        this.growthChance = params.growthChance ?? 1
+        this.layerGrowth = params.layerGrowth ?? 1
 
         this.setOrigin(originPoint)
         this.setSeed(originPoint)
@@ -28,36 +28,35 @@ export class OrganicFill {
     fill() {
         if (this.seeds.length == 0)
             return []
-        const filled = this.fillValues(this.seeds)
-        const seeds = this.fillSeeds(filled)
+        const filled = this.#fillValues(this.seeds)
+        const seeds = this.#getSeeds(filled)
         let times_remaining = Random.int(this.layerGrowth)
+        // add extra tiles randomly
         while(seeds.length && times_remaining--) {
-            seeds.push(...this.fillRandomSeeds(seeds))
+            seeds.push(...this.#fillRandomSeeds(seeds))
         }
         this.layer++
         this.seeds = seeds
         return filled
     }
 
-    fillValues(points) {
-        return points.filter(point => {
-            if (this.isEmpty(point)) {
-                this.setValue(point)
-                return true
-            }
-            return false
+    #fillValues(seedPoints) {
+        return seedPoints.filter(point => {
+            if (! this.isEmpty(point)) return false
+            this.setValue(point)
+            return true
         })
     }
 
-    fillSeeds(points) {
+    #getSeeds(points) {
         let seeds = []
         points.forEach(point => {
             point.adjacents(neighbor => {
                 if (this.isBlocked(neighbor)) {
-                    this.setBorder(point)
+                    this.setBorder(point, neighbor)
                     return
                 }
-                if (this.isEmpty(neighbor) && !this.isSeed(neighbor)) {
+                if (this.#isSeedable(neighbor)) {
                     this.setSeed(neighbor)
                     this.setLayer(neighbor, this.layer)
                     seeds.push(neighbor)
@@ -67,15 +66,13 @@ export class OrganicFill {
         return seeds
     }
 
-    fillRandomValues(points) {
-        return this.fillValues(points.filter(() => {
-            Random.chance(this.growthChance)
-        }))
+    #isSeedable(point) {
+        return this.isEmpty(point) && !this.isSeed(point)
     }
 
-    fillRandomSeeds(points) {
+    #fillRandomSeeds(points) {
         const randPoints = points.filter(() => Random.chance(this.growthChance))
-        return this.fillSeeds(randPoints)
+        return this.#getSeeds(randPoints)
     }
 }
 

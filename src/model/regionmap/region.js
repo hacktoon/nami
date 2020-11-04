@@ -2,10 +2,9 @@ import { PointHash } from '/lib/point'
 
 
 export class Region {
-    constructor(id, origin, organicFill) { // TODO: remove organicFill
+    constructor(id, origin) {
         this.id = id
         this.origin = origin
-        this.organicFill = organicFill
         this.pointHash = new PointHash([origin])
     }
 
@@ -21,8 +20,7 @@ export class Region {
         return this.pointHash.has(point)
     }
 
-    grow() {
-        const filled = this.organicFill.fill()
-        this.pointHash.add(filled)
+    grow(points) {
+        this.pointHash.add(points)
     }
 }

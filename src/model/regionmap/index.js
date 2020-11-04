@@ -17,7 +17,7 @@ export default class RegionMap {
         Type.number("Count", 8),
         Type.number("Layer growth", 40, {step: 1, min: 1}),
         Type.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
-        Type.seed("Seed", '')
+        Type.seed("Seed", 'a')
     )
     static Diagram = Diagram
 
@@ -84,15 +84,19 @@ function createPoints(count, width, height) {
 
 
 function createRegions(points, grid, layerGrowth, growthChance) {
+    const fillerMap = {}
     const regions = points.map((origin, id) => {
-        const organicFill = createOrganicFill({
+        fillerMap[id] = createOrganicFill({
             id, origin, grid, layerGrowth, growthChance
         })
-        // TODO: remove fill from region args
-        return new Region(id, origin, organicFill)
+        return new Region(id, origin)
     })
+
     while(grid.hasEmptyPoints()) {
-        regions.forEach(region => region.grow())
+        regions.forEach(region => {
+            const points = fillerMap[region.id].fill()
+            region.grow(points)
+        })
     }
     return regions
 }
@@ -106,7 +110,7 @@ function createOrganicFill({
         growthChance
     }) {
     return new OrganicFill(origin, {
-        setBorder:  point => grid.setBorder(point),
+        setBorder:  (point, neighbor) => grid.setBorder(point, neighbor),
         setOrigin:  point => grid.setOrigin(point),
         setSeed:    point => grid.setSeed(point, id),
         setValue:   point => grid.setValue(point, id),
