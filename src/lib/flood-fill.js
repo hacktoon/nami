@@ -1,4 +1,6 @@
 import { Random } from '/lib/random'
+import { Direction } from '/lib/direction'
+
 
 function h(pts) {
     return pts.map(p => p.hash).join(' | ')
@@ -8,6 +10,7 @@ function h(pts) {
 export class OrganicFill {
     constructor(originPoint, params={}) {
         this.layer = 0
+        this.origin = originPoint
         this.seeds = [originPoint]
         this.setOrigin = params.setOrigin ?? (()=>{})
         this.setValue = params.setValue ?? (()=>{})
@@ -29,14 +32,9 @@ export class OrganicFill {
         if (this.seeds.length == 0)
             return []
         const filled = this.#fillValues(this.seeds)
-        const seeds = this.#getSeeds(filled)
-        let times_remaining = Random.int(this.layerGrowth)
-        // add extra tiles randomly
-        while(seeds.length && times_remaining--) {
-            seeds.push(...this.#fillRandomSeeds(seeds))
-        }
+        const seeds = this.#setSeeds(filled)
+        this.seeds = this.#setExtraSeeds(seeds)
         this.layer++
-        this.seeds = seeds
         return filled
     }
 
@@ -48,7 +46,7 @@ export class OrganicFill {
         })
     }
 
-    #getSeeds(points) {
+    #setSeeds(points) {
         let seeds = []
         points.forEach(point => {
             point.adjacents(neighbor => {
@@ -70,9 +68,14 @@ export class OrganicFill {
         return this.isEmpty(point) && !this.isSeed(point)
     }
 
-    #fillRandomSeeds(points) {
-        const randPoints = points.filter(() => Random.chance(this.growthChance))
-        return this.#getSeeds(randPoints)
+    #setExtraSeeds(seeds) {
+        let times_remaining = Random.int(this.layerGrowth)
+        const randFilter = () => Random.chance(this.growthChance)
+        while(seeds.length && times_remaining--) {
+            const randPoints = seeds.filter(randFilter)
+            seeds.push(...this.#setSeeds(randPoints))
+        }
+        return seeds
     }
 }
 

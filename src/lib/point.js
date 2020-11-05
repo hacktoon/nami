@@ -1,4 +1,3 @@
-import { repeat } from '/lib/function'
 import { Direction } from '/lib/direction'
 import { Random } from '/lib/random'
 
@@ -58,8 +57,6 @@ export class Point {
     apply(func=()=>{}) {
         return new Point(func(this.x), func(this.y))
     }
-
-    isPositive() { return this.x >= 0 && this.y >= 0 }
 
     isAdjacent(point) {
         const x = Math.abs(this.x - point.x)
@@ -125,6 +122,13 @@ export class Point {
     atSoutheast() { return new Point(this.x + 1, this.y + 1) }
     atNorthwest() { return new Point(this.x - 1, this.y - 1) }
     atSouthwest() { return new Point(this.x - 1, this.y + 1) }
+    isAtDirection(point, dir) {
+        const north = dir === Direction.NORTH && this.y > point.y
+        const south = dir === Direction.SOUTH && this.y < point.y
+        const west = dir === Direction.WEST && this.x > point.x
+        const east = dir === Direction.SOUTH && this.x < point.x
+        return north || south || east || west
+    }
 
     distance(point) {
         let deltaX = Math.pow(point.x - this.x, 2),
@@ -138,6 +142,8 @@ export class Point {
         return deltaX + deltaY
     }
 }
+
+window.Point = Point
 
 
 export class PointHash {
