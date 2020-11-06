@@ -22,4 +22,8 @@ export class PointHash {
     add(points) {
         points.forEach(point => this.set.add(point.hash))
     }
+
+    delete(point) {
+        this.set.delete(point.hash)
+    }
 }

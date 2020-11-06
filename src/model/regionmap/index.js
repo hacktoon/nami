@@ -1,6 +1,5 @@
-import { repeat } from '/lib/function'
 import { Random } from '/lib/random'
-import { Point } from '/lib/point'
+import { RandomPointDistribution } from '/lib/point/distribution'
 import { OrganicFill } from '/lib/flood-fill'
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
@@ -23,10 +22,11 @@ export default class RegionMap {
 
     static create(data) {
         const config = RegionMap.meta.parseConfig(data)
-        Random.seed = config.seed
-        const grid = new RegionGrid(config.width, config.height)
-        const points = createPoints(config.count, config.width, config.height)
-        const regions = createRegions(points, grid, config.layerGrowth, config.growthChance)
+        const {width, height, count, seed, layerGrowth, growthChance} = config
+        Random.seed = seed
+        const grid = new RegionGrid(width, height)
+        const points = RandomPointDistribution.create(count, width, height)
+        const regions = createRegions(points, grid, layerGrowth, growthChance)
         return new RegionMap(regions, grid, config)
     }
 
@@ -77,12 +77,6 @@ export default class RegionMap {
 
 
 // FUNCTIONS ===================================
-
-function createPoints(count, width, height) {
-    if (count <= 0) count = 1 // TODO: remove and use meta to sanitize
-    return repeat(count, () => Point.random(width, height))
-}
-
 
 function createRegions(points, grid, layerGrowth, growthChance) {
     const fillerMap = {}
