@@ -1,4 +1,4 @@
-import { PointHash } from '/lib/point'
+import { PointHash } from '/lib/point/hash'
 
 
 export class Region {

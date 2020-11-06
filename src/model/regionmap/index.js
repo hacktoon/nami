@@ -14,10 +14,10 @@ export default class RegionMap {
     static meta = new MetaClass(
         Type.number("Width", 200),
         Type.number("Height", 150),
-        Type.number("Count", 8),
+        Type.number("Count", 80, {step: 1, min: 1}),
         Type.number("Layer growth", 40, {step: 1, min: 1}),
         Type.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
-        Type.seed("Seed", 'a')
+        Type.seed("Seed", '')
     )
     static Diagram = Diagram
 
@@ -79,6 +79,7 @@ export default class RegionMap {
 // FUNCTIONS ===================================
 
 function createPoints(count, width, height) {
+    if (count <= 0) count = 1 // TODO: remove and use meta to sanitize
     return repeat(count, () => Point.random(width, height))
 }
 
