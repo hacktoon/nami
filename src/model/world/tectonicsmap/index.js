@@ -3,14 +3,14 @@ import { MetaClass } from '/lib/meta'
 import { Grid } from '/lib/grid'
 
 import { RegionMap } from '/model/regionmap'
-import { Diagram } from './image'
+import { Diagram } from './diagram'
 
 
 export default class TectonicsMap {
     static meta = new MetaClass(
-        Type.number("Width", 200),
-        Type.number("Height", 150),
-        Type.number("Plates", 8),
+        Type.number("Width", 200, {step: 1, min: 1}),
+        Type.number("Height", 150, {step: 1, min: 1}),
+        Type.number("Plates", 8, {step: 1, min: 1}),
         Type.seed("Seed", '')
     )
     static Diagram = Diagram
@@ -18,7 +18,6 @@ export default class TectonicsMap {
     static create(data) {
         const config = TectonicsMap.meta.parseConfig(data)
         const regionMap = createRegionMap(config)
-        const borders = []
         const grid = new Grid(config.width, config.height, point => {
             // 1: build basic tectonics map
             return regionMap.get(point)
@@ -33,20 +32,20 @@ export default class TectonicsMap {
         this.width = config.width
         this.height = config.height
         this.seed = config.seed
+        this.config = config
     }
 
     get(point) {
         return this.grid.get(point)
     }
-
 }
 
 
-function createRegionMap({plates, ...data}) {
+function createRegionMap(config) {
     return RegionMap.create({
-        count: plates,
+        count: config.count,
         layerGrowth: 40,
         growthChance: 0.1,
-        ...data
+
     })
 }

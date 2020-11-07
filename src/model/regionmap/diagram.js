@@ -30,7 +30,7 @@ export class Diagram {
         this.config = config
         this.width = regionMap.width
         this.height = regionMap.height
-        this.wrapMode = config.wrapGrid
+        this.wrapGrid = config.wrapGrid
         this.tileSize = config.tileSize
     }
 
@@ -61,7 +61,7 @@ export class Diagram {
     }
 
     isWrappable(point) {
-        if (this.wrapMode) return true
+        if (this.wrapGrid) return true
         const col = point.x >= 0 && point.x < this.width
         const row = point.y >= 0 && point.y < this.height
         return col && row

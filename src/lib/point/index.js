@@ -142,5 +142,3 @@ export class Point {
         return deltaX + deltaY
     }
 }
-
-window.Point = Point

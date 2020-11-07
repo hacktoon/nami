@@ -47,4 +47,3 @@ export class PointHash {
         return false
     }
 }
-window.PointHash = PointHash
