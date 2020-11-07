@@ -8,19 +8,11 @@ export class Region {
         this.pointHash = new PointHash([origin])
     }
 
-    get size() {
-        return this.pointHash.size
-    }
-
-    get points() {
-        return this.pointHash.points
-    }
-
     has(point) {
         return this.pointHash.has(point)
     }
 
     grow(points) {
-        this.pointHash.add(points)
+        this.pointHash.add(...points)
     }
 }

@@ -1,29 +1,50 @@
-import { Point } from './'
 
+/*
+4 => [-1, 4, 3]
+6 => [2, 10, -5]
+
+(4, -1),  (4, 4), (4, 3),
+(6, 2),  (6, 10), (6, -5),
+*/
 
 export class PointHash {
-    constructor(points=[]) {
-        this.set = new Set(points.map(p=>p.hash))
-    }
-
-    get size() {
-        return this.set.size
-    }
-
-    get points() {
-        const hashes = Array.from(this.set.values())
-        return hashes.map(hash => Point.fromHash(hash))
+    constructor(...points) {
+        this.size = 0
+        this.map = new Map()
+        this.add(...points)
     }
 
     has(point) {
-        return this.set.has(point.hash)
+        const {x, y} = point
+        if (! this.map.has(x)) return false
+        return this.map.get(x).has(y)
     }
 
-    add(points) {
-        points.forEach(point => this.set.add(point.hash))
+    add(...points) {
+        points.forEach(({x, y}) => {
+            if (! this.map.has(x)) {
+                this.map.set(x, new Set())
+            }
+            const set = this.map.get(x)
+            if (! set.has(y)) {
+                set.add(y)
+                this.size++
+            }
+        })
     }
 
     delete(point) {
-        this.set.delete(point.hash)
+        const {x, y} = point
+        if (! this.map.has(x)) return false
+        const set = this.map.get(x)
+        if (set.delete(y)) {
+            this.size--
+        }
+        if (set.size == 0) {
+            this.map.delete(x)
+            return true
+        }
+        return false
     }
 }
+window.PointHash = PointHash

@@ -11,8 +11,8 @@ import { Diagram } from './diagram'
 
 export default class RegionMap {
     static meta = new MetaClass(
-        Type.number("Width", 200),
-        Type.number("Height", 150),
+        Type.number("Width", 200, {step: 1, min: 1}),
+        Type.number("Height", 150, {step: 1, min: 1}),
         Type.number("Count", 80, {step: 1, min: 1}),
         Type.number("Layer growth", 40, {step: 1, min: 1}),
         Type.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
