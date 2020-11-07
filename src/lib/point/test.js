@@ -1,5 +1,5 @@
 import { Point } from '/lib/point'
-import { PointHash } from '/lib/point/hash'
+import { PointSet } from '/lib/point/set'
 
 
 function createHash() {
@@ -8,7 +8,7 @@ function createHash() {
         new Point(1, 1),
         new Point(2, 2),
     ]
-    return new PointHash(...points)
+    return new PointSet(...points)
 }
 
 
@@ -45,4 +45,12 @@ test("hash doesn't has point after delete", () => {
     const point = new Point(0, 0)
     hash.delete(point)
     expect(hash.has(point)).toBe(false)
+})
+
+
+test("hash random points", () => {
+    const hash = createHash()
+    const point = hash.random()
+    expect([0, 1, 2]).toContain(point.x)
+    expect([0, 1, 2]).toContain(point.y)
 })

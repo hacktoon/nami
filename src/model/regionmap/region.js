@@ -1,11 +1,11 @@
-import { PointHash } from '/lib/point/hash'
+import { PointSet } from '/lib/point/set'
 
 
 export class Region {
     constructor(id, origin) {
         this.id = id
         this.origin = origin
-        this.pointHash = new PointHash([origin])
+        this.pointHash = new PointSet([origin])
     }
 
     has(point) {

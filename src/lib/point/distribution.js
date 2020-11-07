@@ -1,6 +1,6 @@
 import { repeat } from '/lib/function'
 import { Point } from '.'
-import { PointHash } from './hash'
+import { PointSet } from './set'
 
 
 export class RandomPointDistribution {
@@ -12,10 +12,21 @@ export class RandomPointDistribution {
 
 
 export class EvenPointDistribution {
-    static create(count, width, height) {
+    static create(count, width, height, minDistance=1) {
         if (count <= 0) count = 1
-
-        const hash = new PointHash()
+        const points = []
+        const hash = createPointHash(width, height)
 
     }
+}
+
+
+function createPointHash(width, height) {
+    const hash = new PointSet()
+    for(let i=0; i<width; i++) {
+        for(let j=0; j<height; j++) {
+            hash.add(new Point(i, j))
+        }
+    }
+    return hash
 }

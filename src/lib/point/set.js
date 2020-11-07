@@ -1,13 +1,17 @@
+import { Random } from '/lib/random'
+import { Point } from '/lib/point'
+
 
 /*
+Maps x as a Map and the y's for this x in a Set
 4 => [-1, 4, 3]
 6 => [2, 10, -5]
-
-(4, -1),  (4, 4), (4, 3),
-(6, 2),  (6, 10), (6, -5),
+Points represented for the data above:
+(4, -1), (4, 4), (4, 3),
+(6, 2), (6, 10), (6, -5),
 */
 
-export class PointHash {
+export class PointSet {
     constructor(...points) {
         this.size = 0
         this.map = new Map()
@@ -45,5 +49,11 @@ export class PointHash {
             return true
         }
         return false
+    }
+
+    random() {
+        const x = Random.choice(Array.from(this.map.keys()))
+        const y = Random.choice(Array.from(this.map.get(x).values()))
+        return new Point(x, y)
     }
 }
