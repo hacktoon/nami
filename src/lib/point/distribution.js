@@ -14,11 +14,14 @@ export class RandomPointDistribution {
 
 
 export class EvenPointDistribution {
-    static create(count, width, height, radius=1) {
+    static create(count, width, height) {
         count = clamp(count, 1, width * height)
         const points = []
         const pointSet = createPointSet(width, height)
         const rect = new Rect(width, height)
+        const radiusX = Math.ceil(width / count)
+        const radiusY = Math.ceil(height / count)
+        const radius = radiusX * radiusY * 2
         while(pointSet.size > 0 && points.length < count) {
             const center = pointSet.random()
             iterPointsInCircle(pointSet, center, radius, rect)
@@ -27,7 +30,7 @@ export class EvenPointDistribution {
         return points
     }
 }
-window.EvenPointDistribution = EvenPointDistribution
+
 
 function createPointSet(width, height) {
     const pointSet = new PointSet()

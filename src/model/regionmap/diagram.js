@@ -12,7 +12,7 @@ export class Diagram {
     static meta = new MetaClass(
         Type.boolean("Wrap grid", false),
         Type.boolean("Show border", true),
-        Type.boolean("Show origin", false),
+        Type.boolean("Show origin", true),
         Type.number("Tile size", 4, {step: 1, min: 1}),
         Type.number("Layer", 10, {step: 1, min: 0}),
         Type.color("Foreground", Color.fromHex('#251')),

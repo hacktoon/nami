@@ -1,5 +1,9 @@
 import { Random } from '/lib/random'
-import { RandomPointDistribution } from '/lib/point/distribution'
+import {
+    RandomPointDistribution,
+    EvenPointDistribution
+} from '/lib/point/distribution'
+
 import { OrganicFill } from '/lib/flood-fill'
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
@@ -25,7 +29,7 @@ export default class RegionMap {
         const {width, height, count, seed, layerGrowth, growthChance} = config
         Random.seed = seed
         const grid = new RegionGrid(width, height)
-        const points = RandomPointDistribution.create(count, width, height)
+        const points = EvenPointDistribution.create(count, width, height)
         const regions = createRegions(points, grid, layerGrowth, growthChance)
         return new RegionMap(regions, grid, config)
     }
