@@ -20,7 +20,14 @@ test('clamping', () => {
 
 
 test('rect wrapping', () => {
-    const point = Rect.wrap(new Point(40, 40), 40, 40)
-    expect(point.x).toBe(0)
+    const point = Rect.wrap(new Point(41, 40), 40, 40)
+    expect(point.x).toBe(1)
     expect(point.y).toBe(0)
+})
+
+
+test('rect wrapping negative point', () => {
+    const point = Rect.wrap(new Point(-2, -1), 10, 10)
+    expect(point.x).toBe(8)
+    expect(point.y).toBe(9)
 })
