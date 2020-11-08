@@ -1,4 +1,5 @@
-import { interpolateNumbers, clamp, sum } from '.'
+import { interpolateNumbers, clamp, sum, Rect } from '.'
+import { Point } from '/lib/point'
 
 
 test('int array sum', () => {
@@ -15,4 +16,11 @@ test('number interpolation', () => {
 test('clamping', () => {
     expect(clamp(10, 0, 4)).toBe(4)
     expect(clamp(-3, 1, 4)).toBe(1)
+})
+
+
+test('rect wrapping', () => {
+    const point = Rect.wrap(new Point(40, 40), 40, 40)
+    expect(point.x).toBe(0)
+    expect(point.y).toBe(0)
 })

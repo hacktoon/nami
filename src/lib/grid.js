@@ -1,4 +1,5 @@
 import { Point } from '/lib/point'
+import { Rect } from '/lib/number'
 
 
 export class Grid {
@@ -28,11 +29,6 @@ export class Grid {
     }
 
     wrap(point) {
-        let {x, y} = point
-        if (x >= this.width) { x %= this.width }
-        if (y >= this.height) { y %= this.height }
-        if (x < 0) { x = this.width - 1 - Math.abs(x + 1) % this.width }
-        if (y < 0) { y = this.height - 1 - Math.abs(y + 1) % this.height }
-        return new Point(x, y)
+        return Rect.wrap(point, this.width, this.height)
     }
 }
