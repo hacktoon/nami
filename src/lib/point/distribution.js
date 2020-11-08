@@ -2,6 +2,7 @@ import { repeat } from '/lib/function'
 import { clamp } from '/lib/number'
 import { Point } from '.'
 import { PointSet } from './set'
+import { Rect } from '/lib/number'
 
 
 export class RandomPointDistribution {
@@ -17,11 +18,11 @@ export class EvenPointDistribution {
         count = clamp(count, 1, width * height)
         const points = []
         const pointSet = createPointSet(width, height)
+        const rect = new Rect(width, height)
         while(pointSet.size > 0 && points.length < count) {
-            const point = pointSet.random()
-            // get points in circle
-
-            points.push(point)
+            const center = pointSet.random()
+            iterPointsInCircle(pointSet, center, radius, rect)
+            points.push(center)
         }
         return points
     }
@@ -39,13 +40,14 @@ function createPointSet(width, height) {
 }
 
 
-function removePointsInCircle(point, pointSet, radius) {
-    const {x, y} = point
-    pointSet.delete(point)
+function iterPointsInCircle(pointSet, center, radius, rect) {
+    const {x, y} = center
     for(let i=x-radius; i<x+radius; i++) {
         for(let j=y-radius; j<y+radius; j++) {
-            pointSet.delete(new Point(i, j))
+            const point = rect.wrap(new Point(i, j))
+            if (point.distance(center) <= radius) {
+                pointSet.delete(point)
+            }
         }
     }
-    return pointSet
 }

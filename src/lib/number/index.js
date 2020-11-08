@@ -23,12 +23,17 @@ export const sum = arr => arr.reduce((a,b) => a + b, 0)
 
 
 export class Rect {
-    static wrap(point, width, height) {
+    constructor(width, height) {
+        this.width = width
+        this.height = height
+    }
+
+    wrap(point) {
         let {x, y} = point
-        if (x >= width) { x %= width }
-        if (y >= height) { y %= height }
-        if (x < 0) { x = width - 1 - Math.abs(x + 1) % width }
-        if (y < 0) { y = height - 1 - Math.abs(y + 1) % height }
+        if (x >= this.width) { x %= this.width }
+        if (y >= this.height) { y %= this.height }
+        if (x < 0) { x = this.width - 1 - Math.abs(x + 1) % this.width }
+        if (y < 0) { y = this.height - 1 - Math.abs(y + 1) % this.height }
         return new Point(x, y)
     }
 }

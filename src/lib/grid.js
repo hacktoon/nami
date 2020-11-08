@@ -29,6 +29,6 @@ export class Grid {
     }
 
     wrap(point) {
-        return Rect.wrap(point, this.width, this.height)
+        return new Rect(this.width, this.height).wrap(point)
     }
 }
