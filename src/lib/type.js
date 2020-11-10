@@ -1,11 +1,13 @@
 import { Color } from '/lib/color'
+import { Point } from '/lib/point'
 
 
 // let's create our own type system, it's fun
 class AbstractType {
     static create(AbstractType) {
         return (label, value, props={}) => {
-            return new AbstractType(label, value, props)
+            const type = AbstractType.type
+            return new AbstractType(type, label, value, props)
         }
     }
 
@@ -27,10 +29,6 @@ class AbstractType {
 export class NumberType extends AbstractType {
     static type = 'number'
 
-    constructor(label, value, props) {
-        super(NumberType.type, label, value, props)
-    }
-
     sanitize(value) {
         return Number(value)
     }
@@ -40,25 +38,17 @@ export class NumberType extends AbstractType {
 export class TextType extends AbstractType {
     static type = 'text'
 
-    constructor(label, value, props) {
-        super(TextType.type, label, value, props)
-    }
-
     sanitize(value) {
         return String(value).trim()
     }
 }
 
 
-export class SeedType extends AbstractType {
+export class SeedType extends TextType {
     static type = 'seed'
 
-    constructor(label, value, props) {
-        super(SeedType.type, label, value, props)
-    }
-
     sanitize(value) {
-        const seed = String(value).trim()
+        const seed = super.sanitize(value)
         return seed.length ? seed : String(Number(new Date()))
     }
 }
@@ -66,19 +56,20 @@ export class SeedType extends AbstractType {
 
 export class ColorType extends AbstractType {
     static type = 'color'
+}
 
-    constructor(label, value, props) {
-        super(ColorType.type, label, value, props)
+
+export class PointType extends AbstractType {
+    static type = 'point'
+
+    sanitize({x, y}) {
+        return new Point(Number(x), Number(y))
     }
 }
 
 
 export class BooleanType extends AbstractType {
     static type = 'boolean'
-
-    constructor(label, value, props) {
-        super(BooleanType.type, label, value, props)
-    }
 
     sanitize(value) {
         return Boolean(value)
@@ -87,6 +78,7 @@ export class BooleanType extends AbstractType {
 
 
 export class Type {
+    static point = AbstractType.create(PointType)
     static boolean = AbstractType.create(BooleanType)
     static text = AbstractType.create(TextType)
     static number = AbstractType.create(NumberType)

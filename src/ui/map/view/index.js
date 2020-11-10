@@ -7,7 +7,7 @@ import { Camera, Frame } from './camera'
 import { MouseTrack } from './mouse'
 
 
-export function MapView({diagram, focus = new Point(100, 74), onWheel}) {
+export function MapView({diagram, onZoom, onFocus}) {
     const viewportRef = useRef(null)
     const [width, height] = useResize(viewportRef)
 
@@ -16,8 +16,8 @@ export function MapView({diagram, focus = new Point(100, 74), onWheel}) {
         return <MapFrameView
             diagram={diagram}
             frame={frame}
-            baseFocus={focus}
-            onWheel={onWheel}
+            onZoom={onZoom}
+            onFocus={onFocus}
         />
     }
 
@@ -27,12 +27,12 @@ export function MapView({diagram, focus = new Point(100, 74), onWheel}) {
 }
 
 
-function MapFrameView({diagram, frame, baseFocus, onWheel}) {
+function MapFrameView({diagram, frame, onZoom, onFocus}) {
     const [offset, setOffset] = useState(new Point())
-    const [cursor, setCursor] = useState(baseFocus)
-    const [focus, setFocus] = useState(baseFocus)
+    const [cursor, setCursor] = useState(diagram.focus)
+    const [focus, setFocus] = useState(diagram.focus)
 
-    const camera = new Camera(diagram, frame, focus)
+    const camera = new Camera(diagram, frame, diagram.focus)
 
     const handleMove = point => {
         // setCursor(point)
@@ -40,9 +40,11 @@ function MapFrameView({diagram, frame, baseFocus, onWheel}) {
 
     const handleDrag = point => setOffset(point)
 
-    const handleDragEnd = point => {
-        setOffset(new Point())
-        setFocus(focus.plus(point))
+    const handleDragEnd = dragPoint => {
+        setOffset(new Point())  // reset offset to [0,0] on drag end
+        const point = focus.plus(dragPoint) // add offset to current focus
+        setFocus(point)
+        onFocus(point)
     }
 
     const handleInit = canvas => camera.render(canvas, offset)
@@ -54,7 +56,7 @@ function MapFrameView({diagram, frame, baseFocus, onWheel}) {
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
             onMove={handleMove}
-            onWheel={onWheel}
+            onWheel={onZoom}
         />
         <Canvas width={camera.width} height={camera.height} onInit={handleInit} />
     </>

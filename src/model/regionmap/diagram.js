@@ -1,6 +1,7 @@
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 import { Color } from '/lib/color'
+import { Point } from '/lib/point'
 
 
 // TODO: diagram should be a tile filter
@@ -10,6 +11,7 @@ import { Color } from '/lib/color'
 
 export class Diagram {
     static meta = new MetaClass(
+        Type.point("Focus point", new Point(50, 50)),
         Type.boolean("Wrap grid", false),
         Type.boolean("Show border", false),
         Type.boolean("Show origin", false),
@@ -32,6 +34,7 @@ export class Diagram {
         this.height = regionMap.height
         this.wrapGrid = config.wrapGrid
         this.tileSize = config.tileSize
+        this.focus = config.focusPoint
     }
 
     get(point) {

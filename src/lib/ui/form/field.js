@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 
 import { Color } from '/lib/color'
+import { Point } from '/lib/point'
 
 
 export function NumberField({name, label, value, onChange, ...props}) {
@@ -101,6 +102,30 @@ export function ColorField({name, label, value, onChange, ...props}) {
 }
 
 
+export function PointField({name, label, value, onChange, ...props}) {
+    const handleXChange = event => handleChange(event.target.value, value.y)
+    const handleYChange = event => handleChange(value.x, event.target.value)
+    const handleChange = (x, y) => onChange(name, new Point(x, y))
+
+    return <Field type='point' label={label}>
+        <input
+            name={'x'}
+            type='number'
+            value={value.x}
+            onChange={handleXChange}
+            {...props}
+        />
+        <input
+            name={'y'}
+            type='number'
+            value={value.y}
+            onChange={handleYChange}
+            {...props}
+        />
+    </Field>
+}
+
+
 // BASE FIELD COMPONENT ===============================================
 
 function Field({label, type, status='', children, ...props}) {
@@ -116,5 +141,6 @@ export const TYPE_FIELD_MAP = {
     number: NumberField,
     text: TextField,
     seed: SeedField,
-    color: ColorField
+    color: ColorField,
+    point: PointField,
 }

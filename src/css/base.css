@@ -108,6 +108,17 @@ canvas { display: block; }
     z-index: 1;
 }
 
+/* POINT FIELD ============================== */
+
+.Field.point .FieldValue { display: flex; }
+.Field.point .FieldValue input {
+    margin-right: 10px;
+}
+
+.Field.point .FieldValue input:last-child {
+    margin-right: 0;
+}
+
 
 /* BOOLEAN FIELD ============================== */
 
