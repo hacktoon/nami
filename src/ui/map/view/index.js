@@ -7,17 +7,17 @@ import { Camera, Frame } from './camera'
 import { MouseTrack } from './mouse'
 
 
-export function MapView({diagram, focus = new Point(100, 74), onZoom}) {
+export function MapView({diagram, focus = new Point(100, 74), onWheel}) {
     const viewportRef = useRef(null)
     const [width, height] = useResize(viewportRef)
 
     function render() {
         const frame = new Frame(diagram.tileSize, width, height)
-        return <MapViewFrame
+        return <MapFrameView
             diagram={diagram}
             frame={frame}
             baseFocus={focus}
-            onZoom={onZoom}
+            onWheel={onWheel}
         />
     }
 
@@ -27,7 +27,7 @@ export function MapView({diagram, focus = new Point(100, 74), onZoom}) {
 }
 
 
-function MapViewFrame({diagram, frame, baseFocus, onZoom}) {
+function MapFrameView({diagram, frame, baseFocus, onWheel}) {
     const [offset, setOffset] = useState(new Point())
     const [cursor, setCursor] = useState(baseFocus)
     const [focus, setFocus] = useState(baseFocus)
@@ -45,9 +45,7 @@ function MapViewFrame({diagram, frame, baseFocus, onZoom}) {
         setFocus(focus.plus(point))
     }
 
-    // TODO: camera.render should return <Canvas>
     const handleInit = canvas => camera.render(canvas, offset)
-    const handleBGInit = canvas => camera.renderBackground(canvas)
 
     // TODO: add MapMouseCanvas to draw cursor
     return <>
@@ -56,14 +54,19 @@ function MapViewFrame({diagram, frame, baseFocus, onZoom}) {
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
             onMove={handleMove}
-            onWheel={onZoom}
+            onWheel={onWheel}
         />
-        <MapCanvas camera={camera} onInit={handleInit} onBGInit={handleBGInit}/>
+        <Canvas width={camera.width} height={camera.height} onInit={handleInit} />
     </>
 }
 
 
 function MapMouseTrack({frame, onDrag, onDragEnd, onMove, onWheel}) {
+    /*
+     Translates MouseTrack events in pixel points to
+     tile objects using a view frame object
+    */
+
     const [cursor, setCursor] = useState(new Point())
     const [dragOffset, setDragOffset] = useState(new Point())
 
@@ -99,11 +102,3 @@ function MapMouseTrack({frame, onDrag, onDragEnd, onMove, onWheel}) {
     />
 }
 
-
-function MapCanvas({camera, onInit, onBGInit}) {
-    const {width, height} = camera
-    return <>
-        <Canvas width={width} height={height} onInit={onInit} />
-        <Canvas className="BackgroundCanvas" width={width} height={height} onInit={onBGInit} />
-    </>
-}

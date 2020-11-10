@@ -26,7 +26,7 @@ function MapAppView({Diagram, map}) {
     const [config, setConfig] = useState({})
     const diagram = Diagram.create(map, config)
 
-    const handleZoom = amount => {
+    const handleWheel = amount => {
         const tileSize = diagram.tileSize + amount
         setConfig({...config, tileSize})
     }
@@ -37,6 +37,6 @@ function MapAppView({Diagram, map}) {
               values={diagram.config}
               onSubmit={setConfig}
               onChange={setConfig} />
-        <MapView diagram={diagram} onZoom={handleZoom} />
+        <MapView diagram={diagram} onWheel={handleWheel} />
     </>
 }
