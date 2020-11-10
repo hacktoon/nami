@@ -11,10 +11,10 @@ import { Color } from '/lib/color'
 export class Diagram {
     static meta = new MetaClass(
         Type.boolean("Wrap grid", false),
-        Type.boolean("Show border", true),
-        Type.boolean("Show origin", true),
-        Type.number("Tile size", 4, {step: 1, min: 1}),
-        Type.number("Layer", 10, {step: 1, min: 0}),
+        Type.boolean("Show border", false),
+        Type.boolean("Show origin", false),
+        Type.number("Tile size", 5, {step: 1, min: 1}),
+        Type.number("Layer", 3, {step: 1, min: 0}),
         Type.color("Foreground", Color.fromHex('#251')),
         Type.color("Background", Color.fromHex('#059')),
         Type.color("Border color", Color.fromHex('#04D')),
@@ -35,12 +35,13 @@ export class Diagram {
     }
 
     get(point) {
-        if (this.isWrappable(point))
-            return this.getColor(this.config, this.regionMap, point)
-        return 'transparent'
+        return this.getColor(this.config, this.regionMap, point)
     }
 
     getColor(config, regionMap, point) {
+        if (! this.isWrappable(point)) {
+            return 'transparent'
+        }
         if (config.showBorder && regionMap.isBorder(point)) {
             return config.borderColor.toHex()
         }
@@ -51,9 +52,9 @@ export class Diagram {
         if (regionMap.isLayer(point, config.layer)) {
             return config.foreground.brighten(40).toHex()
         }
-        // invert this check to get remaining spaces
         const pointLayer = regionMap.getLayer(point)
-        if (regionMap.isOverLayer(point, config.layer)) {
+        // invert this check to get remaining spaces
+        if (! regionMap.isOverLayer(point, config.layer)) {
             return config.background.darken(pointLayer*5).toHex()
         } else {
             return config.foreground.darken(pointLayer*5).toHex()
