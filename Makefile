@@ -5,9 +5,11 @@ dev:
 	npm run dev
 
 .PHONY: build
-build:
-	rm -rf build/
+build: clean
 	npm run build
+
+clean:
+	rm -rf build/ .cache
 
 deploy: build
 	if git show-ref -q --heads gh-pages; then \

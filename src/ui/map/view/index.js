@@ -3,8 +3,9 @@ import React, { useState, useRef } from 'react'
 import { useResize } from '/lib/ui'
 import { Point } from '/lib/point'
 import { Canvas } from '/lib/ui/canvas'
-import { Camera, Frame } from './camera'
-import { MouseTrack } from './mouse'
+import { MouseTrack } from '/lib/ui/mouse'
+
+import { Scene } from './scene'
 
 
 export function MapView({diagram, ...props}) {
@@ -12,12 +13,8 @@ export function MapView({diagram, ...props}) {
     const [width, height] = useResize(viewportRef)
 
     function render() {
-        const frame = new Frame(diagram.tileSize, width, height)
-        return <MapFrameView
-            diagram={diagram}
-            frame={frame}
-            {...props}
-        />
+        const scene = new Scene(diagram, width, height)
+        return <MapSceneView scene={scene} {...props} />
     }
 
     return <section className="MapView" ref={viewportRef}>
@@ -26,47 +23,40 @@ export function MapView({diagram, ...props}) {
 }
 
 
-function MapFrameView({diagram, frame, ...props}) {
+function MapSceneView({scene, ...props}) {
     const [offset, setOffset] = useState(new Point())
-    const [cursor, setCursor] = useState(diagram.focus)
-
-    const camera = new Camera(diagram, frame, diagram.focus)
 
     const handleDrag = point => {
         setOffset(point)
-        //props.onDrag(point)
+        //use dragPoint here too if necessary
+        //props.onDrag(scene.focus.plus(dragPoint))
     }
 
     const handleDragEnd = dragPoint => {
         setOffset(new Point())  // reset offset to [0,0] on drag end
-        props.onDrag(diagram.focus.plus(dragPoint))
+        props.onDrag(scene.focus.plus(dragPoint))
     }
 
-    const handleMove = point => {
-        // setCursor(point)
-    }
-
-    const handleInit = canvas => camera.render(canvas, offset)
+    const handleInit = canvas => scene.render(canvas, offset)
 
     // TODO: add MapMouseCanvas to draw cursor
     return <>
         <MapMouseTrack
-            frame={frame}
+            scene={scene}
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
-            onMove={handleMove}
             onWheel={props.onZoom}
         />
         <Canvas
-            width={camera.width}
-            height={camera.height}
+            width={scene.width}
+            height={scene.height}
             onInit={handleInit}
         />
     </>
 }
 
 
-function MapMouseTrack({frame, onDrag, onDragEnd, onMove, onWheel}) {
+function MapMouseTrack({scene, ...props}) {
     /*
      Translates MouseTrack events in pixel points to
      tile objects using a view frame object
@@ -76,34 +66,43 @@ function MapMouseTrack({frame, onDrag, onDragEnd, onMove, onWheel}) {
     const [dragOffset, setDragOffset] = useState(new Point())
 
     const handleDrag = (startPoint, endPoint) => {
-        const startTilePoint = frame.tilePoint(startPoint)
-        const endTilePoint = frame.tilePoint(endPoint)
+        const startTilePoint = scene.frame.tilePoint(startPoint)
+        const endTilePoint = scene.frame.tilePoint(endPoint)
         const newOffset = startTilePoint.minus(endTilePoint)
         if (newOffset.differs(dragOffset)) {
             setDragOffset(newOffset)
-            onDrag(newOffset)
+            props.onDrag(newOffset)
         }
     }
 
     const handleDragEnd = (startPoint, endPoint) => {
-        const startTilePoint = frame.tilePoint(startPoint)
-        const endTilePoint = frame.tilePoint(endPoint)
-        onDragEnd(startTilePoint.minus(endTilePoint))
+        const startTilePoint = scene.frame.tilePoint(startPoint)
+        const endTilePoint = scene.frame.tilePoint(endPoint)
+        props.onDragEnd(startTilePoint.minus(endTilePoint))
     }
 
     const handleMove = mousePoint => {
-        const point = frame.tilePoint(mousePoint)
+        const scenePoint = scene.frame.tilePoint(mousePoint)
+        const point = scenePoint.plus(scene.focus)
         if (point.differs(cursor)) {
             setCursor(point)
-            onMove(point)
         }
     }
 
-    return <MouseTrack
-        onDrag={handleDrag}
-        onDragEnd={handleDragEnd}
-        onMove={handleMove}
-        onWheel={onWheel}
-    />
+    const handleInit = canvas => scene.render(canvas, offset)
+
+    return <>
+        <MouseTrack
+            onDrag={handleDrag}
+            onDragEnd={handleDragEnd}
+            onMove={handleMove}
+            onWheel={props.onWheel}
+        />
+        <Canvas
+            width={scene.width}
+            height={scene.height}
+            onInit={handleInit}
+        />
+    </>
 }
 

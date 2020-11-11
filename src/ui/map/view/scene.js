@@ -1,14 +1,14 @@
 import { Point } from '/lib/point'
 
 
-export class Camera {
-    constructor(diagram, frame, focus) {
+export class Scene {
+    constructor(diagram, width, height) {
+        this.frame = new Frame(diagram.tileSize, width, height)
         this.diagram = diagram
+        this.width = width
+        this.height = height
         this.tileSize = diagram.tileSize
-        this.width = frame.width
-        this.height = frame.height
-        this.frame = frame
-        this.focus = focus
+        this.focus = diagram.focus
     }
 
     render(canvas, offset) {
@@ -36,11 +36,9 @@ export class Camera {
 }
 
 
-export class Frame {
+class Frame {
     constructor(tileSize, width, height) {
         this.tileSize = tileSize
-        this.width = width
-        this.height = height
         this.eastPad = Math.floor(width / 2 - tileSize / 2)
         this.northPad = Math.floor(height / 2 - tileSize / 2)
         this.westPad = width - this.eastPad - tileSize
