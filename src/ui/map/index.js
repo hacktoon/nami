@@ -28,17 +28,24 @@ function MapAppView({Diagram, map}) {
 
     const handleZoom = amount => {
         const tileSize = diagram.tileSize + amount
-        setConfig({...config, tileSize})
+        setConfig(config => ({...config, tileSize}))
     }
 
-    const handleFocus = focusPoint => setConfig({...config, focusPoint})
+    const handleDrag = focusPoint => {
+        setConfig(config => ({...config, focusPoint}))
+    }
 
     return <>
         <Form className="Diagram"
-              meta={Diagram.meta}
-              values={diagram.config}
-              onSubmit={setConfig}
-              onChange={setConfig} />
-        <MapView diagram={diagram} onZoom={handleZoom} onFocus={handleFocus} />
+            meta={Diagram.meta}
+            values={diagram.config}
+            onSubmit={setConfig}
+            onChange={setConfig}
+        />
+        <MapView
+            diagram={diagram}
+            onZoom={handleZoom}
+            onDrag={handleDrag}
+        />
     </>
 }

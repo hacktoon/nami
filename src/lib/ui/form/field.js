@@ -103,8 +103,8 @@ export function ColorField({name, label, value, onChange, ...props}) {
 
 
 export function PointField({name, label, value, onChange, ...props}) {
-    const handleXChange = event => handleChange(event.target.value, value.y)
-    const handleYChange = event => handleChange(value.x, event.target.value)
+    const handleXChange = e => handleChange(e.target.value, value.y)
+    const handleYChange = e => handleChange(value.x, e.target.value)
     const handleChange = (x, y) => onChange(name, new Point(x, y))
 
     return <Field type='point' label={label}>

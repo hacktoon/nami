@@ -7,7 +7,7 @@ import { Camera, Frame } from './camera'
 import { MouseTrack } from './mouse'
 
 
-export function MapView({diagram, onZoom, onFocus}) {
+export function MapView({diagram, ...props}) {
     const viewportRef = useRef(null)
     const [width, height] = useResize(viewportRef)
 
@@ -16,8 +16,7 @@ export function MapView({diagram, onZoom, onFocus}) {
         return <MapFrameView
             diagram={diagram}
             frame={frame}
-            onZoom={onZoom}
-            onFocus={onFocus}
+            {...props}
         />
     }
 
@@ -27,24 +26,24 @@ export function MapView({diagram, onZoom, onFocus}) {
 }
 
 
-function MapFrameView({diagram, frame, onZoom, onFocus}) {
+function MapFrameView({diagram, frame, ...props}) {
     const [offset, setOffset] = useState(new Point())
     const [cursor, setCursor] = useState(diagram.focus)
-    const [focus, setFocus] = useState(diagram.focus)
 
     const camera = new Camera(diagram, frame, diagram.focus)
 
-    const handleMove = point => {
-        // setCursor(point)
+    const handleDrag = point => {
+        setOffset(point)
+        //props.onDrag(point)
     }
-
-    const handleDrag = point => setOffset(point)
 
     const handleDragEnd = dragPoint => {
         setOffset(new Point())  // reset offset to [0,0] on drag end
-        const point = focus.plus(dragPoint) // add offset to current focus
-        setFocus(point)
-        onFocus(point)
+        props.onDrag(diagram.focus.plus(dragPoint))
+    }
+
+    const handleMove = point => {
+        // setCursor(point)
     }
 
     const handleInit = canvas => camera.render(canvas, offset)
@@ -56,9 +55,13 @@ function MapFrameView({diagram, frame, onZoom, onFocus}) {
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
             onMove={handleMove}
-            onWheel={onZoom}
+            onWheel={props.onZoom}
         />
-        <Canvas width={camera.width} height={camera.height} onInit={handleInit} />
+        <Canvas
+            width={camera.width}
+            height={camera.height}
+            onInit={handleInit}
+        />
     </>
 }
 
