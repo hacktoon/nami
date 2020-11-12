@@ -3,11 +3,14 @@ import React, { useState } from 'react'
 import { Point } from '/lib/point'
 
 
-export function MouseTrack({onMove, onDrag, onDragEnd, onWheel}) {
+export function MouseTrack(props) {
     const [dragStart, setDragStart] = useState(new Point(0, 0))
     const [dragging, setDragging]   = useState(false)
 
-    // const handleClick = event => onClick(createMousePoint(event))
+    const handleClick = event => {
+        event.preventDefault()
+        props.onClick(createMousePoint(event))
+    }
 
     const handleMouseDown = event => {
         event.preventDefault()
@@ -18,22 +21,22 @@ export function MouseTrack({onMove, onDrag, onDragEnd, onWheel}) {
     const handleMouseMove = event => {
         const mousePoint = createMousePoint(event)
         if (dragging) {
-            onDrag && onDrag(dragStart, mousePoint)
+            props.onDrag && props.onDrag(dragStart, mousePoint)
         } else {
-            onMove && onMove(mousePoint)
+            props.onMove && props.onMove(mousePoint)
         }
     }
 
     const handleMouseUp = event => {
         const mousePoint = createMousePoint(event)
         setDragging(false)
-        if (dragging && onDragEnd) {
-            onDragEnd(dragStart, mousePoint)
+        if (dragging && props.onDragEnd) {
+            props.onDragEnd(dragStart, mousePoint)
         }
     }
 
     const handleWheel = event => {
-        onWheel && onWheel(event.deltaY > 0 ? -1 : 1)
+        props.onWheel && props.onWheel(event.deltaY > 0 ? -1 : 1)
     }
 
     function createMousePoint(event) {
@@ -43,7 +46,7 @@ export function MouseTrack({onMove, onDrag, onDragEnd, onWheel}) {
 
     return (
         <div className="MouseTrack"
-            // onClick={handleClick}
+            onClick={handleClick}
             onWheel={handleWheel}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}

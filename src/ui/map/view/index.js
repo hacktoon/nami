@@ -24,25 +24,25 @@ export function MapView({diagram, ...props}) {
 
 
 function MapSceneView({scene, ...props}) {
-    const [offset, setOffset] = useState(new Point())
+    const [focusOffset, setFocusOffset] = useState(new Point())
 
     const handleDrag = point => {
-        setOffset(point)
+        setFocusOffset(point)
         //use dragPoint here too if necessary
         //props.onDrag(scene.focus.plus(dragPoint))
     }
 
     const handleDragEnd = dragPoint => {
-        setOffset(new Point())  // reset offset to [0,0] on drag end
+        setFocusOffset(new Point())  // reset offset to [0,0] on drag end
         props.onDrag(scene.focus.plus(dragPoint))
     }
 
-    const handleInit = canvas => scene.render(canvas, offset)
+    const handleInit = canvas => scene.render(canvas, focusOffset)
 
-    // TODO: add MapMouseCanvas to draw cursor
     return <>
         <MapMouseTrack
             scene={scene}
+            focusOffset={focusOffset}
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
             onWheel={props.onZoom}
@@ -63,15 +63,18 @@ function MapMouseTrack({scene, ...props}) {
     */
 
     const [cursor, setCursor] = useState(new Point())
-    const [dragOffset, setDragOffset] = useState(new Point())
+    const [prevCursor, setPrevCursor] = useState(new Point())
+    const [prevFrameOffset, setPrevFrameOffset] = useState(scene.frame.offset)
+    const [focus, setFocus] = useState(new Point())
 
     const handleDrag = (startPoint, endPoint) => {
         const startTilePoint = scene.frame.tilePoint(startPoint)
         const endTilePoint = scene.frame.tilePoint(endPoint)
-        const newOffset = startTilePoint.minus(endTilePoint)
-        if (newOffset.differs(dragOffset)) {
-            setDragOffset(newOffset)
-            props.onDrag(newOffset)
+        const newFocus = startTilePoint.minus(endTilePoint)
+        if (newFocus.differs(focus)) {
+            setPrevFrameOffset(scene.frame.offset)
+            setFocus(newFocus)
+            props.onDrag(newFocus)
         }
     }
 
@@ -85,20 +88,36 @@ function MapMouseTrack({scene, ...props}) {
         const scenePoint = scene.frame.tilePoint(mousePoint)
         const point = scenePoint.plus(scene.focus)
         if (point.differs(cursor)) {
+            setPrevCursor(cursor)
             setCursor(point)
         }
     }
 
-    const handleInit = canvas => scene.render(canvas, offset)
+    const handleClick = mousePoint => {
+        const scenePoint = scene.frame.tilePoint(mousePoint)
+        const point = scenePoint.plus(scene.focus)
+        console.log(point)
+    }
+
+    const handleInit = canvas => {
+        const renderProps = {
+            cursor,
+            prevCursor,
+            focusOffset: props.focusOffset,
+            prevFrameOffset,
+        }
+        scene.renderCursor(canvas, renderProps)
+    }
 
     return <>
         <MouseTrack
+            onClick={handleClick}
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
             onMove={handleMove}
             onWheel={props.onWheel}
         />
-        <Canvas
+        <Canvas className='MapMouseTrackCanvas'
             width={scene.width}
             height={scene.height}
             onInit={handleInit}

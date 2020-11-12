@@ -5,6 +5,7 @@ export function Canvas({width, height, onInit, className='Canvas'}) {
     const ref = useRef(null)
 
     useLayoutEffect(() => onInit(new CanvasContext(ref.current)))
+
     return <canvas ref={ref}
         className={className}
         width={width}
@@ -31,10 +32,14 @@ class CanvasContext {
 
     border(size, point) {
         const {x, y} = point
-        const innerWidth = 5
+        // if (size < 10) {
+        //     this.context.fillRect(x, y, size, size)
+        // }
         this.context.fillStyle = '#FFF'
-        this.context.fillRect(x, y, size, innerWidth)
-        this.context.fillRect(x, y, innerWidth, size)
+        this.context.fillRect(x, y, size, size)
+        // const innerWidth = Math.floor((size * 10) / 100)
+        // this.context.fillRect(x, y, size, innerWidth)
+        // this.context.fillRect(x, y, innerWidth, size)
     }
 }
 
