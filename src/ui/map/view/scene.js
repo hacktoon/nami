@@ -23,18 +23,13 @@ export class Scene {
         })
     }
 
-    renderCursor(canvas, {prevCursor, cursor, focusOffset, prevFrameOffset}) {
-        const focus = this.focus.plus(focusOffset)
+    renderCursor(canvas, {...props}) {
+        const focus = this.focus.plus(props.focusOffset)
+        const canvasPoint = this.#renderPoint(props.cursor, focus)
+        const color = 'rgba(255, 255, 255, .5)'
 
-        this.#renderFrame(focus, (tilePoint, canvasPoint) => {
-            if (tilePoint.equals(prevCursor)) {
-                canvas.clear(this.tileSize, canvasPoint)
-            }
-            if (tilePoint.equals(cursor)) {
-                const color = 'rgba(255, 255, 255, .5)'
-                canvas.border(this.tileSize, canvasPoint, color)
-            }
-        })
+        // canvas.clear(this.tileSize, prevCanvasPoint)
+        canvas.cursor(this.tileSize, canvasPoint, color)
     }
 
     #renderFrame(focus, callback) {
@@ -42,14 +37,22 @@ export class Scene {
         for(let i = origin.x, x = 0; i <= target.x; i++, x += this.tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += this.tileSize) {
                 const tilePoint = new Point(i, j)
-                const canvasPoint = this.#buildCanvasPoint(x, y, this.frame.offset)
+                const canvasPoint = this.#buildCanvasPoint(new Point(x, y))
                 callback(tilePoint, canvasPoint)
             }
         }
     }
 
-    #buildCanvasPoint(x, y, offset) {
-        return new Point(x, y).minus(offset)
+    #renderPoint(point, focus) {
+        const {origin} = this.frame.rect(focus)
+        return point
+            .minus(origin) // get tile at scene edge
+            .multiply(this.tileSize)  // make it a canvas position
+            .minus(this.frame.offset)  // apply viewport offset
+    }
+
+    #buildCanvasPoint(point) {
+        return point.minus(this.frame.offset)
     }
 }
 
@@ -61,10 +64,12 @@ class Frame {
         this.northPad = Math.floor(height / 2 - tileSize / 2)
         this.westPad = width - this.eastPad - tileSize
         this.southPad = height - this.northPad - tileSize
-        this.eastTileCount = Math.ceil(this.eastPad / tileSize)
-        this.northTileCount = Math.ceil(this.northPad / tileSize)
-        this.westTileCount = Math.ceil(this.westPad / tileSize)
-        this.southTileCount = Math.ceil(this.southPad / tileSize)
+        const eastTileCount = Math.ceil(this.eastPad / tileSize)
+        const northTileCount = Math.ceil(this.northPad / tileSize)
+        const westTileCount = Math.ceil(this.westPad / tileSize)
+        const southTileCount = Math.ceil(this.southPad / tileSize)
+        this.origin = new Point(eastTileCount, northTileCount)
+        this.target = new Point(westTileCount, southTileCount)
     }
 
     get offset() {
@@ -77,10 +82,8 @@ class Frame {
     }
 
     rect(offset=new Point()) {
-        const topLeftPoint = new Point(this.eastTileCount, this.northTileCount)
-        const bottomRightPoint = new Point(this.westTileCount, this.southTileCount)
-        const origin = offset.minus(topLeftPoint)
-        const target = offset.plus(bottomRightPoint)
+        const origin = offset.minus(this.origin)
+        const target = offset.plus(this.target)
         return {origin, target}
     }
 

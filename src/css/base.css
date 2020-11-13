@@ -41,7 +41,7 @@ canvas { display: block; }
 
 .Canvas,
 .MouseTrack,
-.MapMouseTrackCanvas {
+.CursorCanvas {
     position: absolute;
     top: 0;
     left: 0;
@@ -55,7 +55,7 @@ canvas { display: block; }
     z-index: 12;
 }
 
-.MapMouseTrackCanvas { z-index: 11; }
+.CursorCanvas { z-index: 11; }
 .Canvas { z-index: 10; }
 
 

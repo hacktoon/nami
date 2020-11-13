@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 
 import { useResize } from '/lib/ui'
 import { Point } from '/lib/point'
-import { Canvas } from '/lib/ui/canvas'
+import { Canvas, CursorCanvas } from '/lib/ui/canvas'
 import { MouseTrack } from '/lib/ui/mouse'
 
 import { Scene } from './scene'
@@ -64,7 +64,6 @@ function MapMouseTrack({scene, ...props}) {
 
     const [cursor, setCursor] = useState(new Point())
     const [prevCursor, setPrevCursor] = useState(new Point())
-    const [prevFrameOffset, setPrevFrameOffset] = useState(scene.frame.offset)
     const [focus, setFocus] = useState(new Point())
 
     const handleDrag = (startPoint, endPoint) => {
@@ -72,7 +71,6 @@ function MapMouseTrack({scene, ...props}) {
         const endTilePoint = scene.frame.tilePoint(endPoint)
         const newFocus = startTilePoint.minus(endTilePoint)
         if (newFocus.differs(focus)) {
-            setPrevFrameOffset(scene.frame.offset)
             setFocus(newFocus)
             props.onDrag(newFocus)
         }
@@ -96,15 +94,13 @@ function MapMouseTrack({scene, ...props}) {
     const handleClick = mousePoint => {
         const scenePoint = scene.frame.tilePoint(mousePoint)
         const point = scenePoint.plus(scene.focus)
-        console.log(point)
+        console.log('clicked', point)
     }
 
     const handleInit = canvas => {
         const renderProps = {
             cursor,
-            prevCursor,
-            focusOffset: props.focusOffset,
-            prevFrameOffset,
+            focusOffset: props.focusOffset
         }
         scene.renderCursor(canvas, renderProps)
     }
@@ -117,7 +113,7 @@ function MapMouseTrack({scene, ...props}) {
             onMove={handleMove}
             onWheel={props.onWheel}
         />
-        <Canvas className='MapMouseTrackCanvas'
+        <CursorCanvas
             width={scene.width}
             height={scene.height}
             onInit={handleInit}

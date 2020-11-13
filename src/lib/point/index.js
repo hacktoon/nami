@@ -54,6 +54,10 @@ export class Point {
         return new Point(this.x - point.x, this.y - point.y)
     }
 
+    multiply(x, y) {
+        return new Point(this.x * x, this.y * (y ?? x))
+    }
+
     apply(func=()=>{}) {
         return new Point(func(this.x), func(this.y))
     }

@@ -12,45 +12,61 @@ function createHash() {
 }
 
 
-test('hash size', () => {
-    const hash = createHash()
-    expect(hash.size).toBe(3)
+test('point set size', () => {
+    const pointSet = createHash()
+    expect(pointSet.size).toBe(3)
 })
 
 
-test('hash size after add', () => {
-    const hash = createHash()
-    hash.add(new Point(4, 4))
-    expect(hash.size).toBe(4)
+test('point set size after add', () => {
+    const pointSet = createHash()
+    pointSet.add(new Point(4, 4))
+    expect(pointSet.size).toBe(4)
 })
 
 
-test('hash size after delete', () => {
-    const hash = createHash()
-    hash.delete(new Point(0, 0))
-    expect(hash.size).toBe(2)
+test('point set size after delete', () => {
+    const pointSet = createHash()
+    pointSet.delete(new Point(0, 0))
+    expect(pointSet.size).toBe(2)
 })
 
 
-test('hash has point after add', () => {
-    const hash = createHash()
+test('point set has point after add', () => {
+    const pointSet = createHash()
     const point = new Point(4, 4)
-    hash.add(point)
-    expect(hash.has(point)).toBe(true)
+    pointSet.add(point)
+    expect(pointSet.has(point)).toBe(true)
 })
 
 
-test("hash doesn't has point after delete", () => {
-    const hash = createHash()
+test("point set doesn't has point after delete", () => {
+    const pointSet = createHash()
     const point = new Point(0, 0)
-    hash.delete(point)
-    expect(hash.has(point)).toBe(false)
+    pointSet.delete(point)
+    expect(pointSet.has(point)).toBe(false)
 })
 
 
-test("hash random points", () => {
-    const hash = createHash()
-    const point = hash.random()
+test("point set random points", () => {
+    const pointSet = createHash()
+    const point = pointSet.random()
     expect([0, 1, 2]).toContain(point.x)
     expect([0, 1, 2]).toContain(point.y)
+})
+
+
+test("point multiplication", () => {
+    const point = new Point(1, 2)
+    const multiplied = point.multiply(2)
+    expect(multiplied.x).toBe(2)
+    expect(multiplied.y).toBe(4)
+})
+
+
+test("point multiplication second parameter", () => {
+    const point = new Point(1, 2)
+    const multiplied = point.multiply(2, 4)
+    expect(multiplied.x).toBe(2)
+    expect(multiplied.y).toBe(8)
 })

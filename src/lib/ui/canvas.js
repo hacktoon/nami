@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from 'react'
+import React, { useState, useRef, useLayoutEffect } from 'react'
 
 
 export function Canvas({width, height, onInit, className='Canvas'}) {
@@ -11,6 +11,21 @@ export function Canvas({width, height, onInit, className='Canvas'}) {
         width={width}
         height={height}>
     </canvas>
+}
+
+
+export function CursorCanvas({width, height, onInit}) {
+    const [cache, setCache] = useState()
+
+    const handleInit = context => {
+        onInit(context)
+    }
+
+    return <Canvas className='CursorCanvas'
+        width={width}
+        height={height}
+        onInit={handleInit}
+    />
 }
 
 
@@ -30,7 +45,7 @@ class CanvasContext {
         this.context.clearRect(x, y, size, size)
     }
 
-    border(size, point) {
+    cursor(size, point) {
         const {x, y} = point
         // if (size < 10) {
         //     this.context.fillRect(x, y, size, size)
