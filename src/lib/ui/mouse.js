@@ -8,18 +8,15 @@ export function MouseTrack(props) {
     const [dragging, setDragging]   = useState(false)
 
     const handleClick = event => {
-        event.preventDefault()
         props.onClick(createMousePoint(event))
     }
 
     const handleMouseDown = event => {
-        event.preventDefault()
         setDragStart(createMousePoint(event))
         setDragging(true)
     }
 
     const handleMouseMove = event => {
-        event.preventDefault()
         const mousePoint = createMousePoint(event)
         if (dragging) {
             props.onDrag && props.onDrag(dragStart, mousePoint)
@@ -29,12 +26,15 @@ export function MouseTrack(props) {
     }
 
     const handleMouseUp = event => {
-        event.preventDefault()
         const mousePoint = createMousePoint(event)
         setDragging(false)
         if (dragging && props.onDragEnd) {
             props.onDragEnd(dragStart, mousePoint)
         }
+    }
+
+    const handleMouseOut = () => {
+        props.onLeave()
     }
 
     const handleWheel = event => {
@@ -51,7 +51,7 @@ export function MouseTrack(props) {
             onClick={handleClick}
             onWheel={handleWheel}
             onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
+            onMouseOut={handleMouseOut}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}>
         </div>
