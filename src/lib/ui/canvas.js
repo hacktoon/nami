@@ -18,6 +18,7 @@ export function CursorCanvas({width, height, onInit}) {
     const [cache, setCache] = useState()
 
     const handleInit = context => {
+        context.reset()
         onInit(context)
     }
 
@@ -32,12 +33,18 @@ export function CursorCanvas({width, height, onInit}) {
 class CanvasContext {
     constructor(canvas) {
         this.context = canvas.getContext('2d')
+        this.width = canvas.width
+        this.height = canvas.height
     }
 
     rect(size, point, color) {
         const {x, y} = point
         this.context.fillStyle = color
         this.context.fillRect(x, y, size, size)
+    }
+
+    reset() {
+        this.context.clearRect(0, 0, this.width, this.height)
     }
 
     clear(size, point) {
@@ -47,9 +54,6 @@ class CanvasContext {
 
     cursor(size, point) {
         const {x, y} = point
-        // if (size < 10) {
-        //     this.context.fillRect(x, y, size, size)
-        // }
         this.context.fillStyle = '#FFF'
         this.context.fillRect(x, y, size, size)
         // const innerWidth = Math.floor((size * 10) / 100)
@@ -59,11 +63,9 @@ class CanvasContext {
 }
 
 
-function createCanvas(originalCanvas) {
+function createCanvas(width, height) {
     const canvas = document.createElement('canvas')
-    canvas.width = myCanvas.width
-    canvas.height = myCanvas.height
-
-    canvas.getContext('2d').drawDiagram(originalCanvas, 0, 0)
-    return canvas
+    canvas.width = width
+    canvas.height = height
+    return {canvas, context: canvas.getContext('2d')}
 }

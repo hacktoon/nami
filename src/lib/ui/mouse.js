@@ -19,6 +19,7 @@ export function MouseTrack(props) {
     }
 
     const handleMouseMove = event => {
+        event.preventDefault()
         const mousePoint = createMousePoint(event)
         if (dragging) {
             props.onDrag && props.onDrag(dragStart, mousePoint)
@@ -28,6 +29,7 @@ export function MouseTrack(props) {
     }
 
     const handleMouseUp = event => {
+        event.preventDefault()
         const mousePoint = createMousePoint(event)
         setDragging(false)
         if (dragging && props.onDragEnd) {
