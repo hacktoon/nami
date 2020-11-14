@@ -4,10 +4,10 @@ import { Point } from '/lib/point'
 
 // let's create our own type system, it's fun
 class AbstractType {
-    static create(AbstractType) {
+    static create(AbstractTypeClass) {
         return (label, value, props={}) => {
-            const type = AbstractType.type
-            return new AbstractType(type, label, value, props)
+            const type = AbstractTypeClass.type
+            return new AbstractTypeClass(type, label, value, props)
         }
     }
 

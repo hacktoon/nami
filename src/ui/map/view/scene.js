@@ -23,12 +23,11 @@ export class Scene {
         })
     }
 
-    renderCursor(canvas, {...props}) {
-        const focus = this.focus.plus(props.focusOffset)
-        const canvasPoint = this.#renderPoint(props.cursor, focus)
+    renderCursor(canvas, cursor, focusOffset) {
+        const focus = this.focus.plus(focusOffset)
+        const canvasPoint = this.#renderPoint(cursor, focus)
         const color = 'rgba(255, 255, 255, .5)'
 
-        // canvas.clear(this.tileSize, prevCanvasPoint)
         canvas.cursor(this.tileSize, canvasPoint, color)
     }
 
