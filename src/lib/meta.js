@@ -5,7 +5,7 @@ export class MetaClass {
     }
 
     parseConfig(raw_data) {
-        const data = Object.assign(this.defaultConfig, raw_data)
+        const data = this.#defaultConfig(raw_data)
         const types = Object.entries(data)
         const map = {}
 
@@ -16,9 +16,9 @@ export class MetaClass {
         return map
     }
 
-    get defaultConfig() {
+    #defaultConfig(raw_data) {
         const entries = this.types.map(type => [type.name, type.value])
-        return Object.fromEntries(entries)
+        return Object.assign(Object.fromEntries(entries), raw_data)
     }
 
     get nameMap() {

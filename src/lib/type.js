@@ -1,5 +1,6 @@
-import { Color } from '/lib/color'
+
 import { Point } from '/lib/point'
+import { clamp } from '/lib/number'
 
 
 // let's create our own type system, it's fun
@@ -30,7 +31,9 @@ export class NumberType extends AbstractType {
     static type = 'number'
 
     sanitize(value) {
-        return Number(value)
+        const min = this.fieldAttrs.min ?? -Infinity
+        const max = this.fieldAttrs.max ?? Infinity
+        return clamp(Number(value), min, max)
     }
 }
 
