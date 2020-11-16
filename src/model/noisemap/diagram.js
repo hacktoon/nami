@@ -7,6 +7,7 @@ import { Color } from '/lib/color'
 
 export class Diagram {
     static meta = new MetaClass(
+        Type.boolean("Wrap grid", false),
         Type.point("Focus point", new Point(0, 0)),
         Type.number("Tile size", 6, {step: 1, min: 1}),
     )
@@ -21,17 +22,13 @@ export class Diagram {
         this.config = config
         this.width = map.width
         this.height = map.height
-        this.wrapMode = false
+        this.wrapGrid = config.wrapGrid
         this.tileSize = config.tileSize
         this.focus = config.focusPoint
-
-        this.grid = new Grid(map.width, map.height, point => {
-            const height = this.map.get(point)
-            return new Color(height, height, height).toHex()
-        })
     }
 
     get(point) {
-        return this.grid.get(point)
+        const height = this.map.get(point)
+        return new Color(height, height, height).toHex()
     }
 }

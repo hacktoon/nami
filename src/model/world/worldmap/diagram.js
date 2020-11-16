@@ -21,16 +21,22 @@ export class Diagram {
         this.config = config
         this.width = worldMap.width
         this.height = worldMap.height
-        this.wrapMode = config.wrapGrid
+        this.wrapGrid = config.wrapGrid
         this.tileSize = config.tileSize
         this.focus = config.focusPoint
-
-        this.grid = new Grid(worldMap.width, worldMap.height, point => {
-            return this.worldMap.reliefMap.codeMap.getColor(point)
-        })
     }
 
     get(point) {
-        return this.grid.get(point)
+        if (! this.isWrappable(point)) {
+            return 'transparent'
+        }
+        return this.worldMap.reliefMap.codeMap.getColor(point)
+    }
+
+    isWrappable(point) {
+        if (this.wrapGrid) return true
+        const col = point.x >= 0 && point.x < this.width
+        const row = point.y >= 0 && point.y < this.height
+        return col && row
     }
 }

@@ -62,7 +62,7 @@ function MapMouseTrack({scene, ...props}) {
      tile objects using a view frame object
     */
 
-    const [cursor, setCursor] = useState(new Point())
+    const [cursor, setCursor] = useState(null)
     const [focus, setFocus] = useState(new Point())
 
     const handleDrag = (startPoint, endPoint) => {

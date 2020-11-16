@@ -5,6 +5,7 @@ import { Color } from '/lib/color'
 
 export class Diagram {
     static meta = new MetaClass(
+        Type.point("Focus point", new Point(0, 0)),
         Type.boolean("Wrap grid", false),
         Type.boolean("Show border", true),
         Type.number("Tile size", 6, {step: 1, min: 1}),
@@ -19,11 +20,12 @@ export class Diagram {
 
     constructor(tectonicsMap, config) {
         this.tectonicsMap = tectonicsMap
+        this.config = config
         this.width = tectonicsMap.width
         this.height = tectonicsMap.height
         this.wrapGrid = config.wrapGrid
         this.tileSize = config.tileSize
-        this.config = config
+        this.focus = config.focusPoint
     }
 
     get(point) {
