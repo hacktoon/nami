@@ -1,10 +1,12 @@
 import { Grid } from '/lib/grid'
+import { Point } from '/lib/point'
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
 
 export class Diagram {
     static meta = new MetaClass(
+        Type.point("Focus point", new Point(0, 0)),
         Type.boolean("Wrap grid", false),
         Type.number("Tile size", 6, {step: 1, min: 1}),
     )
@@ -21,6 +23,7 @@ export class Diagram {
         this.height = worldMap.height
         this.wrapMode = config.wrapGrid
         this.tileSize = config.tileSize
+        this.focus = config.focusPoint
 
         this.grid = new Grid(worldMap.width, worldMap.height, point => {
             return this.worldMap.reliefMap.codeMap.getColor(point)

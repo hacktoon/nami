@@ -1,4 +1,5 @@
 import { Grid } from '/lib/grid'
+import { Point } from '/lib/point'
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 import { Color } from '/lib/color'
@@ -6,6 +7,7 @@ import { Color } from '/lib/color'
 
 export class Diagram {
     static meta = new MetaClass(
+        Type.point("Focus point", new Point(0, 0)),
         Type.number("Tile size", 6, {step: 1, min: 1}),
     )
 
@@ -21,6 +23,7 @@ export class Diagram {
         this.height = map.height
         this.wrapMode = false
         this.tileSize = config.tileSize
+        this.focus = config.focusPoint
 
         this.grid = new Grid(map.width, map.height, point => {
             const height = this.map.get(point)
