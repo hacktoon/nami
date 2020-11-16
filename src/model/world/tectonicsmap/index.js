@@ -2,7 +2,7 @@ import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 import { Grid } from '/lib/grid'
 
-import { RegionMap } from '/model/regionmap'
+import RegionMap from '/model/regionmap'
 import { Diagram } from './diagram'
 
 
@@ -22,7 +22,7 @@ export default class TectonicsMap {
             // 1: build basic tectonics map
             return regionMap.get(point)
         })
-        // 2: build deformations using borders
+        // // 2: build deformations using borders
         return new TectonicsMap(regionMap, grid, config)
     }
 
@@ -42,6 +42,8 @@ export default class TectonicsMap {
 
 
 function createRegionMap(config) {
+    console.log('travou');
+    // TODO:  accept any params
     return RegionMap.create({
         count: config.count,
         layerGrowth: 40,

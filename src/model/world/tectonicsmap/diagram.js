@@ -1,6 +1,7 @@
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 import { Color } from '/lib/color'
+import { Point } from '/lib/point'
 
 
 export class Diagram {

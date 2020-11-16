@@ -5,6 +5,7 @@ import { SelectField } from '/lib/ui/form/field'
 import { Title } from '/lib/ui'
 
 import { MapApp } from '/ui/map'
+import TectonicsMap from '/model/world/tectonicsmap'
 import WorldMap from '/model/world/worldmap'
 import RegionMap from '/model/regionmap'
 import NoiseMap from '/model/noisemap'
@@ -15,6 +16,7 @@ import "./css/index.css"
 
 
 const APPS = {
+    TectonicsMap: { id: 'TectonicsMap', component: () => <MapApp Map={TectonicsMap} /> },
     WorldMap: { id: 'WorldMap', component: () => <MapApp Map={WorldMap} /> },
     RegionMap: { id: 'RegionMap', component:  () => <MapApp Map={RegionMap} /> },
     NoiseMap: { id: 'NoiseMap', component: () => <MapApp Map={NoiseMap} /> },
