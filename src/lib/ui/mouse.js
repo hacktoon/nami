@@ -7,33 +7,39 @@ export function MouseTrack(props) {
     const [dragStart, setDragStart] = useState(new Point())
     const [dragging, setDragging]   = useState(false)
 
-    const handleClick = event => {
-        props.onClick(createMousePoint(event))
-    }
 
     const handleMouseDown = event => {
-        setDragStart(createMousePoint(event))
-        setDragging(true)
+        handleNativeEvent(event)
+        const mousePoint = createMousePoint(event)
+        setDragStart(mousePoint)
+        if (event.button === 1) {  // middle mouse button
+            setDragging(true)
+        } else {
+            props.onClick(mousePoint)
+        }
     }
 
     const handleMouseUp = event => {
+        handleNativeEvent(event)
         const mousePoint = createMousePoint(event)
         if (dragging && props.onDragEnd) {
             props.onDragEnd(dragStart, mousePoint)
-            setDragging(false)
         }
+        setDragging(false)
     }
 
     const handleMouseOut = event => {
+        handleNativeEvent(event)
         const mousePoint = createMousePoint(event)
         if (dragging && props.onDragEnd) {
             props.onDragEnd(dragStart, mousePoint)
-            setDragging(false)
         }
+        setDragging(false)
         props.onMouseOut(mousePoint)
     }
 
     const handleMouseMove = event => {
+        handleNativeEvent(event)
         const mousePoint = createMousePoint(event)
         if (dragging) {
             props.onDrag && props.onDrag(dragStart, mousePoint)
@@ -47,12 +53,17 @@ export function MouseTrack(props) {
     }
 
     function createMousePoint(event) {
+        handleNativeEvent(event)
         const {offsetX, offsetY} = event.nativeEvent
         return new Point(offsetX, offsetY)
     }
 
+    function handleNativeEvent(event) {
+        event.stopPropagation()
+        event.preventDefault()
+    }
+
     return <div className="MouseTrack"
-        onClick={handleClick}
         onWheel={handleWheel}
         onMouseUp={handleMouseUp}
         onMouseOut={handleMouseOut}

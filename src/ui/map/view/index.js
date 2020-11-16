@@ -85,7 +85,6 @@ function MapMouseTrack({scene, ...props}) {
         const scenePoint = scene.frame.tilePoint(mousePoint)
         const point = scenePoint.plus(scene.focus)
         if (! cursor || point.differs(cursor)) {
-            console.log(point, cursor);
             setCursor(point)
         }
     }
@@ -93,12 +92,12 @@ function MapMouseTrack({scene, ...props}) {
     const handleClick = mousePoint => {
         const scenePoint = scene.frame.tilePoint(mousePoint)
         const point = scenePoint.plus(scene.focus)
-        console.log('clicked', point)
+        console.log(point);
     }
 
     const handleMouseOut = () => setCursor(null)
 
-    const handleInit = canvas => {
+    const handleCanvasInit = canvas => {
         if (cursor) {
             scene.renderCursor(canvas, cursor, props.focusOffset)
         }
@@ -116,7 +115,7 @@ function MapMouseTrack({scene, ...props}) {
         <CursorCanvas
             width={scene.width}
             height={scene.height}
-            onInit={handleInit}
+            onInit={handleCanvasInit}
         />
     </>
 }
