@@ -4,7 +4,7 @@ import { SimplexNoise } from '/lib/noise'
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
-import { Diagram } from './diagram'
+import { MapDiagram } from './diagram'
 
 
 export default class NoiseMap {
@@ -16,7 +16,7 @@ export default class NoiseMap {
         Type.number("Scale", .01, {step: 0.01, min: 0.01}),
         Type.seed("Seed", '')
     )
-    static Diagram = Diagram
+    static MapDiagram = MapDiagram
 
     static create(data) {
         const config = NoiseMap.meta.parseConfig(data)

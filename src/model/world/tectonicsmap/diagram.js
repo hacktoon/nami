@@ -4,33 +4,33 @@ import { Color } from '/lib/color'
 import { Point } from '/lib/point'
 
 
-export class Diagram {
+export class MapDiagram {
     static meta = new MetaClass(
-        Type.point("Focus point", new Point(0, 0)),
+        Type.point("Focus point", new Point(100, 74)),
         Type.boolean("Wrap grid", false),
         Type.boolean("Show border", true),
-        Type.number("Tile size", 6, {step: 1, min: 1}),
-        Type.color("Border color", Color.fromHex('#04D')),
-        Type.color("Background", Color.fromHex('#888')),
+        Type.number("Tile size", 5, {step: 1, min: 1}),
+        Type.color("Border color", Color.fromHex('#069')),
+        Type.color("Background", Color.fromHex('#333')),
     )
 
     static create(tectonicsMap, data) {
-        const config = Diagram.meta.parseConfig(data)
-        return new Diagram(tectonicsMap, config)
+        const config = MapDiagram.meta.parseConfig(data)
+        return new MapDiagram(tectonicsMap, config)
     }
 
-    constructor(tectonicsMap, config) {
-        this.width = tectonicsMap.width
-        this.height = tectonicsMap.height
-        this.tectonicsMap = tectonicsMap
-        this.config = config
+    constructor(map, config) {
+        this.width = map.width
+        this.height = map.height
         this.wrapGrid = config.wrapGrid
         this.tileSize = config.tileSize
         this.focus = config.focusPoint
+        this.config = config
+        this.map = map
     }
 
     get(point) {
-        return this.getColor(this.tectonicsMap, point)
+        return this.getColor(this.map, point)
     }
 
     isWrappable(point) {

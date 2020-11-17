@@ -21,7 +21,7 @@ const APPS = {
     RegionMap: { id: 'RegionMap', component:  () => <MapApp Map={RegionMap} /> },
     NoiseMap: { id: 'NoiseMap', component: () => <MapApp Map={NoiseMap} /> },
 }
-const DEFAULT_APP = APPS.RegionMap
+const DEFAULT_APP = APPS.TectonicsMap
 
 
 function AppHeader({app, setApp}) {

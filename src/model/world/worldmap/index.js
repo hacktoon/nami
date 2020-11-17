@@ -6,7 +6,7 @@ import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
 import { ReliefMap } from './geo/relief'
-import { Diagram } from './diagram'
+import { MapDiagram } from './diagram'
 
 
 export default class WorldMap {
@@ -16,7 +16,7 @@ export default class WorldMap {
         Type.seed("Seed", '')
     )
 
-    static Diagram = Diagram
+    static MapDiagram = MapDiagram
 
     static create(data) {
         const config = WorldMap.meta.parseConfig(data)
@@ -28,7 +28,7 @@ export default class WorldMap {
 
     constructor(reliefMap, grid, config) {
         this.name = Name.createLandmassName()
-        this.config = config
+        this.config = {...config, seed: ''}
         this.seed = config.seed
         this.size = config.size
         this.width = config.size

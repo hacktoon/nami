@@ -17,14 +17,14 @@ export function MapApp({Map}) {
             onChange={handleMap}>
                 <Button label="New" />
         </Form>
-        <MapAppView Diagram={Map.Diagram} map={map} />
+        <MapAppView MapDiagram={Map.MapDiagram} map={map} />
     </section>
 }
 
 
-function MapAppView({Diagram, map}) {
+function MapAppView({MapDiagram, map}) {
     const [config, setConfig] = useState({})
-    const diagram = Diagram.create(map, config)
+    const diagram = MapDiagram.create(map, config)
 
     const handleZoom = amount => {
         const tileSize = diagram.tileSize + amount
@@ -36,8 +36,8 @@ function MapAppView({Diagram, map}) {
     }
 
     return <>
-        <Form className="Diagram"
-            meta={Diagram.meta}
+        <Form className="MapDiagram"
+            meta={MapDiagram.meta}
             values={diagram.config}
             onSubmit={setConfig}
             onChange={setConfig}

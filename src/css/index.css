@@ -50,7 +50,7 @@
     grid-column: span 2;
 }
 
-.MapApp .Form.Diagram {
+.MapApp .Form.MapDiagram {
     background: #111;
     color: #FFF;
     gap: .5rem;

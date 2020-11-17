@@ -4,7 +4,7 @@ import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
 
-export class Diagram {
+export class MapDiagram {
     static meta = new MetaClass(
         Type.point("Focus point", new Point(0, 0)),
         Type.boolean("Wrap grid", false),
@@ -12,8 +12,8 @@ export class Diagram {
     )
 
     static create(worldMap, data) {
-        const config = Diagram.meta.parseConfig(data)
-        return new Diagram(worldMap, config)
+        const config = MapDiagram.meta.parseConfig(data)
+        return new MapDiagram(worldMap, config)
     }
 
     constructor(worldMap, config) {

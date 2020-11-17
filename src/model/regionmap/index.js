@@ -10,7 +10,7 @@ import { MetaClass } from '/lib/meta'
 
 import { Region } from './region'
 import { RegionGrid } from './grid'
-import { Diagram } from './diagram'
+import { MapDiagram } from './diagram'
 
 
 export default class RegionMap {
@@ -22,7 +22,7 @@ export default class RegionMap {
         Type.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
         Type.seed("Seed", '')
     )
-    static Diagram = Diagram
+    static MapDiagram = MapDiagram
 
     static create(data) {
         const config = RegionMap.meta.parseConfig(data)

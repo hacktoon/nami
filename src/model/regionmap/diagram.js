@@ -9,7 +9,7 @@ import { Point } from '/lib/point'
 // define tiles as drawable or not, or filters like translate
 // diagram here should be a list of tiles to render
 
-export class Diagram {
+export class MapDiagram {
     static meta = new MetaClass(
         Type.point("Focus point", new Point(100, 74)),
         Type.boolean("Wrap grid", false),
@@ -23,8 +23,8 @@ export class Diagram {
     )
 
     static create(regionMap, rawConfig) {
-        const config = Diagram.meta.parseConfig(rawConfig)
-        return new Diagram(regionMap, config)
+        const config = MapDiagram.meta.parseConfig(rawConfig)
+        return new MapDiagram(regionMap, config)
     }
 
     constructor(regionMap, config) {
