@@ -92,7 +92,6 @@ function MapMouseTrack({scene, ...props}) {
     const handleClick = mousePoint => {
         const scenePoint = scene.frame.tilePoint(mousePoint)
         const point = scenePoint.plus(scene.focus)
-        console.log(point);
     }
 
     const handleMouseOut = () => setCursor(null)

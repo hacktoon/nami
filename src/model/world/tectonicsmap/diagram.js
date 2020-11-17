@@ -20,19 +20,17 @@ export class Diagram {
     }
 
     constructor(tectonicsMap, config) {
-        this.tectonicsMap = tectonicsMap
-        this.config = config
         this.width = tectonicsMap.width
         this.height = tectonicsMap.height
+        this.tectonicsMap = tectonicsMap
+        this.config = config
         this.wrapGrid = config.wrapGrid
         this.tileSize = config.tileSize
         this.focus = config.focusPoint
     }
 
     get(point) {
-        if (this.isWrappable(point))
-            return this.getColor(this.tectonicsMap, point)
-        return 'transparent'
+        return this.getColor(this.tectonicsMap, point)
     }
 
     isWrappable(point) {
@@ -43,6 +41,10 @@ export class Diagram {
     }
 
     getColor(map, point) {
+        if (! this.isWrappable(point)) {
+            return 'transparent'
+        }
+
         if (this.config.showBorder && map.isBorder(point)) {
             return this.config.borderColor.toHex()
         }

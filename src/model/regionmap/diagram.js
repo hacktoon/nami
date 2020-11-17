@@ -11,11 +11,11 @@ import { Point } from '/lib/point'
 
 export class Diagram {
     static meta = new MetaClass(
-        Type.point("Focus point", new Point(0, 0)),
+        Type.point("Focus point", new Point(100, 74)),
         Type.boolean("Wrap grid", false),
         Type.boolean("Show border", false),
         Type.boolean("Show origin", false),
-        Type.number("Tile size", 50, {step: 1, min: 1}),
+        Type.number("Tile size", 5, {step: 1, min: 1}),
         Type.number("Layer", 3, {step: 1, min: 0}),
         Type.color("Foreground", Color.fromHex('#251')),
         Type.color("Background", Color.fromHex('#059')),
@@ -28,10 +28,10 @@ export class Diagram {
     }
 
     constructor(regionMap, config) {
-        this.regionMap = regionMap
-        this.config = config
         this.width = regionMap.width
         this.height = regionMap.height
+        this.regionMap = regionMap
+        this.config = config
         this.wrapGrid = config.wrapGrid
         this.tileSize = config.tileSize
         this.focus = config.focusPoint

@@ -18,12 +18,12 @@ export default class TectonicsMap {
     static create(data) {
         const config = TectonicsMap.meta.parseConfig(data)
         const regionMap = createRegionMap(config)
-        const grid = new Grid(config.width, config.height, point => {
-            // 1: build basic tectonics map
-            return regionMap.get(point)
-        })
+        // const grid = new Grid(config.width, config.height, point => {
+        //     // 1: build basic tectonics map
+        //     return regionMap.get(point)
+        // })
         // // 2: build deformations using borders
-        return new TectonicsMap(regionMap, grid, config)
+        return new TectonicsMap(regionMap, null, config)
     }
 
     constructor(regionMap, grid, config) {
@@ -35,19 +35,21 @@ export default class TectonicsMap {
         this.config = config
     }
 
+    isBorder(point) {
+        const isb= this.regionMap.isBorder(point)
+        return isb
+    }
+
     get(point) {
-        return this.grid.get(point)
+        return this.regionMap.get(point)
     }
 }
 
 
 function createRegionMap(config) {
-    console.log('travou');
-    // TODO:  accept any params
     return RegionMap.create({
-        count: config.count,
+        count: config.plates,
         layerGrowth: 40,
         growthChance: 0.1,
-
     })
 }

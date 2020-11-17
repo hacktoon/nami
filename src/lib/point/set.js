@@ -12,6 +12,16 @@ Points represented for the data above:
 */
 
 export class PointSet {
+    static fromRect(rect) {
+        const pointSet = new PointSet()
+        for(let i = 0; i < rect.width; i++) {
+            for(let j = 0; j < rect.height; j++) {
+                pointSet.add(new Point(i, j))
+            }
+        }
+        return pointSet
+    }
+
     constructor(...points) {
         this.size = 0
         this.map = new Map()

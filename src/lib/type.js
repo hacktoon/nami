@@ -30,10 +30,11 @@ class AbstractType {
 export class NumberType extends AbstractType {
     static type = 'number'
 
-    sanitize(value) {
+    sanitize(value=0) {
+        const number = value ?? 0
         const min = this.fieldAttrs.min ?? -Infinity
         const max = this.fieldAttrs.max ?? Infinity
-        return clamp(Number(value), min, max)
+        return clamp(Number(number), min, max)
     }
 }
 
