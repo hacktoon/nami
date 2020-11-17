@@ -7,7 +7,7 @@ import { Rect } from '/lib/number'
 
 export class RandomPointDistribution {
     static create(count, width, height) {
-        count = clamp(count, 1, width * height)
+        count = clamp(count, 1, width * height) // TODO: move this to types
         return repeat(count, () => Point.random(width, height))
     }
 }
@@ -15,16 +15,18 @@ export class RandomPointDistribution {
 
 export class EvenPointDistribution {
     static create(count, width, height) {
-        count = clamp(count, 1, width * height)
+        count = clamp(count, 1, width * height) // TODO: move this to types
         const points = []
         const rect = new Rect(width, height)
         const pointSet = PointSet.fromRect(rect)
-        const radius = 10
+        const pointsPerItem = Math.floor(rect.area / count)
+        const radius = Math.floor(Math.sqrt(pointsPerItem) / 2)
         while(pointSet.size > 0 && points.length < count) {
             const center = pointSet.random()
             iterPointsInCircle(pointSet, center, radius, rect)
             points.push(center)
         }
+        console.log(`count=${count}, radius=${radius}, total=${points.length}`)
         return points
     }
 }

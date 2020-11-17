@@ -13,12 +13,6 @@ import { RegionGrid } from './grid'
 import { Diagram } from './diagram'
 
 
-const pointDistribution = {
-    'even': EvenPointDistribution,
-    'random': RandomPointDistribution
-}
-
-
 export default class RegionMap {
     static meta = new MetaClass(
         Type.number("Width", 200, {step: 1, min: 1}),
@@ -26,17 +20,16 @@ export default class RegionMap {
         Type.number("Count", 80, {step: 1, min: 1}),
         Type.number("Layer growth", 40, {step: 1, min: 1}),
         Type.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
-        Type.text("Spread", 'even'),
         Type.seed("Seed", '')
     )
     static Diagram = Diagram
 
     static create(data) {
         const config = RegionMap.meta.parseConfig(data)
-        const {width, height, count, seed, layerGrowth, spread, growthChance} = config
+        const {width, height, count, seed, layerGrowth, growthChance} = config
         Random.seed = seed
         const grid = new RegionGrid(width, height)
-        const points = pointDistribution[spread].create(count, width, height)
+        const points = RandomPointDistribution.create(count, width, height)
         const regions = createRegions(points, grid, layerGrowth, growthChance)
         return new RegionMap(regions, grid, config)
     }
