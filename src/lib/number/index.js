@@ -28,6 +28,10 @@ export class Rect {
         this.height = height
     }
 
+    get area() {
+        return this.width * this.height
+    }
+
     wrap(point) {
         let {x, y} = point
         if (x >= this.width) { x %= this.width }

@@ -31,3 +31,9 @@ test('rect wrapping negative point', () => {
     expect(point.x).toBe(8)
     expect(point.y).toBe(9)
 })
+
+
+test('rect area', () => {
+    const point = new Rect(10, 10)
+    expect(point.area).toBe(100)
+})
