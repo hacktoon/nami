@@ -1,4 +1,3 @@
-import { Random } from '/lib/random'
 import { Grid } from '/lib/grid'
 import { SimplexNoise } from '/lib/noise'
 import { Type } from '/lib/type'
@@ -20,8 +19,7 @@ export default class NoiseMap {
 
     static create(data) {
         const config = NoiseMap.meta.parseConfig(data)
-        const {width, height, detail, resolution, scale, seed} = config
-        Random.seed = seed
+        const {width, height, detail, resolution, scale} = config
         const simplex = new SimplexNoise()
         const grid = new Grid(width, height, point => {
             let {x, y} = point
@@ -31,13 +29,13 @@ export default class NoiseMap {
     }
 
     constructor(grid, config) {
+        this.seed = config.seed
         this.grid = grid
-        this.config = config
         this.width = config.width
         this.height = config.height
-        this.detail = config.detail
         this.resolution = config.resolution
-        this.seed = config.seed
+        this.detail = config.detail
+        this.config = config
     }
 
     get(point) {

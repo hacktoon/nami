@@ -1,4 +1,3 @@
-import { Random } from '/lib/random'
 import { RandomPointDistribution } from '/lib/point/distribution'
 
 import { OrganicFill } from '/lib/flood-fill'
@@ -23,19 +22,19 @@ export default class RegionMap {
 
     static create(data) {
         const config = RegionMap.meta.parseConfig(data)
-        Random.seed = config.seed
-        const grid = new RegionGrid(config.width, config.height)
-        const regions = createRegions(grid, config)
-        return new RegionMap(regions, grid, config)
+        return new RegionMap(config)
     }
 
-    constructor(regions, grid, config) {
-        this.seed = config.seed
-        this.width = config.width
-        this.height = config.height
-        this.regions = regions
-        this.grid = grid
-        this.config = {...config, seed: ''} // FIXME: abstract this on meta
+    constructor(config) {
+        this.grid = new RegionGrid(
+            config.get('width'),
+            config.get('height')
+        )
+        this.regions = createRegions(this.grid, config)
+        this.seed = config.get('seed')
+        this.width = config.get('width')
+        this.height = config.get('height')
+        this.config = config.original()
     }
 
     get(point) {
@@ -78,14 +77,19 @@ export default class RegionMap {
 // FUNCTIONS ===================================
 
 function createRegions(grid, config) {
-    const {count, width, height} = config
-    const points = RandomPointDistribution.create(count, width, height)
+    const points = RandomPointDistribution.create(
+        config.get('count'),
+        config.get('width'),
+        config.get('height')
+    )
     const fillerMap = {}
     const regions = points.map((origin, id) => {
         fillerMap[id] = createOrganicFill({
-            id, origin, grid,
-            layerGrowth: config.layerGrowth,
-            growthChance: config.growthChance
+            id,
+            origin,
+            grid,
+            layerGrowth: config.get('layerGrowth'),
+            growthChance: config.get('growthChance')
         })
         return new Region(id, origin)
     })

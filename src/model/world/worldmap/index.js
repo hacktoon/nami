@@ -1,7 +1,6 @@
 import Tile from './tile'
 import { Grid } from '/lib/grid'
 import { Name } from '/lib/name'
-import { Random } from '/lib/random'
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
@@ -20,7 +19,6 @@ export default class WorldMap {
 
     static create(data) {
         const config = WorldMap.meta.parseConfig(data)
-        Random.seed = config.seed
         const reliefMap = new ReliefMap(config.size, config.roughness)
         const grid = new Grid(config.size, config.size, point => new Tile(point))
         return new WorldMap(reliefMap, grid, config)

@@ -1,21 +1,24 @@
-
+import { Random } from '/lib/random'
 import { Point } from '/lib/point'
 import { clamp } from '/lib/number'
 
 
 // let's create our own type system, it's fun
 class AbstractType {
-    static create(AbstractTypeClass) {
+    static volatile = false
+
+    static create(TypeClass) {
+        // Example: Type.number('label', 'foobar', {})
         return (label, value, props={}) => {
-            const type = AbstractTypeClass.type
-            return new AbstractTypeClass(type, label, value, props)
+            const type = TypeClass.type
+            return new TypeClass(type, label, value, props)
         }
     }
 
     constructor(type, label, value, fieldAttrs) {
         this.type = type
-        this.label = label
         this.name = normalizeLabel(label)
+        this.label = label
         this.value = value
         this.fieldAttrs = fieldAttrs
         this.description = fieldAttrs.description ?? `${type}(${label})`
@@ -52,8 +55,10 @@ export class SeedType extends TextType {
     static type = 'seed'
 
     sanitize(value) {
-        const seed = super.sanitize(value)
-        return seed.length ? seed : String(Number(new Date()))
+        const text = super.sanitize(value)
+        const seed = text.length ? text : String(Number(new Date()))
+        Random.seed = seed
+        return seed
     }
 }
 
