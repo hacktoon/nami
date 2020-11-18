@@ -8,6 +8,7 @@ const TYPE_ORIGIN = 2
 const TYPE_BORDER = 3
 
 
+// FIXME: mutable object
 export class RegionGrid {
     constructor(width, height) {
         this.grid = new Grid(width, height, () => new GridCell())
@@ -24,10 +25,18 @@ export class RegionGrid {
         this.get(point).type = TYPE_ORIGIN
     }
 
+    isOrigin(point) {
+        return this.get(point).isOrigin()
+    }
+
     setBorder(point, neighbor) {
         const cell = this.get(point)
         if (cell.type == TYPE_ORIGIN) return
         cell.type = TYPE_BORDER
+    }
+
+    isBorder(point) {
+        return this.get(point).isBorder()
     }
 
     setValue(point, value) {
@@ -36,8 +45,20 @@ export class RegionGrid {
         this.emptyPoints--
     }
 
+    isValue(point, value) {
+        return this.get(point).isValue(value)
+    }
+
     setLayer(point, layer) {
         this.get(point).layer = layer
+    }
+
+    getLayer(point) {
+        return this.get(point).layer
+    }
+
+    isLayer(point, layer) {
+        return this.get(point).isLayer(layer)
     }
 
     setSeed(point, value) {
@@ -48,38 +69,18 @@ export class RegionGrid {
         return this.get(point).isSeed(value)
     }
 
-    isOrigin(point) {
-        return this.get(point).isOrigin()
-    }
-
-    isBorder(point) {
-        return this.get(point).isBorder()
-    }
-
-    isLayer(point, layer) {
-        return this.get(point).isLayer(layer)
-    }
-
-    getLayer(point) {
-        return this.get(point).layer
-    }
-
     hasEmptyPoints() {
         return this.emptyPoints > 0
-    }
-
-    isBlocked(point, value) {
-        let isFilled = !this.isEmpty(point) && !this.isValue(point, value)
-        let otherSeed = !this.isSeed(point, EMPTY_SEED) && !this.isSeed(point, value)
-        return isFilled || otherSeed
     }
 
     isEmpty(point) {
         return this.get(point).isValue(EMPTY_VALUE)
     }
 
-    isValue(point, value) {
-        return this.get(point).isValue(value)
+    isBlocked(point, value) {
+        let isFilled = !this.isEmpty(point) && !this.isValue(point, value)
+        let otherSeed = !this.isSeed(point, EMPTY_SEED) && !this.isSeed(point, value)
+        return isFilled || otherSeed
     }
 }
 

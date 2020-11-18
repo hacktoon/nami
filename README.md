@@ -10,18 +10,18 @@
 
 #### RegionMap
 - Store borders for each region
-- Build regions adjacency table to know
+- Build regions adjacency table
   - tiles 4,2 (r1) - 4,1 (r2)   ->  r1: left,  r2: right
 
 #### TectonicsMap
 - Convergent
-  - OO : Island Arc
-  - OC : Trench + Mountain
-  - CC : Mountain + Volcano
+  - OO : Island Arc + Earthquake
+  - OC : Trench + Mountain + Volcano + Earthquake
+  - CC : Mountain + Earthquake
 
 - Divergent
   - OO : Ridge
-  - CC : Rift
+  - CC : Rift  + Earthquake
 
 - create ridges separately in tectonics map, using total and start point of border points
 - Iterate over region growth borders to distribute hills, cenotes, ravines, lakes, etc

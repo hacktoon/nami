@@ -1,8 +1,5 @@
 import { Random } from '/lib/random'
-import {
-    RandomPointDistribution,
-    EvenPointDistribution
-} from '/lib/point/distribution'
+import { RandomPointDistribution } from '/lib/point/distribution'
 
 import { OrganicFill } from '/lib/flood-fill'
 import { Type } from '/lib/type'
