@@ -23,11 +23,9 @@ export default class RegionMap {
 
     static create(data) {
         const config = RegionMap.meta.parseConfig(data)
-        const {width, height, count, seed, layerGrowth, growthChance} = config
-        Random.seed = seed
-        const grid = new RegionGrid(width, height)
-        const points = RandomPointDistribution.create(count, width, height)
-        const regions = createRegions(points, grid, layerGrowth, growthChance)
+        Random.seed = config.seed
+        const grid = new RegionGrid(config.width, config.height)
+        const regions = createRegions(grid, config)
         return new RegionMap(regions, grid, config)
     }
 
@@ -79,11 +77,15 @@ export default class RegionMap {
 
 // FUNCTIONS ===================================
 
-function createRegions(points, grid, layerGrowth, growthChance) {
+function createRegions(grid, config) {
+    const {count, width, height} = config
+    const points = RandomPointDistribution.create(count, width, height)
     const fillerMap = {}
     const regions = points.map((origin, id) => {
         fillerMap[id] = createOrganicFill({
-            id, origin, grid, layerGrowth, growthChance
+            id, origin, grid,
+            layerGrowth: config.layerGrowth,
+            growthChance: config.growthChance
         })
         return new Region(id, origin)
     })
