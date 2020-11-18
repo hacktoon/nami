@@ -1,10 +1,13 @@
 import { PointSet } from '/lib/point/set'
 
 
-export class Region {
-    constructor(id, origin) {
+export class Plate {
+    constructor(id) {
         this.id = id
-        this.origin = origin
+        this.name = ''
+        this.area = 1
+        this.points = []
+        this.neighbors = []
         this.pointSet = new PointSet([origin])
     }
 

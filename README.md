@@ -9,30 +9,31 @@
 ## ROADMAP
 
 #### RegionMap
-- Store borders for each region
-- Build regions adjacency table
-  - tiles 4,2 (r1) - 4,1 (r2)   ->  r1: left,  r2: right
+- [] Region borders are stored
+- [] Regions adjacency table
 
 #### TectonicsMap
+- [] Create Plate register
 - Convergent
   - OO : Island Arc + Earthquake
   - OC : Trench + Mountain + Volcano + Earthquake
   - CC : Mountain + Earthquake
 
 - Divergent
-  - OO : Ridge
+  - OO : Oceanic Ridge
   - CC : Rift  + Earthquake
 
 - create ridges separately in tectonics map, using total and start point of border points
 - Iterate over region growth borders to distribute hills, cenotes, ravines, lakes, etc
 - First 2-3 layers are always land (cratons)
 
+#### ContinentMap
+- [] Create Continent
+
 #### BasinMap
-- determine rivers using ghaph
+- [] determine rivers using graph
 
 #### TerrainMap
-- Build vector map
-  - Align subregions points to other regions plates that collide
 - Build distance map from coast borders
 - Property (water: bool)
 - Use ScanlineFill to discover areas
