@@ -1,6 +1,7 @@
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 import { Color } from '/lib/color'
+import { Rect } from '/lib/number'
 import { Point } from '/lib/point'
 
 
@@ -22,9 +23,9 @@ export class MapDiagram {
         Type.color("Border color", Color.fromHex('#021')),
     )
 
-    static create(regionMap, rawConfig) {
+    static create(map, rawConfig) {
         const config = MapDiagram.meta.parseConfig(rawConfig)
-        return new MapDiagram(regionMap, config)
+        return new MapDiagram(map, config)
     }
 
     constructor(map, config) {
@@ -78,8 +79,6 @@ export class MapDiagram {
 
     isWrappable(point) {
         if (this.wrapGrid) return true
-        const col = point.x >= 0 && point.x < this.width
-        const row = point.y >= 0 && point.y < this.height
-        return col && row
+        return new Rect(this.width, this.height).inside(point)
     }
 }

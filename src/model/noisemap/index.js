@@ -19,23 +19,30 @@ export default class NoiseMap {
 
     static create(data) {
         const config = NoiseMap.meta.parseConfig(data)
-        const {width, height, detail, resolution, scale} = config
         const simplex = new SimplexNoise()
-        const grid = new Grid(width, height, point => {
-            let {x, y} = point
-            return simplex.noise(detail, x, y, resolution, scale, 0, 255)
-        })
+        const grid = new Grid(
+            config.get('width'),
+            config.get('height'),
+            point => {
+                let {x, y} = point
+                return simplex.noise(
+                    config.get('detail'),
+                    x, y,
+                    config.get('resolution'),
+                    config.get('scale'),
+                    0, 255)
+            })
         return new NoiseMap(grid, config)
     }
 
     constructor(grid, config) {
-        this.seed = config.seed
         this.grid = grid
-        this.width = config.width
-        this.height = config.height
-        this.resolution = config.resolution
-        this.detail = config.detail
-        this.config = config
+        this.seed = config.get('seed')
+        this.width = config.get('width')
+        this.height = config.get('height')
+        this.resolution = config.get('resolution')
+        this.detail = config.get('detail')
+        this.config = config.original()
     }
 
     get(point) {

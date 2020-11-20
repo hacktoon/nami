@@ -34,6 +34,20 @@ test('rect wrapping negative point', () => {
 
 
 test('rect area', () => {
-    const point = new Rect(10, 10)
-    expect(point.area).toBe(100)
+    const point = new Rect(10, 12)
+    expect(point.area).toBe(120)
+})
+
+
+test('point inside rect', () => {
+    const rect = new Rect(10, 10)
+    const point = new Point(5, 3)
+    expect(rect.inside(point)).toBe(true)
+})
+
+
+test('point outside rect', () => {
+    const rect = new Rect(10, 10)
+    const point = new Point(15, 3)
+    expect(rect.inside(point)).toBe(false)
 })
