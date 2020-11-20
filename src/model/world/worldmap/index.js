@@ -19,20 +19,22 @@ export default class WorldMap {
 
     static create(data) {
         const config = WorldMap.meta.parseConfig(data)
-        const reliefMap = new ReliefMap(config.size, config.roughness)
-        const grid = new Grid(config.size, config.size, point => new Tile(point))
+        const size = config.get('size')
+        const roughness = config.get('roughness')
+        const reliefMap = new ReliefMap(size, roughness)
+        const grid = new Grid(size, size, point => new Tile(point))
         return new WorldMap(reliefMap, grid, config)
     }
 
     constructor(reliefMap, grid, config) {
-        this.name = Name.createLandmassName()
-        this.config = {...config, seed: ''}
-        this.seed = config.seed
-        this.size = config.size
-        this.width = config.size
-        this.height = config.size
-        this.area = config.size * config.size
         this.grid = grid
+        this.name = Name.createLandmassName()
+        this.config = config.original()
+        this.seed = config.get('seed')
+        this.size = config.get('size')
+        this.width = config.get('size')
+        this.height = config.get('size')
+        this.area = config.get('size') * config.get('size')
         this.reliefMap = reliefMap
     }
 

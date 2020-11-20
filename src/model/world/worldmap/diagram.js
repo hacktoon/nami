@@ -1,5 +1,5 @@
-import { Grid } from '/lib/grid'
 import { Point } from '/lib/point'
+import { Rect } from '/lib/number'
 import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 
@@ -11,32 +11,30 @@ export class MapDiagram {
         Type.number("Tile size", 6, {step: 1, min: 1}),
     )
 
-    static create(worldMap, data) {
+    static create(map, data) {
         const config = MapDiagram.meta.parseConfig(data)
-        return new MapDiagram(worldMap, config)
+        return new MapDiagram(map, config)
     }
 
-    constructor(worldMap, config) {
-        this.worldMap = worldMap
-        this.config = config
-        this.width = worldMap.width
-        this.height = worldMap.height
-        this.wrapGrid = config.wrapGrid
-        this.tileSize = config.tileSize
-        this.focus = config.focusPoint
+    constructor(map, config) {
+        this.map = map
+        this.width = map.width
+        this.height = map.height
+        this.wrapGrid = config.get('wrapGrid')
+        this.tileSize = config.get('tileSize')
+        this.focus = config.get('focusPoint')
+        this.config = config.original()
     }
 
     get(point) {
         if (! this.isWrappable(point)) {
             return 'transparent'
         }
-        return this.worldMap.reliefMap.codeMap.getColor(point)
+        return this.map.reliefMap.codeMap.getColor(point)
     }
 
     isWrappable(point) {
         if (this.wrapGrid) return true
-        const col = point.x >= 0 && point.x < this.width
-        const row = point.y >= 0 && point.y < this.height
-        return col && row
+        return new Rect(this.width, this.height).inside(point)
     }
 }

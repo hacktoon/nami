@@ -2,6 +2,7 @@ import { Type } from '/lib/type'
 import { MetaClass } from '/lib/meta'
 import { Color } from '/lib/color'
 import { Point } from '/lib/point'
+import { Rect } from '/lib/number'
 
 
 export class MapDiagram {
@@ -14,40 +15,40 @@ export class MapDiagram {
         Type.color("Background", Color.fromHex('#333')),
     )
 
-    static create(tectonicsMap, data) {
+    static create(map, data) {
         const config = MapDiagram.meta.parseConfig(data)
-        return new MapDiagram(tectonicsMap, config)
+        return new MapDiagram(map, config)
     }
 
     constructor(map, config) {
+        this.map = map
         this.width = map.width
         this.height = map.height
-        this.wrapGrid = config.wrapGrid
-        this.tileSize = config.tileSize
-        this.focus = config.focusPoint
-        this.config = config
-        this.map = map
+        this.wrapGrid = config.get('wrapGrid')
+        this.tileSize = config.get('tileSize')
+        this.background = config.get('background')
+        this.showBorder = config.get('showBorder')
+        this.borderColor = config.get('borderColor')
+        this.focus = config.get('focusPoint')
+        this.config = config.original()
     }
 
     get(point) {
         return this.getColor(this.map, point)
     }
 
-    isWrappable(point) {
-        if (this.wrapGrid) return true
-        const col = point.x >= 0 && point.x < this.width
-        const row = point.y >= 0 && point.y < this.height
-        return col && row
-    }
-
     getColor(map, point) {
         if (! this.isWrappable(point)) {
             return 'transparent'
         }
-
-        if (this.config.showBorder && map.isBorder(point)) {
-            return this.config.borderColor.toHex()
+        if (this.showBorder && map.isBorder(point)) {
+            return this.borderColor.toHex()
         }
-        return this.config.background.toHex()
+        return this.background.toHex()
+    }
+
+    isWrappable(point) {
+        if (this.wrapGrid) return true
+        return new Rect(this.width, this.height).inside(point)
     }
 }

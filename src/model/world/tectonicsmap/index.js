@@ -17,29 +17,33 @@ export default class TectonicsMap {
 
     static create(data) {
         const config = TectonicsMap.meta.parseConfig(data)
-        const {width, height} = config
+        const width = config.get('width')
+        const height = config.get('height')
         const regionMap = RegionMap.create({
             width,
             height,
-            count: config.plates,
+            count: config.get('plates'),
             layerGrowth: 40,
             growthChance: 0.1,
         })
-        const grid = new Grid(width, height, point => {
-            // 1: build basic tectonics map
-            return regionMap.get(point)
-        })
+        const grid = new Grid(
+            width,
+            height,
+            point => {
+                // 1: build basic tectonics map
+                return regionMap.get(point)
+            })
         // 2: build deformations using borders
         return new TectonicsMap(regionMap, grid, config)
     }
 
     constructor(regionMap, grid, config) {
-        this.regionMap = regionMap
         this.grid = grid
-        this.width = config.width
-        this.height = config.height
-        this.seed = config.seed
-        this.config = {...config, seed: ''} // FIXME: remove this
+        this.regionMap = regionMap
+        this.width = config.get('width')
+        this.height = config.get('height')
+        this.seed = config.get('seed')
+        this.config = config.original()
     }
 
     isBorder(point) {
