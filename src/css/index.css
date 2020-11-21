@@ -61,4 +61,13 @@
 }
 
 
+/* TEST COMPONENT ======================================= */
+
+.TestApp {
+    background: #EEE;
+    display: block;
+    padding: .5rem;
+}
+
+
 /* OTHER ======================================= */

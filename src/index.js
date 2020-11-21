@@ -5,6 +5,8 @@ import { SelectField } from '/lib/ui/form/field'
 import { Title } from '/lib/ui'
 
 import { MapApp } from '/ui/map'
+import { TestApp } from '/ui/test'
+
 import TectonicsMap from '/model/world/tectonicsmap'
 import WorldMap from '/model/world/worldmap'
 import RegionMap from '/model/regionmap'
@@ -16,10 +18,17 @@ import "./css/index.css"
 
 
 const APPS = {
-    TectonicsMap: { id: 'TectonicsMap', component: () => <MapApp Map={TectonicsMap} /> },
+    Test: { id: 'Test', component: () => <TestApp /> },
     WorldMap: { id: 'WorldMap', component: () => <MapApp Map={WorldMap} /> },
-    RegionMap: { id: 'RegionMap', component:  () => <MapApp Map={RegionMap} /> },
     NoiseMap: { id: 'NoiseMap', component: () => <MapApp Map={NoiseMap} /> },
+    TectonicsMap: {
+        id: 'TectonicsMap',
+        component: () => <MapApp Map={TectonicsMap} />
+    },
+    RegionMap: {
+        id: 'RegionMap',
+        component:  () => <MapApp Map={RegionMap} />
+    },
 }
 const DEFAULT_APP = APPS.RegionMap
 
