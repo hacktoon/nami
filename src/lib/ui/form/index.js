@@ -40,3 +40,36 @@ export function Form({meta, values, onSubmit, onChange, ...props}) {
 }
 
 
+
+export function Form2({meta, values, onSubmit, onChange, ...props}) {
+    const handleSubmit = event => {
+        event.preventDefault()
+    }
+
+    const handleChange = (name, value) => {
+
+    }
+
+    const buildFields = (values, onChange) => {
+        return meta.types.map((typeObject, id) => {
+            const {type, name, label, value, fieldAttrs, ...props} = typeObject
+            const FieldComponent = TYPE_FIELD_MAP[type]
+            return <FieldComponent
+                key={id}
+                name={name}
+                label={label}
+                value={values[name]}
+                onChange={onChange}
+                {...fieldAttrs}
+                {...props}
+            />
+        })
+    }
+
+    return <form className={`Form ${props.className}`} onSubmit={handleSubmit}>
+        {buildFields(values, handleChange)}
+        {props.children}
+    </form>
+}
+
+

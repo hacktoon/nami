@@ -30,7 +30,7 @@ const APPS = {
         component:  () => <MapApp Map={RegionMap} />
     },
 }
-const DEFAULT_APP = APPS.RegionMap
+const DEFAULT_APP = APPS.TectonicsMap
 
 
 function AppHeader({app, setApp}) {
