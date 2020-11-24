@@ -1,9 +1,16 @@
 import React, { useState } from 'react'
 
-import { MetaClass } from '/lib/meta'
+import { Schema, Type } from './schema'
 import { Form2 } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
-import { Schema, Type } from './schema'
+import {
+    PointField2,
+    BooleanField2,
+    SeedField2,
+    ColorField2
+} from '/lib/ui/form/field'
+import { Point } from '/lib/point'
+import { Color } from '/lib/color'
 
 
 // const MapSchema = Schema.create(
@@ -12,40 +19,48 @@ import { Schema, Type } from './schema'
 // )
 
 
-// const WorldMapSchema = MapSchema.extend(
-//     Type.text("FGColor", '#CCC'),
-// )
-
-
-// class TestMap extends ModelMap {
-//     static create(data) {
-//         const config = TestMap.parseConfig(data)
-//         return new TestMap(config)
-//     }
-
-//     constructor(config) {
-//         this.width = config.get('width')
-//         this.height = config.get('height')
-//         this.config = config
-//     }
-// }
-
-
 export function TestApp() {
-    // const buildItem = () => NamiItem.create({width: 20, height: 10})
+    const [formData, setFormData] = useState(new Map([
+        ['focus', new Point(5, 2)],
+        ['active', false],
+        ['seed', ''],
+        ['bgColor', new Color(230, 35, 66)],
+    ]))
 
-    // const [item, setItem] = useState(buildItem())
-
-    // const setConfig = data => {
-    //     setItem(buildItem(data))
-    // }
+    const setConfig = data => {
+        console.log(data);
+        setFormData(data)
+    }
 
     return <section className='TestApp'>
-        {/* <Form2
+        <Form2
             className="TestForm"
             onSubmit={setConfig}
-            onChange={setConfig}
-            data={item.data}
-        /> */}
+            data={formData}>
+
+            <ColorField2
+                name='bgColor'
+                label='BG Color'
+                value={formData.get('bgColor')}
+            />
+
+            <BooleanField2
+                name='active'
+                label='Active'
+                value={formData.get('active')}
+            />
+            <SeedField2
+                name='seed'
+                label='Seed'
+                value={formData.get('seed')}
+            />
+
+            <PointField2
+                name='focus'
+                label='Focus'
+                value={formData.get('focus')}
+            />
+            <Button label="New" />
+        </Form2>
     </section>
 }
