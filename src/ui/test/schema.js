@@ -5,26 +5,50 @@ import { clamp } from '/lib/number'
 
 
 export class Schema {
+    constructor(...types) {
+        this.types = types
+    }
+
+    defaults() {
+        const mapToDefault = type => [type.name, type.defaultValue]
+        const entries = this.types.map(mapToDefault)
+        return new Map(entries)
+    }
+
+    parse(raw_data) {
+        const defaults = this.defaults()
+        const types = Object.entries(defaults)
+        const map = new Map()
+        for(let [name, value] of types) {
+            const field = this.nameMap[name]
+            map.set(name, field.sanitize(value))
+        }
+        return map
+    }
+
+    get nameMap() {
+        const entries = this.types.map(type => [type.name, type])
+        return Object.fromEntries(entries)
+    }
 }
 
 
 // let's create our own type system, it's fun
 class AbstractType {
-    static create(TypeClass) {
-        // Example: Type.number('label', 'foobar', {})
-        return (label, value, props={}) => {
+    static define(TypeClass) {
+        // Example: Type.number('foobar', 'Foobar param', 42)
+        return (name, label, defaultValue, props={}) => {
             const type = TypeClass.type
-            return new TypeClass(type, label, value, props)
+            return new TypeClass(type, name, label, defaultValue, props)
         }
     }
 
-    constructor(type, label, value, fieldAttrs) {
+    constructor(type, name, label, defaultValue, fieldAttrs) {
         this.type = type
-        this.name = normalizeLabel(label)
+        this.name = name
         this.label = label
-        this.value = value
+        this.defaultValue = defaultValue
         this.fieldAttrs = fieldAttrs
-        this.description = fieldAttrs.description ?? `${type}(${label})`
     }
 
     sanitize(value) {
@@ -90,26 +114,10 @@ export class BooleanType extends AbstractType {
 
 
 export class Type {
-    static point = AbstractType.create(PointType)
-    static boolean = AbstractType.create(BooleanType)
-    static text = AbstractType.create(TextType)
-    static number = AbstractType.create(NumberType)
-    static color = AbstractType.create(ColorType)
-    static seed = AbstractType.create(SeedType)
-}
-
-
-function normalizeLabel(label) {
-    const capitalWords = label.split(' ').map((word, index) => {
-        const lowerCase = removeSymbols(word.toLowerCase())
-        if (index > 0)
-            return lowerCase[0].toUpperCase() + lowerCase.substring(1)
-        return lowerCase
-    })
-    return capitalWords.join('')
-}
-
-
-function removeSymbols(text) {
-    return text.replace(/[^a-zA-Z0-9]/g, '')
+    static point = AbstractType.define(PointType)
+    static boolean = AbstractType.define(BooleanType)
+    static text = AbstractType.define(TextType)
+    static number = AbstractType.define(NumberType)
+    static color = AbstractType.define(ColorType)
+    static seed = AbstractType.define(SeedType)
 }

@@ -34,34 +34,23 @@ export function TextField({name, label, value, onChange, ...props}) {
 }
 
 
+export function TextField2({name, label, defaultValue, ...props}) {
+    return <Field type='text' label={label}>
+        <input
+            name={name}
+            type='text'
+            defaultValue={defaultValue}
+            {...props}
+        />
+    </Field>
+}
+
+
 export function SeedField({name, label, value, onChange, ...props}) {
     const handleChange = event => onChange(name, event.target.value)
 
     return <Field type='text' label={label}>
         <input name={name} type='text' onChange={handleChange} {...props} />
-    </Field>
-}
-
-
-export function SeedField2({name, label, value, ...props}) {
-    const createSeed = text => {
-        if (text === '') {
-            return String(Number(new Date()))
-        }
-        return text
-    }
-    const [status, setStatus] = useState(createSeed(value))
-
-    const handleChange = event => {
-        const inputValue = event.target.value.trim()
-        setStatus(createSeed(inputValue))
-    }
-
-    return <Field type='text' label={label}>
-        <input type='text'
-            defaultValue={value}
-            onChange={handleChange} {...props} />
-        <input name={name} type='hidden' value={status} />
     </Field>
 }
 
@@ -99,8 +88,8 @@ export function BooleanField({name, label, value, onChange}) {
     </Field>
 }
 
-export function BooleanField2({name, label, value, onChange}) {
-    const [status, setStatus] = useState(value)
+export function BooleanField2({name, label, defaultValue, onChange}) {
+    const [status, setStatus] = useState(defaultValue)
 
     const onClick = () => {
         setStatus(!status)
@@ -137,8 +126,8 @@ export function ColorField({name, label, value, onChange, ...props}) {
     </Field>
 }
 
-export function ColorField2({name, label, value, ...props}) {
-    const [color, setColor] = useState(value)
+export function ColorField2({name, label, defaultValue, ...props}) {
+    const [color, setColor] = useState(defaultValue)
 
     const handleChange = event => {
         const newColor = Color.fromHex(event.target.value)
@@ -185,23 +174,23 @@ export function PointField({name, label, value, onChange, ...props}) {
 }
 
 
-export function PointField2({name, label, value, ...props}) {
-    const [point, setPoint] = useState(value)
-    const handleXChange = e => handleChange(e.target.value, value.y)
-    const handleYChange = e => handleChange(value.x, e.target.value)
+export function PointField2({name, label, defaultValue, ...props}) {
+    const [point, setPoint] = useState(defaultValue)
+    const handleXChange = e => handleChange(e.target.value, defaultValue.y)
+    const handleYChange = e => handleChange(defaultValue.x, e.target.value)
     const handleChange = (x, y) => setPoint(new Point(x, y))
 
     return <Field type='point' label={label}>
         <input name={name} type='hidden' value={point.hash} />
         <input
             type='number'
-            defaultValue={value.x}
+            defaultValue={defaultValue.x}
             onChange={handleXChange}
             {...props}
         />
         <input
             type='number'
-            defaultValue={value.y}
+            defaultValue={defaultValue.y}
             onChange={handleYChange}
             {...props}
         />
