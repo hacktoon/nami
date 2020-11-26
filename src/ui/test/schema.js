@@ -9,6 +9,13 @@ export class Schema {
         this.types = types
     }
 
+    has(name) {
+        for(let type of this.types) {
+            if (type.name === name) return true
+        }
+        return false
+    }
+
     defaults() {
         const mapToDefault = type => [type.name, type.defaultValue]
         const entries = this.types.map(mapToDefault)

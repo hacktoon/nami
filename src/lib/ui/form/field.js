@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 
 import { Color } from '/lib/color'
 import { Point } from '/lib/point'
@@ -47,7 +47,9 @@ export function TextField2({name, label, defaultValue, ...props}) {
 
 
 export function SeedField({name, label, value, onChange, ...props}) {
-    const handleChange = event => onChange(name, event.target.value)
+    const handleChange = event => {
+        onChange(name, event.target.value)
+    }
 
     return <Field type='text' label={label}>
         <input name={name} type='text' onChange={handleChange} {...props} />
@@ -215,4 +217,12 @@ export const TYPE_FIELD_MAP = {
     seed: SeedField,
     color: ColorField,
     point: PointField,
+}
+
+export const TYPE_FIELD_MAP2 = {
+    boolean: BooleanField2,
+    number: NumberField,
+    text: TextField2,
+    color: ColorField2,
+    point: PointField2,
 }

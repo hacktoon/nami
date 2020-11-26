@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { TYPE_FIELD_MAP } from './field'
+import { TYPE_FIELD_MAP, TYPE_FIELD_MAP2 } from './field'
 
 
 export function Form({meta, values, onSubmit, onChange, ...props}) {
@@ -40,26 +40,35 @@ export function Form({meta, values, onSubmit, onChange, ...props}) {
 }
 
 
-export function Form2({data, onSubmit, onChange, ...props}) {
+export function Form2({data, schema, onSubmit, ...props}) {
     const handleSubmit = event => {
         event.preventDefault()
-        const inputs = Array.from(event.target.elements)
-        const newData = new Map()
-        inputs.map(input => {
-            if (data.has(input.name)) {
-                newData.set(input.name, input.value)
-            }
-        })
-        onSubmit(newData)
-    }
-
-    const handleChange = (name, value) => {
-
+        const entries = Array.from(event.target.elements)
+            .filter(input => schema.has(input.name))
+            .map(input => [input.name, input.value])
+        onSubmit(new Map(entries))
     }
 
     return <form className={`Form ${props.className}`} onSubmit={handleSubmit}>
+        <FieldSet types={schema.types} data={data} />
         {props.children}
     </form>
 }
 
 
+function FieldSet({types, data}) {
+    return types.map((typeObject, id) => {
+        const {
+            type, name, label, defaultValue, fieldAttrs, ...props
+        } = typeObject
+        const FieldComponent = TYPE_FIELD_MAP2[type]
+        return <FieldComponent
+            key={id}
+            name={name}
+            label={label}
+            defaultValue={data.get(name)}
+            {...fieldAttrs}
+            {...props}
+        />
+    })
+}
