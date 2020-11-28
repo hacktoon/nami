@@ -1,5 +1,5 @@
-import { Random } from '/lib/random'
 import { Point } from '/lib/point'
+import { Color } from '/lib/color'
 import { clamp } from '/lib/number'
 
 
@@ -16,26 +16,20 @@ export class Schema {
         return false
     }
 
-    defaults() {
+    defaultValues() {
         const mapToDefault = type => [type.name, type.defaultValue]
         const entries = this.types.map(mapToDefault)
         return new Map(entries)
     }
 
-    parse(raw_data) {
-        const defaults = this.defaults()
-        const types = Object.entries(defaults)
+    parse(formMap) {
         const map = new Map()
-        for(let [name, value] of types) {
-            const field = this.nameMap[name]
-            map.set(name, field.sanitize(value))
+        for(let type of this.types) {
+            const rawValue = formMap.get(type.name)
+            const value = type.parse(rawValue)
+            map.set(type.name, value)
         }
         return map
-    }
-
-    get nameMap() {
-        const entries = this.types.map(type => [type.name, type])
-        return Object.fromEntries(entries)
     }
 }
 
@@ -58,20 +52,8 @@ class AbstractType {
         this.fieldAttrs = fieldAttrs
     }
 
-    sanitize(value) {
+    parse(value) {
         return value
-    }
-}
-
-
-export class NumberType extends AbstractType {
-    static type = 'number'
-
-    sanitize(value=0) {
-        const number = value ?? 0
-        const min = this.fieldAttrs.min ?? -Infinity
-        const max = this.fieldAttrs.max ?? Infinity
-        return clamp(Number(number), min, max)
     }
 }
 
@@ -79,34 +61,42 @@ export class NumberType extends AbstractType {
 export class TextType extends AbstractType {
     static type = 'text'
 
-    sanitize(value) {
-        return String(value).trim()
+    parse(value) {
+        return String(value ?? '').trim()
     }
 }
 
 
-export class SeedType extends TextType {
-    static type = 'seed'
+export class NumberType extends TextType {
+    static type = 'number'
 
-    sanitize(value) {
-        const text = super.sanitize(value)
-        const seed = text.length ? text : String(Number(new Date()))
-        Random.seed = seed
-        return seed
+    parse(text) {
+        const value = super.parse(text ?? 0)
+        const min = this.fieldAttrs.min ?? -Infinity
+        const max = this.fieldAttrs.max ?? Infinity
+        return clamp(Number(value), min, max)
     }
 }
 
 
-export class ColorType extends AbstractType {
+// const seed = text.length ? text : String(Number(new Date()))
+
+
+export class ColorType extends TextType {
     static type = 'color'
+
+    parse(text) {
+        const hex = super.parse(text)
+        return Color.fromHex(hex)
+    }
 }
 
 
 export class PointType extends AbstractType {
     static type = 'point'
 
-    sanitize({x, y}) {
-        return new Point(Number(x), Number(y))
+    parse(hash) {
+        return Point.fromHash(hash)
     }
 }
 
@@ -114,8 +104,8 @@ export class PointType extends AbstractType {
 export class BooleanType extends AbstractType {
     static type = 'boolean'
 
-    sanitize(value) {
-        return Boolean(value)
+    parse(value) {
+        return value === 'true'
     }
 }
 
@@ -126,5 +116,4 @@ export class Type {
     static text = AbstractType.define(TextType)
     static number = AbstractType.define(NumberType)
     static color = AbstractType.define(ColorType)
-    static seed = AbstractType.define(SeedType)
 }

@@ -26,7 +26,6 @@ export class EvenPointDistribution {
             iterPointsInCircle(pointSet, center, radius, rect)
             points.push(center)
         }
-        console.log(`count=${count}, radius=${radius}, total=${points.length}`)
         return points
     }
 }
