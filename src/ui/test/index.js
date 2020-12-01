@@ -19,10 +19,14 @@ const mapSchema = new Schema(
 export function TestApp() {
     const [data, setData] = useState(mapSchema.defaultValues())
 
+    const handleSubmit = data => {
+        setData(data)
+    }
+
     return <section className='TestApp'>
         <Form
             className="TestForm"
-            onSubmit={setData}
+            onSubmit={handleSubmit}
             schema={mapSchema}
             data={data}>
             <Button label="New" />

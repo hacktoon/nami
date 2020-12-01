@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
 import { TYPE_FIELD_MAP } from './field'
 
@@ -9,7 +9,6 @@ export function Form({data, schema, onSubmit, ...props}) {
         const map = createValueMap(event.target.elements, schema)
         const params = schema.parse(map)
         onSubmit(params)
-        console.log(params);
     }
 
     const createValueMap = (inputs, schema) => {

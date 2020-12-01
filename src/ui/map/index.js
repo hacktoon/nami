@@ -6,15 +6,16 @@ import { MapView } from './view'
 
 
 export function MapApp({Map}) {
-    const [map, setMap] = useState(prev => prev ?? Map.create())
-    const handleMap = config => setMap(Map.create(config))
+    const [data, setData] = useState(Map.schema.defaultValues())
+    const map = Map.create(data)
+
+    const handleSubmit = data => setData(data)
 
     return <section className='MapApp'>
         <Form className="Map"
-            meta={Map.meta}
-            values={map.config}
-            onSubmit={handleMap}
-            onChange={handleMap}>
+            schema={Map.schema}
+            data={data}
+            onSubmit={handleSubmit}>
                 <Button label="New" />
         </Form>
         <MapAppView MapDiagram={Map.MapDiagram} map={map} />
@@ -23,25 +24,31 @@ export function MapApp({Map}) {
 
 
 function MapAppView({MapDiagram, map}) {
-    const [config, setConfig] = useState({})
-    const diagram = MapDiagram.create(map, config)
+    const [data, setData] = useState(MapDiagram.schema.defaultValues())
+
+    const diagram = MapDiagram.create(map, data)
 
     const handleZoom = amount => {
-        const tileSize = diagram.tileSize + amount
-        setConfig(config => ({...config, tileSize}))
+        const entry = ['tileSize', data.get('tileSize') + amount]
+        setData(new Map([...data, entry]))
     }
 
     const handleDrag = focusPoint => {
-        setConfig(config => ({...config, focusPoint}))
+        const entry = ['focusPoint', focusPoint]
+        setData(new Map([...data, entry]))
+    }
+
+    const handleSubmit = data => {
+        setData(data)
     }
 
     return <>
         <Form className="MapDiagram"
-            meta={MapDiagram.meta}
-            values={diagram.config}
-            onSubmit={setConfig}
-            onChange={setConfig}
-        />
+            schema={MapDiagram.schema}
+            data={data}
+            onSubmit={handleSubmit}>
+                <Button label="Update" />
+        </Form>
         <MapView
             diagram={diagram}
             onZoom={handleZoom}

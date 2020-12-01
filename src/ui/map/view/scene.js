@@ -1,6 +1,7 @@
 import { Point } from '/lib/point'
 
 
+// TODO: move Scene to model
 export class Scene {
     constructor(diagram, width, height) {
         this.frame = new Frame(diagram.tileSize, width, height)
@@ -23,9 +24,8 @@ export class Scene {
         })
     }
 
-    renderCursor(canvas, cursor, focusOffset) {
-        const focus = this.focus.plus(focusOffset)
-        const canvasPoint = this.#renderPoint(cursor, focus)
+    renderCursor(canvas, cursor) {
+        const canvasPoint = this.#renderPoint(cursor, this.focus)
         const color = 'rgba(255, 255, 255, .5)'
 
         canvas.cursor(this.tileSize, canvasPoint, color)

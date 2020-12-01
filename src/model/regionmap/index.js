@@ -1,8 +1,7 @@
 import { RandomPointDistribution } from '/lib/point/distribution'
 
 import { OrganicFill } from '/lib/flood-fill'
-import { Type } from '/lib/type'
-import { MetaClass } from '/lib/meta'
+import { Schema, Type } from '/lib/schema'
 
 import { Region } from './region'
 import { RegionGrid } from './grid'
@@ -10,31 +9,27 @@ import { MapDiagram } from './diagram'
 
 
 export default class RegionMap {
-    static meta = new MetaClass(
-        Type.number("Width", 200, {step: 1, min: 1}),
-        Type.number("Height", 150, {step: 1, min: 1}),
-        Type.number("Count", 80, {step: 1, min: 1}),
-        Type.number("Layer growth", 40, {step: 1, min: 1}),
-        Type.number("Growth chance", 0.1, {step: 0.01, min: 0.01}),
-        Type.seed("Seed", '')
+    static schema = new Schema(
+        Type.number('width', "Width", 200, {step: 1, min: 1}),
+        Type.number('height', "Height", 150, {step: 1, min: 1}),
+        Type.number('count', "Count", 80, {step: 1, min: 1}),
+        Type.number('layerGrowth', "Layer growth", 40, {step: 1, min: 1}),
+        Type.number('growthChance', "Growth chance", 0.1, {step: 0.01, min: 0.01}),
+        Type.text('seed', "Seed", '')
     )
     static MapDiagram = MapDiagram
 
-    static create(data) {
-        const config = RegionMap.meta.parseConfig(data)
-        return new RegionMap(config)
+    static create(params) {
+        return new RegionMap(params)
     }
 
     constructor(config) {
-        this.grid = new RegionGrid(
-            config.get('width'),
-            config.get('height')
-        )
+        const [width, height] = [config.get('width'), config.get('height')]
+        this.grid = new RegionGrid(width, height)
         this.regions = createRegions(this.grid, config)
+        this.width = width
+        this.height = height
         this.seed = config.get('seed')
-        this.width = config.get('width')
-        this.height = config.get('height')
-        this.config = config.original()
     }
 
     get(point) {

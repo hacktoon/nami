@@ -1,5 +1,4 @@
-import { Type } from '/lib/type'
-import { MetaClass } from '/lib/meta'
+import { Schema, Type } from '/lib/schema'
 import { Color } from '/lib/color'
 import { Rect } from '/lib/number'
 import { Point } from '/lib/point'
@@ -11,21 +10,20 @@ import { Point } from '/lib/point'
 // diagram here should be a list of tiles to render
 
 export class MapDiagram {
-    static meta = new MetaClass(
-        Type.point("Focus point", new Point(100, 74)),
-        Type.boolean("Wrap grid", false),
-        Type.boolean("Show border", true),
-        Type.boolean("Show origin", false),
-        Type.number("Tile size", 5, {step: 1, min: 1}),
-        Type.number("Layer", 3, {step: 1, min: 0}),
-        Type.color("Foreground", Color.fromHex('#251')),
-        Type.color("Background", Color.fromHex('#059')),
-        Type.color("Border color", Color.fromHex('#021')),
+    static schema = new Schema(
+        Type.point('focusPoint', "Focus point", new Point(0, 0)),
+        Type.boolean('wrapGrid', "Wrap grid", false),
+        Type.boolean('showBorder', "Show border", true),
+        Type.boolean('showOrigin', "Show origin", false),
+        Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
+        Type.number('layer', "Layer", 3, {step: 1, min: 0}),
+        Type.color('foreground', "Foreground", Color.fromHex('#251')),
+        Type.color('background', "Background", Color.fromHex('#059')),
+        Type.color('borderColor', "Border color", Color.fromHex('#021')),
     )
 
-    static create(map, rawConfig) {
-        const config = MapDiagram.meta.parseConfig(rawConfig)
-        return new MapDiagram(map, config)
+    static create(map, params) {
+        return new MapDiagram(map, params)
     }
 
     constructor(map, config) {
@@ -39,7 +37,6 @@ export class MapDiagram {
         this.tileSize = config.get('tileSize')
         this.layer = config.get('layer')
         this.focus = config.get('focusPoint')
-        this.config = config.original()
     }
 
     get width() {

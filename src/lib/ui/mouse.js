@@ -43,9 +43,8 @@ export function MouseTrack(props) {
         const mousePoint = createMousePoint(event)
         if (dragging) {
             props.onDrag && props.onDrag(dragStart, mousePoint)
-        } else {
-            props.onMove && props.onMove(mousePoint)
         }
+        props.onMove && props.onMove(mousePoint)
     }
 
     const handleWheel = event => {

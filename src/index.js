@@ -30,7 +30,7 @@ const APPS = {
         component:  () => <MapApp Map={RegionMap} />
     },
 }
-const DEFAULT_APP = APPS.Test
+const DEFAULT_APP = APPS.RegionMap
 
 
 function AppHeader({app, setApp}) {

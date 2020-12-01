@@ -14,7 +14,7 @@ export function MapView({diagram, ...props}) {
 
     function render() {
         const scene = new Scene(diagram, width, height)
-        return <MapSceneView scene={scene} {...props} />
+        return <MapScene scene={scene} {...props} />
     }
 
     return <section className="MapView" ref={viewportRef}>
@@ -23,26 +23,20 @@ export function MapView({diagram, ...props}) {
 }
 
 
-function MapSceneView({scene, ...props}) {
-    const [focusOffset, setFocusOffset] = useState(new Point())
+function MapScene({scene, ...props}) {
+    const [offset, setOffset] = useState(new Point())
+    const [baseOffset, setBaseOffset] = useState(new Point())
 
-    const handleDrag = point => {
-        setFocusOffset(point)
-        //use dragPoint here too if necessary
-        //props.onDrag(scene.focus.plus(dragPoint))
+    const handleDrag = point => setOffset(baseOffset.plus(point))
+    const handleDragEnd = () => setBaseOffset(offset)
+
+    const handleInit = canvas => {
+        scene.render(canvas, offset)
     }
-
-    const handleDragEnd = dragPoint => {
-        setFocusOffset(new Point())  // reset offset to [0,0] on drag end
-        props.onDrag(scene.focus.plus(dragPoint))
-    }
-
-    const handleInit = canvas => scene.render(canvas, focusOffset)
 
     return <>
         <MapMouseTrack
             scene={scene}
-            focusOffset={focusOffset}
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
             onWheel={props.onZoom}
@@ -98,7 +92,7 @@ function MapMouseTrack({scene, ...props}) {
 
     const handleCanvasInit = canvas => {
         if (cursor) {
-            scene.renderCursor(canvas, cursor, props.focusOffset)
+            scene.renderCursor(canvas, cursor)
         }
     }
 

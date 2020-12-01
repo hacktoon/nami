@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useRef } from 'react'
 
 import { Color } from '/lib/color'
 import { Point } from '/lib/point'
 
 
-export function NumberField({name, label, defaultValue, onChange, ...props}) {
-    return <Field type='number' label={label}>
+export function NumberField({name, label, defaultValue, ...props}) {
+    return <Field type='number' label={label} value={defaultValue}>
         <input
             name={name}
             type='number'
@@ -50,13 +50,10 @@ export function SelectField({name, label, value, onChange, options, ...props}) {
 export function BooleanField({name, label, defaultValue, onChange}) {
     const [status, setStatus] = useState(defaultValue)
 
-    const onClick = event => {
-        event.preventDefault()
-        setStatus(!status)
-    }
+    const onClick = () => setStatus(!status)
 
     return <Field type='boolean' label={label} status={status}>
-        <button onClick={onClick}>{status ? 'Yes' : 'No'}</button>
+        <button type="button" onClick={onClick}>{status ? 'Yes' : 'No'}</button>
         <input name={name} type='hidden' value={String(status)} />
     </Field>
 }
@@ -111,7 +108,7 @@ export function PointField({name, label, defaultValue, ...props}) {
 
 // BASE FIELD COMPONENT ===============================================
 
-function Field({label, type, status='', children, ...props}) {
+function Field({label, type, value, status='', children, ...props}) {
     return <label className={`Field ${type} ${status}`} {...props}>
         <span className='FieldLabel'>{label}</span>
         <span className='FieldValue'>{children}</span>
