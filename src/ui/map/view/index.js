@@ -27,17 +27,16 @@ function MapScene({scene, ...props}) {
     const [offset, setOffset] = useState(new Point())
     const [baseOffset, setBaseOffset] = useState(new Point())
 
-    const handleDrag = point => setOffset(baseOffset.plus(point))
-    const handleDragEnd = () => setBaseOffset(offset)
-
-    const handleInit = canvas => {
-        scene.render(canvas, offset)
-    }
+    const handleDrag = point => setOffset(point.plus(baseOffset))
+    const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
+    const handleClick = point => console.info(point.plus(offset))
+    const handleInit = canvas => scene.render(canvas, offset)
 
     return <>
         <MapMouseTrack
             scene={scene}
             onDrag={handleDrag}
+            onClick={handleClick}
             onDragEnd={handleDragEnd}
             onWheel={props.onZoom}
         />
@@ -86,7 +85,7 @@ function MapMouseTrack({scene, ...props}) {
     const handleClick = mousePoint => {
         const scenePoint = scene.frame.tilePoint(mousePoint)
         const point = scenePoint.plus(scene.focus)
-        console.info(point.hash);
+        props.onClick(point)
     }
 
     const handleMouseOut = () => setCursor(null)
