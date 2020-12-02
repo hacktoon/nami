@@ -12,14 +12,16 @@ export class Scene {
         this.focus = diagram.focus
     }
 
-    render(canvas, focusOffset) {
+    render(canvas, focusOffset, zoom) {
+        const tileSize = this.tileSize + zoom
         const focus = this.focus.plus(focusOffset)
+        console.log(tileSize);
         this.#renderFrame(focus, (tilePoint, canvasPoint) => {
             const color = this.diagram.get(tilePoint)
             if (color == 'transparent') {
-                canvas.clear(this.tileSize, canvasPoint)
+                canvas.clear(tileSize, canvasPoint)
             } else {
-                canvas.rect(this.tileSize, canvasPoint, color)
+                canvas.rect(tileSize, canvasPoint, color)
             }
         })
     }

@@ -13,6 +13,7 @@ export function MapView({diagram, ...props}) {
     const [width, height] = useResize(viewportRef)
 
     function render() {
+        // TODO: move to MapScene
         const scene = new Scene(diagram, width, height)
         return <MapScene scene={scene} {...props} />
     }
@@ -26,11 +27,15 @@ export function MapView({diagram, ...props}) {
 function MapScene({scene, ...props}) {
     const [offset, setOffset] = useState(new Point())
     const [baseOffset, setBaseOffset] = useState(new Point())
+    const [zoom, setZoom] = useState(0)
 
     const handleDrag = point => setOffset(point.plus(baseOffset))
     const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
     const handleClick = point => console.info(point.plus(offset))
-    const handleInit = canvas => scene.render(canvas, offset)
+    const handleWheel = amount => {
+        setZoom(zoom + amount)
+    }
+    const handleInit = canvas => scene.render(canvas, offset, zoom)
 
     return <>
         <MapMouseTrack
@@ -38,7 +43,7 @@ function MapScene({scene, ...props}) {
             onDrag={handleDrag}
             onClick={handleClick}
             onDragEnd={handleDragEnd}
-            onWheel={props.onZoom}
+            onWheel={handleWheel}
         />
         <Canvas
             width={scene.width}

@@ -25,34 +25,18 @@ export function MapApp({Map}) {
 
 function MapAppView({MapDiagram, map}) {
     const [data, setData] = useState(MapDiagram.schema.defaultValues())
-
     const diagram = MapDiagram.create(map, data)
 
-    const handleZoom = amount => {
-        const entry = ['tileSize', data.get('tileSize') + amount]
-        setData(new Map([...data, entry]))
-    }
-
-    const handleDrag = focusPoint => {
-        const entry = ['focusPoint', focusPoint]
-        setData(new Map([...data, entry]))
-    }
-
-    const handleSubmit = data => {
-        setData(data)
-    }
+    const handleSubmit = data => setData(data)
 
     return <>
         <Form className="MapDiagram"
             schema={MapDiagram.schema}
+            onSubmit={handleSubmit}
             data={data}
-            onSubmit={handleSubmit}>
-                <Button label="Update" />
+        >
+            <Button label="Update" />
         </Form>
-        <MapView
-            diagram={diagram}
-            onZoom={handleZoom}
-            onDrag={handleDrag}
-        />
+        <MapView diagram={diagram} />
     </>
 }
