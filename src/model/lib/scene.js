@@ -15,7 +15,6 @@ export class Scene {
     render(canvas, focusOffset, zoom) {
         const tileSize = this.tileSize + zoom
         const focus = this.focus.plus(focusOffset)
-        console.log(tileSize);
         this.#renderFrame(focus, (tilePoint, canvasPoint) => {
             const color = this.diagram.get(tilePoint)
             if (color == 'transparent') {
@@ -27,7 +26,7 @@ export class Scene {
     }
 
     renderCursor(canvas, cursor) {
-        const canvasPoint = this.#renderPoint(cursor, this.focus)
+        const canvasPoint = this.#canvasPoint(cursor, this.focus)
         const color = 'rgba(255, 255, 255, .5)'
 
         canvas.cursor(this.tileSize, canvasPoint, color)
@@ -44,7 +43,7 @@ export class Scene {
         }
     }
 
-    #renderPoint(point, focus) {
+    #canvasPoint(point, focus) {
         const {origin} = this.frame.rect(focus)
         return point
             .minus(origin) // get tile at scene edge

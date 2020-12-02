@@ -9,25 +9,23 @@ import { Scene } from '/model/lib/scene'
 
 
 export function MapView({diagram, ...props}) {
-    const viewportRef = useRef(null)
-    const [width, height] = useResize(viewportRef)
+    const viewport = useRef(null)
+    const [width, height] = useResize(viewport)
 
-    function render() {
-        // TODO: move to MapScene
-        const scene = new Scene(diagram, width, height)
-        return <MapScene scene={scene} {...props} />
-    }
-
-    return <section className="MapView" ref={viewportRef}>
-        {viewportRef.current && render()}
+    return <section className="MapView" ref={viewport}>
+        {viewport.current && (
+            <MapScene diagram={diagram} width={width} height={height} />
+        )}
     </section>
 }
 
 
-function MapScene({scene, ...props}) {
+function MapScene({diagram, width, height}) {
     const [offset, setOffset] = useState(new Point())
     const [baseOffset, setBaseOffset] = useState(new Point())
     const [zoom, setZoom] = useState(0)
+
+    const scene = new Scene(diagram, width, height)
 
     const handleDrag = point => setOffset(point.plus(baseOffset))
     const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))

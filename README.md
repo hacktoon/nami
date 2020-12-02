@@ -7,6 +7,7 @@
 
 
 ## ROADMAP
+- [] Use Rect instead of width & height
 
 #### RegionMap
 - [] Region borders are stored

@@ -4,18 +4,31 @@ import { Rect } from '/lib/number'
 import { Point } from '/lib/point'
 
 
+
+export class MapScene {
+    static schema = new Schema(
+        Type.point('focusPoint', "Focus point", new Point(0, 0)),
+        Type.boolean('wrapGrid', "Wrap grid", false),
+        Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
+    )
+}
+
+
+
 // TODO: diagram should be a tile filter
-// diagram is a render rules object
-// define tiles as drawable or not, or filters like translate
+// define tiles as drawable or not, or filters like translate()
 // diagram here should be a list of tiles to render
+// set tileRenderBatch
+// use olde object to clear previous tiles
+// but clear only points not in newBatch (use PointSet)
 
 export class MapDiagram {
     static schema = new Schema(
         Type.point('focusPoint', "Focus point", new Point(0, 0)),
         Type.boolean('wrapGrid', "Wrap grid", false),
+        Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
         Type.boolean('showBorder', "Show border", true),
         Type.boolean('showOrigin', "Show origin", false),
-        Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
         Type.number('layer', "Layer", 3, {step: 1, min: 0}),
         Type.color('foreground', "Foreground", Color.fromHex('#251')),
         Type.color('background', "Background", Color.fromHex('#059')),
@@ -28,6 +41,7 @@ export class MapDiagram {
 
     constructor(map, config) {
         this.map = map
+        // TODO: set `this.data` and add attributes dynamically
         this.wrapGrid = config.get('wrapGrid')
         this.showBorder = config.get('showBorder')
         this.foreground = config.get('foreground')
