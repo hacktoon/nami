@@ -15,8 +15,9 @@ export function MapApp({Map}) {
         <Form className="Map"
             schema={Map.schema}
             data={data}
-            onSubmit={handleSubmit}>
-                <Button label="New" />
+            onSubmit={handleSubmit}
+        >
+            <Button label="New" />
         </Form>
         <MapAppView MapDiagram={Map.MapDiagram} map={map} />
     </section>
