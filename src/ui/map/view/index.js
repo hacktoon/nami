@@ -5,7 +5,7 @@ import { Point } from '/lib/point'
 import { Canvas, CursorCanvas } from '/lib/ui/canvas'
 import { MouseTrack } from '/lib/ui/mouse'
 
-import { Scene } from './scene'
+import { Scene } from '/model/lib/scene'
 
 
 export function MapView({diagram, ...props}) {
