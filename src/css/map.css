@@ -48,6 +48,7 @@
 .MapApp .MapViewForm {
     background-color: #CCC;
     height: 3rem;
+    grid-auto-flow: column;
 }
 
 

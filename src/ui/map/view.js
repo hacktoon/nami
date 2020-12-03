@@ -7,7 +7,7 @@ import { Button } from '/lib/ui/form/button'
 import { Canvas, CursorCanvas } from '/lib/ui/canvas'
 import { MouseTrack } from '/lib/ui/mouse'
 
-import { Scene } from '/model/lib/scene'
+import { MapScene, Scene } from '/model/lib/scene'
 
 
 export function MapView({diagram}) {
@@ -21,7 +21,7 @@ export function MapView({diagram}) {
     const scene = new Scene(diagram, width, height)
 
     const handleDrag = point => setOffset(point.plus(baseOffset))
-    const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
+    const handleDragEnd = () => setBaseOffset(offset)
     const handleClick = point => console.info(point.plus(offset))
     const handleWheel = amount => setZoom(zoom + amount)
 
@@ -38,9 +38,12 @@ export function MapView({diagram}) {
                 <MapCanvas scene={scene} offset={offset} zoom={zoom} />
             </>}
         </section>
-        <section className="MapViewForm">
-
-        </section>
+        <Form className="MapViewForm"
+            schema={MapScene.schema}
+            data={MapScene.schema.defaultValues()}
+        >
+            <Button label="New" />
+        </Form>
     </section>
 }
 

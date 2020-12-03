@@ -4,17 +4,6 @@ import { Rect } from '/lib/number'
 import { Point } from '/lib/point'
 
 
-
-export class MapScene {
-    static schema = new Schema(
-        Type.point('focusPoint', "Focus point", new Point(0, 0)),
-        Type.boolean('wrapGrid', "Wrap grid", false),
-        Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
-    )
-}
-
-
-
 // TODO: diagram should be a tile filter
 // define tiles as drawable or not, or filters like translate()
 // diagram here should be a list of tiles to render

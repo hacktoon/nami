@@ -1,5 +1,17 @@
 import { Point } from '/lib/point'
 import { Frame } from './frame'
+import { Schema, Type } from '/lib/schema'
+
+
+export class MapScene {
+    static schema = new Schema(
+        Type.point('focusPoint', "Focus point", new Point(0, 0)),
+        Type.boolean('wrapGrid', "Wrap grid", false),
+        Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
+    )
+
+
+}
 
 
 export class Scene {
