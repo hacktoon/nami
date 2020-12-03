@@ -1,34 +1,3 @@
-
-.App {
-    color: #333;
-    background: #111;
-    display: grid;
-    grid-template-rows: 50px auto;
-    height: 100vh;
-}
-
-.AppHeader {
-    display: grid;
-    grid-template-columns: min-content auto;
-    padding: .5rem;
-}
-
-.AppTitle {
-    color: #FFF;
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: center;
-}
-
-.MainMenu {
-    color: #FFF;
-    display: grid;
-    grid-template-columns: auto;
-    justify-content: end;
-}
-
-
-
 /* MAP COMPONENT ======================================= */
 
 .MapApp {
@@ -57,7 +26,29 @@
     grid-auto-flow: row;
     grid-auto-rows: min-content;
     grid-row: 2;
+}
 
+.MapApp .MapView {
+    background-color: #FFF;
+    background-image: linear-gradient(45deg, #E8E8E8 25%, transparent 25%),
+        linear-gradient(-45deg, #E8E8E8 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #E8E8E8 75%),
+        linear-gradient(-45deg, transparent 75%, #E8E8E8 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 8rem;
+}
+
+.MapApp .MapViewCanvas {
+
+}
+
+
+.MapApp .MapViewForm {
+    background-color: #FFF;
+    position: relative;
 }
 
 
@@ -68,6 +59,3 @@
     display: block;
     padding: .5rem;
 }
-
-
-/* OTHER ======================================= */

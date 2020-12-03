@@ -29,14 +29,17 @@ export function Title({className, ...props}) {
 export function useResize(containerRef) {
     const [width, setWidth] = useState(0)
     const [height, setHeight] = useState(0)
-    const handleResize = () => {
-        setWidth(containerRef.current.clientWidth)
-        setHeight(containerRef.current.clientHeight)
-    }
+
     useLayoutEffect(() => {
         handleResize()
         window.addEventListener('resize', handleResize)
         return () => window.removeEventListener('resize', handleResize)
     }, [])
+
+    const handleResize = () => {
+        setWidth(containerRef.current.clientWidth)
+        setHeight(containerRef.current.clientHeight)
+    }
+
     return [width, height]
 }

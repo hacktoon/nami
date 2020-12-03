@@ -14,7 +14,7 @@ import NoiseMap from '/model/noisemap'
 
 
 import "./css/base.css"
-import "./css/index.css"
+import "./css/map.css"
 
 
 const APPS = {
@@ -36,12 +36,12 @@ const DEFAULT_APP = APPS.RegionMap
 function AppHeader({app, setApp}) {
     return <section className="AppHeader">
         <Title className="AppTitle">NAMI</Title>
-        <MainMenu app={app} setApp={setApp} />
+        <AppHeaderMenu app={app} setApp={setApp} />
     </section>
 }
 
 
-function MainMenu({app, setApp}) {
+function AppHeaderMenu({app, setApp}) {
     const appOptions = Object.fromEntries(
         Object.entries(APPS).map(entry => {
             const [id, app] = entry
@@ -50,7 +50,7 @@ function MainMenu({app, setApp}) {
     )
     const onChange = (_, value) => setApp(APPS[value])
 
-    return <section className="MainMenu">
+    return <section className="AppHeaderMenu">
         <SelectField
             label="App"
             value={app.id}
@@ -70,4 +70,4 @@ function RootComponent() {
 }
 
 
-ReactDOM.render(<RootComponent />, document.getElementById('main'));
+ReactDOM.render(<RootComponent />, document.getElementById('app'));
