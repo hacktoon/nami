@@ -42,7 +42,7 @@ export function MapView({diagram}) {
             schema={MapScene.schema}
             data={MapScene.schema.defaultValues()}
         >
-            <Button label="New" />
+            <Button label="Update" />
         </Form>
     </section>
 }
