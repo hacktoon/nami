@@ -2,23 +2,17 @@ import React, { useState, useRef } from 'react'
 
 import { useResize } from '/lib/ui'
 import { Point } from '/lib/point'
+import { Form } from '/lib/ui/form'
+import { Button } from '/lib/ui/form/button'
 import { Canvas, CursorCanvas } from '/lib/ui/canvas'
 import { MouseTrack } from '/lib/ui/mouse'
 
 import { Scene } from '/model/lib/scene'
 
 
-{/* <Form className="MapViewForm"
-        schema={MapDiagram.schema}
-        onSubmit={handleSubmit}
-        data={data}
-    >
-        <Button label="Update" />
-    </Form> */}
-
-
 export function MapView({diagram}) {
     const viewport = useRef(null)
+
     const [width, height] = useResize(viewport)
     const [offset, setOffset] = useState(new Point())
     const [baseOffset, setBaseOffset] = useState(new Point())
@@ -30,7 +24,6 @@ export function MapView({diagram}) {
     const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
     const handleClick = point => console.info(point.plus(offset))
     const handleWheel = amount => setZoom(zoom + amount)
-    const handleInit = canvas => scene.render(canvas, offset, zoom)
 
     return <section className="MapView">
         <section className="MapViewCanvas" ref={viewport}>
@@ -42,17 +35,24 @@ export function MapView({diagram}) {
                     onDragEnd={handleDragEnd}
                     onWheel={handleWheel}
                 />
-                <Canvas
-                    width={width}
-                    height={height}
-                    onInit={handleInit}
-                />
+                <MapCanvas scene={scene} offset={offset} zoom={zoom} />
             </>}
         </section>
         <section className="MapViewForm">
 
         </section>
     </section>
+}
+
+
+function MapCanvas({scene, offset, zoom}) {
+    const handleInit = canvas => scene.render(canvas, offset, zoom)
+
+    return <Canvas
+        width={scene.width}
+        height={scene.height}
+        onInit={handleInit}
+    />
 }
 
 

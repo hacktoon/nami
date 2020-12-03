@@ -36,19 +36,18 @@
         linear-gradient(-45deg, transparent 75%, #E8E8E8 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-    position: relative;
     display: grid;
-    grid-template-rows: auto 8rem;
+    grid-template-rows: auto min-content;
 }
 
 .MapApp .MapViewCanvas {
-
+    box-shadow: inset 0 0 .5rem #000;
+    position: relative;
 }
 
-
 .MapApp .MapViewForm {
-    background-color: #FFF;
-    position: relative;
+    background-color: #CCC;
+    height: 3rem;
 }
 
 
