@@ -28,7 +28,7 @@
     grid-row: 2;
 }
 
-.MapApp .MapView {
+.MapApp .MapSceneUI {
     background-color: #FFF;
     background-image: linear-gradient(45deg, #E8E8E8 25%, transparent 25%),
         linear-gradient(-45deg, #E8E8E8 25%, transparent 25%),

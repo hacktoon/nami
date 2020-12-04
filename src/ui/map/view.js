@@ -11,7 +11,7 @@ import { MapScene, Scene } from '/model/lib/scene'
 import { Frame } from '/model/lib/frame'
 
 
-export function MapView({diagram}) {
+export function MapSceneUI({diagram}) {
     const viewport = useRef(null)
 
     const [width, height] = useResize(viewport)
@@ -27,7 +27,7 @@ export function MapView({diagram}) {
     const handleClick = point => console.info(point.plus(offset))
     const handleWheel = amount => setZoom(zoom + amount)
 
-    return <section className="MapView">
+    return <section className="MapSceneUI">
         <section className="MapViewCanvas" ref={viewport}>
             {viewport.current && <>
                 <MapMouseTrack

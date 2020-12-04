@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
-import { MapView } from './view'
+import { MapSceneUI } from './view'
 
 
 export function MapApp({Map}) {
@@ -38,6 +38,6 @@ function MapAppView({MapDiagram, map}) {
         >
             <Button label="Update" />
         </Form>
-        <MapView diagram={diagram} />
+        <MapSceneUI diagram={diagram} />
     </>
 }
