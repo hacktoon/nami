@@ -127,7 +127,7 @@ canvas { display: block; }
 /* BUTTONS ======================================= */
 
 .Button {
-    background: rgb(6, 94, 6);
+    background: rgb(0, 149, 255);
     color: #FFF;
     font-weight: bold;
     padding: .5rem 1rem;

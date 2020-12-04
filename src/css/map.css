@@ -46,11 +46,16 @@
 }
 
 .MapApp .MapViewForm {
-    background-color: #CCC;
+    background-color: #333;
+    color: #FFF;
     height: 3rem;
     grid-auto-flow: column;
 }
 
+.MapApp .MapViewForm input {
+    background-color: #555;
+    color: #EEE;
+}
 
 /* TEST COMPONENT ======================================= */
 
