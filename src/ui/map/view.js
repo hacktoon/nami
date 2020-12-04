@@ -8,6 +8,7 @@ import { Canvas, CursorCanvas } from '/lib/ui/canvas'
 import { MouseTrack } from '/lib/ui/mouse'
 
 import { MapScene, Scene } from '/model/lib/scene'
+import { Frame } from '/model/lib/frame'
 
 
 export function MapView({diagram}) {
@@ -18,8 +19,8 @@ export function MapView({diagram}) {
     const [baseOffset, setBaseOffset] = useState(new Point())
     const [zoom, setZoom] = useState(0)
 
-    // const frame = new Frame(diagram, width, height)
-    const scene = new Scene(diagram, width, height)
+    const frame = new Frame(diagram.tileSize, width, height)
+    const scene = new Scene(diagram, frame)
 
     const handleDrag = point => setOffset(point.plus(baseOffset))
     const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))

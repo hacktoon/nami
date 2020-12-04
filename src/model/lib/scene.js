@@ -1,23 +1,22 @@
 import { Point } from '/lib/point'
-import { Frame } from './frame'
 import { Schema, Type } from '/lib/schema'
 
 
 export class MapScene {
     static schema = new Schema(
-        Type.point('focusPoint', "Focus point", new Point(0, 0)),
-        Type.boolean('wrapGrid', "Wrap grid", false),
-        Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
+        Type.point('focus', "Focus", new Point(0, 0)),
+        Type.boolean('wrap', "Wrap", false),
+        Type.number('zoom', "Zoom", 20, {step: 1, min: 1}),
     )
 }
 
 
 export class Scene {
-    constructor(diagram, width, height) {
-        this.frame = new Frame(diagram.tileSize, width, height)
+    constructor(diagram, frame) {
         this.diagram = diagram
-        this.width = width
-        this.height = height
+        this.frame = frame
+        this.width = frame.width
+        this.height = frame.height
         this.tileSize = diagram.tileSize
         this.focus = diagram.focus
     }

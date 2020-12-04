@@ -3,6 +3,8 @@ import { Point } from '/lib/point'
 
 export class Frame {
     constructor(tileSize, width, height) {
+        this.width = width
+        this.height = height
         this.tileSize = tileSize
         this.eastPad = Math.floor(width / 2 - tileSize / 2)
         this.northPad = Math.floor(height / 2 - tileSize / 2)
