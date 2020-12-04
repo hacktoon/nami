@@ -18,10 +18,11 @@ export function MapView({diagram}) {
     const [baseOffset, setBaseOffset] = useState(new Point())
     const [zoom, setZoom] = useState(0)
 
+    // const frame = new Frame(diagram, width, height)
     const scene = new Scene(diagram, width, height)
 
     const handleDrag = point => setOffset(point.plus(baseOffset))
-    const handleDragEnd = () => setBaseOffset(offset)
+    const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
     const handleClick = point => console.info(point.plus(offset))
     const handleWheel = amount => setZoom(zoom + amount)
 
@@ -36,6 +37,7 @@ export function MapView({diagram}) {
                     onWheel={handleWheel}
                 />
                 <MapCanvas scene={scene} offset={offset} zoom={zoom} />
+                {/* TODO: <MapCanvas scene={scene} frame={frame} /> */}
             </>}
         </section>
         <Form className="MapViewForm"

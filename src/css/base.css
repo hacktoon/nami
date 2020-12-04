@@ -111,7 +111,7 @@ canvas { display: block; }
     width: 100%;
     cursor: pointer;
     display: block;
-    padding: .5rem 0;
+    padding: .5rem 1rem;
     justify-content: center;
     text-align: center;
 }

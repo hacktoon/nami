@@ -9,8 +9,6 @@ export class MapScene {
         Type.boolean('wrapGrid', "Wrap grid", false),
         Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
     )
-
-
 }
 
 
