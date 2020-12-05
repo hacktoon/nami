@@ -5,13 +5,13 @@ import { Button } from '/lib/ui/form/button'
 import { MapSceneUI } from './scene'
 
 
-export function MapApp({Map}) {
+export function MapUI({Map}) {
     const [data, setData] = useState(Map.schema.defaultValues())
     const map = Map.create(data)
 
     const handleSubmit = data => setData(data)
 
-    return <section className='MapApp'>
+    return <section className='MapUI'>
         <Form className="Map"
             schema={Map.schema}
             data={data}
@@ -19,12 +19,12 @@ export function MapApp({Map}) {
         >
             <Button label="New" />
         </Form>
-        <MapAppView MapDiagram={Map.MapDiagram} map={map} />
+        <MapDiagramUI MapDiagram={Map.MapDiagram} map={map} />
     </section>
 }
 
 
-function MapAppView({MapDiagram, map}) {
+function MapDiagramUI({MapDiagram, map}) {
     const [data, setData] = useState(MapDiagram.schema.defaultValues())
     const diagram = MapDiagram.create(map, data)
 

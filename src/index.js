@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import { SelectField } from '/lib/ui/form/field'
 import { Title } from '/lib/ui'
 
-import { MapApp } from '/ui/map'
+import { MapUI } from '/ui/map'
 import { TestApp } from '/ui/test'
 
 import TectonicsMap from '/model/world/tectonicsmap'
@@ -19,15 +19,15 @@ import "./css/map.css"
 
 const APPS = {
     Test: { id: 'Test', component: () => <TestApp /> },
-    WorldMap: { id: 'WorldMap', component: () => <MapApp Map={WorldMap} /> },
-    NoiseMap: { id: 'NoiseMap', component: () => <MapApp Map={NoiseMap} /> },
+    WorldMap: { id: 'WorldMap', component: () => <MapUI Map={WorldMap} /> },
+    NoiseMap: { id: 'NoiseMap', component: () => <MapUI Map={NoiseMap} /> },
     TectonicsMap: {
         id: 'TectonicsMap',
-        component: () => <MapApp Map={TectonicsMap} />
+        component: () => <MapUI Map={TectonicsMap} />
     },
     RegionMap: {
         id: 'RegionMap',
-        component:  () => <MapApp Map={RegionMap} />
+        component:  () => <MapUI Map={RegionMap} />
     },
 }
 const DEFAULT_APP = APPS.RegionMap

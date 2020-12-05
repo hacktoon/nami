@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react'
 
-import { useResize } from '/lib/ui'
 import { Point } from '/lib/point'
+
+import { useResize } from '/lib/ui'
+import { MouseTrack } from '/lib/ui/mouse'
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
 import { Canvas, CursorCanvas } from '/lib/ui/canvas'
-import { MouseTrack } from '/lib/ui/mouse'
 
 import { MapScene, Scene } from '/model/lib/scene'
 import { Frame } from '/model/lib/frame'
