@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
-import { MapSceneUI } from './view'
+import { MapSceneUI } from './scene'
 
 
 export function MapApp({Map}) {
