@@ -16,14 +16,14 @@ const mapSchema = new Schema(
 )
 
 
-export function TestApp() {
+export function TestUI() {
     const [data, setData] = useState(mapSchema.defaultValues())
 
     const handleSubmit = data => {
         setData(data)
     }
 
-    return <section className='TestApp'>
+    return <section className='TestUI'>
         <Form
             className="TestForm"
             onSubmit={handleSubmit}

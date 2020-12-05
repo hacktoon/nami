@@ -14,22 +14,6 @@ export function Canvas({width, height, onInit, className='Canvas'}) {
 }
 
 
-export function CursorCanvas({width, height, onInit}) {
-    const [cache, setCache] = useState()
-
-    const handleInit = context => {
-        context.reset()
-        onInit(context)
-    }
-
-    return <Canvas className='CursorCanvas'
-        width={width}
-        height={height}
-        onInit={handleInit}
-    />
-}
-
-
 class CanvasContext {
     constructor(canvas) {
         this.context = canvas.getContext('2d')

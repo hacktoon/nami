@@ -8,6 +8,19 @@ export class MapScene {
         Type.boolean('wrap', "Wrap", false),
         Type.number('zoom', "Zoom", 20, {step: 1, min: 1}),
     )
+
+    static create(map, params) {
+        return new MapScene(map, params)
+    }
+
+    constructor(diagram, params) {
+        this.diagram = diagram
+        // TODO: set `this.data` and add attributes dynamically
+        this.wrap = params.get('wrap')
+        this.focus = params.get('focus')
+        this.zoom = params.get('zoom')
+
+    }
 }
 
 
@@ -24,7 +37,7 @@ export class Scene {
     render(canvas, focusOffset, zoom) {
         const tileSize = this.tileSize + zoom
         const focus = this.focus.plus(focusOffset)
-        this.#renderFrame(focus, (tilePoint, canvasPoint) => {
+        this.#renderFrame(focus, tileSize, (tilePoint, canvasPoint) => {
             const color = this.diagram.get(tilePoint)
             if (color == 'transparent') {
                 canvas.clear(tileSize, canvasPoint)
@@ -41,10 +54,10 @@ export class Scene {
         canvas.cursor(this.tileSize, canvasPoint, color)
     }
 
-    #renderFrame(focus, callback) {
+    #renderFrame(focus, tileSize, callback) {
         const {origin, target} = this.frame.rect(focus)
-        for(let i = origin.x, x = 0; i <= target.x; i++, x += this.tileSize) {
-            for(let j = origin.y, y = 0; j <= target.y; j++, y += this.tileSize) {
+        for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
+            for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {
                 const tilePoint = new Point(i, j)
                 const canvasPoint = this.#buildCanvasPoint(new Point(x, y))
                 callback(tilePoint, canvasPoint)

@@ -5,20 +5,19 @@ import { SelectField } from '/lib/ui/form/field'
 import { Title } from '/lib/ui'
 
 import { MapUI } from '/ui/map'
-import { TestApp } from '/ui/test'
+import { TestUI } from '/ui/test'
 
 import TectonicsMap from '/model/world/tectonicsmap'
 import WorldMap from '/model/world/worldmap'
 import RegionMap from '/model/regionmap'
 import NoiseMap from '/model/noisemap'
 
-
 import "./css/base.css"
 import "./css/map.css"
 
 
 const APPS = {
-    Test: { id: 'Test', component: () => <TestApp /> },
+    Test: { id: 'Test', component: () => <TestUI /> },
     WorldMap: { id: 'WorldMap', component: () => <MapUI Map={WorldMap} /> },
     NoiseMap: { id: 'NoiseMap', component: () => <MapUI Map={NoiseMap} /> },
     TectonicsMap: {
@@ -27,7 +26,7 @@ const APPS = {
     },
     RegionMap: {
         id: 'RegionMap',
-        component:  () => <MapUI Map={RegionMap} />
+        component: () => <MapUI Map={RegionMap} />
     },
 }
 const DEFAULT_APP = APPS.RegionMap
@@ -63,6 +62,7 @@ function AppHeaderMenu({app, setApp}) {
 
 function RootComponent() {
     const [app, setApp] = useState(DEFAULT_APP)
+
     return <section className="App">
         <AppHeader app={app} setApp={setApp} />
         <app.component />
