@@ -5,7 +5,7 @@ import { MouseTrack } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
 
 
-export function MapMouseTrack({scene, ...props}) {
+export function MapMouseTrack({focusPoint, frame, ...props}) {
     /*
      Translates MouseTrack events in pixel points to
      tile objects using a view frame object
@@ -15,8 +15,8 @@ export function MapMouseTrack({scene, ...props}) {
     const [focus, setFocus] = useState(new Point())
 
     const handleDrag = (startPoint, endPoint) => {
-        const startTilePoint = scene.frame.tilePoint(startPoint)
-        const endTilePoint = scene.frame.tilePoint(endPoint)
+        const startTilePoint = frame.tilePoint(startPoint)
+        const endTilePoint = frame.tilePoint(endPoint)
         const newFocus = startTilePoint.minus(endTilePoint)
         if (newFocus.differs(focus)) {
             setFocus(newFocus)
@@ -25,22 +25,22 @@ export function MapMouseTrack({scene, ...props}) {
     }
 
     const handleDragEnd = (startPoint, endPoint) => {
-        const startTilePoint = scene.frame.tilePoint(startPoint)
-        const endTilePoint = scene.frame.tilePoint(endPoint)
+        const startTilePoint = frame.tilePoint(startPoint)
+        const endTilePoint = frame.tilePoint(endPoint)
         props.onDragEnd(startTilePoint.minus(endTilePoint))
     }
 
     const handleMove = mousePoint => {
-        const scenePoint = scene.frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(scene.focus)
+        const scenePoint = frame.tilePoint(mousePoint)
+        const point = scenePoint.plus(focusPoint)
         if (! cursor || point.differs(cursor)) {
             setCursor(point)
         }
     }
 
     const handleClick = mousePoint => {
-        const scenePoint = scene.frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(scene.focus)
+        const scenePoint = frame.tilePoint(mousePoint)
+        const point = scenePoint.plus(focusPoint)
         props.onClick(point)
     }
 
@@ -48,7 +48,7 @@ export function MapMouseTrack({scene, ...props}) {
 
     const handleCanvasInit = canvas => {
         if (cursor) {
-            scene.renderCursor(canvas, cursor)
+            props.onRenderCursor(canvas, cursor)
         }
     }
 
@@ -62,8 +62,8 @@ export function MapMouseTrack({scene, ...props}) {
             onWheel={props.onWheel}
         />
         <CursorCanvas
-            width={scene.width}
-            height={scene.height}
+            width={frame.width}
+            height={frame.height}
             onInit={handleCanvasInit}
         />
     </>

@@ -13,7 +13,6 @@ import { Point } from '/lib/point'
 
 export class MapDiagram {
     static schema = new Schema(
-        Type.point('focusPoint', "Focus point", new Point(0, 0)),
         Type.boolean('wrapGrid', "Wrap grid", false),
         Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
         Type.boolean('showBorder', "Show border", true),
@@ -39,7 +38,6 @@ export class MapDiagram {
         this.showOrigin = config.get('showOrigin')
         this.tileSize = config.get('tileSize')
         this.layer = config.get('layer')
-        this.focus = config.get('focusPoint')
     }
 
     get width() {

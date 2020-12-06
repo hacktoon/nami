@@ -34,10 +34,10 @@ export class Scene {
         this.focus = diagram.focus
     }
 
-    render(canvas, focusOffset, zoom) {
+    render(canvas, focus, focusOffset, zoom) {
         const tileSize = this.tileSize + zoom
-        const focus = this.focus.plus(focusOffset)
-        this.#renderFrame(focus, tileSize, (tilePoint, canvasPoint) => {
+        const rect = this.frame.rect(focus.plus(focusOffset))
+        this.#renderFrame(rect, tileSize, (tilePoint, canvasPoint) => {
             const color = this.diagram.get(tilePoint)
             if (color == 'transparent') {
                 canvas.clear(tileSize, canvasPoint)
@@ -54,8 +54,8 @@ export class Scene {
         canvas.cursor(this.tileSize, canvasPoint, color)
     }
 
-    #renderFrame(focus, tileSize, callback) {
-        const {origin, target} = this.frame.rect(focus)
+    #renderFrame(rect, tileSize, callback) {
+        const {origin, target} = rect
         for(let i = origin.x, x = 0; i <= target.x; i++, x += tileSize) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += tileSize) {
                 const tilePoint = new Point(i, j)
