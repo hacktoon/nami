@@ -30,12 +30,12 @@ export class Scene {
         this.frame = frame
         this.width = frame.width
         this.height = frame.height
-        this.tileSize = diagram.tileSize
-        this.focus = diagram.focus
+        this.tileSize = frame.zoom
+        this.focus = frame.focus
     }
 
-    render(canvas, focus, focusOffset, zoom) {
-        const tileSize = this.tileSize + zoom
+    render(canvas, focus, focusOffset) {
+        const tileSize = this.tileSize
         const rect = this.frame.rect(focus.plus(focusOffset))
         this.#renderFrame(rect, tileSize, (tilePoint, canvasPoint) => {
             const color = this.diagram.get(tilePoint)

@@ -14,7 +14,6 @@ import { Point } from '/lib/point'
 export class MapDiagram {
     static schema = new Schema(
         Type.boolean('wrapGrid', "Wrap grid", false),
-        Type.number('tileSize', "Tile size", 20, {step: 1, min: 1}),
         Type.boolean('showBorder', "Show border", true),
         Type.boolean('showOrigin', "Show origin", false),
         Type.number('layer', "Layer", 3, {step: 1, min: 0}),
@@ -36,7 +35,6 @@ export class MapDiagram {
         this.background = config.get('background')
         this.borderColor = config.get('borderColor')
         this.showOrigin = config.get('showOrigin')
-        this.tileSize = config.get('tileSize')
         this.layer = config.get('layer')
     }
 
