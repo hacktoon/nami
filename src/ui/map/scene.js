@@ -23,7 +23,7 @@ export function MapSceneUI({diagram}) {
     const [baseOffset, setBaseOffset] = useState(new Point())
     const [zoom, setZoom] = useState(0)
 
-    const frame = new Frame(diagram.tileSize, width, height)
+    const frame = new Frame(diagram.tileSize, width, height, focus)
     const scene = new Scene(diagram, frame)
 
     // const mapScene = new MapScene()
@@ -40,14 +40,13 @@ export function MapSceneUI({diagram}) {
             {viewport.current && <>
                 <MapMouseTrack
                     frame={frame}
-                    focusPoint={focus}
                     onDrag={handleDrag}
                     onClick={handleClick}
                     onDragEnd={handleDragEnd}
                     onWheel={handleWheel}
                     onRenderCursor={handleRenderCursor}
                 />
-                <MapCanvas scene={scene} focus={focus} offset={offset} zoom={zoom} />
+                <MapCanvas scene={scene} frame={frame} offset={offset} zoom={zoom} />
             </>}
         </section>
         <Form className="MapViewForm"
@@ -60,8 +59,8 @@ export function MapSceneUI({diagram}) {
 }
 
 
-function MapCanvas({scene, focus, offset, zoom}) {
-    const handleInit = canvas => scene.render(canvas, focus, offset, zoom)
+function MapCanvas({scene, frame, offset, zoom}) {
+    const handleInit = canvas => scene.render(canvas, frame.focus, offset, zoom)
 
     return <Canvas
         width={scene.width}

@@ -2,7 +2,7 @@ import { Point } from '/lib/point'
 
 
 export class Frame {
-    constructor(tileSize, width, height) {
+    constructor(tileSize, width, height, focus) {
         this.width = width
         this.height = height
         this.tileSize = tileSize
@@ -16,6 +16,7 @@ export class Frame {
         const southTileCount = Math.ceil(this.southPad / tileSize)
         this.origin = new Point(eastTileCount, northTileCount)
         this.target = new Point(westTileCount, southTileCount)
+        this.focus = focus
     }
 
     get offset() {

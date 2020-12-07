@@ -5,7 +5,7 @@ import { MouseTrack } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
 
 
-export function MapMouseTrack({focusPoint, frame, ...props}) {
+export function MapMouseTrack({frame, ...props}) {
     /*
      Translates MouseTrack events in pixel points to
      tile objects using a view frame object
@@ -32,7 +32,7 @@ export function MapMouseTrack({focusPoint, frame, ...props}) {
 
     const handleMove = mousePoint => {
         const scenePoint = frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(focusPoint)
+        const point = scenePoint.plus(frame.focus)
         if (! cursor || point.differs(cursor)) {
             setCursor(point)
         }
@@ -40,7 +40,7 @@ export function MapMouseTrack({focusPoint, frame, ...props}) {
 
     const handleClick = mousePoint => {
         const scenePoint = frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(focusPoint)
+        const point = scenePoint.plus(frame.focus)
         props.onClick(point)
     }
 
