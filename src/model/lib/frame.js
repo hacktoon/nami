@@ -2,7 +2,7 @@ import { Point } from '/lib/point'
 
 
 export class Frame {
-    constructor(width, height, focus, zoom) {
+    constructor(width, height, focus, zoom, wrap) {
         this.width = width
         this.height = height
         this.zoom = zoom
@@ -17,6 +17,7 @@ export class Frame {
         this.origin = new Point(eastTileCount, northTileCount)
         this.target = new Point(westTileCount, southTileCount)
         this.focus = focus
+        this.wrap = wrap
     }
 
     get offset() {

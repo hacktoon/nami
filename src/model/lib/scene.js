@@ -1,4 +1,5 @@
 import { Point } from '/lib/point'
+import { Rect } from '/lib/number'
 import { Schema, Type } from '/lib/schema'
 
 
@@ -9,8 +10,8 @@ export class MapScene {
         Type.number('zoom', "Zoom", 20, {step: 1, min: 1}),
     )
 
-    static create(map, params) {
-        return new MapScene(map, params)
+    static create(diagram, width, height, params) {
+        return new MapScene(diagram, params)
     }
 
     constructor(diagram, params) {
@@ -32,19 +33,26 @@ export class Scene {
         this.height = frame.height
         this.tileSize = frame.zoom
         this.focus = frame.focus
+        this.wrap = frame.wrap
     }
 
     render(canvas, focus, focusOffset) {
         const tileSize = this.tileSize
         const rect = this.frame.rect(focus.plus(focusOffset))
+        console.log();
         this.#renderFrame(rect, tileSize, (tilePoint, canvasPoint) => {
-            const color = this.diagram.get(tilePoint)
-            if (color == 'transparent') {
-                canvas.clear(tileSize, canvasPoint)
-            } else {
+            if (this.isWrappable(tilePoint)) {
+                const color = this.diagram.get(tilePoint)
                 canvas.rect(tileSize, canvasPoint, color)
+            } else {
+                canvas.clear(tileSize, canvasPoint)
             }
         })
+    }
+
+    isWrappable(point) {
+        if (this.wrap) return true
+        return new Rect(this.diagram.width, this.diagram.height).inside(point)
     }
 
     renderCursor(canvas, cursor) {
