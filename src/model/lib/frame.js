@@ -2,7 +2,7 @@ import { Point } from '/lib/point'
 
 
 export class Frame {
-    constructor(tileSize, width, height, focus) {
+    constructor(width, height, focus, tileSize) {
         this.width = width
         this.height = height
         this.tileSize = tileSize

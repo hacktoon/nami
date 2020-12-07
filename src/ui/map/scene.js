@@ -15,28 +15,30 @@ import { Frame } from '/model/lib/frame'
 
 export function MapSceneUI({diagram}) {
     const viewport = useRef(null)
-
     const [width, height] = useResize(viewport)
 
     const [focus, setFocus] = useState(new Point())
+    const [zoom, setZoom] = useState(0)
     const [offset, setOffset] = useState(new Point())
     const [baseOffset, setBaseOffset] = useState(new Point())
-    const [zoom, setZoom] = useState(0)
 
-    const frame = new Frame(diagram.tileSize, width, height, focus)
-    const scene = new Scene(diagram, frame)
+    const [data, setData] = useState(MapScene.schema.defaultValues())
 
     // const mapScene = new MapScene()
+
+    const frame = new Frame(width, height, focus, diagram.tileSize)
+    const scene = new Scene(diagram, frame)
 
     const handleDrag = point => setOffset(point.plus(baseOffset))
     const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
     const handleClick = point => console.info(point.plus(offset))
     const handleWheel = amount => setZoom(zoom + amount)
+    const handleSubmit = data => setData(data)
 
     const handleRenderCursor = (canvas, cursor) => scene.renderCursor(canvas, cursor)
 
     return <section className="MapSceneUI">
-        <section className="MapViewCanvas" ref={viewport}>
+        <section className="MapViewCanvasUI" ref={viewport}>
             {viewport.current && <>
                 <MapMouseTrack
                     frame={frame}
@@ -52,6 +54,7 @@ export function MapSceneUI({diagram}) {
         <Form className="MapViewForm"
             schema={MapScene.schema}
             data={MapScene.schema.defaultValues()}
+            onSubmit={handleSubmit}
         >
             <Button label="Update" />
         </Form>
