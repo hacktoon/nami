@@ -10,7 +10,6 @@ import { Canvas } from '/lib/ui/canvas'
 import { MapMouseTrack } from './mouse'
 
 import { MapScene, Scene } from '/model/lib/scene'
-import { Frame } from '/model/lib/frame'
 
 
 export function MapSceneUI({diagram}) {
@@ -28,8 +27,7 @@ export function MapSceneUI({diagram}) {
 
     const mapScene = MapScene.create(diagram, width, height, data)
 
-    const frame = new Frame(width, height, focus, zoom, wrap)
-    const scene = new Scene(diagram, frame)
+    const scene = new Scene(diagram, width, height, focus, zoom, wrap)
 
     const handleDrag = point => setOffset(point.plus(baseOffset))
     const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
@@ -43,20 +41,20 @@ export function MapSceneUI({diagram}) {
         <section className="MapViewCanvasUI" ref={viewport}>
             {viewport.current && <>
                 <MapMouseTrack
-                    frame={frame}
+                    scene={scene}
                     onDrag={handleDrag}
                     onClick={handleClick}
-                    onDragEnd={handleDragEnd}
                     onWheel={handleWheel}
+                    onDragEnd={handleDragEnd}
                     onRenderCursor={handleRenderCursor}
                 />
-                <MapCanvas scene={scene} frame={frame} offset={offset} />
+                <MapCanvas scene={scene} offset={offset} />
             </>}
         </section>
         <Form className="MapViewForm"
-            schema={MapScene.schema}
             data={data}
             onSubmit={handleSubmit}
+            schema={MapScene.schema}
         >
             <Button label="Update" />
         </Form>
@@ -64,8 +62,8 @@ export function MapSceneUI({diagram}) {
 }
 
 
-function MapCanvas({scene, frame, offset}) {
-    const handleInit = canvas => scene.render(canvas, frame.focus, offset)
+function MapCanvas({scene, offset}) {
+    const handleInit = canvas => scene.render(canvas, offset)
 
     return <Canvas
         width={scene.width}
