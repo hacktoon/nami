@@ -22,11 +22,16 @@
   },
   "homepage": "https://github.com/hacktoon/nami",
   "dependencies": {
+    "@babel/core": "^7.12.3",
     "@babel/cli": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "babel-preset-react": "^6.24.1",
+    "parcel-bundler": "^1.12.4",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
+  },
+  "devDependencies": {
+    "jest": "^26.0"
   },
   "alias": {
     "lib": "./src/lib",
@@ -38,10 +43,5 @@
     "moduleNameMapper": {
       "^/(.*)$": "<rootDir>/src/$1"
     }
-  },
-  "devDependencies": {
-    "parcel-bundler": "^1.12.4",
-    "@babel/core": "^7.12.3",
-    "jest": "^26.0"
   }
 }
