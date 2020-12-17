@@ -1,44 +1,32 @@
 import Tile from './tile'
 import { Grid } from '/lib/grid'
 import { Name } from '/lib/name'
-import { Type } from '/lib/type'
-import { MetaClass } from '/lib/meta'
+import { Schema, Type } from '/lib/schema'
+import { GenericMap } from '/model/lib/map'
 
 import { ReliefMap } from './geo/relief'
 import { MapDiagram } from './diagram'
 
 
-export default class WorldMap {
-    static meta = new MetaClass(
-        Type.number("Roughness", 8),
-        Type.number("Size", 257, {min: 1, step: 1}),
-        Type.seed("Seed", '')
+export default class WorldMap extends GenericMap {
+    static schema = new Schema(
+        Type.number('roughness', 'Roughness', 8, {min: 1, step: 1}),
+        Type.number('size', 'Size', 257, {min: 1, step: 1}),
+        Type.text('seed', 'Seed', '')
     )
 
     static MapDiagram = MapDiagram
 
-    static create(data) {
-        const config = WorldMap.meta.parseConfig(data)
-        const size = config.get('size')
-        const roughness = config.get('roughness')
-        const reliefMap = new ReliefMap(size, roughness)
-        const grid = new Grid(size, size, point => new Tile(point))
-        return new WorldMap(reliefMap, grid, config)
+    static create(params) {
+        return new WorldMap(params)
     }
 
-    constructor(reliefMap, grid, config) {
-        this.grid = grid
+    constructor(params) {
+        super(params)
+        this.size = params.get('size')
+        this.roughness = params.get('roughness')
+        this.area = this.size * this.size
         this.name = Name.createLandmassName()
-        this.config = config.original()
-        this.seed = config.get('seed')
-        this.size = config.get('size')
-        this.width = config.get('size')
-        this.height = config.get('size')
-        this.area = config.get('size') * config.get('size')
-        this.reliefMap = reliefMap
-    }
-
-    get(point) {
-        return this.grid.get(point)
+        this.reliefMap = new ReliefMap(this.size, this.roughness)
     }
 }
