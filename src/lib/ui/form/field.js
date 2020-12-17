@@ -106,7 +106,22 @@ export function PointField({name, label, defaultValue, ...props}) {
 }
 
 
-// BASE FIELD COMPONENT ===============================================
+export function FieldSet({types, data}) {
+    return types.map((typeObject, id) => {
+        const {
+            type, name, label, defaultValue, fieldAttrs, ...props
+        } = typeObject
+        const FieldComponent = TYPE_FIELD_MAP[type]
+        return <FieldComponent
+            key={id}
+            name={name}
+            label={label}
+            defaultValue={data.get(name)}
+            {...fieldAttrs}
+            {...props}
+        />
+    })
+}
 
 function Field({label, type, value, status='', children, ...props}) {
     return <label className={`Field ${type} ${status}`} {...props}>

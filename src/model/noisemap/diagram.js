@@ -1,5 +1,4 @@
-import { Point } from '/lib/point'
-import { Schema, Type } from '/lib/schema'
+import { Schema } from '/lib/schema'
 import { Color } from '/lib/color'
 
 
