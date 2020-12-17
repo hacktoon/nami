@@ -1,42 +1,29 @@
 import { Point } from '/lib/point'
-import { Type } from '/lib/type'
-import { MetaClass } from '/lib/meta'
+import { Schema, Type } from '/lib/schema'
 import { Color } from '/lib/color'
-import { Rect } from '/lib/number'
 
 
 export class MapDiagram {
-    static meta = new MetaClass(
-        Type.boolean("Wrap grid", false),
-        Type.point("Focus point", new Point(0, 0)),
-        Type.number("Tile size", 10, {step: 1, min: 1}),
-    )
+    static schema = new Schema()
 
-    static create(map, data) {
-        const config = MapDiagram.meta.parseConfig(data)
-        return new MapDiagram(map, config)
+    static create(map) {
+        return new MapDiagram(map)
     }
 
-    constructor(map, config) {
+    constructor(map) {
         this.map = map
-        this.width = map.width
-        this.height = map.height
-        this.wrapGrid = config.get('wrapGrid')
-        this.tileSize = config.get('tileSize')
-        this.focus = config.get('focusPoint')
-        this.config = config.original()
+    }
+
+    get width() {
+        return this.map.width
+    }
+
+    get height() {
+        return this.map.height
     }
 
     get(point) {
-        if (! this.isWrappable(point)) {
-            return 'transparent'
-        }
-        const value = this.map.get(point)
+        const value = parseInt(this.map.get(point), 10)
         return new Color(value, value, value).toHex()
-    }
-
-    isWrappable(point) {
-        if (this.wrapGrid) return true
-        return new Rect(this.width, this.height).inside(point)
     }
 }
