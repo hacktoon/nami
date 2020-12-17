@@ -24,6 +24,11 @@ export default class RegionMap extends GenericMap {
         return new RegionMap(params)
     }
 
+    static fromData(data) {
+        const params = new Map(Object.entries(data))
+        return new RegionMap(params)
+    }
+
     constructor(params) {
         super(params)
         this.grid = new RegionGrid(this.width, this.height)

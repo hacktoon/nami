@@ -4,27 +4,27 @@ import { Color } from '/lib/color'
 
 export class MapDiagram {
     static schema = new Schema(
-        Type.boolean('showBorder', "Show border", true),
-        Type.boolean('showOrigin', "Show origin", false),
-        Type.number('layer', "Layer", 3, {step: 1, min: 0}),
-        Type.color('foreground', "Foreground", Color.fromHex('#251')),
-        Type.color('background', "Background", Color.fromHex('#059')),
-        Type.color('borderColor', "Border color", Color.fromHex('#021')),
+        Type.boolean('showBorder', 'Show border', true),
+        Type.boolean('showOrigin', 'Show origin', false),
+        Type.number('layer', 'Layer', 3, {step: 1, min: 0}),
+        Type.color('foreground', 'Foreground', Color.fromHex('#251')),
+        Type.color('background', 'Background', Color.fromHex('#059')),
+        Type.color('borderColor', 'Border color', Color.fromHex('#021')),
     )
 
     static create(map, params) {
         return new MapDiagram(map, params)
     }
 
-    constructor(map, config) {
+    constructor(map, params) {
         this.map = map
         // TODO: set `this.data` and add attributes dynamically
-        this.showBorder = config.get('showBorder')
-        this.showOrigin = config.get('showOrigin')
-        this.layer = config.get('layer')
-        this.foreground = config.get('foreground')
-        this.background = config.get('background')
-        this.borderColor = config.get('borderColor')
+        this.showBorder = params.get('showBorder')
+        this.showOrigin = params.get('showOrigin')
+        this.layer = params.get('layer')
+        this.foreground = params.get('foreground')
+        this.background = params.get('background')
+        this.borderColor = params.get('borderColor')
     }
 
     get width() {

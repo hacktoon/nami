@@ -8,7 +8,7 @@ export class GenericMap {
         this.seed = this.#buildSeed(params.get('seed'))
     }
 
-    #buildSeed(text) {
+    #buildSeed(text='') {
         const seed = text.length ? text : String(Number(new Date()))
         Random.seed = seed
         return seed

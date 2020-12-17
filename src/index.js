@@ -29,7 +29,7 @@ const APPS = {
         component: () => <MapUI Map={RegionMap} />
     },
 }
-const DEFAULT_APP = APPS.NoiseMap
+const DEFAULT_APP = APPS.TectonicsMap
 
 
 function AppHeader({app, setApp}) {
