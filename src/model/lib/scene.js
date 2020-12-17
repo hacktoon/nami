@@ -11,55 +11,44 @@ export class MapScene {
     )
 
     static create(diagram, width, height, params) {
-        return new MapScene(diagram, params)
+        return new MapScene(diagram, width, height, params)
     }
 
-    constructor(diagram, params) {
+    constructor(diagram, width, height, params) {
         this.diagram = diagram
+        this.width = width
+        this.height = height
         // TODO: set `this.data` and add attributes dynamically
         this.wrap = params.get('wrap')
         this.focus = params.get('focus')
         this.zoom = params.get('zoom')
-
-    }
-}
-
-
-export class Scene {
-    constructor(diagram, width, height, focus, zoom, wrap) {
-        this.frame = new Frame(width, height, focus, zoom, wrap)
-        this.diagram = diagram
-        this.width = width
-        this.height = height
-        this.tileSize = zoom
-        this.focus = focus
-        this.wrap = wrap
+        this.frame = new Frame(width, height, this.focus, this.zoom)
     }
 
     render(canvas, focusOffset) {
-        const tileSize = this.tileSize
-        const rect = this.frame.rect(this.frame.focus.plus(focusOffset))
+        const zoom = this.zoom
+        const rect = this.frame.rect(this.focus.plus(focusOffset))
 
-        this.#renderFrame(rect, tileSize, (tilePoint, canvasPoint) => {
+        this.#renderFrame(rect, zoom, (tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
                 const color = this.diagram.get(tilePoint)
-                canvas.rect(tileSize, canvasPoint, color)
+                canvas.rect(zoom, canvasPoint, color)
             } else {
-                canvas.clear(tileSize, canvasPoint)
+                canvas.clear(zoom, canvasPoint)
             }
         })
     }
 
     isWrappable(point) {
         if (this.wrap) return true
-        return new Rect(this.diagram.width, this.diagram.height).inside(point)
+        const rect = new Rect(this.diagram.width, this.diagram.height)
+        return rect.inside(point)
     }
 
     renderCursor(canvas, cursor) {
         const canvasPoint = this.#canvasPoint(cursor, this.focus)
         const color = 'rgba(255, 255, 255, .5)'
-
-        canvas.cursor(this.tileSize, canvasPoint, color)
+        canvas.cursor(this.zoom, canvasPoint, color)
     }
 
     #renderFrame(rect, tileSize, callback) {
@@ -77,7 +66,7 @@ export class Scene {
         const {origin} = this.frame.rect(focus)
         return point
             .minus(origin) // get tile at scene edge
-            .multiply(this.tileSize)  // make it a canvas position
+            .multiply(this.zoom)  // make it a canvas position
             .minus(this.frame.offset)  // apply viewport offset
     }
 
@@ -88,7 +77,7 @@ export class Scene {
 
 
 class Frame {
-    constructor(width, height, focus, zoom, wrap) {
+    constructor(width, height, focus, zoom) {
         this.width = width
         this.height = height
         this.zoom = zoom
@@ -103,7 +92,6 @@ class Frame {
         this.origin = new Point(eastTileCount, northTileCount)
         this.target = new Point(westTileCount, southTileCount)
         this.focus = focus
-        this.wrap = wrap
     }
 
     get offset() {

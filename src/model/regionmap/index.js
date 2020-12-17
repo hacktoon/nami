@@ -1,4 +1,5 @@
 import { RandomPointDistribution } from '/lib/point/distribution'
+import { GenericMap } from '/model/lib/map'
 
 import { OrganicFill } from '/lib/flood-fill'
 import { Schema, Type } from '/lib/schema'
@@ -8,14 +9,14 @@ import { RegionGrid } from './grid'
 import { MapDiagram } from './diagram'
 
 
-export default class RegionMap {
+export default class RegionMap extends GenericMap {
     static schema = new Schema(
-        Type.number('width', "Width", 200, {step: 1, min: 1}),
-        Type.number('height', "Height", 150, {step: 1, min: 1}),
-        Type.number('count', "Count", 80, {step: 1, min: 1}),
-        Type.number('layerGrowth', "Layer growth", 40, {step: 1, min: 1}),
-        Type.number('growthChance', "Growth chance", 0.1, {step: 0.01, min: 0.01}),
-        Type.text('seed', "Seed", '')
+        Type.number('width', 'Width', 200, {step: 1, min: 1}),
+        Type.number('height', 'Height', 150, {step: 1, min: 1}),
+        Type.number('count', 'Count', 80, {step: 1, min: 1}),
+        Type.number('layerGrowth', 'Layer growth', 40, {step: 1, min: 1}),
+        Type.number('growthChance', 'Growth chance', 0.1, {step: 0.01, min: 0.01}),
+        Type.text('seed', 'Seed', '')
     )
     static MapDiagram = MapDiagram
 
@@ -23,13 +24,10 @@ export default class RegionMap {
         return new RegionMap(params)
     }
 
-    constructor(config) {
-        const [width, height] = [config.get('width'), config.get('height')]
-        this.grid = new RegionGrid(width, height)
-        this.regions = createRegions(this.grid, config)
-        this.width = width
-        this.height = height
-        this.seed = config.get('seed')
+    constructor(params) {
+        super(params)
+        this.grid = new RegionGrid(this.width, this.height)
+        this.regions = createRegions(this.grid, params)
     }
 
     get(point) {

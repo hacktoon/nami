@@ -16,18 +16,14 @@ export function MapSceneUI({diagram}) {
     const viewport = useRef(null)
     const [width, height] = useResize(viewport)
 
-    const [focus, setFocus] = useState(new Point())
-    const [zoom, setZoom] = useState(25)
-    const [wrap, setWrap] = useState(false)
+    const [zoom, setZoom] = useState(0)
 
-    const [offset, setOffset] = useState(new Point())
     const [baseOffset, setBaseOffset] = useState(new Point())
+    const [offset, setOffset] = useState(new Point())
 
     const [data, setData] = useState(MapScene.schema.defaultValues())
 
-    const mapScene = MapScene.create(diagram, width, height, data)
-
-    const scene = new Scene(diagram, width, height, focus, zoom, wrap)
+    const scene = MapScene.create(diagram, width, height, data)
 
     const handleDrag = point => setOffset(point.plus(baseOffset))
     const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
@@ -52,9 +48,9 @@ export function MapSceneUI({diagram}) {
             </>}
         </section>
         <Form className="MapViewForm"
+            schema={MapScene.schema}
             data={data}
             onSubmit={handleSubmit}
-            schema={MapScene.schema}
         >
             <Button label="Update" />
         </Form>
