@@ -1,15 +1,14 @@
 import React, { useState, useRef } from 'react'
 
 import { Point } from '/lib/point'
-
 import { useResize } from '/lib/ui'
-
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
 import { Canvas } from '/lib/ui/canvas'
-import { MapMouseTrack } from './mouse'
 
-import { MapScene, Scene } from '/model/lib/scene'
+import { MapScene } from '/model/lib/scene'
+
+import { MapMouseTrack } from './mouse'
 
 
 export function MapSceneUI({diagram}) {
@@ -28,7 +27,12 @@ export function MapSceneUI({diagram}) {
     const handleDrag = point => setOffset(point.plus(baseOffset))
     const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
     const handleClick = point => console.info(point.plus(offset))
-    const handleWheel = amount => setZoom(zoom => zoom + amount)
+    const handleWheel = amount => {
+        setZoom(zoom => zoom + amount)
+        const m = new Map([...data, ['zoom', zoom + amount]])
+        // console.log(m);
+        setData(m)
+    }
     const handleSubmit = data => setData(data)
 
     const handleRenderCursor = (canvas, cursor) => scene.renderCursor(canvas, cursor)

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import { Color } from '/lib/color'
 import { Point } from '/lib/point'
