@@ -8,11 +8,11 @@ import { Color } from '/lib/color'
 
 
 const mapSchema = new Schema(
-    Type.point('focus', 'Focus', new Point(5, 2)),
-    Type.boolean('active', 'Active', false),
-    Type.text('seed', 'Seed', ''),
     Type.number('count', 'Count', 4),
+    Type.text('seed', 'Seed', 'seed'),
+    Type.boolean('active', 'Active', false),
     Type.color('bg', 'BG color', new Color(230, 35, 66)),
+    // Type.point('focus', 'Focus', new Point(5, 2)),
 )
 
 
@@ -21,9 +21,28 @@ export function TestUI() {
 
     const handleSubmit = data => {
         setData(data)
+        console.log(data);
     }
 
     return <section className='TestUI'>
+        <button onClick={() => {
+            const m = new Map([
+                ['seed', 'default'],
+                ['bg', new Color(255, 255, 255)],
+                ['active', false],
+                ['count', 0],
+            ])
+            setData(m)
+        }}>click 1</button>
+        <button onClick={() => {
+            const m = new Map([
+                ['seed', 'dois'],
+                ['bg', new Color(0, 0, 255)],
+                ['active', true],
+                ['count', 2],
+            ])
+            setData(m)
+        }}>click 2</button>
         <Form
             className="TestForm"
             onSubmit={handleSubmit}

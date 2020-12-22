@@ -1,27 +1,37 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 
 import { Color } from '/lib/color'
 import { Point } from '/lib/point'
 
 
-export function NumberField({name, label, defaultValue, ...props}) {
-    return <Field type='number' label={label} value={defaultValue}>
+export function NumberField({name, label, value, ...props}) {
+    const [number, setNumber] = useState(value)
+    const handleChange = e => setNumber(Number(e.target.value))
+
+    useEffect(() => setNumber(value), [value])
+    return <Field type='number' label={label} value={value}>
         <input
             name={name}
             type='number'
-            defaultValue={defaultValue}
+            value={number}
+            onChange={handleChange}
             {...props}
         />
     </Field>
 }
 
 
-export function TextField({name, label, defaultValue, ...props}) {
+export function TextField({name, label, value, ...props}) {
+    const [text, setText] = useState(value)
+    const handleChange = e => setText(String(e.target.value).trim())
+
+    useEffect(() => setText(value), [value])
     return <Field type='text' label={label}>
         <input
             name={name}
             type='text'
-            defaultValue={defaultValue}
+            value={text}
+            onChange={handleChange}
             {...props}
         />
     </Field>
@@ -47,34 +57,39 @@ export function SelectField({name, label, value, onChange, options, ...props}) {
 }
 
 
-export function BooleanField({name, label, defaultValue, onChange}) {
-    const [status, setStatus] = useState(defaultValue)
+export function BooleanField({name, label, value}) {
+    const [bool, setBool] = useState(value)
+    const handleClick = () => setBool(!bool)
 
-    const onClick = () => setStatus(!status)
-
-    return <Field type='boolean' label={label} status={status}>
-        <button type="button" onClick={onClick}>{status ? 'Yes' : 'No'}</button>
-        <input name={name} type='hidden' value={String(status)} />
+    useEffect(() => setBool(value), [value])
+    return <Field type='boolean' label={label} status={bool}>
+        <button type="button" onClick={handleClick}>{bool ? 'Yes' : 'No'}</button>
+        <input name={name} type='hidden' value={String(bool)} />
     </Field>
 }
 
 
-export function ColorField({name, label, defaultValue, ...props}) {
-    const [color, setColor] = useState(defaultValue)
-
+export function ColorField({name, label, value, ...props}) {
+    const [color, setColor] = useState(value)
+    const [hexColor, setHexColor] = useState(value.toHex())
+    const style = {backgroundColor: color.toHex()}
     const handleChange = event => {
-        setColor(Color.fromHex(event.target.value))
+        const hex = String(event.target.value).trim()
+        setHexColor(hex)
+        setColor(Color.fromHex(hex))
     }
 
+    useEffect(() => {
+        setColor(value)
+        setHexColor(value.toHex())
+    }, [value])
+
     return <Field type='color' label={label}>
-        <span
-            className="ColorView"
-            style={{backgroundColor: color.toHex()}}>
-        </span>
+        <span className="ColorView" style={style} />
         <input
             name={name}
             type='text'
-            defaultValue={color.toHex()}
+            value={hexColor}
             onChange={handleChange}
             {...props}
         />
@@ -82,8 +97,8 @@ export function ColorField({name, label, defaultValue, ...props}) {
 }
 
 
-export function PointField({name, label, defaultValue, ...props}) {
-    const [point, setPoint] = useState(defaultValue)
+export function PointField({name, label, value, ...props}) {
+    const [point, setPoint] = useState(value)
     const handleXChange = e => handleChange(e.target.value, point.y)
     const handleYChange = e => handleChange(point.x, e.target.value)
     const handleChange = (x, y) => setPoint(new Point(x, y))
@@ -106,7 +121,7 @@ export function PointField({name, label, defaultValue, ...props}) {
 }
 
 
-export function FieldSet({types, data}) {
+export function FieldSet({types, data, reset}) {
     return types.map((typeObject, id) => {
         const {
             type, name, label, defaultValue, fieldAttrs, ...props
@@ -116,7 +131,8 @@ export function FieldSet({types, data}) {
             key={id}
             name={name}
             label={label}
-            defaultValue={data.get(name)}
+            value={data.get(name)}
+            reset={reset}
             {...fieldAttrs}
             {...props}
         />

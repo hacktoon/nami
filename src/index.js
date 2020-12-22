@@ -29,7 +29,7 @@ const APPS = {
         component: () => <MapUI Map={RegionMap} />
     },
 }
-const DEFAULT_APP = APPS.TectonicsMap
+const DEFAULT_APP = APPS.Test
 
 
 function AppHeader({app, setApp}) {

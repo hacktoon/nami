@@ -83,6 +83,7 @@ canvas { display: block; }
 .Field.color .FieldValue { position: relative; }
 .Field.color .FieldValue input { padding-left: 35px; }
 .Field.color .FieldValue .ColorView {
+    outline: 1px solid #CCC;
     background-color: red;
     position: absolute;
     height: 22px;
