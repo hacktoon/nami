@@ -72,7 +72,6 @@ export function BooleanField({name, label, value}) {
 export function ColorField({name, label, value, ...props}) {
     const [color, setColor] = useState(value)
     const [hexColor, setHexColor] = useState(value.toHex())
-    const style = {backgroundColor: color.toHex()}
     const handleChange = event => {
         const hex = String(event.target.value).trim()
         setHexColor(hex)
@@ -85,7 +84,7 @@ export function ColorField({name, label, value, ...props}) {
     }, [value])
 
     return <Field type='color' label={label}>
-        <span className="ColorView" style={style} />
+        <span className="ColorView" style={{backgroundColor: color.toHex()}} />
         <input
             name={name}
             type='text'
@@ -103,17 +102,18 @@ export function PointField({name, label, value, ...props}) {
     const handleYChange = e => handleChange(point.x, e.target.value)
     const handleChange = (x, y) => setPoint(new Point(x, y))
 
+    useEffect(() => setPoint(value), [value])
     return <Field type='point' label={label}>
         <input name={name} type='hidden' value={point.hash} />
         <input
             type='number'
-            defaultValue={point.x}
+            value={point.x}
             onChange={handleXChange}
             {...props}
         />
         <input
             type='number'
-            defaultValue={point.y}
+            value={point.y}
             onChange={handleYChange}
             {...props}
         />
@@ -121,23 +121,20 @@ export function PointField({name, label, value, ...props}) {
 }
 
 
-export function FieldSet({types, data, reset}) {
-    return types.map((typeObject, id) => {
-        const {
-            type, name, label, defaultValue, fieldAttrs, ...props
-        } = typeObject
-        const FieldComponent = TYPE_FIELD_MAP[type]
+export function FieldSet({types, data}) {
+    return types.map((type, id) => {
+        const FieldComponent = TYPE_FIELD_MAP[type.type]
         return <FieldComponent
             key={id}
-            name={name}
-            label={label}
-            value={data.get(name)}
-            reset={reset}
-            {...fieldAttrs}
-            {...props}
+            name={type.name}
+            label={type.label}
+            value={data.get(type.name)}
+            {...type.fieldAttrs}
+            {...type.props}
         />
     })
 }
+
 
 function Field({label, type, value, status='', children, ...props}) {
     return <label className={`Field ${type} ${status}`} {...props}>

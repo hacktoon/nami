@@ -12,7 +12,7 @@ const mapSchema = new Schema(
     Type.text('seed', 'Seed', 'seed'),
     Type.boolean('active', 'Active', false),
     Type.color('bg', 'BG color', new Color(230, 35, 66)),
-    // Type.point('focus', 'Focus', new Point(5, 2)),
+    Type.point('focus', 'Focus', new Point(5, 2)),
 )
 
 
@@ -31,6 +31,7 @@ export function TestUI() {
                 ['bg', new Color(255, 255, 255)],
                 ['active', false],
                 ['count', 0],
+                ['focus', new Point(0, 0)],
             ])
             setData(m)
         }}>click 1</button>
@@ -40,6 +41,7 @@ export function TestUI() {
                 ['bg', new Color(0, 0, 255)],
                 ['active', true],
                 ['count', 2],
+                ['focus', new Point(2, 2)],
             ])
             setData(m)
         }}>click 2</button>

@@ -66,7 +66,7 @@ export class TextType extends AbstractType {
     static type = 'text'
 
     parse(value) {
-        return String(value ?? '').trim()
+        return String(value ?? '')
     }
 }
 
@@ -75,15 +75,12 @@ export class NumberType extends TextType {
     static type = 'number'
 
     parse(text) {
-        const value = super.parse(text ?? 0)
+        const value = super.parse(text)
         const min = this.fieldAttrs.min ?? -Infinity
         const max = this.fieldAttrs.max ?? Infinity
         return clamp(Number(value), min, max)
     }
 }
-
-
-// const seed = text.length ? text : String(Number(new Date()))
 
 
 export class ColorType extends TextType {
