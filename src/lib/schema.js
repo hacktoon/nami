@@ -111,10 +111,20 @@ export class BooleanType extends AbstractType {
 }
 
 
+export class EnumType extends AbstractType {
+    static type = 'enum'
+
+    parse(value) {
+        return value
+    }
+}
+
+
 export class Type {
-    static point = AbstractType.define(PointType)
-    static boolean = AbstractType.define(BooleanType)
     static text = AbstractType.define(TextType)
     static number = AbstractType.define(NumberType)
+    static boolean = AbstractType.define(BooleanType)
     static color = AbstractType.define(ColorType)
+    static point = AbstractType.define(PointType)
+    static enum = AbstractType.define(EnumType)
 }

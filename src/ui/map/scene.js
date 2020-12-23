@@ -28,7 +28,6 @@ export function MapSceneUI({diagram}) {
         setData(new Map([...data, ['zoom', scene.zoom + amount]]))
     }
     const handleClick = point => console.info(point)
-    const handleSubmit = data => setData(data)
 
     const handleRenderCursor = (canvas, cursor) => scene.renderCursor(canvas, cursor)
 
@@ -50,7 +49,7 @@ export function MapSceneUI({diagram}) {
         <Form className="MapViewForm"
             schema={MapScene.schema}
             data={data}
-            onSubmit={handleSubmit}
+            onSubmit={setData}
         >
             <Button label="Update" />
         </Form>
