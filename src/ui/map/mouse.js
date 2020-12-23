@@ -25,6 +25,10 @@ export function MapMouseTrack({scene, ...props}) {
         }
     }
 
+    const handleDragStart = () => {
+        props.onDragStart()
+    }
+
     const handleDragEnd = (startPoint, endPoint) => {
         const startTilePoint = frame.tilePoint(startPoint)
         const endTilePoint = frame.tilePoint(endPoint)
@@ -57,6 +61,7 @@ export function MapMouseTrack({scene, ...props}) {
         <MouseTrack
             onClick={handleClick}
             onDrag={handleDrag}
+            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onMove={handleMove}
             onMouseOut={handleMouseOut}

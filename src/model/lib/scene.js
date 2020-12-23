@@ -5,9 +5,9 @@ import { Schema, Type } from '/lib/schema'
 
 export class MapScene {
     static schema = new Schema(
-        Type.point('focus', "Focus", new Point(100, 75)),
+        Type.point('focus', "Focus", new Point(10, 0)),
         Type.boolean('wrap', "Wrap", false),
-        Type.number('zoom', "Zoom", 3, {step: 1, min: 1}),
+        Type.number('zoom', "Zoom", 20, {step: 1, min: 1}),
     )
 
     static create(diagram, width, height, params) {
@@ -25,9 +25,9 @@ export class MapScene {
         this.frame = new Frame(width, height, this.focus, this.zoom)
     }
 
-    render(canvas, focusOffset) {
+    render(canvas) {
         const zoom = this.zoom
-        const rect = this.frame.rect(this.focus.plus(focusOffset))
+        const rect = this.frame.rect(this.focus)
 
         this.#renderFrame(rect, zoom, (tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {

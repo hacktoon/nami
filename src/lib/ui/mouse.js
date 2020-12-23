@@ -14,6 +14,7 @@ export function MouseTrack(props) {
         setDragStart(mousePoint)
         if (event.button === 1) {  // middle mouse button
             setDragging(true)
+            props.onDragStart(mousePoint)
         } else {
             props.onClick(mousePoint)
         }

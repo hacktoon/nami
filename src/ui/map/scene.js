@@ -15,24 +15,19 @@ export function MapSceneUI({diagram}) {
     const viewport = useRef(null)
     const [width, height] = useResize(viewport)
 
-    const [zoom, setZoom] = useState(0)
-
-    const [baseOffset, setBaseOffset] = useState(new Point())
-    const [offset, setOffset] = useState(new Point())
-
+    const [prevFocus, setPrevFocus] = useState(new Point())
     const [data, setData] = useState(MapScene.schema.defaultValues())
 
     const scene = MapScene.create(diagram, width, height, data)
 
-    const handleDrag = point => setOffset(point.plus(baseOffset))
-    const handleDragEnd = point => setBaseOffset(point.plus(baseOffset))
-    const handleClick = point => console.info(point.plus(offset))
-    const handleWheel = amount => {
-        setZoom(zoom => zoom + amount)
-        const m = new Map([...data, ['zoom', zoom + amount]])
-        // console.log(m);
-        setData(m)
+    const handleDragStart = () => setPrevFocus(scene.focus)
+    const handleDrag = point => {
+        setData(new Map([...data, ['focus', prevFocus.plus(point)]]))
     }
+    const handleWheel = amount => {
+        setData(new Map([...data, ['zoom', scene.zoom + amount]]))
+    }
+    const handleClick = point => console.info(point)
     const handleSubmit = data => setData(data)
 
     const handleRenderCursor = (canvas, cursor) => scene.renderCursor(canvas, cursor)
@@ -45,10 +40,11 @@ export function MapSceneUI({diagram}) {
                     onDrag={handleDrag}
                     onClick={handleClick}
                     onWheel={handleWheel}
-                    onDragEnd={handleDragEnd}
+                    onDragStart={handleDragStart}
+                    onDragEnd={()=>{}}
                     onRenderCursor={handleRenderCursor}
                 />
-                <MapCanvas scene={scene} offset={offset} />
+                <MapCanvas scene={scene} />
             </>}
         </section>
         <Form className="MapViewForm"
@@ -62,8 +58,8 @@ export function MapSceneUI({diagram}) {
 }
 
 
-function MapCanvas({scene, offset}) {
-    const handleInit = canvas => scene.render(canvas, offset)
+function MapCanvas({scene}) {
+    const handleInit = canvas => scene.render(canvas)
 
     return <Canvas
         width={scene.width}
