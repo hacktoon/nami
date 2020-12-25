@@ -7,17 +7,24 @@ import { Point } from '/lib/point'
 import { Color } from '/lib/color'
 
 
-const mapSchema = new Schema(
-    Type.number('count', 'Count', 4),
-    Type.text('seed', 'Seed', 'seed'),
-    Type.boolean('active', 'Active', false),
-    Type.color('bg', 'BG color', new Color(230, 35, 66)),
-    Type.point('focus', 'Focus', new Point(5, 2)),
-)
+export class Test {
+    static id = 'Test'
+
+    static schema = new Schema(
+        Type.number('count', 'Count', 4),
+        Type.text('seed', 'Seed', 'seed'),
+        Type.boolean('active', 'Active', false),
+        Type.color('bg', 'BG color', new Color(230, 35, 66)),
+        Type.point('focus', 'Focus', new Point(5, 2)),
+    )
+
+    constructor(params) {
+    }
+}
 
 
-export function TestUI() {
-    const [data, setData] = useState(mapSchema.defaultValues())
+export function TestUI({model}) {
+    const [data, setData] = useState(model.schema.defaultValues())
 
     const handleSubmit = data => {
         setData(data)
@@ -48,7 +55,7 @@ export function TestUI() {
         <Form
             className="TestForm"
             onSubmit={handleSubmit}
-            schema={mapSchema}
+            schema={model.schema}
             data={data}>
             <Button label="New" />
         </Form>

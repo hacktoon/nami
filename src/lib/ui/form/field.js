@@ -39,18 +39,16 @@ export function TextField({name, label, value, ...props}) {
 
 
 export function SelectField({name, label, value, onChange, options, ...props}) {
-    const handleChange = event => onChange(name, event.target.value)
-
+    const handleChange = event => onChange(event.target.value)
     function buildSelectOptions(options) {
-        const entries = Object.entries(options)
-        return entries.map((option, index) => {
+        return Object.entries(options).map((option, index) => {
             const [value, label] = option
             return <option key={index} value={value}>{label}</option>
         })
     }
 
     return <Field type='select' label={label}>
-        <select name={name} defaultValue={value} {...props} onChange={handleChange}>
+        <select name={name} value={value} onChange={handleChange} {...props}>
             {useMemo(() => buildSelectOptions(options), [options])}
         </select>
     </Field>

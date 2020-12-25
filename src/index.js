@@ -5,7 +5,7 @@ import { SelectField } from '/lib/ui/form/field'
 import { Title } from '/lib/ui'
 
 import { MapUI } from '/ui/map'
-import { TestUI } from '/ui/test'
+import { Test, TestUI } from '/ui/test'
 
 import TectonicsMap from '/model/world/tectonicsmap'
 import WorldMap from '/model/world/worldmap'
@@ -16,56 +16,41 @@ import "./css/base.css"
 import "./css/map.css"
 
 
-const APPS = {
-    Test: { id: 'Test', component: () => <TestUI /> },
-    WorldMap: { id: 'WorldMap', component: () => <MapUI Map={WorldMap} /> },
-    NoiseMap: { id: 'NoiseMap', component: () => <MapUI Map={NoiseMap} /> },
-    TectonicsMap: {
-        id: 'TectonicsMap',
-        component: () => <MapUI Map={TectonicsMap} />
-    },
-    RegionMap: {
-        id: 'RegionMap',
-        component: () => <MapUI Map={RegionMap} />
-    },
-}
-const DEFAULT_APP = APPS.Test
+const APPS = [
+    // model,      component
+    [Test,         TestUI],
+    [WorldMap,     MapUI],
+    [NoiseMap,     MapUI],
+    [TectonicsMap, MapUI],
+    [RegionMap,    MapUI],
+]
 
+const DEFAULT_ID = TectonicsMap.id
 
-function AppHeader({app, setApp}) {
-    return <section className="AppHeader">
-        <Title className="AppTitle">NAMI</Title>
-        <AppHeaderMenu app={app} setApp={setApp} />
-    </section>
-}
+const appMap = new Map(APPS.map(([model, Component]) => {
+    return [model.id, () => <Component model={model} />]
+}))
 
-
-function AppHeaderMenu({app, setApp}) {
-    const appOptions = Object.fromEntries(
-        Object.entries(APPS).map(entry => {
-            const [id, app] = entry
-            return [id, app.id]
-        })
-    )
-    const onChange = (_, value) => setApp(APPS[value])
-
-    return <section className="AppHeaderMenu">
-        <SelectField
-            label="App"
-            value={app.id}
-            options={appOptions}
-            onChange={onChange}
-        />
-    </section>
-}
+const options = Object.fromEntries(APPS.map(([model,]) => [model.id, model.id]))
 
 
 function RootComponent() {
-    const [app, setApp] = useState(DEFAULT_APP)
+    const [id, setId] = useState(DEFAULT_ID)
+    const Application = appMap.get(id)
 
     return <section className="App">
-        <AppHeader app={app} setApp={setApp} />
-        <app.component />
+        <section className="AppHeader">
+            <Title className="AppTitle">NAMI</Title>
+            <section className="AppHeaderMenu">
+                <SelectField
+                    label="App"
+                    value={id}
+                    options={options}
+                    onChange={setId}
+                />
+            </section>
+        </section>
+        <Application />
     </section>
 }
 

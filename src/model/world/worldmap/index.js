@@ -1,5 +1,3 @@
-import Tile from './tile'
-import { Grid } from '/lib/grid'
 import { Name } from '/lib/name'
 import { Schema, Type } from '/lib/schema'
 import { GenericMap } from '/model/lib/map'
@@ -9,6 +7,8 @@ import { MapDiagram } from './diagram'
 
 
 export default class WorldMap extends GenericMap {
+    static id = 'WorldMap'
+
     static schema = new Schema(
         Type.number('roughness', 'Roughness', 8, {min: 1, step: 1}),
         Type.number('size', 'Size', 257, {min: 1, step: 1}),
