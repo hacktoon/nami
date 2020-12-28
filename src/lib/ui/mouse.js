@@ -3,34 +3,38 @@ import React, { useState } from 'react'
 import { Point } from '/lib/point'
 
 
+const CLICK_TIMEOUT = 200
+
+
 export function MouseTrack(props) {
     const [dragStart, setDragStart] = useState(new Point())
     const [dragging, setDragging]   = useState(false)
-
+    const [clickTimeout, setClickTimeout]   = useState(false)
 
     const handleMouseDown = event => {
-        handleNativeEvent(event)
+        disableNativeEvent(event)
         const mousePoint = createMousePoint(event)
         setDragStart(mousePoint)
-        if (event.button === 1) {  // middle mouse button
-            setDragging(true)
-            props.onDragStart(mousePoint)
-        } else {
-            props.onClick(mousePoint)
-        }
+        setDragging(true)
+        setClickTimeout(true)
+        setTimeout(() => setClickTimeout(false), CLICK_TIMEOUT)
+        props.onDragStart(mousePoint)
     }
 
     const handleMouseUp = event => {
-        handleNativeEvent(event)
+        disableNativeEvent(event)
         const mousePoint = createMousePoint(event)
         if (dragging && props.onDragEnd) {
             props.onDragEnd(dragStart, mousePoint)
+        }
+        if (clickTimeout) {
+            props.onClick(mousePoint)
         }
         setDragging(false)
     }
 
     const handleMouseOut = event => {
-        handleNativeEvent(event)
+        disableNativeEvent(event)
         const mousePoint = createMousePoint(event)
         if (dragging && props.onDragEnd) {
             props.onDragEnd(dragStart, mousePoint)
@@ -40,7 +44,7 @@ export function MouseTrack(props) {
     }
 
     const handleMouseMove = event => {
-        handleNativeEvent(event)
+        disableNativeEvent(event)
         const mousePoint = createMousePoint(event)
         if (dragging) {
             props.onDrag && props.onDrag(dragStart, mousePoint)
@@ -53,12 +57,12 @@ export function MouseTrack(props) {
     }
 
     function createMousePoint(event) {
-        handleNativeEvent(event)
+        disableNativeEvent(event)
         const {offsetX, offsetY} = event.nativeEvent
         return new Point(offsetX, offsetY)
     }
 
-    function handleNativeEvent(event) {
+    function disableNativeEvent(event) {
         event.stopPropagation()
         event.preventDefault()
     }
