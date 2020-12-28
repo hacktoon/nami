@@ -20,7 +20,7 @@ export default class RegionMap extends GenericMap {
         Type.number('growthChance', 'Growth chance', 0.1, {step: 0.01, min: 0.01}),
         Type.text('seed', 'Seed', '')
     )
-    static MapDiagram = MapDiagram
+    static diagram = MapDiagram
 
     static create(params) {
         return new RegionMap(params)

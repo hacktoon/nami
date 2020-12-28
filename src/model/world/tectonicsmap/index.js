@@ -15,7 +15,7 @@ export default class TectonicsMap extends GenericMap {
         Type.number('plates', 'Plates', 10, {step: 1, min: 1}),
         Type.text('seed', 'Seed', '')
     )
-    static MapDiagram = MapDiagram
+    static diagram = MapDiagram
 
     static create(params) {
         return new TectonicsMap(params)

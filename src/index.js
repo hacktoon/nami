@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
+import { Schema, Type } from '/lib/schema'
 import { SelectField } from '/lib/ui/form/field'
 import { Title } from '/lib/ui'
 
@@ -32,6 +33,13 @@ const appMap = new Map(APPS.map(([model, Component]) => {
 }))
 
 const options = Object.fromEntries(APPS.map(([model,]) => [model.id, model.id]))
+
+
+class App {
+    static schema = new Schema(
+        Type.enum('app', 'App', '')
+    )
+}
 
 
 function RootComponent() {

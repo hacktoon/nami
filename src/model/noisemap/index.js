@@ -17,7 +17,7 @@ export default class NoiseMap extends GenericMap {
         Type.number('scale', 'Scale', .01, {step: 0.01, min: 0.01}),
         Type.text('seed', 'Seed', '')
     )
-    static MapDiagram = MapDiagram
+    static diagram = MapDiagram
 
     static create(params) {
         return new NoiseMap(params)

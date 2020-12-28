@@ -19,25 +19,25 @@ export function MapUI({model}) {
         >
             <Button label="New" />
         </Form>
-        <MapDiagramUI MapDiagram={model.MapDiagram} map={map} />
+        <MapDiagramUI diagram={model.diagram} map={map} />
     </section>
 }
 
 
-function MapDiagramUI({MapDiagram, map}) {
-    const [data, setData] = useState(MapDiagram.schema.defaultValues())
-    const diagram = MapDiagram.create(map, data)
+function MapDiagramUI({diagram, map}) {
+    const [data, setData] = useState(diagram.schema.defaultValues())
+    const mapDiagram = diagram.create(map, data)
 
     const handleSubmit = data => setData(data)
 
     return <>
         <Form className="MapDiagram"
-            schema={MapDiagram.schema}
+            schema={diagram.schema}
             onSubmit={handleSubmit}
             data={data}
         >
             <Button label="Update" />
         </Form>
-        <MapSceneUI diagram={diagram} />
+        <MapSceneUI diagram={mapDiagram} />
     </>
 }

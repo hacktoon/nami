@@ -15,7 +15,7 @@ export default class WorldMap extends GenericMap {
         Type.text('seed', 'Seed', '')
     )
 
-    static MapDiagram = MapDiagram
+    static diagram = MapDiagram
 
     static create(params) {
         return new WorldMap(params)
