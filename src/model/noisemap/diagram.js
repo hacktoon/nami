@@ -1,24 +1,13 @@
 import { Schema } from '/lib/schema'
 import { Color } from '/lib/color'
+import { BaseMapDiagram } from '/model/lib/map'
 
 
-export class MapDiagram {
+export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema()
 
     static create(map) {
         return new MapDiagram(map)
-    }
-
-    constructor(map) {
-        this.map = map
-    }
-
-    get width() {
-        return this.map.width
-    }
-
-    get height() {
-        return this.map.height
     }
 
     get(point) {

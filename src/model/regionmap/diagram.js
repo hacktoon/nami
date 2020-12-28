@@ -1,8 +1,9 @@
 import { Schema, Type } from '/lib/schema'
 import { Color } from '/lib/color'
+import { BaseMapDiagram } from '/model/lib/map'
 
 
-export class MapDiagram {
+export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorder', 'Show border', true),
         Type.boolean('showOrigin', 'Show origin', false),
@@ -17,7 +18,7 @@ export class MapDiagram {
     }
 
     constructor(map, params) {
-        this.map = map
+        super(map)
         // TODO: set `this.data` and add attributes dynamically
         this.showBorder = params.get('showBorder')
         this.showOrigin = params.get('showOrigin')
@@ -25,14 +26,6 @@ export class MapDiagram {
         this.foreground = params.get('foreground')
         this.background = params.get('background')
         this.borderColor = params.get('borderColor')
-    }
-
-    get width() {
-        return this.map.width
-    }
-
-    get height() {
-        return this.map.height
     }
 
     get(point) {

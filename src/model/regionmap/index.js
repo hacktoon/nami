@@ -1,5 +1,5 @@
 import { RandomPointDistribution } from '/lib/point/distribution'
-import { GenericMap } from '/model/lib/map'
+import { BaseMap } from '/model/lib/map'
 
 import { OrganicFill } from '/lib/flood-fill'
 import { Schema, Type } from '/lib/schema'
@@ -9,7 +9,7 @@ import { RegionGrid } from './grid'
 import { MapDiagram } from './diagram'
 
 
-export default class RegionMap extends GenericMap {
+export default class RegionMap extends BaseMap {
     static id = 'RegionMap'
 
     static schema = new Schema(

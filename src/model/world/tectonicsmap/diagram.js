@@ -1,8 +1,9 @@
 import { Schema, Type } from '/lib/schema'
 import { Color } from '/lib/color'
+import { BaseMapDiagram } from '/model/lib/map'
 
 
-export class MapDiagram {
+export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.color('background', 'Background', Color.fromHex('#333')),
         Type.boolean('showBorder', 'Show border', true),
@@ -14,26 +15,18 @@ export class MapDiagram {
     }
 
     constructor(map, params) {
-        this.map = map
+        super(map)
         this.background = params.get('background')
         this.showBorder = params.get('showBorder')
         this.borderColor = params.get('borderColor')
     }
 
-    get width() {
-        return this.map.width
-    }
-
-    get height() {
-        return this.map.height
-    }
-
     get(point) {
-        return this.getColor(this.map, point)
+        return this.getColor(point)
     }
 
-    getColor(map, point) {
-        if (this.showBorder && map.isBorder(point)) {
+    getColor(point) {
+        if (this.showBorder && this.map.isBorder(point)) {
             return this.borderColor.toHex()
         }
         return this.background.toHex()

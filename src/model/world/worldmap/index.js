@@ -1,12 +1,12 @@
 import { Name } from '/lib/name'
 import { Schema, Type } from '/lib/schema'
-import { GenericMap } from '/model/lib/map'
+import { BaseMap } from '/model/lib/map'
 
 import { ReliefMap } from './geo/relief'
 import { MapDiagram } from './diagram'
 
 
-export default class WorldMap extends GenericMap {
+export default class WorldMap extends BaseMap {
     static id = 'WorldMap'
 
     static schema = new Schema(
@@ -24,6 +24,8 @@ export default class WorldMap extends GenericMap {
     constructor(params) {
         super(params)
         this.size = params.get('size')
+        this.width = params.get('size')
+        this.height = params.get('size')
         this.roughness = params.get('roughness')
         this.area = this.size * this.size
         this.name = Name.createLandmassName()

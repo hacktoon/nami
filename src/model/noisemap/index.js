@@ -1,12 +1,12 @@
 import { Grid } from '/lib/grid'
-import { GenericMap } from '/model/lib/map'
+import { BaseMap } from '/model/lib/map'
 import { SimplexNoise } from '/lib/noise'
 import { Schema, Type } from '/lib/schema'
 
 import { MapDiagram } from './diagram'
 
 
-export default class NoiseMap extends GenericMap {
+export default class NoiseMap extends BaseMap {
     static id = 'NoiseMap'
 
     static schema = new Schema(

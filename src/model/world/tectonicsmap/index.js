@@ -1,4 +1,4 @@
-import { GenericMap } from '/model/lib/map'
+import { BaseMap } from '/model/lib/map'
 import { Grid } from '/lib/grid'
 import { Schema, Type } from '/lib/schema'
 
@@ -6,7 +6,7 @@ import RegionMap from '/model/regionmap'
 import { MapDiagram } from './diagram'
 
 
-export default class TectonicsMap extends GenericMap {
+export default class TectonicsMap extends BaseMap {
     static id = 'TectonicsMap'
 
     static schema = new Schema(
