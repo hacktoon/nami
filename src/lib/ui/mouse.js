@@ -24,9 +24,6 @@ export function MouseTrack(props) {
     const handleMouseUp = event => {
         disableNativeEvent(event)
         const mousePoint = createMousePoint(event)
-        if (dragging && props.onDragEnd) {
-            props.onDragEnd(dragStart, mousePoint)
-        }
         if (clickTimeout) {
             props.onClick(mousePoint)
         }

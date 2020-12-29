@@ -5,8 +5,8 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.color('background', 'Background', Color.fromHex('#333')),
         Type.boolean('showBorder', 'Show border', true),
+        Type.color('background', 'Background', Color.fromHex('#333')),
         Type.color('borderColor', 'Border color', Color.fromHex('#069')),
     )
 

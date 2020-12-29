@@ -40,7 +40,6 @@ export function MapSceneUI({diagram}) {
                     onClick={handleClick}
                     onWheel={handleWheel}
                     onDragStart={handleDragStart}
-                    onDragEnd={()=>{}}
                     onRenderCursor={handleRenderCursor}
                 />
                 <MapCanvas scene={scene} />
