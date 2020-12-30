@@ -45,7 +45,7 @@ export function MapMouseTrack({scene, ...props}) {
 
     const handleCanvasInit = canvas => {
         if (cursor) {
-            props.onRenderCursor(canvas, cursor)
+            scene.renderCursor(canvas, cursor)
         }
     }
 

@@ -29,8 +29,6 @@ export function MapSceneUI({diagram}) {
     }
     const handleClick = point => console.info(point)
 
-    const handleRenderCursor = (canvas, cursor) => scene.renderCursor(canvas, cursor)
-
     return <section className="MapSceneUI">
         <section className="MapViewCanvasUI" ref={viewport}>
             {viewport.current && <>
@@ -40,7 +38,6 @@ export function MapSceneUI({diagram}) {
                     onClick={handleClick}
                     onWheel={handleWheel}
                     onDragStart={handleDragStart}
-                    onRenderCursor={handleRenderCursor}
                 />
                 <MapCanvas scene={scene} />
             </>}

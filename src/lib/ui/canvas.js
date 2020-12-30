@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from 'react'
+import React, { useRef, useLayoutEffect } from 'react'
 
 
 export function Canvas({width, height, onInit, className='Canvas'}) {

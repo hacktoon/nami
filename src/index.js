@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 
 import { Schema, Type } from '/lib/schema'
 import { SelectField } from '/lib/ui/form/field'
+import { Form } from '/lib/ui/form'
+import { Button } from '/lib/ui/form/button'
 import { Title } from '/lib/ui'
 
 import { MapUI } from '/ui/map'
@@ -32,12 +34,10 @@ const appMap = new Map(APPS.map(([model, Component]) => {
     return [model.id, () => <Component model={model} />]
 }))
 
-const options = Object.fromEntries(APPS.map(([model,]) => [model.id, model.id]))
-
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', '')
+        Type.enum('app', 'App', Object.fromEntries(APPS.map(([model,]) => [model.id, model.id])))
     )
 }
 
@@ -46,17 +46,20 @@ function RootComponent() {
     const [id, setId] = useState(DEFAULT_ID)
     const Application = appMap.get(id)
 
+    const [data, setData] = useState(App.schema.defaultValues())
+
+    const handleSubmit = data => setData(data)
+
     return <section className="App">
         <section className="AppHeader">
             <Title className="AppTitle">NAMI</Title>
-            <section className="AppHeaderMenu">
-                <SelectField
-                    label="App"
-                    value={id}
-                    options={options}
-                    onChange={setId}
-                />
-            </section>
+            <Form className="AppHeaderMenu"
+                schema={App.schema}
+                data={data}
+                onSubmit={handleSubmit}
+            >
+                <Button label="Run" />
+            </Form>
         </section>
         <Application />
     </section>

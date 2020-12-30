@@ -38,8 +38,9 @@ export function TextField({name, label, value, ...props}) {
 }
 
 
-export function SelectField({name, label, value, onChange, options, ...props}) {
+export function SelectField({name, label, value, onChange, ...props}) {
     const handleChange = event => onChange(event.target.value)
+
     function buildSelectOptions(options) {
         return Object.entries(options).map((option, index) => {
             const [value, label] = option
@@ -49,7 +50,7 @@ export function SelectField({name, label, value, onChange, options, ...props}) {
 
     return <Field type='select' label={label}>
         <select name={name} value={value} onChange={handleChange} {...props}>
-            {useMemo(() => buildSelectOptions(options), [options])}
+            {useMemo(() => buildSelectOptions(value), [value])}
         </select>
     </Field>
 }
@@ -148,4 +149,5 @@ export const TYPE_FIELD_MAP = {
     text: TextField,
     color: ColorField,
     point: PointField,
+    enum: SelectField,
 }

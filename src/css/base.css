@@ -146,7 +146,7 @@ canvas { display: block; }
     color: #333;
     background: #111;
     display: grid;
-    grid-template-rows: 50px auto;
+    grid-template-rows: min-content auto;
     height: 100vh;
 }
 
@@ -158,7 +158,7 @@ canvas { display: block; }
 
 .AppTitle {
     color: #FFF;
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: bold;
     text-align: center;
 }
@@ -166,6 +166,8 @@ canvas { display: block; }
 .AppHeaderMenu {
     color: #FFF;
     display: grid;
+    gap: 1rem;
     grid-template-columns: auto;
+    grid-auto-flow: column;
     justify-content: end;
 }
