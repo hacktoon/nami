@@ -39,7 +39,7 @@ export class Schema {
 
 
 // let's create our own type system, it's fun
-class AbstractType {
+class BaseType {
     static define(TypeClass) {
         // Example: Type.number('foobar', 'Foobar param', 42)
         return (name, label, defaultValue, props={}) => {
@@ -62,7 +62,9 @@ class AbstractType {
 }
 
 
-export class TextType extends AbstractType {
+
+
+export class TextType extends BaseType {
     static type = 'text'
 
     parse(value) {
@@ -93,7 +95,7 @@ export class ColorType extends TextType {
 }
 
 
-export class PointType extends AbstractType {
+export class PointType extends BaseType {
     static type = 'point'
 
     parse(hash) {
@@ -102,7 +104,7 @@ export class PointType extends AbstractType {
 }
 
 
-export class BooleanType extends AbstractType {
+export class BooleanType extends BaseType {
     static type = 'boolean'
 
     parse(value) {
@@ -111,20 +113,16 @@ export class BooleanType extends AbstractType {
 }
 
 
-export class EnumType extends AbstractType {
+export class EnumType extends BaseType {
     static type = 'enum'
-
-    parse(value) {
-        return value
-    }
 }
 
 
 export class Type {
-    static text = AbstractType.define(TextType)
-    static number = AbstractType.define(NumberType)
-    static boolean = AbstractType.define(BooleanType)
-    static color = AbstractType.define(ColorType)
-    static point = AbstractType.define(PointType)
-    static enum = AbstractType.define(EnumType)
+    static text = BaseType.define(TextType)
+    static number = BaseType.define(NumberType)
+    static boolean = BaseType.define(BooleanType)
+    static color = BaseType.define(ColorType)
+    static point = BaseType.define(PointType)
+    static enum = BaseType.define(EnumType)
 }
