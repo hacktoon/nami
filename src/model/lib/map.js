@@ -2,6 +2,10 @@ import { Random } from '/lib/random'
 
 
 export class BaseMap {
+    static name() {
+        return this.constructor.name
+    }
+
     constructor(params) {
         this.width = params.get('width')
         this.height = params.get('height')

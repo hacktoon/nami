@@ -7,8 +7,6 @@ import { MapDiagram } from './diagram'
 
 
 export default class WorldMap extends BaseMap {
-    static id = 'WorldMap'
-
     static schema = new Schema(
         Type.number('roughness', 'Roughness', 8, {min: 1, step: 1}),
         Type.number('size', 'Size', 257, {min: 1, step: 1}),

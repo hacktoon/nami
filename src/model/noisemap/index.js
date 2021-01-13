@@ -7,8 +7,6 @@ import { MapDiagram } from './diagram'
 
 
 export default class NoiseMap extends BaseMap {
-    static id = 'NoiseMap'
-
     static schema = new Schema(
         Type.number('width', 'Width', 150, {step: 1, min: 1}),
         Type.number('height', 'Height', 150, {step: 1, min: 1}),

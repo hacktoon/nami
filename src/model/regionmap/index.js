@@ -10,8 +10,6 @@ import { MapDiagram } from './diagram'
 
 
 export default class RegionMap extends BaseMap {
-    static id = 'RegionMap'
-
     static schema = new Schema(
         Type.number('width', 'Width', 200, {step: 1, min: 1}),
         Type.number('height', 'Height', 150, {step: 1, min: 1}),

@@ -38,9 +38,7 @@ export function TextField({name, label, value, ...props}) {
 }
 
 
-export function SelectField({name, label, value, options, onChange, ...props}) {
-    const handleChange = event => onChange(event.target.value)
-
+export function SelectField({name, label, value, options, ...props}) {
     function buildSelectOptions(options) {
         return options.map((option, index) => {
             const [value, label] = option

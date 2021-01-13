@@ -29,23 +29,20 @@ const APPS = [
 
 
 const appMap = new Map(APPS.map(([model, Component]) => {
-    return [model.id, () => <Component model={model} />]
+    return [model.name, () => <Component model={model} />]
 }))
 
-const options = APPS.map(([model,]) => [model.id, model.id])
+const options = APPS.map(([model,]) => [model.name, model.name])
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', TectonicsMap.id, {options})
+        Type.enum('app', 'App', TectonicsMap.name, {options})
     )
 }
-
 
 function RootComponent() {
     const [data, setData] = useState(App.schema.defaultValues())
     const Application = appMap.get(data.get('app'))
-
-    const handleSubmit = data => setData(data)
 
     return <section className="App">
         <section className="AppHeader">
@@ -53,7 +50,7 @@ function RootComponent() {
             <Form className="AppHeaderMenu"
                 schema={App.schema}
                 data={data}
-                onSubmit={handleSubmit}
+                onSubmit={setData}
             >
                 <Button label="Run" />
             </Form>
