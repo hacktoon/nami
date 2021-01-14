@@ -23,19 +23,21 @@ export default class NoiseMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        const simplex = new SimplexNoise()
+        this.detail = params.get('detail')
+        this.resolution = params.get('resolution')
+        this.scale = params.get('scale')
+        const range = [0, 255]
+
+        const simplex = new SimplexNoise(
+            this.detail,
+            this.resolution,
+            this.scale,
+            range
+        )
         this.grid = new Grid(this.width, this.height,
             point => {
-                let {x, y} = point
-                return simplex.noise(
-                    params.get('detail'),
-                    x, y,
-                    params.get('resolution'),
-                    params.get('scale'),
-                    0, 255)
+                return simplex.noise(point)
             })
-        this.resolution = params.get('resolution')
-        this.detail = params.get('detail')
     }
 
     get(point) {
