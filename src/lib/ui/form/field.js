@@ -47,7 +47,7 @@ export function SelectField({name, label, value, options, ...props}) {
     }
 
     return <Field type='select' label={label}>
-        <select name={name} {...props}>
+        <select name={name} defaultValue={value} {...props}>
             {useMemo(() => buildSelectOptions(options), [value])}
         </select>
     </Field>
