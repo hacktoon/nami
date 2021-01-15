@@ -29,14 +29,14 @@ const APPS = [
 
 
 const appMap = new Map(APPS.map(([model, Component]) => {
-    return [model.name, () => <Component model={model} />]
+    return [model.id, () => <Component model={model} />]
 }))
 
-const options = APPS.map(([model,]) => [model.name, model.name])
+const options = APPS.map(([model,]) => [model.id, model.id])
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', TectonicsMap.name, {options})
+        Type.enum('app', 'App', TectonicsMap.id, {options})
     )
 }
 
