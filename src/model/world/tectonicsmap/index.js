@@ -35,7 +35,8 @@ export default class TectonicsMap extends BaseMap {
                 const y = region.id * 10
                 const noisePt = point.plus(new Point(x, y))
                 const isContinent = simplex.noise(noisePt) > 127
-                return {region, isContinent}
+                const oceanicPlate = region.id <= 2
+                return {region, isContinent, oceanicPlate}
             }
         )
         // 2: build deformations using borders
@@ -58,6 +59,10 @@ export default class TectonicsMap extends BaseMap {
 
     isContinent(point) {
         return this.grid.get(point).isContinent
+    }
+
+    isOceanicPlate(point) {
+        return this.grid.get(point).oceanicPlate
     }
 
 

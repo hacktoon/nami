@@ -29,6 +29,7 @@ export class MapDiagram extends BaseMapDiagram {
         if (this.showBorder && this.map.isBorder(point)) {
             return this.borderColor.toHex()
         }
+        if (this.map.isOceanicPlate(point)) return '#069'
         return this.map.isContinent(point) ? '#1e622b' : '#069'
     }
 }
