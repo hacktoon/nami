@@ -7,7 +7,7 @@ export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorder', 'Show border', true),
         Type.color('background', 'Background', Color.fromHex('#333')),
-        Type.color('borderColor', 'Border color', Color.fromHex('#069')),
+        Type.color('borderColor', 'Border color', Color.fromHex('#444')),
     )
 
     static create(map, params) {
@@ -29,6 +29,6 @@ export class MapDiagram extends BaseMapDiagram {
         if (this.showBorder && this.map.isBorder(point)) {
             return this.borderColor.toHex()
         }
-        return this.background.toHex()
+        return this.map.isContinent(point) ? '#1e622b' : '#069'
     }
 }

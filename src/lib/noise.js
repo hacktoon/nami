@@ -4,24 +4,23 @@ import { Random } from '/lib/random'
 // example:  simplex = SimplexNoise(8, .6, 0.01, [0, 255])
 //           r = simplex.noise(x, y)
 
+const RANGE = 255
+
+
 export class SimplexNoise {
-    constructor(iterations, persistence, scale, range) {
+    constructor(iterations, persistence, scale) {
         this.iterations = iterations
         this.persistence = persistence
         this.scale = scale
-        this.low = range[0]
-        this.high = range[1]
         this.grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],
                       [1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],
                       [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
-        const p = [];
-        for (let i=0; i<=this.high; i++) {
-            p[i] = Random.int(this.high)
-        }
-        // To remove the need for index wrapping, double the permutation table length
+
+        // To remove the need for index wrapping,
+        // double the permutation table length
         this.perm = [];
-        for(let i=0; i<(this.high+1)*2; i++) {
-            this.perm[i] = p[i & this.high];
+        for(let i=0; i<=RANGE*2; i++) {
+            this.perm[i] = Random.int(RANGE)
         }
     }
 
@@ -41,7 +40,7 @@ export class SimplexNoise {
         //take the average value of the iterations
         noise /= maxAmp
         //normalize the result
-        return noise * (this.high - this.low) / 2 + (this.high + this.low) / 2
+        return noise * RANGE / 2 + RANGE / 2
     }
 
     #get_noise(xin, yin) {

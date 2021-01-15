@@ -13,7 +13,7 @@ export default class NoiseMap extends BaseMap {
         Type.number('detail', 'Detail', 8, {step: 1, min: 1, max: 20}),
         Type.number('resolution', 'Resolution', .5, {step: 0.1, min: 0.1}),
         Type.number('scale', 'Scale', .01, {step: 0.01, min: 0.01}),
-        Type.text('seed', 'Seed', '')
+        Type.text('seed', 'Seed', 'a')
     )
     static diagram = MapDiagram
 
@@ -26,13 +26,11 @@ export default class NoiseMap extends BaseMap {
         this.detail = params.get('detail')
         this.resolution = params.get('resolution')
         this.scale = params.get('scale')
-        const range = [0, 255]
 
         const simplex = new SimplexNoise(
             this.detail,
             this.resolution,
-            this.scale,
-            range
+            this.scale
         )
         this.grid = new Grid(this.width, this.height,
             point => {
