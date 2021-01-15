@@ -31,8 +31,8 @@ export default class TectonicsMap extends BaseMap {
             point => {
                 // 1: build basic tectonics map
                 const region = this.regionMap.get(point)
-                const x = region.id * 3
-                const y = region.id * 10
+                const x = region.id * 1000
+                const y = region.id * 1000
                 const noisePt = point.plus(new Point(x, y))
                 const isContinent = simplex.noise(noisePt) > 127
                 const oceanicPlate = region.id <= 2
