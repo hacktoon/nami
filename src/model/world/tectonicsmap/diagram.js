@@ -6,8 +6,8 @@ import { BaseMapDiagram } from '/model/lib/map'
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorder', 'Show border', true),
-        Type.color('background', 'Background', Color.fromHex('#333')),
-        Type.color('borderColor', 'Border color', Color.fromHex('#048')),
+        Type.color('continent', 'Continent', Color.fromHex('#389E4A')),
+        Type.color('borderColor', 'Border color', Color.fromHex('#111')),
     )
 
     static create(map, params) {
@@ -16,7 +16,7 @@ export class MapDiagram extends BaseMapDiagram {
 
     constructor(map, params) {
         super(map)
-        this.background = params.get('background')
+        this.continent = params.get('continent')
         this.showBorder = params.get('showBorder')
         this.borderColor = params.get('borderColor')
     }
@@ -30,6 +30,6 @@ export class MapDiagram extends BaseMapDiagram {
             return this.borderColor.toHex()
         }
         if (this.map.isOceanicPlate(point)) return '#069'
-        return this.map.isContinent(point) ? '#1e622b' : '#069'
+        return this.map.isContinent(point) ? this.continent.toHex() : '#069'
     }
 }
