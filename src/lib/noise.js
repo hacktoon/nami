@@ -19,7 +19,7 @@ export class SimplexNoise {
         // To remove the need for index wrapping,
         // double the permutation table length
         this.perm = [];
-        for(let i=0; i<=RANGE*2; i++) {
+        for(let i=0; i<(RANGE+1)*2; i++) {
             this.perm[i] = Random.int(RANGE)
         }
     }

@@ -1,5 +1,6 @@
 import { BaseMap } from '/model/lib/map'
 import { Grid } from '/lib/grid'
+import { Point } from '/lib/point'
 import { Schema, Type } from '/lib/schema'
 import { SimplexNoise } from '/lib/noise'
 
@@ -22,7 +23,26 @@ export default class TectonicsMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.regionMap = RegionMap.fromData({
+        this.regionMap = this.#buildRegionMap(params)
+        const simplex = new SimplexNoise(8, 0.7, 0.01)
+        this.grid = new Grid(
+            this.width,
+            this.height,
+            point => {
+                // 1: build basic tectonics map
+                const region = this.regionMap.get(point)
+                const x = region.id * 3
+                const y = region.id * 10
+                const noisePt = point.plus(new Point(x, y))
+                const isContinent = simplex.noise(noisePt) > 127
+                return {region, isContinent}
+            }
+        )
+        // 2: build deformations using borders
+    }
+
+    #buildRegionMap(params) {
+        return RegionMap.fromData({
             width: this.width,
             height: this.height,
             count: params.get('plates'),
@@ -30,19 +50,6 @@ export default class TectonicsMap extends BaseMap {
             growthChance: 0.1,
             seed: params.get('seed')
         })
-        const simplex = new SimplexNoise(4, 0.5, 0.01)
-        this.grid = new Grid(
-            this.width,
-            this.height,
-            point => {
-                // 1: build basic tectonics map
-                return {
-                    region: this.regionMap.get(point),
-                    isContinent: simplex.noise(point) > 127
-                }
-            }
-        )
-        // 2: build deformations using borders
     }
 
     isBorder(point) {

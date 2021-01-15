@@ -7,7 +7,7 @@ export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorder', 'Show border', true),
         Type.color('background', 'Background', Color.fromHex('#333')),
-        Type.color('borderColor', 'Border color', Color.fromHex('#444')),
+        Type.color('borderColor', 'Border color', Color.fromHex('#048')),
     )
 
     static create(map, params) {
