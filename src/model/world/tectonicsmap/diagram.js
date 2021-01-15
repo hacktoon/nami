@@ -8,7 +8,7 @@ export class MapDiagram extends BaseMapDiagram {
         Type.boolean('showBorder', 'Show border', true),
         Type.color('continent', 'Continent', Color.fromHex('#389E4A')),
         Type.color('ocean', 'Ocean', Color.fromHex('#058')),
-        Type.color('borderColor', 'Border color', Color.fromHex('#111')),
+        Type.color('borderColor', 'Border color', Color.fromHex('#F90')),
     )
 
     static create(map, params) {
