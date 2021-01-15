@@ -16,13 +16,13 @@
 #### TectonicsMap
 - [] Create Plate register
 - Convergent
-  - OO : Island Arc + Earthquake
-  - OC : Trench + Mountain + Volcano + Earthquake
-  - CC : Mountain + Earthquake
+  - OO : Island Arc
+  - OC : Trench + Orogeny
+  - CC : Mountain
 
 - Divergent
   - OO : Oceanic Ridge
-  - CC : Rift  + Earthquake
+  - CC : Rift
 
 - create ridges separately in tectonics map, using total and start point of border points
 - Iterate over region growth borders to distribute hills, cenotes, ravines, lakes, etc

@@ -7,6 +7,7 @@ export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorder', 'Show border', true),
         Type.color('continent', 'Continent', Color.fromHex('#389E4A')),
+        Type.color('ocean', 'Ocean', Color.fromHex('#058')),
         Type.color('borderColor', 'Border color', Color.fromHex('#111')),
     )
 
@@ -17,6 +18,7 @@ export class MapDiagram extends BaseMapDiagram {
     constructor(map, params) {
         super(map)
         this.continent = params.get('continent')
+        this.ocean = params.get('ocean')
         this.showBorder = params.get('showBorder')
         this.borderColor = params.get('borderColor')
     }
@@ -29,7 +31,9 @@ export class MapDiagram extends BaseMapDiagram {
         if (this.showBorder && this.map.isBorder(point)) {
             return this.borderColor.toHex()
         }
-        if (this.map.isOceanicPlate(point)) return '#069'
-        return this.map.isContinent(point) ? this.continent.toHex() : '#069'
+        const ocean = this.ocean.toHex()
+        const continent = this.continent.toHex()
+        if (this.map.isOceanicPlate(point)) return ocean
+        return this.map.isContinent(point) ? continent : ocean
     }
 }
