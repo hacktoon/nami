@@ -35,6 +35,7 @@ export default class RegionMap extends BaseMap {
         super(params)
         this.grid = new RegionGrid(this.width, this.height)
         this.regions = createRegions(this.grid, params)
+        createDistanceField(this.grid, this.regions)
     }
 
     get(point) {
@@ -76,27 +77,30 @@ export default class RegionMap extends BaseMap {
 
 // FUNCTIONS ===================================
 
+function createDistanceField(grid, regions) {
+    //const borders = regions.map(region => region.borders)
+}
+
 function createRegions(grid, config) {
     const points = RandomPointDistribution.create(
         config.get('count'),
         config.get('width'),
         config.get('height')
     )
-    const fillerMap = {}
-    const regions = points.map((origin, id) => {
-        fillerMap[id] = createOrganicFill({
-            id,
-            origin,
+    const regions = points.map((origin, id) => new Region(id, origin))
+    const fillerMap = new Map(regions.map(region => {
+        const fill = createOrganicFill({
+            region,
             grid,
             layerGrowth: config.get('layerGrowth'),
             growthChance: config.get('growthChance')
         })
-        return new Region(id, origin)
-    })
+        return [region.id, fill]
+    }))
 
     while(grid.hasEmptyPoints()) {
         regions.forEach(region => {
-            const points = fillerMap[region.id].fill()
+            const points = fillerMap.get(region.id).fill()
             region.grow(points)
         })
     }
@@ -104,22 +108,17 @@ function createRegions(grid, config) {
 }
 
 
-function createOrganicFill({
-        id,
-        origin,
-        grid,
-        layerGrowth,
-        growthChance
-    }) {
-    return new OrganicFill(origin, {
+function createOrganicFill(params){
+    const {region, grid, layerGrowth, growthChance} = params
+    return new OrganicFill(region.origin, {
         setBorder:  (point, neighbor) => grid.setBorder(point, neighbor),
         setOrigin:  point => grid.setOrigin(point),
-        setSeed:    point => grid.setSeed(point, id),
-        setValue:   point => grid.setValue(point, id),
+        setSeed:    point => grid.setSeed(point, region.id),
+        setValue:   point => grid.setValue(point, region.id),
         setLayer:   (point, layer) => grid.setLayer(point, layer),
         isEmpty:    point => grid.isEmpty(point),
-        isSeed:     point => grid.isSeed(point, id),
-        isBlocked:  point => grid.isBlocked(point, id),
+        isSeed:     point => grid.isSeed(point, region.id),
+        isBlocked:  point => grid.isBlocked(point, region.id),
         layerGrowth,
         growthChance,
     })

@@ -15,7 +15,7 @@ export default class TectonicsMap extends BaseMap {
         Type.number('width', 'Width', 200, {step: 1, min: 1}),
         Type.number('height', 'Height', 150, {step: 1, min: 1}),
         Type.number('plates', 'Plates', 10, {step: 1, min: 1}),
-        Type.text('seed', 'Seed', '')
+        Type.text('seed', 'Seed', 'a')
     )
     static diagram = MapDiagram
 
@@ -31,14 +31,14 @@ export default class TectonicsMap extends BaseMap {
             this.width,
             this.height,
             point => {
-                // 1: build basic tectonics map
                 const region = this.regionMap.get(point)
                 const x = region.id * 1000
                 const y = region.id * 1000
+                // TODO: get plate origin and flood fill setting plate features
                 const noisePt = point.plus(new Point(x, y))
                 const isContinent = simplex.noise(noisePt) > 127
-                const oceanicPlate = region.id <= 2
-                return {region, isContinent, oceanicPlate}
+                const isOceanicPlate = region.id <= 2
+                return {region, isContinent, isOceanicPlate}
             }
         )
         // 2: build deformations using borders
@@ -55,17 +55,23 @@ export default class TectonicsMap extends BaseMap {
         })
     }
 
+    #buildGrid(params) {
+
+    }
+
     isBorder(point) {
         return this.regionMap.isBorder(point)
     }
 
     isContinent(point) {
-        return this.grid.get(point).isContinent
+        return this.get(point).isContinent
     }
 
     isOceanicPlate(point) {
-        return this.grid.get(point).oceanicPlate
+        return this.get(point).isOceanicPlate
     }
 
-
+    get(point) {
+        return this.grid.get(point)
+    }
 }

@@ -33,6 +33,7 @@ export class RegionGrid {
         const cell = this.get(point)
         if (cell.type == TYPE_ORIGIN) return
         cell.type = TYPE_BORDER
+        cell.neighbor = neighbor
     }
 
     isBorder(point) {
@@ -87,10 +88,11 @@ export class RegionGrid {
 
 class GridCell {
     constructor() {
-        this.layer = 0
-        this.value = EMPTY_VALUE
-        this.type  = TYPE_NORMAL
-        this.seed  = EMPTY_SEED
+        this.layer    = 0
+        this.value    = EMPTY_VALUE
+        this.type     = TYPE_NORMAL
+        this.seed     = EMPTY_SEED
+        this.neighbor = null
     }
 
     isOrigin() {

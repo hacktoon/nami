@@ -10,7 +10,7 @@
 - [] Use Rect instead of width & height
 
 #### RegionMap
-- [] Region borders are stored
+- [] Create region distance field using flood fill in border points
 - [] Regions adjacency table
 
 #### TectonicsMap

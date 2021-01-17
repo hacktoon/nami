@@ -6,6 +6,7 @@ export class Region {
         this.id = id
         this.origin = origin
         this.pointSet = new PointSet([origin])
+        this.borders = []
     }
 
     has(point) {
