@@ -15,8 +15,8 @@ export default class RegionMap extends BaseMap {
     static schema = new Schema(
         Type.number('width', 'Width', 200, {step: 1, min: 1}),
         Type.number('height', 'Height', 150, {step: 1, min: 1}),
-        Type.number('count', 'Count', 80, {step: 1, min: 1}),
-        Type.number('layerGrowth', 'Layer growth', 40, {step: 1, min: 1}),
+        Type.number('count', 'Count', 12, {step: 1, min: 1}),
+        Type.number('layerGrowth', 'Layer growth', 30, {step: 1, min: 1}),
         Type.number('growthChance', 'Growth chance', 0.1, {step: 0.01, min: 0.01}),
         Type.text('seed', 'Seed', '')
     )
@@ -88,15 +88,7 @@ function createRegions(grid, config) {
         config.get('height')
     )
     const regions = points.map((origin, id) => new Region(id, origin))
-    const fillerMap = new Map(regions.map(region => {
-        const fill = createOrganicFill({
-            region,
-            grid,
-            layerGrowth: config.get('layerGrowth'),
-            growthChance: config.get('growthChance')
-        })
-        return [region.id, fill]
-    }))
+    const fillerMap = createFillMap(regions, grid, config)
 
     while(grid.hasEmptyPoints()) {
         regions.forEach(region => {
@@ -107,6 +99,16 @@ function createRegions(grid, config) {
     return regions
 }
 
+
+function createFillMap(regions, grid, config){
+    const layerGrowth = config.get('layerGrowth')
+    const growthChance = config.get('growthChance')
+    const entries = regions.map(region => {
+        const params = {region, grid, layerGrowth, growthChance}
+        return [region.id, createOrganicFill(params)]
+    })
+    return new Map(entries)
+}
 
 function createOrganicFill(params){
     const {region, grid, layerGrowth, growthChance} = params
