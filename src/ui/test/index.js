@@ -28,7 +28,6 @@ export function TestUI({model}) {
 
     const handleSubmit = data => {
         setData(data)
-        console.log(data);
     }
 
     return <section className='TestUI'>

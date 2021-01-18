@@ -1,10 +1,8 @@
-import { RandomPointDistribution } from '/lib/point/distribution'
 import { BaseMap } from '/model/lib/map'
 
-import { OrganicFill } from '/lib/flood-fill'
 import { Schema, Type } from '/lib/schema'
 
-import { Region, RegionSet } from './region'
+import { RegionSet } from './region'
 import { RegionGrid } from './grid'
 import { MapDiagram } from './diagram'
 
@@ -33,45 +31,16 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.count = params.get('count')
         this.grid = new RegionGrid(this.width, this.height)
-        this.regions = this.#createRegions(this.grid, params)
-    }
-
-    #createRegions(grid, params) {
-        const points = RandomPointDistribution.create(
-            this.count,
-            this.width,
-            this.height
-        )
-        const regions = points.map((origin, id) => new Region(id, origin))
-        return this.#fillRegions(grid, regions, params)
-    }
-
-    #fillRegions(grid, regions, params){
-        const fillerMap = this.#createFillMap(regions, grid, params)
-        while(grid.hasEmptyPoints()) {
-            regions.forEach(region => {
-                const points = fillerMap.get(region.id).fill()
-                region.grow(points)
-            })
-        }
-        return regions
-    }
-
-    #createFillMap(regions, grid, params){
-        const layerGrowth = params.get('layerGrowth')
-        const growthChance = params.get('growthChance')
-        const entries = regions.map(region => {
-            const params = {region, grid, layerGrowth, growthChance}
-            return [region.id, createOrganicFill(params)]
+        this.regions = new RegionSet(this.grid, params)
+        this.regions.forEach((item, index) => {
+            // console.log(item);
         })
-        return new Map(entries)
     }
 
     get(point) {
         const id = this.grid.get(point).value
-        return this.regions[id]
+        return this.regions.get(id)
     }
 
     isOrigin(point) {
@@ -103,31 +72,4 @@ export default class RegionMap extends BaseMap {
     isOverLayer(point, layer) {
         return this.getLayer(point) > layer
     }
-}
-
-
-// FUNCTIONS ===================================
-
-function createDistanceField(grid, regions) {
-    //const borders = regions.map(region => region.borders)
-}
-
-
-function createOrganicFill(params){
-    const {region, grid, layerGrowth, growthChance} = params
-    return new OrganicFill(region.origin, {
-        setBorder:  (point, neighbor) => {
-            grid.setBorder(point)
-            region.setBorder(point, neighbor)
-        },
-        setOrigin:  point => grid.setOrigin(point),
-        setSeed:    point => grid.setSeed(point, region.id),
-        setValue:   point => grid.setValue(point, region.id),
-        setLayer:   (point, layer) => grid.setLayer(point, layer),
-        isEmpty:    point => grid.isEmpty(point),
-        isSeed:     point => grid.isSeed(point, region.id),
-        isBlocked:  point => grid.isBlocked(point, region.id),
-        layerGrowth,
-        growthChance,
-    })
 }

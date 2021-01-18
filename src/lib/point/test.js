@@ -2,7 +2,7 @@ import { Point } from '/lib/point'
 import { PointSet } from '/lib/point/set'
 
 
-function createHash() {
+function createSet() {
     const points = [
         new Point(0, 0),
         new Point(1, 1),
@@ -13,27 +13,27 @@ function createHash() {
 
 
 test('point set size', () => {
-    const pointSet = createHash()
+    const pointSet = createSet()
     expect(pointSet.size).toBe(3)
 })
 
 
 test('point set size after add', () => {
-    const pointSet = createHash()
+    const pointSet = createSet()
     pointSet.add(new Point(4, 4))
     expect(pointSet.size).toBe(4)
 })
 
 
 test('point set size after delete', () => {
-    const pointSet = createHash()
+    const pointSet = createSet()
     pointSet.delete(new Point(0, 0))
     expect(pointSet.size).toBe(2)
 })
 
 
 test('point set has point after add', () => {
-    const pointSet = createHash()
+    const pointSet = createSet()
     const point = new Point(4, 4)
     pointSet.add(point)
     expect(pointSet.has(point)).toBe(true)
@@ -41,7 +41,7 @@ test('point set has point after add', () => {
 
 
 test("point set doesn't has point after delete", () => {
-    const pointSet = createHash()
+    const pointSet = createSet()
     const point = new Point(0, 0)
     pointSet.delete(point)
     expect(pointSet.has(point)).toBe(false)
@@ -49,7 +49,7 @@ test("point set doesn't has point after delete", () => {
 
 
 test("point set random points", () => {
-    const pointSet = createHash()
+    const pointSet = createSet()
     const point = pointSet.random()
     expect([0, 1, 2]).toContain(point.x)
     expect([0, 1, 2]).toContain(point.y)

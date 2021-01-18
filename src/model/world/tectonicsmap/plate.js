@@ -8,7 +8,7 @@ export class Plate {
         this.area = 1
         this.points = []
         this.neighbors = []
-        this.pointSet = new PointSet([origin])
+        this.pointSet = new PointSet(origin)
     }
 
     has(point) {
