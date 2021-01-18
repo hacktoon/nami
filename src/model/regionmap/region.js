@@ -21,3 +21,8 @@ export class Region {
         this.points.add(...points)
     }
 }
+
+
+export class RegionSet {
+
+}

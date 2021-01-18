@@ -4,7 +4,7 @@ import { BaseMap } from '/model/lib/map'
 import { OrganicFill } from '/lib/flood-fill'
 import { Schema, Type } from '/lib/schema'
 
-import { Region } from './region'
+import { Region, RegionSet } from './region'
 import { RegionGrid } from './grid'
 import { MapDiagram } from './diagram'
 
