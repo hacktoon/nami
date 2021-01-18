@@ -5,15 +5,19 @@ export class Region {
     constructor(id, origin) {
         this.id = id
         this.origin = origin
-        this.pointSet = new PointSet([origin])
-        this.borders = []
+        this.points = new PointSet([origin])
+        this.borders = new PointSet([])
     }
 
     has(point) {
-        return this.pointSet.has(point)
+        return this.points.has(point)
+    }
+
+    setBorder(point, neighbor) {
+        this.borders.add(point)
     }
 
     grow(points) {
-        this.pointSet.add(...points)
+        this.points.add(...points)
     }
 }

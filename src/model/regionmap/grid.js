@@ -11,7 +11,7 @@ const TYPE_BORDER = 3
 // FIXME: mutable object
 export class RegionGrid {
     constructor(width, height) {
-        this.grid = new Grid(width, height, () => new GridCell())
+        this.grid = new Grid(width, height, () => new RegionCell())
         this.emptyPoints = width * height
         this.width = width
         this.height = height
@@ -29,11 +29,10 @@ export class RegionGrid {
         return this.get(point).isOrigin()
     }
 
-    setBorder(point, neighbor) {
+    setBorder(point) {
         const cell = this.get(point)
         if (cell.type == TYPE_ORIGIN) return
         cell.type = TYPE_BORDER
-        cell.neighbor = neighbor
     }
 
     isBorder(point) {
@@ -86,7 +85,7 @@ export class RegionGrid {
 }
 
 
-class GridCell {
+class RegionCell {
     constructor() {
         this.layer    = 0
         this.value    = EMPTY_VALUE

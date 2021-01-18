@@ -33,9 +33,40 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
+        this.count = params.get('count')
         this.grid = new RegionGrid(this.width, this.height)
-        this.regions = createRegions(this.grid, params)
-        createDistanceField(this.grid, this.regions)
+        this.regions = this.#createRegions(this.grid, params)
+    }
+
+    #createRegions(grid, params) {
+        const points = RandomPointDistribution.create(
+            this.count,
+            this.width,
+            this.height
+        )
+        const regions = points.map((origin, id) => new Region(id, origin))
+        return this.#fillRegions(grid, regions, params)
+    }
+
+    #fillRegions(grid, regions, params){
+        const fillerMap = this.#createFillMap(regions, grid, params)
+        while(grid.hasEmptyPoints()) {
+            regions.forEach(region => {
+                const points = fillerMap.get(region.id).fill()
+                region.grow(points)
+            })
+        }
+        return regions
+    }
+
+    #createFillMap(regions, grid, params){
+        const layerGrowth = params.get('layerGrowth')
+        const growthChance = params.get('growthChance')
+        const entries = regions.map(region => {
+            const params = {region, grid, layerGrowth, growthChance}
+            return [region.id, createOrganicFill(params)]
+        })
+        return new Map(entries)
     }
 
     get(point) {
@@ -81,39 +112,14 @@ function createDistanceField(grid, regions) {
     //const borders = regions.map(region => region.borders)
 }
 
-function createRegions(grid, config) {
-    const points = RandomPointDistribution.create(
-        config.get('count'),
-        config.get('width'),
-        config.get('height')
-    )
-    const regions = points.map((origin, id) => new Region(id, origin))
-    const fillerMap = createFillMap(regions, grid, config)
-
-    while(grid.hasEmptyPoints()) {
-        regions.forEach(region => {
-            const points = fillerMap.get(region.id).fill()
-            region.grow(points)
-        })
-    }
-    return regions
-}
-
-
-function createFillMap(regions, grid, config){
-    const layerGrowth = config.get('layerGrowth')
-    const growthChance = config.get('growthChance')
-    const entries = regions.map(region => {
-        const params = {region, grid, layerGrowth, growthChance}
-        return [region.id, createOrganicFill(params)]
-    })
-    return new Map(entries)
-}
 
 function createOrganicFill(params){
     const {region, grid, layerGrowth, growthChance} = params
     return new OrganicFill(region.origin, {
-        setBorder:  (point, neighbor) => grid.setBorder(point, neighbor),
+        setBorder:  (point, neighbor) => {
+            grid.setBorder(point)
+            region.setBorder(point, neighbor)
+        },
         setOrigin:  point => grid.setOrigin(point),
         setSeed:    point => grid.setSeed(point, region.id),
         setValue:   point => grid.setValue(point, region.id),
