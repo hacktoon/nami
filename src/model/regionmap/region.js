@@ -11,11 +11,18 @@ export class Region {
         this.borders = new PointSet()
     }
 
+    get size() {
+        return this.points.size
+    }
+
     has(point) {
         return this.points.has(point)
     }
 
     setBorder(point, neighbor) {
+        if (this.id == 1) {
+            console.log(neighbor);
+        }
         this.borders.add(point)
     }
 

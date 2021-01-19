@@ -33,9 +33,9 @@ export default class RegionMap extends BaseMap {
         super(params)
         this.grid = new RegionGrid(this.width, this.height)
         this.regions = new RegionSet(this.grid, params)
-        this.regions.forEach((item, index) => {
-            // console.log(item);
-        })
+        // this.regions.forEach((item, index) => {
+        //
+        // })
     }
 
     get(point) {
