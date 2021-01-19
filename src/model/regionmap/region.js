@@ -20,9 +20,9 @@ export class Region {
     }
 
     setBorder(point, neighbor) {
-        if (this.id == 1) {
-            console.log(neighbor);
-        }
+        // if (this.id == 1) {
+        //     console.log(neighbor);
+        // }
         this.borders.add(point)
     }
 
@@ -52,28 +52,40 @@ export class RegionSet {
     }
 
     #fillRegions(grid, params){
-        const fillerMap = this.#createFillMap(grid, params)
+        const regionFill = new RegionFill(this.regions, grid, params)
         while(grid.hasEmptyPoints()) {
             this.regions.forEach(region => {
-                const points = fillerMap.get(region.id).fill()
+                const points = regionFill.fill(region.id)
                 region.grow(points)
             })
         }
     }
+}
 
-    #createFillMap(grid, params){
+
+class RegionFill {
+    constructor(regions, grid, params) {
+        this.regions = regions
+        this.map = this.#createMap(grid, params)
+    }
+
+    fill(id) {
+        return this.map.get(id).fill()
+    }
+
+    #createMap(grid, params) {
         const layerGrowth = params.get('layerGrowth')
         const growthChance = params.get('growthChance')
         const entries = this.regions.map(region => {
-            const params = {region, grid, layerGrowth, growthChance}
-            const fill = this.#createOrganicFill(params)
+            const params = {region, layerGrowth, growthChance}
+            const fill = this.#createOrganicFill(grid, params)
             return [region.id, fill]
         })
         return new Map(entries)
     }
 
-    #createOrganicFill(params){
-        const {region, grid, layerGrowth, growthChance} = params
+    #createOrganicFill(grid, params) {
+        const {region, layerGrowth, growthChance} = params
         return new OrganicFill(region.origin, {
             setBorder:  (point, neighbor) => {
                 grid.setBorder(point)

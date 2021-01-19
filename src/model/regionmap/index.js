@@ -44,7 +44,7 @@ export default class RegionMap extends BaseMap {
     }
 
     isOrigin(point) {
-        return this.grid.isOrigin(point)
+        return this.grid.get(point).isOrigin()
     }
 
     isSeed(point, value) {
@@ -66,7 +66,7 @@ export default class RegionMap extends BaseMap {
     }
 
     isLayer(point, layer) {
-        return this.grid.isLayer(point, layer)
+        return this.grid.get(point).isLayer(layer)
     }
 
     isOverLayer(point, layer) {

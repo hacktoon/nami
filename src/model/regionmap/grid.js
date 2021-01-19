@@ -25,10 +25,6 @@ export class RegionGrid {
         this.get(point).type = TYPE_ORIGIN
     }
 
-    isOrigin(point) {
-        return this.get(point).isOrigin()
-    }
-
     setBorder(point) {
         const cell = this.get(point)
         if (cell.type == TYPE_ORIGIN) return
@@ -55,10 +51,6 @@ export class RegionGrid {
 
     getLayer(point) {
         return this.get(point).layer
-    }
-
-    isLayer(point, layer) {
-        return this.get(point).isLayer(layer)
     }
 
     setSeed(point, value) {
