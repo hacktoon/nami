@@ -1,8 +1,8 @@
 import { BaseMap } from '/model/lib/map'
-
+import { RandomPointDistribution } from '/lib/point/distribution'
 import { Schema, Type } from '/lib/schema'
 
-import { RegionSet } from './region'
+import { RegionSet, RegionFill } from './region'
 import { RegionGrid } from './grid'
 import { MapDiagram } from './diagram'
 
@@ -32,10 +32,26 @@ export default class RegionMap extends BaseMap {
     constructor(params) {
         super(params)
         this.grid = new RegionGrid(this.width, this.height)
-        this.regions = new RegionSet(this.grid, params)
+        const origins = RandomPointDistribution.create(
+            params.get('count'), this.width, this.height
+        )
+        this.regionSet = new RegionSet(origins)
+
+        const regionFill = new RegionFill(this, params)
+        this.#fillRegions(regionFill)
+
         // this.regions.forEach((item, index) => {
         //
         // })
+    }
+
+    #fillRegions(regionFill){
+        while(this.grid.hasEmptyPoints()) {
+            this.regionSet.forEach(region => {
+                const points = regionFill.fill(region.id)
+                region.grow(points)
+            })
+        }
     }
 
     get(point) {

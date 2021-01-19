@@ -1,4 +1,3 @@
-import { RandomPointDistribution } from '/lib/point/distribution'
 import { PointSet } from '/lib/point/set'
 import { OrganicFill } from '/lib/flood-fill'
 
@@ -33,14 +32,9 @@ export class Region {
 
 
 export class RegionSet {
-    constructor(grid, params) {
-        this.origins = RandomPointDistribution.create(
-            params.get('count'),
-            params.get('width'),
-            params.get('height')
-        )
+    constructor(origins) {
+        this.origins = origins
         this.regions = this.origins.map((origin, id) => new Region(id, origin))
-        this.#fillRegions(grid, params)
     }
 
     get(id) {
@@ -51,22 +45,16 @@ export class RegionSet {
         return this.regions.forEach(callback)
     }
 
-    #fillRegions(grid, params){
-        const regionFill = new RegionFill(this.regions, grid, params)
-        while(grid.hasEmptyPoints()) {
-            this.regions.forEach(region => {
-                const points = regionFill.fill(region.id)
-                region.grow(points)
-            })
-        }
+    map(callback) {
+        return this.regions.map(callback)
     }
 }
 
 
-class RegionFill {
-    constructor(regions, grid, params) {
-        this.regions = regions
-        this.map = this.#createMap(grid, params)
+export class RegionFill {
+    constructor(regionMap, params) {
+        this.regionSet = regionMap.regionSet
+        this.map = this.#createMap(regionMap.grid, params)
     }
 
     fill(id) {
@@ -74,18 +62,14 @@ class RegionFill {
     }
 
     #createMap(grid, params) {
-        const layerGrowth = params.get('layerGrowth')
-        const growthChance = params.get('growthChance')
-        const entries = this.regions.map(region => {
-            const params = {region, layerGrowth, growthChance}
-            const fill = this.#createOrganicFill(grid, params)
+        const entries = this.regionSet.map(region => {
+            const fill = this.#createOrganicFill(region, grid, params)
             return [region.id, fill]
         })
         return new Map(entries)
     }
 
-    #createOrganicFill(grid, params) {
-        const {region, layerGrowth, growthChance} = params
+    #createOrganicFill(region, grid, params) {
         return new OrganicFill(region.origin, {
             setBorder:  (point, neighbor) => {
                 grid.setBorder(point)
@@ -98,8 +82,8 @@ class RegionFill {
             isEmpty:    point => grid.isEmpty(point),
             isSeed:     point => grid.isSeed(point, region.id),
             isBlocked:  point => grid.isBlocked(point, region.id),
-            layerGrowth,
-            growthChance,
+            layerGrowth: params.get('layerGrowth'),
+            growthChance: params.get('growthChance'),
         })
     }
 }
