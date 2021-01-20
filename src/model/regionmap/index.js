@@ -2,7 +2,7 @@ import { BaseMap } from '/model/lib/map'
 import { RandomPointDistribution } from '/lib/point/distribution'
 import { Schema, Type } from '/lib/schema'
 
-import { RegionSet, RegionFill } from './region'
+import { RegionSet, RegionMapFill } from './region'
 import { RegionGrid } from './grid'
 import { MapDiagram } from './diagram'
 
@@ -37,7 +37,7 @@ export default class RegionMap extends BaseMap {
         )
         this.regionSet = new RegionSet(origins)
 
-        const regionFill = new RegionFill(this, params)
+        const regionFill = new RegionMapFill(this, params)
         this.#fillRegions(regionFill)
 
         // this.regions.forEach((item, index) => {

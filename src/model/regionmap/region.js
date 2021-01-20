@@ -51,25 +51,26 @@ export class RegionSet {
 }
 
 
-export class RegionFill {
+export class RegionMapFill {
     constructor(regionMap, params) {
-        this.regionSet = regionMap.regionSet
-        this.map = this.#createMap(regionMap.grid, params)
+        this.regionMap = regionMap
+        this.map = this.#createMap(params)
     }
 
     fill(id) {
         return this.map.get(id).fill()
     }
 
-    #createMap(grid, params) {
-        const entries = this.regionSet.map(region => {
-            const fill = this.#createOrganicFill(region, grid, params)
+    #createMap(params) {
+        const entries = this.regionMap.regionSet.map(region => {
+            const fill = this.#createOrganicFill(region, params)
             return [region.id, fill]
         })
         return new Map(entries)
     }
 
-    #createOrganicFill(region, grid, params) {
+    #createOrganicFill(region, params) {
+        const grid = this.regionMap.grid
         return new OrganicFill(region.origin, {
             setBorder:  (point, neighbor) => {
                 grid.setBorder(point)
