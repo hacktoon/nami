@@ -38,20 +38,9 @@ export default class RegionMap extends BaseMap {
         this.regionSet = new RegionSet(origins)
 
         const regionFill = new RegionMapFill(this, params)
-        this.#fillRegions(regionFill)
-
         // this.regions.forEach((item, index) => {
         //
         // })
-    }
-
-    #fillRegions(regionFill){
-        while(this.grid.hasEmptyPoints()) {
-            this.regionSet.forEach(region => {
-                const points = regionFill.fill(region.id)
-                region.grow(points)
-            })
-        }
     }
 
     get(point) {
@@ -61,6 +50,10 @@ export default class RegionMap extends BaseMap {
 
     isOrigin(point) {
         return this.grid.get(point).isOrigin()
+    }
+
+    setOrigin(point) {
+        return this.grid.get(point).setOrigin()
     }
 
     isSeed(point, value) {

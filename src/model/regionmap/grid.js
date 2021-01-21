@@ -1,11 +1,6 @@
 import { Grid } from '/lib/grid'
+import { RegionCell } from './region'
 
-
-const EMPTY_VALUE = null
-const EMPTY_SEED = null
-const TYPE_NORMAL = 1
-const TYPE_ORIGIN = 2
-const TYPE_BORDER = 3
 
 
 // FIXME: mutable object
@@ -21,14 +16,10 @@ export class RegionGrid {
         return this.grid.get(point)
     }
 
-    setOrigin(point) {
-        this.get(point).type = TYPE_ORIGIN
-    }
-
     setBorder(point) {
         const cell = this.get(point)
-        if (cell.type == TYPE_ORIGIN) return
-        cell.type = TYPE_BORDER
+        if (cell.isOrigin()) return
+        cell.setBorder()
     }
 
     isBorder(point) {
@@ -37,7 +28,7 @@ export class RegionGrid {
 
     setValue(point, value) {
         if (! this.isEmpty(point)) return
-        this.grid.get(point).value = value
+        this.get(point).value = value
         this.emptyPoints--
     }
 
@@ -66,43 +57,14 @@ export class RegionGrid {
     }
 
     isEmpty(point) {
-        return this.get(point).isValue(EMPTY_VALUE)
+        return this.get(point).isEmpty()
     }
 
     isBlocked(point, value) {
-        let isFilled = !this.isEmpty(point) && !this.isValue(point, value)
-        let otherSeed = !this.isSeed(point, EMPTY_SEED) && !this.isSeed(point, value)
-        return isFilled || otherSeed
+        const cell = this.get(point)
+        let isFilled = !cell.isEmpty() && !cell.isValue(value)
+        let isAnotherSeed = !cell.isEmptySeed() && !cell.isSeed(value)
+        return isFilled || isAnotherSeed
     }
 }
 
-
-class RegionCell {
-    constructor() {
-        this.layer    = 0
-        this.value    = EMPTY_VALUE
-        this.type     = TYPE_NORMAL
-        this.seed     = EMPTY_SEED
-        this.neighbor = null
-    }
-
-    isOrigin() {
-        return this.type === TYPE_ORIGIN
-    }
-
-    isBorder() {
-        return this.type === TYPE_BORDER
-    }
-
-    isLayer(layer) {
-        return this.layer === layer
-    }
-
-    isValue(value) {
-        return this.value === value
-    }
-
-    isSeed(value) {
-        return this.seed === value
-    }
-}
