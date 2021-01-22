@@ -60,6 +60,7 @@ export class RegionCell {
     }
 
     setValue(value) {
-        this.value = value
+        if (this.isEmpty())
+            this.value = value
     }
 }

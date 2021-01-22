@@ -32,16 +32,18 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
+        this.layerGrowth = params.get('layerGrowth')
+        this.growthChance = params.get('growthChance')
         this.grid = new Grid(this.width, this.height, () => new RegionCell())
         const origins = RandomPointDistribution.create(
             params.get('count'), this.width, this.height
         )
         this.regionSet = new RegionSet(origins)
 
-        const regionFill = new RegionMapFill(this, params)
-        // this.regions.forEach((item, index) => {
-        //
-        // })
+        const regionFill = new RegionMapFill(this)
+        this.regionSet.forEach(region => {
+            console.log(region.id);
+        })
     }
 
     at(point) {
@@ -50,23 +52,11 @@ export default class RegionMap extends BaseMap {
 
     get(point) {
         const id = this.at(point).value
-        return this.regions.get(id)
-    }
-
-    getLayer(point) {
-        return this.at(point).layer
+        return this.regionSet.get(id)
     }
 
     isOrigin(point) {
         return this.at(point).isOrigin()
-    }
-
-    isSeed(point, value) {
-        return this.at(point).isSeed(value)
-    }
-
-    isEmpty(point) {
-        return this.at(point).isEmpty()
     }
 
     isBorder(point) {
@@ -78,29 +68,7 @@ export default class RegionMap extends BaseMap {
     }
 
     isOverLayer(point, layer) {
-        return this.getLayer(point) > layer
-    }
-
-    setOrigin(point) {
-        this.at(point).setOrigin()
-    }
-
-    setValue(point, value) {
-        const cell = this.at(point)
-        if (cell.isEmpty())
-            cell.setValue(value)
-    }
-
-    setBorder(point) {
-        this.at(point).setBorder()
-    }
-
-    setSeed(point, value) {
-        this.at(point).setSeed(value)
-    }
-
-    setLayer(point, layer) {
-        this.at(point).setLayer(layer)
+        return this.at(point).layer > layer
     }
 
     isBlocked(point, value) {

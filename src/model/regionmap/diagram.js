@@ -7,6 +7,7 @@ export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorder', 'Show border', true),
         Type.boolean('showOrigin', 'Show origin', true),
+        Type.boolean('invert', 'Invert colors', false),
         Type.number('layer', 'Layer', 3, {step: 1, min: 0}),
         Type.color('foreground', 'Foreground', Color.fromHex('#251')),
         Type.color('background', 'Background', Color.fromHex('#059')),
@@ -26,13 +27,10 @@ export class MapDiagram extends BaseMapDiagram {
         this.foreground = params.get('foreground')
         this.background = params.get('background')
         this.borderColor = params.get('borderColor')
+        this.invert = params.get('invert')
     }
 
     get(point) {
-        return this.getColor(point)
-    }
-
-    getColor(point) {
         if (this.showBorder && this.map.isBorder(point)) {
             return this.borderColor.toHex()
         }
@@ -43,12 +41,14 @@ export class MapDiagram extends BaseMapDiagram {
         if (this.map.isLayer(point, this.layer)) {
             return this.foreground.brighten(40).toHex()
         }
-        const pointLayer = this.map.getLayer(point)
-        // invert this check to get remaining spaces
-        if (! this.map.isOverLayer(point, this.layer)) {
-            return this.background.darken(pointLayer*5).toHex()
+
+        const pointLayer = this.map.at(point).layer
+        const background = this.invert ? this.background : this.foreground
+        const foreground = this.invert ? this.foreground : this.background
+        if (this.map.isOverLayer(point, this.layer)) {
+            return foreground.darken(pointLayer*5).toHex()
         } else {
-            return this.foreground.darken(pointLayer*5).toHex()
+            return background.darken(pointLayer*5).toHex()
         }
     }
 }

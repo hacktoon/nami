@@ -53,9 +53,9 @@ export class RegionSet {
 
 
 export class RegionMapFill {
-    constructor(regionMap, params) {
+    constructor(regionMap) {
         this.regionMap = regionMap
-        this.fillMap = this.#createFillMap(params)
+        this.fillMap = this.#createFillMap()
         this.#fillRegions()
     }
 
@@ -63,30 +63,30 @@ export class RegionMapFill {
         return this.fillMap.get(id).fill()
     }
 
-    #createFillMap(params) {
+    #createFillMap() {
         const entries = this.regionMap.regionSet.map(region => {
-            const fill = this.#createOrganicFill(region, params)
+            const fill = this.#createOrganicFill(region)
             return [region.id, fill]
         })
         return new Map(entries)
     }
 
-    #createOrganicFill(region, params) {
+    #createOrganicFill(region) {
         const map = this.regionMap
         return new OrganicFill(region.origin, {
-            setBorder:  (point, neighbor) => {
-                map.setBorder(point)
+            setBorder: (point, neighbor) => {
+                map.at(point).setBorder()
                 region.setBorder(point, neighbor)
             },
-            setOrigin:  point => map.setOrigin(point),
-            setSeed:    point => map.setSeed(point, region.id),
-            setValue:   point => map.setValue(point, region.id),
-            setLayer:   (point, layer) => map.setLayer(point, layer),
-            isEmpty:    point => map.isEmpty(point),
-            isSeed:     point => map.isSeed(point, region.id),
+            setOrigin:  point => map.at(point).setOrigin(),
+            setSeed:    point => map.at(point).setSeed(region.id),
+            setValue:   point => map.at(point).setValue(region.id),
+            setLayer:   (point, layer) => map.at(point).setLayer(layer),
+            isEmpty:    point => map.at(point).isEmpty(),
+            isSeed:     point => map.at(point).isSeed(region.id),
             isBlocked:  point => map.isBlocked(point, region.id),
-            layerGrowth: params.get('layerGrowth'),
-            growthChance: params.get('growthChance'),
+            layerGrowth: map.layerGrowth,
+            growthChance: map.growthChance
         })
     }
 
@@ -95,8 +95,7 @@ export class RegionMapFill {
         while(totalPoints > 0) {
             this.regionMap.regionSet.forEach(region => {
                 const points = this.fill(region.id)
-                region.grow(points)
-                totalPoints -= points.length
+                totalPoints -= region.grow(points)
             })
         }
     }
