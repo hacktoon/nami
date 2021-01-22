@@ -18,10 +18,7 @@ export class Region {
         return this.points.has(point)
     }
 
-    setBorder(point, neighbor) {
-        // if (this.id == 1) {
-        //     console.log(neighbor);
-        // }
+    addBorder(point, neighbor) {
         this.borders.add(point)
     }
 
@@ -76,7 +73,7 @@ export class RegionMapFill {
         return new OrganicFill(region.origin, {
             setBorder: (point, neighbor) => {
                 map.at(point).setBorder()
-                region.setBorder(point, neighbor)
+                region.addBorder(point, neighbor)
             },
             setOrigin:  point => map.at(point).setOrigin(),
             setSeed:    point => map.at(point).setSeed(region.id),
@@ -84,7 +81,7 @@ export class RegionMapFill {
             setLayer:   (point, layer) => map.at(point).setLayer(layer),
             isEmpty:    point => map.at(point).isEmpty(),
             isSeed:     point => map.at(point).isSeed(region.id),
-            isBlocked:  point => map.isBlocked(point, region.id),
+            isBlocked:  point => map.at(point).isBlocked(region.id),
             layerGrowth: map.layerGrowth,
             growthChance: map.growthChance
         })

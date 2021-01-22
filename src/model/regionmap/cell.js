@@ -63,4 +63,10 @@ export class RegionCell {
         if (this.isEmpty())
             this.value = value
     }
+
+    isBlocked(value) {
+        let isFilled = !this.isEmpty() && !this.isValue(value)
+        let isAnotherSeed = !this.isEmptySeed() && !this.isSeed(value)
+        return isFilled || isAnotherSeed
+    }
 }

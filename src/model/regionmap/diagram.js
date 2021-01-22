@@ -9,6 +9,7 @@ export class MapDiagram extends BaseMapDiagram {
         Type.boolean('showOrigin', 'Show origin', true),
         Type.boolean('invert', 'Invert colors', false),
         Type.number('layer', 'Layer', 3, {step: 1, min: 0}),
+        Type.number('showRegion', 'Show region', -1, {step: 1, min: -1}),
         Type.color('foreground', 'Foreground', Color.fromHex('#251')),
         Type.color('background', 'Background', Color.fromHex('#059')),
         Type.color('borderColor', 'Border color', Color.fromHex('#021')),
@@ -27,11 +28,14 @@ export class MapDiagram extends BaseMapDiagram {
         this.foreground = params.get('foreground')
         this.background = params.get('background')
         this.borderColor = params.get('borderColor')
+        this.showRegion = params.get('showRegion')
         this.invert = params.get('invert')
     }
 
     get(point) {
         if (this.showBorder && this.map.isBorder(point)) {
+            if (this.map.regionAt(point).id === this.showRegion)
+                return this.borderColor.invert().toHex()
             return this.borderColor.toHex()
         }
         if (this.showOrigin && this.map.isOrigin(point)) {

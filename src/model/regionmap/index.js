@@ -42,7 +42,7 @@ export default class RegionMap extends BaseMap {
 
         const regionFill = new RegionMapFill(this)
         this.regionSet.forEach(region => {
-            console.log(region.id);
+
         })
     }
 
@@ -50,7 +50,7 @@ export default class RegionMap extends BaseMap {
         return this.grid.get(point)
     }
 
-    get(point) {
+    regionAt(point) {
         const id = this.at(point).value
         return this.regionSet.get(id)
     }
@@ -69,12 +69,5 @@ export default class RegionMap extends BaseMap {
 
     isOverLayer(point, layer) {
         return this.at(point).layer > layer
-    }
-
-    isBlocked(point, value) {
-        const cell = this.at(point)
-        let isFilled = !cell.isEmpty() && !cell.isValue(value)
-        let isAnotherSeed = !cell.isEmptySeed() && !cell.isSeed(value)
-        return isFilled || isAnotherSeed
     }
 }
