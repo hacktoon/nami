@@ -3,7 +3,8 @@ import { RandomPointDistribution } from '/lib/point/distribution'
 import { Schema, Type } from '/lib/schema'
 
 import { RegionSet, RegionMapFill } from './region'
-import { RegionGrid } from './grid'
+import { RegionCell } from './cell'
+import { Grid } from '/lib/grid'
 import { MapDiagram } from './diagram'
 
 
@@ -31,7 +32,7 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.grid = new RegionGrid(this.width, this.height)
+        this.grid = new Grid(this.width, this.height, () => new RegionCell())
         const origins = RandomPointDistribution.create(
             params.get('count'), this.width, this.height
         )
@@ -43,43 +44,33 @@ export default class RegionMap extends BaseMap {
         // })
     }
 
+    at(point) {
+        return this.grid.get(point)
+    }
+
     get(point) {
         const id = this.at(point).value
         return this.regions.get(id)
     }
 
-    at(point) {
-        return this.grid.get(point)
+    getLayer(point) {
+        return this.at(point).layer
     }
 
     isOrigin(point) {
         return this.at(point).isOrigin()
     }
 
-    setOrigin(point) {
-        this.at(point).setOrigin()
-    }
-
-    setSeed(point, value) {
-        return this.at(point).setSeed(value)
-    }
-
     isSeed(point, value) {
-        if (this.isEmpty(point))
-            return false
-        return this.grid.isSeed(point, value)
+        return this.at(point).isSeed(value)
     }
 
     isEmpty(point) {
-        return this.grid.isEmpty(point)
+        return this.at(point).isEmpty()
     }
 
     isBorder(point) {
-        return this.grid.isBorder(point)
-    }
-
-    getLayer(point) {
-        return this.grid.getLayer(point)
+        return this.at(point).isBorder()
     }
 
     isLayer(point, layer) {
@@ -88,5 +79,34 @@ export default class RegionMap extends BaseMap {
 
     isOverLayer(point, layer) {
         return this.getLayer(point) > layer
+    }
+
+    setOrigin(point) {
+        this.at(point).setOrigin()
+    }
+
+    setValue(point, value) {
+        const cell = this.at(point)
+        if (cell.isEmpty())
+            cell.setValue(value)
+    }
+
+    setBorder(point) {
+        this.at(point).setBorder()
+    }
+
+    setSeed(point, value) {
+        this.at(point).setSeed(value)
+    }
+
+    setLayer(point, layer) {
+        this.at(point).setLayer(layer)
+    }
+
+    isBlocked(point, value) {
+        const cell = this.at(point)
+        let isFilled = !cell.isEmpty() && !cell.isValue(value)
+        let isAnotherSeed = !cell.isEmptySeed() && !cell.isSeed(value)
+        return isFilled || isAnotherSeed
     }
 }

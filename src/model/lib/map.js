@@ -8,6 +8,10 @@ export class BaseMap {
         this.seed = this.#buildSeed(params.get('seed'))
     }
 
+    get area() {
+        return this.width * this.height
+    }
+
     #buildSeed(text='') {
         const seed = text.length ? text : String(Number(new Date()))
         Random.seed = seed
