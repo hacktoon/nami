@@ -33,23 +33,24 @@ export class MapDiagram extends BaseMapDiagram {
     }
 
     get(point) {
-        if (this.showBorders && this.map.isBorder(point)) {
+        const cell = this.map.at(point)
+        if (this.showBorders && cell.isBorder()) {
             if (this.map.regionAt(point).id === this.showRegion)
                 return this.borderColor.invert().toHex()
             return this.borderColor.toHex()
         }
-        if (this.showOrigins && this.map.isOrigin(point)) {
+        if (this.showOrigins && cell.isOrigin()) {
             return this.foreground.invert().toHex()
         }
         // draw seed
-        if (this.map.isLayer(point, this.showLayer)) {
+        if (cell.isLayer(this.showLayer)) {
             return this.foreground.brighten(40).toHex()
         }
 
         const pointLayer = this.map.at(point).layer
         const background = this.invertColors ? this.background : this.foreground
         const foreground = this.invertColors ? this.foreground : this.background
-        if (this.map.isOverLayer(point, this.showLayer)) {
+        if (cell.layer > this.showLayer) {
             return foreground.darken(pointLayer*5).toHex()
         } else {
             return background.darken(pointLayer*5).toHex()

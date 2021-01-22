@@ -54,20 +54,4 @@ export default class RegionMap extends BaseMap {
         const id = this.at(point).value
         return this.regionSet.get(id)
     }
-
-    isOrigin(point) {
-        return this.at(point).isOrigin()
-    }
-
-    isBorder(point) {
-        return this.at(point).isBorder()
-    }
-
-    isLayer(point, layer) {
-        return this.at(point).isLayer(layer)
-    }
-
-    isOverLayer(point, layer) {
-        return this.at(point).layer > layer
-    }
 }
