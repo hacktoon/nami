@@ -44,16 +44,24 @@ export default class RegionMap extends BaseMap {
     }
 
     get(point) {
-        const id = this.grid.get(point).value
+        const id = this.at(point).value
         return this.regions.get(id)
     }
 
+    at(point) {
+        return this.grid.get(point)
+    }
+
     isOrigin(point) {
-        return this.grid.get(point).isOrigin()
+        return this.at(point).isOrigin()
     }
 
     setOrigin(point) {
-        return this.grid.get(point).setOrigin()
+        this.at(point).setOrigin()
+    }
+
+    setSeed(point, value) {
+        return this.at(point).setSeed(value)
     }
 
     isSeed(point, value) {
@@ -75,7 +83,7 @@ export default class RegionMap extends BaseMap {
     }
 
     isLayer(point, layer) {
-        return this.grid.get(point).isLayer(layer)
+        return this.at(point).isLayer(layer)
     }
 
     isOverLayer(point, layer) {

@@ -5,8 +5,7 @@ import { OrganicFill } from '/lib/flood-fill'
 const EMPTY_VALUE = null
 const EMPTY_SEED = null
 const TYPE_NORMAL = 1
-const TYPE_ORIGIN = 2
-const TYPE_BORDER = 3
+const TYPE_BORDER = 2
 
 
 export class Region {
@@ -78,14 +77,15 @@ export class RegionMapFill {
     }
 
     #createOrganicFill(region, params) {
+        const map = this.regionMap
         const grid = this.regionMap.grid
         return new OrganicFill(region.origin, {
             setBorder:  (point, neighbor) => {
                 grid.setBorder(point)
                 region.setBorder(point, neighbor)
             },
-            setOrigin:  point => this.regionMap.setOrigin(point),
-            setSeed:    point => grid.setSeed(point, region.id),
+            setOrigin:  point => map.setOrigin(point),
+            setSeed:    point => map.setSeed(point, region.id),
             setValue:   point => grid.setValue(point, region.id),
             setLayer:   (point, layer) => grid.setLayer(point, layer),
             isEmpty:    point => grid.isEmpty(point),
@@ -114,20 +114,22 @@ function createDistanceField(grid, regions) {
 
 
 export class RegionCell {
+    #isOrigin = false
+    #type     = TYPE_NORMAL
+
     constructor() {
         this.layer    = 0
         this.value    = EMPTY_VALUE
-        this.type     = TYPE_NORMAL
         this.seed     = EMPTY_SEED
         this.neighbor = null
     }
 
     isOrigin() {
-        return this.type === TYPE_ORIGIN
+        return this.#isOrigin
     }
 
     isBorder() {
-        return this.type === TYPE_BORDER
+        return this.#type === TYPE_BORDER
     }
 
     isLayer(layer) {
@@ -150,15 +152,15 @@ export class RegionCell {
         return this.seed === EMPTY_SEED
     }
 
-    isOrigin() {
-        return this.seed.type === TYPE_ORIGIN
-    }
-
     setOrigin() {
-        this.type = TYPE_ORIGIN
+        this.#isOrigin = true
     }
 
     setBorder() {
-        return this.type = TYPE_BORDER
+        return this.#type = TYPE_BORDER
+    }
+
+    setSeed(value) {
+        return this.seed = value
     }
 }
