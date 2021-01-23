@@ -27,7 +27,6 @@ export default class WorldMap extends BaseMap {
         this.width = params.get('size')
         this.height = params.get('size')
         this.roughness = params.get('roughness')
-        this.area = this.size * this.size
         this.name = Name.createLandmassName()
         this.reliefMap = new ReliefMap(this.size, this.roughness)
     }

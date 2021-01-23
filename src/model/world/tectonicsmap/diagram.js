@@ -24,10 +24,6 @@ export class MapDiagram extends BaseMapDiagram {
     }
 
     get(point) {
-        return this.getColor(point)
-    }
-
-    getColor(point) {
         if (this.showBorder && this.map.isBorder(point)) {
             return this.borderColor.toHex()
         }
