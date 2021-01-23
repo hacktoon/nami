@@ -34,10 +34,9 @@ export default class NoiseMap extends BaseMap {
             this.resolution,
             this.scale
         )
-        this.grid = new Grid(this.width, this.height,
-            point => {
-                return simplex.noise(point)
-            })
+        this.grid = new Grid(this.width, this.height, point => {
+            return simplex.noise(point)
+        })
     }
 
     get(point) {
