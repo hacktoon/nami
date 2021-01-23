@@ -1,8 +1,9 @@
 import { BaseMap } from '/model/lib/map'
 import { RandomPointDistribution } from '/lib/point/distribution'
+import { OrganicFill } from '/lib/flood-fill'
 import { Schema, Type } from '/lib/schema'
 
-import { RegionSet, RegionMapFill } from './region'
+import { RegionSet } from './region'
 import { RegionCell } from './cell'
 import { Grid } from '/lib/grid'
 import { MapDiagram } from './diagram'
@@ -40,10 +41,12 @@ export default class RegionMap extends BaseMap {
         )
         this.regionSet = new RegionSet(origins)
 
-        const regionFill = new RegionMapFill(this)
-        this.regionSet.forEach(region => {
+        this.fillMap = this.#createFillMap()
+        this.#fillRegions()
 
-        })
+        // this.regionSet.forEach(region => {
+
+        // })
     }
 
     at(point) {
@@ -53,5 +56,44 @@ export default class RegionMap extends BaseMap {
     regionAt(point) {
         const id = this.at(point).value
         return this.regionSet.get(id)
+    }
+
+    #createFillMap() {
+        const entries = this.regionSet.map(region => {
+            const fill = this.#createOrganicFill(region)
+            return [region.id, fill]
+        })
+        return new Map(entries)
+    }
+
+    #createOrganicFill(region) {
+        const hooks = {
+            setBorder: (point, neighbor) => {
+                this.at(point).setBorder()
+                region.addBorder(point, neighbor)
+            },
+            setOrigin:  point => this.at(point).setOrigin(),
+            setSeed:    point => this.at(point).setSeed(region.id),
+            setValue:   point => this.at(point).setValue(region.id),
+            setLayer:   (point, layer) => this.at(point).setLayer(layer),
+            isEmpty:    point => this.at(point).isEmpty(),
+            isSeed:     point => this.at(point).isSeed(region.id),
+            isBlocked:  point => this.at(point).isBlocked(region.id),
+            layerGrowth: this.layerGrowth,
+            growthChance: this.growthChance
+        }
+        return new OrganicFill(region.origin, hooks)
+    }
+
+    #fillRegions(){
+        let totalPoints = this.area
+
+        while(totalPoints > 0) {
+            this.regionSet.forEach(region => {
+
+                const points = this.fillMap.get(region.id).fill(region.id)
+                totalPoints -= region.grow(points)
+            })
+        }
     }
 }
