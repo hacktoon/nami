@@ -20,12 +20,9 @@ export class Region {
         return this.points.has(point)
     }
 
-    addBorder(point, neighborId) {
+    addBorder(point, neighborRegion) {
         this.borders.add(point)
-        if (! this.neighbors.has(neighborId)) {
-            this.neighbors.add(neighborId)
-            // console.log(`region ${this.id} has neighbor ${neighborId}`);
-        }
+        this.neighbors.add(neighborRegion.id)
     }
 
     grow(points) {

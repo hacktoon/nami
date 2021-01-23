@@ -18,7 +18,9 @@ export class RegionCell {
         return this.#region
     }
 
-    get layer() { return this.#layer }
+    get layer() {
+        return this.#layer
+    }
 
     isOrigin() {
         return this.#isOrigin
@@ -35,6 +37,12 @@ export class RegionCell {
     isRegion(region) {
         if (this.isEmpty()) return false
         return this.#region.id === region.id
+    }
+
+    // TODO: remove, use SelectField of regions
+    isRegionId(id) {
+        if (this.isEmpty()) return false
+        return this.#region.id === id
     }
 
     isEmpty() {
@@ -66,7 +74,7 @@ export class RegionCell {
         this.#seed = region.id
     }
 
-    setValue(region) {
+    setRegion(region) {
         if (this.isEmpty())
             this.#region = region
     }

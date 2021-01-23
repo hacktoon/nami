@@ -8,20 +8,20 @@ function h(pts) {
 
 
 export class OrganicFill {
-    constructor(originPoint, params={}) {
+    constructor(originPoint, hooks={}) {
         this.layer = 0
         this.origin = originPoint
         this.seeds = [originPoint]
-        this.setOrigin = params.setOrigin ?? (()=>{})
-        this.setValue = params.setValue ?? (()=>{})
-        this.setSeed = params.setSeed ?? (()=>{})
-        this.setLayer = params.setLayer ?? (()=>{})
-        this.setBorder = params.setBorder ?? (()=>{})
-        this.isSeed = params.isSeed ?? (() => true)
-        this.isEmpty = params.isEmpty ?? (() => false)
-        this.isBlocked = params.isBlocked ?? (() => true)
-        this.growthChance = params.growthChance ?? 1
-        this.layerGrowth = params.layerGrowth ?? 1
+        this.setOrigin = hooks.setOrigin ?? (()=>{})
+        this.setValue = hooks.setValue ?? (()=>{})
+        this.setSeed = hooks.setSeed ?? (()=>{})
+        this.setLayer = hooks.setLayer ?? (()=>{})
+        this.setBorder = hooks.setBorder ?? (()=>{})
+        this.isSeed = hooks.isSeed ?? (() => true)
+        this.isEmpty = hooks.isEmpty ?? (() => false)
+        this.isBlocked = hooks.isBlocked ?? (() => true)
+        this.growthChance = hooks.growthChance ?? 1
+        this.layerGrowth = hooks.layerGrowth ?? 1
 
         this.setOrigin(originPoint)
         this.setSeed(originPoint)

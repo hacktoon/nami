@@ -52,6 +52,7 @@ export default class RegionMap extends BaseMap {
         let totalPoints = this.area
         while(totalPoints > 0) {
             this.regionSet.forEach(region => {
+                console.log(region.neighbors);
                 const points = fillMap.get(region.id).fill(region.id)
                 totalPoints -= region.grow(points)
             })
@@ -68,17 +69,13 @@ export default class RegionMap extends BaseMap {
 
     #createOrganicFill(region) {
         const hooks = {
-            setBorder: (point, neighbor) => {
-                // const id = this.get(neighbor).region.id
-                // if (id == undefined) {
-                //     console.log(this.at(neighbor));
-                // }
+            setBorder: (point, neighborPoint) => {
                 this.get(point).setBorder()
-                // region.addBorder(point, id)
+                region.addBorder(point, this.get(neighborPoint).region)
             },
             setOrigin:  point => this.get(point).setOrigin(),
             setSeed:    point => this.get(point).setSeed(region),
-            setValue:   point => this.get(point).setValue(region),
+            setValue:   point => this.get(point).setRegion(region),
             setLayer:   (point, layer) => this.get(point).setLayer(layer),
             isEmpty:    point => this.get(point).isEmpty(),
             isSeed:     point => this.get(point).isSeed(region),
