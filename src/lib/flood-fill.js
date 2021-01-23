@@ -1,5 +1,4 @@
 import { Random } from '/lib/random'
-import { Direction } from '/lib/direction'
 
 
 function h(pts) {
@@ -25,7 +24,7 @@ export class OrganicFill {
 
         this.setOrigin(originPoint)
         this.setSeed(originPoint)
-        this.setLayer(originPoint, this.layer)
+        this.setLayer(originPoint, this.layer++)
     }
 
     fill() {
