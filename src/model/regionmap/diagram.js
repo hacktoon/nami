@@ -40,17 +40,17 @@ export class MapDiagram extends BaseMapDiagram {
         const isOrigin = this.showOrigins && cell.isOrigin()
         const showSeeds = cell.isLayer(this.showLayer)
 
-        if (showSeeds) {
-            return fgcolor.brighten(isBorder ? 0 : 40).toHex()
-        }
-        if (isOrigin) {
-            return fgcolor.invert().toHex()
-        }
         if (isBorder) {
             const color = fgcolor.darken(70)
             if (this.map.regionAt(point).id === this.showRegion)
                 return color.invert().toHex()
             return color.toHex()
+        }
+        if (isOrigin) {
+            return fgcolor.invert().toHex()
+        }
+        if (showSeeds) {
+            return fgcolor.brighten(isBorder ? 0 : 40).toHex()
         }
 
         const background = this.invertColors ? this.bgColor : fgcolor

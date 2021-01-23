@@ -43,7 +43,6 @@ export default class RegionMap extends BaseMap {
 
         this.fillMap = this.#createFillMap()
         this.#fillRegions()
-
         // this.regionSet.forEach(region => {
 
         // })
