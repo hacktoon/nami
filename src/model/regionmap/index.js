@@ -33,16 +33,16 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
+        this.count = params.get('count')
         this.layerGrowth = params.get('layerGrowth')
         this.growthChance = params.get('growthChance')
         this.grid = new Grid(this.width, this.height, () => new RegionCell())
-        const origins = RandomPointDistribution.create(
-            params.get('count'), this.width, this.height
-        )
-        this.regionSet = new RegionSet(origins)
+        this.regionSet = new RegionSet(RandomPointDistribution.create(
+            this.count, this.width, this.height
+        ))
 
-        this.fillMap = this.#createFillMap()
-        this.#fillRegions()
+        const fillMap = this.#createFillMap(this.regionSet)
+        this.#fillRegions(fillMap)
         // this.regionSet.forEach(region => {
 
         // })
@@ -57,8 +57,8 @@ export default class RegionMap extends BaseMap {
         return this.regionSet.get(id)
     }
 
-    #createFillMap() {
-        const entries = this.regionSet.map(region => {
+    #createFillMap(regionSet) {
+        const entries = regionSet.map(region => {
             const fill = this.#createOrganicFill(region)
             return [region.id, fill]
         })
@@ -84,13 +84,11 @@ export default class RegionMap extends BaseMap {
         return new OrganicFill(region.origin, hooks)
     }
 
-    #fillRegions(){
+    #fillRegions(fillMap){
         let totalPoints = this.area
-
         while(totalPoints > 0) {
             this.regionSet.forEach(region => {
-
-                const points = this.fillMap.get(region.id).fill(region.id)
+                const points = fillMap.get(region.id).fill(region.id)
                 totalPoints -= region.grow(points)
             })
         }
