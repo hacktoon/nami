@@ -11,9 +11,8 @@ export class MapDiagram extends BaseMapDiagram {
         Type.boolean('randomColors', 'Random colors', false),
         Type.number('showLayer', 'Show layer', 3, {step: 1, min: 0}),
         Type.number('showRegion', 'Show region', -1, {step: 1, min: -1}),
-        Type.color('foreground', 'Foreground', Color.fromHex('#251')),
-        Type.color('background', 'Background', Color.fromHex('#059')),
-        Type.color('borderColor', 'Border color', Color.fromHex('#021')),
+        Type.color('fgColor', 'FG color', Color.fromHex('#251')),
+        Type.color('bgColor', 'BG color', Color.fromHex('#059'))
     )
 
     static create(map, params) {
@@ -26,9 +25,8 @@ export class MapDiagram extends BaseMapDiagram {
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
         this.showLayer = params.get('showLayer')
-        this.foreground = params.get('foreground')
-        this.background = params.get('background')
-        this.borderColor = params.get('borderColor')
+        this.fgColor = params.get('fgColor')
+        this.bgColor = params.get('bgColor')
         this.showRegion = params.get('showRegion')
         this.invertColors = params.get('invertColors')
         this.randomColors = params.get('randomColors')
@@ -37,25 +35,26 @@ export class MapDiagram extends BaseMapDiagram {
     get(point) {
         const cell = this.map.at(point)
         const region = this.map.regionAt(point)
+        const fgcolor = this.randomColors ? region.color : this.fgColor
         const isBorder = this.showBorders && cell.isBorder()
+        const isOrigin = this.showOrigins && cell.isOrigin()
         const showSeeds = cell.isLayer(this.showLayer)
-        const fgColor = this.randomColors ? region.color : this.foreground
-        // current layer are seeds
+
         if (showSeeds) {
-            const bright = isBorder ? 0 : 40
-            return fgColor.brighten(bright).toHex()
+            return fgcolor.brighten(isBorder ? 0 : 40).toHex()
         }
-        if (this.showOrigins && cell.isOrigin()) {
-            return fgColor.invert().toHex()
+        if (isOrigin) {
+            return fgcolor.invert().toHex()
         }
         if (isBorder) {
+            const color = fgcolor.darken(70)
             if (this.map.regionAt(point).id === this.showRegion)
-                return this.borderColor.invert().toHex()
-            return this.borderColor.toHex()
+                return color.invert().toHex()
+            return color.toHex()
         }
 
-        const background = this.invertColors ? this.background : fgColor
-        const foreground = this.invertColors ? fgColor : this.background
+        const background = this.invertColors ? this.bgColor : fgcolor
+        const foreground = this.invertColors ? fgcolor : this.bgColor
         const color = cell.layer > this.showLayer ? foreground : background
         return color.darken(cell.layer * 5).toHex()
     }
