@@ -24,7 +24,6 @@ export class OrganicFill {
 
         this.setOrigin(originPoint)
         this.setSeed(originPoint)
-        this.setLayer(originPoint, this.layer++)
     }
 
     fill() {
@@ -41,6 +40,7 @@ export class OrganicFill {
         return seedPoints.filter(point => {
             if (! this.isEmpty(point)) return false
             this.setValue(point)
+            this.setLayer(point, this.layer)
             return true
         })
     }
@@ -55,7 +55,6 @@ export class OrganicFill {
                 }
                 if (this.#isSeedable(neighbor)) {
                     this.setSeed(neighbor)
-                    this.setLayer(neighbor, this.layer)
                     seeds.push(neighbor)
                 }
             })
