@@ -15,7 +15,7 @@ export default class NoiseMap extends BaseMap {
         Type.number('detail', 'Detail', 8, {step: 1, min: 1, max: 20}),
         Type.number('resolution', 'Resolution', .5, {step: 0.1, min: 0.1}),
         Type.number('scale', 'Scale', .01, {step: 0.01, min: 0.01}),
-        Type.text('seed', 'Seed', 'a')
+        Type.text('seed', 'Seed', '')
     )
     static diagram = MapDiagram
 

@@ -10,8 +10,7 @@ export class SimplexNoise {
         this.iterations = iterations
         this.persistence = persistence
         this.scale = scale
-        this.low = 0
-        this.high = 255
+        this.range = 255
 
         this.identity = [[1, 1], [-1, 1 ], [1, -1], [-1, -1],
                          [1, 0], [-1, 0 ], [1,  0], [-1,  0],
@@ -28,25 +27,22 @@ export class SimplexNoise {
     }
 
     noise(point) {
-        let maxAmp = 0
         let amp = 1
         let freq = this.scale
         let noise = 0
 
         //add successively smaller, higher-frequency terms
         for(let i = 0; i < this.iterations; ++i) {
-            noise += this._noise(point.x * freq, point.y * freq) * amp
-            maxAmp += amp
+            noise += this.#calcNoise(point.x * freq, point.y * freq) * amp
             amp *= this.persistence
             freq *= 2
         }
-        //take the average value of the iterations
-        noise /= maxAmp
         //normalize the result
-        return noise * (this.high - this.low) / 2 + (this.high + this.low) / 2
+        const half = this.range / 2
+        return Math.round(noise * half + half)
     }
 
-    _noise(xin, yin) {
+    #calcNoise(xin, yin) {
         // Skew the input space to determine which simplex cell we're in
         const F2 = 0.5*(Math.sqrt(3.0)-1.0)
         // Noise contributions from the three corners
@@ -85,33 +81,35 @@ export class SimplexNoise {
         let gi2 = this.perm[ii + 1 + this.perm[jj + 1]] % 12
         // Calculate the contribution from the three corners
         let t0 = 0.5 - x0 * x0 - y0 * y0
-        if(t0 < 0)
+        if (t0 < 0)
             n0 = 0.0
         else {
           t0 *= t0
-          n0 = t0 * t0 * dot(this.identity[gi0], x0, y0) // (x,y) of identity used for 2D gradient
+          n0 = t0 * t0 * this.dot(gi0, x0, y0) // (x,y) of identity used for 2D gradient
         }
         let t1 = 0.5 - x1 * x1 - y1 * y1
-        if(t1 < 0)
+        if (t1 < 0)
             n1 = 0.0
         else {
           t1 *= t1
-          n1 = t1 * t1 * dot(this.identity[gi1], x1, y1)
+          n1 = t1 * t1 * this.dot(gi1, x1, y1)
         }
         let t2 = 0.5 - x2 * x2 - y2 * y2
-        if(t2 < 0)
+        if (t2 < 0)
             n2 = 0.0
         else {
           t2 *= t2
-          n2 = t2 * t2 * dot(this.identity[gi2], x2, y2)
+          n2 = t2 * t2 * this.dot(gi2, x2, y2)
         }
         // Add contributions from each corner to get the final noise value.
         // The result is scaled to return values in the interval [-1,1].
-        return 70.0 * (n0 + n1 + n2)
-      }
+        return 40 * (n0 + n1 + n2)
+    }
+
+    dot(gi, x, y) {
+        const g = this.identity[gi]
+        return g[0] * x + g[1] * y;
+    }
 }
 
 
-function dot(g, x, y) {
-    return g[0]*x + g[1]*y;
-}

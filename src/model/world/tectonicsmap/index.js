@@ -15,7 +15,7 @@ export default class TectonicsMap extends BaseMap {
         Type.number('width', 'Width', 200, {step: 1, min: 1}),
         Type.number('height', 'Height', 150, {step: 1, min: 1}),
         Type.number('plates', 'Plates', 10, {step: 1, min: 1}),
-        Type.text('seed', 'Seed', 'a')
+        Type.text('seed', 'Seed', '')
     )
     static diagram = MapDiagram
 
