@@ -36,7 +36,7 @@ const options = APPS.map(([model,]) => [model.id, model.id])
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', RegionMap.id, {options})
+        Type.enum('app', 'App', NoiseMap.id, {options})
     )
 }
 

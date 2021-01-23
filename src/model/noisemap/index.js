@@ -34,9 +34,15 @@ export default class NoiseMap extends BaseMap {
             this.resolution,
             this.scale
         )
+        let max = -Infinity
+        let min = Infinity
         this.grid = new Grid(this.width, this.height, point => {
-            return simplex.noise(point)
+            let val = simplex.noise(point)
+            if (val > max) max = val
+            if (val < min) min = val
+            return val
         })
+        console.log(min, max);
     }
 
     get(point) {

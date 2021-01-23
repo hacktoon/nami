@@ -4,23 +4,26 @@ import { Random } from '/lib/random'
 // example:  simplex = SimplexNoise(8, .6, 0.01, [0, 255])
 //           r = simplex.noise(x, y)
 
-const RANGE = 255
-
 
 export class SimplexNoise {
     constructor(iterations, persistence, scale) {
         this.iterations = iterations
         this.persistence = persistence
         this.scale = scale
-        this.grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],
-                      [1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],
-                      [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
+        this.low = 0
+        this.high = 255
 
-        // To remove the need for index wrapping,
-        // double the permutation table length
+        this.identity = [[1, 1], [-1, 1 ], [1, -1], [-1, -1],
+                         [1, 0], [-1, 0 ], [1,  0], [-1,  0],
+                         [0, 1], [ 0, -1], [0,  1], [ 0, -1]];
+        const p = [];
+        for (let i=0; i<256; i++) {
+            p[i] = Random.int(255)
+        }
+        // To remove the need for index wrapping, double the permutation table length
         this.perm = [];
-        for(let i=0; i<(RANGE+1)*2; i++) {
-            this.perm[i] = Random.int(RANGE)
+        for(let i=0; i<512; i++) {
+            this.perm[i] = p[i & 255];
         }
     }
 
@@ -32,7 +35,7 @@ export class SimplexNoise {
 
         //add successively smaller, higher-frequency terms
         for(let i = 0; i < this.iterations; ++i) {
-            noise += this.#get_noise(point.x * freq, point.y * freq) * amp
+            noise += this._noise(point.x * freq, point.y * freq) * amp
             maxAmp += amp
             amp *= this.persistence
             freq *= 2
@@ -40,10 +43,10 @@ export class SimplexNoise {
         //take the average value of the iterations
         noise /= maxAmp
         //normalize the result
-        return noise * RANGE / 2 + RANGE / 2
+        return noise * (this.high - this.low) / 2 + (this.high + this.low) / 2
     }
 
-    #get_noise(xin, yin) {
+    _noise(xin, yin) {
         // Skew the input space to determine which simplex cell we're in
         const F2 = 0.5*(Math.sqrt(3.0)-1.0)
         // Noise contributions from the three corners
@@ -53,7 +56,7 @@ export class SimplexNoise {
         let j = Math.floor(yin+s)
         let G2 = (3.0-Math.sqrt(3.0)) / 6.0
         let t = (i + j) * G2
-        let X0 = i - t // Unskew the cell origin back to (x,y) space
+        let X0 = i - t // Unskew the cell origin back to (point.,y) space
         let Y0 = j - t
         let x0 = xin - X0 // The x,y distances from the cell origin
         let y0 = yin - Y0
@@ -86,21 +89,21 @@ export class SimplexNoise {
             n0 = 0.0
         else {
           t0 *= t0
-          n0 = t0 * t0 * dot(this.grad3[gi0], x0, y0) // (x,y) of grad3 used for 2D gradient
+          n0 = t0 * t0 * dot(this.identity[gi0], x0, y0) // (x,y) of identity used for 2D gradient
         }
         let t1 = 0.5 - x1 * x1 - y1 * y1
         if(t1 < 0)
             n1 = 0.0
         else {
           t1 *= t1
-          n1 = t1 * t1 * dot(this.grad3[gi1], x1, y1)
+          n1 = t1 * t1 * dot(this.identity[gi1], x1, y1)
         }
         let t2 = 0.5 - x2 * x2 - y2 * y2
         if(t2 < 0)
             n2 = 0.0
         else {
           t2 *= t2
-          n2 = t2 * t2 * dot(this.grad3[gi2], x2, y2)
+          n2 = t2 * t2 * dot(this.identity[gi2], x2, y2)
         }
         // Add contributions from each corner to get the final noise value.
         // The result is scaled to return values in the interval [-1,1].
