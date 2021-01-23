@@ -1,4 +1,5 @@
 import { PointSet } from '/lib/point/set'
+import { Color } from '/lib/color'
 
 
 export class Region {
@@ -7,6 +8,7 @@ export class Region {
         this.origin = origin
         this.points = new PointSet(origin)
         this.borders = new PointSet()
+        this.color = new Color()
     }
 
     get size() {

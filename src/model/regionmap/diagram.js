@@ -8,6 +8,7 @@ export class MapDiagram extends BaseMapDiagram {
         Type.boolean('showBorders', 'Show borders', true),
         Type.boolean('showOrigins', 'Show origins', true),
         Type.boolean('invertColors', 'Invert colors', false),
+        Type.boolean('randomColors', 'Random colors', false),
         Type.number('showLayer', 'Show layer', 3, {step: 1, min: 0}),
         Type.number('showRegion', 'Show region', -1, {step: 1, min: -1}),
         Type.color('foreground', 'Foreground', Color.fromHex('#251')),
@@ -30,18 +31,22 @@ export class MapDiagram extends BaseMapDiagram {
         this.borderColor = params.get('borderColor')
         this.showRegion = params.get('showRegion')
         this.invertColors = params.get('invertColors')
+        this.randomColors = params.get('randomColors')
     }
 
     get(point) {
         const cell = this.map.at(point)
+        const region = this.map.regionAt(point)
         const isBorder = this.showBorders && cell.isBorder()
+        const showSeeds = cell.isLayer(this.showLayer)
+        const fgColor = this.randomColors ? region.color : this.foreground
         // current layer are seeds
-        if (cell.isLayer(this.showLayer)) {
+        if (showSeeds) {
             const bright = isBorder ? 0 : 40
-            return this.foreground.brighten(bright).toHex()
+            return fgColor.brighten(bright).toHex()
         }
         if (this.showOrigins && cell.isOrigin()) {
-            return this.foreground.invert().toHex()
+            return fgColor.invert().toHex()
         }
         if (isBorder) {
             if (this.map.regionAt(point).id === this.showRegion)
@@ -49,8 +54,8 @@ export class MapDiagram extends BaseMapDiagram {
             return this.borderColor.toHex()
         }
 
-        const background = this.invertColors ? this.background : this.foreground
-        const foreground = this.invertColors ? this.foreground : this.background
+        const background = this.invertColors ? this.background : fgColor
+        const foreground = this.invertColors ? fgColor : this.background
         const color = cell.layer > this.showLayer ? foreground : background
         return color.darken(cell.layer * 5).toHex()
     }
