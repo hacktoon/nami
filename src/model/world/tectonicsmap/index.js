@@ -31,7 +31,7 @@ export default class TectonicsMap extends BaseMap {
             this.width,
             this.height,
             point => {
-                const region = this.regionMap.regionAt(point)
+                const region = this.regionMap.get(point).region
                 const x = region.id * 1000
                 const y = region.id * 1000
                 // TODO: get plate origin and flood fill setting plate features

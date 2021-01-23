@@ -33,9 +33,8 @@ export class MapDiagram extends BaseMapDiagram {
     }
 
     get(point) {
-        const cell = this.map.at(point)
-        const region = this.map.regionAt(point)
-        const fgcolor = this.randomColors ? region.color : this.fgColor
+        const cell = this.map.get(point)
+        const fgcolor = this.randomColors ? cell.region.color : this.fgColor
         const isBorder = this.showBorders && cell.isBorder()
         const isOrigin = this.showOrigins && cell.isOrigin()
         const showSeeds = cell.isLayer(this.showLayer)
@@ -48,7 +47,7 @@ export class MapDiagram extends BaseMapDiagram {
         }
         if (isBorder) {
             const color = fgcolor.darken(70)
-            if (this.map.regionAt(point).id === this.showRegion)
+            if (this.map.get(point).isRegion(this.showRegion))
                 return color.invert().toHex()
             return color.toHex()
         }

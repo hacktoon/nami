@@ -9,6 +9,7 @@ export class Region {
         this.points = new PointSet(origin)
         this.borders = new PointSet()
         this.color = new Color()
+        this.neighbors = new Set()
     }
 
     get size() {
@@ -19,8 +20,12 @@ export class Region {
         return this.points.has(point)
     }
 
-    addBorder(point, neighbor) {
+    addBorder(point, neighborId) {
         this.borders.add(point)
+        if (! this.neighbors.has(neighborId)) {
+            this.neighbors.add(neighborId)
+            // console.log(`region ${this.id} has neighbor ${neighborId}`);
+        }
     }
 
     grow(points) {

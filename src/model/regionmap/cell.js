@@ -1,4 +1,4 @@
-const EMPTY_VALUE = null
+const NO_REGION = null
 const EMPTY_SEED = null
 const TYPE_NORMAL = 1
 const TYPE_BORDER = 2
@@ -7,13 +7,18 @@ const TYPE_BORDER = 2
 export class RegionCell {
     #isOrigin = false
     #type     = TYPE_NORMAL
+    #region   = NO_REGION
+    #seed     = EMPTY_SEED
+    #layer    = 0
 
-    constructor() {
-        this.layer    = 0
-        this.value    = EMPTY_VALUE
-        this.seed     = EMPTY_SEED
-        this.neighbor = null
+    get region() {
+        if (this.#region === NO_REGION) {
+            return this.#seed
+        }
+        return this.#region
     }
+
+    get layer() { return this.#layer }
 
     isOrigin() {
         return this.#isOrigin
@@ -24,23 +29,25 @@ export class RegionCell {
     }
 
     isLayer(layer) {
-        return this.layer === layer
+        return this.#layer === layer
     }
 
-    isValue(value) {
-        return this.value === value
+    isRegion(region) {
+        if (this.isEmpty()) return false
+        return this.#region.id === region.id
     }
 
     isEmpty() {
-        return this.isValue(EMPTY_VALUE)
+        return this.#region === NO_REGION
     }
 
-    isSeed(value) {
-        return this.seed === value
+    isSeed(region) {
+        if (this.isEmptySeed()) return false
+        return this.#seed === region.id
     }
 
     isEmptySeed() {
-        return this.seed === EMPTY_SEED
+        return this.#seed === EMPTY_SEED
     }
 
     setOrigin() {
@@ -48,25 +55,25 @@ export class RegionCell {
     }
 
     setLayer(layer) {
-        this.layer = layer
+        this.#layer = layer
     }
 
     setBorder() {
         this.#type = TYPE_BORDER
     }
 
-    setSeed(value) {
-        this.seed = value
+    setSeed(region) {
+        this.#seed = region.id
     }
 
-    setValue(value) {
+    setValue(region) {
         if (this.isEmpty())
-            this.value = value
+            this.#region = region
     }
 
-    isBlocked(value) {
-        let isFilled = !this.isEmpty() && !this.isValue(value)
-        let isAnotherSeed = !this.isEmptySeed() && !this.isSeed(value)
+    isBlocked(region) {
+        let isFilled = !this.isEmpty() && !this.isRegion(region)
+        let isAnotherSeed = !this.isEmptySeed() && !this.isSeed(region)
         return isFilled || isAnotherSeed
     }
 }
