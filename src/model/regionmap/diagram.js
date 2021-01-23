@@ -21,7 +21,7 @@ export class MapDiagram extends BaseMapDiagram {
 
     constructor(map, params) {
         super(map)
-        // TODO: set `this.data` and add attributes dynamically
+        // TODO: set `this.attrs` and add attributes dynamically
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
         this.showLayer = params.get('showLayer')
@@ -40,17 +40,17 @@ export class MapDiagram extends BaseMapDiagram {
         const isOrigin = this.showOrigins && cell.isOrigin()
         const showSeeds = cell.isLayer(this.showLayer)
 
-        if (isBorder) {
-            const color = fgcolor.darken(70)
-            if (this.map.regionAt(point).id === this.showRegion)
-                return color.invert().toHex()
-            return color.toHex()
-        }
         if (isOrigin) {
             return fgcolor.invert().toHex()
         }
         if (showSeeds) {
             return fgcolor.brighten(isBorder ? 0 : 40).toHex()
+        }
+        if (isBorder) {
+            const color = fgcolor.darken(70)
+            if (this.map.regionAt(point).id === this.showRegion)
+                return color.invert().toHex()
+            return color.toHex()
         }
 
         const background = this.invertColors ? this.bgColor : fgcolor
