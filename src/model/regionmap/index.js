@@ -54,7 +54,7 @@ export default class RegionMap extends BaseMap {
             this.regionSet.forEach(region => {
                 // FIXME: avoid undefined values (seed/value diff)
                 // see region.addBorder for region checking
-                console.log(region.neighbors);
+                // console.log(region.neighbors);
                 const points = fillMap.get(region.id).fill(region.id)
                 totalPoints -= region.grow(points)
             })
@@ -71,10 +71,7 @@ export default class RegionMap extends BaseMap {
 
     #createOrganicFill(region) {
         const hooks = {
-            setBorder: (point, neighborPoint) => {
-                this.get(point).setBorder()
-                region.addBorder(point, this.get(neighborPoint).region)
-            },
+            setBorder: point => this.get(point).setBorder(),
             setOrigin:  point => this.get(point).setOrigin(),
             setSeed:    point => this.get(point).setSeed(region),
             isSeed:     point => this.get(point).isSeed(region),
