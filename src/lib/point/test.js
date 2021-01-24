@@ -40,6 +40,15 @@ test('point set has point after add', () => {
 })
 
 
+test('point set filters points', () => {
+    const pointSet = createSet()
+    const remaining = new Point(2, 2)
+    const filtered = pointSet.filter(point => point.x > 1)
+    expect(filtered.size).toBe(1)
+    expect(pointSet.has(remaining)).toBe(true)
+})
+
+
 test("point set doesn't has point after delete", () => {
     const pointSet = createSet()
     const point = new Point(0, 0)

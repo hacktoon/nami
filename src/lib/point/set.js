@@ -34,6 +34,22 @@ export class PointSet {
         return this.map.get(x).has(y)
     }
 
+    forEach(callback) {
+        this.map.forEach((subset, x) => {
+            subset.forEach(y => {
+                callback(new Point(x, y))
+            })
+        })
+    }
+
+    filter(callback) {
+        const pointSet = new PointSet()
+        this.forEach(point => {
+            if (callback(point)) pointSet.add(point)
+        })
+        return pointSet
+    }
+
     add(...points) {
         points.forEach(({x, y}) => {
             if (! this.map.has(x)) {
