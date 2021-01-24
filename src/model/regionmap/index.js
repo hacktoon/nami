@@ -52,6 +52,8 @@ export default class RegionMap extends BaseMap {
         let totalPoints = this.area
         while(totalPoints > 0) {
             this.regionSet.forEach(region => {
+                // FIXME: avoid undefined values (seed/value diff)
+                // see region.addBorder for region checking
                 console.log(region.neighbors);
                 const points = fillMap.get(region.id).fill(region.id)
                 totalPoints -= region.grow(points)

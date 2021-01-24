@@ -63,9 +63,9 @@ export class PointSet {
             if (! this.map.has(x)) {
                 this.map.set(x, new Set())
             }
-            const set = this.map.get(x)
-            if (! set.has(y)) {
-                set.add(y)
+            const subset = this.map.get(x)
+            if (! subset.has(y)) {
+                subset.add(y)
                 this.size++
             }
         })

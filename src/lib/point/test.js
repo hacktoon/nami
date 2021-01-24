@@ -60,6 +60,14 @@ test('point set merges points', () => {
 })
 
 
+test('pointSet size after merge', () => {
+    const pointSet1 = createSet()
+    const pointSet2 = new PointSet(new Point(4, 4))
+    const merged = pointSet1.merge(pointSet2)
+    expect(merged.size).toBe(4)
+})
+
+
 test("point set doesn't has point after delete", () => {
     const pointSet = createSet()
     const point = new Point(0, 0)

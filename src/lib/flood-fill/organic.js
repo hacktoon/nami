@@ -25,8 +25,8 @@ export class OrganicFill {
         if (this.seeds.length == 0)
             return []
         const filled = this.#fillValues(this.seeds)
-        const seeds = this.#setSeeds(filled)
-        this.seeds = this.#setExtraSeeds(seeds)
+        const seeds = this.#buildSeeds(filled)
+        this.seeds = this.#buildExtraSeeds(seeds)
         this.layer++
         return filled
     }
@@ -40,7 +40,7 @@ export class OrganicFill {
         })
     }
 
-    #setSeeds(points) {
+    #buildSeeds(points) {
         let seeds = []
         points.forEach(point => {
             point.adjacents(neighbor => {
@@ -61,12 +61,12 @@ export class OrganicFill {
         return this.isEmpty(point) && !this.isSeed(point)
     }
 
-    #setExtraSeeds(seeds) {
+    #buildExtraSeeds(seeds) {
         let times_remaining = Random.int(this.layerGrowth)
         const randFilter = () => Random.chance(this.growthChance)
         while(seeds.length && times_remaining--) {
             const randPoints = seeds.filter(randFilter)
-            seeds.push(...this.#setSeeds(randPoints))
+            seeds.push(...this.#buildSeeds(randPoints))
         }
         return seeds
     }
