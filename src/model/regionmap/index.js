@@ -36,19 +36,19 @@ export default class RegionMap extends BaseMap {
         this.count = params.get('count')
         this.layerGrowth = params.get('layerGrowth')
         this.growthChance = params.get('growthChance')
-        this.grid = new Grid(this.width, this.height, () => new RegionCell())
         this.regionSet = new RegionSet(RandomPointDistribution.create(
             this.count, this.width, this.height
         ))
-        this.#fillRegions()
+        this.grid = this.#buildGrid()
     }
 
     get(point) {
         return this.grid.get(point)
     }
 
-    #fillRegions() {
-        const fillMap = this.#createFillMap(this.regionSet)
+    #buildGrid() {
+        const grid = new Grid(this.width, this.height, () => new RegionCell())
+        const fillMap = this.#createFillMap(grid, this.regionSet)
         let totalPoints = this.area
         while(totalPoints > 0) {
             this.regionSet.forEach(region => {
@@ -59,21 +59,17 @@ export default class RegionMap extends BaseMap {
                 totalPoints -= region.grow(points)
             })
         }
+        return grid
     }
 
-    #createFillMap(regionSet) {
-        const entries = regionSet.map(region => {
-            const fill = this.#createOrganicFill(region)
-            return [region.id, fill]
-        })
-        return new Map(entries)
-    }
-
-    #createOrganicFill(region) {
+    #createFillMap(grid, regionSet) {
         const params = {
             layerGrowth: this.layerGrowth,
             growthChance: this.growthChance
         }
-        return new OrganicFill(region, this.grid, params)
+        const entries = regionSet.map(region => [
+            region.id, new OrganicFill(region, grid, params)
+        ])
+        return new Map(entries)
     }
 }
