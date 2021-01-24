@@ -2,23 +2,23 @@ import { Random } from '/lib/random'
 
 
 export class OrganicFill {
-    constructor(originPoint, hooks={}) {
+    constructor(region, grid, params) {
         this.layer = 0
-        this.origin = originPoint
-        this.seeds = [originPoint]
-        this.setOrigin = hooks.setOrigin ?? (()=>{})
-        this.setValue = hooks.setValue ?? (()=>{})
-        this.setSeed = hooks.setSeed ?? (()=>{})
-        this.setLayer = hooks.setLayer ?? (()=>{})
-        this.setBorder = hooks.setBorder ?? (()=>{})
-        this.isSeed = hooks.isSeed ?? (() => true)
-        this.isEmpty = hooks.isEmpty ?? (() => false)
-        this.isBlocked = hooks.isBlocked ?? (() => true)
-        this.growthChance = hooks.growthChance ?? 1
-        this.layerGrowth = hooks.layerGrowth ?? 1
+        this.origin = region.origin
+        this.seeds = [region.origin]
+        this.setOrigin = point => grid.get(point).setOrigin(),
+        this.setValue = point => grid.get(point).setRegion(region)
+        this.setSeed = point => grid.get(point).setSeed(region)
+        this.setLayer = (point, layer) => grid.get(point).setLayer(layer)
+        this.setBorder = point => grid.get(point).setBorder()
+        this.isSeed = point => grid.get(point).isSeed(region)
+        this.isEmpty = point => grid.get(point).isEmpty()
+        this.isBlocked = point => grid.get(point).isBlocked(region)
+        this.growthChance = params.growthChance ?? 1
+        this.layerGrowth = params.layerGrowth ?? 1
 
-        this.setOrigin(originPoint)
-        this.setSeed(originPoint)
+        this.setOrigin(region.origin)
+        this.setSeed(region.origin)
     }
 
     fill() {

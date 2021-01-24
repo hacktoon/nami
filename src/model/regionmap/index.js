@@ -70,18 +70,10 @@ export default class RegionMap extends BaseMap {
     }
 
     #createOrganicFill(region) {
-        const hooks = {
-            setBorder: point => this.get(point).setBorder(),
-            setOrigin:  point => this.get(point).setOrigin(),
-            setSeed:    point => this.get(point).setSeed(region),
-            isSeed:     point => this.get(point).isSeed(region),
-            setValue:   point => this.get(point).setRegion(region),
-            setLayer:   (point, layer) => this.get(point).setLayer(layer),
-            isEmpty:    point => this.get(point).isEmpty(),
-            isBlocked:  point => this.get(point).isBlocked(region),
+        const params = {
             layerGrowth: this.layerGrowth,
             growthChance: this.growthChance
         }
-        return new OrganicFill(region.origin, hooks)
+        return new OrganicFill(region, this.grid, params)
     }
 }
