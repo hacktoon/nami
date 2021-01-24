@@ -49,6 +49,17 @@ test('point set filters points', () => {
 })
 
 
+test('point set merges points', () => {
+    const pointSet1 = createSet()
+    const pointSet2 = new PointSet(new Point(4, 4))
+    const merged = pointSet1.merge(pointSet2)
+    expect(pointSet1.has(new Point(4, 4))).toBe(false)
+    expect(pointSet2.has(new Point(1, 1))).toBe(false)
+    expect(merged.has(new Point(4, 4))).toBe(true)
+    expect(merged.has(new Point(2, 2))).toBe(true)
+})
+
+
 test("point set doesn't has point after delete", () => {
     const pointSet = createSet()
     const point = new Point(0, 0)

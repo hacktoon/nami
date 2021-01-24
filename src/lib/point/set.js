@@ -28,6 +28,14 @@ export class PointSet {
         this.add(...points)
     }
 
+    get points() {
+        const pointList = []
+        this.forEach(point => {
+            pointList.push(point)
+        })
+        return pointList
+    }
+
     has(point) {
         const {x, y} = point
         if (! this.map.has(x)) return false
@@ -61,6 +69,12 @@ export class PointSet {
                 this.size++
             }
         })
+    }
+
+    merge(otherPointSet) {
+        const pointSet = new PointSet(...this.points)
+        otherPointSet.forEach(point => pointSet.add(point))
+        return pointSet
     }
 
     delete(point) {
