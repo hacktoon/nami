@@ -1,6 +1,6 @@
 import { BaseMap } from '/model/lib/map'
 import { RandomPointDistribution } from '/lib/point/distribution'
-import { OrganicFill } from '/lib/flood-fill'
+import { OrganicFill } from '/lib/flood-fill/organic'
 import { Schema, Type } from '/lib/schema'
 
 import { RegionSet } from './region'
@@ -75,10 +75,10 @@ export default class RegionMap extends BaseMap {
             },
             setOrigin:  point => this.get(point).setOrigin(),
             setSeed:    point => this.get(point).setSeed(region),
+            isSeed:     point => this.get(point).isSeed(region),
             setValue:   point => this.get(point).setRegion(region),
             setLayer:   (point, layer) => this.get(point).setLayer(layer),
             isEmpty:    point => this.get(point).isEmpty(),
-            isSeed:     point => this.get(point).isSeed(region),
             isBlocked:  point => this.get(point).isBlocked(region),
             layerGrowth: this.layerGrowth,
             growthChance: this.growthChance
