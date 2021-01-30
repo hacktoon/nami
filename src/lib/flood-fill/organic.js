@@ -42,7 +42,7 @@ export class OrganicFill {
 
     #buildSeeds(points) {
         let seeds = []
-        points.forEach(point => {
+        const visitNeighbors = point => {
             point.adjacents(neighbor => {
                 if (this.isBlocked(neighbor)) {
                     this.setBorder(point, neighbor)
@@ -53,7 +53,8 @@ export class OrganicFill {
                     seeds.push(neighbor)
                 }
             })
-        })
+        }
+        points.forEach(visitNeighbors)
         return seeds
     }
 
