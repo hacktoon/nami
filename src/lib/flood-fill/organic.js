@@ -2,23 +2,23 @@ import { Random } from '/lib/random'
 
 
 export class OrganicFill {
-    constructor(region, grid, params) {
+    constructor(origin, params) {
         this.layer = 0
-        this.origin = region.origin
-        this.seeds = [region.origin]
-        this.setOrigin = point => grid.get(point).setOrigin(),
-        this.setValue = point => grid.get(point).setRegion(region)
-        this.setSeed = point => grid.get(point).setSeed(region)
-        this.setLayer = (point, layer) => grid.get(point).setLayer(layer)
-        this.setBorder = point => grid.get(point).setBorder()
-        this.isSeed = point => grid.get(point).isSeed(region)
-        this.isEmpty = point => grid.get(point).isEmpty()
-        this.isBlocked = point => grid.get(point).isBlocked(region)
+        this.origin = origin
+        this.seeds = [origin]
+        this.setOrigin = params.setOrigin
+        this.setValue = params.setValue
+        this.setSeed = params.setSeed
+        this.setLayer = params.setLayer
+        this.setBorder = params.setBorder
+        this.isSeed = params.isSeed
+        this.isEmpty = params.isEmpty
+        this.isBlocked = params.isBlocked
         this.growthChance = params.growthChance ?? 1
         this.layerGrowth = params.layerGrowth ?? 1
 
-        this.setOrigin(region.origin)
-        this.setSeed(region.origin)
+        this.setOrigin(origin)
+        this.setSeed(origin)
     }
 
     fill() {

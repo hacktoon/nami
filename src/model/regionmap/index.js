@@ -55,7 +55,7 @@ export default class RegionMap extends BaseMap {
                 // FIXME: avoid undefined values (seed/value diff)
                 // see region.addBorder for region checking
                 // console.log(region.neighbors);
-                const points = fillMap.get(region.id).fill(region.id)
+                const points = fillMap[region.id].fill(region.id)
                 totalPoints -= region.grow(points)
             })
         }
@@ -63,13 +63,22 @@ export default class RegionMap extends BaseMap {
     }
 
     #createFillMap(grid, regionSet) {
-        const params = {
+        const buildParams = region => ({
+            isEmpty:   point => grid.get(point).isEmpty(),
+            isSeed:    point => grid.get(point).isSeed(region),
+            isBlocked: point => grid.get(point).isBlocked(region),
+            setOrigin: point => grid.get(point).setOrigin(),
+            setBorder: point => grid.get(point).setBorder(),
+            setSeed:   point => grid.get(point).setSeed(region),
+            setValue:  point => grid.get(point).setRegion(region),
+            setLayer:  (point, layer) => grid.get(point).setLayer(layer),
             layerGrowth: this.layerGrowth,
             growthChance: this.growthChance
-        }
-        const entries = regionSet.map(region => [
-            region.id, new OrganicFill(region, grid, params)
-        ])
-        return new Map(entries)
+        })
+        const map = {}
+        regionSet.forEach(region => {
+            map[region.id] = new OrganicFill(region.origin, buildParams(region))
+        })
+        return map
     }
 }
