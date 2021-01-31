@@ -21,7 +21,7 @@ export class OrganicFill {
         this.setSeed(origin)
     }
 
-    fill() {
+    grow() {
         if (this.seeds.length == 0)
             return []
         const filled = this.#fillValues(this.seeds)
