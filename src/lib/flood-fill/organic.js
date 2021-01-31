@@ -33,10 +33,12 @@ export class OrganicFill {
 
     #fillValues(seedPoints) {
         return seedPoints.filter(point => {
-            if (! this.isEmpty(point)) return false
-            this.setValue(point)
-            this.setLayer(point, this.layer)
-            return true
+            if (this.isEmpty(point)) {
+                this.setValue(point)
+                this.setLayer(point, this.layer)
+                return true
+            }
+            return false
         })
     }
 

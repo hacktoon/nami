@@ -24,7 +24,7 @@ export class PointSet {
 
     constructor(...points) {
         this.size = 0
-        this.map = new Map()
+        this.map = {}
         this.add(...points)
     }
 
@@ -38,14 +38,14 @@ export class PointSet {
 
     has(point) {
         const {x, y} = point
-        if (! this.map.has(x)) return false
-        return this.map.get(x).has(y)
+        if (! this.map.hasOwnProperty(x)) return false
+        return this.map[x].hasOwnProperty(y)
     }
 
     forEach(callback) {
-        this.map.forEach((subset, x) => {
-            subset.forEach(y => {
-                callback(new Point(x, y))
+        Object.entries(this.map).forEach(([x, yobj]) => {
+            Object.keys(yobj).forEach(y => {
+                callback(new Point(Number(x), Number(y)))
             })
         })
     }
@@ -59,13 +59,14 @@ export class PointSet {
     }
 
     add(...points) {
-        points.forEach(({x, y}) => {
-            if (! this.map.has(x)) {
-                this.map.set(x, new Set())
+        points.forEach(point => {
+            const {x, y} = point
+            if (! this.map.hasOwnProperty(x)) {
+                this.map[x] = {}
             }
-            const subset = this.map.get(x)
-            if (! subset.has(y)) {
-                subset.add(y)
+            const yobj = this.map[x]
+            if (! yobj.hasOwnProperty(y)) {
+                yobj[y] = true
                 this.size++
             }
         })
@@ -78,22 +79,19 @@ export class PointSet {
     }
 
     delete(point) {
+        if (! this.has(point)) return false
         const {x, y} = point
-        if (! this.map.has(x)) return false
-        const set = this.map.get(x)
-        if (set.delete(y)) {
-            this.size--
+        delete this.map[x][y]
+        if (Object.values(this.map[x]).length == 0) {
+            delete this.map[x]
         }
-        if (set.size == 0) {
-            this.map.delete(x)
-            return true
-        }
-        return false
+        this.size--
+        return true
     }
 
     random() {
-        const x = Random.choice(Array.from(this.map.keys()))
-        const y = Random.choice(Array.from(this.map.get(x).values()))
-        return new Point(x, y)
+        const x = Random.choice(Object.keys(this.map))
+        const y = Random.choice(Object.keys(this.map[x]))
+        return new Point(Number(x), Number(y))
     }
 }
