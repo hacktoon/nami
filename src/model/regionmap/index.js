@@ -56,7 +56,7 @@ export default class RegionMap extends BaseMap {
                 // see region.addBorder for region checking
                 // console.log(region.neighbors);
                 const points = fillMap[region.id].fill(region.id)
-                totalPoints -= region.grow(points)
+                totalPoints -= points.length
             })
         }
         return grid
@@ -66,9 +66,9 @@ export default class RegionMap extends BaseMap {
         const buildParams = region => ({
             isEmpty:   point => grid.get(point).isEmpty(),
             isSeed:    point => grid.get(point).isSeed(region),
-            isBlocked: point => grid.get(point).isBlocked(region),
+            isNeighbor: point => grid.get(point).isNeighbor(region),
             setOrigin: point => grid.get(point).setOrigin(),
-            setBorder: point => grid.get(point).setBorder(),
+            setBorder: (point, neighbor) => grid.get(point).setBorder(neighbor),
             setSeed:   point => grid.get(point).setSeed(region),
             setValue:  point => grid.get(point).setRegion(region),
             setLayer:  (point, layer) => grid.get(point).setLayer(layer),

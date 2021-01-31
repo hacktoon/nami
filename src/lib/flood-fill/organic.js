@@ -13,7 +13,7 @@ export class OrganicFill {
         this.setBorder = params.setBorder
         this.isSeed = params.isSeed
         this.isEmpty = params.isEmpty
-        this.isBlocked = params.isBlocked
+        this.isNeighbor = params.isNeighbor
         this.growthChance = params.growthChance ?? 1
         this.layerGrowth = params.layerGrowth ?? 1
 
@@ -25,8 +25,8 @@ export class OrganicFill {
         if (this.seeds.length == 0)
             return []
         const filled = this.#fillValues(this.seeds)
-        const seeds = this.#buildSeeds(filled)
-        this.seeds = this.#buildExtraSeeds(seeds)
+        this.seeds = this.#buildSeeds(filled)
+        this.seeds = this.#buildExtraSeeds(this.seeds)
         this.layer++
         return filled
     }
@@ -46,7 +46,7 @@ export class OrganicFill {
         let seeds = []
         const visitNeighbors = point => {
             point.adjacents(neighbor => {
-                if (this.isBlocked(neighbor)) {
+                if (this.isNeighbor(neighbor)) {
                     this.setBorder(point, neighbor)
                     return
                 }

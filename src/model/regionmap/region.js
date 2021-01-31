@@ -6,28 +6,10 @@ export class Region {
     constructor(id, origin) {
         this.id = id
         this.origin = origin
-        this.points = new PointSet(origin)
+        this.size = 1
         this.borders = new PointSet()
         this.color = new Color()
         this.neighbors = new Set()
-    }
-
-    get size() {
-        return this.points.size
-    }
-
-    has(point) {
-        return this.points.has(point)
-    }
-
-    addBorder(point, neighborRegion) {
-        this.borders.add(point)
-        this.neighbors.add(neighborRegion.id)
-    }
-
-    grow(points) {
-        this.points.add(...points)
-        return points.length
     }
 }
 

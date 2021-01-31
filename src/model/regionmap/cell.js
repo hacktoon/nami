@@ -66,7 +66,7 @@ export class RegionCell {
         this.#layer = layer
     }
 
-    setBorder() {
+    setBorder(neighbor) {
         this.#type = TYPE_BORDER
     }
 
@@ -79,9 +79,9 @@ export class RegionCell {
             this.#region = region
     }
 
-    isBlocked(region) {
-        let isFilled = !this.isEmpty() && !this.isRegion(region)
-        let isAnotherSeed = !this.isEmptySeed() && !this.isSeed(region)
+    isNeighbor(neighborRegion) {
+        let isFilled = !this.isEmpty() && !this.isRegion(neighborRegion)
+        let isAnotherSeed = !this.isEmptySeed() && !this.isSeed(neighborRegion)
         return isFilled || isAnotherSeed
     }
 }
