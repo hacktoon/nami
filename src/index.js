@@ -12,6 +12,7 @@ import { Test, TestUI } from '/ui/test'
 import TectonicsMap from '/model/world/tectonicsmap'
 import WorldMap from '/model/world/worldmap'
 import RegionMap from '/model/regionmap'
+import FloodFillMap from '/model/floodfillmap'
 import NoiseMap from '/model/noisemap'
 
 import "./css/base.css"
@@ -25,6 +26,7 @@ const APPS = [
     [NoiseMap,     MapUI],
     [TectonicsMap, MapUI],
     [RegionMap,    MapUI],
+    [FloodFillMap,    MapUI],
 ]
 
 
@@ -36,7 +38,7 @@ const options = APPS.map(([model,]) => [model.id, model.id])
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', RegionMap.id, {options})
+        Type.enum('app', 'App', FloodFillMap.id, {options})
     )
 }
 

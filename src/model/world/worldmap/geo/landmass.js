@@ -1,5 +1,5 @@
 import { Grid } from '/lib/grid'
-import { ScanlineFill } from '/lib/flood-fill'
+import { ScanlineFill } from '/lib/floodfill'
 import { Name } from '/lib/name'
 
 const MIN_CONTINENT_AREA_CHANCE = 3

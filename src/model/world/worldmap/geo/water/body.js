@@ -1,6 +1,6 @@
 import { Grid } from '/lib/grid'
 import { Name } from '/lib/name'
-import { ScanlineFill8 } from '/lib/flood-fill'
+import { ScanlineFill8 } from '/lib/floodfill'
 
 
 const EMPTY = 0

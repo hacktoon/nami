@@ -1,6 +1,6 @@
 import { BaseMap } from '/model/lib/map'
 import { RandomPointDistribution } from '/lib/point/distribution'
-import { OrganicFill } from '/lib/flood-fill/organic'
+import { OrganicFill } from '/lib/floodfill/organic'
 import { Schema, Type } from '/lib/schema'
 
 import { RegionSet } from './region'

@@ -20,4 +20,8 @@ export class BaseFloodFill {
         this.seeds = seeds
         return seeds
     }
+
+    canGrow() {
+        return this.seeds.length > 0
+    }
 }
