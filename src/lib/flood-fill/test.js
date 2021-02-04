@@ -2,10 +2,11 @@ import { Grid } from '/lib/grid'
 import { Point } from '/lib/point'
 import { BaseFloodFill } from '/lib/flood-fill/base'
 
+function createGrid(p) {
+    return new Grid(p.x * 2 + 1, p.y * 2 + 1, () => 0)
+}
 
-function createBaseFill(x, y) {
-    const origin = new Point(x, y)
-    const grid = new Grid(x * 2 + 1, y * 2 + 1, () => 0)
+function createBaseFill(origin, grid) {
     return new BaseFloodFill(origin, {
         isEmpty:  point => grid.get(point) === 0,
         setValue: point => grid.set(point, 1)
@@ -14,11 +15,14 @@ function createBaseFill(x, y) {
 
 
 test('origin point is filled', () => {
-    const [x, y] = [4, 4]
-    const fill = createBaseFill(x, y)
-    const points = fill.grow()
-    expect(points[0].equals(new Point(x-1, y))).toBe(true)
-    expect(points[1].equals(new Point(x+1, y))).toBe(true)
-    expect(points[2].equals(new Point(x, y-1))).toBe(true)
-    expect(points[3].equals(new Point(x, y+1))).toBe(true)
+    const origin = new Point(4, 4)
+    const grid = createGrid(origin)
+    const fill = createBaseFill(origin, grid)
+    const pointAt = (x, y) => origin.plus(new Point(x, y))
+
+    fill.grow()
+    expect(grid.get(pointAt(-1, 0))).toBe(1)
+    expect(grid.get(pointAt(1, 0))).toBe(1)
+    expect(grid.get(pointAt(0, -1))).toBe(1)
+    expect(grid.get(pointAt(0, 1))).toBe(1)
 })
