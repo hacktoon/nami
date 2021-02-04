@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "parcel src/index.html -d build",
     "build": "parcel build src/index.html -d build --public-url ./ --no-source-maps",
-    "test": "jest --watch --maxWorkers=4"
+    "test": "jest --watchAll --maxWorkers=4"
   },
   "repository": {
     "type": "git",
