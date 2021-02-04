@@ -37,6 +37,8 @@ test('origin point is filled on layer 2', () => {
 
     const layerCount1 = fill.grow()
     const layerCount2 = fill.grow()
+    const layerCount3 = fill.grow()
     expect(layerCount1.length).toBe(4)
     expect(layerCount2.length).toBe(8)
+    expect(layerCount3.length).toBe(12)
 })
