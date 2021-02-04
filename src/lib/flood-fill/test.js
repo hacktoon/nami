@@ -2,8 +2,8 @@ import { Grid } from '/lib/grid'
 import { Point } from '/lib/point'
 import { BaseFloodFill } from '/lib/flood-fill/base'
 
-function createGrid(p) {
-    return new Grid(p.x * 2 + 1, p.y * 2 + 1, () => 0)
+function createGrid(p, factor=2) {
+    return new Grid(p.x * factor + 1, p.y * factor + 1, () => 0)
 }
 
 function createBaseFill(origin, grid) {
@@ -20,9 +20,23 @@ test('origin point is filled', () => {
     const fill = createBaseFill(origin, grid)
     const pointAt = (x, y) => origin.plus(new Point(x, y))
 
-    fill.grow()
+    const grown = fill.grow()
+    expect(grid.get(pointAt(0, 0))).toBe(1)
     expect(grid.get(pointAt(-1, 0))).toBe(1)
     expect(grid.get(pointAt(1, 0))).toBe(1)
     expect(grid.get(pointAt(0, -1))).toBe(1)
     expect(grid.get(pointAt(0, 1))).toBe(1)
+    expect(grown.length).toBe(4)
+})
+
+
+test('origin point is filled on layer 2', () => {
+    const origin = new Point(4, 4)
+    const grid = createGrid(origin)
+    const fill = createBaseFill(origin, grid)
+
+    const layerCount1 = fill.grow()
+    const layerCount2 = fill.grow()
+    expect(layerCount1.length).toBe(4)
+    expect(layerCount2.length).toBe(8)
 })
