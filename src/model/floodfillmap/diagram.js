@@ -17,11 +17,20 @@ export class MapDiagram extends BaseMapDiagram {
         super(map)
         this.fgColor = params.get('fgColor')
         this.bgColor = params.get('bgColor')
+        this.colorMap = this.buildColorMap()
+    }
+
+    buildColorMap() {
+        const map = {}
+        for(let i=1; i<=this.map.count; i++) {
+            map[i] = new Color()
+        }
+        return map
     }
 
     get(point) {
         const value = this.map.get(point)
-        const color = value === 0 ? this.bgColor : this.fgColor
+        const color = value === 0 ? this.bgColor : this.colorMap[value]
         return color.toHex()
     }
 }
