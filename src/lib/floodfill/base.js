@@ -9,6 +9,11 @@ export class BaseFloodFill {
     }
 
     grow() {
+        this.growLayer()
+        return this.seeds
+    }
+
+    growLayer() {
         let seeds = []
         this.seeds.forEach(point => {
             point.adjacents().forEach(candidate => {
@@ -18,7 +23,6 @@ export class BaseFloodFill {
             })
         })
         this.seeds = seeds
-        return seeds
     }
 
     canGrow() {
