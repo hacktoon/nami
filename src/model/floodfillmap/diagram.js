@@ -5,8 +5,7 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.color('fgColor', 'FG color', Color.fromHex('#111')),
-        Type.color('bgColor', 'BG color', Color.fromHex('#DDD'))
+        Type.boolean('randomColors', 'Random colors', false)
     )
 
     static create(map, params) {
@@ -15,15 +14,15 @@ export class MapDiagram extends BaseMapDiagram {
 
     constructor(map, params) {
         super(map)
-        this.fgColor = params.get('fgColor')
-        this.bgColor = params.get('bgColor')
+        this.randomColors = params.get('randomColors')
         this.colorMap = this.buildColorMap()
     }
 
     buildColorMap() {
         const map = {}
+        const color = new Color()
         for(let i=1; i<=this.map.count; i++) {
-            map[i] = new Color()
+            map[i] = this.randomColors ? new Color() : color.brighten(i * 10)
         }
         return map
     }
