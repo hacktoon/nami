@@ -11,10 +11,10 @@ export default class FloodFillMap extends BaseMap {
     static id = 'FloodFillMap'
 
     static schema = new Schema(
-        Type.number('width', 'Width', 200, {step: 1, min: 1}),
-        Type.number('height', 'Height', 150, {step: 1, min: 1}),
+        Type.number('width', 'Width', 200, {step: 1, min: 1, max: 256}),
+        Type.number('height', 'Height', 150, {step: 1, min: 1, max: 256}),
         Type.number('count', 'Count', 15, {step: 1, min: 1}),
-        Type.number('iterations', 'Iterations', 30, {step: 1, min: 1}),
+        Type.number('iterations', 'Iterations', 30, {step: 1, min: 0}),
         Type.number('variability', 'Variability', 0.5, {
             step: 0.01, min: 0.01, max: 1}),
         Type.text('seed', 'Seed', '')
@@ -45,16 +45,20 @@ export default class FloodFillMap extends BaseMap {
     buildFloodFills(grid, origins) {
         const fills = []
         for(let i = 0; i < origins.length; i++) {
-            const params = {
-                isEmpty:   point => grid.get(point) === 0,
-                setValue:  point => grid.set(point, i + 1),
-            }
-            const fill = new OrganicFloodFill(
-                origins[i], params, this.iterations, this.variability
-            )
+            const fill = this.buildFloodFill(grid, origins[i], i + 1)
             fills.push(fill)
         }
         return fills
+    }
+
+    buildFloodFill(grid, origin, id) {
+        const params = {
+            isEmpty:   point => grid.get(point) === 0,
+            setValue:  point => grid.set(point, id),
+        }
+        return new OrganicFloodFill(
+            origin, params, this.iterations, this.variability
+        )
     }
 
     get(point) {
