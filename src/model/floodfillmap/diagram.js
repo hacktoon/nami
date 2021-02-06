@@ -30,7 +30,6 @@ export class MapDiagram extends BaseMapDiagram {
 
     get(point) {
         const value = this.map.get(point)
-        const color = value === 0 ? this.bgColor : this.colorMap[value]
-        return color.toHex()
+        return this.colorMap[value].toHex()
     }
 }
