@@ -7,7 +7,10 @@
 
 
 ## ROADMAP
-- [] Use Rect instead of width & height
+
+#### Main
+- [] Remove floodfill points absorbed by others
+- [] Optimize canvas rendering with off-screen canvas
 
 #### RegionMap
 - [] Create region distance field using flood fill in border points

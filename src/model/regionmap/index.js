@@ -1,5 +1,5 @@
 import { BaseMap } from '/model/lib/map'
-import { RandomPointDistribution } from '/lib/point/distribution'
+import { RandomRectPoints } from '/lib/point'
 import { OrganicFill } from '/lib/floodfill/organic'
 import { Schema, Type } from '/lib/schema'
 
@@ -36,7 +36,7 @@ export default class RegionMap extends BaseMap {
         this.count = params.get('count')
         this.layerGrowth = params.get('layerGrowth')
         this.growthChance = params.get('growthChance')
-        this.regionSet = new RegionSet(RandomPointDistribution.create(
+        this.regionSet = new RegionSet(RandomRectPoints.create(
             this.count, this.width, this.height
         ))
         this.grid = this.#buildGrid()

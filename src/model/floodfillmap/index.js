@@ -2,7 +2,7 @@ import { Schema, Type } from '/lib/schema'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { FillMap } from '/lib/floodfill'
 import { Grid } from '/lib/grid'
-import { RandomPointDistribution } from '/lib/point/distribution'
+import { RandomRectPoints } from '/lib/point'
 import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
 
@@ -31,7 +31,7 @@ export default class FloodFillMap extends BaseMap {
         this.iterations = params.get('iterations')
         this.variability = params.get('variability')
         this.grid = new Grid(this.width, this.height, () => 0)
-        const origins = RandomPointDistribution.create(
+        const origins = RandomRectPoints.create(
             this.count, this.width, this.height
         )
         const fills = this.buildFloodFills(this.grid, origins)

@@ -25,7 +25,7 @@ export const sum = arr => arr.reduce((a,b) => a + b, 0)
 export class Rect {
     constructor(width, height) {
         this.width = width
-        this.height = height
+        this.height = height ?? width
     }
 
     get area() {

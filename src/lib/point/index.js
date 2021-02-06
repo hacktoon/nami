@@ -1,5 +1,7 @@
 import { Direction } from '/lib/direction'
 import { Random } from '/lib/random'
+import { repeat } from '/lib/function'
+import { clamp } from '/lib/number'
 
 
 const ADJACENT_NEIGHBORHOOD = [
@@ -144,5 +146,13 @@ export class Point {
         let deltaX = Math.abs(point.x - this.x),
             deltaY = Math.abs(point.y - this.y)
         return deltaX + deltaY
+    }
+}
+
+
+export class RandomRectPoints {
+    static create(count, width, height) {
+        const parsedMaxCount = clamp(count, 1, width * height)
+        return repeat(parsedMaxCount, () => Point.random(width, height))
     }
 }
