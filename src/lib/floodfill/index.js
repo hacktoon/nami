@@ -1,3 +1,28 @@
+
+export class FillMap {
+    #canGrow = true
+
+    constructor(fills) {
+        this.fills = fills
+    }
+
+    canGrow() {
+        return this.#canGrow
+    }
+
+    grow() {
+        let totalFull = 0
+        for(let i = 0; i < this.fills.length; i++) {
+            const filled = this.fills[i].grow()
+            if (filled.length === 0) totalFull++
+        }
+        if (totalFull === this.fills.length) {
+            this.#canGrow = false
+        }
+    }
+}
+
+
 function h(pts) {
     return pts.map(p => p.hash).join(' | ')
 }
