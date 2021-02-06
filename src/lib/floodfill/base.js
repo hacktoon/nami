@@ -56,8 +56,7 @@ export class OrganicFloodFill extends BaseFloodFill {
     }
 
     growMore() {
-        const times = Random.int(this.iterations)
-        for(let i = 0; i < times; i++) {
+        for(let i = 0; i < this.iterations; i++) {
             const [extra, other] = this.splitSeeds(this.seeds, this.variability)
             let extraSeeds = this.growLayer(extra)
             this.seeds = [...other, ...extraSeeds]

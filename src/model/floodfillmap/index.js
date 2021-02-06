@@ -16,7 +16,7 @@ export default class FloodFillMap extends BaseMap {
         Type.number('count', 'Count', 15, {step: 1, min: 1}),
         Type.number('iterations', 'Iterations', 30, {step: 1, min: 0}),
         Type.number('variability', 'Variability', 0.5, {
-            step: 0.01, min: 0.01, max: 1}),
+            step: 0.01, min: 0, max: 1}),
         Type.text('seed', 'Seed', '')
     )
     static diagram = MapDiagram
