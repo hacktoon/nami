@@ -68,16 +68,16 @@ class WaterGrid {
     _setPoint(point) {
         const id = this.currentID
         this.grid.set(point, id)
-        this._detectShore(point, id)
+        // this._detectShore(point, id)
     }
 
-    _detectShore(point, id) {
-        point.OldAdjacentPoints(neighbor => {
-            if (this.reliefMap.isLand(neighbor)) {
-                this.grid.set(point, -id)
-            }
-        })
-    }
+    // _detectShore(point, id) {
+    //     point.OldAdjacentPoints(neighbor => {
+    //         if (this.reliefMap.isLand(neighbor)) {
+    //             this.grid.set(point, -id)
+    //         }
+    //     })
+    // }
 
     _buildWater(tileCount) {
         const id = this.currentID++

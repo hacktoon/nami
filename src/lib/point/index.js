@@ -60,10 +60,6 @@ export class Point {
         return new Point(this.x * x, this.y * (y ?? x))
     }
 
-    apply(func=()=>{}) {
-        return new Point(func(this.x), func(this.y))
-    }
-
     isAdjacent(point) {
         const x = Math.abs(this.x - point.x)
         const y = Math.abs(this.y - point.y)
@@ -88,34 +84,6 @@ export class Point {
             if (predicate(point, direction)) {
                 points.push(point)
             }
-        }
-        return points
-    }
-
-    //TODO: switch to new version adjacents
-    OldAdjacentPoints(callback=()=>{}) {
-        let points = [
-            [new Point(this.x - 1, this.y), Direction.WEST],
-            [new Point(this.x + 1, this.y), Direction.EAST],
-            [new Point(this.x, this.y - 1), Direction.NORTH],
-            [new Point(this.x, this.y + 1), Direction.SOUTH]
-        ]
-        for (let point of points) {
-            callback(point[0], point[1])
-        }
-        return points
-    }
-
-    //TODO: refactor
-    pointsAround(callback=function(){}) {
-        let points = this.OldAdjacentPoints().concat([
-            [new Point(this.x - 1, this.y - 1), Direction.NORTHWEST],
-            [new Point(this.x + 1, this.y + 1), Direction.SOUTHEAST],
-            [new Point(this.x + 1, this.y - 1), Direction.NORTHEAST],
-            [new Point(this.x - 1, this.y + 1), Direction.SOUTHWEST]
-        ])
-        for (let point of points) {
-            callback(point[0], point[1])
         }
         return points
     }
