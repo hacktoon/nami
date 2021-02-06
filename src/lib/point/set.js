@@ -90,8 +90,8 @@ export class PointSet {
     }
 
     random() {
-        const x = Random.choice(Object.keys(this.map))
-        const y = Random.choice(Object.keys(this.map[x]))
+        const x = Random.choice(...Object.keys(this.map))
+        const y = Random.choice(...Object.keys(this.map[x]))
         return new Point(Number(x), Number(y))
     }
 }

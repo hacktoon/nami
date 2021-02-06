@@ -58,7 +58,7 @@ export class Direction {
     }
 
     static random () {
-        return Random.choice([
+        return Random.choice(
             this.NORTH,
             this.EAST,
             this.SOUTH,
@@ -67,15 +67,15 @@ export class Direction {
             this.NORTHWEST,
             this.SOUTHEAST,
             this.SOUTHWEST,
-        ])
+        )
     }
 
     static randomCardinal () {
-        return Random.choice([
+        return Random.choice(
             this.NORTH,
             this.EAST,
             this.SOUTH,
             this.WEST
-        ])
+        )
     }
 }

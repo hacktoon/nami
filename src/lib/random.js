@@ -17,7 +17,7 @@ export class Random {
         return percentage >= value
     }
 
-    static choice(items) {
+    static choice(...items) {
         let index = Random.int(0, items.length-1)
         return items[index]
     }

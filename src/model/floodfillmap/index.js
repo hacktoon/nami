@@ -1,5 +1,5 @@
 import { Schema, Type } from '/lib/schema'
-import { BaseFloodFill } from '/lib/floodfill/base'
+import { BaseFloodFill, OrganicFloodFill } from '/lib/floodfill/base'
 import { Grid } from '/lib/grid'
 import { Point } from '/lib/point'
 import { RandomPointDistribution } from '/lib/point/distribution'
@@ -45,7 +45,7 @@ export default class FloodFillMap extends BaseMap {
                 isEmpty:   point => grid.get(point) === 0,
                 setValue:  point => grid.set(point, i+1),
             }
-            fills.push(new BaseFloodFill(origin, params))
+            fills.push(new OrganicFloodFill(origin, params))
         }
         return fills
     }

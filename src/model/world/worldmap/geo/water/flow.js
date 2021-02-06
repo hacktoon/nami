@@ -13,7 +13,7 @@ const SOURCE_CHANCE = .2                // chance of spawning a river source
 const SOURCE_ISOLATION = 15             // minimum tiles between river sources
 const MEANDER_RATE = .4                 // how much the river will meander
 const EROSION_START = 3                 // at which tile erosion will start
-const RIVER_BANK_SPREAD = [2, 3, 4, 5]  // how much the river deposits sediment
+const ... = [2, 3, 4, 5]  // how much the river deposits sediment
 
 
 class WaterFlowMap {
@@ -138,7 +138,7 @@ class WaterFlowMap {
             const nextY = origin.y + Math.sign(target.y - origin.y)
             points.push(new Point(origin.x, nextY))
         }
-        return Random.choice(points)
+        return Random.choice(...points)
     }
 
     _addPoint(river, point, currentRelief) {
@@ -172,7 +172,7 @@ class WaterFlowMap {
                 // }
             }
         }
-        const spread = Random.choice(RIVER_BANK_SPREAD)
+        const spread = Random.choice(...RIVER_BANK_SPREAD)
         new FloodFill(this.grid, river.mouth, onFill).stepFill(spread)
     }
 

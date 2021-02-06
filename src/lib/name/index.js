@@ -33,18 +33,18 @@ const RIVERS = [
 
 export class Name {
     static createLandmassName () {
-        return Random.choice(LANDFORMS.first) + Random.choice(LANDFORMS.last)
+        return Random.choice(...LANDFORMS.first) + Random.choice(...LANDFORMS.last)
     }
 
     static createPersonName () {
-        return Random.choice(PERSONS.first) +' '+ Random.choice(PERSONS.last)
+        return Random.choice(...PERSONS.first) +' '+ Random.choice(...PERSONS.last)
     }
 
     static createWaterName() {
-        return Random.choice(OCEANS)
+        return Random.choice(...OCEANS)
     }
 
     static createRiverName() {
-        return Random.choice(RIVERS)
+        return Random.choice(...RIVERS)
     }
 }
