@@ -1,5 +1,5 @@
 import { Schema, Type } from '/lib/schema'
-import { BaseFloodFill, OrganicFloodFill } from '/lib/floodfill/base'
+import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { FillMap } from '/lib/floodfill'
 import { Grid } from '/lib/grid'
 import { RandomPointDistribution } from '/lib/point/distribution'

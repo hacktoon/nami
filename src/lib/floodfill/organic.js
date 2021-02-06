@@ -1,4 +1,37 @@
 import { Random } from '/lib/random'
+import { FloodFill } from './index'
+
+
+export class OrganicFloodFill extends FloodFill {
+    constructor(origin, params, iterations=30, variability=.5) {
+        super(origin, params)
+        this.iterations = iterations
+        this.variability = variability
+    }
+
+    grow() {
+        this.seeds = this.growLayer()
+        this.growMore()
+        return this.seeds
+    }
+
+    growMore() {
+        for(let i = 0; i < this.iterations; i++) {
+            const [extra, other] = this.splitSeeds(this.seeds, this.variability)
+            let extraSeeds = this.growLayer(extra)
+            this.seeds = [...other, ...extraSeeds]
+        }
+    }
+
+    splitSeeds(array, chance) {
+        const first = [], second = []
+        for(let i = 0; i < array.length; i++) {
+            const outputArray = Random.chance(chance) ? first : second
+            outputArray.push(array[i])
+        }
+        return [first, second]
+    }
+}
 
 
 export class OrganicFill {

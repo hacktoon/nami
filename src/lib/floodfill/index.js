@@ -1,4 +1,46 @@
 
+
+export class FloodFill {
+    constructor(origin, params) {
+        this.origin = origin
+        this.seeds = [origin]
+        this.setValue = params.setValue
+        this.isEmpty = params.isEmpty
+
+        this.setValue(this.origin)
+    }
+
+    canGrow() {
+        return this.seeds.length > 0
+    }
+
+    grow() {
+        this.seeds = this.growLayer()
+        return this.seeds
+    }
+
+    growLayer(seeds=this.seeds) {
+        let newSeeds = []
+        for(let i = 0; i < seeds.length; i++) {
+            const filledNeighbors = this.fillNeighbors(seeds[i])
+            newSeeds.push(...filledNeighbors)
+        }
+        return newSeeds
+    }
+
+    fillNeighbors(point) {
+        const filledNeighbors = []
+        const emptyNeighbors = point.adjacents(p => this.isEmpty(p))
+        for(let i = 0; i < emptyNeighbors.length; i++) {
+            const neighbor = emptyNeighbors[i]
+            this.setValue(neighbor)
+            filledNeighbors.push(neighbor)
+        }
+        return filledNeighbors
+    }
+}
+
+
 export class FillMap {
     #canGrow = true
 
@@ -19,62 +61,6 @@ export class FillMap {
         if (totalFull === this.fills.length) {
             this.#canGrow = false
         }
-    }
-}
-
-
-function h(pts) {
-    return pts.map(p => p.hash).join(' | ')
-}
-
-
-export class FloodFill {
-    constructor(grid, startPoint, onFill, isFillable) {
-        this.grid = grid
-        this.seeds = []
-        this.isFillable = isFillable
-        this.startPoint = startPoint
-        this.onFill = onFill
-        this.step = 0
-
-        this.fillPoint(startPoint)
-    }
-
-    get isComplete() {
-        return this.seeds.length === 0
-    }
-
-    fill() {
-        while (!this.isComplete) {
-            this.stepFill()
-        }
-    }
-
-    stepFill(times = 1) {
-        if (this.isComplete)
-            return
-        let currentSeeds = this.seeds
-        this.seeds = []
-        currentSeeds.forEach(point => {
-            this.fillNeighborPoints(point)
-        })
-        this.step++
-        if (times > 1) {
-            this.stepFill(times - 1)
-        }
-    }
-
-    fillNeighborPoints(referencePoint) {
-        referencePoint.OldAdjacentPoints(neighbor => {
-            let point = this.grid.wrap(neighbor)
-            if (this.isFillable(point, referencePoint, this.step))
-                this.fillPoint(point)
-        })
-    }
-
-    fillPoint(point) {
-        this.seeds.push(point)
-        this.onFill(point, this.step)
     }
 }
 
