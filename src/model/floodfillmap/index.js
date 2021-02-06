@@ -34,7 +34,7 @@ export default class FloodFillMap extends BaseMap {
         const origins = RandomPointDistribution.create(
             this.count, this.width, this.height
         )
-        const fills = this.buildFills(this.grid, origins)
+        const fills = this.buildFloodFills(this.grid, origins)
         const fillMap = new FillMap(fills)
 
         while(fillMap.canGrow()) {
@@ -42,16 +42,15 @@ export default class FloodFillMap extends BaseMap {
         }
     }
 
-    buildFills(grid, origins) {
+    buildFloodFills(grid, origins) {
         const fills = []
         for(let i = 0; i < origins.length; i++) {
-            const origin = origins[i]
             const params = {
                 isEmpty:   point => grid.get(point) === 0,
-                setValue:  point => grid.set(point, i+1),
+                setValue:  point => grid.set(point, i + 1),
             }
             const fill = new OrganicFloodFill(
-                origin, params, this.iterations, this.variability
+                origins[i], params, this.iterations, this.variability
             )
             fills.push(fill)
         }

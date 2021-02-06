@@ -21,7 +21,7 @@ export class MapDiagram extends BaseMapDiagram {
     buildColorMap() {
         const map = {}
         const color = new Color(0, 0, 0)
-        for(let i=1; i<=this.map.count; i++) {
+        for(let i = 1; i <= this.map.count; i++) {
             const bright = Math.round(i * (this.map.count / 2))
             map[i] = this.randomColors ? new Color() : color.brighten(bright)
         }
