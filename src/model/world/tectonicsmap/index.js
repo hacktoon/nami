@@ -12,9 +12,9 @@ export default class TectonicsMap extends BaseMap {
     static id = 'TectonicsMap'
 
     static schema = new Schema(
-        Type.number('width', 'Width', 200, {step: 1, min: 1}),
-        Type.number('height', 'Height', 150, {step: 1, min: 1}),
-        Type.number('plates', 'Plates', 10, {step: 1, min: 1}),
+        Type.number('width', 'Width', 150, {step: 1, min: 1}),
+        Type.number('height', 'Height', 100, {step: 1, min: 1}),
+        Type.number('plates', 'Plates', 16, {step: 1, min: 1}),
         Type.text('seed', 'Seed', '')
     )
     static diagram = MapDiagram
@@ -26,7 +26,7 @@ export default class TectonicsMap extends BaseMap {
     constructor(params) {
         super(params)
         this.regionMap = this.#buildRegionMap(params)
-        const simplex = new SimplexNoise(8, 0.7, 0.01)
+        const simplex = new SimplexNoise(6, 0.7, 0.01)
         this.grid = new Grid(
             this.width,
             this.height,
@@ -60,7 +60,7 @@ export default class TectonicsMap extends BaseMap {
     }
 
     isBorder(point) {
-        return this.regionMap.at(point).isBorder()
+        return this.regionMap.get(point).isBorder()
     }
 
     isContinent(point) {

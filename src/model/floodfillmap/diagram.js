@@ -5,7 +5,7 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('randomColors', 'Random colors', false)
+        Type.boolean('randomColors', 'Random colors', true)
     )
 
     static create(map, params) {

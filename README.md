@@ -9,7 +9,10 @@
 ## ROADMAP
 
 #### Main
-- [] Remove floodfill points absorbed by others
+- [] Break plate regions into continent regions
+    Plate
+    Continent
+    Continental shelf
 - [] Optimize canvas rendering with off-screen canvas
 
 #### RegionMap

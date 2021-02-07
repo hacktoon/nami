@@ -1,6 +1,6 @@
 import { Grid } from '/lib/grid'
 import { Point } from '/lib/point'
-import { BaseFloodFill } from '/lib/floodfill/base'
+import { BaseFloodFill } from '/lib/floodfill'
 
 function createGrid(p, factor=2) {
     return new Grid(p.x * factor + 1, p.y * factor + 1, () => 0)

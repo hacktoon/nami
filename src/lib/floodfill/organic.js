@@ -17,6 +17,7 @@ export class OrganicFloodFill extends FloodFill {
 
     growMore() {
         for(let i = 0; i < this.iterations; i++) {
+            if (Random.chance(this.variability)) continue
             const [extra, other] = this.splitSeeds(this.seeds, this.variability)
             let extraSeeds = this.growLayer(extra)
             this.seeds = [...other, ...extraSeeds]

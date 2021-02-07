@@ -14,7 +14,7 @@ export default class FloodFillMap extends BaseMap {
         Type.number('width', 'Width', 200, {step: 1, min: 1, max: 256}),
         Type.number('height', 'Height', 150, {step: 1, min: 1, max: 256}),
         Type.number('count', 'Count', 15, {step: 1, min: 1}),
-        Type.number('iterations', 'Iterations', 40, {step: 1, min: 0}),
+        Type.number('iterations', 'Iterations', 60, {step: 1, min: 0}),
         Type.number('variability', 'Variability', 0.4, {
             step: 0.01, min: 0, max: 1
         }),
