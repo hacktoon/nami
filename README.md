@@ -9,18 +9,27 @@
 ## ROADMAP
 
 #### Main
-- [] Break plate regions into continent regions
+- MaxCount for fills
+- Noise in non-wrapping space for continental plates
+- Alternate model
+  plate region map
+  continent region map
+    - continent shelf emerges from background
+    level 0 - water
+    level 1 - shelf
+- Substitute OrganicFill in RegionMap for OrganicFloodFill
+- Break plate regions into continent regions
     Plate
     Continent
     Continental shelf
-- [] Optimize canvas rendering with off-screen canvas
+- Optimize rendering using an off-screen canvas
 
 #### RegionMap
-- [] Create region distance field using flood fill in border points
-- [] Regions adjacency table
+- Create region distance field using flood fill in border points
+- Regions adjacency table
 
 #### TectonicsMap
-- [] Create Plate register
+- Create Plate register
 - Convergent
   - OO : Island Arc
   - OC : Trench + Orogeny
@@ -35,10 +44,10 @@
 - First 2-3 layers are always land (cratons)
 
 #### ContinentMap
-- [] Create Continent
+- Create Continent
 
 #### BasinMap
-- [] determine rivers using graph
+- determine rivers using graph
 
 #### TerrainMap
 - Build distance map from coast borders

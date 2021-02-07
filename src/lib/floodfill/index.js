@@ -8,6 +8,7 @@ export class FloodFill {
         this.isEmpty = params.isEmpty
 
         this.setValue(this.origin)
+        this.area = 1
     }
 
     canGrow() {
@@ -34,33 +35,10 @@ export class FloodFill {
         for(let i = 0; i < emptyNeighbors.length; i++) {
             const neighbor = emptyNeighbors[i]
             this.setValue(neighbor)
+            this.area += 1
             filledNeighbors.push(neighbor)
         }
         return filledNeighbors
-    }
-}
-
-
-export class FillMap {
-    #canGrow = true
-
-    constructor(fills) {
-        this.fills = fills
-    }
-
-    canGrow() {
-        return this.#canGrow
-    }
-
-    grow() {
-        let totalFull = 0
-        for(let i = 0; i < this.fills.length; i++) {
-            const filled = this.fills[i].grow()
-            if (filled.length === 0) totalFull++
-        }
-        if (totalFull === this.fills.length) {
-            this.#canGrow = false
-        }
     }
 }
 
@@ -163,6 +141,30 @@ export class ScanlineFill8 extends ScanlineFill {
             this.detectRangeBelow(point.atSouth(), range)
             this.detectRangeBelow(point.atSoutheast(), range)
             point = this.grid.wrap(point.atEast())
+        }
+    }
+}
+
+
+export class FillMap {
+
+    constructor(fills) {
+        this.fills = fills
+        this._canGrow = true
+    }
+
+    canGrow() {
+        return this._canGrow
+    }
+
+    grow() {
+        let totalFull = 0
+        for(let i = 0; i < this.fills.length; i++) {
+            const filled = this.fills[i].grow()
+            if (filled.length === 0) totalFull++
+        }
+        if (totalFull === this.fills.length) {
+            this._canGrow = false
         }
     }
 }
