@@ -116,11 +116,3 @@ export class Point {
         return deltaX + deltaY
     }
 }
-
-
-export class RandomRectPoints {
-    static create(count, width, height) {
-        const parsedMaxCount = clamp(count, 1, width * height)
-        return repeat(parsedMaxCount, () => Point.random(width, height))
-    }
-}

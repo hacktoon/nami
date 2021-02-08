@@ -9,7 +9,8 @@
 ## ROADMAP
 
 #### Main
-- MaxCount for fills
+- Make Grid 1D (profile)
+- Even point sampling
 - Noise in non-wrapping space for continental plates
 - Alternate model
   plate region map

@@ -150,6 +150,7 @@ export class FillMap {
 
     constructor(fills) {
         this.fills = fills
+        this.size = fills.length
         this._canGrow = true
     }
 

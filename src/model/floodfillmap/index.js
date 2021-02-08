@@ -2,7 +2,7 @@ import { Schema, Type } from '/lib/schema'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { FillMap } from '/lib/floodfill'
 import { Grid } from '/lib/grid'
-import { RandomRectPoints } from '/lib/point'
+import { EvenPointSampling } from '/lib/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
 
@@ -13,7 +13,7 @@ export default class FloodFillMap extends BaseMap {
     static schema = new Schema(
         Type.number('width', 'Width', 200, {step: 1, min: 1, max: 256}),
         Type.number('height', 'Height', 150, {step: 1, min: 1, max: 256}),
-        Type.number('count', 'Count', 15, {step: 1, min: 1}),
+        Type.number('count', 'Count', 40, {step: 1, min: 1}),
         Type.number('iterations', 'Iterations', 60, {step: 1, min: 0}),
         Type.number('variability', 'Variability', 0.4, {
             step: 0.01, min: 0, max: 1
@@ -32,24 +32,23 @@ export default class FloodFillMap extends BaseMap {
         this.iterations = params.get('iterations')
         this.variability = params.get('variability')
         this.grid = new Grid(this.width, this.height, () => 0)
-        const origins = RandomRectPoints.create(
+        const origins = EvenPointSampling.create(
             this.count, this.width, this.height
         )
-        const fills = this.buildFloodFills(this.grid, origins)
-        const fillMap = new FillMap(fills)
+        this.fillMap = this.buildFillMap(origins)
+    }
 
+    buildFillMap(origins) {
+        const fills = []
+        for(let i = 0; i < origins.length; i++) {
+            const fill = this.buildFloodFill(this.grid, origins[i], i + 1)
+            fills.push(fill)
+        }
+        const fillMap = new FillMap(fills)
         while(fillMap.canGrow()) {
             fillMap.grow()
         }
-    }
-
-    buildFloodFills(grid, origins) {
-        const fills = []
-        for(let i = 0; i < origins.length; i++) {
-            const fill = this.buildFloodFill(grid, origins[i], i + 1)
-            fills.push(fill)
-        }
-        return fills
+        return fillMap
     }
 
     buildFloodFill(grid, origin, id) {
