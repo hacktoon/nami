@@ -13,8 +13,8 @@ export default class FloodFillMap extends BaseMap {
     static schema = new Schema(
         Type.number('width', 'Width', 200, {step: 1, min: 1, max: 256}),
         Type.number('height', 'Height', 150, {step: 1, min: 1, max: 256}),
-        Type.number('count', 'Count', 40, {step: 1, min: 1}),
-        Type.number('iterations', 'Iterations', 60, {step: 1, min: 0}),
+        Type.number('scale', 'Scale', 5, {step: 1, min: 1}),
+        Type.number('iterations', 'Iterations', 10, {step: 1, min: 0}),
         Type.number('variability', 'Variability', 0.4, {
             step: 0.01, min: 0, max: 1
         }),
@@ -28,14 +28,26 @@ export default class FloodFillMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.count = params.get('count')
+        this.scale = params.get('scale')
         this.iterations = params.get('iterations')
         this.variability = params.get('variability')
         this.grid = new Grid(this.width, this.height, () => 0)
         const origins = EvenPointSampling.create(
-            this.count, this.width, this.height
+            this.scale, this.width, this.height
         )
         this.fillMap = this.buildFillMap(origins)
+
+        // =============== TODO: just a test, remove
+        let count = 0
+        this.fillMap.forEach(fill => {
+            if (fill.area < 5) {
+                console.log(fill.area)
+                count++
+            }
+        })
+        // ===============
+        console.log('total absorbed: ', count)
+
     }
 
     buildFillMap(origins) {

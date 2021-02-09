@@ -154,6 +154,10 @@ export class FillMap {
         this._canGrow = true
     }
 
+    forEach(callback) {
+        this.fills.forEach(fill => callback(fill))
+    }
+
     canGrow() {
         return this._canGrow
     }

@@ -22,7 +22,7 @@ export class MapDiagram extends BaseMapDiagram {
         const map = {}
         const color = new Color(0, 0, 0)
         for(let i = 1; i <= this.map.fillMap.size; i++) {
-            const bright = Math.round(i * (this.map.count / 2))
+            const bright = Math.round(i * (this.map.scale / 2))
             map[i] = this.randomColors ? new Color() : color.brighten(bright)
         }
         return map

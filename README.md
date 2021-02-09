@@ -11,17 +11,10 @@
 #### Main
 - Avoid generating one-sized cells from Organic FloodFill
 - Noise in non-wrapping space for continental plates
-- Alternate model
-  plate region map
-  continent region map
-    - continent shelf emerges from background
-    level 0 - water
-    level 1 - shelf
-- Substitute OrganicFill in RegionMap for OrganicFloodFill
 - Break plate regions into continent regions
-    Plate
-    Continent
-    Continental shelf
+  - Continent shelf emerges from background
+  - Plate, Continent, shelf
+- Substitute OrganicFill in RegionMap for OrganicFloodFill
 - Optimize rendering using an off-screen canvas
 
 #### RegionMap
