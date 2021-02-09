@@ -17,6 +17,9 @@
 - Substitute OrganicFill in RegionMap for OrganicFloodFill
 - Optimize rendering using an off-screen canvas
 
+#### Map
+- Organize model folder structure under `map/`
+
 #### RegionMap
 - Create region distance field using flood fill in border points
 - Regions adjacency table

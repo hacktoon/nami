@@ -18,26 +18,11 @@ export class EvenPointSampling {
         const points = []
         const rect = new Rect(width, height)
         const pointSet = PointSet.fromRect(rect)
-
-        function circleMaskPoints() {
-            const center = new Point(0, 0)
-            const points = []
-            for(let i = center.x - radius; i < center.x + radius; i++) {
-                for(let j = center.y - radius; j < center.y + radius; j++) {
-                    const point = new Point(i, j)
-                    if (point.distance(center) <= radius) {
-                        points.push(point)
-                    }
-                }
-            }
-            return points
-        }
-        const maskPoints = circleMaskPoints(points)
-
+        const maskPoints = circleMaskPoints(radius)
 
         while(pointSet.size > 0) {
             const center = pointSet.random()
-            iterPointsInCircle(pointSet, center, radius, rect)
+            deletePointsInCircle(maskPoints, pointSet, center, rect)
             points.push(center)
         }
         return points
@@ -45,14 +30,24 @@ export class EvenPointSampling {
 }
 
 
-function iterPointsInCircle(pointSet, center, radius, rect) {
-    const {x, y} = center
-    for(let i=x-radius; i<x+radius; i++) {
-        for(let j=y-radius; j<y+radius; j++) {
-            const point = rect.wrap(new Point(i, j))
+function circleMaskPoints(radius) {
+    const center = new Point(0, 0)
+    const points = []
+    for(let i = center.x - radius; i < center.x + radius; i++) {
+        for(let j = center.y - radius; j < center.y + radius; j++) {
+            const point = new Point(i, j)
             if (point.distance(center) <= radius) {
-                pointSet.delete(point)
+                points.push(point)
             }
         }
     }
+    return points
+}
+
+
+function deletePointsInCircle(maskPoints, pointSet, center, rect) {
+    maskPoints.forEach(maskPoint => {
+        const point = rect.wrap(center.plus(maskPoint))
+        pointSet.delete(point)
+    })
 }
