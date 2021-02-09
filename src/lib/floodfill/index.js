@@ -146,7 +146,7 @@ export class ScanlineFill8 extends ScanlineFill {
 }
 
 
-export class FillMap {
+export class MultiFill {
 
     constructor(fills) {
         this.fills = fills

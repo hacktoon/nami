@@ -8,12 +8,6 @@
 
 ## ROADMAP
 
-#### Main
-- Break plate regions into continent regions
-  - Continent shelf emerges from background
-  - Plate, Continent, shelf
-- Optimize rendering using an off-screen canvas
-
 #### Map
 - Organize model folder structure under `map/`
 
@@ -79,10 +73,9 @@
 - Roads
   - create junction points between route ends
 
-
 ### Interface
-- Create "Focus" property to render map view centered on that
 - Optimize canvas rendering
   - Use offscreen canvas when `map.size <  screen.size`
   - Add tool to live-test drawing functions on console
 - Add/use URL with parameters
+- Store parameters in localStorage

@@ -1,6 +1,6 @@
 import { Schema, Type } from '/lib/schema'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
-import { FillMap } from '/lib/floodfill'
+import { MultiFill } from '/lib/floodfill'
 import { Grid } from '/lib/grid'
 import { RandomPointSampling, EvenPointSampling } from '/lib/point/sampling'
 import { BaseMap } from '/model/lib/map'
@@ -15,7 +15,7 @@ export default class FloodFillMap extends BaseMap {
         Type.number('width', 'Width', 150, {step: 1, min: 1, max: 256}),
         Type.number('height', 'Height', 100, {step: 1, min: 1, max: 256}),
         Type.number('scale', 'Scale', 20, {step: 1, min: 1}),
-        Type.number('iterations', 'Iterations', 30, {step: 1, min: 0}),
+        Type.number('iterations', 'Iterations', 20, {step: 1, min: 0}),
         Type.number('variability', 'Variability', 0.3, {
             step: 0.01, min: 0, max: 1
         }),
@@ -33,7 +33,7 @@ export default class FloodFillMap extends BaseMap {
         this.iterations = params.get('iterations')
         this.variability = params.get('variability')
         this.grid = new Grid(this.width, this.height, () => 0)
-        this.fillMap = this.buildFillMap()
+        this.fillMap = this.buildMultiFill(EvenPointSampling)
 
         // =============== TODO: just a test, remove
         let count = 0
@@ -48,22 +48,23 @@ export default class FloodFillMap extends BaseMap {
 
     }
 
-    buildFillMap() {
+    buildMultiFill(PointSampling) {
         const fills = []
-        const origins = EvenPointSampling.create(
+        const origins = PointSampling.create(
             this.scale,
             this.width,
             this.height
         )
         for(let i = 0; i < origins.length; i++) {
-            const fill = this.buildFloodFill(this.grid, origins[i], i + 1)
+            const value = i + 1
+            const fill = this.buildFloodFill(this.grid, origins[i], value)
             fills.push(fill)
         }
-        const fillMap = new FillMap(fills)
-        while(fillMap.canGrow()) {
-            fillMap.grow()
+        const multiFill = new MultiFill(fills)
+        while(multiFill.canGrow()) {
+            multiFill.grow()
         }
-        return fillMap
+        return multiFill
     }
 
     buildFloodFill(grid, origin, id) {
