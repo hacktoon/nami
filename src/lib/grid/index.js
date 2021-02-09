@@ -7,6 +7,7 @@ export class Grid {
         this.width = width
         this.height = height
         this.area = width * height
+        this.rect = new Rect(width, height)
         this.matrix = []
 
         for (let y = 0; y < this.height; y++) {
@@ -29,6 +30,6 @@ export class Grid {
     }
 
     wrap(point) {
-        return new Rect(this.width, this.height).wrap(point)
+        return this.rect.wrap(point)
     }
 }

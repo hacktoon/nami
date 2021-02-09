@@ -9,8 +9,7 @@
 ## ROADMAP
 
 #### Main
-- Make Grid 1D (profile)
-- Even point sampling
+- Avoid generating one-sized cells from Organic FloodFill
 - Noise in non-wrapping space for continental plates
 - Alternate model
   plate region map

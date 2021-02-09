@@ -1,7 +1,5 @@
 import { Direction } from '/lib/direction'
 import { Random } from '/lib/random'
-import { repeat } from '/lib/function'
-import { clamp } from '/lib/number'
 
 
 const ADJACENT_NEIGHBORHOOD = [
