@@ -19,6 +19,22 @@ export class EvenPointSampling {
         const rect = new Rect(width, height)
         const pointSet = PointSet.fromRect(rect)
 
+        function circleMaskPoints() {
+            const center = new Point(0, 0)
+            const points = []
+            for(let i = center.x - radius; i < center.x + radius; i++) {
+                for(let j = center.y - radius; j < center.y + radius; j++) {
+                    const point = new Point(i, j)
+                    if (point.distance(center) <= radius) {
+                        points.push(point)
+                    }
+                }
+            }
+            return points
+        }
+        const maskPoints = circleMaskPoints(points)
+
+
         while(pointSet.size > 0) {
             const center = pointSet.random()
             iterPointsInCircle(pointSet, center, radius, rect)

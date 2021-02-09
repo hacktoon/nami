@@ -36,9 +36,10 @@ export default class RegionMap extends BaseMap {
         this.count = params.get('count')
         this.layerGrowth = params.get('layerGrowth')
         this.growthChance = params.get('growthChance')
-        this.regionSet = new RegionSet(EvenPointSampling.create(
+        const origins = EvenPointSampling.create(
             this.count, this.width, this.height
-        ))
+        )
+        this.regionSet = new RegionSet(origins)
         this.grid = this.#buildGrid()
     }
 
