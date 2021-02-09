@@ -9,22 +9,22 @@
 ## ROADMAP
 
 #### Main
-- Avoid generating one-sized cells from Organic FloodFill
-- Noise in non-wrapping space for continental plates
 - Break plate regions into continent regions
   - Continent shelf emerges from background
   - Plate, Continent, shelf
-- Substitute OrganicFill in RegionMap for OrganicFloodFill
 - Optimize rendering using an off-screen canvas
 
 #### Map
 - Organize model folder structure under `map/`
 
 #### RegionMap
+- Substitute OrganicFill in RegionMap for OrganicFloodFill
+- Normalize regions from OrganicFloodFill
 - Create region distance field using flood fill in border points
 - Regions adjacency table
 
 #### TectonicsMap
+- Noise in non-wrapping space for continental plates
 - Create Plate register
 - Convergent
   - OO : Island Arc
