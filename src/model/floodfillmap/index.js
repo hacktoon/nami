@@ -2,9 +2,10 @@ import { Schema, Type } from '/lib/schema'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { FillMap } from '/lib/floodfill'
 import { Grid } from '/lib/grid'
-import { EvenPointSampling } from '/lib/point/sampling'
+import { RandomPointSampling, EvenPointSampling } from '/lib/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
+import { Random } from '/lib/random'
 
 
 export default class FloodFillMap extends BaseMap {
@@ -13,9 +14,9 @@ export default class FloodFillMap extends BaseMap {
     static schema = new Schema(
         Type.number('width', 'Width', 150, {step: 1, min: 1, max: 256}),
         Type.number('height', 'Height', 100, {step: 1, min: 1, max: 256}),
-        Type.number('scale', 'Scale', 5, {step: 1, min: 1}),
-        Type.number('iterations', 'Iterations', 10, {step: 1, min: 0}),
-        Type.number('variability', 'Variability', 0.4, {
+        Type.number('scale', 'Scale', 20, {step: 1, min: 1}),
+        Type.number('iterations', 'Iterations', 30, {step: 1, min: 0}),
+        Type.number('variability', 'Variability', 0.3, {
             step: 0.01, min: 0, max: 1
         }),
         Type.text('seed', 'Seed', '')
