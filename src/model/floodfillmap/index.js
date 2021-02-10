@@ -4,6 +4,7 @@ import { Grid } from '/lib/grid'
 import { RandomPointSampling, EvenPointSampling } from '/lib/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
+import { MapUI } from '/ui/map'
 
 
 const SAMPLING_ENTRIES = [
@@ -12,24 +13,24 @@ const SAMPLING_ENTRIES = [
 ]
 const SAMPLING_MAP = new Map(SAMPLING_ENTRIES)
 
+const SCHEMA = new Schema(
+    Type.number('width', 'Width', 150, {step: 1, min: 1, max: 256}),
+    Type.number('height', 'Height', 100, {step: 1, min: 1, max: 256}),
+    Type.number('scale', 'Scale', 20, {step: 1, min: 1}),
+    Type.number('growth', 'Growth', 10, {step: 1, min: 0}),
+    Type.number('chance', 'Chance', 0.3, {step: 0.01, min: 0.1, max: 1}),
+    Type.enum('pointSampling', 'Sampling', EvenPointSampling.id, {
+        options: SAMPLING_ENTRIES.map(([id,]) => [id, id])
+    }),
+    Type.text('seed', 'Seed', '')
+)
+
 
 export default class FloodFillMap extends BaseMap {
-    static id = 'FloodFillMap'
-
-    static schema = new Schema(
-        Type.number('width', 'Width', 150, {step: 1, min: 1, max: 256}),
-        Type.number('height', 'Height', 100, {step: 1, min: 1, max: 256}),
-        Type.number('scale', 'Scale', 20, {step: 1, min: 1}),
-        Type.number('growth', 'Growth', 10, {step: 1, min: 0}),
-        Type.number('chance', 'Chance', 0.3, {
-            step: 0.01, min: 0.1, max: 1
-        }),
-        Type.enum('pointSampling', 'Sampling', EvenPointSampling.id, {
-            options: SAMPLING_ENTRIES.map(([id,]) => [id, id])
-        }),
-        Type.text('seed', 'Seed', '')
-    )
+    static label = 'FloodFill map'
     static diagram = MapDiagram
+    static schema = SCHEMA
+    static ui = MapUI
 
     static create(params) {
         return new FloodFillMap(params)

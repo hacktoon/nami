@@ -8,8 +8,7 @@ import { Color } from '/lib/color'
 
 
 export class Test {
-    static id = 'Test'
-
+    static label = 'Test'
     static schema = new Schema(
         Type.number('count', 'Count', 4),
         Type.text('seed', 'Seed', 'seed'),

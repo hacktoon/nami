@@ -3,21 +3,25 @@ import { Grid } from '/lib/grid'
 import { Point } from '/lib/point'
 import { Schema, Type } from '/lib/schema'
 import { SimplexNoise } from '/lib/noise'
+import { MapUI } from '/ui/map'
 
 import RegionMap from '/model/regionmap'
 import { MapDiagram } from './diagram'
 
 
-export default class TectonicsMap extends BaseMap {
-    static id = 'TectonicsMap'
+const SCHEMA = new Schema(
+    Type.number('width', 'Width', 150, {step: 1, min: 1}),
+    Type.number('height', 'Height', 100, {step: 1, min: 1}),
+    Type.number('plates', 'Plates', 16, {step: 1, min: 1}),
+    Type.text('seed', 'Seed', '')
+)
 
-    static schema = new Schema(
-        Type.number('width', 'Width', 150, {step: 1, min: 1}),
-        Type.number('height', 'Height', 100, {step: 1, min: 1}),
-        Type.number('plates', 'Plates', 16, {step: 1, min: 1}),
-        Type.text('seed', 'Seed', '')
-    )
+
+export default class TectonicsMap extends BaseMap {
+    static label = 'Tectonics map'
     static diagram = MapDiagram
+    static schema = SCHEMA
+    static ui = MapUI
 
     static create(params) {
         return new TectonicsMap(params)

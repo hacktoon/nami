@@ -7,20 +7,24 @@ import { RegionSet } from './region'
 import { RegionCell } from './cell'
 import { Grid } from '/lib/grid'
 import { MapDiagram } from './diagram'
+import { MapUI } from '/ui/map'
+
+
+const SCHEMA = new Schema(
+    Type.number('width', 'Width', 200, {step: 1, min: 1}),
+    Type.number('height', 'Height', 150, {step: 1, min: 1}),
+    Type.number('count', 'Count', 15, {step: 1, min: 1}),
+    Type.number('layerGrowth', 'Layer growth', 30, {step: 1, min: 1}),
+    Type.number('growthChance', 'Growth chance', 0.1, {step: 0.01, min: 0.01}),
+    Type.text('seed', 'Seed', '')
+)
 
 
 export default class RegionMap extends BaseMap {
-    static id = 'RegionMap'
-
-    static schema = new Schema(
-        Type.number('width', 'Width', 200, {step: 1, min: 1}),
-        Type.number('height', 'Height', 150, {step: 1, min: 1}),
-        Type.number('count', 'Count', 15, {step: 1, min: 1}),
-        Type.number('layerGrowth', 'Layer growth', 30, {step: 1, min: 1}),
-        Type.number('growthChance', 'Growth chance', 0.1, {step: 0.01, min: 0.01}),
-        Type.text('seed', 'Seed', '')
-    )
     static diagram = MapDiagram
+    static label = 'Region map'
+    static schema = SCHEMA
+    static ui = MapUI
 
     static create(params) {
         return new RegionMap(params)
