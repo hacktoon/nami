@@ -173,3 +173,16 @@ export class MultiFill {
         }
     }
 }
+
+
+export class OrganicMultiFill extends MultiFill {
+    grow() {
+        let initialIterations = 2
+        for(let i = 0; i < this.fills.length; i++) {
+            while(initialIterations--) {
+                this.fills[i].grow()
+            }
+        }
+        super.grow()
+    }
+}

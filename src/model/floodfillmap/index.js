@@ -5,7 +5,6 @@ import { Grid } from '/lib/grid'
 import { RandomPointSampling, EvenPointSampling } from '/lib/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
-import { Random } from '/lib/random'
 
 
 export default class FloodFillMap extends BaseMap {
@@ -16,7 +15,7 @@ export default class FloodFillMap extends BaseMap {
         Type.number('height', 'Height', 100, {step: 1, min: 1, max: 256}),
         Type.number('scale', 'Scale', 20, {step: 1, min: 1}),
         Type.number('iterations', 'Iterations', 20, {step: 1, min: 0}),
-        Type.number('variability', 'Variability', 0.3, {
+        Type.number('chance', 'Chance', 0.3, {
             step: 0.01, min: 0, max: 1
         }),
         Type.text('seed', 'Seed', '')
@@ -31,7 +30,7 @@ export default class FloodFillMap extends BaseMap {
         super(params)
         this.scale = params.get('scale')
         this.iterations = params.get('iterations')
-        this.variability = params.get('variability')
+        this.chance = params.get('chance')
         this.grid = new Grid(this.width, this.height, () => 0)
         this.fillMap = this.buildMultiFill(EvenPointSampling)
 
@@ -73,7 +72,7 @@ export default class FloodFillMap extends BaseMap {
             setValue:  point => grid.set(point, id),
         }
         return new OrganicFloodFill(
-            origin, params, this.iterations, this.variability
+            origin, params, this.iterations, this.chance
         )
     }
 

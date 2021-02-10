@@ -3,10 +3,10 @@ import { FloodFill } from './index'
 
 
 export class OrganicFloodFill extends FloodFill {
-    constructor(origin, params, iterations=30, variability=.5) {
+    constructor(origin, params, iterations=30, chance=.5) {
         super(origin, params)
         this.iterations = iterations
-        this.variability = variability
+        this.chance = chance
     }
 
     grow() {
@@ -16,7 +16,7 @@ export class OrganicFloodFill extends FloodFill {
     }
 
     growMore() {
-        if (Random.chance(this.variability)) return
+        if (Random.chance(this.chance)) return
         for(let i = 0; i < this.iterations; i++) {
             this.growRandomLayer()
         }
@@ -31,7 +31,7 @@ export class OrganicFloodFill extends FloodFill {
     splitSeeds(array) {
         const first = [], second = []
         for(let i = 0; i < array.length; i++) {
-            const outputArray = Random.chance(this.variability) ? first : second
+            const outputArray = Random.chance(this.chance) ? first : second
             outputArray.push(array[i])
         }
         return [first, second]
