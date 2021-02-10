@@ -1,4 +1,4 @@
-import { Direction } from '/lib/direction'
+import { Direction } from '/lib/base/direction'
 import { Random } from '/lib/random'
 
 

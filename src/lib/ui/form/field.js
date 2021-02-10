@@ -126,7 +126,7 @@ export function FieldSet({types, data}) {
             name={type.name}
             label={type.label}
             value={data.get(type.name)}
-            {...type.fieldAttrs}
+            {...type.attributes}
             {...type.props}
         />
     })

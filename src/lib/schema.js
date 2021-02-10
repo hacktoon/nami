@@ -21,7 +21,7 @@ export class Schema {
     }
 
     defaultValues() {
-        const mapToDefault = type => [type.name, type.defaultValue]
+        const mapToDefault = type => [type.name, type.attributes.default]
         const entries = this.types.map(mapToDefault)
         return new Map(entries)
     }
@@ -42,18 +42,17 @@ export class Schema {
 class BaseType {
     static define(TypeClass) {
         // Example: Type.number('foobar', 'Foobar param', 42)
-        return (name, label, defaultValue, props={}) => {
+        return (name, label, props={}) => {
             const type = TypeClass.type
-            return new TypeClass(type, name, label, defaultValue, props)
+            return new TypeClass(type, name, label, props)
         }
     }
 
-    constructor(type, name, label, fieldAttrs) {
+    constructor(type, name, label, attributes) {
         this.type = type
         this.name = name
         this.label = label
-        this.defaultValue = fieldAttrs.default
-        this.fieldAttrs = fieldAttrs
+        this.attributes = attributes
     }
 
     parse(value) {
@@ -78,8 +77,8 @@ export class NumberType extends TextType {
 
     parse(text) {
         const value = super.parse(text)
-        const min = this.fieldAttrs.min ?? -Infinity
-        const max = this.fieldAttrs.max ?? Infinity
+        const min = this.attributes.min ?? -Infinity
+        const max = this.attributes.max ?? Infinity
         return clamp(Number(value), min, max)
     }
 }
