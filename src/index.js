@@ -38,7 +38,7 @@ const options = APPS.map(([model,]) => [model.name, model.label])
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', FloodFillMap.name, {options})
+        Type.enum('app', 'App', {default: FloodFillMap.name, options})
     )
 }
 

@@ -14,12 +14,13 @@ const SAMPLING_ENTRIES = [
 const SAMPLING_MAP = new Map(SAMPLING_ENTRIES)
 
 const SCHEMA = new Schema(
-    Type.number('width', 'Width', 150, {step: 1, min: 1, max: 256}),
-    Type.number('height', 'Height', 100, {step: 1, min: 1, max: 256}),
-    Type.number('scale', 'Scale', 20, {step: 1, min: 1}),
-    Type.number('growth', 'Growth', 10, {step: 1, min: 0}),
-    Type.number('chance', 'Chance', 0.3, {step: 0.01, min: 0.1, max: 1}),
-    Type.enum('pointSampling', 'Sampling', EvenPointSampling.id, {
+    Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
+    Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 256}),
+    Type.number('scale', 'Scale', {default: 20, step: 1, min: 1}),
+    Type.number('growth', 'Growth', {default: 10, step: 1, min: 0}),
+    Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
+    Type.enum('pointSampling', 'Sampling', {
+        default: EvenPointSampling.id,
         options: SAMPLING_ENTRIES.map(([id,]) => [id, id])
     }),
     Type.text('seed', 'Seed', '')

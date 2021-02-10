@@ -8,9 +8,9 @@ import { MapDiagram } from './diagram'
 
 
 const SCHEMA = new Schema(
-    Type.number('roughness', 'Roughness', 8, {min: 1, step: 1}),
-    Type.number('size', 'Size', 257, {min: 1, step: 1}),
-    Type.text('seed', 'Seed', '')
+    Type.number('roughness', 'Roughness', {default: 8, min: 1, step: 1}),
+    Type.number('size', 'Size', {default: 257, min: 1, step: 1}),
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 export default class WorldMap extends BaseMap {

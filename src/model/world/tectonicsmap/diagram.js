@@ -5,10 +5,10 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('showBorder', 'Show border', false),
-        Type.color('continent', 'Continent', Color.fromHex('#389E4A')),
-        Type.color('ocean', 'Ocean', Color.fromHex('#058')),
-        Type.color('borderColor', 'Border color', Color.fromHex('#F90')),
+        Type.boolean('showBorder', 'Show border', {default: false}),
+        Type.color('continent', 'Continent', {default: Color.fromHex('#389E4A')}),
+        Type.color('ocean', 'Ocean', {default: Color.fromHex('#058')}),
+        Type.color('borderColor', 'Border', {default: Color.fromHex('#F90')})
     )
 
     static create(map, params) {

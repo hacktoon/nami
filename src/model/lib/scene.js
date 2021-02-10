@@ -5,9 +5,9 @@ import { Schema, Type } from '/lib/schema'
 
 export class MapScene {
     static schema = new Schema(
-        Type.point('focus', "Focus", new Point(99, 50)),
-        Type.boolean('wrap', "Wrap", false),
-        Type.number('zoom', "Zoom", 5, {step: 1, min: 1}),
+        Type.point('focus', "Focus", {default: new Point(99, 50)}),
+        Type.boolean('wrap', "Wrap", {default: false}),
+        Type.number('zoom', "Zoom", {default: 5, step: 1, min: 1}),
     )
 
     static create(diagram, width, height, params) {

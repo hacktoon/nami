@@ -5,14 +5,14 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('showBorders', 'Show borders', true),
-        Type.boolean('showOrigins', 'Show origins', true),
-        Type.boolean('invertColors', 'Invert colors', false),
-        Type.boolean('randomColors', 'Random colors', true),
-        Type.number('showLayer', 'Show layer', 40, {step: 1, min: 0}),
-        Type.number('selectRegion', 'Select region', -1, {step: 1, min: -1}),
-        Type.color('fgColor', 'FG color', Color.fromHex('#251')),
-        Type.color('bgColor', 'BG color', Color.fromHex('#059'))
+        Type.boolean('showBorders', 'Show borders', {default: true}),
+        Type.boolean('showOrigins', 'Show origins', {default: true}),
+        Type.boolean('invertColors', 'Invert colors', {default: false}),
+        Type.boolean('randomColors', 'Random colors', {default: true}),
+        Type.number('showLayer', 'Show layer', {default: 40, step: 1, min: 0}),
+        Type.number('selectRegion', 'Region', {default: -1, step: 1, min: -1}),
+        Type.color('fgColor', 'FG color', {default: Color.fromHex('#251')}),
+        Type.color('bgColor', 'BG color', {default: Color.fromHex('#059')})
     )
 
     static create(map, params) {

@@ -48,11 +48,11 @@ class BaseType {
         }
     }
 
-    constructor(type, name, label, defaultValue, fieldAttrs) {
+    constructor(type, name, label, fieldAttrs) {
         this.type = type
         this.name = name
         this.label = label
-        this.defaultValue = defaultValue
+        this.defaultValue = fieldAttrs.default
         this.fieldAttrs = fieldAttrs
     }
 

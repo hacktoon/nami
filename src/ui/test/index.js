@@ -10,11 +10,11 @@ import { Color } from '/lib/color'
 export class Test {
     static label = 'Test'
     static schema = new Schema(
-        Type.number('count', 'Count', 4),
-        Type.text('seed', 'Seed', 'seed'),
-        Type.boolean('active', 'Active', false),
-        Type.color('bg', 'BG color', new Color(230, 35, 66)),
-        Type.point('focus', 'Focus', new Point(5, 2)),
+        Type.number('count', 'Count', {default: 4}),
+        Type.text('seed', 'Seed', {default: 'seed'}),
+        Type.boolean('active', 'Active', {default: false}),
+        Type.color('bg', 'BG color', {default: new Color(230, 35, 66)}),
+        Type.point('focus', 'Focus', {default: new Point(5, 2)}),
     )
 
     constructor(params) {

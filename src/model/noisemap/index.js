@@ -8,12 +8,12 @@ import { MapDiagram } from './diagram'
 
 
 const SCHEMA = new Schema(
-    Type.number('width', 'Width', 150, {step: 1, min: 1}),
-    Type.number('height', 'Height', 150, {step: 1, min: 1}),
-    Type.number('detail', 'Detail', 8, {step: 1, min: 1, max: 20}),
-    Type.number('resolution', 'Resolution', .5, {step: 0.1, min: 0.1}),
-    Type.number('scale', 'Scale', .01, {step: 0.01, min: 0.01}),
-    Type.text('seed', 'Seed', '')
+    Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
+    Type.number('height', 'Height', {default: 150, step: 1, min: 1}),
+    Type.number('detail', 'Detail', {default: 8, step: 1, min: 1, max: 20}),
+    Type.number('resolution', 'Resolution', {default: .5, step: 0.1, min: 0.1}),
+    Type.number('scale', 'Scale', {default: .01, step: 0.01, min: 0.01}),
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 
@@ -38,15 +38,9 @@ export default class NoiseMap extends BaseMap {
             this.resolution,
             this.scale
         )
-        let max = -Infinity
-        let min = Infinity
         this.grid = new Grid(this.width, this.height, point => {
-            let val = simplex.noise(point)
-            if (val > max) max = val
-            if (val < min) min = val
-            return val
+            return simplex.noise(point)
         })
-        console.log(min, max);
     }
 
     get(point) {

@@ -10,10 +10,10 @@ import { MapDiagram } from './diagram'
 
 
 const SCHEMA = new Schema(
-    Type.number('width', 'Width', 150, {step: 1, min: 1}),
-    Type.number('height', 'Height', 100, {step: 1, min: 1}),
-    Type.number('plates', 'Plates', 16, {step: 1, min: 1}),
-    Type.text('seed', 'Seed', '')
+    Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
+    Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
+    Type.number('plates', 'Plates', {default: 16, step: 1, min: 1}),
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 
