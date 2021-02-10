@@ -147,11 +147,14 @@ export class ScanlineFill8 extends ScanlineFill {
 
 
 export class MultiFill {
-
-    constructor(fills) {
-        this.fills = fills
-        this.size = fills.length
+    constructor(origins, buildFill) {
+        this.fills = origins.map((center, i) => buildFill(center,  i + 1))
+        this.size = this.fills.length
         this.canGrow = true
+
+        while(this.canGrow) {
+            this.grow()
+        }
     }
 
     forEach(callback) {
@@ -170,15 +173,3 @@ export class MultiFill {
     }
 }
 
-
-export class OrganicMultiFill extends MultiFill {
-    grow() {
-        let initialIterations = 2
-        for(let i = 0; i < this.fills.length; i++) {
-            while(initialIterations--) {
-                this.fills[i].grow()
-            }
-        }
-        super.grow()
-    }
-}

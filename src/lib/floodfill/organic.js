@@ -3,10 +3,10 @@ import { FloodFill } from './index'
 
 
 export class OrganicFloodFill extends FloodFill {
-    constructor(origin, params, iterations=30, chance=.5) {
+    constructor(origin, params) {
         super(origin, params)
-        this.iterations = iterations
-        this.chance = chance
+        this.iterations = params.iterations ?? 20
+        this.chance = params.chance ?? .2
     }
 
     grow() {

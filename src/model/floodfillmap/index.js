@@ -32,49 +32,23 @@ export default class FloodFillMap extends BaseMap {
         this.iterations = params.get('iterations')
         this.chance = params.get('chance')
         this.grid = new Grid(this.width, this.height, () => 0)
-        this.fillMap = this.buildMultiFill(EvenPointSampling)
+        this.fillMap = this.buildMultiFill(this.grid)
+    }
 
-        // =============== TODO: just a test, remove
-        let count = 0
-        this.fillMap.forEach(fill => {
-            if (fill.area < 5) {
-                // console.log(fill.area)
-                count++
+    buildMultiFill(grid) {
+        const origins = EvenPointSampling.create(
+            this.scale, this.width, this.height
+        )
+        const buildFill = (center, value) => {
+            const params = {
+                isEmpty:   point => grid.get(point) === 0,
+                setValue:  point => grid.set(point, value),
+                iterations: this.iterations,
+                chance: this.chance,
             }
-        })
-        // ===============
-        console.log('total absorbed: ', count)
-
-    }
-
-    buildMultiFill(PointSampling) {
-        const fills = []
-        const origins = PointSampling.create(
-            this.scale,
-            this.width,
-            this.height
-        )
-        // TODO: move this to MultiFill
-        for(let i = 0; i < origins.length; i++) {
-            const value = i + 1
-            const fill = this.buildFloodFill(this.grid, origins[i], value)
-            fills.push(fill)
+            return new OrganicFloodFill(center, params)
         }
-        const multiFill = new MultiFill(fills)
-        while(multiFill.canGrow) {
-            multiFill.grow()
-        }
-        return multiFill
-    }
-
-    buildFloodFill(grid, origin, id) {
-        const params = {
-            isEmpty:   point => grid.get(point) === 0,
-            setValue:  point => grid.set(point, id),
-        }
-        return new OrganicFloodFill(
-            origin, params, this.iterations, this.chance
-        )
+        return new MultiFill(origins, buildFill)
     }
 
     get(point) {
