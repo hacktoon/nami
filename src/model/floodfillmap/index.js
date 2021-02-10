@@ -38,7 +38,7 @@ export default class FloodFillMap extends BaseMap {
         let count = 0
         this.fillMap.forEach(fill => {
             if (fill.area < 5) {
-                console.log(fill.area)
+                // console.log(fill.area)
                 count++
             }
         })
@@ -54,6 +54,7 @@ export default class FloodFillMap extends BaseMap {
             this.width,
             this.height
         )
+        // TODO: move this to MultiFill
         for(let i = 0; i < origins.length; i++) {
             const value = i + 1
             const fill = this.buildFloodFill(this.grid, origins[i], value)

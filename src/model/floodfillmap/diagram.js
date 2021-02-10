@@ -1,11 +1,11 @@
 import { Schema, Type } from '/lib/schema'
 import { Color } from '/lib/color'
+import { clamp } from '/lib/number'
 import { BaseMapDiagram } from '/model/lib/map'
 
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('randomColors', 'Random colors', true)
     )
 
     static create(map, params) {
@@ -14,16 +14,13 @@ export class MapDiagram extends BaseMapDiagram {
 
     constructor(map, params) {
         super(map)
-        this.randomColors = params.get('randomColors')
         this.colorMap = this.buildColorMap()
     }
 
     buildColorMap() {
         const map = {}
-        const color = new Color(0, 0, 0)
         for(let i = 1; i <= this.map.fillMap.size; i++) {
-            const bright = Math.round(i * (this.map.fillMap.size / 2))
-            map[i] = this.randomColors ? new Color() : color.brighten(bright)
+            map[i] = new Color()
         }
         return map
     }

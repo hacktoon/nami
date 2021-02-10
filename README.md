@@ -7,13 +7,13 @@
 
 
 ## ROADMAP
+- Add borders to base FloodFill
 
 #### Map
 - Organize model folder structure under `map/`
 
 #### RegionMap
 - Substitute OrganicFill in RegionMap for OrganicFloodFill
-- Normalize regions from OrganicFloodFill
 - Create region distance field using flood fill in border points
 - Regions adjacency table
 
