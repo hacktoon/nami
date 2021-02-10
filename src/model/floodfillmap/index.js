@@ -1,10 +1,16 @@
 import { Schema, Type } from '/lib/schema'
-import { OrganicFloodFill } from '/lib/floodfill/organic'
-import { MultiFill } from '/lib/floodfill'
+import { OrganicMultiFill } from '/lib/floodfill/organic'
 import { Grid } from '/lib/grid'
 import { RandomPointSampling, EvenPointSampling } from '/lib/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
+
+
+const SAMPLING_ENTRIES = [
+    [RandomPointSampling.id, RandomPointSampling],
+    [EvenPointSampling.id, EvenPointSampling],
+]
+const SAMPLING_MAP = new Map(SAMPLING_ENTRIES)
 
 
 export default class FloodFillMap extends BaseMap {
@@ -14,9 +20,12 @@ export default class FloodFillMap extends BaseMap {
         Type.number('width', 'Width', 150, {step: 1, min: 1, max: 256}),
         Type.number('height', 'Height', 100, {step: 1, min: 1, max: 256}),
         Type.number('scale', 'Scale', 20, {step: 1, min: 1}),
-        Type.number('iterations', 'Iterations', 10, {step: 1, min: 0}),
+        Type.number('growth', 'Growth', 10, {step: 1, min: 0}),
         Type.number('chance', 'Chance', 0.3, {
             step: 0.01, min: 0.1, max: 1
+        }),
+        Type.enum('pointSampling', 'Sampling', EvenPointSampling.id, {
+            options: SAMPLING_ENTRIES.map(([id,]) => [id, id])
         }),
         Type.text('seed', 'Seed', '')
     )
@@ -28,27 +37,19 @@ export default class FloodFillMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.scale = params.get('scale')
-        this.iterations = params.get('iterations')
-        this.chance = params.get('chance')
-        this.grid = new Grid(this.width, this.height, () => 0)
-        this.fillMap = this.buildMultiFill(this.grid)
-    }
 
-    buildMultiFill(grid) {
-        const origins = EvenPointSampling.create(
-            this.scale, this.width, this.height
+        const pointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
+        const points = pointSampling.create(
+            params.get('scale'), this.width, this.height
         )
-        const buildFill = (center, value) => {
-            const params = {
-                isEmpty:   point => grid.get(point) === 0,
-                setValue:  point => grid.set(point, value),
-                iterations: this.iterations,
-                chance: this.chance,
-            }
-            return new OrganicFloodFill(center, params)
-        }
-        return new MultiFill(origins, buildFill)
+        this.grid = new Grid(this.width, this.height, () => 0)
+        const multiFill = new OrganicMultiFill(points, value => ({
+            chance:     params.get('chance'),
+            isEmpty:    point => this.grid.get(point) === 0,
+            setValue:   point => this.grid.set(point, value),
+            growth: params.get('growth'),
+        }))
+        this.regionCount = multiFill.size
     }
 
     get(point) {

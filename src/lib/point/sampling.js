@@ -6,6 +6,8 @@ import { Rect } from '/lib/number'
 
 
 export class RandomPointSampling {
+    static id = 'Random'
+
     static create(count, width, height) {
         const parsedMaxCount = clamp(count, 1, width * height)
         return repeat(parsedMaxCount, () => Point.random(width, height))
@@ -14,6 +16,8 @@ export class RandomPointSampling {
 
 
 export class EvenPointSampling {
+    static id = 'Even'
+
     static create(radius, width, height) {
         const points = []
         const rect = new Rect(width, height)

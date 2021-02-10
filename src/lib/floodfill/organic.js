@@ -1,5 +1,5 @@
 import { Random } from '/lib/random'
-import { FloodFill } from './index'
+import { FloodFill, MultiFill } from './index'
 
 
 export class OrganicFloodFill extends FloodFill {
@@ -112,3 +112,13 @@ export class OrganicFill {
         return seeds
     }
 }
+
+
+export class OrganicMultiFill extends MultiFill {
+    constructor(origins, buildParams) {
+        super(origins, (center, value) => {
+            return new OrganicFloodFill(center, buildParams(value))
+        })
+    }
+}
+

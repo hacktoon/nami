@@ -19,7 +19,7 @@ export class MapDiagram extends BaseMapDiagram {
 
     buildColorMap() {
         const map = {}
-        for(let i = 1; i <= this.map.fillMap.size; i++) {
+        for(let i = 1; i <= this.map.regionCount; i++) {
             map[i] = new Color()
         }
         return map
