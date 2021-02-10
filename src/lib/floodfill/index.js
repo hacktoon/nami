@@ -151,15 +151,11 @@ export class MultiFill {
     constructor(fills) {
         this.fills = fills
         this.size = fills.length
-        this._canGrow = true
+        this.canGrow = true
     }
 
     forEach(callback) {
         this.fills.forEach(fill => callback(fill))
-    }
-
-    canGrow() {
-        return this._canGrow
     }
 
     grow() {
@@ -169,7 +165,7 @@ export class MultiFill {
             if (filled.length === 0) totalFull++
         }
         if (totalFull === this.fills.length) {
-            this._canGrow = false
+            this.canGrow = false
         }
     }
 }
