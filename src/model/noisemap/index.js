@@ -1,4 +1,4 @@
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { BaseMap } from '/model/lib/map'
 import { SimplexNoise } from '/lib/noise'
 import { Schema, Type } from '/lib/base/schema'
@@ -38,12 +38,12 @@ export default class NoiseMap extends BaseMap {
             this.resolution,
             this.scale
         )
-        this.grid = new Grid(this.width, this.height, point => {
+        this.matrix = new Matrix(this.width, this.height, point => {
             return simplex.noise(point)
         })
     }
 
     get(point) {
-        return this.grid.get(point)
+        return this.matrix.get(point)
     }
 }

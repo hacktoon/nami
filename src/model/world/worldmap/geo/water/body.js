@@ -1,4 +1,4 @@
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { Name } from '/lib/name'
 import { ScanlineFill8 } from '/lib/floodfill'
 
@@ -33,12 +33,12 @@ class WaterGrid {
         this.waterPoints  = []
         this.waterMap = {}
         this.reliefMap    = reliefMap
-        this.grid         = this._buildGrid(reliefMap.size)
+        this.matrix         = this._buildGrid(reliefMap.size)
         this._buildMap()
     }
 
     _buildGrid(size) {
-        return new Grid(size, size, point => {
+        return new Matrix(size, size, point => {
             if (this.reliefMap.isWater(point)) {
                 this.waterPoints.push(point)
             }
@@ -59,7 +59,7 @@ class WaterGrid {
         }
 
         if (isFillable(startPoint)) {
-            new ScanlineFill8(this.grid, startPoint, onFill, isFillable).fill()
+            new ScanlineFill8(this.matrix, startPoint, onFill, isFillable).fill()
             // TODO: create new WaterRegion extends Region()
             this._buildWater(tileCount)
         }
@@ -67,14 +67,14 @@ class WaterGrid {
 
     _setPoint(point) {
         const id = this.currentID
-        this.grid.set(point, id)
+        this.matrix.set(point, id)
         // this._detectShore(point, id)
     }
 
     // _detectShore(point, id) {
     //     point.OldAdjacentPoints(neighbor => {
     //         if (this.reliefMap.isLand(neighbor)) {
-    //             this.grid.set(point, -id)
+    //             this.matrix.set(point, -id)
     //         }
     //     })
     // }
@@ -99,11 +99,11 @@ class WaterGrid {
     }
 
     isShore(point) {
-        return this.grid.get(point) < 0
+        return this.matrix.get(point) < 0
     }
 
     getId(point) {
-        return this.grid.get(point)
+        return this.matrix.get(point)
     }
 
     getWater(id) {

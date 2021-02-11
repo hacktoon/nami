@@ -1,4 +1,4 @@
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { ScanlineFill } from '/lib/floodfill'
 import { Name } from '/lib/name'
 
@@ -17,7 +17,7 @@ const LANDMASS_TABLE = {
 export class LandmassMap {
     constructor(reliefMap, waterMap) {
         this.size = reliefMap.size
-        this.grid = new Grid(this.size, this.size, () => EMPTY_VALUE)
+        this.matrix = new Matrix(this.size, this.size, () => EMPTY_VALUE)
         this.reliefMap = reliefMap
         this.waterMap = waterMap
         this.nextId = 1
@@ -34,16 +34,16 @@ export class LandmassMap {
         let tileCount = 0
         const isFillable = point => {
             let relief = this.reliefMap.get(point)
-            let isEmpty = this.grid.get(point) == EMPTY_VALUE
+            let isEmpty = this.matrix.get(point) == EMPTY_VALUE
             return relief.isLand && isEmpty
         }
         const onFill = point => {
-            this.grid.set(point, this.nextId)
+            this.matrix.set(point, this.nextId)
             tileCount++
         }
 
         if (isFillable(startPoint)) {
-            new ScanlineFill(this.grid, startPoint, onFill, isFillable).fill()
+            new ScanlineFill(this.matrix, startPoint, onFill, isFillable).fill()
             this._buildLandmass(this.nextId++, startPoint, tileCount)
         }
     }
@@ -61,7 +61,7 @@ export class LandmassMap {
     }
 
     get(point) {
-        let id = this.grid.get(point)
+        let id = this.matrix.get(point)
         return this.map[id]
     }
 }

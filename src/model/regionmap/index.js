@@ -5,7 +5,7 @@ import { Schema, Type } from '/lib/base/schema'
 
 import { RegionSet } from './region'
 import { RegionCell } from './cell'
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { MapDiagram } from './diagram'
 import { MapUI } from '/lib/ui/map'
 
@@ -48,16 +48,16 @@ export default class RegionMap extends BaseMap {
             this.count, this.width, this.height
         )
         this.regionSet = new RegionSet(origins)
-        this.grid = this.#buildGrid()
+        this.matrix = this.#buildGrid()
     }
 
     get(point) {
-        return this.grid.get(point)
+        return this.matrix.get(point)
     }
 
     #buildGrid() {
-        const grid = new Grid(this.width, this.height, () => new RegionCell())
-        const fillMap = this.#createFillMap(grid, this.regionSet)
+        const matrix = new Matrix(this.width, this.height, () => new RegionCell())
+        const fillMap = this.#createFillMap(matrix, this.regionSet)
         let totalPoints = this.area
         while(totalPoints > 0) {
             this.regionSet.forEach(region => {
@@ -65,19 +65,19 @@ export default class RegionMap extends BaseMap {
                 totalPoints -= points.length
             })
         }
-        return grid
+        return matrix
     }
 
-    #createFillMap(grid, regionSet) {
+    #createFillMap(matrix, regionSet) {
         const buildParams = region => ({
-            isEmpty:   point => grid.get(point).isEmpty(),
-            isSeed:    point => grid.get(point).isSeed(region),
-            isNeighbor: point => grid.get(point).isNeighbor(region),
-            setOrigin: point => grid.get(point).setOrigin(),
-            setBorder: (point, neighbor) => grid.get(point).setBorder(neighbor),
-            setSeed:   point => grid.get(point).setSeed(region),
-            setValue:  point => grid.get(point).setRegion(region),
-            setLayer:  (point, layer) => grid.get(point).setLayer(layer),
+            isEmpty:   point => matrix.get(point).isEmpty(),
+            isSeed:    point => matrix.get(point).isSeed(region),
+            isNeighbor: point => matrix.get(point).isNeighbor(region),
+            setOrigin: point => matrix.get(point).setOrigin(),
+            setBorder: (point, neighbor) => matrix.get(point).setBorder(neighbor),
+            setSeed:   point => matrix.get(point).setSeed(region),
+            setValue:  point => matrix.get(point).setRegion(region),
+            setLayer:  (point, layer) => matrix.get(point).setLayer(layer),
             layerGrowth: this.layerGrowth,
             growthChance: this.growthChance
         })

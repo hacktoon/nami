@@ -1,4 +1,4 @@
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { HeightMap } from '/lib/heightmap'
 
 export const VERY_DRY = 0
@@ -18,7 +18,7 @@ const MOISTURE_TABLE = [
 
 export class MoistureMap {
     constructor(size, roughness) {
-        this.grid = new Grid(size, size)
+        this.matrix = new Matrix(size, size)
         this.size = size
 
         this._buildMap(size, roughness)
@@ -27,7 +27,7 @@ export class MoistureMap {
     _buildMap(size, roughness) {
         new HeightMap(size, roughness, (height, point) => {
             let moisture = this._buildMoisture(height)
-            this.grid.set(point, moisture)
+            this.matrix.set(point, moisture)
         })
     }
 
@@ -54,7 +54,7 @@ export class MoistureMap {
     isVeryWet(point) { return this.get(point) == VERY_WET }
 
     get(point) {
-        return this.grid.get(point)
+        return this.matrix.get(point)
     }
 
     getName(point) {

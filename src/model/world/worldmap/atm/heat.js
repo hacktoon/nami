@@ -1,5 +1,5 @@
 import { clamp } from '/lib/number'
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { MidpointDisplacement } from '/lib/heightmap'
 import { Point } from '/lib/point'
 
@@ -34,7 +34,7 @@ const ROUGHNESS = .2
 
 export class HeatMap {
     constructor(size) {
-        this.grid = new Grid(size, size)
+        this.matrix = new Matrix(size, size)
         this.size = size
         this._buildMap()
     }
@@ -59,9 +59,9 @@ export class HeatMap {
             while (baseY >= 0) {
                 let pointAbove = new Point(point.x, baseY)
 
-                if (this.grid.get(pointAbove) != undefined)
+                if (this.matrix.get(pointAbove) != undefined)
                     break
-                this.grid.set(pointAbove, id)
+                this.matrix.set(pointAbove, id)
                 baseY--
             }
         }
@@ -79,7 +79,7 @@ export class HeatMap {
     isTropical(point) { return this.get(point) == TROPICAL }
 
     get(point) {
-        return this.grid.get(point)
+        return this.matrix.get(point)
     }
 
     getName(point) {

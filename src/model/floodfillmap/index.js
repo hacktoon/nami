@@ -1,6 +1,6 @@
 import { Schema, Type } from '/lib/base/schema'
 import { OrganicMultiFill } from '/lib/floodfill/organic'
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { RandomPointSampling, EvenPointSampling } from '/lib/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
@@ -44,17 +44,17 @@ export default class FloodFillMap extends BaseMap {
         const points = pointSampling.create(
             params.get('scale'), this.width, this.height
         )
-        this.grid = new Grid(this.width, this.height, () => 0)
+        this.matrix = new Matrix(this.width, this.height, () => 0)
         const multiFill = new OrganicMultiFill(points, value => ({
             chance:     params.get('chance'),
-            isEmpty:    point => this.grid.get(point) === 0,
-            setValue:   point => this.grid.set(point, value),
+            isEmpty:    point => this.matrix.get(point) === 0,
+            setValue:   point => this.matrix.set(point, value),
             growth: params.get('growth'),
         }))
         this.regionCount = multiFill.size
     }
 
     get(point) {
-        return this.grid.get(point)
+        return this.matrix.get(point)
     }
 }

@@ -2,7 +2,7 @@ import { Point } from '/lib/point'
 import { Rect } from '/lib/number'
 
 
-export class Grid {
+export class Matrix {
     constructor(width, height, buildValue=()=>null) {
         this.width = width
         this.height = height

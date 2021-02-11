@@ -1,5 +1,5 @@
 import { BaseMap } from '/model/lib/map'
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { Point } from '/lib/point'
 import { Schema, Type } from '/lib/base/schema'
 import { SimplexNoise } from '/lib/noise'
@@ -31,7 +31,7 @@ export default class TectonicsMap extends BaseMap {
         super(params)
         this.regionMap = this.#buildRegionMap(params)
         const simplex = new SimplexNoise(6, 0.7, 0.01)
-        this.grid = new Grid(
+        this.matrix = new Matrix(
             this.width,
             this.height,
             point => {
@@ -76,6 +76,6 @@ export default class TectonicsMap extends BaseMap {
     }
 
     get(point) {
-        return this.grid.get(point)
+        return this.matrix.get(point)
     }
 }

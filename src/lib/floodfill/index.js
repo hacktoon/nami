@@ -44,9 +44,9 @@ export class FloodFill {
 
 
 export class ScanlineFill {
-    constructor(grid, startPoint, onFill, isFillable) {
+    constructor(matrix, startPoint, onFill, isFillable) {
         this.startPoint = startPoint
-        this.grid = grid
+        this.matrix = matrix
         this.rangeQueue = []
         this.onFill = onFill
         this.isFillable = isFillable
@@ -64,10 +64,10 @@ export class ScanlineFill {
 
     findRangeStart(originPoint) {
         let currentPoint = originPoint
-        let nextPoint = this.grid.wrap(currentPoint.atWest())
+        let nextPoint = this.matrix.wrap(currentPoint.atWest())
         while (this.isFillable(nextPoint) && nextPoint.x != originPoint.x) {
             currentPoint = nextPoint
-            nextPoint = this.grid.wrap(nextPoint.atWest())
+            nextPoint = this.matrix.wrap(nextPoint.atWest())
         }
         return currentPoint
     }
@@ -98,12 +98,12 @@ export class ScanlineFill {
             this.onFill(point)
             this.detectRangeAbove(point.atNorth(), range)
             this.detectRangeBelow(point.atSouth(), range)
-            point = this.grid.wrap(point.atEast())
+            point = this.matrix.wrap(point.atEast())
         }
     }
 
     detectRangeAbove(referencePoint, referenceRange) {
-        let pointAbove = this.grid.wrap(referencePoint)
+        let pointAbove = this.matrix.wrap(referencePoint)
         if (this.isFillable(pointAbove)) {
             if (referenceRange.canCheckAbove) {
                 this.createRange(pointAbove)
@@ -115,7 +115,7 @@ export class ScanlineFill {
     }
 
     detectRangeBelow(referencePoint, referenceRange) {
-        let pointBelow = this.grid.wrap(referencePoint)
+        let pointBelow = this.matrix.wrap(referencePoint)
         if (this.isFillable(pointBelow)) {
             if (referenceRange.canCheckBelow) {
                 this.createRange(pointBelow)
@@ -140,7 +140,7 @@ export class ScanlineFill8 extends ScanlineFill {
             this.detectRangeBelow(point.atSouthwest(), range)
             this.detectRangeBelow(point.atSouth(), range)
             this.detectRangeBelow(point.atSoutheast(), range)
-            point = this.grid.wrap(point.atEast())
+            point = this.matrix.wrap(point.atEast())
         }
     }
 }

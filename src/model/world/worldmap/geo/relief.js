@@ -1,4 +1,4 @@
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { TileableHeightMap } from '/lib/heightmap'
 
 export const VOLCANO_CHANCE = .006
@@ -166,12 +166,12 @@ export class ReliefMap {
         this.codeMap     = new CodeMap(size, roughness)
             // build all things with build() method
             // avoid running on construction
-        this.grid      = this._buildGrid(size, this.codeMap)
+        this.matrix      = this._buildGrid(size, this.codeMap)
         this.size      = size
     }
 
     _buildGrid(size, codeMap) {
-        return new Grid(size, size, point => {
+        return new Matrix(size, size, point => {
             const height = codeMap.get(point)
             return this._buildRelief(height)
         })
@@ -183,7 +183,7 @@ export class ReliefMap {
     }
 
     get(point) {
-        return this.grid.get(point)
+        return this.matrix.get(point)
     }
 
     getCode(point) {

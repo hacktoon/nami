@@ -44,7 +44,7 @@
 - Build distance map from coast borders
 - Property (water: bool)
 - Use ScanlineFill to discover areas
-- Set id's on Grid during scanline fill
+- Set id's on Matrix during scanline fill
 
 #### (MAYBE) ErosionMap
 - Eliminate hard/pointy edges - smooth terrain
@@ -69,8 +69,6 @@
 
 #### Other
 - Vegetation/wildlife density: adjusted by humidity, temperature and height
-- Cities
-  - Use disc point allocation on grid
 - Roads
   - create junction points between route ends
 

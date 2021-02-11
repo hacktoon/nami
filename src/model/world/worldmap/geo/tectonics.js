@@ -1,4 +1,4 @@
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { TileableHeightMap } from '/lib/heightmap'
 
 

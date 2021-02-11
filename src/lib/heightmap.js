@@ -1,6 +1,6 @@
 import { clamp, sum } from '/lib/number'
 
-import { Grid } from '/lib/grid'
+import { Matrix } from '/lib/base/matrix'
 import { Point } from '/lib/point'
 import { Random } from '/lib/random'
 
@@ -57,7 +57,7 @@ export const MidpointDisplacement = (source, target, roughness, callback=()=>{})
 export class HeightMap {
     constructor(size, roughness, values, mask) {
         this.scale  = roughness * (size - 1)
-        this.grid   = new Grid(size, size, () => EMPTY)
+        this.matrix   = new Matrix(size, size, () => EMPTY)
         this.max    = -Infinity
         this.min    = Infinity
         this.values = values || []
@@ -130,7 +130,7 @@ export class HeightMap {
     }
 
     _averagePoints(points) {
-        const getValue = ([ x, y ]) => this.grid.get(new Point(x, y))
+        const getValue = ([ x, y ]) => this.matrix.get(new Point(x, y))
         // TODO: is this filter necessary?
         const values = points.map(getValue).filter(n => typeof n == 'number')
         return sum(values) / values.length
@@ -139,7 +139,7 @@ export class HeightMap {
     _set(point, value) {
         const size = this.size
         const height = parseInt(clamp(value, -size, size), 10)
-        this.grid.set(point, height)
+        this.matrix.set(point, height)
         this._updateMinMax(height)
     }
 
@@ -149,7 +149,7 @@ export class HeightMap {
     }
 
     get(point) {
-        let value = this.grid.get(point)
+        let value = this.matrix.get(point)
         if (this.mask) {
             const mask = this.mask.get(point)
             value -= (value * mask) / 100
@@ -178,7 +178,7 @@ export class TileableHeightMap extends HeightMap {
     }
 
     _set(point, value) {
-        if (this.grid.get(point) != EMPTY) return
+        if (this.matrix.get(point) != EMPTY) return
         if (! this._isCorner(point)) {
             let oppositeEdge = this._getOpposite(point)
             super._set(oppositeEdge, value)
