@@ -6,9 +6,7 @@ import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
 import { Title } from '/lib/ui'
 
-import { TestApp, TestAppUI } from '/lib/ui/test'
-import { MapUI } from '/lib/ui/map'
-
+import { TestApp } from '/lib/ui/test'
 import TectonicsMap from '/model/world/tectonicsmap'
 import WorldMap from '/model/world/worldmap'
 import RegionMap from '/model/regionmap'
@@ -20,18 +18,17 @@ import "./css/map.css"
 
 
 const APPS = [
-    // model,      component
-    [TestApp,         TestAppUI],
-    [WorldMap,     MapUI],
-    [NoiseMap,     MapUI],
-    [TectonicsMap, MapUI],
-    [RegionMap,    MapUI],
-    [FloodFillMap,    MapUI],
+    [TestApp],
+    [WorldMap],
+    [NoiseMap],
+    [TectonicsMap],
+    [RegionMap],
+    [FloodFillMap],
 ]
 
 
-const appMap = new Map(APPS.map(([model, Component]) => {
-    return [model.name, () => <Component model={model} />]
+const appMap = new Map(APPS.map(([model]) => {
+    return [model.name, () => <model.ui model={model} />]
 }))
 
 const options = APPS.map(([model,]) => [model.name, model.label])

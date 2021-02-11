@@ -3,7 +3,6 @@ import { Color } from '/lib/base/color'
 import { clamp } from '/lib/base/number'
 
 
-
 export class Schema {
     constructor(...types) {
         this.types = types
@@ -59,8 +58,6 @@ class BaseType {
         return value
     }
 }
-
-
 
 
 export class TextType extends BaseType {
