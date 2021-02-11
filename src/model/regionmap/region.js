@@ -1,5 +1,5 @@
 import { PointSet } from '/lib/point/set'
-import { Color } from '/lib/color'
+import { Color } from '/lib/base/color'
 
 
 export class Region {

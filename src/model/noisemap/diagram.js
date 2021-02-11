@@ -1,5 +1,5 @@
 import { Schema } from '/lib/base/schema'
-import { Color } from '/lib/color'
+import { Color } from '/lib/base/color'
 import { BaseMapDiagram } from '/model/lib/map'
 
 

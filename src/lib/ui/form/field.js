@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 
-import { Color } from '/lib/color'
+import { Color } from '/lib/base/color'
 import { Point } from '/lib/point'
 
 

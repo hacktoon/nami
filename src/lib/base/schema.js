@@ -1,5 +1,5 @@
 import { Point } from '/lib/point'
-import { Color } from '/lib/color'
+import { Color } from '/lib/base/color'
 import { clamp } from '/lib/number'
 
 
