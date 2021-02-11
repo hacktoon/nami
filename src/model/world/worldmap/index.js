@@ -1,7 +1,7 @@
 import { Name } from '/lib/name'
 import { Schema, Type } from '/lib/schema'
 import { BaseMap } from '/model/lib/map'
-import { MapUI } from '/ui/map'
+import { MapUI } from '/lib/ui/map'
 
 import { ReliefMap } from './geo/relief'
 import { MapDiagram } from './diagram'

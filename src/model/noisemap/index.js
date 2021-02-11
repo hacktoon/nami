@@ -2,7 +2,7 @@ import { Grid } from '/lib/grid'
 import { BaseMap } from '/model/lib/map'
 import { SimplexNoise } from '/lib/noise'
 import { Schema, Type } from '/lib/schema'
-import { MapUI } from '/ui/map'
+import { MapUI } from '/lib/ui/map'
 
 import { MapDiagram } from './diagram'
 

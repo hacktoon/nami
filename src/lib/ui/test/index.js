@@ -7,7 +7,7 @@ import { Point } from '/lib/point'
 import { Color } from '/lib/color'
 
 
-export class Test {
+export class TestApp {
     static label = 'Test'
     static schema = new Schema(
         Type.number('count', 'Count', {default: 4}),
@@ -22,14 +22,14 @@ export class Test {
 }
 
 
-export function TestUI({model}) {
+export function TestAppUI({model}) {
     const [data, setData] = useState(model.schema.defaultValues())
 
     const handleSubmit = data => {
         setData(data)
     }
 
-    return <section className='TestUI'>
+    return <section className='TestAppUI'>
         <button onClick={() => {
             const m = new Map([
                 ['seed', 'default'],

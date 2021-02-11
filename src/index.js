@@ -6,8 +6,8 @@ import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
 import { Title } from '/lib/ui'
 
-import { MapUI } from '/ui/map'
-import { Test, TestUI } from '/ui/test'
+import { TestApp, TestAppUI } from '/lib/ui/test'
+import { MapUI } from '/lib/ui/map'
 
 import TectonicsMap from '/model/world/tectonicsmap'
 import WorldMap from '/model/world/worldmap'
@@ -21,7 +21,7 @@ import "./css/map.css"
 
 const APPS = [
     // model,      component
-    [Test,         TestUI],
+    [TestApp,         TestAppUI],
     [WorldMap,     MapUI],
     [NoiseMap,     MapUI],
     [TectonicsMap, MapUI],

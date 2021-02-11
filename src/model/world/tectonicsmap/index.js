@@ -3,7 +3,7 @@ import { Grid } from '/lib/grid'
 import { Point } from '/lib/point'
 import { Schema, Type } from '/lib/schema'
 import { SimplexNoise } from '/lib/noise'
-import { MapUI } from '/ui/map'
+import { MapUI } from '/lib/ui/map'
 
 import RegionMap from '/model/regionmap'
 import { MapDiagram } from './diagram'

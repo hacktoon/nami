@@ -7,7 +7,7 @@ import { RegionSet } from './region'
 import { RegionCell } from './cell'
 import { Grid } from '/lib/grid'
 import { MapDiagram } from './diagram'
-import { MapUI } from '/ui/map'
+import { MapUI } from '/lib/ui/map'
 
 
 const SCHEMA = new Schema(

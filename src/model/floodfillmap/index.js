@@ -4,7 +4,7 @@ import { Grid } from '/lib/grid'
 import { RandomPointSampling, EvenPointSampling } from '/lib/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
-import { MapUI } from '/ui/map'
+import { MapUI } from '/lib/ui/map'
 
 
 const SAMPLING_ENTRIES = [
