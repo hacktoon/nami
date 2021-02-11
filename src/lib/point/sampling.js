@@ -1,8 +1,8 @@
-import { repeat } from '/lib/function'
-import { clamp } from '/lib/number'
+import { repeat } from '/lib/base/function'
+import { clamp } from '/lib/base/number'
 import { Point } from '.'
 import { PointSet } from './set'
-import { Rect } from '/lib/number'
+import { Rect } from '/lib/base/number'
 
 
 export class RandomPointSampling {

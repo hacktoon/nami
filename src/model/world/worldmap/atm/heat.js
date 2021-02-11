@@ -1,4 +1,4 @@
-import { clamp } from '/lib/number'
+import { clamp } from '/lib/base/number'
 import { Matrix } from '/lib/base/matrix'
 import { MidpointDisplacement } from '/lib/heightmap'
 import { Point } from '/lib/point'

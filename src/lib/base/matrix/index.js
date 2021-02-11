@@ -1,5 +1,5 @@
 import { Point } from '/lib/point'
-import { Rect } from '/lib/number'
+import { Rect } from '/lib/base/number'
 
 
 export class Matrix {

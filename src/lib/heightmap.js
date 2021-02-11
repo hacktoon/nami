@@ -1,4 +1,4 @@
-import { clamp, sum } from '/lib/number'
+import { clamp, sum } from '/lib/base/number'
 
 import { Matrix } from '/lib/base/matrix'
 import { Point } from '/lib/point'

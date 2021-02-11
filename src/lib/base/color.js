@@ -1,5 +1,5 @@
 import { Random } from '/lib/random'
-import { interpolateNumbers, clamp } from '/lib/number'
+import { interpolateNumbers, clamp } from '/lib/base/number'
 
 
 const CHARS = '0123456789ABCDEF'
