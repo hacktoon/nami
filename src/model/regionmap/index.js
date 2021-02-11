@@ -1,7 +1,7 @@
 import { BaseMap } from '/model/lib/map'
 import { EvenPointSampling } from '/lib/point/sampling'
 import { OrganicFill } from '/lib/floodfill/organic'
-import { Schema, Type } from '/lib/schema'
+import { Schema, Type } from '/lib/base/schema'
 
 import { RegionSet } from './region'
 import { RegionCell } from './cell'

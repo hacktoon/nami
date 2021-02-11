@@ -1,7 +1,7 @@
 import { BaseMap } from '/model/lib/map'
 import { Grid } from '/lib/grid'
 import { Point } from '/lib/point'
-import { Schema, Type } from '/lib/schema'
+import { Schema, Type } from '/lib/base/schema'
 import { SimplexNoise } from '/lib/noise'
 import { MapUI } from '/lib/ui/map'
 

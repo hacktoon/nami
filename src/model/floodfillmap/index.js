@@ -1,4 +1,4 @@
-import { Schema, Type } from '/lib/schema'
+import { Schema, Type } from '/lib/base/schema'
 import { OrganicMultiFill } from '/lib/floodfill/organic'
 import { Grid } from '/lib/grid'
 import { RandomPointSampling, EvenPointSampling } from '/lib/point/sampling'

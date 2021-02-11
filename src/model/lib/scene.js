@@ -1,6 +1,6 @@
 import { Point } from '/lib/point'
 import { Rect } from '/lib/number'
-import { Schema, Type } from '/lib/schema'
+import { Schema, Type } from '/lib/base/schema'
 
 
 export class MapScene {

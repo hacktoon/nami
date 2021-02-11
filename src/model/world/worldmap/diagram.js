@@ -1,4 +1,4 @@
-import { Schema } from '/lib/schema'
+import { Schema } from '/lib/base/schema'
 import { BaseMapDiagram } from '/model/lib/map'
 
 
