@@ -1,4 +1,4 @@
-import { Random } from '/lib/random'
+import { Random } from '/lib/base/random'
 import { interpolateNumbers, clamp } from '/lib/base/number'
 
 

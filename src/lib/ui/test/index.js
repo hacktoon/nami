@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Schema, Type } from '/lib/base/schema'
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
-import { Point } from '/lib/point'
+import { Point } from '/lib/base/point'
 import { Color } from '/lib/base/color'
 
 

@@ -1,4 +1,4 @@
-import { PointSet } from '/lib/point/set'
+import { PointSet } from '/lib/base/point/set'
 import { Color } from '/lib/base/color'
 
 

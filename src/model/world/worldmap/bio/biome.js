@@ -1,4 +1,4 @@
-import { Random } from '/lib/random'
+import { Random } from '/lib/base/random'
 
 const VOLCANO_CHANCE = .007
 

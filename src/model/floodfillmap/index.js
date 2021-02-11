@@ -1,7 +1,7 @@
 import { Schema, Type } from '/lib/base/schema'
 import { OrganicMultiFill } from '/lib/floodfill/organic'
 import { Matrix } from '/lib/base/matrix'
-import { RandomPointSampling, EvenPointSampling } from '/lib/point/sampling'
+import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
 import { MapUI } from '/lib/ui/map'

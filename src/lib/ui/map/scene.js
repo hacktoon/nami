@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 
-import { Point } from '/lib/point'
+import { Point } from '/lib/base/point'
 import { useResize } from '/lib/ui'
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'

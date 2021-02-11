@@ -1,5 +1,5 @@
 import { Matrix } from '/lib/base/matrix'
-import { Point } from '/lib/point'
+import { Point } from '/lib/base/point'
 import { FloodFill } from '/lib/floodfill'
 
 function createGrid(p, factor=2) {

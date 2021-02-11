@@ -1,4 +1,4 @@
-import { Point } from '/lib/point'
+import { Point } from '/lib/base/point'
 import { Rect } from '/lib/base/number'
 import { Schema, Type } from '/lib/base/schema'
 

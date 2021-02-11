@@ -1,5 +1,5 @@
-import { Point } from '/lib/point'
-import { PointSet } from '/lib/point/set'
+import { Point } from '/lib/base/point'
+import { PointSet } from '/lib/base/point/set'
 
 
 function createSet() {

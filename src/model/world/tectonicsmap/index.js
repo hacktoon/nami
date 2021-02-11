@@ -1,6 +1,6 @@
 import { BaseMap } from '/model/lib/map'
 import { Matrix } from '/lib/base/matrix'
-import { Point } from '/lib/point'
+import { Point } from '/lib/base/point'
 import { Schema, Type } from '/lib/base/schema'
 import { SimplexNoise } from '/lib/noise'
 import { MapUI } from '/lib/ui/map'

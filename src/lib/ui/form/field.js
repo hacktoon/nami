@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
 
 import { Color } from '/lib/base/color'
-import { Point } from '/lib/point'
+import { Point } from '/lib/base/point'
 
 
 export function NumberField({name, label, value, ...props}) {

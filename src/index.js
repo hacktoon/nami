@@ -36,11 +36,13 @@ const appMap = new Map(APPS.map(([model, Component]) => {
 
 const options = APPS.map(([model,]) => [model.name, model.label])
 
+
 class App {
     static schema = new Schema(
         Type.enum('app', 'App', {default: FloodFillMap.name, options})
     )
 }
+
 
 function RootComponent() {
     const [data, setData] = useState(App.schema.defaultValues())
