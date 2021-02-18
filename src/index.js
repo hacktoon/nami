@@ -18,25 +18,23 @@ import "./css/map.css"
 
 
 const APPS = [
-    [TestApp],
-    [WorldMap],
-    [NoiseMap],
-    [TectonicsMap],
-    [RegionMap],
-    [FloodFillMap],
+    TestApp,
+    WorldMap,
+    NoiseMap,
+    TectonicsMap,
+    RegionMap,
+    FloodFillMap,
 ]
 
 
-const appMap = new Map(APPS.map(([model]) => {
+const appMap = new Map(APPS.map(model => {
     return [model.name, () => <model.ui model={model} />]
 }))
-
-const options = APPS.map(([model,]) => [model.name, model.label])
 
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', {default: FloodFillMap.name, options})
+        Type.enum('app', 'App', {default: FloodFillMap.name, options: APPS})
     )
 }
 

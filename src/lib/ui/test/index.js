@@ -7,21 +7,6 @@ import { Point } from '/lib/base/point'
 import { Color } from '/lib/base/color'
 
 
-export class TestApp {
-    static label = 'Test'
-    static schema = new Schema(
-        Type.number('count', 'Count', {default: 4}),
-        Type.text('seed', 'Seed', {default: 'seed'}),
-        Type.boolean('active', 'Active', {default: false}),
-        Type.color('bg', 'BG color', {default: new Color(230, 35, 66)}),
-        Type.point('focus', 'Focus', {default: new Point(5, 2)}),
-    )
-
-    constructor(params) {
-    }
-}
-
-
 export function TestAppUI({model}) {
     const [data, setData] = useState(model.schema.defaultValues())
 
@@ -58,4 +43,20 @@ export function TestAppUI({model}) {
             <Button label="New" />
         </Form>
     </section>
+}
+
+
+export class TestApp {
+    static ui = TestAppUI
+    static label = 'Test'
+    static schema = new Schema(
+        Type.number('count', 'Count', {default: 4}),
+        Type.text('seed', 'Seed', {default: 'seed'}),
+        Type.boolean('active', 'Active', {default: false}),
+        Type.color('bg', 'BG color', {default: new Color(230, 35, 66)}),
+        Type.point('focus', 'Focus', {default: new Point(5, 2)}),
+    )
+
+    constructor(params) {
+    }
 }

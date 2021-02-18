@@ -20,7 +20,7 @@ export class Schema {
     }
 
     defaultValues() {
-        const mapToDefault = type => [type.name, type.attributes.default]
+        const mapToDefault = type => [type.name, type.defaultValue]
         const entries = this.types.map(mapToDefault)
         return new Map(entries)
     }
@@ -47,11 +47,13 @@ class BaseType {
         }
     }
 
-    constructor(type, name, label, attributes) {
+    constructor(type, name, label, props) {
+        const {default: _default, ..._props} = props
         this.type = type
         this.name = name
         this.label = label
-        this.attributes = attributes
+        this.defaultValue = _default
+        this.props = _props
     }
 
     parse(value) {
@@ -64,7 +66,7 @@ export class TextType extends BaseType {
     static type = 'text'
 
     parse(value) {
-        return String(value ?? '')
+        return String(value && '')
     }
 }
 
@@ -74,8 +76,8 @@ export class NumberType extends TextType {
 
     parse(text) {
         const value = super.parse(text)
-        const min = this.attributes.min ?? -Infinity
-        const max = this.attributes.max ?? Infinity
+        const min = this.props.min ?? -Infinity
+        const max = this.props.max ?? Infinity
         return clamp(Number(value), min, max)
     }
 }

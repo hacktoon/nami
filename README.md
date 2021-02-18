@@ -12,6 +12,8 @@
 
 #### Map
 - Organize model folder structure under `map/`
+- Put all form options on sidebar
+- Move sidebar to the right
 
 #### RegionMap
 - Substitute OrganicFill in RegionMap for OrganicFloodFill

@@ -22,10 +22,15 @@ export function NumberField({name, label, value, ...props}) {
 
 
 export function TextField({name, label, value, ...props}) {
+    console.log('started', name, value, props);
     const [text, setText] = useState(value)
     const handleChange = e => setText(String(e.target.value).trim())
 
-    useEffect(() => setText(value), [value])
+    console.log("text: ", text);
+    useEffect(() => {
+        console.log('reset to', value);
+        setText(value)
+    }, [value])
     return <Field type='text' label={label}>
         <input
             name={name}
@@ -38,17 +43,22 @@ export function TextField({name, label, value, ...props}) {
 }
 
 
-export function SelectField({name, label, value, options, ...props}) {
-    function buildSelectOptions(options) {
-        return options.map((option, index) => {
+export function SelectField({name, label, value, ...props}) {
+    const [selected, setSelected] = useState(value)
+
+    function buildSelectOptions() {
+        const _options = props.options.map(model => [model.name, model.label])
+        return _options.map((option, index) => {
             const [value, label] = option
-            return <option key={index} value={value}>{label}</option>
+            return <option key={index} value={value}>{label}
+            </option>
         })
     }
-
+    useEffect(() => setSelected(value), [value])
+    // console.log(name, label, value);
     return <Field type='select' label={label}>
-        <select name={name} defaultValue={value} {...props}>
-            {useMemo(() => buildSelectOptions(options), [value])}
+        <select name={name} defaultValue={selected}>
+            {useMemo(() => buildSelectOptions(), [value])}
         </select>
     </Field>
 }
@@ -126,7 +136,6 @@ export function FieldSet({types, data}) {
             name={type.name}
             label={type.label}
             value={data.get(type.name)}
-            {...type.attributes}
             {...type.props}
         />
     })
