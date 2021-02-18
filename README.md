@@ -7,21 +7,16 @@
 
 
 ## ROADMAP
-- Set identity point method for Direction class
-
-#### Map
-- Organize model folder structure under `map/`
-- Put all form options on sidebar
-- Move sidebar to the right
 
 #### RegionMap
-- Substitute OrganicFill in RegionMap for OrganicFloodFill
-- Create region distance field using flood fill in border points
 - Regions adjacency table
+- Substitute/rename RegionMap for OrganicFloodFill
 
 #### TectonicsMap
-- Noise in non-wrapping space for continental plates
-- Create Plate register
+- Noise in non-wrapping space for plates
+- Create region distance field using flood fill in border points
+- Use RegionMap again to get sub regions (+ granularity)
+- Create Plate register with adjacency table from region map
 - Convergent
   - OO : Island Arc
   - OC : Trench + Orogeny
@@ -30,10 +25,6 @@
 - Divergent
   - OO : Oceanic Ridge
   - CC : Rift
-
-- create ridges separately in tectonics map, using total and start point of border points
-- Iterate over region growth borders to distribute hills, cenotes, ravines, lakes, etc
-- First 2-3 layers are always land (cratons)
 
 #### ContinentMap
 - Create Continent
@@ -50,7 +41,7 @@
 #### (MAYBE) ErosionMap
 - Eliminate hard/pointy edges - smooth terrain
 - discover river paths
-- Start from highest points, flood fill
+  - Start from river mouth points, flood fill
 
 #### OceanMap
 - Decide it's type when finished, set type on object WaterBody
@@ -69,11 +60,15 @@
 - Value range: 0:10, varies according to month and windmap
 
 #### Other
+- Organize model folder structure under `map/`
+- Set identity point method for Direction class
 - Vegetation/wildlife density: adjusted by humidity, temperature and height
 - Roads
   - create junction points between route ends
 
 ### Interface
+- Put all form options on sidebar
+- Move sidebar to the right
 - Optimize canvas rendering
   - Use offscreen canvas when `map.size <  screen.size`
   - Add tool to live-test drawing functions on console
