@@ -7,7 +7,6 @@
 
 
 ## ROADMAP
-- Add borders to base FloodFill
 - Set identity point method for Direction class
 
 #### Map

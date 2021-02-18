@@ -51,7 +51,7 @@ export default class FloodFillMap extends BaseMap {
             growth:   params.get('growth'),
             setValue: point => this.setValue(point, fillValue),
             isEmpty:  (adjacent, center) => {
-                if (this.isNeighbor(adjacent, center, fillValue)) {
+                if (this.isNeighbor(adjacent, fillValue)) {
                     this.setBorder(center)
                 }
                 return this.isEmpty(adjacent)
@@ -60,18 +60,18 @@ export default class FloodFillMap extends BaseMap {
         this.regionCount = multiFill.size
     }
 
+    isNeighbor(adjacent, fillValue) {
+        const isEmpty = ! this.isEmpty(adjacent)
+        const notFillValue = ! this.isValue(adjacent, fillValue)
+        return notFillValue && isEmpty
+    }
+
     get(point) {
         return this.matrix.get(point).v
     }
 
     isEmpty(point) {
         return this.matrix.get(point).v === EMPTY_VALUE
-    }
-
-    isNeighbor(adjacent, center, fillValue) {
-        const isNeighborOrEmpty = ! this.isValue(adjacent, fillValue)
-        const isNeighborOccupied = ! this.isEmpty(adjacent)
-        return isNeighborOrEmpty && isNeighborOccupied && ! this.isBorder(center)
     }
 
     isValue(point, value) {
