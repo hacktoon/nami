@@ -42,13 +42,14 @@ export function SelectField({name, label, value, ...props}) {
     const [selected, setSelected] = useState(value)
 
     function buildSelectOptions() {
-        const _options = props.options.map(model => [model.name, model.label])
+        const _options = props.options.map(model => [model.label, model.label])
         return _options.map((option, index) => {
             const [value, label] = option
             return <option key={index} value={value}>{label}
             </option>
         })
     }
+
     useEffect(() => setSelected(value), [value])
     return <Field type='select' label={label}>
         <select name={name} defaultValue={selected}>

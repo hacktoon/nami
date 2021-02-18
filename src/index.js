@@ -28,13 +28,13 @@ const APPS = [
 
 
 const appMap = new Map(APPS.map(model => {
-    return [model.name, () => <model.ui model={model} />]
+    return [model.label, () => <model.ui model={model} />]
 }))
 
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', {default: TectonicsMap.name, options: APPS})
+        Type.enum('app', 'App', {default: TectonicsMap.label, options: APPS})
     )
 }
 
