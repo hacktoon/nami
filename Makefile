@@ -9,7 +9,7 @@ build: clean
 	npm run build
 
 clean:
-	rm -rf build/ .cache
+	rm -rf build/ .cache node_modules
 
 deploy: build
 	if git show-ref -q --heads gh-pages; then \
