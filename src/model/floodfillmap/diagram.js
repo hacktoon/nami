@@ -6,6 +6,7 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
+        Type.boolean('showBorders', 'Show borders', {default: true}),
     )
 
     static create(map, params) {
@@ -14,6 +15,7 @@ export class MapDiagram extends BaseMapDiagram {
 
     constructor(map, params) {
         super(map)
+        this.showBorders = params.get('showBorders')
         this.colorMap = this.buildColorMap()
     }
 
@@ -27,6 +29,9 @@ export class MapDiagram extends BaseMapDiagram {
 
     get(point) {
         const value = this.map.get(point)
+        if (this.showBorders && this.map.isBorder(point)) {
+            return this.colorMap[value].darken(40).toHex()
+        }
         return this.colorMap[value].toHex()
     }
 }

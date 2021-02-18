@@ -6,7 +6,7 @@ import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
 import { MapUI } from '/lib/ui/map'
 
-
+const EMPTY_VALUE = 0
 const SAMPLING_ENTRIES = [
     RandomPointSampling,
     EvenPointSampling,
@@ -39,22 +39,54 @@ export default class FloodFillMap extends BaseMap {
 
     constructor(params) {
         super(params)
-
+        this.matrix = new Matrix(this.width, this.height, () => {
+            return {v: EMPTY_VALUE, b: false}
+        })
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const points = PointSampling.create(
             params.get('scale'), this.width, this.height
         )
-        this.matrix = new Matrix(this.width, this.height, () => 0)
-        const multiFill = new OrganicMultiFill(points, value => ({
-            chance:     params.get('chance'),
-            isEmpty:    point => this.matrix.get(point) === 0,
-            setValue:   point => this.matrix.set(point, value),
-            growth: params.get('growth'),
+        const multiFill = new OrganicMultiFill(points, fillValue => ({
+            chance:   params.get('chance'),
+            growth:   params.get('growth'),
+            setValue: point => this.setValue(point, fillValue),
+            isEmpty:  (adjacent, center) => {
+                if (this.isNeighbor(adjacent, center, fillValue)) {
+                    this.setBorder(center)
+                }
+                return this.isEmpty(adjacent)
+            },
         }))
         this.regionCount = multiFill.size
     }
 
     get(point) {
-        return this.matrix.get(point)
+        return this.matrix.get(point).v
+    }
+
+    isEmpty(point) {
+        return this.matrix.get(point).v === EMPTY_VALUE
+    }
+
+    isNeighbor(adjacent, center, fillValue) {
+        const isNeighborOrEmpty = ! this.isValue(adjacent, fillValue)
+        const isNeighborOccupied = ! this.isEmpty(adjacent)
+        return isNeighborOrEmpty && isNeighborOccupied && ! this.isBorder(center)
+    }
+
+    isValue(point, value) {
+        return this.matrix.get(point).v === value
+    }
+
+    setValue(point, value) {
+        return this.matrix.get(point).v = value
+    }
+
+    isBorder(point) {
+        return this.matrix.get(point).b === true
+    }
+
+    setBorder(point) {
+        return this.matrix.get(point).b = true
     }
 }

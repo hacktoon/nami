@@ -29,9 +29,11 @@ export class FloodFill {
         return newSeeds
     }
 
-    fillNeighbors(point) {
+    fillNeighbors(center) {
         const filledNeighbors = []
-        const emptyNeighbors = point.adjacents(p => this.isEmpty(p))
+        const emptyNeighbors = center.adjacents(adjacent => {
+            return this.isEmpty(adjacent, center)
+        })
         for(let i = 0; i < emptyNeighbors.length; i++) {
             const neighbor = emptyNeighbors[i]
             this.setValue(neighbor)
