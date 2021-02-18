@@ -21,4 +21,4 @@ deploy: build
 	git add index.html src.*.js src.*.css
 	git commit -m 'deploy-$(shell date --iso=seconds)'
 	git push -f origin gh-pages
-	git checkout -f master
+	git checkout -f -
