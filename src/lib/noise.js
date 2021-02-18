@@ -2,7 +2,7 @@ import { Random } from '/lib/base/random'
 
 
 // example:  simplex = SimplexNoise(8, .6, 0.01, [0, 255])
-//           r = simplex.noise(x, y)
+//           r = simplex.at(x, y)
 
 
 export class SimplexNoise {
@@ -26,7 +26,7 @@ export class SimplexNoise {
         }
     }
 
-    noise(point) {
+    at(point) {
         let amp = 1
         let freq = this.scale
         let noise = 0

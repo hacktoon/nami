@@ -39,7 +39,7 @@ export default class NoiseMap extends BaseMap {
             this.scale
         )
         this.matrix = new Matrix(this.width, this.height, point => {
-            return simplex.noise(point)
+            return simplex.at(point)
         })
     }
 

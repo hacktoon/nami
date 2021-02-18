@@ -40,7 +40,7 @@ export default class TectonicsMap extends BaseMap {
                 const x = region * 1000
                 const y = region * 1000
                 const noisePt = point.plus(new Point(x, y))
-                const isContinent = simplex.noise(noisePt) > 127
+                const isContinent = simplex.at(noisePt) > 127
                 const isOceanicPlate = region <= 2
                 return {region, isContinent, isOceanicPlate}
             }
