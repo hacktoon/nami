@@ -22,15 +22,10 @@ export function NumberField({name, label, value, ...props}) {
 
 
 export function TextField({name, label, value, ...props}) {
-    console.log('started', name, value, props);
     const [text, setText] = useState(value)
     const handleChange = e => setText(String(e.target.value).trim())
 
-    console.log("text: ", text);
-    useEffect(() => {
-        console.log('reset to', value);
-        setText(value)
-    }, [value])
+    useEffect(() => setText(value), [value])
     return <Field type='text' label={label}>
         <input
             name={name}
@@ -55,7 +50,6 @@ export function SelectField({name, label, value, ...props}) {
         })
     }
     useEffect(() => setSelected(value), [value])
-    // console.log(name, label, value);
     return <Field type='select' label={label}>
         <select name={name} defaultValue={selected}>
             {useMemo(() => buildSelectOptions(), [value])}
@@ -131,6 +125,7 @@ export function PointField({name, label, value, ...props}) {
 export function FieldSet({types, data}) {
     return types.map((type, id) => {
         const FieldComponent = TYPE_FIELD_MAP[type.type]
+
         return <FieldComponent
             key={id}
             name={type.name}

@@ -39,14 +39,6 @@ export class Schema {
 
 // let's create our own type system, it's fun
 class BaseType {
-    static define(TypeClass) {
-        // Example: Type.number('foobar', 'Foobar param', 42)
-        return (name, label, props={}) => {
-            const type = TypeClass.type
-            return new TypeClass(type, name, label, props)
-        }
-    }
-
     constructor(type, name, label, props) {
         const {default: _default, ..._props} = props
         this.type = type
@@ -54,6 +46,14 @@ class BaseType {
         this.label = label
         this.defaultValue = _default
         this.props = _props
+    }
+
+    static define(TypeClass) {
+        // Example: Type.number('foobar', 'Foobar param', {default: 42})
+        return (name, label, props={}) => {
+            const type = TypeClass.type
+            return new TypeClass(type, name, label, props)
+        }
     }
 
     parse(value) {
@@ -66,7 +66,7 @@ export class TextType extends BaseType {
     static type = 'text'
 
     parse(value) {
-        return String(value && '')
+        return String(value ?? '')
     }
 }
 

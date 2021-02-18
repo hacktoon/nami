@@ -19,11 +19,11 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 20, step: 1, min: 1}),
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
-    // Type.enum('pointSampling', 'Sampling', {
-    //     default: EvenPointSampling.name,
-    //     options: SAMPLING_ENTRIES
-    // }),
-    Type.text('seed', 'Seed', '')
+    Type.enum('pointSampling', 'Sampling', {
+        default: EvenPointSampling.name,
+        options: SAMPLING_ENTRIES
+    }),
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 
@@ -40,7 +40,7 @@ export default class FloodFillMap extends BaseMap {
     constructor(params) {
         super(params)
 
-        const PointSampling = RandomPointSampling//SAMPLING_MAP.get(params.get('pointSampling'))
+        const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const points = PointSampling.create(
             params.get('scale'), this.width, this.height
         )
