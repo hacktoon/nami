@@ -11,7 +11,7 @@ const SAMPLING_ENTRIES = [
     RandomPointSampling,
     EvenPointSampling,
 ]
-const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.name, model]))
+const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.label, model]))
 
 const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
@@ -20,7 +20,7 @@ const SCHEMA = new Schema(
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
     Type.enum('pointSampling', 'Sampling', {
-        default: EvenPointSampling.name,
+        default: EvenPointSampling.label,
         options: SAMPLING_ENTRIES
     }),
     Type.text('seed', 'Seed', {default: ''})
