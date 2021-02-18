@@ -66,7 +66,7 @@ export class TextType extends BaseType {
     static type = 'text'
 
     parse(value) {
-        return String(value ?? '')
+        return String(value ?? this.defaultValue)
     }
 }
 
@@ -113,6 +113,10 @@ export class BooleanType extends BaseType {
 
 export class EnumType extends BaseType {
     static type = 'enum'
+
+    parse(value) {
+        return value ?? this.defaultValue
+    }
 }
 
 

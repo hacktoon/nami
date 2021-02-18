@@ -34,7 +34,7 @@ const appMap = new Map(APPS.map(model => {
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', {default: FloodFillMap.name, options: APPS})
+        Type.enum('app', 'App', {default: TectonicsMap.name, options: APPS})
     )
 }
 

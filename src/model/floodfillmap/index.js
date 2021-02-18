@@ -37,6 +37,12 @@ export default class FloodFillMap extends BaseMap {
         return new FloodFillMap(params)
     }
 
+    static fromData(data) {
+        const map = new Map(Object.entries(data))
+        const params = FloodFillMap.schema.parse(map)
+        return new FloodFillMap(params)
+    }
+
     constructor(params) {
         super(params)
         this.matrix = new Matrix(this.width, this.height, () => {

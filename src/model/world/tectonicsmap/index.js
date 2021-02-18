@@ -5,14 +5,14 @@ import { Schema, Type } from '/lib/base/schema'
 import { SimplexNoise } from '/lib/noise'
 import { MapUI } from '/lib/ui/map'
 
-import RegionMap from '/model/regionmap'
+import FloodFillMap from '/model/floodfillmap'
 import { MapDiagram } from './diagram'
 
 
 const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
-    Type.number('plates', 'Plates', {default: 16, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 25, step: 1, min: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -29,42 +29,38 @@ export default class TectonicsMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.regionMap = this.#buildRegionMap(params)
+        this.floodFillMap = this.#buildFloodFillMap(params)
         const simplex = new SimplexNoise(6, 0.7, 0.01)
+
         this.matrix = new Matrix(
             this.width,
             this.height,
             point => {
-                const region = this.regionMap.get(point).region
-                const x = region.id * 1000
-                const y = region.id * 1000
-                // TODO: get plate origin and flood fill setting plate features
+                const region = this.floodFillMap.get(point)
+                const x = region * 1000
+                const y = region * 1000
                 const noisePt = point.plus(new Point(x, y))
                 const isContinent = simplex.noise(noisePt) > 127
-                const isOceanicPlate = region.id <= 2
+                const isOceanicPlate = region <= 2
                 return {region, isContinent, isOceanicPlate}
             }
         )
         // 2: build deformations using borders
     }
 
-    #buildRegionMap(params) {
-        return RegionMap.fromData({
+    #buildFloodFillMap(params) {
+        return FloodFillMap.fromData({
             width: this.width,
             height: this.height,
-            count: params.get('plates'),
-            layerGrowth: 40,
-            growthChance: 0.1,
+            scale: params.get('scale'),
+            growth: 2,
+            chance: 0.3,
             seed: params.get('seed')
         })
     }
 
-    #buildGrid(params) {
-
-    }
-
     isBorder(point) {
-        return this.regionMap.get(point).isBorder()
+        return this.floodFillMap.isBorder(point)
     }
 
     isContinent(point) {
