@@ -22,6 +22,7 @@ export class Schema {
     defaultValues() {
         const mapToDefault = type => [type.name, type.defaultValue]
         const entries = this.types.map(mapToDefault)
+        console.log(entries);
         return new Map(entries)
     }
 
