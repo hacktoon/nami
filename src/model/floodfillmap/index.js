@@ -38,12 +38,12 @@ export default class FloodFillMap extends BaseMap {
     }
 
     static fromData(data) {
-        const map = new Map(Object.entries(data))
-        const params = FloodFillMap.schema.parse(map)
-        return new FloodFillMap(params)
+        const rawParams = new Map(Object.entries(data))
+        return new FloodFillMap(rawParams)
     }
 
-    constructor(params) {
+    constructor(rawParams) {
+        const params = FloodFillMap.schema.parse(rawParams)
         super(params)
         this.matrix = new Matrix(this.width, this.height, () => {
             return {v: EMPTY_VALUE, b: false}
