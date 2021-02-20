@@ -49,8 +49,7 @@ function RootComponent() {
             <Form className="AppHeaderMenu"
                 schema={App.schema}
                 data={data}
-                onSubmit={setData}
-            >
+                onSubmit={setData}>
                 <Button label="Run" />
             </Form>
         </section>

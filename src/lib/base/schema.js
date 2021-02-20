@@ -19,6 +19,14 @@ export class Schema {
         return false
     }
 
+    parseForm(inputs) {
+        const entries = Array.from(inputs)
+            // check if input was defined in schema
+            .filter(input => this.has(input.name))
+            .map(input => [input.name, input.value])
+        return new Map(entries)
+    }
+
     parse(rawData=null) {
         if (!rawData) {
             const mapToDefault = type => [type.name, type.defaultValue]
