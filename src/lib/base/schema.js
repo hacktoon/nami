@@ -22,7 +22,6 @@ export class Schema {
     defaultValues() {
         const mapToDefault = type => [type.name, type.defaultValue]
         const entries = this.types.map(mapToDefault)
-        console.log(entries);
         return new Map(entries)
     }
 
@@ -34,6 +33,26 @@ export class Schema {
             map.set(type.name, value)
         }
         return map
+    }
+}
+
+
+class ObjectData {
+    constructor(types) {
+        this.map = new Map()
+        this.types = types
+    }
+
+    set(name, value) {
+        return this.map.set(name, value)
+    }
+
+    get(name) {
+        return this.map.get(name)
+    }
+
+    entries() {
+        return []
     }
 }
 

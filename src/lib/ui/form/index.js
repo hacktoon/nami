@@ -13,8 +13,9 @@ export function Form({data, schema, onSubmit, ...props}) {
 
     const createValueMap = (inputs, schema) => {
         const entries = Array.from(inputs)
+            // check if input was defined in schema
             .filter(input => schema.has(input.name))
-            .map(({name, value}) => [name, value])
+            .map(input => [input.name, input.value])
         return new Map(entries)
     }
 
