@@ -19,16 +19,15 @@ export class Schema {
         return false
     }
 
-    defaultValues() {
-        const mapToDefault = type => [type.name, type.defaultValue]
-        const entries = this.types.map(mapToDefault)
-        return new Map(entries)
-    }
-
-    parse(formMap) {
+    parse(rawData=null) {
+        if (!rawData) {
+            const mapToDefault = type => [type.name, type.defaultValue]
+            const entries = this.types.map(mapToDefault)
+            return new Map(entries)
+        }
         const map = new Map()
         for(let type of this.types) {
-            const rawValue = formMap.get(type.name)
+            const rawValue = rawData.get(type.name)
             const value = type.parse(rawValue)
             map.set(type.name, value)
         }
@@ -37,7 +36,7 @@ export class Schema {
 }
 
 
-class ObjectData {
+class ModelData {
     constructor(types) {
         this.map = new Map()
         this.types = types

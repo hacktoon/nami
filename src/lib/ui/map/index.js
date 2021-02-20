@@ -6,7 +6,7 @@ import { MapSceneUI } from './scene'
 
 
 export function MapUI({model}) {
-    const [data, setData] = useState(model.schema.defaultValues())
+    const [data, setData] = useState(model.schema.parse())
     const map = model.create(data)
 
     const handleSubmit = data => setData(data)
@@ -25,7 +25,7 @@ export function MapUI({model}) {
 
 
 function MapDiagramUI({diagram, map}) {
-    const [data, setData] = useState(diagram.schema.defaultValues())
+    const [data, setData] = useState(diagram.schema.parse())
     const mapDiagram = diagram.create(map, data)
 
     const handleSubmit = data => setData(data)

@@ -8,7 +8,7 @@ import { Color } from '/lib/base/color'
 
 
 export function TestAppUI({model}) {
-    const [data, setData] = useState(model.schema.defaultValues())
+    const [data, setData] = useState(model.schema.parse())
 
     const handleSubmit = data => {
         setData(data)
