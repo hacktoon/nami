@@ -15,8 +15,7 @@ export function MapUI({model}) {
         <Form className="Map"
             schema={model.schema}
             data={data}
-            onSubmit={handleSubmit}
-        >
+            onSubmit={handleSubmit}>
             <Button label="New" />
         </Form>
         <MapDiagramUI diagram={model.diagram} map={map} />

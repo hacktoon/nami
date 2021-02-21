@@ -27,39 +27,44 @@ export class Schema {
         return new Map(entries)
     }
 
-    parse(rawData=null) {
-        if (!rawData) {
-            const mapToDefault = type => [type.name, type.defaultValue]
-            const entries = this.types.map(mapToDefault)
-            return new Map(entries)
-        }
+    parse(rawData=new Map()) {
         const map = new Map()
+        // const instance = new SchemaInstance(this)
         for(let type of this.types) {
-            const rawValue = rawData.get(type.name)
-            const value = type.parse(rawValue)
-            map.set(type.name, value)
+            const name = type.name
+            let value = type.defaultValue
+            if (rawData.has(name)) {
+                const rawValue = rawData.get(name)
+                value = type.parse(rawValue)
+            }
+            map.set(name, value)
         }
         return map
     }
 }
 
 
-class ModelData {
-    constructor(types) {
-        this.map = new Map()
-        this.types = types
+class SchemaInstance {
+    constructor(schema) {
+        this.schema = schema
+        this.values = new Map()
+        this.types = schema.types
+    }
+
+    get size() {
+        return this.values.size
     }
 
     set(name, value) {
-        return this.map.set(name, value)
+        return this.values.set(name, value)
     }
 
     get(name) {
-        return this.map.get(name)
+        return this.values.get(name)
     }
 
     entries() {
-        return []
+        return this.values.entries()
     }
 }
 
