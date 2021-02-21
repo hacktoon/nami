@@ -14,6 +14,7 @@ export class Schema {
         return false
     }
 
+    // TODO: get inputs as array of entries
     parseForm(inputs) {
         const entries = Array.from(inputs)
             // check if input was defined in schema
