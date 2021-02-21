@@ -1,21 +1,21 @@
+
 export class Schema {
     constructor(...types) {
         this.types = types
     }
 
-    parse(rawData=new Map()) {
-        const map = new Map()
-        // const instance = new SchemaInstance(this)
+    parse(rawMap=new Map()) {
+        const schemaInstance = new SchemaInstance(this)
         for(let type of this.types) {
             const name = type.name
             let value = type.defaultValue
-            if (rawData.has(name)) {
-                const rawValue = rawData.get(name)
+            if (rawMap.has(name)) {
+                const rawValue = rawMap.get(name)
                 value = type.parse(rawValue)
             }
-            map.set(name, value)
+            schemaInstance.set(name, value)
         }
-        return map
+        return schemaInstance
     }
 }
 
@@ -33,6 +33,10 @@ class SchemaInstance {
 
     set(name, value) {
         return this.values.set(name, value)
+    }
+
+    has(name) {
+        return this.values.has(name)
     }
 
     get(name) {
