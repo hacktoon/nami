@@ -22,10 +22,12 @@ export function MapSceneUI({diagram}) {
 
     const handleDragStart = () => setPrevFocus(scene.focus)
     const handleDrag = point => {
-        setData(new Map([...data, ['focus', prevFocus.plus(point)]]))
+        const entries = [...data.entries(), ['focus', prevFocus.plus(point)]]
+        setData(new Map(entries))
     }
     const handleWheel = amount => {
-        setData(new Map([...data, ['zoom', scene.zoom + amount]]))
+        const entries = [...data.entries(), ['zoom', scene.zoom + amount]]
+        setData(new Map(entries))
     }
     const handleClick = point => console.info(point)
 

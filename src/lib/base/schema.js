@@ -3,17 +3,6 @@ export class Schema {
         this.types = types
     }
 
-    get size() {
-        return this.types.length
-    }
-
-    has(name) {
-        for(let type of this.types) {
-            if (type.name === name) return true
-        }
-        return false
-    }
-
     parse(rawData=new Map()) {
         const map = new Map()
         // const instance = new SchemaInstance(this)
