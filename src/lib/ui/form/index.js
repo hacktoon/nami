@@ -6,7 +6,9 @@ import { FieldSet } from './field'
 export function Form({data, schema, onSubmit, ...props}) {
     const handleSubmit = event => {
         event.preventDefault()
-        const params = schema.parseForm(event.target.elements)
+        const inputs = Array.from(event.target.elements)
+        const entries = inputs.map(input => [input.name, input.value])
+        const params = schema.parse(new Map(entries))
         onSubmit(params)
     }
 

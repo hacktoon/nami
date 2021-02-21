@@ -14,15 +14,6 @@ export class Schema {
         return false
     }
 
-    // TODO: get inputs as array of entries
-    parseForm(inputs) {
-        const entries = Array.from(inputs)
-            // check if input was defined in schema
-            .filter(input => this.has(input.name))
-            .map(input => [input.name, input.value])
-        return new Map(entries)
-    }
-
     parse(rawData=new Map()) {
         const map = new Map()
         // const instance = new SchemaInstance(this)
