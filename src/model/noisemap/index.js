@@ -1,7 +1,8 @@
 import { Matrix } from '/lib/base/matrix'
 import { BaseMap } from '/model/lib/map'
 import { SimplexNoise } from '/lib/noise'
-import { Schema, Type } from '/lib/base/schema'
+import { Schema } from '/lib/base/schema'
+import { Type } from '/lib/base/type'
 import { MapUI } from '/lib/ui/map'
 
 import { MapDiagram } from './diagram'

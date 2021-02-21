@@ -1,4 +1,5 @@
-import { Schema, Type } from '/lib/base/schema'
+import { Schema } from '/lib/base/schema'
+import { Type } from '/lib/base/type'
 import { OrganicMultiFill } from '/lib/floodfill/organic'
 import { Matrix } from '/lib/base/matrix'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'

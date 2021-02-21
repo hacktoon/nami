@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
-import { Schema, Type } from '/lib/base/schema'
+import { Schema } from '/lib/base/schema'
+import { Type } from '/lib/base/type'
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
 import { Point } from '/lib/base/point'
