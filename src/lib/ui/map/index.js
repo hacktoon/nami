@@ -6,17 +6,13 @@ import { MapSceneUI } from './scene'
 
 
 export function MapUI({model}) {
-    const [data, setData] = useState(model.schema.defaultValues())
+    const [data, setData] = useState(model.schema.parse())
     const map = model.create(data)
-
-    const handleSubmit = data => setData(data)
 
     return <section className='MapUI'>
         <Form className="Map"
-            schema={model.schema}
             data={data}
-            onSubmit={handleSubmit}
-        >
+            onSubmit={setData}>
             <Button label="New" />
         </Form>
         <MapDiagramUI diagram={model.diagram} map={map} />
@@ -25,15 +21,12 @@ export function MapUI({model}) {
 
 
 function MapDiagramUI({diagram, map}) {
-    const [data, setData] = useState(diagram.schema.defaultValues())
+    const [data, setData] = useState(diagram.schema.parse())
     const mapDiagram = diagram.create(map, data)
-
-    const handleSubmit = data => setData(data)
 
     return <>
         <Form className="MapDiagram"
-            schema={diagram.schema}
-            onSubmit={handleSubmit}
+            onSubmit={setData}
             data={data}
         >
             <Button label="Update" />

@@ -1,7 +1,8 @@
 import { BaseMap } from '/model/lib/map'
 import { EvenPointSampling } from '/lib/base/point/sampling'
 import { OrganicFill } from '/lib/floodfill/organic'
-import { Schema, Type } from '/lib/base/schema'
+import { Schema } from '/lib/base/schema'
+import { Type } from '/lib/base/type'
 
 import { RegionSet } from './region'
 import { RegionCell } from './cell'
@@ -35,7 +36,8 @@ export default class RegionMap extends BaseMap {
     }
 
     static fromData(data) {
-        const params = new Map(Object.entries(data))
+        const map = new Map(Object.entries(data))
+        const params = RegionMap.schema.parse(map)
         return new RegionMap(params)
     }
 

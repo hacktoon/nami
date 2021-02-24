@@ -16,16 +16,18 @@ export function MapSceneUI({diagram}) {
     const [width, height] = useResize(viewport)
 
     const [prevFocus, setPrevFocus] = useState(new Point())
-    const [data, setData] = useState(MapScene.schema.defaultValues())
+    const [data, setData] = useState(MapScene.schema.parse())
 
     const scene = MapScene.create(diagram, width, height, data)
 
     const handleDragStart = () => setPrevFocus(scene.focus)
     const handleDrag = point => {
-        setData(new Map([...data, ['focus', prevFocus.plus(point)]]))
+        const dragPoint = prevFocus.plus(point)
+        setData(data.update('focus', dragPoint))
     }
     const handleWheel = amount => {
-        setData(new Map([...data, ['zoom', scene.zoom + amount]]))
+        const zoom = scene.zoom + amount
+        setData(data.update('zoom', zoom))
     }
     const handleClick = point => console.info(point)
 
@@ -43,7 +45,6 @@ export function MapSceneUI({diagram}) {
             </>}
         </section>
         <Form className="MapViewForm"
-            schema={MapScene.schema}
             data={data}
             onSubmit={setData}
         >

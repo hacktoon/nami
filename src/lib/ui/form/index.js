@@ -3,24 +3,19 @@ import React from 'react'
 import { FieldSet } from './field'
 
 
-export function Form({data, schema, onSubmit, ...props}) {
+export function Form({data, onSubmit, ...props}) {
     const handleSubmit = event => {
         event.preventDefault()
-        const map = createValueMap(event.target.elements, schema)
-        const params = schema.parse(map)
-        onSubmit(params)
-    }
-
-    const createValueMap = (inputs, schema) => {
-        const entries = Array.from(inputs)
-            .filter(input => schema.has(input.name))
-            .map(({name, value}) => [name, value])
-        return new Map(entries)
+        const inputs = Array.from(event.target.elements)
+                        .filter(input => input.name.trim().length > 0)
+        const entries = inputs.map(input => [input.name, input.value])
+        const schemaInstance = data.schema.parse(new Map(entries))
+        onSubmit(schemaInstance)
     }
 
     return <form className={`Form ${props.className}`} onSubmit={handleSubmit}>
-        <FieldSet types={schema.types} data={data} />
-        {schema.size ? props.children : null}
+        <FieldSet types={data.types} data={data} />
+        {data.size ? props.children : null}
     </form>
 }
 

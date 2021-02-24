@@ -1,4 +1,5 @@
-import { Schema, Type } from '/lib/base/schema'
+import { Schema } from '/lib/base/schema'
+import { Type } from '/lib/base/type'
 import { OrganicMultiFill } from '/lib/floodfill/organic'
 import { Matrix } from '/lib/base/matrix'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
@@ -19,7 +20,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 20, step: 1, min: 1}),
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
-    Type.enum('pointSampling', 'Sampling', {
+    Type.selection('pointSampling', 'Sampling', {
         default: EvenPointSampling.label,
         options: SAMPLING_ENTRIES
     }),
@@ -63,13 +64,13 @@ export default class FloodFillMap extends BaseMap {
                 return this.isEmpty(adjacent)
             },
         }))
-        this.regionCount = multiFill.size
+        this.fillCount = multiFill.size
     }
 
     isNeighbor(adjacent, fillValue) {
-        const isEmpty = ! this.isEmpty(adjacent)
-        const notFillValue = ! this.isValue(adjacent, fillValue)
-        return notFillValue && isEmpty
+        const notEmpty = ! this.isEmpty(adjacent)
+        const notSameValue = ! this.isValue(adjacent, fillValue)
+        return notSameValue && notEmpty
     }
 
     get(point) {

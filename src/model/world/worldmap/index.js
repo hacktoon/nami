@@ -1,5 +1,6 @@
 import { Name } from '/lib/name'
-import { Schema, Type } from '/lib/base/schema'
+import { Schema } from '/lib/base/schema'
+import { Type } from '/lib/base/type'
 import { BaseMap } from '/model/lib/map'
 import { MapUI } from '/lib/ui/map'
 

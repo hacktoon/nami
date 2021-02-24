@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
-import { Schema, Type } from '/lib/base/schema'
+import { Schema } from '/lib/base/schema'
+import { Type } from '/lib/base/type'
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
 import { Point } from '/lib/base/point'
@@ -8,7 +9,7 @@ import { Color } from '/lib/base/color'
 
 
 export function TestAppUI({model}) {
-    const [data, setData] = useState(model.schema.defaultValues())
+    const [data, setData] = useState(model.schema.parse())
 
     const handleSubmit = data => {
         setData(data)
@@ -38,7 +39,6 @@ export function TestAppUI({model}) {
         <Form
             className="TestForm"
             onSubmit={handleSubmit}
-            schema={model.schema}
             data={data}>
             <Button label="New" />
         </Form>

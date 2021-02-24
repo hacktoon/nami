@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
-import { Schema, Type } from '/lib/base/schema'
+import { Schema } from '/lib/base/schema'
+import { Type } from '/lib/base/type'
 import { Form } from '/lib/ui/form'
 import { Button } from '/lib/ui/form/button'
 import { Title } from '/lib/ui'
@@ -34,23 +35,21 @@ const appMap = new Map(APPS.map(model => {
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', {default: TectonicsMap.label, options: APPS})
+        Type.selection('app', 'App', {default: FloodFillMap.label, options: APPS})
     )
 }
 
 
 function RootComponent() {
-    const [data, setData] = useState(App.schema.defaultValues())
+    const [data, setData] = useState(App.schema.parse())
     const Application = appMap.get(data.get('app'))
 
     return <section className="App">
         <section className="AppHeader">
             <Title className="AppTitle">NAMI</Title>
             <Form className="AppHeaderMenu"
-                schema={App.schema}
                 data={data}
-                onSubmit={setData}
-            >
+                onSubmit={setData}>
                 <Button label="Run" />
             </Form>
         </section>

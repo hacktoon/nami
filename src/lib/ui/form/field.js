@@ -4,7 +4,23 @@ import { Color } from '/lib/base/color'
 import { Point } from '/lib/base/point'
 
 
-export function NumberField({name, label, value, ...props}) {
+export function FieldSet({types, data}) {
+    return types.map((type, id) => {
+        const FieldComponent = TYPE_FIELD_MAP[type.type]
+        const value = data.get(type.name)
+
+        return <FieldComponent
+            key={id}
+            name={type.name}
+            label={type.label}
+            value={value}
+            {...type.props}
+        />
+    })
+}
+
+
+function NumberField({name, label, value, ...props}) {
     const [number, setNumber] = useState(value)
     const handleChange = e => setNumber(Number(e.target.value))
 
@@ -21,7 +37,7 @@ export function NumberField({name, label, value, ...props}) {
 }
 
 
-export function TextField({name, label, value, ...props}) {
+function TextField({name, label, value, ...props}) {
     const [text, setText] = useState(value)
     const handleChange = e => setText(String(e.target.value).trim())
 
@@ -38,7 +54,7 @@ export function TextField({name, label, value, ...props}) {
 }
 
 
-export function SelectField({name, label, value, ...props}) {
+function SelectField({name, label, value, ...props}) {
     const [selected, setSelected] = useState(value)
 
     function buildSelectOptions() {
@@ -59,7 +75,7 @@ export function SelectField({name, label, value, ...props}) {
 }
 
 
-export function BooleanField({name, label, value}) {
+function BooleanField({name, label, value}) {
     const [bool, setBool] = useState(value)
     const handleClick = () => setBool(!bool)
 
@@ -71,7 +87,7 @@ export function BooleanField({name, label, value}) {
 }
 
 
-export function ColorField({name, label, value, ...props}) {
+function ColorField({name, label, value, ...props}) {
     const [color, setColor] = useState(value)
     const [hexColor, setHexColor] = useState(value.toHex())
     const handleChange = event => {
@@ -98,7 +114,7 @@ export function ColorField({name, label, value, ...props}) {
 }
 
 
-export function PointField({name, label, value, ...props}) {
+function PointField({name, label, value, ...props}) {
     const [point, setPoint] = useState(value)
     const handleXChange = e => handleChange(e.target.value, point.y)
     const handleYChange = e => handleChange(point.x, e.target.value)
@@ -123,21 +139,6 @@ export function PointField({name, label, value, ...props}) {
 }
 
 
-export function FieldSet({types, data}) {
-    return types.map((type, id) => {
-        const FieldComponent = TYPE_FIELD_MAP[type.type]
-
-        return <FieldComponent
-            key={id}
-            name={type.name}
-            label={type.label}
-            value={data.get(type.name)}
-            {...type.props}
-        />
-    })
-}
-
-
 function Field({label, type, value, status='', children, ...props}) {
     return <label className={`Field ${type} ${status}`} {...props}>
         <span className='FieldLabel'>{label}</span>
@@ -146,11 +147,11 @@ function Field({label, type, value, status='', children, ...props}) {
 }
 
 
-export const TYPE_FIELD_MAP = {
+const TYPE_FIELD_MAP = {
     boolean: BooleanField,
     number: NumberField,
     text: TextField,
     color: ColorField,
     point: PointField,
-    enum: SelectField,
+    selection: SelectField,
 }
