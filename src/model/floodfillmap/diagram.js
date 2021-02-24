@@ -9,27 +9,27 @@ export class MapDiagram extends BaseMapDiagram {
         Type.boolean('showBorders', 'Show borders', {default: true}),
     )
 
-    static create(map, params) {
-        return new MapDiagram(map, params)
+    static create(mapModel, params) {
+        return new MapDiagram(mapModel, params)
     }
 
-    constructor(map, params) {
-        super(map)
+    constructor(mapModel, params) {
+        super(mapModel)
         this.showBorders = params.get('showBorders')
         this.colorMap = this.buildColorMap()
     }
 
     buildColorMap() {
         const map = {}
-        for(let i = 1; i <= this.map.fillCount; i++) {
+        for(let i = 0; i < this.mapModel.fillCount; i++) {
             map[i] = new Color()
         }
         return map
     }
 
     get(point) {
-        const value = this.map.get(point)
-        if (this.showBorders && this.map.isBorder(point)) {
+        const value = this.mapModel.get(point)
+        if (this.showBorders && this.mapModel.isBorder(point)) {
             return this.colorMap[value].darken(40).toHex()
         }
         return this.colorMap[value].toHex()

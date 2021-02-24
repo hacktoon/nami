@@ -12,12 +12,12 @@ export class MapDiagram extends BaseMapDiagram {
         Type.color('borderColor', 'Border', {default: Color.fromHex('#F90')})
     )
 
-    static create(map, params) {
-        return new MapDiagram(map, params)
+    static create(mapModel, params) {
+        return new MapDiagram(mapModel, params)
     }
 
-    constructor(map, params) {
-        super(map)
+    constructor(mapModel, params) {
+        super(mapModel)
         this.continent = params.get('continent')
         this.ocean = params.get('ocean')
         this.showBorder = params.get('showBorder')
@@ -25,12 +25,12 @@ export class MapDiagram extends BaseMapDiagram {
     }
 
     get(point) {
-        if (this.showBorder && this.map.isBorder(point)) {
+        if (this.showBorder && this.mapModel.isBorder(point)) {
             return this.borderColor.toHex()
         }
         const ocean = this.ocean.toHex()
         const continent = this.continent.toHex()
-        if (this.map.isOceanicPlate(point)) return ocean
-        return this.map.isContinent(point) ? continent : ocean
+        if (this.mapModel.isOceanicPlate(point)) return ocean
+        return this.mapModel.isContinent(point) ? continent : ocean
     }
 }

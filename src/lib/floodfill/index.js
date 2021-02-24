@@ -150,7 +150,7 @@ export class ScanlineFill8 extends ScanlineFill {
 
 export class MultiFill {
     constructor(origins, buildFill) {
-        this.fills = origins.map((center, i) => buildFill(center,  i + 1))
+        this.fills = origins.map((center, i) => buildFill(center,  i))
         this.size = this.fills.length
         this.canGrow = true
 

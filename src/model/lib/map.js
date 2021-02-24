@@ -21,9 +21,9 @@ export class BaseMap {
 
 
 export class BaseMapDiagram {
-    constructor(map) {
-        this.map = map
-        this.width = map.width
-        this.height = map.height
+    constructor(mapModel) {
+        this.mapModel = mapModel
+        this.width = mapModel.width
+        this.height = mapModel.height
     }
 }

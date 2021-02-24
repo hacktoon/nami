@@ -7,7 +7,7 @@ import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
 import { MapUI } from '/lib/ui/map'
 
-const EMPTY_VALUE = 0
+const EMPTY_VALUE = null
 const SAMPLING_ENTRIES = [
     RandomPointSampling,
     EvenPointSampling,

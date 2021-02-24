@@ -16,12 +16,12 @@ export class MapDiagram extends BaseMapDiagram {
         Type.color('bgColor', 'BG color', {default: Color.fromHex('#059')})
     )
 
-    static create(map, params) {
-        return new MapDiagram(map, params)
+    static create(mapModel, params) {
+        return new MapDiagram(mapModel, params)
     }
 
-    constructor(map, params) {
-        super(map)
+    constructor(mapModel, params) {
+        super(mapModel)
         // TODO: set `this.attrs` and add attributes dynamically
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
@@ -34,7 +34,7 @@ export class MapDiagram extends BaseMapDiagram {
     }
 
     get(point) {
-        const cell = this.map.get(point)
+        const cell = this.mapModel.get(point)
         const fgcolor = this.randomColors ? cell.region.color : this.fgColor
         const isBorder = this.showBorders && cell.isBorder()
         const isOrigin = this.showOrigins && cell.isOrigin()
