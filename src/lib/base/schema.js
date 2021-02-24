@@ -34,7 +34,7 @@ class SchemaInstance {
     update(name, value) {
         const valueMap = new Map(this.valueMap.entries())
         valueMap.set(name, value)
-        return new SchemaInstance(this, valueMap)
+        return new SchemaInstance(this.schema, valueMap)
     }
 
     has(name) {

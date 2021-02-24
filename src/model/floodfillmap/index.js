@@ -64,7 +64,7 @@ export default class FloodFillMap extends BaseMap {
                 return this.isEmpty(adjacent)
             },
         }))
-        this.regionCount = multiFill.size
+        this.fillCount = multiFill.size
     }
 
     isNeighbor(adjacent, fillValue) {

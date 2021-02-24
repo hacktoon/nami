@@ -1,7 +1,6 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { Color } from '/lib/base/color'
-import { clamp } from '/lib/base/number'
 import { BaseMapDiagram } from '/model/lib/map'
 
 
@@ -22,7 +21,7 @@ export class MapDiagram extends BaseMapDiagram {
 
     buildColorMap() {
         const map = {}
-        for(let i = 1; i <= this.map.regionCount; i++) {
+        for(let i = 1; i <= this.map.fillCount; i++) {
             map[i] = new Color()
         }
         return map
