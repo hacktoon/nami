@@ -36,7 +36,8 @@ export default class RegionMap extends BaseMap {
     }
 
     static fromData(data) {
-        const params = new Map(Object.entries(data))
+        const map = new Map(Object.entries(data))
+        const params = RegionMap.schema.parse(map)
         return new RegionMap(params)
     }
 

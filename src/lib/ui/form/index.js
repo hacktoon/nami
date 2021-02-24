@@ -9,8 +9,8 @@ export function Form({data, onSubmit, ...props}) {
         const inputs = Array.from(event.target.elements)
                         .filter(input => input.name.trim().length > 0)
         const entries = inputs.map(input => [input.name, input.value])
-        console.log('form submitted:', new Map(entries));
-        onSubmit(new Map(entries))
+        const schemaInstance = data.schema.parse(new Map(entries))
+        onSubmit(schemaInstance)
     }
 
     return <form className={`Form ${props.className}`} onSubmit={handleSubmit}>

@@ -31,8 +31,6 @@ export function MapSceneUI({diagram}) {
     }
     const handleClick = point => console.info(point)
 
-    const handleSubmit = data => setData(MapScene.schema.parse(data))
-
     return <section className="MapSceneUI">
         <section className="MapViewCanvasUI" ref={viewport}>
             {viewport.current && <>
@@ -48,7 +46,7 @@ export function MapSceneUI({diagram}) {
         </section>
         <Form className="MapViewForm"
             data={data}
-            onSubmit={handleSubmit}
+            onSubmit={setData}
         >
             <Button label="Update" />
         </Form>

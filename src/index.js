@@ -35,7 +35,7 @@ const appMap = new Map(APPS.map(model => {
 
 class App {
     static schema = new Schema(
-        Type.enum('app', 'App', {default: FloodFillMap.label, options: APPS})
+        Type.enum('app', 'App', {default: TectonicsMap.label, options: APPS})
     )
 }
 
@@ -44,14 +44,12 @@ function RootComponent() {
     const [data, setData] = useState(App.schema.parse())
     const Application = appMap.get(data.get('app'))
 
-    const handleSubmit = data => setData(App.schema.parse(data))
-
     return <section className="App">
         <section className="AppHeader">
             <Title className="AppTitle">NAMI</Title>
             <Form className="AppHeaderMenu"
                 data={data}
-                onSubmit={handleSubmit}>
+                onSubmit={setData}>
                 <Button label="Run" />
             </Form>
         </section>
