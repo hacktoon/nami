@@ -47,33 +47,37 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.matrix = new RegionMapMatrix(this.width, this.height)
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const points = PointSampling.create(
             params.get('scale'), this.width, this.height
         )
+        this.matrix = this.buildMatrix(points, params)
+
+        // STEP: distance field from borders
+
+    }
+
+    buildMatrix(points, params) {
+        const matrix = new RegionMapMatrix(params.get('width'), params.get('height'))
         const multiFill = new OrganicMultiFill(points, fillValue => ({
             chance:   params.get('chance'),
             growth:   params.get('growth'),
-            setValue: point => this.matrix.setValue(point, fillValue),
+            setValue: point => matrix.setValue(point, fillValue),
             isEmpty:  (adjacent, center) => {
-                const notEmpty = ! this.matrix.isEmpty(adjacent)
-                const notSameValue = ! this.matrix.isValue(adjacent, fillValue)
+                const notEmpty = ! matrix.isEmpty(adjacent)
+                const notSameValue = ! matrix.isValue(adjacent, fillValue)
                 if (notSameValue && notEmpty) {
-                    this.matrix.setBorder(center)
+                    matrix.setBorder(center)
                 }
-                return this.matrix.isEmpty(adjacent)
+                return matrix.isEmpty(adjacent)
             },
         }))
         this.fillCount = multiFill.size
+        return matrix
     }
 
     get(point) {
         return this.matrix.get(point)
-    }
-
-    isValue(point, value) {
-        return this.matrix.isValue(point, value)
     }
 
     isBorder(point) {
