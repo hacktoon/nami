@@ -1,13 +1,14 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { OrganicMultiFill } from '/lib/floodfill/organic'
-import { Matrix } from '/lib/base/matrix'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
-import { BaseMap } from '/model/lib/map'
-import { MapDiagram } from './diagram'
+import { OrganicMultiFill } from '/lib/floodfill/organic'
 import { MapUI } from '/lib/ui/map'
+import { BaseMap } from '/model/lib/map'
 
-const EMPTY_VALUE = null
+import { MapDiagram } from './diagram'
+import { FloodFillMapMatrix } from './matrix'
+
+
 const SAMPLING_ENTRIES = [
     RandomPointSampling,
     EvenPointSampling,
@@ -46,9 +47,7 @@ export default class FloodFillMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.matrix = new Matrix(this.width, this.height, () => {
-            return {v: EMPTY_VALUE, b: false}
-        })
+        this.matrix = new FloodFillMapMatrix(this.width, this.height)
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const points = PointSampling.create(
             params.get('scale'), this.width, this.height
@@ -56,44 +55,29 @@ export default class FloodFillMap extends BaseMap {
         const multiFill = new OrganicMultiFill(points, fillValue => ({
             chance:   params.get('chance'),
             growth:   params.get('growth'),
-            setValue: point => this.setValue(point, fillValue),
+            setValue: point => this.matrix.setValue(point, fillValue),
             isEmpty:  (adjacent, center) => {
-                if (this.isNeighbor(adjacent, fillValue)) {
-                    this.setBorder(center)
+                const notEmpty = ! this.matrix.isEmpty(adjacent)
+                const notSameValue = ! this.matrix.isValue(adjacent, fillValue)
+                if (notSameValue && notEmpty) {
+                    this.matrix.setBorder(center)
                 }
-                return this.isEmpty(adjacent)
+                return this.matrix.isEmpty(adjacent)
             },
         }))
         this.fillCount = multiFill.size
     }
 
-    isNeighbor(adjacent, fillValue) {
-        const notEmpty = ! this.isEmpty(adjacent)
-        const notSameValue = ! this.isValue(adjacent, fillValue)
-        return notSameValue && notEmpty
-    }
-
     get(point) {
-        return this.matrix.get(point).v
-    }
-
-    isEmpty(point) {
-        return this.matrix.get(point).v === EMPTY_VALUE
+        return this.matrix.get(point)
     }
 
     isValue(point, value) {
-        return this.matrix.get(point).v === value
-    }
-
-    setValue(point, value) {
-        return this.matrix.get(point).v = value
+        return this.matrix.isValue(point, value)
     }
 
     isBorder(point) {
-        return this.matrix.get(point).b === true
-    }
-
-    setBorder(point) {
-        return this.matrix.get(point).b = true
+        return this.matrix.isBorder(point)
     }
 }
+
