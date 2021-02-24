@@ -6,7 +6,7 @@ import { Type } from '/lib/base/type'
 import { SimplexNoise } from '/lib/noise'
 import { MapUI } from '/lib/ui/map'
 
-import FloodFillMap from '/model/floodfillmap'
+import RegionMap from '/model/regionmap'
 import { MapDiagram } from './diagram'
 
 
@@ -50,7 +50,7 @@ export default class TectonicsMap extends BaseMap {
     }
 
     #buildFloodFillMap(params) {
-        return FloodFillMap.fromData({
+        return RegionMap.fromData({
             width: this.width,
             height: this.height,
             scale: params.get('scale'),

@@ -10,7 +10,6 @@
 
 #### RegionMap
 - Regions adjacency table
-- Substitute/rename RegionMap for OrganicFloodFill
 
 #### TectonicsMap
 - Noise in non-wrapping space for plates

@@ -4,7 +4,7 @@ import { Matrix } from '/lib/base/matrix'
 const EMPTY_VALUE = null
 
 
-export class FloodFillMapMatrix {
+export class RegionMapMatrix {
     constructor(width, height) {
         this.matrix = new Matrix(width, height, () => {
             return {value: EMPTY_VALUE, border: false}

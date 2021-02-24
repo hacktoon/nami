@@ -11,7 +11,6 @@ import { TestApp } from '/lib/ui/test'
 import TectonicsMap from '/model/world/tectonicsmap'
 import WorldMap from '/model/world/worldmap'
 import RegionMap from '/model/regionmap'
-import FloodFillMap from '/model/floodfillmap'
 import NoiseMap from '/model/noisemap'
 
 import "./css/base.css"
@@ -24,7 +23,6 @@ const APPS = [
     NoiseMap,
     TectonicsMap,
     RegionMap,
-    FloodFillMap,
 ]
 
 
@@ -35,7 +33,7 @@ const appMap = new Map(APPS.map(model => {
 
 class App {
     static schema = new Schema(
-        Type.selection('app', 'App', {default: FloodFillMap.label, options: APPS})
+        Type.selection('app', 'App', {default: RegionMap.label, options: APPS})
     )
 }
 
