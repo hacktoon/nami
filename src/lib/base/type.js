@@ -37,14 +37,14 @@ class TextType extends BaseType {
 }
 
 
-class NumberType extends TextType {
+class NumberType extends BaseType {
     static type = 'number'
 
     parse(text) {
-        const value = super.parse(text)
+        const value = Number(text) ?? 0
         const min = this.props.min ?? -Infinity
         const max = this.props.max ?? Infinity
-        return clamp(Number(value), min, max)
+        return clamp(value, min, max)
     }
 }
 
@@ -62,8 +62,8 @@ class ColorType extends TextType {
 class PointType extends BaseType {
     static type = 'point'
 
-    parse(hash) {
-        return Point.fromHash(hash)
+    parse(text) {
+        return Point.fromHash(text)
     }
 }
 
@@ -71,8 +71,8 @@ class PointType extends BaseType {
 class BooleanType extends BaseType {
     static type = 'boolean'
 
-    parse(value) {
-        return value === 'true'
+    parse(text) {
+        return text === 'true'
     }
 }
 
@@ -80,8 +80,8 @@ class BooleanType extends BaseType {
 class EnumType extends BaseType {
     static type = 'enum'
 
-    parse(value) {
-        return value ?? this.defaultValue
+    parse(text) {
+        return text ?? this.defaultValue
     }
 }
 

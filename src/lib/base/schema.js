@@ -5,7 +5,7 @@ export class Schema {
     }
 
     parse(rawMap=new Map()) {
-        const schemaInstance = new SchemaInstance(this)
+        const map = new Map()
         for(let type of this.types) {
             const name = type.name
             let value = type.defaultValue
@@ -13,37 +13,39 @@ export class Schema {
                 const rawValue = rawMap.get(name)
                 value = type.parse(rawValue)
             }
-            schemaInstance.set(name, value)
+            map.set(name, value)
         }
-        return schemaInstance
+        return new SchemaInstance(this, map)
     }
 }
 
 
 class SchemaInstance {
-    constructor(schema) {
+    constructor(schema, map) {
         this.schema = schema
-        this.values = new Map()
+        this.valueMap = map
         this.types = schema.types
     }
 
     get size() {
-        return this.values.size
+        return this.valueMap.size
     }
 
-    set(name, value) {
-        return this.values.set(name, value)
+    update(name, value) {
+        const valueMap = new Map(this.valueMap.entries())
+        valueMap.set(name, value)
+        return new SchemaInstance(this, valueMap)
     }
 
     has(name) {
-        return this.values.has(name)
+        return this.valueMap.has(name)
     }
 
     get(name) {
-        return this.values.get(name)
+        return this.valueMap.get(name)
     }
 
     entries() {
-        return this.values.entries()
+        return this.valueMap.entries()
     }
 }

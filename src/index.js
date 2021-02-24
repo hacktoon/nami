@@ -44,13 +44,14 @@ function RootComponent() {
     const [data, setData] = useState(App.schema.parse())
     const Application = appMap.get(data.get('app'))
 
+    const handleSubmit = data => setData(App.schema.parse(data))
+
     return <section className="App">
         <section className="AppHeader">
             <Title className="AppTitle">NAMI</Title>
             <Form className="AppHeaderMenu"
-                schema={App.schema}
                 data={data}
-                onSubmit={setData}>
+                onSubmit={handleSubmit}>
                 <Button label="Run" />
             </Form>
         </section>

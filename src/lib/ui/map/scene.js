@@ -22,14 +22,16 @@ export function MapSceneUI({diagram}) {
 
     const handleDragStart = () => setPrevFocus(scene.focus)
     const handleDrag = point => {
-        const entries = [...data.entries(), ['focus', prevFocus.plus(point)]]
-        setData(new Map(entries))
+        const dragPoint = prevFocus.plus(point)
+        setData(data.update('focus', dragPoint))
     }
     const handleWheel = amount => {
-        const entries = [...data.entries(), ['zoom', scene.zoom + amount]]
-        setData(new Map(entries))
+        const zoom = scene.zoom + amount
+        setData(data.update('zoom', zoom))
     }
     const handleClick = point => console.info(point)
+
+    const handleSubmit = data => setData(MapScene.schema.parse(data))
 
     return <section className="MapSceneUI">
         <section className="MapViewCanvasUI" ref={viewport}>
@@ -45,9 +47,8 @@ export function MapSceneUI({diagram}) {
             </>}
         </section>
         <Form className="MapViewForm"
-            schema={MapScene.schema}
             data={data}
-            onSubmit={setData}
+            onSubmit={handleSubmit}
         >
             <Button label="Update" />
         </Form>

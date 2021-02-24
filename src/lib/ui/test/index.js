@@ -39,7 +39,6 @@ export function TestAppUI({model}) {
         <Form
             className="TestForm"
             onSubmit={handleSubmit}
-            schema={model.schema}
             data={data}>
             <Button label="New" />
         </Form>

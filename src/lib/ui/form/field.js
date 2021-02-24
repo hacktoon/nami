@@ -7,12 +7,13 @@ import { Point } from '/lib/base/point'
 export function FieldSet({types, data}) {
     return types.map((type, id) => {
         const FieldComponent = TYPE_FIELD_MAP[type.type]
+        const value = data.get(type.name)
 
         return <FieldComponent
             key={id}
             name={type.name}
             label={type.label}
-            value={data.get(type.name)}
+            value={value}
             {...type.props}
         />
     })
