@@ -153,5 +153,5 @@ const TYPE_FIELD_MAP = {
     text: TextField,
     color: ColorField,
     point: PointField,
-    enum: SelectField,
+    selection: SelectField,
 }

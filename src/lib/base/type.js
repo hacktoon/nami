@@ -78,7 +78,7 @@ class BooleanType extends BaseType {
 
 
 class EnumType extends BaseType {
-    static type = 'enum'
+    static type = 'selection'
 
     parse(text) {
         return text ?? this.defaultValue
@@ -92,5 +92,5 @@ export class Type {
     static boolean = BaseType.define(BooleanType)
     static color = BaseType.define(ColorType)
     static point = BaseType.define(PointType)
-    static enum = BaseType.define(EnumType)
+    static selection = BaseType.define(EnumType)
 }

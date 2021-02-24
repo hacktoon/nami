@@ -20,7 +20,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 20, step: 1, min: 1}),
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
-    Type.enum('pointSampling', 'Sampling', {
+    Type.selection('pointSampling', 'Sampling', {
         default: EvenPointSampling.label,
         options: SAMPLING_ENTRIES
     }),
