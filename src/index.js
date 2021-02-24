@@ -35,7 +35,7 @@ const appMap = new Map(APPS.map(model => {
 
 class App {
     static schema = new Schema(
-        Type.selection('app', 'App', {default: TectonicsMap.label, options: APPS})
+        Type.selection('app', 'App', {default: FloodFillMap.label, options: APPS})
     )
 }
 

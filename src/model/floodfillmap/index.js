@@ -68,9 +68,9 @@ export default class FloodFillMap extends BaseMap {
     }
 
     isNeighbor(adjacent, fillValue) {
-        const isEmpty = ! this.isEmpty(adjacent)
-        const notFillValue = ! this.isValue(adjacent, fillValue)
-        return notFillValue && isEmpty
+        const notEmpty = ! this.isEmpty(adjacent)
+        const notSameValue = ! this.isValue(adjacent, fillValue)
+        return notSameValue && notEmpty
     }
 
     get(point) {
