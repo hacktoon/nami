@@ -51,7 +51,7 @@ export default class RegionMap extends BaseMap {
         const points = PointSampling.create(
             params.get('scale'), this.width, this.height
         )
-        this.matrix = this.buildMatrix(points, params)
+        this._matrix = this.buildMatrix(points, params)
         // STEP: graph depends on matrix points
         this.graph = []
         // STEP: distance field from borders
@@ -80,15 +80,15 @@ export default class RegionMap extends BaseMap {
     }
 
     get(point) {
-        return this.matrix.get(point)
+        return this._matrix.get(point)
     }
 
     isBorder(point) {
-        return this.matrix.isBorder(point)
+        return this._matrix.isBorder(point)
     }
 
     getBorder(point) {
-        return this.matrix.getBorder(point)
+        return this._matrix.getBorder(point)
     }
 }
 
