@@ -10,7 +10,6 @@
 
 #### RegionMap
 - Microregions must be absorbed
-- Regions adjacency table
 
 #### TectonicsMap
 - Noise in non-wrapping space for plates

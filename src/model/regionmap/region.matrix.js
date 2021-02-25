@@ -5,7 +5,7 @@ const EMPTY_VALUE = null
 const NO_BORDER = null
 
 
-export class RegionMapMatrix {
+export class RegionMatrix {
     constructor(width, height) {
         this.matrix = new Matrix(width, height, () => {
             return {value: EMPTY_VALUE, border: NO_BORDER}

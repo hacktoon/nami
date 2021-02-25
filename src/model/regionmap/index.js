@@ -1,12 +1,13 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
+import { Graph } from '/lib/base/graph'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
 import { OrganicMultiFill } from '/lib/floodfill/organic'
 import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 
 import { MapDiagram } from './diagram'
-import { RegionMapMatrix } from './region.matrix'
+import { RegionMatrix } from './region.matrix'
 
 
 const SAMPLING_ENTRIES = [
@@ -51,15 +52,14 @@ export default class RegionMap extends BaseMap {
         const points = PointSampling.create(
             params.get('scale'), this.width, this.height
         )
+        this.graph = new Graph()
         this._matrix = this.buildMatrix(points, params)
-        // STEP: graph depends on matrix points
-        this.graph = []
         // STEP: distance field from borders
 
     }
 
     buildMatrix(points, params) {
-        const matrix = new RegionMapMatrix(params.get('width'), params.get('height'))
+        const matrix = new RegionMatrix(params.get('width'), params.get('height'))
         const multiFill = new OrganicMultiFill(points, fillValue => ({
             chance:   params.get('chance'),
             growth:   params.get('growth'),
@@ -70,7 +70,7 @@ export default class RegionMap extends BaseMap {
                 if (notSameValue && notEmpty) {
                     const neighborValue = matrix.get(adjacent)
                     matrix.setBorder(center, neighborValue)
-
+                    this.graph.addEdge(fillValue, neighborValue)
                 }
                 return matrix.isEmpty(adjacent)
             },
