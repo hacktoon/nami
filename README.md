@@ -9,6 +9,7 @@
 ## ROADMAP
 
 #### RegionMap
+- Microregions must be absorbed
 - Regions adjacency table
 
 #### TectonicsMap
