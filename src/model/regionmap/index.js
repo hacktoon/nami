@@ -6,7 +6,7 @@ import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 
 import { MapDiagram } from './diagram'
-import { RegionMapMatrix } from './matrix'
+import { RegionMapMatrix } from './region.matrix'
 
 
 const SAMPLING_ENTRIES = [
