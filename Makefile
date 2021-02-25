@@ -9,7 +9,7 @@ build: clean
 	npm run build
 
 clean:
-	rm -rf build/ .cache node_modules
+	rm -rf build/ .cache
 
 deploy: build
 	if git show-ref -q --heads gh-pages; then \
@@ -21,4 +21,4 @@ deploy: build
 	git add index.html src.*.js src.*.css
 	git commit -m 'deploy-$(shell date --iso=seconds)'
 	git push -f origin gh-pages
-	git checkout -f -
+	git checkout -f main
