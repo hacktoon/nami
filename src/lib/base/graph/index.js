@@ -1,27 +1,29 @@
 
 export class Graph {
     constructor() {
-        this.table = {};
+        this.table = {}
     }
 
-    hasVertex(vertex) {
-        return Boolean(this.table[vertex])
+    hasNode(value) {
+        return Boolean(this.table[value])
     }
 
-    addVertex(vertex) {
-        if (! this.table[vertex]) {
-            this.table[vertex] = new Set();
+    addNode(value) {
+        if (! this.table[value]) {
+            this.table[value] = new Set()
         }
     }
 
     addEdge(source, target) {
-        if (! this.table[source]) {
-            this.addVertex(source);
-        }
-        if (! this.table[target]) {
-            this.addVertex(target);
-        }
-        this.table[source].add(target);
-        this.table[target].add(source);
+        this.addNode(source)
+        this.addNode(target)
+        this.table[source].add(target)
+        this.table[target].add(source)
+    }
+
+    hasEdge(source, target) {
+        const hasTarget = this.table[source].has(target)
+        const hasSource = this.table[target].has(source)
+        return hasSource && hasTarget
     }
 }
