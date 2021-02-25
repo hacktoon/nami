@@ -2,17 +2,22 @@ import { Matrix } from '/lib/base/matrix'
 
 
 const EMPTY_VALUE = null
+const NO_BORDER = null
 
 
 export class RegionMapMatrix {
     constructor(width, height) {
         this.matrix = new Matrix(width, height, () => {
-            return {value: EMPTY_VALUE, border: false}
+            return {value: EMPTY_VALUE, border: NO_BORDER}
         })
     }
 
     get(point) {
         return this.matrix.get(point).value
+    }
+
+    getBorder(point) {
+        return this.matrix.get(point).border
     }
 
     isValue(point, value) {
@@ -28,10 +33,10 @@ export class RegionMapMatrix {
     }
 
     isBorder(point) {
-        return this.matrix.get(point).border === true
+        return this.matrix.get(point).border !== NO_BORDER
     }
 
-    setBorder(point) {
-        return this.matrix.get(point).border = true
+    setBorder(point, neighborValue) {
+        return this.matrix.get(point).border = neighborValue
     }
 }

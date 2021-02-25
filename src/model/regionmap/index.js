@@ -52,7 +52,8 @@ export default class RegionMap extends BaseMap {
             params.get('scale'), this.width, this.height
         )
         this.matrix = this.buildMatrix(points, params)
-
+        // STEP: Adjacency matrix depends on matrix points
+        this.adjacencyMatrix = []
         // STEP: distance field from borders
 
     }
@@ -67,7 +68,8 @@ export default class RegionMap extends BaseMap {
                 const notEmpty = ! matrix.isEmpty(adjacent)
                 const notSameValue = ! matrix.isValue(adjacent, fillValue)
                 if (notSameValue && notEmpty) {
-                    matrix.setBorder(center)
+                    const neighborValue = matrix.get(adjacent)
+                    matrix.setBorder(center, neighborValue)
                 }
                 return matrix.isEmpty(adjacent)
             },
@@ -82,6 +84,10 @@ export default class RegionMap extends BaseMap {
 
     isBorder(point) {
         return this.matrix.isBorder(point)
+    }
+
+    getBorder(point) {
+        return this.matrix.getBorder(point)
     }
 }
 
