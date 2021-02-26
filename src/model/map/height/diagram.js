@@ -1,4 +1,5 @@
 import { Schema } from '/lib/base/schema'
+import { Color } from '/lib/base/color'
 import { BaseMapDiagram } from '/model/lib/map'
 
 
@@ -10,6 +11,8 @@ export class MapDiagram extends BaseMapDiagram {
     }
 
     get(point) {
-        return this.mapModel.reliefMap.codeMap.getColor(point)
+        const height = this.mapModel.map.get(point)
+        const color = new Color(height, height, height)
+        return color.toHex()
     }
 }

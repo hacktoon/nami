@@ -54,15 +54,14 @@ export const MidpointDisplacement = (source, target, roughness, callback=()=>{})
 }
 
 
-export class HeightMap {
-    constructor(size, roughness, values, mask) {
+export class DiamondSquare {
+    constructor(size, roughness, values) {
         this.scale  = roughness * (size - 1)
         this.matrix   = new Matrix(size, size, () => EMPTY)
         this.max    = -Infinity
         this.min    = Infinity
         this.values = values || []
         this.size   = size
-        this.mask   = mask
         this._build()
     }
 
@@ -150,11 +149,6 @@ export class HeightMap {
 
     get(point) {
         let value = this.matrix.get(point)
-        if (this.mask) {
-            const mask = this.mask.get(point)
-            value -= (value * mask) / 100
-            value = clamp(value, this.min, this.max)
-        }
         return this.values.length ? this._normalize(value) : value
     }
 
@@ -167,7 +161,7 @@ export class HeightMap {
 }
 
 
-export class TileableHeightMap extends HeightMap {
+export class TileableDiamondSquare extends DiamondSquare {
     _setSeedPoints() {
         const maxIndex = this.size - 1
         const value = this._getVariation()

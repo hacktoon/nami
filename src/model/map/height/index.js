@@ -1,10 +1,9 @@
-import { Name } from '/lib/name'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { BaseMap } from '/model/lib/map'
 import { MapUI } from '/lib/ui/map'
+import { TileableDiamondSquare } from '/lib/diamondsquare'
 
-import { ReliefMap } from './relief'
 import { MapDiagram } from './diagram'
 
 
@@ -17,24 +16,26 @@ const SCHEMA = new Schema(
 )
 
 
-export default class WorldMap extends BaseMap {
-    static id = 'WorldMap'
+export default class HeightMap extends BaseMap {
+    static id = 'HeightMap'
     static diagram = MapDiagram
     static schema = SCHEMA
     static ui = MapUI
 
     static create(params) {
-        return new WorldMap(params)
+        return new HeightMap(params)
     }
 
     constructor(params) {
         super(params)
         this.size = Number(params.get('size'))
-        console.log(this.size);
         this.width = this.size
         this.height = this.size
         this.roughness = params.get('roughness')
-        this.name = Name.createLandmassName()
-        this.reliefMap = new ReliefMap(this.size, this.roughness)
+        this.map = new TileableDiamondSquare(this.size, this.roughness)
+    }
+
+    get(point) {
+        return this.map.get(point)
     }
 }

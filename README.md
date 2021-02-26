@@ -59,11 +59,10 @@
   - create junction points between route ends to set midpath detours
 
 ### Interface
-- Convert current WorldMap to HeightMap
 - Put all form options on sidebar
 - Move sidebar to the right
 - Optimize canvas rendering
   - Use offscreen canvas when `map.size <  screen.size`
   - Add tool to live-test drawing functions on console
 - Add/use URL with parameters
-- Store parameters in localStorage
+- Store form parameters in localStorage

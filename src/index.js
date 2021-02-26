@@ -9,7 +9,7 @@ import { Title } from '/lib/ui'
 
 import { TestApp } from '/lib/ui/test'
 import TectonicsMap from '/model/map/world/tectonics'
-import WorldMap from '/model/map/world/world'
+import HeightMap from '/model/map/height/'
 import RegionMap from '/model/map/region'
 import NoiseMap from '/model/map/noise'
 
@@ -19,7 +19,7 @@ import "./css/map.css"
 
 const APPS = [
     TestApp,
-    WorldMap,
+    HeightMap,
     NoiseMap,
     TectonicsMap,
     RegionMap,
@@ -33,7 +33,7 @@ const appMap = new Map(APPS.map(model => {
 
 class App {
     static schema = new Schema(
-        Type.selection('app', 'App', {default: WorldMap.id, options: APPS})
+        Type.selection('app', 'App', {default: RegionMap.id, options: APPS})
     )
 }
 
