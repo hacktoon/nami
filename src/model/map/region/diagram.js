@@ -6,7 +6,7 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('showBorders', 'Show borders', {default: false}),
+        Type.boolean('showBorders', 'Show borders', {default: true}),
         Type.boolean('showNeighbors', 'Show neighbors', {default: false}),
     )
 

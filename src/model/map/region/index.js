@@ -54,8 +54,8 @@ export default class RegionMap extends BaseMap {
         )
         this.graph = new Graph()
         this.matrix = this.buildMatrix(points, params)
-        // STEP: distance field from borders
-        this.buildInnerRegionMap()
+        this.filterMap = this.buildFilterMap()
+        // next: distance field from borders
     }
 
     buildMatrix(points, params) {
@@ -80,21 +80,22 @@ export default class RegionMap extends BaseMap {
         return matrix
     }
 
-    buildInnerRegionMap() {
-        const map = new Map()
+    buildFilterMap() {
+        const filterMap = new Map()
         this.graph.nodes().map(value => {
-            if (this.graph.nodeSize(value) === 1) {
-                const neighborValue = this.graph.edges(value)[0]
-                map.set(neighborValue, value)
-
-                console.log(`value ${value} has one neighbor: ${neighborValue}`)
+            const neighbor = this.graph.edges(value)
+            if (neighbor.length === 1) {
+                filterMap.set(neighbor[0], value)
             }
         })
-        return map
+        return filterMap
     }
 
     get(point) {
-        return this.matrix.get(point)
+        const id = this.matrix.get(point)
+        if (this.filterMap.has(id))
+            return this.filterMap.get(id)
+        return id
     }
 
     isBorder(point) {
