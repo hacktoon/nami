@@ -6,7 +6,7 @@ import { Type } from '/lib/base/type'
 import { SimplexNoise } from '/lib/noise'
 import { MapUI } from '/lib/ui/map'
 
-import RegionMap from '/model/regionmap'
+import RegionMap from '/model/map/region'
 import { MapDiagram } from './diagram'
 
 

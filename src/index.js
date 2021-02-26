@@ -8,10 +8,10 @@ import { Button } from '/lib/ui/form/button'
 import { Title } from '/lib/ui'
 
 import { TestApp } from '/lib/ui/test'
-import TectonicsMap from '/model/world/tectonicsmap'
-import WorldMap from '/model/world/worldmap'
-import RegionMap from '/model/regionmap'
-import NoiseMap from '/model/noisemap'
+import TectonicsMap from '/model/map/world/tectonics'
+import WorldMap from '/model/map/world/world'
+import RegionMap from '/model/map/region'
+import NoiseMap from '/model/map/noise'
 
 import "./css/base.css"
 import "./css/map.css"
