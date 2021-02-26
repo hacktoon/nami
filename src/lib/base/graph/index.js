@@ -4,14 +4,33 @@ export class Graph {
         this.table = {}
     }
 
-    hasNode(value) {
-        return Boolean(this.table[value])
+    nodes() {
+        return Object.keys(this.table).map(k => Number(k))
+    }
+
+    nodeSize(value) {
+        if (this.hasNode(value)) {
+            return this.table[value].size
+        }
+        return 0
+    }
+
+    edges(value) {
+        if (this.hasNode(value)) {
+            return Array.from(this.table[value].values())
+        }
+        return []
     }
 
     addNode(value) {
-        if (! this.table[value]) {
-            this.table[value] = new Set()
+        if (this.hasNode(value)) {
+            return
         }
+        this.table[value] = new Set()
+    }
+
+    hasNode(value) {
+        return Boolean(this.table[value])
     }
 
     addEdge(source, target) {

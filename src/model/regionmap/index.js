@@ -26,7 +26,7 @@ const SCHEMA = new Schema(
         default: EvenPointSampling.label,
         options: SAMPLING_ENTRIES
     }),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: 'ad'})
 )
 
 
@@ -53,9 +53,9 @@ export default class RegionMap extends BaseMap {
             params.get('scale'), this.width, this.height
         )
         this.graph = new Graph()
-        this._matrix = this.buildMatrix(points, params)
+        this.matrix = this.buildMatrix(points, params)
         // STEP: distance field from borders
-
+        this.buildInnerRegionMap()
     }
 
     buildMatrix(points, params) {
@@ -67,6 +67,7 @@ export default class RegionMap extends BaseMap {
             isEmpty:  (adjacent, center) => {
                 const notEmpty = ! matrix.isEmpty(adjacent)
                 const notSameValue = ! matrix.isValue(adjacent, fillValue)
+                // is another fill
                 if (notSameValue && notEmpty) {
                     const neighborValue = matrix.get(adjacent)
                     matrix.setBorder(center, neighborValue)
@@ -79,16 +80,29 @@ export default class RegionMap extends BaseMap {
         return matrix
     }
 
+    buildInnerRegionMap() {
+        const map = new Map()
+        this.graph.nodes().map(value => {
+            if (this.graph.nodeSize(value) === 1) {
+                const neighborValue = this.graph.edges(value)[0]
+                map.set(neighborValue, value)
+
+                console.log(`value ${value} has one neighbor: ${neighborValue}`)
+            }
+        })
+        return map
+    }
+
     get(point) {
-        return this._matrix.get(point)
+        return this.matrix.get(point)
     }
 
     isBorder(point) {
-        return this._matrix.isBorder(point)
+        return this.matrix.isBorder(point)
     }
 
     getBorder(point) {
-        return this._matrix.getBorder(point)
+        return this.matrix.getBorder(point)
     }
 }
 
