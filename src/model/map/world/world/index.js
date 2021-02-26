@@ -4,7 +4,7 @@ import { Type } from '/lib/base/type'
 import { BaseMap } from '/model/lib/map'
 import { MapUI } from '/lib/ui/map'
 
-import { ReliefMap } from './geo/relief'
+import { ReliefMap } from './relief'
 import { MapDiagram } from './diagram'
 
 
@@ -15,8 +15,8 @@ const SCHEMA = new Schema(
 )
 
 export default class WorldMap extends BaseMap {
+    static id = 'WorldMap'
     static diagram = MapDiagram
-    static label = 'World map'
     static schema = SCHEMA
     static ui = MapUI
 

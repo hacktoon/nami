@@ -14,7 +14,7 @@ const SAMPLING_ENTRIES = [
     RandomPointSampling,
     EvenPointSampling,
 ]
-const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.label, model]))
+const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
 
 const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
@@ -23,7 +23,7 @@ const SCHEMA = new Schema(
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
     Type.selection('pointSampling', 'Sampling', {
-        default: EvenPointSampling.label,
+        default: EvenPointSampling.id,
         options: SAMPLING_ENTRIES
     }),
     Type.text('seed', 'Seed', {default: 'ad'})
@@ -31,7 +31,7 @@ const SCHEMA = new Schema(
 
 
 export default class RegionMap extends BaseMap {
-    static label = 'RegionMap'
+    static id = 'RegionMap'
     static diagram = MapDiagram
     static schema = SCHEMA
     static ui = MapUI

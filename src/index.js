@@ -27,13 +27,13 @@ const APPS = [
 
 
 const appMap = new Map(APPS.map(model => {
-    return [model.label, () => <model.ui model={model} />]
+    return [model.id, () => <model.ui model={model} />]
 }))
 
 
 class App {
     static schema = new Schema(
-        Type.selection('app', 'App', {default: RegionMap.label, options: APPS})
+        Type.selection('app', 'App', {default: WorldMap.id, options: APPS})
     )
 }
 

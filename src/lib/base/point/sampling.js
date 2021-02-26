@@ -6,7 +6,7 @@ import { Rect } from '/lib/base/number'
 
 
 export class RandomPointSampling {
-    static label = 'RandomPointSampling'
+    static id = 'RandomPointSampling'
 
     static create(count, width, height) {
         const parsedMaxCount = clamp(count, 1, width * height)
@@ -16,7 +16,7 @@ export class RandomPointSampling {
 
 
 export class EvenPointSampling {
-    static label = 'EvenPointSampling'
+    static id = 'EvenPointSampling'
 
     static create(radius, width, height) {
         const points = []

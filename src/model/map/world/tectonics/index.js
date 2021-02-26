@@ -19,7 +19,7 @@ const SCHEMA = new Schema(
 
 
 export default class TectonicsMap extends BaseMap {
-    static label = 'Tectonics map'
+    static id = 'Tectonics map'
     static diagram = MapDiagram
     static schema = SCHEMA
     static ui = MapUI

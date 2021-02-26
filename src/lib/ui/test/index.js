@@ -48,7 +48,7 @@ export function TestAppUI({model}) {
 
 export class TestApp {
     static ui = TestAppUI
-    static label = 'Test'
+    static id = 'Test'
     static schema = new Schema(
         Type.number('count', 'Count', {default: 4}),
         Type.text('seed', 'Seed', {default: 'seed'}),

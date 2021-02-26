@@ -20,7 +20,7 @@ const SCHEMA = new Schema(
 
 export default class NoiseMap extends BaseMap {
     static diagram = MapDiagram
-    static label = 'Noise map'
+    static id = 'Noise map'
     static schema = SCHEMA
     static ui = MapUI
 
