@@ -25,12 +25,6 @@
   - OO : Oceanic Ridge
   - CC : Rift
 
-#### ContinentMap
-- Create Continent
-
-#### BasinMap
-- determine rivers using graph
-
 #### TerrainMap
 - Build distance map from coast borders
 - Property (water: bool)
@@ -59,13 +53,13 @@
 - Value range: 0:10, varies according to month and windmap
 
 #### Other
-- Organize model folder structure under `map/`
 - Set identity point method for Direction class
 - Vegetation/wildlife density: adjusted by humidity, temperature and height
 - Roads
-  - create junction points between route ends
+  - create junction points between route ends to set midpath detours
 
 ### Interface
+- Convert current WorldMap to HeightMap
 - Put all form options on sidebar
 - Move sidebar to the right
 - Optimize canvas rendering
