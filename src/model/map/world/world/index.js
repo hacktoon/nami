@@ -10,9 +10,12 @@ import { MapDiagram } from './diagram'
 
 const SCHEMA = new Schema(
     Type.number('roughness', 'Roughness', {default: 8, min: 1, step: 1}),
-    Type.number('size', 'Size', {default: 257, min: 1, step: 1}),
+    Type.selection('size', 'Size', {default: 257, options: [
+        {id: 257}, {id: 129}, {id: 65}
+    ]}),
     Type.text('seed', 'Seed', {default: ''})
 )
+
 
 export default class WorldMap extends BaseMap {
     static id = 'WorldMap'
@@ -26,9 +29,10 @@ export default class WorldMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.size = params.get('size')
-        this.width = params.get('size')
-        this.height = params.get('size')
+        this.size = Number(params.get('size'))
+        console.log(this.size);
+        this.width = this.size
+        this.height = this.size
         this.roughness = params.get('roughness')
         this.name = Name.createLandmassName()
         this.reliefMap = new ReliefMap(this.size, this.roughness)

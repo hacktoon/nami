@@ -90,45 +90,15 @@ class CodeTable {
     }
 }
 
-const valley = [
-    [10, 1],
-    [20, 1],
-    [30, 1],
-    [40, 1],
-    [60, 1],
-    [70, 1],
-    [60, 1],
-    [40, 1],
-    [30, 1],
-    [20, 1],
-    [10, 1],
-]
-
-const elevation = [
-    [10, 1],
-    [20, 1],
-    [30, 1],
-    [40, 1],
-    [60, 1],
-    [70, 1],
-    [60, 1],
-    [40, 1],
-    [30, 1],
-    [20, 1],
-    [10, 1],
-];
 
 export class CodeMap {
     constructor(size, roughness) {
-        const maskValues = this._initValues([
-            ...valley
-        ])
         const values = this._initValues([
-            ['#000023', 4],
-            ['#000034', 10],
-            ['#000045', 14],
+            ['#000023', 3],
+            ['#000034', 5],
+            ['#000045', 6],
             ['#000078', 8],
-            ['#0a5816', 5],
+            ['#0a5816', 7],
             ['#31771a', 8],
             ['#6f942b', 5],
             ['#888888', 3],
@@ -138,8 +108,7 @@ export class CodeMap {
             ['#DDDDDD', 2],
             ['#EEEEEE', 1],
         ])
-        this.mask = new TileableHeightMap(size, roughness, maskValues)
-        this.baseMap = new TileableHeightMap(size, roughness, values, this.mask)
+        this.baseMap = new TileableHeightMap(size, roughness, values)
     }
 
     _initValues(values) {
@@ -162,11 +131,11 @@ export class CodeMap {
 
 export class ReliefMap {
     constructor(size, roughness) {
-        this.codeTable   = new CodeTable()
-        this.codeMap     = new CodeMap(size, roughness)
+        this.codeTable = new CodeTable()
+        this.codeMap   = new CodeMap(size, roughness)
             // build all things with build() method
             // avoid running on construction
-        this.matrix      = this._buildGrid(size, this.codeMap)
+        this.matrix    = this._buildGrid(size, this.codeMap)
         this.size      = size
     }
 
@@ -209,8 +178,7 @@ export class ReliefMap {
     isPlain(pt) { return this.getCode(pt) == PLAIN }
     isHighland(pt) { return this.getCode(pt) == HIGHLAND }
     isTable(pt) { return this.getCode(pt) == TABLE }
-    isHill(pt) { return this.getCode(pt) == HILL }
-    isMountain(pt) { return this.getCode(pt) == MOUNTAIN }
+
 
     hasVolcano(pt) { return this.get(pt).mask == VOLCANO }
     hasCave(pt) { return this.get(pt).mask == CAVE }
