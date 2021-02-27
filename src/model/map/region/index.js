@@ -78,11 +78,11 @@ export default class RegionMap extends BaseMap {
 
 class Regions {
     constructor(origins, params) {
-        const [width, height] = [params.get('width'), params.get('height')]
+        const [width, height] = params.get('width', 'height')
         this.origins = origins
         this.graph = new Graph()
-        this.matrix = new Matrix(width, height, () => new RegionCell())
         this.count = origins.length
+        this.matrix = new Matrix(width, height, () => new RegionCell())
         new RegionMapFill(this.origins, this.graph, this.matrix, params)
     }
 

@@ -41,8 +41,14 @@ class SchemaInstance {
         return this.valueMap.has(name)
     }
 
-    get(name) {
-        return this.valueMap.get(name)
+    get(...names) {
+        if (names.length == 1)
+            return this.valueMap.get(names[0])
+        const data = []
+        for (let i=0; i<names.length; i++) {
+            data.push(this.valueMap.get(names[i]))
+        }
+        return data
     }
 
     entries() {
