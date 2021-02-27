@@ -30,14 +30,16 @@ export class MapDiagram extends BaseMapDiagram {
     }
 
     get(point) {
-        const value = this.mapModel.get(point)
+        const value = this.mapModel.getValue(point)
         const showNeighbors = this.showBorders && this.showNeighbors
-        if (showNeighbors && this.mapModel.isBorder(point)) {
-            const value = this.mapModel.getBorder(point)
-            return this.colorMap[value].toHex()
-        }
-        if (this.showBorders && this.mapModel.isBorder(point)) {
-            return this.colorMap[value].darken(40).toHex()
+        if (this.mapModel.isBorder(point)) {
+            if (showNeighbors) {
+                const value = this.mapModel.getBorder(point)
+                return this.colorMap[value].toHex()
+            }
+            if (this.showBorders) {
+                return this.colorMap[value].darken(40).toHex()
+            }
         }
         return this.colorMap[value].toHex()
     }

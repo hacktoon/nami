@@ -54,7 +54,7 @@ export default class RegionMap extends BaseMap {
         )
         this.graph = new Graph()
         this.matrix = this.buildMatrix(points, params)
-        this.filterMap = this.buildFilterMap()
+        this.transformMap = this.buildTransformMap()
         // next: distance field from borders
     }
 
@@ -69,7 +69,7 @@ export default class RegionMap extends BaseMap {
                 const notSameValue = ! matrix.isValue(adjacent, fillValue)
                 // is another fill
                 if (notSameValue && notEmpty) {
-                    const neighborValue = matrix.get(adjacent)
+                    const neighborValue = matrix.getValue(adjacent)
                     matrix.setBorder(center, neighborValue)
                     this.graph.addEdge(fillValue, neighborValue)
                 }
@@ -80,30 +80,38 @@ export default class RegionMap extends BaseMap {
         return matrix
     }
 
-    buildFilterMap() {
-        const filterMap = new Map()
-        this.graph.nodes().map(value => {
-            const neighbor = this.graph.edges(value)
-            if (neighbor.length === 1) {
-                filterMap.set(neighbor[0], value)
+    buildTransformMap() {
+        const transformMap = new Map()
+        this.graph.nodes().map(node => {
+            const edges = this.graph.edges(node)
+            if (edges.length === 1) {
+                transformMap.set(node, edges[0])
             }
         })
-        return filterMap
+        return transformMap
     }
 
     get(point) {
-        const id = this.matrix.get(point)
-        if (this.filterMap.has(id))
-            return this.filterMap.get(id)
-        return id
+        const region = this.matrix.get(point)
+        if (this.transformMap.has(region.value)) {
+            const newValue = this.transformMap.get(region.value)
+            return {value: newValue, border: null}
+        }
+        return region
+    }
+
+    getValue(point) {
+        return this.get(point).value
     }
 
     isBorder(point) {
-        return this.matrix.isBorder(point)
+        const border = this.get(point).border
+        if (this.transformMap.has(border)) return false
+        return border != null
     }
 
     getBorder(point) {
-        return this.matrix.getBorder(point)
+        return this.get(point).border
     }
 }
 

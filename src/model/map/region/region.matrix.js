@@ -13,6 +13,10 @@ export class RegionMatrix {
     }
 
     get(point) {
+        return this.matrix.get(point)
+    }
+
+    getValue(point) {
         return this.matrix.get(point).value
     }
 
