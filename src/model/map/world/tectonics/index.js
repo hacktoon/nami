@@ -13,7 +13,7 @@ import { MapDiagram } from './diagram'
 const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 25, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 30, step: 1, min: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -31,13 +31,13 @@ export default class TectonicsMap extends BaseMap {
     constructor(params) {
         super(params)
         this.floodFillMap = this.#buildFloodFillMap(params)
-        const simplex = new SimplexNoise(6, 0.7, 0.01)
+        const simplex = new SimplexNoise(6, 0.8, 0.01)
 
         this.matrix = new Matrix(
             this.width,
             this.height,
             point => {
-                const region = this.floodFillMap.get(point)
+                const region = this.floodFillMap.getValue(point)
                 const x = region * 1000
                 const y = region * 1000
                 const noisePt = point.plus(new Point(x, y))
@@ -54,7 +54,7 @@ export default class TectonicsMap extends BaseMap {
             width: this.width,
             height: this.height,
             scale: params.get('scale'),
-            growth: 2,
+            growth: 20,
             chance: 0.3,
             seed: params.get('seed')
         })

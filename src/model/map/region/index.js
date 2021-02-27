@@ -60,17 +60,17 @@ export default class RegionMap extends BaseMap {
             chance:   params.get('chance'),
             growth:   params.get('growth'),
             setValue: point => this.matrix.get(point).setValue(fillValue),
-            isEmpty:  (adjacent, center) => {
-                const adjacentCell = this.matrix.get(adjacent)
+            isEmpty: point => this.matrix.get(point).isEmpty(),
+            checkNeighbor: (neighbor, origin) => {
+                const adjacentCell = this.matrix.get(neighbor)
                 const notEmpty = ! adjacentCell.isEmpty()
                 const notSameValue = ! adjacentCell.isValue(fillValue)
                 // is another fill
                 if (notSameValue && notEmpty) {
                     const neighborValue = adjacentCell.getValue()
-                    this.matrix.get(center).setBorder(neighborValue)
+                    this.matrix.get(origin).setBorder(neighborValue)
                     this.graph.addEdge(fillValue, neighborValue)
                 }
-                return adjacentCell.isEmpty()
             },
         }))
         this.regionCount = multiFill.size
