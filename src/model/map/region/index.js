@@ -7,7 +7,7 @@ import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 
 import { MapDiagram } from './diagram'
-import { RegionMatrix } from './region.matrix'
+import { RegionMatrix } from './matrix'
 
 
 const SAMPLING_ENTRIES = [
@@ -54,7 +54,6 @@ export default class RegionMap extends BaseMap {
         )
         this.graph = new Graph()
         this.matrix = this.buildMatrix(points, params)
-        this.transformMap = this.buildTransformMap()
         // next: distance field from borders
     }
 
@@ -80,24 +79,8 @@ export default class RegionMap extends BaseMap {
         return matrix
     }
 
-    buildTransformMap() {
-        const transformMap = new Map()
-        this.graph.nodes().map(node => {
-            const edges = this.graph.edges(node)
-            if (edges.length === 1) {
-                transformMap.set(node, edges[0])
-            }
-        })
-        return transformMap
-    }
-
     get(point) {
-        const region = this.matrix.get(point)
-        if (this.transformMap.has(region.value)) {
-            const newValue = this.transformMap.get(region.value)
-            return {value: newValue, border: null}
-        }
-        return region
+        return this.matrix.get(point)
     }
 
     getValue(point) {
@@ -105,9 +88,7 @@ export default class RegionMap extends BaseMap {
     }
 
     isBorder(point) {
-        const border = this.get(point).border
-        if (this.transformMap.has(border)) return false
-        return border != null
+        return this.getBorder(point) != null
     }
 
     getBorder(point) {
