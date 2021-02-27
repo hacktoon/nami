@@ -23,7 +23,7 @@ export class MapDiagram extends BaseMapDiagram {
 
     buildColorMap() {
         const map = {}
-        for(let i = 0; i < this.mapModel.fillCount; i++) {
+        for(let i = 0; i < this.mapModel.regionCount; i++) {
             map[i] = new Color()
         }
         return map

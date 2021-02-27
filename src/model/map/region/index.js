@@ -1,13 +1,14 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { Graph } from '/lib/base/graph'
+import { Matrix } from '/lib/base/matrix'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
 import { OrganicMultiFill } from '/lib/floodfill/organic'
 import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 
 import { MapDiagram } from './diagram'
-import { RegionMatrix } from './matrix'
+import { RegionCell } from './region'
 
 
 const SAMPLING_ENTRIES = [
@@ -20,7 +21,7 @@ const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 256}),
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1}),
-    Type.number('growth', 'Growth', {default: 5, step: 1, min: 0}),
+    Type.number('growth', 'Growth', {default: 20, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
     Type.selection('pointSampling', 'Sampling', {
         default: EvenPointSampling.id,
@@ -53,30 +54,27 @@ export default class RegionMap extends BaseMap {
             params.get('scale'), this.width, this.height
         )
         this.graph = new Graph()
-        this.matrix = this.buildMatrix(points, params)
-        // next: distance field from borders
-    }
+        this.matrix = new Matrix(this.width, this.height, () => new RegionCell())
 
-    buildMatrix(points, params) {
-        const matrix = new RegionMatrix(params.get('width'), params.get('height'))
         const multiFill = new OrganicMultiFill(points, fillValue => ({
             chance:   params.get('chance'),
             growth:   params.get('growth'),
-            setValue: point => matrix.setValue(point, fillValue),
+            setValue: point => this.matrix.get(point).setValue(fillValue),
             isEmpty:  (adjacent, center) => {
-                const notEmpty = ! matrix.isEmpty(adjacent)
-                const notSameValue = ! matrix.isValue(adjacent, fillValue)
+                const adjacentCell = this.matrix.get(adjacent)
+                const notEmpty = ! adjacentCell.isEmpty()
+                const notSameValue = ! adjacentCell.isValue(fillValue)
                 // is another fill
                 if (notSameValue && notEmpty) {
-                    const neighborValue = matrix.getValue(adjacent)
-                    matrix.setBorder(center, neighborValue)
+                    const neighborValue = adjacentCell.getValue()
+                    this.matrix.get(center).setBorder(neighborValue)
                     this.graph.addEdge(fillValue, neighborValue)
                 }
-                return matrix.isEmpty(adjacent)
+                return adjacentCell.isEmpty()
             },
         }))
-        this.fillCount = multiFill.size
-        return matrix
+        this.regionCount = multiFill.size
+        // next: distance field from borders
     }
 
     get(point) {
@@ -84,15 +82,15 @@ export default class RegionMap extends BaseMap {
     }
 
     getValue(point) {
-        return this.get(point).value
+        return this.matrix.get(point).getValue()
     }
 
     isBorder(point) {
-        return this.getBorder(point) != null
+        return this.matrix.get(point).isBorder()
     }
 
     getBorder(point) {
-        return this.get(point).border
+        return this.matrix.get(point).getBorder()
     }
 }
 
