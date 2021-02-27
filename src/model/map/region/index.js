@@ -20,7 +20,7 @@ const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
 const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 256}),
-    Type.number('scale', 'Scale', {default: 25, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 28, step: 1, min: 1}),
     Type.number('growth', 'Growth', {default: 20, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
     Type.selection('pointSampling', 'Sampling', {
@@ -49,31 +49,9 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
-        const points = PointSampling.create(
-            params.get('scale'), this.width, this.height
-        )
-        this.graph = new Graph()
         this.matrix = new Matrix(this.width, this.height, () => new RegionCell())
-
-        const multiFill = new OrganicMultiFill(points, fillValue => ({
-            chance:   params.get('chance'),
-            growth:   params.get('growth'),
-            setValue: point => this.matrix.get(point).setValue(fillValue),
-            isEmpty: point => this.matrix.get(point).isEmpty(),
-            checkNeighbor: (neighbor, origin) => {
-                const adjacentCell = this.matrix.get(neighbor)
-                const notEmpty = ! adjacentCell.isEmpty()
-                const notSameValue = ! adjacentCell.isValue(fillValue)
-                // is another fill
-                if (notSameValue && notEmpty) {
-                    const neighborValue = adjacentCell.getValue()
-                    this.matrix.get(origin).setBorder(neighborValue)
-                    this.graph.addEdge(fillValue, neighborValue)
-                }
-            },
-        }))
-        this.regionCount = multiFill.size
+        this.regions = new Regions(this.matrix, params)
+        this.regionCount = this.regions.count
         // next: distance field from borders
     }
 
@@ -94,3 +72,32 @@ export default class RegionMap extends BaseMap {
     }
 }
 
+
+class Regions {
+    constructor(matrix, params) {
+        const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
+        const points = PointSampling.create(
+            params.get('scale'), params.get('width'), params.get('height')
+        )
+
+        this.graph = new Graph()
+        const multiFill = new OrganicMultiFill(points, fillValue => ({
+            chance:   params.get('chance'),
+            growth:   params.get('growth'),
+            setValue: point => matrix.get(point).setValue(fillValue),
+            isEmpty:  point => matrix.get(point).isEmpty(),
+            checkNeighbor: (neighbor, origin) => {
+                const neighborCell = matrix.get(neighbor)
+                const notEmpty = ! neighborCell.isEmpty()
+                const notSameValue = ! neighborCell.isValue(fillValue)
+                // is another fill
+                if (notSameValue && notEmpty) {
+                    const neighborValue = neighborCell.getValue()
+                    matrix.get(origin).setBorder(neighborValue)
+                    this.graph.addEdge(fillValue, neighborValue)
+                }
+            },
+        }))
+        this.count = multiFill.size
+    }
+}
