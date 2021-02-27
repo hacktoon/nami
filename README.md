@@ -8,9 +8,6 @@
 
 ## ROADMAP
 
-#### RegionMap
-- Microregions must be absorbed
-
 #### TectonicsMap
 - Noise in non-wrapping space for plates
 - Create region distance field using flood fill in border points

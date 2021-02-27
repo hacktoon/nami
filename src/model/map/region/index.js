@@ -49,38 +49,44 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.matrix = new Matrix(this.width, this.height, () => new RegionCell())
-        this.regions = new Regions(this.matrix, params)
+        this.regions = new Regions(params)
         this.regionCount = this.regions.count
         // next: distance field from borders
     }
 
     get(point) {
-        return this.matrix.get(point)
+        return this.regions.get(point)
     }
 
     getValue(point) {
-        return this.matrix.get(point).getValue()
+        return this.regions.get(point).getValue()
     }
 
     isBorder(point) {
-        return this.matrix.get(point).isBorder()
+        return this.regions.get(point).isBorder()
     }
 
     getBorder(point) {
-        return this.matrix.get(point).getBorder()
+        return this.regions.get(point).getBorder()
     }
 }
 
 
 class Regions {
-    constructor(matrix, params) {
+    constructor(params) {
+        const [width, height] = [params.get('width'), params.get('height')]
+        const matrix = new Matrix(width, height, () => new RegionCell())
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const points = PointSampling.create(
             params.get('scale'), matrix.width, matrix.height
         )
-        const multiFill = new RegionMapFill(points, matrix, params)
         this.count = points.length
+        this.matrix = matrix
+        new RegionMapFill(points, matrix, params)
+    }
+
+    get(point) {
+        return this.matrix.get(point)
     }
 }
 
@@ -88,22 +94,22 @@ class Regions {
 class RegionMapFill {
     constructor(points, matrix, params) {
         const graph = new Graph()
-        new OrganicMultiFill(points, fillValue => ({
+        const buildParams = fillValue => ({
             chance:   params.get('chance'),
             growth:   params.get('growth'),
             setValue: point => matrix.get(point).setValue(fillValue),
             isEmpty:  point => matrix.get(point).isEmpty(),
             checkNeighbor: (neighbor, origin) => {
                 const neighborCell = matrix.get(neighbor)
-                const notEmpty = ! neighborCell.isEmpty()
-                const notSameValue = ! neighborCell.isValue(fillValue)
-                // is another fill
-                if (notSameValue && notEmpty) {
-                    const neighborValue = neighborCell.getValue()
-                    matrix.get(origin).setBorder(neighborValue)
-                    graph.setEdge(fillValue, neighborValue)
-                }
+                const isEmpty = neighborCell.isEmpty()
+                const sameValue = neighborCell.isValue(fillValue)
+                if (sameValue || isEmpty) return
+                const neighborValue = neighborCell.getValue()
+                matrix.get(origin).setBorder(neighborValue)
+                graph.setEdge(fillValue, neighborValue)
+
             },
-        }))
+        })
+        new OrganicMultiFill(points, buildParams)
     }
 }
