@@ -37,3 +37,10 @@ export class RegionCell {
         return this.border = border
     }
 }
+
+
+export class Region {
+    constructor(id) {
+        this.id = id
+    }
+}

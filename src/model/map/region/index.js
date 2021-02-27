@@ -8,7 +8,7 @@ import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 
 import { MapDiagram } from './diagram'
-import { RegionCell } from './region'
+import { Region, RegionCell } from './region'
 
 
 const SAMPLING_ENTRIES = [
@@ -77,11 +77,18 @@ class Regions {
     constructor(matrix, params) {
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const points = PointSampling.create(
-            params.get('scale'), params.get('width'), params.get('height')
+            params.get('scale'), matrix.width, matrix.height
         )
+        const multiFill = new RegionMapFill(points, matrix, params)
+        this.count = points.length
+    }
+}
 
-        this.graph = new Graph()
-        const multiFill = new OrganicMultiFill(points, fillValue => ({
+
+class RegionMapFill {
+    constructor(points, matrix, params) {
+        const graph = new Graph()
+        new OrganicMultiFill(points, fillValue => ({
             chance:   params.get('chance'),
             growth:   params.get('growth'),
             setValue: point => matrix.get(point).setValue(fillValue),
@@ -94,10 +101,9 @@ class Regions {
                 if (notSameValue && notEmpty) {
                     const neighborValue = neighborCell.getValue()
                     matrix.get(origin).setBorder(neighborValue)
-                    this.graph.addEdge(fillValue, neighborValue)
+                    graph.setEdge(fillValue, neighborValue)
                 }
             },
         }))
-        this.count = multiFill.size
     }
 }

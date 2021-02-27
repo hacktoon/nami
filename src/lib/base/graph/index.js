@@ -26,7 +26,7 @@ export class Graph {
         return Boolean(this.table[source])
     }
 
-    addEdge(source, target) {
+    setEdge(source, target) {
         this.addNode(source)
         this.addNode(target)
         this.table[source].add(target)
