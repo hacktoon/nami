@@ -49,45 +49,38 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
+        const [scale, width, height] = params.get('scale', 'width', 'height')
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
-        this.origins = PointSampling.create(
-            params.get('scale'), params.get('width'), params.get('height')
-        )
-        this.regions = new Regions(this.origins, params)
-        this.regionCount = this.regions.count
+        const origins = PointSampling.create(scale, width, height)
+        this.graph = new Graph()
+        this.matrix = new Matrix(width, height, () => new RegionCell())
+        this.regions = new Regions(origins)
+        this.regionCount = origins.length
+        new RegionMapFill(origins, this.graph, this.matrix, params)
         // next: distance field from borders
     }
 
-    get(point) {
-        return this.regions.get(point)
+    getRegion(point) {
+        return this.matrix.get(point)
     }
 
     getValue(point) {
-        return this.regions.get(point).getValue()
+        return this.matrix.get(point).getValue()
     }
 
     isBorder(point) {
-        return this.regions.get(point).isBorder()
+        return this.matrix.get(point).isBorder()
     }
 
     getBorder(point) {
-        return this.regions.get(point).getBorder()
+        return this.matrix.get(point).getBorder()
     }
 }
 
 
 class Regions {
-    constructor(origins, params) {
-        const [width, height] = params.get('width', 'height')
-        this.origins = origins
-        this.graph = new Graph()
-        this.count = origins.length
-        this.matrix = new Matrix(width, height, () => new RegionCell())
-        new RegionMapFill(this.origins, this.graph, this.matrix, params)
-    }
-
-    get(point) {
-        return this.matrix.get(point)
+    constructor(origins) {
+        this.regions = origins.map((point, i) => new Region(i))
     }
 }
 

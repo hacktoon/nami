@@ -30,14 +30,14 @@ export default class TectonicsMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.floodFillMap = this.#buildFloodFillMap(params)
+        this.regionMap = this.#buildRegionMap(params)
         const simplex = new SimplexNoise(6, 0.8, 0.01)
 
         this.matrix = new Matrix(
             this.width,
             this.height,
             point => {
-                const region = this.floodFillMap.getValue(point)
+                const region = this.regionMap.getValue(point)
                 const x = region * 1000
                 const y = region * 1000
                 const noisePt = point.plus(new Point(x, y))
@@ -49,7 +49,7 @@ export default class TectonicsMap extends BaseMap {
         // 2: build deformations using borders
     }
 
-    #buildFloodFillMap(params) {
+    #buildRegionMap(params) {
         return RegionMap.fromData({
             width: this.width,
             height: this.height,
@@ -61,7 +61,7 @@ export default class TectonicsMap extends BaseMap {
     }
 
     isBorder(point) {
-        return this.floodFillMap.isBorder(point)
+        return this.regionMap.isBorder(point)
     }
 
     isContinent(point) {
