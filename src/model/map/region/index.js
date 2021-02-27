@@ -49,7 +49,11 @@ export default class RegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.regions = new Regions(params)
+        const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
+        this.origins = PointSampling.create(
+            params.get('scale'), params.get('width'), params.get('height')
+        )
+        this.regions = new Regions(this.origins, params)
         this.regionCount = this.regions.count
         // next: distance field from borders
     }
@@ -73,16 +77,13 @@ export default class RegionMap extends BaseMap {
 
 
 class Regions {
-    constructor(params) {
+    constructor(origins, params) {
         const [width, height] = [params.get('width'), params.get('height')]
-        const matrix = new Matrix(width, height, () => new RegionCell())
-        const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
-        const points = PointSampling.create(
-            params.get('scale'), matrix.width, matrix.height
-        )
-        this.count = points.length
-        this.matrix = matrix
-        new RegionMapFill(points, matrix, params)
+        this.origins = origins
+        this.graph = new Graph()
+        this.matrix = new Matrix(width, height, () => new RegionCell())
+        this.count = origins.length
+        new RegionMapFill(this.origins, this.graph, this.matrix, params)
     }
 
     get(point) {
@@ -92,24 +93,24 @@ class Regions {
 
 
 class RegionMapFill {
-    constructor(points, matrix, params) {
-        const graph = new Graph()
-        const buildParams = fillValue => ({
-            chance:   params.get('chance'),
-            growth:   params.get('growth'),
-            setValue: point => matrix.get(point).setValue(fillValue),
-            isEmpty:  point => matrix.get(point).isEmpty(),
-            checkNeighbor: (neighbor, origin) => {
-                const neighborCell = matrix.get(neighbor)
-                const isEmpty = neighborCell.isEmpty()
-                const sameValue = neighborCell.isValue(fillValue)
-                if (sameValue || isEmpty) return
-                const neighborValue = neighborCell.getValue()
-                matrix.get(origin).setBorder(neighborValue)
-                graph.setEdge(fillValue, neighborValue)
-
-            },
-        })
+    constructor(points, graph, matrix, params) {
+        function buildParams(regionValue) {
+            return {
+                chance:   params.get('chance'),
+                growth:   params.get('growth'),
+                isEmpty:  point => matrix.get(point).isEmpty(),
+                setValue: point => matrix.get(point).setValue(regionValue),
+                checkNeighbor: (neighbor, origin) => {
+                    const neighborCell = matrix.get(neighbor)
+                    const isEmpty = neighborCell.isEmpty()
+                    const sameValue = neighborCell.isValue(regionValue)
+                    if (sameValue || isEmpty) return
+                    const neighborValue = neighborCell.getValue()
+                    matrix.get(origin).setBorder(neighborValue)
+                    graph.setEdge(regionValue, neighborValue)
+                }
+            }
+        }
         new OrganicMultiFill(points, buildParams)
     }
 }
