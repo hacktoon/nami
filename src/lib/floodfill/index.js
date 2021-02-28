@@ -48,9 +48,8 @@ export class FloodFill {
 
 
 export class MultiFill {
-    constructor(origins, buildFill) {
-        this.fills = origins.map((origin, i) => buildFill(origin,  i))
-        this.size = this.fills.length
+    constructor(fills) {
+        this.fills = fills
         this.canGrow = true
 
         while(this.canGrow) {
@@ -59,7 +58,7 @@ export class MultiFill {
     }
 
     forEach(callback) {
-        this.fills.forEach(fill => callback(fill))
+        this.fills.forEach(callback)
     }
 
     grow() {

@@ -16,7 +16,6 @@ export class OrganicFloodFill extends FloodFill {
     }
 
     growMore() {
-        if (Random.chance(this.chance)) return
         for(let i = 0; i < this.growth; i++) {
             this.growRandomLayer()
         }
@@ -41,9 +40,10 @@ export class OrganicFloodFill extends FloodFill {
 
 export class OrganicMultiFill extends MultiFill {
     constructor(origins, buildParams) {
-        super(origins, (center, value) => {
-            return new OrganicFloodFill(center, buildParams(value))
+        const fills = origins.map((origin, id) => {
+            return new OrganicFloodFill(origin, buildParams(id))
         })
+        super(fills)
     }
 }
 
