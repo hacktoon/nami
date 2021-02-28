@@ -1,6 +1,33 @@
+import { Graph } from '/lib/base/graph'
+
 
 const EMPTY_VALUE = null
 const NO_BORDER = null
+
+
+export class Regions {
+    constructor(origins) {
+        this.regions = origins.map((origin, id) => new Region(id, origin))
+        this.origins = origins
+        this.graph = new Graph()
+    }
+
+    forEach(callback) {
+        this.regions.forEach(region => callback(region))
+    }
+
+    get length() {
+        return this.origins.length
+    }
+}
+
+
+class Region {
+    constructor(id, origin) {
+        this.id = id
+        this.origin = origin
+    }
+}
 
 
 export class RegionCell {
@@ -35,12 +62,5 @@ export class RegionCell {
 
     setBorder(border) {
         return this.border = border
-    }
-}
-
-
-export class Region {
-    constructor(id) {
-        this.id = id
     }
 }

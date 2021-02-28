@@ -1,6 +1,5 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { Graph } from '/lib/base/graph'
 import { Matrix } from '/lib/base/matrix'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
 import { OrganicMultiFill } from '/lib/floodfill/organic'
@@ -8,7 +7,7 @@ import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 
 import { MapDiagram } from './diagram'
-import { Region, RegionCell } from './region'
+import { Regions, RegionCell } from './region'
 
 
 const SAMPLING_ENTRIES = [
@@ -76,23 +75,6 @@ export default class RegionMap extends BaseMap {
 }
 
 
-class Regions {
-    constructor(origins) {
-        this.regions = origins.map((_, id) => new Region(id))
-        this.graph = new Graph()
-        this.origins = origins
-    }
-
-    forEach(callback) {
-        this.regions.forEach(region => callback(region))
-    }
-
-    get length() {
-        return this.origins.length
-    }
-}
-
-
 class RegionMapFill {
     constructor(regions, matrix, params) {
         function buildParams(regionValue) {
@@ -103,9 +85,8 @@ class RegionMapFill {
                 setValue: point => matrix.get(point).setValue(regionValue),
                 checkNeighbor: (neighbor, origin) => {
                     const neighborCell = matrix.get(neighbor)
-                    const isEmpty = neighborCell.isEmpty()
-                    const sameValue = neighborCell.isValue(regionValue)
-                    if (sameValue || isEmpty) return
+                    if (neighborCell.isEmpty()) return
+                    if (neighborCell.isValue(regionValue)) return
                     const neighborValue = neighborCell.getValue()
                     matrix.get(origin).setBorder(neighborValue)
                     regions.graph.setEdge(regionValue, neighborValue)
