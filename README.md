@@ -8,11 +8,15 @@
 
 ## ROADMAP
 
-#### TectonicsMap
-- Noise in non-wrapping space for plates
+#### RegionMap
+- Expose regions neighborhood using graph
 - Create region distance field using flood fill in border points
-- Use RegionMap again to get sub regions (+ granularity)
+
+#### TectonicsMap
+- For each region origin
+  - Use noise in scanline fill
 - Create Plate register with adjacency table from region map
+- Use RegionMap again to get sub regions (+ granularity)
 - Convergent
   - OO : Island Arc
   - OC : Trench + Orogeny

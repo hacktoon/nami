@@ -30,9 +30,8 @@ export default class TectonicsMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.regionMap = this.#buildRegionMap(params)
         const simplex = new SimplexNoise(6, 0.8, 0.01)
-
+        this.regionMap = this.#buildRegionMap(params)
         this.matrix = new Matrix(
             this.width,
             this.height,
