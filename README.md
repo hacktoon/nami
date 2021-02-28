@@ -9,13 +9,18 @@
 ## ROADMAP
 
 #### RegionMap
+- Expose regions
 - Expose regions neighborhood using graph
-- Create region distance field using flood fill in border points
+  - Is that my neighbor
+  - Who are my neighbors
 
 #### TectonicsMap
+- PlateRegionMap inherits RegionMap
+- Get borders for each region on matrix build
+- Create region distance field using flood fill in border points
+- Create Plate register with adjacency table from region map
 - For each region origin
   - Use noise in scanline fill
-- Create Plate register with adjacency table from region map
 - Use RegionMap again to get sub regions (+ granularity)
 - Convergent
   - OO : Island Arc

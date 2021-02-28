@@ -23,9 +23,9 @@ export class MapDiagram extends BaseMapDiagram {
 
     buildColorMap() {
         const map = {}
-        for(let i = 0; i < this.mapModel.regionCount; i++) {
-            map[i] = new Color()
-        }
+        this.mapModel.regions.forEach(region => {
+            map[region.id] = new Color()
+        })
         return map
     }
 

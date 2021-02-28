@@ -20,9 +20,9 @@ const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
 const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 256}),
-    Type.number('scale', 'Scale', {default: 28, step: 1, min: 1}),
-    Type.number('growth', 'Growth', {default: 20, step: 1, min: 0}),
-    Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
+    Type.number('scale', 'Scale', {default: 30, step: 1, min: 1}),
+    Type.number('growth', 'Growth', {default: 30, step: 1, min: 0}),
+    Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
     Type.selection('pointSampling', 'Sampling', {
         default: EvenPointSampling.id,
         options: SAMPLING_ENTRIES
@@ -52,11 +52,9 @@ export default class RegionMap extends BaseMap {
         const [scale, width, height] = params.get('scale', 'width', 'height')
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const origins = PointSampling.create(scale, width, height)
-        this.graph = new Graph()
         this.matrix = new Matrix(width, height, () => new RegionCell())
         this.regions = new Regions(origins)
-        this.regionCount = origins.length
-        new RegionMapFill(origins, this.graph, this.matrix, params)
+        new RegionMapFill(this.regions, this.matrix, params)
         // next: distance field from borders
     }
 
@@ -80,13 +78,23 @@ export default class RegionMap extends BaseMap {
 
 class Regions {
     constructor(origins) {
-        this.regions = origins.map((point, i) => new Region(i))
+        this.regions = origins.map((_, id) => new Region(id))
+        this.graph = new Graph()
+        this.origins = origins
+    }
+
+    forEach(callback) {
+        this.regions.forEach(region => callback(region))
+    }
+
+    get length() {
+        return this.origins.length
     }
 }
 
 
 class RegionMapFill {
-    constructor(points, graph, matrix, params) {
+    constructor(regions, matrix, params) {
         function buildParams(regionValue) {
             return {
                 chance:   params.get('chance'),
@@ -100,10 +108,10 @@ class RegionMapFill {
                     if (sameValue || isEmpty) return
                     const neighborValue = neighborCell.getValue()
                     matrix.get(origin).setBorder(neighborValue)
-                    graph.setEdge(regionValue, neighborValue)
+                    regions.graph.setEdge(regionValue, neighborValue)
                 }
             }
         }
-        new OrganicMultiFill(points, buildParams)
+        new OrganicMultiFill(regions.origins, buildParams)
     }
 }
