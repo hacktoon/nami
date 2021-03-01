@@ -55,7 +55,6 @@ export default class RegionMap extends BaseMap {
         this.matrix = new Matrix(width, height, () => new RegionCell())
         this.regions = new Regions(origins)
         new RegionMapFill(this.regions, this.matrix, params)
-        // next: distance field from borders
     }
 
     getRegion(point) {
@@ -76,16 +75,6 @@ export default class RegionMap extends BaseMap {
 }
 
 
-// export class OrganicMultiFill extends MultiFill {
-//     constructor(origins, buildParams) {
-//         const fills = origins.map((origin, id) => {
-//             return new OrganicFloodFill(origin, buildParams(id))
-//         })
-//         super(fills)
-//     }
-// }
-
-
 // make this dict a FloodFillParams class with {origin: ,...}
 class RegionMapFill {
     constructor(regions, matrix, params) {
@@ -101,12 +90,11 @@ class RegionMapFill {
                     if (neighborCell.isValue(region.id)) return
                     const neighborValue = neighborCell.getValue()
                     matrix.get(origin).setBorder(neighborValue)
-                    regions.graph.setEdge(region.id, neighborValue)
+                    regions.setNeighborhood(region.id, neighborValue)
                 }
             }
         }
         const fills = regions.map(region => {
-            // console.log(region.id);
             return new OrganicFloodFill(region.origin, buildParams(region))
         })
         new MultiFill(fills)

@@ -12,6 +12,10 @@ export class Regions {
         this.graph = new Graph()
     }
 
+    setNeighborhood(id0, id1) {
+        this.graph.setEdge(id0, id1)
+    }
+
     forEach(callback) {
         this.regions.forEach(region => callback(region))
     }
