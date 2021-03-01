@@ -59,6 +59,7 @@
 - Value range: 0:10, varies according to month and windmap
 
 #### Other
+- Create Schema inside static method `create` to use data like `region.count`
 - Set identity point method for Direction class
 - Vegetation/wildlife density: adjusted by humidity, temperature and height
 - Roads

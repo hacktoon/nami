@@ -1,4 +1,5 @@
 import { Graph } from '/lib/base/graph'
+import { Color } from '/lib/base/color'
 
 
 const EMPTY_VALUE = null
@@ -14,6 +15,10 @@ export class Regions {
 
     setNeighborhood(id0, id1) {
         this.graph.setEdge(id0, id1)
+    }
+
+    isNeighborhood(id0, id1) {
+        return this.graph.hasEdge(id0, id1)
     }
 
     forEach(callback) {
@@ -34,6 +39,7 @@ class Region {
     constructor(id, origin) {
         this.id = id
         this.origin = origin
+        this.color = new Color()
     }
 }
 

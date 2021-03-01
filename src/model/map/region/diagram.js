@@ -7,7 +7,9 @@ import { BaseMapDiagram } from '/model/lib/map'
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorders', 'Show borders', {default: true}),
-        Type.boolean('showNeighbors', 'Show neighbors', {default: false}),
+        Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
+        Type.boolean('showNeighborhood', 'Show neighborhood', {default: true}),
+        Type.number('currentRegion', 'Current Region', {default: 0, min: 0, step: 1}),
     )
 
     static create(mapModel, params) {
@@ -17,30 +19,39 @@ export class MapDiagram extends BaseMapDiagram {
     constructor(mapModel, params) {
         super(mapModel)
         this.showBorders = params.get('showBorders')
-        this.showNeighbors = params.get('showNeighbors')
+        this.showNeighborBorder = params.get('showNeighborBorder')
+        this.showNeighborhood = params.get('showNeighborhood')
+        this.currentRegion = params.get('currentRegion')
         this.colorMap = this.buildColorMap()
     }
 
     buildColorMap() {
-        const map = {}
-        this.mapModel.regions.forEach(region => {
-            map[region.id] = new Color()
-        })
-        return map
+        const entries = this.mapModel.regions.map(region => [region.id, region.color])
+        return Object.fromEntries(entries)
     }
 
     get(point) {
         const value = this.mapModel.getValue(point)
-        const showNeighbors = this.showBorders && this.showNeighbors
-        if (this.mapModel.isBorder(point)) {
-            if (showNeighbors) {
-                const value = this.mapModel.getBorder(point)
-                return this.colorMap[value].toHex()
+        const color = this.colorMap[value]
+        const isCurrentRegion = this.currentRegion === value
+        const isBorder = this.mapModel.isBorder(point)
+        if (this.showNeighborhood) {
+            if (isCurrentRegion) {
+                return color.brighten(50).toHex()
             }
-            if (this.showBorders) {
-                return this.colorMap[value].darken(40).toHex()
+            if (this.mapModel.regions.isNeighborhood(value, this.currentRegion)) {
+                return color.darken(50).toHex()
             }
         }
-        return this.colorMap[value].toHex()
+        if (isBorder) {
+            if (this.showBorders && this.showNeighborBorder) {
+                const border = this.mapModel.getBorder(point)
+                return this.colorMap[border].toHex()
+            }
+            if (this.showBorders) {
+                return color.darken(40).toHex()
+            }
+        }
+        return color.toHex()
     }
 }
