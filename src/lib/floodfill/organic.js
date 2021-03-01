@@ -36,14 +36,3 @@ export class OrganicFloodFill extends FloodFill {
         return [first, second]
     }
 }
-
-
-export class OrganicMultiFill extends MultiFill {
-    constructor(origins, buildParams) {
-        const fills = origins.map((origin, id) => {
-            return new OrganicFloodFill(origin, buildParams(id))
-        })
-        super(fills)
-    }
-}
-

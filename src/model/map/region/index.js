@@ -2,7 +2,8 @@ import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { Matrix } from '/lib/base/matrix'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
-import { OrganicMultiFill } from '/lib/floodfill/organic'
+import { MultiFill } from '/lib/floodfill'
+import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 
@@ -75,24 +76,39 @@ export default class RegionMap extends BaseMap {
 }
 
 
+// export class OrganicMultiFill extends MultiFill {
+//     constructor(origins, buildParams) {
+//         const fills = origins.map((origin, id) => {
+//             return new OrganicFloodFill(origin, buildParams(id))
+//         })
+//         super(fills)
+//     }
+// }
+
+
+// make this dict a FloodFillParams class with {origin: ,...}
 class RegionMapFill {
     constructor(regions, matrix, params) {
-        function buildParams(regionValue) {
+        function buildParams(region) {
             return {
                 chance:   params.get('chance'),
                 growth:   params.get('growth'),
                 isEmpty:  point => matrix.get(point).isEmpty(),
-                setValue: point => matrix.get(point).setValue(regionValue),
+                setValue: point => matrix.get(point).setValue(region.id),
                 checkNeighbor: (neighbor, origin) => {
                     const neighborCell = matrix.get(neighbor)
                     if (neighborCell.isEmpty()) return
-                    if (neighborCell.isValue(regionValue)) return
+                    if (neighborCell.isValue(region.id)) return
                     const neighborValue = neighborCell.getValue()
                     matrix.get(origin).setBorder(neighborValue)
-                    regions.graph.setEdge(regionValue, neighborValue)
+                    regions.graph.setEdge(region.id, neighborValue)
                 }
             }
         }
-        new OrganicMultiFill(regions.origins, buildParams)
+        const fills = regions.map(region => {
+            // console.log(region.id);
+            return new OrganicFloodFill(region.origin, buildParams(region))
+        })
+        new MultiFill(fills)
     }
 }

@@ -16,6 +16,10 @@ export class Regions {
         this.regions.forEach(region => callback(region))
     }
 
+    map(callback) {
+        return this.regions.map(region => callback(region))
+    }
+
     get length() {
         return this.origins.length
     }
