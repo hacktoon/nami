@@ -39,6 +39,7 @@ class Region {
     constructor(id, origin) {
         this.id = id
         this.origin = origin
+        this.area = 0
         this.color = new Color()
     }
 }

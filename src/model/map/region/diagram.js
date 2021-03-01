@@ -6,7 +6,7 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('showBorders', 'Show borders', {default: true}),
+        Type.boolean('showBorders', 'Show borders', {default: false}),
         Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
         Type.boolean('showNeighborhood', 'Show neighborhood', {default: true}),
         Type.number('currentRegion', 'Current Region', {default: 0, min: 0, step: 1}),
@@ -33,15 +33,16 @@ export class MapDiagram extends BaseMapDiagram {
     get(point) {
         const value = this.mapModel.getValue(point)
         const color = this.colorMap[value]
-        const isCurrentRegion = this.currentRegion === value
         const isBorder = this.mapModel.isBorder(point)
+
         if (this.showNeighborhood) {
-            if (isCurrentRegion) {
-                return color.brighten(50).toHex()
+            if (this.currentRegion === value) {
+                if (isBorder) return '#000'
+                return color.toHex()
             }
-            if (this.mapModel.regions.isNeighborhood(value, this.currentRegion)) {
-                return color.darken(50).toHex()
-            }
+            // if (this.mapModel.isNeighborhood(value, this.currentRegion)) {
+            //     return color.brighten(50).toHex()
+            // }
         }
         if (isBorder) {
             if (this.showBorders && this.showNeighborBorder) {

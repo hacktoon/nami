@@ -20,7 +20,7 @@ const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
 const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 256}),
-    Type.number('scale', 'Scale', {default: 30, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 10, step: 1, min: 1}),
     Type.number('growth', 'Growth', {default: 30, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
     Type.selection('pointSampling', 'Sampling', {
@@ -57,12 +57,13 @@ export default class RegionMap extends BaseMap {
         new RegionMapFill(this.regions, this.matrix, params)
     }
 
-    getRegion(point) {
-        return this.matrix.get(point)
-    }
-
     getValue(point) {
         return this.matrix.get(point).getValue()
+    }
+
+    isNeighborhood(point, neighborValue) {
+        const currentValue = this.getValue(point)
+        return this.regions.isNeighborhood(currentValue, neighborValue)
     }
 
     isBorder(point) {
