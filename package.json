@@ -23,8 +23,8 @@
   "homepage": "https://github.com/hacktoon/nami",
   "dependencies": {
     "@babel/cli": "^7.13.0",
-    "@babel/core": "^7.13.1",
-    "@babel/preset-env": "^7.13.5",
+    "@babel/core": "^7.13.8",
+    "@babel/preset-env": "^7.13.8",
     "babel-preset-react": "^6.24.1",
     "parcel-bundler": "^1.12.4",
     "react": "^16.14.0",
