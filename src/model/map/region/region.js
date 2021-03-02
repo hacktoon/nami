@@ -1,24 +1,27 @@
-import { Graph } from '/lib/base/graph'
 import { Color } from '/lib/base/color'
 
 
 export class Regions {
     constructor(origins) {
-        this.regions = origins.map((origin, id) => new Region(id, origin))
+        this.regionMap = {}
+        this.regionList = origins.map((origin, id) => {
+            const region = new Region(id, origin)
+            this.regionMap[id] = region
+            return region
+        })
         this.origins = origins
-        this.graph = new Graph()
     }
 
-    setNeighborhood(id0, id1) {
-        this.graph.setEdge(id0, id1)
+    get(id) {
+        return this.regionMap[id]
     }
 
     forEach(callback) {
-        this.regions.forEach(region => callback(region))
+        this.regionList.forEach(callback)
     }
 
     map(callback) {
-        return this.regions.map(region => callback(region))
+        return this.regionList.map(callback)
     }
 
     get length() {

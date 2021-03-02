@@ -60,21 +60,18 @@ export default class RegionMap extends BaseMap {
         new RegionMapFill(this.regions, this.regionMatrix, this.borderMatrix, params)
     }
 
-    getValue(point) {
-        return this.regionMatrix.get(point)
-    }
-
-    isNeighborhood(point, neighborValue) {
-        const currentValue = this.getValue(point)
-        return this.regions.isNeighborhood(currentValue, neighborValue)
+    getRegion(point) {
+        const id = this.regionMatrix.get(point)
+        return this.regions.get(id)
     }
 
     isBorder(point) {
         return this.borderMatrix.get(point) !== NO_BORDER
     }
 
-    getBorder(point) {
-        return this.borderMatrix.get(point)
+    getNeighborRegion(point) {
+        const id = this.borderMatrix.get(point)
+        return this.regions.get(id)
     }
 }
 
