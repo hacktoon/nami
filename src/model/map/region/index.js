@@ -8,9 +8,10 @@ import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 
 import { MapDiagram } from './diagram'
-import { Regions, RegionCell } from './region'
+import { Regions } from './region'
 
-
+const NO_REGION = null
+const NO_BORDER = null
 const SAMPLING_ENTRIES = [
     RandomPointSampling,
     EvenPointSampling,
@@ -52,13 +53,16 @@ export default class RegionMap extends BaseMap {
         const [scale, width, height] = params.get('scale', 'width', 'height')
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const origins = PointSampling.create(scale, width, height)
-        this.matrix = new Matrix(width, height, () => new RegionCell())
+
+        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
+        this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
+        // regions.setNeighborhood(region.id, neighborValue)
         this.regions = new Regions(origins)
-        new RegionMapFill(this.regions, this.matrix, params)
+        new RegionMapFill(this.regions, this.regionMatrix, this.borderMatrix, params)
     }
 
     getValue(point) {
-        return this.matrix.get(point).getValue()
+        return this.regionMatrix.get(point)
     }
 
     isNeighborhood(point, neighborValue) {
@@ -67,31 +71,29 @@ export default class RegionMap extends BaseMap {
     }
 
     isBorder(point) {
-        return this.matrix.get(point).isBorder()
+        return this.borderMatrix.get(point) !== NO_BORDER
     }
 
     getBorder(point) {
-        return this.matrix.get(point).getBorder()
+        return this.borderMatrix.get(point)
     }
 }
 
 
 // make this dict a FloodFillParams class with {origin: ,...}
 class RegionMapFill {
-    constructor(regions, matrix, params) {
+    constructor(regions, regionMatrix, borderMatrix, params) {
         function buildParams(region) {
             return {
                 chance:   params.get('chance'),
                 growth:   params.get('growth'),
-                isEmpty:  point => matrix.get(point).isEmpty(),
-                setValue: point => matrix.get(point).setValue(region.id),
+                isEmpty:  point => regionMatrix.get(point) === NO_REGION,
+                setValue: point => regionMatrix.set(point, region.id),
                 checkNeighbor: (neighbor, origin) => {
-                    const neighborCell = matrix.get(neighbor)
-                    if (neighborCell.isEmpty()) return
-                    if (neighborCell.isValue(region.id)) return
-                    const neighborValue = neighborCell.getValue()
-                    matrix.get(origin).setBorder(neighborValue)
-                    regions.setNeighborhood(region.id, neighborValue)
+                    const neighborRegion = regionMatrix.get(neighbor)
+                    if (neighborRegion === NO_REGION) return
+                    if (neighborRegion === region.id) return
+                    borderMatrix.set(origin, neighborRegion)
                 }
             }
         }
