@@ -9,13 +9,13 @@
 ## ROADMAP
 
 #### RegionMap
-- Expose regions
-- Expose regions neighborhood using graph
-  - Is that my neighbor
-  - Who are my neighbors
+
+
+#### SubRegionMap
+- Combine one or many RegionMap's
 
 #### TectonicsMap
-- PlateRegionMap inherits RegionMap
+- PlateRegionMap inherits SubRegionMap
 - Get borders for each region on matrix build
 - Create region distance field using flood fill in border points
 - Create Plate register with adjacency table from region map

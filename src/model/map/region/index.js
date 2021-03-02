@@ -57,7 +57,7 @@ export default class RegionMap extends BaseMap {
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
         this.regions = new Regions(origins)
-        new RegionMapFill(this.regions, this.regionMatrix, this.borderMatrix, params)
+        fillRegions(this.regions, this.regionMatrix, this.borderMatrix, params)
     }
 
     getRegion(point) {
@@ -76,26 +76,23 @@ export default class RegionMap extends BaseMap {
 }
 
 
-// make this dict a FloodFillParams class with {origin: ,...}
-class RegionMapFill {
-    constructor(regions, regionMatrix, borderMatrix, params) {
-        function buildParams(region) {
-            return {
-                chance:   params.get('chance'),
-                growth:   params.get('growth'),
-                isEmpty:  point => regionMatrix.get(point) === NO_REGION,
-                setValue: point => regionMatrix.set(point, region.id),
-                checkNeighbor: (neighbor, origin) => {
-                    const neighborRegion = regionMatrix.get(neighbor)
-                    if (neighborRegion === NO_REGION) return
-                    if (neighborRegion === region.id) return
-                    borderMatrix.set(origin, neighborRegion)
-                }
+function fillRegions(regions, regionMatrix, borderMatrix, params) {
+    function buildParams(region) {
+        return {
+            chance:   params.get('chance'),
+            growth:   params.get('growth'),
+            isEmpty:  point => regionMatrix.get(point) === NO_REGION,
+            setValue: point => regionMatrix.set(point, region.id),
+            checkNeighbor: (neighbor, origin) => {
+                const neighborRegion = regionMatrix.get(neighbor)
+                if (neighborRegion === NO_REGION) return
+                if (neighborRegion === region.id) return
+                borderMatrix.set(origin, neighborRegion)
             }
         }
-        const fills = regions.map(region => {
-            return new OrganicFloodFill(region.origin, buildParams(region))
-        })
-        new MultiFill(fills)
     }
+    const fills = regions.map(region => {
+        return new OrganicFloodFill(region.origin, buildParams(region))
+    })
+    new MultiFill(fills)
 }
