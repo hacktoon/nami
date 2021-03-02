@@ -56,7 +56,6 @@ export default class RegionMap extends BaseMap {
 
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
-        // regions.setNeighborhood(region.id, neighborValue)
         this.regions = new Regions(origins)
         new RegionMapFill(this.regions, this.regionMatrix, this.borderMatrix, params)
     }

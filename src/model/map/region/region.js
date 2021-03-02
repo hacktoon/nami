@@ -13,10 +13,6 @@ export class Regions {
         this.graph.setEdge(id0, id1)
     }
 
-    isNeighborhood(id0, id1) {
-        return this.graph.hasEdge(id0, id1)
-    }
-
     forEach(callback) {
         this.regions.forEach(region => callback(region))
     }

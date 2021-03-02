@@ -40,9 +40,6 @@ export class MapDiagram extends BaseMapDiagram {
                 if (isBorder) return '#000'
                 return color.toHex()
             }
-            // if (this.mapModel.isNeighborhood(value, this.currentRegion)) {
-            //     return color.brighten(50).toHex()
-            // }
         }
         if (isBorder) {
             if (this.showBorders && this.showNeighborBorder) {
