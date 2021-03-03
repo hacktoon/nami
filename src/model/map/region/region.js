@@ -24,6 +24,11 @@ export class Regions {
         return this.regionMap[id]
     }
 
+    getBorderRegion(point) {
+        const id = this.borderMatrix.get(point)
+        return this.regionMap[id]
+    }
+
     isEmpty(point) {
         return this.regionMatrix.get(point) === NO_REGION
     }
@@ -54,10 +59,10 @@ function fillRegions(regions, params) {
             isEmpty:  point => regions.isEmpty(point),
             setValue: point => regions.regionMatrix.set(point, region.id),
             checkNeighbor: (neighbor, origin) => {
-                const neighborRegion = regions.regionMatrix.get(neighbor)
-                if (neighborRegion === NO_REGION) return
-                if (neighborRegion === region.id) return
-                regions.borderMatrix.set(origin, neighborRegion)
+                const neighborId = regions.regionMatrix.get(neighbor)
+                if (neighborId === NO_REGION) return
+                if (neighborId === region.id) return
+                regions.borderMatrix.set(origin, neighborId)
             }
         }
     }

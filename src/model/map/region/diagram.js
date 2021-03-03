@@ -8,7 +8,7 @@ export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorders', 'Show borders', {default: false}),
         Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
-        Type.boolean('showSelectedRegion', 'Show selected region', {default: true}),
+        Type.boolean('showSelectedRegion', 'Show selected region', {default: false}),
         Type.number('selectRegion', 'Select region', {default: 0, min: 0, step: 1}),
     )
 
@@ -38,11 +38,11 @@ export class MapDiagram extends BaseMapDiagram {
         }
         if (isBorder) {
             if (this.showBorders && this.showNeighborBorder) {
-                const neighborRegion = this.mapModel.getNeighborRegion(point)
+                const neighborRegion = this.mapModel.getBorderRegion(point)
                 return this.colorMap.get(neighborRegion).toHex()
             }
             if (this.showBorders) {
-                return color.darken(40).toHex()
+                return color.darken(50).toHex()
             }
         }
         return color.toHex()
@@ -52,12 +52,11 @@ export class MapDiagram extends BaseMapDiagram {
 
 class RegionColorMap {
     constructor(regions) {
-        this.regions = regions
         const entries = regions.map(region => [region.id, region.color])
         this.map = Object.fromEntries(entries)
     }
 
     get(region) {
-        return this.map[region.id] ?? new Color()
+        return this.map[region.id]
     }
 }
