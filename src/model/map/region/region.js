@@ -1,8 +1,15 @@
 import { Color } from '/lib/base/color'
+import { Matrix } from '/lib/base/matrix'
+
+
+const NO_REGION = null
+const NO_BORDER = null
 
 
 export class Regions {
-    constructor(origins) {
+    constructor(origins, width, height) {
+        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
+        this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
         this.regionMap = {}
         this.regionList = origins.map((origin, id) => {
             const region = new Region(id, origin)
@@ -14,6 +21,10 @@ export class Regions {
 
     get(id) {
         return this.regionMap[id]
+    }
+
+    isEmpty(point) {
+        return this.regionMatrix.get(point) === NO_REGION
     }
 
     forEach(callback) {

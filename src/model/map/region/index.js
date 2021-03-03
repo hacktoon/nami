@@ -1,6 +1,5 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { Matrix } from '/lib/base/matrix'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
@@ -10,12 +9,11 @@ import { BaseMap } from '/model/lib/map'
 import { MapDiagram } from './diagram'
 import { Regions } from './region'
 
+
 const NO_REGION = null
 const NO_BORDER = null
-const SAMPLING_ENTRIES = [
-    RandomPointSampling,
-    EvenPointSampling,
-]
+
+const SAMPLING_ENTRIES = [RandomPointSampling, EvenPointSampling]
 const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
 
 const SCHEMA = new Schema(
@@ -54,40 +52,38 @@ export default class RegionMap extends BaseMap {
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const origins = PointSampling.create(scale, width, height)
 
-        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
-        this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
-        this.regions = new Regions(origins)
-        fillRegions(this.regions, this.regionMatrix, this.borderMatrix, params)
+        this.regions = new Regions(origins, width, height)
+        fillRegions(this.regions, params)
     }
 
     getRegion(point) {
-        const id = this.regionMatrix.get(point)
+        const id = this.regions.regionMatrix.get(point)
         return this.regions.get(id)
     }
 
     isBorder(point) {
-        return this.borderMatrix.get(point) !== NO_BORDER
+        return this.regions.borderMatrix.get(point) !== NO_BORDER
     }
 
     getNeighborRegion(point) {
-        const id = this.borderMatrix.get(point)
+        const id = this.regions.borderMatrix.get(point)
         return this.regions.get(id)
     }
 }
 
 
-function fillRegions(regions, regionMatrix, borderMatrix, params) {
+function fillRegions(regions, params) {
     function buildParams(region) {
         return {
             chance:   params.get('chance'),
             growth:   params.get('growth'),
-            isEmpty:  point => regionMatrix.get(point) === NO_REGION,
-            setValue: point => regionMatrix.set(point, region.id),
+            isEmpty:  point => regions.isEmpty(point),
+            setValue: point => regions.regionMatrix.set(point, region.id),
             checkNeighbor: (neighbor, origin) => {
-                const neighborRegion = regionMatrix.get(neighbor)
+                const neighborRegion = regions.regionMatrix.get(neighbor)
                 if (neighborRegion === NO_REGION) return
                 if (neighborRegion === region.id) return
-                borderMatrix.set(origin, neighborRegion)
+                regions.borderMatrix.set(origin, neighborRegion)
             }
         }
     }
