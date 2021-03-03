@@ -1,17 +1,12 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
-import { MultiFill } from '/lib/floodfill'
-import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 
 import { MapDiagram } from './diagram'
 import { Regions } from './region'
 
-
-const NO_REGION = null
-const NO_BORDER = null
 
 const SAMPLING_ENTRIES = [RandomPointSampling, EvenPointSampling]
 const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
@@ -52,43 +47,19 @@ export default class RegionMap extends BaseMap {
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         const origins = PointSampling.create(scale, width, height)
 
-        this.regions = new Regions(origins, width, height)
-        fillRegions(this.regions, params)
+        this.regions = new Regions(origins, params)
     }
 
     getRegion(point) {
-        const id = this.regions.regionMatrix.get(point)
-        return this.regions.get(id)
+        return this.regions.get(point)
     }
 
     isBorder(point) {
-        return this.regions.borderMatrix.get(point) !== NO_BORDER
+        return this.regions.isBorder(point)
     }
 
     getNeighborRegion(point) {
         const id = this.regions.borderMatrix.get(point)
         return this.regions.get(id)
     }
-}
-
-
-function fillRegions(regions, params) {
-    function buildParams(region) {
-        return {
-            chance:   params.get('chance'),
-            growth:   params.get('growth'),
-            isEmpty:  point => regions.isEmpty(point),
-            setValue: point => regions.regionMatrix.set(point, region.id),
-            checkNeighbor: (neighbor, origin) => {
-                const neighborRegion = regions.regionMatrix.get(neighbor)
-                if (neighborRegion === NO_REGION) return
-                if (neighborRegion === region.id) return
-                regions.borderMatrix.set(origin, neighborRegion)
-            }
-        }
-    }
-    const fills = regions.map(region => {
-        return new OrganicFloodFill(region.origin, buildParams(region))
-    })
-    new MultiFill(fills)
 }

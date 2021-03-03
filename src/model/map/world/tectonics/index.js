@@ -36,13 +36,13 @@ export default class TectonicsMap extends BaseMap {
             this.width,
             this.height,
             point => {
-                const region = this.regionMap.getValue(point)
-                const x = region * 1000
-                const y = region * 1000
+                const region = this.regionMap.getRegion(point)
+                const x = region.id * 1000
+                const y = region.id * 1000
                 const noisePt = point.plus(new Point(x, y))
                 const isContinent = simplex.at(noisePt) > 127
-                const isOceanicPlate = region <= 2
-                return {region, isContinent, isOceanicPlate}
+                const isOceanicPlate = region.id <= 2
+                return {region: region.id, isContinent, isOceanicPlate}
             }
         )
         // 2: build deformations using borders
