@@ -8,7 +8,7 @@ import { Rect } from '/lib/base/number'
 export class RandomPointSampling {
     static id = 'RandomPointSampling'
 
-    static create(count, width, height) {
+    static create(width, height, count) {
         const parsedMaxCount = clamp(count, 1, width * height)
         return repeat(parsedMaxCount, () => Point.random(width, height))
     }
@@ -18,7 +18,7 @@ export class RandomPointSampling {
 export class EvenPointSampling {
     static id = 'EvenPointSampling'
 
-    static create(radius, width, height) {
+    static create(width, height, radius) {
         const points = []
         const rect = new Rect(width, height)
         const pointSet = PointSet.fromRect(rect)
@@ -34,6 +34,7 @@ export class EvenPointSampling {
 }
 
 
+// TODO: use better algorithm by Amit Patel
 function circleMaskPoints(radius) {
     const center = new Point(0, 0)
     const points = []

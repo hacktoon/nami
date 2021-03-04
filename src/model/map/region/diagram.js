@@ -22,7 +22,7 @@ export class MapDiagram extends BaseMapDiagram {
         this.showNeighborBorder = params.get('showNeighborBorder')
         this.showSelectedRegion = params.get('showSelectedRegion')
         this.selectRegion = params.get('selectRegion')
-        this.colorMap = new RegionColorMap(mapModel.regions)
+        this.colorMap = new RegionColorMap(mapModel)
     }
 
     get(point) {
@@ -52,8 +52,8 @@ export class MapDiagram extends BaseMapDiagram {
 
 
 class RegionColorMap {
-    constructor(regions) {
-        const entries = regions.map(region => [region.id, region.color])
+    constructor(regionMap) {
+        const entries = regionMap.map(region => [region.id, region.color])
         this.map = Object.fromEntries(entries)
     }
 

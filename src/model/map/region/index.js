@@ -3,9 +3,11 @@ import { Type } from '/lib/base/type'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
 import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
+import { MultiFill } from '/lib/floodfill'
+import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { MapDiagram } from './diagram'
-import { Regions } from './region'
+import { Region, RegionMatrix, RegionFillConfig } from './region'
 
 
 const SAMPLING_ENTRIES = [RandomPointSampling, EvenPointSampling]
@@ -45,20 +47,38 @@ export default class RegionMap extends BaseMap {
         super(params)
         const [scale, width, height] = params.get('scale', 'width', 'height')
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
-        const origins = PointSampling.create(scale, width, height)
 
-        this.regions = new Regions(origins, params)
+        this.origins = PointSampling.create(width, height, scale)
+        this.matrix = new RegionMatrix(width, height)
+        this.regionIndex = {}
+        this.regions = []
+
+        const organicFills = this.origins.map((origin, id) => {
+            const region = new Region(id, origin)
+            const refs = {matrix: this.matrix, region}
+            const fillConfig = new RegionFillConfig(refs, params)
+            this.regionIndex[region.id] = region
+            this.regions.push(region)
+            return new OrganicFloodFill(region.origin, fillConfig)
+        })
+        new MultiFill(organicFills).fill()
     }
 
     getRegion(point) {
-        return this.regions.getRegion(point)
-    }
-
-    isBorder(point) {
-        return this.regions.isBorder(point)
+        const id = this.matrix.getRegionId(point)
+        return this.regionIndex[id]
     }
 
     getBorderRegion(point) {
-        return this.regions.getBorderRegion(point)
+        const id = this.matrix.getBorderId(point)
+        return this.regionIndex[id]
+    }
+
+    isBorder(point) {
+        return this.matrix.isBorder(point)
+    }
+
+    map(callback) {
+        return this.regions.map(callback)
     }
 }
