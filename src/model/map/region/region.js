@@ -18,9 +18,9 @@ export class Regions {
 
         const fills = origins.map((origin, id) => {
             const region = new Region(id, origin)
+            const fillConfig = new RegionFillConfig(this.matrix, region, params)
             this.regionList.push(region)
             this.regionMap.set(id, region)
-            const fillConfig = new RegionFillConfig(this.matrix, region, params)
             return new OrganicFloodFill(origin, fillConfig)
         })
         new MultiFill(fills).fill()
@@ -37,7 +37,7 @@ export class Regions {
     }
 
     isBorder(point) {
-        return this.matrix.getBorderId(point) !== NO_BORDER
+        return this.matrix.isBorder(point)
     }
 
     forEach(callback) {
@@ -47,10 +47,6 @@ export class Regions {
     map(callback) {
         return this.regionList.map(callback)
     }
-
-    get length() {
-        return this.origins.length
-    }
 }
 
 
@@ -58,11 +54,8 @@ class Region {
     constructor(id, origin) {
         this.id = id
         this.origin = origin
+        this.area = 0
         this.color = new Color()
-    }
-
-    get area() {
-        return 1
     }
 }
 
@@ -75,6 +68,10 @@ class RegionMatrix {
 
     isEmpty(point) {
         return this.regionIdMatrix.get(point) === NO_REGION
+    }
+
+    isBorder(point) {
+        return this.borderMatrix.get(point) !== NO_BORDER
     }
 
     setRegion(point, id) {
@@ -109,6 +106,7 @@ class RegionFillConfig {
 
     setValue(point) {
         this.matrix.setRegion(point, this.currentRegion.id)
+        this.currentRegion.area += 1
     }
 
     checkNeighbor(neighbor, origin) {
