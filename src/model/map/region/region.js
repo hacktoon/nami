@@ -13,8 +13,7 @@ export class Regions {
         const [width, height] = params.get('width', 'height')
         this.regionList = origins.map((origin, id) => new Region(id, origin))
         this.regionMap = Object.fromEntries(this.regionList.map(reg => [reg.id, reg]))
-        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
-        this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
+        this.matrix = new RegionMatrix(width, height)
         this.origins = origins
         this.#buildRegions(params)
     }
@@ -29,21 +28,21 @@ export class Regions {
     }
 
     get(point) {
-        const id = this.regionMatrix.get(point)
+        const id = this.matrix.getRegionId(point)
         return this.regionMap[id]
     }
 
     getBorderRegion(point) {
-        const id = this.borderMatrix.get(point)
+        const id = this.matrix.getBorderId(point)
         return this.regionMap[id]
     }
 
     isEmpty(point) {
-        return this.regionMatrix.get(point) === NO_REGION
+        return this.matrix.getRegionId(point) === NO_REGION
     }
 
     isBorder(point) {
-        return this.borderMatrix.get(point) !== NO_BORDER
+        return this.matrix.getBorderId(point) !== NO_BORDER
     }
 
     forEach(callback) {
@@ -73,6 +72,30 @@ class Region {
 }
 
 
+class RegionMatrix {
+    constructor(width, height) {
+        this.regionIdMatrix = new Matrix(width, height, () => NO_REGION)
+        this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
+    }
+
+    setRegion(point, id) {
+        return this.regionIdMatrix.set(point, id)
+    }
+
+    setBorder(point, id) {
+        return this.borderMatrix.set(point, id)
+    }
+
+    getRegionId(point) {
+        return this.regionIdMatrix.get(point)
+    }
+
+    getBorderId(point) {
+        return this.borderMatrix.get(point)
+    }
+}
+
+
 class RegionFillConfig {
     constructor(regions, region, params) {
         this.chance = params.get('chance')
@@ -86,13 +109,13 @@ class RegionFillConfig {
     }
 
     setValue(point) {
-        this.regions.regionMatrix.set(point, this.region.id)
+        this.regions.matrix.setRegion(point, this.region.id)
     }
 
     checkNeighbor(neighbor, origin) {
-        const neighborId = this.regions.regionMatrix.get(neighbor)
+        const neighborId = this.regions.matrix.getRegionId(neighbor)
         if (neighborId === NO_REGION) return
         if (neighborId === this.region.id) return
-        this.regions.borderMatrix.set(origin, neighborId)
+        this.regions.matrix.setBorder(origin, neighborId)
     }
 }
