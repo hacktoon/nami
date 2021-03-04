@@ -51,7 +51,7 @@ export default class RegionMap extends BaseMap {
     }
 
     getRegion(point) {
-        return this.regions.get(point)
+        return this.regions.getRegion(point)
     }
 
     isBorder(point) {
