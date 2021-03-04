@@ -3,10 +3,10 @@ import { FloodFill, MultiFill } from './index'
 
 
 export class OrganicFloodFill extends FloodFill {
-    constructor(origin, params) {
-        super(origin, params)
-        this.growth = params.growth ?? 20
-        this.chance = params.chance ?? .2
+    constructor(origin, fillConfig) {
+        super(origin, fillConfig)
+        this.growth = fillConfig.growth
+        this.chance = fillConfig.chance
     }
 
     grow() {

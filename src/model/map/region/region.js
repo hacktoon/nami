@@ -11,12 +11,21 @@ const NO_BORDER = null
 export class Regions {
     constructor(origins, params) {
         const [width, height] = params.get('width', 'height')
-        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
-        this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
         this.regionList = origins.map((origin, id) => new Region(id, origin))
         this.regionMap = Object.fromEntries(this.regionList.map(reg => [reg.id, reg]))
+        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
+        this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
         this.origins = origins
-        fillRegions(this, params)
+        this.#buildRegions(params)
+    }
+
+    #buildRegions(params) {
+        const fills = this.map(region => {
+            const fillConfig = new RegionFillConfig(this, region, params)
+            return new OrganicFloodFill(region.origin, fillConfig)
+        })
+        const multiFill = new MultiFill(fills)
+        multiFill.fill()
     }
 
     get(point) {
@@ -51,33 +60,39 @@ export class Regions {
 }
 
 
-function fillRegions(regions, params) {
-    function buildParams(region) {
-        return {
-            chance:   params.get('chance'),
-            growth:   params.get('growth'),
-            isEmpty:  point => regions.isEmpty(point),
-            setValue: point => regions.regionMatrix.set(point, region.id),
-            checkNeighbor: (neighbor, origin) => {
-                const neighborId = regions.regionMatrix.get(neighbor)
-                if (neighborId === NO_REGION) return
-                if (neighborId === region.id) return
-                regions.borderMatrix.set(origin, neighborId)
-            }
-        }
-    }
-    const fills = regions.map(region => {
-        return new OrganicFloodFill(region.origin, buildParams(region))
-    })
-    new MultiFill(fills)
-}
-
-
 class Region {
     constructor(id, origin) {
         this.id = id
         this.origin = origin
-        this.area = 1
         this.color = new Color()
+    }
+
+    get area() {
+        return 1
+    }
+}
+
+
+class RegionFillConfig {
+    constructor(regions, region, params) {
+        this.chance = params.get('chance')
+        this.growth = params.get('growth')
+        this.regions = regions
+        this.region = region
+    }
+
+    isEmpty(point) {
+        return this.regions.isEmpty(point)
+    }
+
+    setValue(point) {
+        this.regions.regionMatrix.set(point, this.region.id)
+    }
+
+    checkNeighbor(neighbor, origin) {
+        const neighborId = this.regions.regionMatrix.get(neighbor)
+        if (neighborId === NO_REGION) return
+        if (neighborId === this.region.id) return
+        this.regions.borderMatrix.set(origin, neighborId)
     }
 }

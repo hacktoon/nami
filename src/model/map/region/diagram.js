@@ -8,7 +8,7 @@ export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorders', 'Show borders', {default: false}),
         Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
-        Type.boolean('showSelectedRegion', 'Show selected region', {default: false}),
+        Type.boolean('showSelectedRegion', 'Show selected region', {default: true}),
         Type.number('selectRegion', 'Select region', {default: 0, min: 0, step: 1}),
     )
 
@@ -32,8 +32,9 @@ export class MapDiagram extends BaseMapDiagram {
 
         if (this.showSelectedRegion) {
             if (this.selectRegion === region.id) {
-                if (isBorder) return '#000'
-                return color.toHex()
+                if (isBorder) return color.invert().toHex()
+                const toggle = (point.x + point.y) % 2 === 0
+                return toggle ? '#000' : color.toHex()
             }
         }
         if (isBorder) {
