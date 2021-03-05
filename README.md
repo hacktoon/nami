@@ -9,20 +9,22 @@
 ## ROADMAP
 
 #### TectonicsMap
-- Get borders for each region on matrix build
-- Create region distance field using flood fill in border points
-- Create Plate register with adjacency table from region map
-- For each region origin
-  - Use noise in scanline fill
-- Use RegionMap again to get sub regions (+ granularity)
-- Convergent
-  - OO : Island Arc
-  - OC : Trench + Orogeny
-  - CC : Mountain
+- Create RegionMap 1 with plate dimensions
+- Create PlateMatrix
+  - For each region origin => set noise for each scanline fill
+- Create RegionMap 2 with subregion dimensions
+- Create Plate for each region 1
+- Create Plate index
+- Create Plate list
+- Create plate adjacency from region map
+  - Convergent
+    - OO : Island Arc
+    - OC : Trench + Orogeny
+    - CC : Mountain
 
-- Divergent
-  - OO : Oceanic Ridge
-  - CC : Rift
+  - Divergent
+    - OO : Oceanic Ridge
+    - CC : Rift
 
 #### TerrainMap
 - Build distance map from coast borders
