@@ -40,7 +40,8 @@ export class MapDiagram extends BaseMapDiagram {
         if (isBorder) {
             if (this.showBorders && this.showNeighborBorder) {
                 const neighborRegion = this.mapModel.getBorderRegion(point)
-                return this.colorMap.get(neighborRegion).toHex()
+                const borderColor = this.colorMap.get(neighborRegion)
+                return borderColor.darken(50).toHex()
             }
             if (this.showBorders) {
                 return color.darken(50).toHex()

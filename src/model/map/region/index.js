@@ -1,6 +1,7 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
+import { Graph } from '/lib/base/graph'
 import { MapUI } from '/lib/ui/map'
 import { BaseMap } from '/model/lib/map'
 import { MultiFill } from '/lib/floodfill'
@@ -50,12 +51,13 @@ export default class RegionMap extends BaseMap {
 
         this.origins = PointSampling.create(width, height, scale)
         this.matrix = new RegionMatrix(width, height)
+        this.adjacency = new Graph()
         this.regionIndex = {}
         this.regions = []
 
         const organicFills = this.origins.map((origin, id) => {
             const region = new Region(id, origin)
-            const refs = {matrix: this.matrix, region}
+            const refs = {matrix: this.matrix, adjacency: this.adjacency, region}
             const fillConfig = new RegionFillConfig(refs, params)
             this.regionIndex[region.id] = region
             this.regions.push(region)

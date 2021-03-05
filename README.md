@@ -8,14 +8,7 @@
 
 ## ROADMAP
 
-#### RegionMap
-
-
-#### SubRegionMap
-- Combine one or many RegionMap's
-
 #### TectonicsMap
-- PlateRegionMap inherits SubRegionMap
 - Get borders for each region on matrix build
 - Create region distance field using flood fill in border points
 - Create Plate register with adjacency table from region map
