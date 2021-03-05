@@ -48,7 +48,6 @@ export default class RegionMap extends BaseMap {
         super(params)
         const [scale, width, height] = params.get('scale', 'width', 'height')
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
-
         this.origins = PointSampling.create(width, height, scale)
         this.matrix = new RegionMatrix(width, height)
         this.adjacency = new Graph()
@@ -74,6 +73,10 @@ export default class RegionMap extends BaseMap {
     getBorderRegion(point) {
         const id = this.matrix.getBorderId(point)
         return this.regionIndex[id]
+    }
+
+    getBorderRegions() {
+        return []
     }
 
     isBorder(point) {

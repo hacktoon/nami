@@ -50,9 +50,10 @@ export class RegionMatrix {
 
 export class RegionFillConfig {
     constructor(refs, params) {
-        this.currentRegion = refs.region
         this.chance = params.get('chance')
         this.growth = params.get('growth')
+        this.currentRegion = refs.region
+        this.adjacency = refs.adjacency
         this.matrix = refs.matrix
     }
 
@@ -66,9 +67,11 @@ export class RegionFillConfig {
     }
 
     checkNeighbor(neighbor, origin) {
+        const regionId = this.currentRegion.id
         const neighborId = this.matrix.getRegionId(neighbor)
         if (neighborId === NO_REGION) return
-        if (neighborId === this.currentRegion.id) return
+        if (neighborId === regionId) return
         this.matrix.setBorder(origin, neighborId)
+        this.adjacency.setEdge(regionId, neighborId)
     }
 }
