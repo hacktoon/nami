@@ -2,21 +2,40 @@ import { Matrix } from '/lib/base/matrix'
 import { Point } from '/lib/base/point'
 import { FloodFill } from '/lib/floodfill'
 
-function createGrid(p, factor=2) {
+
+class FillConfig {
+    constructor(matrix) {
+        this.matrix = matrix
+    }
+
+    isEmpty(point) {
+        return this.matrix.get(point) === 0
+    }
+
+    setValue(point) {
+        this.matrix.set(point, 1)
+    }
+
+    checkNeighbor(adjacent, origin) {
+
+    }
+}
+
+
+
+function createMatrix(p, factor=2) {
     return new Matrix(p.x * factor + 1, p.y * factor + 1, () => 0)
 }
 
 function createBaseFill(origin, matrix) {
-    return new FloodFill(origin, {
-        isEmpty:  point => matrix.get(point) === 0,
-        setValue: point => matrix.set(point, 1)
-    })
+    const config = new FillConfig(matrix)
+    return new FloodFill(origin, config)
 }
 
 
 test('origin point is filled', () => {
     const origin = new Point(4, 4)
-    const matrix = createGrid(origin)
+    const matrix = createMatrix(origin)
     const fill = createBaseFill(origin, matrix)
     const pointAt = (x, y) => origin.plus(new Point(x, y))
 
@@ -32,7 +51,7 @@ test('origin point is filled', () => {
 
 test('origin point is filled on layer 2', () => {
     const origin = new Point(4, 4)
-    const matrix = createGrid(origin)
+    const matrix = createMatrix(origin)
     const fill = createBaseFill(origin, matrix)
 
     const layerCount1 = fill.grow()
@@ -43,16 +62,3 @@ test('origin point is filled on layer 2', () => {
     expect(layerCount3.length).toBe(12)
 })
 
-
-test('flood fill area', () => {
-    const origin = new Point(4, 4)
-    const matrix = createGrid(origin)
-    const fill = createBaseFill(origin, matrix)
-
-    expect(fill.area).toBe(1)
-    fill.grow()
-    expect(fill.area).toBe(5)
-    fill.grow()
-    expect(fill.area).toBe(13)
-
-})

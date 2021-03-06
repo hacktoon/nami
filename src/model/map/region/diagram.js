@@ -9,7 +9,7 @@ export class MapDiagram extends BaseMapDiagram {
         Type.boolean('showBorders', 'Show borders', {default: false}),
         Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
         Type.boolean('showSelectedRegion', 'Show selected region', {default: true}),
-        Type.number('selectRegion', 'Select region', {default: 0, min: 0, step: 1}),
+        Type.number('selectedRegion', 'Select region', {default: 0, min: 0, step: 1}),
     )
 
     static create(mapModel, params) {
@@ -21,17 +21,20 @@ export class MapDiagram extends BaseMapDiagram {
         this.showBorders = params.get('showBorders')
         this.showNeighborBorder = params.get('showNeighborBorder')
         this.showSelectedRegion = params.get('showSelectedRegion')
-        this.selectRegion = params.get('selectRegion')
+        this.selectedRegion = params.get('selectedRegion')
         this.colorMap = new RegionColorMap(mapModel)
     }
 
     get(point) {
+        const isBorder = this.mapModel.isBorder(point)
         const region = this.mapModel.getRegion(point)
         const color = this.colorMap.get(region)
-        const isBorder = this.mapModel.isBorder(point)
+
+        const neighborRegion = this.mapModel.getBorderRegion(point)
+        // const edges = new Set(this.mapModel.getRegionEdges(neighborRegion))
 
         if (this.showSelectedRegion) {
-            if (this.selectRegion === region.id) {
+            if (this.selectedRegion === region.id) {
                 if (isBorder) return color.invert().toHex()
                 const toggle = (point.x + point.y) % 2 === 0
                 return toggle ? '#000' : color.toHex()
@@ -39,7 +42,6 @@ export class MapDiagram extends BaseMapDiagram {
         }
         if (isBorder) {
             if (this.showBorders && this.showNeighborBorder) {
-                const neighborRegion = this.mapModel.getBorderRegion(point)
                 const borderColor = this.colorMap.get(neighborRegion)
                 return borderColor.darken(50).toHex()
             }

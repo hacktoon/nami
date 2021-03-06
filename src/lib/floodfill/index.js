@@ -33,11 +33,10 @@ export class FloodFill {
             this.config.checkNeighbor(adjacent, origin)
             return this.config.isEmpty(adjacent)
         })
-        for(let i = 0; i < emptyNeighbors.length; i++) {
-            const neighbor = emptyNeighbors[i]
+        emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
             this.config.setValue(neighbor)
-        }
+        })
         return filledNeighbors
     }
 }

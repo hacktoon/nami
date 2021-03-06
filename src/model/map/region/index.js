@@ -75,8 +75,8 @@ export default class RegionMap extends BaseMap {
         return this.regionIndex[id]
     }
 
-    getBorderRegions() {
-        return []
+    getRegionEdges(region) {
+        return this.adjacency.getEdges(region.id)
     }
 
     isBorder(point) {
@@ -84,6 +84,6 @@ export default class RegionMap extends BaseMap {
     }
 
     map(callback) {
-        return this.regions.map(callback)
+        return this.regions.map(region => callback(region))
     }
 }

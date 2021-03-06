@@ -4,13 +4,14 @@ export class Graph {
         this.table = {}
     }
 
-    nodes() {
-        return Object.keys(this.table).map(Number)
+    getNodes() {
+        return Object.keys(this.table).map(x => Number(x))
     }
 
-    edges(source) {
+    getEdges(source) {
+        const edgeSet = this.table[source]
         if (this.hasNode(source)) {
-            return Array.from(this.table[source].values())
+            return Array.from(edgeSet.values())
         }
         return []
     }
