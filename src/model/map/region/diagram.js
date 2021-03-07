@@ -27,20 +27,9 @@ export class MapDiagram extends BaseMapDiagram {
 
     get(point) {
         const isBorder = this.mapModel.isBorder(point)
-        const currentRegion = this.mapModel.getRegion(point)
-        const color = this.colorMap.get(currentRegion)
+        const region = this.mapModel.getRegion(point)
+        const color = this.colorMap.get(region)
 
-
-        if (this.selectedRegion === currentRegion.id) {
-            if (this.showSelectedRegion) {
-                if (isBorder) return color.invert().toHex()
-                const toggle = (point.x + point.y) % 2 === 0
-                return toggle ? '#000' : color.toHex()
-            }
-        } else {
-            // const edges = this.mapModel.getRegionEdges()
-
-        }
         if (this.showBorders) {
             if (isBorder && this.showNeighborBorder) {
                 const neighborRegion = this.mapModel.getBorderRegion(point)
@@ -49,6 +38,18 @@ export class MapDiagram extends BaseMapDiagram {
             }
             if (isBorder) {
                 return color.darken(50).toHex()
+            }
+        }
+        if (this.showSelectedRegion) {
+            const toggle = (point.x + point.y) % 2 === 0
+            if (this.selectedRegion === region.id) {
+                if (isBorder) return color.invert().toHex()
+                return toggle ? '#000' : '#FFF'
+            } else {
+                const [selectedId, currentId] = [this.selectedRegion, region.id]
+                if (this.mapModel.isEdgeNeighbor(selectedId, currentId)) {
+                    return toggle ? color.darken(40).toHex() : color.toHex()
+                }
             }
         }
         return color.toHex()

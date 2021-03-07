@@ -75,8 +75,8 @@ export default class RegionMap extends BaseMap {
         return this.regionIndex[id]
     }
 
-    getRegionEdges(region) {
-        return this.adjacency.getEdges(region.id)
+    isEdgeNeighbor(id, neighborId) {
+        return this.adjacency.hasEdge(id, neighborId)
     }
 
     isBorder(point) {
