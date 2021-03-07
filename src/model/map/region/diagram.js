@@ -27,25 +27,27 @@ export class MapDiagram extends BaseMapDiagram {
 
     get(point) {
         const isBorder = this.mapModel.isBorder(point)
-        const region = this.mapModel.getRegion(point)
-        const color = this.colorMap.get(region)
+        const currentRegion = this.mapModel.getRegion(point)
+        const color = this.colorMap.get(currentRegion)
 
-        const neighborRegion = this.mapModel.getBorderRegion(point)
-        // const edges = new Set(this.mapModel.getRegionEdges(neighborRegion))
 
-        if (this.showSelectedRegion) {
-            if (this.selectedRegion === region.id) {
+        if (this.selectedRegion === currentRegion.id) {
+            if (this.showSelectedRegion) {
                 if (isBorder) return color.invert().toHex()
                 const toggle = (point.x + point.y) % 2 === 0
                 return toggle ? '#000' : color.toHex()
             }
+        } else {
+            // const edges = this.mapModel.getRegionEdges()
+
         }
-        if (isBorder) {
-            if (this.showBorders && this.showNeighborBorder) {
+        if (this.showBorders) {
+            if (isBorder && this.showNeighborBorder) {
+                const neighborRegion = this.mapModel.getBorderRegion(point)
                 const borderColor = this.colorMap.get(neighborRegion)
                 return borderColor.darken(50).toHex()
             }
-            if (this.showBorders) {
+            if (isBorder) {
                 return color.darken(50).toHex()
             }
         }
