@@ -32,19 +32,8 @@ export default class TectonicsMap extends BaseMap {
         super(params)
         const simplex = new SimplexNoise(6, 0.8, 0.01)
         this.regionMap = this.#buildRegionMap(params)
-        this.matrix = new Matrix(
-            this.width,
-            this.height,
-            point => {
-                const region = this.regionMap.getRegion(point)
-                const x = region.id * 1000
-                const y = region.id * 1000
-                const noisePt = point.plus(new Point(x, y))
-                const isContinent = simplex.at(noisePt) > 127
-                const isOceanicPlate = region.id <= 2
-                return {region: region.id, isContinent, isOceanicPlate}
-            }
-        )
+        this.matrix = new PlateMatrix(
+            this.width, this.height, this.regionMap, simplex)
         // 2: build deformations using borders
     }
 
@@ -72,6 +61,29 @@ export default class TectonicsMap extends BaseMap {
     }
 
     get(point) {
+        return this.matrix.get(point)
+    }
+}
+
+
+class PlateMatrix {
+    constructor(width, height, regionMap, simplex) {
+        this.matrix = new Matrix(
+            width,
+            height,
+            point => {
+                const region = regionMap.getRegion(point)
+                const x = region.id * 1000
+                const y = region.id * 1000
+                const noisePt = point.plus(new Point(x, y))
+                const isContinent = simplex.at(noisePt) > 127
+                const isOceanicPlate = region.id <= 2
+                return {region: region.id, isContinent, isOceanicPlate}
+            }
+        )
+    }
+
+    get (point) {
         return this.matrix.get(point)
     }
 }
