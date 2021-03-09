@@ -18,7 +18,7 @@
 - Create Plate list
 - Create plate adjacency from region map
   - Convergent
-    - OO : Island Arc
+    - OO : Island Arc + trench
     - OC : Trench + Orogeny
     - CC : Mountain
 
