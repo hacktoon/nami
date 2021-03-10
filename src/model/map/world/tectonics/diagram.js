@@ -28,9 +28,11 @@ export class MapDiagram extends BaseMapDiagram {
         if (this.showBorder && this.mapModel.isBorder(point)) {
             return this.borderColor.toHex()
         }
+        const value = this.mapModel.get(point)
         const ocean = this.ocean.toHex()
         const continent = this.continent.toHex()
-        if (this.mapModel.isOceanicPlate(point)) return ocean
-        return this.mapModel.isContinent(point) ? continent : ocean
+        if (value === 0) return ocean
+        if (value === 1) return '#27A'
+        if (value === 2) return continent
     }
 }

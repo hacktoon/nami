@@ -52,14 +52,6 @@ export default class TectonicsMap extends BaseMap {
         return this.regionMap.isBorder(point)
     }
 
-    isContinent(point) {
-        return this.get(point).isContinent
-    }
-
-    isOceanicPlate(point) {
-        return this.get(point).isOceanicPlate
-    }
-
     get(point) {
         return this.matrix.get(point)
     }
@@ -76,9 +68,10 @@ class PlateMatrix {
                 const x = region.id * 1000
                 const y = region.id * 1000
                 const noisePt = point.plus(new Point(x, y))
-                const isContinent = simplex.at(noisePt) > 127
-                const isOceanicPlate = region.id <= 2
-                return {region: region.id, isContinent, isOceanicPlate}
+                const value = simplex.at(noisePt)
+                if (region.id <= 3 || value < 110) return 0
+                if (value < 160) return 1
+                return 2
             }
         )
     }
