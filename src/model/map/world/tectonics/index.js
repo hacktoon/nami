@@ -31,22 +31,24 @@ export default class TectonicsMap extends BaseMap {
     constructor(params) {
         super(params)
         const [width, height] = params.get('width', 'height')
-        const plateMap = buildPlateRegionMap(params)
-        const provinceMap = buildSubPlateRegionMap(params)
-        const plates = plateMap.map(region => new Plate(region))
+        this.plateMap = buildPlateRegionMap(params)
+        // const provinceMap = buildSubPlateRegionMap(params)
+        // const plates = this.plateMap.map(region => new Plate(region))
+        // move to continent map
         this.matrix = new PlateMatrix(width, height, params)
-        this.plateGraph = new PlateGraph(plates)
-        this.plates = plates
-        // TODO: build deformations using plateMap.graph
 
-        this.matrix2 = new Matrix(width, height, point => {
-            const plateRg = plateMap.getRegion(point)
-            const subplateRg = provinceMap.getRegion(point)
-        })
+        // this.graph = new PlateGraph(plates)
+        // this.plates = plates
+        // TODO: build deformations using this.plateMap.graph
+
+        // this.matrix2 = new Matrix(width, height, point => {
+        //     const plateRg = this.plateMap.getRegion(point)
+        //     const subplateRg = provinceMap.getRegion(point)
+        // })
     }
 
     isBorder(point) {
-        return this.regionMap.isBorder(point)
+        return this.plateMap.isBorder(point)
     }
 
     get(point) {

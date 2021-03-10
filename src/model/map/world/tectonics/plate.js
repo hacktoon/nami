@@ -42,7 +42,6 @@ export class PlateMatrix {
 
 /*
 TODO
-- create plates list
 - make different map for platform and continent
 - need to get regions data to create the elevation map in borders
 */
@@ -62,7 +61,7 @@ class ContinentalMatrix {
 export class Plate {
     constructor(id) {
         this.id = id
-        this.name = ''
+        this.area = 0
     }
 }
 
