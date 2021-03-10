@@ -4,10 +4,21 @@ import { SimplexNoise } from '/lib/noise'
 import RegionMap from '/model/map/region'
 
 
+function buildPlateRegionMap(params) {
+    return RegionMap.fromData({
+        width: params.get('width'),
+        height: params.get('height'),
+        scale: params.get('scale'), // 30
+        seed: params.get('seed'),
+        chance: 0.3,
+        growth: 20,
+    })
+}
+
 export class PlateMatrix {
     constructor(width, height, params) {
         const simplex = new SimplexNoise(6, 0.8, 0.01)
-        const regionMap = buildRegionMap(params)
+        const regionMap = buildPlateRegionMap(params)
         this.matrix = new Matrix(
             width,
             height,
@@ -17,17 +28,24 @@ export class PlateMatrix {
                 const y = region.id * 1000
                 const noisePt = point.plus(new Point(x, y))
                 const value = simplex.at(noisePt)
-                if (region.id <= 3 || value < 110) return 0
-                if (value < 160) return 1
+                if (region.id <= 3 || value < 100) return 0
+                if (value < 140) return 1
                 return 2
             }
         )
     }
 
-    get (point) {
+    get(point) {
         return this.matrix.get(point)
     }
 }
+
+/*
+TODO
+- create plates list
+- make different map for platform and continent
+- need to get regions data to create the elevation map in borders
+*/
 
 
 class ContinentalMatrix {
@@ -48,14 +66,3 @@ export class Plate {
     }
 }
 
-
-function buildRegionMap(params) {
-    return RegionMap.fromData({
-        width: params.get('width'),
-        height: params.get('height'),
-        scale: params.get('scale'),
-        seed: params.get('seed'),
-        chance: 0.3,
-        growth: 20,
-    })
-}

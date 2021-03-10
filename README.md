@@ -9,7 +9,7 @@
 ## ROADMAP
 
 #### TectonicsMap
-- Create RegionMap 1 with plate dimensions
+- Pass RegionMap setValue to send noise point to generate continents in plate
 - Create PlateMatrix
   - For each region origin => set noise for each scanline fill
 - Create RegionMap 2 with subregion dimensions

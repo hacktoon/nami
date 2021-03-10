@@ -1,9 +1,13 @@
-import { BaseMap } from '/model/lib/map'
+import { Matrix } from '/lib/base/matrix'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
+import { BaseMap } from '/model/lib/map'
 import { MapUI } from '/lib/ui/map'
+
+import RegionMap from '/model/map/region'
+
+import { Plate, PlateMatrix } from './plate'
 import { MapDiagram } from './diagram'
-import { PlateMatrix } from './plate'
 
 
 const SCHEMA = new Schema(
@@ -26,8 +30,19 @@ export default class TectonicsMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.matrix = new PlateMatrix(this.width, this.height, params)
-        // 2: build deformations using borders
+        const [width, height] = params.get('width', 'height')
+        const plateMap = buildPlateRegionMap(params)
+        const provinceMap = buildSubPlateRegionMap(params)
+        const plates = plateMap.map(region => new Plate(region))
+        this.matrix = new PlateMatrix(width, height, params)
+        this.plateGraph = new PlateGraph(plates)
+        this.plates = plates
+        // TODO: build deformations using plateMap.graph
+
+        this.matrix2 = new Matrix(width, height, point => {
+            const plateRg = plateMap.getRegion(point)
+            const subplateRg = provinceMap.getRegion(point)
+        })
     }
 
     isBorder(point) {
@@ -37,4 +52,34 @@ export default class TectonicsMap extends BaseMap {
     get(point) {
         return this.matrix.get(point)
     }
+}
+
+
+class PlateGraph {
+    constructor(plates) {
+
+    }
+}
+
+
+function buildPlateRegionMap(params) {
+    return RegionMap.fromData({
+        width: params.get('width'),
+        height: params.get('height'),
+        scale: params.get('scale'), // 30
+        seed: params.get('seed'),
+        chance: 0.3,
+        growth: 20,
+    })
+}
+
+function buildSubPlateRegionMap(params) {
+    return RegionMap.fromData({
+        width: params.get('width'),
+        height: params.get('height'),
+        seed: params.get('seed'),
+        scale: 2,
+        chance: 0.3,
+        growth: 1,
+    })
 }
