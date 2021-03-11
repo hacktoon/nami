@@ -6,8 +6,8 @@ import { MapUI } from '/lib/ui/map'
 
 import RegionMap from '/model/map/region'
 
-import { Plate, PlateMatrix } from './plate'
 import { MapDiagram } from './diagram'
+import { Plate } from './plate'
 
 
 const SCHEMA = new Schema(
@@ -31,28 +31,43 @@ export default class TectonicsMap extends BaseMap {
     constructor(params) {
         super(params)
         const [width, height] = params.get('width', 'height')
-        this.plateMap = buildPlateRegionMap(params)
-        // const provinceMap = buildSubPlateRegionMap(params)
-        // const plates = this.plateMap.map(region => new Plate(region))
-        // move to continent map
-        this.matrix = new PlateMatrix(width, height, params)
+        this.regionMap = buildPlateRegionMap(params)
+        this.subregionMap = buildSubPlateRegionMap(params)
+        this.plates = this.regionMap.map(region => new Plate(region.id, region.area))
+        this.matrix = new Matrix(width, height, point => {
 
-        // this.graph = new PlateGraph(plates)
-        // this.plates = plates
+        })
+        this.graph = new PlateGraph()
+        this.plateIndex = {}
+
         // TODO: build deformations using this.plateMap.graph
 
-        // this.matrix2 = new Matrix(width, height, point => {
-        //     const plateRg = this.plateMap.getRegion(point)
-        //     const subplateRg = provinceMap.getRegion(point)
+        // this.matrix = new PlateMatrix(width, height, point => {
+        //    this.regionMap.get(point)
+        //    this.subregionMap.get(point)
         // })
     }
 
-    isBorder(point) {
-        return this.plateMap.isBorder(point)
+    getPlate(point) {
+        const region = this.regionMap.getRegion(point)
+        return this.plates[region.id]
     }
 
-    get(point) {
-        return this.matrix.get(point)
+    getProvince(point) {
+        const region = this.subregionMap.getRegion(point)
+        return this.plates[region.id]
+    }
+
+    isPlateBorder(point) {
+        return this.regionMap.isBorder(point)
+    }
+
+    isProvinceBorder(point) {
+        return this.subregionMap.isBorder(point)
+    }
+
+    map(callback) {
+        return this.plates.map(plate => callback(plate))
     }
 }
 
@@ -62,6 +77,7 @@ class PlateGraph {
 
     }
 }
+
 
 
 function buildPlateRegionMap(params) {
@@ -75,13 +91,14 @@ function buildPlateRegionMap(params) {
     })
 }
 
+
 function buildSubPlateRegionMap(params) {
     return RegionMap.fromData({
         width: params.get('width'),
         height: params.get('height'),
         seed: params.get('seed'),
-        scale: 2,
+        scale: 7,
         chance: 0.3,
-        growth: 1,
+        growth: 2,
     })
 }

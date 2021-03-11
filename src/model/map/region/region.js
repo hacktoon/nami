@@ -53,7 +53,7 @@ export class RegionFillConfig {
         this.chance = params.get('chance')
         this.growth = params.get('growth')
         this.currentRegion = refs.region
-        this.adjacency = refs.adjacency
+        this.graph = refs.graph
         this.matrix = refs.matrix
     }
 
@@ -72,6 +72,6 @@ export class RegionFillConfig {
         if (neighborId === NO_REGION) return
         if (neighborId === regionId) return
         this.matrix.setBorder(origin, neighborId)
-        this.adjacency.setEdge(regionId, neighborId)
+        this.graph.setEdge(regionId, neighborId)
     }
 }

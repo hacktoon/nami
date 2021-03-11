@@ -3,13 +3,12 @@
 export class Random {
     static set seed(value) {
         let seed = String(value)
-        let numericSeed = _hashString(seed)
-        Random.publicSeed = seed
-        Random._currentSeed = _hash(numericSeed)
+        Random._stringSeed = seed
+        Random._numericSeed = _hash(_hashString(seed))
     }
 
     static get seed() {
-        return Random.publicSeed
+        return Random._stringSeed
     }
 
     static chance(percentage) {
@@ -48,12 +47,12 @@ export class Random {
     }
 
     static float() {
-        if (Random._currentSeed === undefined) {
+        if (Random._numericSeed === undefined) {
             Random.seed = Number(new Date())
         }
-        let s = Random._currentSeed
-        Random._currentSeed = s + 1831565813 | 0
-        let t = Math.imul(s ^ s >>> 15, 1 | s)
+        let seed = Random._numericSeed
+        Random._numericSeed = seed + 1831565813 | 0
+        let t = Math.imul(seed ^ seed >>> 15, 1 | seed)
         t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t
         return ((t ^ t >>> 14) >>> 0) / 2 ** 32
     }
