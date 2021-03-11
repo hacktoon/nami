@@ -79,7 +79,6 @@ class PlateGraph {
 }
 
 
-
 function buildPlateRegionMap(params) {
     return RegionMap.fromData({
         width: params.get('width'),
@@ -97,7 +96,7 @@ function buildSubPlateRegionMap(params) {
         width: params.get('width'),
         height: params.get('height'),
         seed: params.get('seed'),
-        scale: 7,
+        scale: 5,
         chance: 0.3,
         growth: 2,
     })
