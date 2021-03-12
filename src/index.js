@@ -33,7 +33,7 @@ const appMap = new Map(APPS.map(model => {
 
 class App {
     static schema = new Schema(
-        Type.selection('app', 'App', {default: TectonicsMap.id, options: APPS})
+        Type.selection('app', 'App', {default: RegionMap.id, options: APPS})
     )
 }
 
