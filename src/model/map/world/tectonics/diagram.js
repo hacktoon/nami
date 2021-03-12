@@ -8,8 +8,7 @@ export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorder', 'Show border', {default: true}),
         Type.color('continent', 'Continent', {default: Color.fromHex('#389E4A')}),
-        Type.color('ocean', 'Ocean', {default: Color.fromHex('#058')}),
-        Type.color('borderColor', 'Border', {default: Color.fromHex('#F22')})
+        Type.color('ocean', 'Ocean', {default: Color.fromHex('#058')})
     )
 
     static create(mapModel, params) {
@@ -21,7 +20,6 @@ export class MapDiagram extends BaseMapDiagram {
         this.continent = params.get('continent')
         this.ocean = params.get('ocean')
         this.showBorder = params.get('showBorder')
-        this.borderColor = params.get('borderColor')
         this.colorMap = new PlateColorMap(mapModel)
     }
 
@@ -29,11 +27,11 @@ export class MapDiagram extends BaseMapDiagram {
         const plate = this.mapModel.getPlate(point)
         const color = this.colorMap.get(plate)
 
-        // if (this.showBorder && this.mapModel.isPlateBorder(point)) {
-        //     return this.borderColor.toHex()
-        // }
+        if (this.showBorder && this.mapModel.isPlateBorder(point)) {
+            return color.darken(50).toHex()
+        }
         if (this.showBorder && this.mapModel.isProvinceBorder(point)) {
-            return color.brighten(40).toHex()
+            return color.brighten(50).toHex()
         }
 
         return color.toHex()

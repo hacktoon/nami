@@ -19,6 +19,12 @@ const SCHEMA = new Schema(
 )
 
 
+const NO_DEFORMATION = 0
+const OROGENY = 1
+const TRENCH = 2
+const RIFT = 3
+
+
 export default class TectonicsMap extends BaseMap {
     static id = 'Tectonics map'
     static diagram = MapDiagram
@@ -33,17 +39,25 @@ export default class TectonicsMap extends BaseMap {
         super(params)
         const [width, height] = params.get('width', 'height')
         this.regionMap = buildPlateRegionMap(params)
-        this.subregionMap = buildSubPlateRegionMap(params)
         this.plates = this.regionMap.map(region => new Plate(region.id, region.area))
-        this.matrix = new Matrix(width, height, point => {
 
+        this.subregionMap = buildSubPlateRegionMap(params)
+        this.borderProvinceMap = {}
+        this.plateMap = new Matrix(width, height, point => {
+            const region = this.regionMap.getRegion(point)
+            const subregion = this.subregionMap.getRegion(point)
+            if (this.regionMap.isBorder(point)) {
+                this.borderProvinceMap[subregion.id] = region.id
+            }
+
+            return NO_DEFORMATION
         })
         this.graph = new PlateGraph()
         this.plateIndex = {}
 
         // TODO: build deformations using this.plateMap.graph
 
-        // this.matrix = new PlateMatrix(width, height, point => {
+        // this.plateMap = new PlateMatrix(width, height, point => {
         //    this.regionMap.get(point)
         //    this.subregionMap.get(point)
         // })
