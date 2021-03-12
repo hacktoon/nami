@@ -14,6 +14,7 @@ const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
     Type.number('scale', 'Scale', {default: 30, step: 1, min: 1}),
+    Type.number('subscale', 'Subscale', {default: 6, step: 1, min: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -96,8 +97,8 @@ function buildSubPlateRegionMap(params) {
         width: params.get('width'),
         height: params.get('height'),
         seed: params.get('seed'),
-        scale: 5,
-        chance: 0.3,
-        growth: 2,
+        scale: params.get('subscale'),
+        chance: 0.2,
+        growth: 1,
     })
 }
