@@ -11,6 +11,7 @@ import { TestApp } from '/lib/ui/test'
 import TectonicsMap from '/model/map/world/tectonics'
 import HeightMap from '/model/map/height/'
 import RegionMap from '/model/map/region'
+import SubRegionMap from '/model/map/subregion'
 import NoiseMap from '/model/map/noise'
 
 import "./css/base.css"
@@ -23,6 +24,7 @@ const APPS = [
     NoiseMap,
     TectonicsMap,
     RegionMap,
+    SubRegionMap,
 ]
 
 
@@ -33,7 +35,7 @@ const appMap = new Map(APPS.map(model => {
 
 class App {
     static schema = new Schema(
-        Type.selection('app', 'App', {default: RegionMap.id, options: APPS})
+        Type.selection('app', 'App', {default: SubRegionMap.id, options: APPS})
     )
 }
 

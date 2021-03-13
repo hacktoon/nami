@@ -13,6 +13,11 @@ const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
     Type.number('scale', 'Scale', {default: 30, step: 1, min: 1}),
+    Type.number('subscale', 'Sub scale', {default: 3, step: 1, min: 1}),
+    Type.number('growth', 'Growth', {default: 25, step: 1, min: 0}),
+    Type.number('chance', 'Chance', {default: 0.3, step: 0.01, min: 0.1, max: 1}),
+    Type.number('subgrowth', 'Sub growth', {default: 0, step: 1, min: 0}),
+    Type.number('subchance', 'Sub chance', {default: 0.1, step: 0.01, min: 0.1, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -29,70 +34,51 @@ export default class SubRegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        const [width, height] = params.get('width', 'height')
-        this.regionMap = buildPlateRegionMap(params)
-        this.subregionMap = buildSubPlateRegionMap(params)
-        this.borderProvinceMap = {}
-        this.plateMap = new Matrix(width, height, point => {
-            const region = this.regionMap.getRegion(point)
-            const subregion = this.subregionMap.getRegion(point)
-            if (this.regionMap.isBorder(point)) {
-                this.borderProvinceMap[subregion.id] = region.id
-            }
-        })
-
-        // TODO: build deformations using this.plateMap.graph
-
-        // this.plateMap = new PlateMatrix(width, height, point => {
-        //    this.regionMap.get(point)
-        //    this.subregionMap.get(point)
-        // })
+        this.regionMap = buildRegionMap(params)
+        this.subRegionMap = buildSubRegionMap(params)
     }
 
-    getPlate(point) {
-        const region = this.regionMap.getRegion(point)
-        return this.plates[region.id]
+    getRegion(point) {
+        return this.regionMap.getRegion(point)
     }
 
-    getProvince(point) {
-        const region = this.subregionMap.getRegion(point)
-        return this.plates[region.id]
+    getSubRegion(point) {
+        return this.subRegionMap.getRegion(point)
     }
 
-    isPlateBorder(point) {
+    isRegionBorder(point) {
         return this.regionMap.isBorder(point)
     }
 
-    isProvinceBorder(point) {
-        return this.subregionMap.isBorder(point)
+    isSubRegionBorder(point) {
+        return this.subRegionMap.isBorder(point)
     }
 
     map(callback) {
-        return this.plates.map(plate => callback(plate))
+        return this.regionMap.map(region => callback(region))
     }
 }
 
 
-
-function buildPlateRegionMap(params) {
+function buildRegionMap(params) {
     return RegionMap.fromData({
         width: params.get('width'),
         height: params.get('height'),
-        scale: params.get('scale'), // 30
+        scale: params.get('scale'),
         seed: params.get('seed'),
-        chance: 0.3,
-        growth: 20,
+        chance: params.get('chance'),
+        growth: params.get('growth'),
     })
 }
 
 
-function buildSubPlateRegionMap(params) {
+function buildSubRegionMap(params) {
     return RegionMap.fromData({
         width: params.get('width'),
         height: params.get('height'),
-        seed: params.get('seed'),
         scale: params.get('subscale'),
-        chance: 0.2,
-        growth: 1,
+        seed: params.get('seed'),
+        chance: params.get('subchance'),
+        growth: params.get('subgrowth'),
     })
 }

@@ -70,6 +70,14 @@ export class Color {
             this.blue - amount,
         )
     }
+
+    merge(color) {
+        return new Color(
+            Math.floor((this.red + color.red) / 2),
+            Math.floor((this.green + color.green) / 2),
+            Math.floor((this.blue + color.blue) / 2),
+        )
+    }
 }
 
 
