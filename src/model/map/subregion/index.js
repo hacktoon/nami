@@ -34,8 +34,21 @@ export default class SubRegionMap extends BaseMap {
 
     constructor(params) {
         super(params)
-        this.regionMap = buildRegionMap(params)
-        this.subRegionMap = buildSubRegionMap(params)
+        const [width, height] = params.get('width', 'height')
+        const [seed, scale] = params.get('seed', 'scale')
+
+        this.regionMap = RegionMap.fromData({
+            width, height, scale, seed,
+            chance: params.get('chance'),
+            growth: params.get('growth'),
+        })
+
+        this.subRegionMap = RegionMap.fromData({
+            width, height, seed,
+            scale: params.get('subscale'),
+            chance: params.get('subchance'),
+            growth: params.get('subgrowth'),
+        })
     }
 
     getRegion(point) {
@@ -57,28 +70,4 @@ export default class SubRegionMap extends BaseMap {
     map(callback) {
         return this.regionMap.map(region => callback(region))
     }
-}
-
-
-function buildRegionMap(params) {
-    return RegionMap.fromData({
-        width: params.get('width'),
-        height: params.get('height'),
-        scale: params.get('scale'),
-        seed: params.get('seed'),
-        chance: params.get('chance'),
-        growth: params.get('growth'),
-    })
-}
-
-
-function buildSubRegionMap(params) {
-    return RegionMap.fromData({
-        width: params.get('width'),
-        height: params.get('height'),
-        scale: params.get('subscale'),
-        seed: params.get('seed'),
-        chance: params.get('subchance'),
-        growth: params.get('subgrowth'),
-    })
 }

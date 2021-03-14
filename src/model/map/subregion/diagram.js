@@ -33,6 +33,7 @@ export class MapDiagram extends BaseMapDiagram {
         if (this.showSubBorder && this.mapModel.isSubRegionBorder(point)) {
             return subcolor.toHex()
         }
+        // return subregion.id % 2 === 0 ? '#555' : '#fff' // cave system
         return color.average(subcolor).toHex()
     }
 }
