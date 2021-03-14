@@ -33,7 +33,7 @@ export class MapDiagram extends BaseMapDiagram {
         if (this.showSubBorder && this.mapModel.isSubRegionBorder(point)) {
             return subcolor.toHex()
         }
-        return color.merge(subcolor).toHex()
+        return color.average(subcolor).toHex()
     }
 }
 

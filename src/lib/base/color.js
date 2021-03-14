@@ -71,7 +71,7 @@ export class Color {
         )
     }
 
-    merge(color) {
+    average(color) {
         return new Color(
             Math.floor((this.red + color.red) / 2),
             Math.floor((this.green + color.green) / 2),
