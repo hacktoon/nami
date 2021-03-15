@@ -30,8 +30,9 @@ export class MapDiagram extends BaseMapDiagram {
         if (this.showBorder && this.mapModel.isPlateBorder(point)) {
             return color.darken(50).toHex()
         }
-        if (this.showBorder && this.mapModel.isProvinceBorder(point)) {
-            return color.brighten(50).toHex()
+        const isBorderProvince = this.mapModel.isProvinceRegionBorder(point)
+        if (this.showBorder && isBorderProvince && this.mapModel.isProvinceBorder(point)) {
+            return color.darken(50).toHex()
         }
 
         return color.toHex()

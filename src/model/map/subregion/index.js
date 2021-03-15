@@ -60,6 +60,10 @@ export default class SubRegionMap extends BaseMap {
         return this.regionMap.getRegion(point)
     }
 
+    getBorderRegion(point) {
+        return this.regionMap.getBorderRegion(point)
+    }
+
     getSubRegion(point) {
         return this.subRegionMap.getRegion(point)
     }

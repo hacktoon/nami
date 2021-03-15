@@ -41,12 +41,13 @@ export default class TectonicsMap extends BaseMap {
         this.subRegionMap = buildSubRegionMap(params)
         this.plates = this.subRegionMap.map(reg => new Plate(reg.id, reg.area))
 
-        this.borderProvinceMap = {}
+        this.borderProvinceTable = new Map()
         this.plateMap = new Matrix(width, height, point => {
-            const region = this.subRegionMap.getRegion(point)
-            const subregion = this.subRegionMap.getSubRegion(point)
+            const plate = this.subRegionMap.getRegion(point)
+            const province = this.subRegionMap.getSubRegion(point)
             if (this.subRegionMap.isRegionBorder(point)) {
-                this.borderProvinceMap[subregion.id] = region.id
+                const borderRegion = this.subRegionMap.getBorderRegion(point)
+                this.borderProvinceTable.set(province.id, borderRegion.id)
             }
 
             return NO_DEFORMATION
@@ -56,13 +57,12 @@ export default class TectonicsMap extends BaseMap {
     }
 
     getPlate(point) {
-        const region = this.subRegionMap.getRegion(point)
-        return this.plates[region.id]
+        const plate = this.subRegionMap.getRegion(point)
+        return this.plates[plate.id]
     }
 
     getProvince(point) {
-        const region = this.subRegionMap.getSubRegion(point)
-        return this.plates[region.id]
+        return this.subRegionMap.getSubRegion(point)
     }
 
     isPlateBorder(point) {
@@ -71,6 +71,11 @@ export default class TectonicsMap extends BaseMap {
 
     isProvinceBorder(point) {
         return this.subRegionMap.isSubRegionBorder(point)
+    }
+
+    isProvinceRegionBorder(point) {
+        const province = this.getProvince(point)
+        return this.borderProvinceTable.has(province.id)
     }
 
     map(callback) {
