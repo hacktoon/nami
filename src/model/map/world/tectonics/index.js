@@ -15,11 +15,11 @@ const SCHEMA = new Schema(
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
     Type.number('scale', 'Scale', {default: 30, step: 1, min: 1}),
     Type.number('subscale', 'Subscale', {default: 4, step: 1, min: 1}),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: 'b'})
 )
 
 
-const NO_DEFORMATION = 0
+const NO_DEFORMATION = null
 const OROGENY = 1
 const TRENCH = 2
 const RIFT = 3
@@ -43,13 +43,12 @@ export default class TectonicsMap extends BaseMap {
 
         this.borderProvinceTable = new Map()
         this.plateMap = new Matrix(width, height, point => {
-            const plate = this.subRegionMap.getRegion(point)
             const province = this.subRegionMap.getSubRegion(point)
             if (this.subRegionMap.isRegionBorder(point)) {
                 const borderRegion = this.subRegionMap.getBorderRegion(point)
                 this.borderProvinceTable.set(province.id, borderRegion.id)
+                return borderRegion.id
             }
-
             return NO_DEFORMATION
         })
         this.graph = new PlateGraph()
@@ -73,9 +72,15 @@ export default class TectonicsMap extends BaseMap {
         return this.subRegionMap.isSubRegionBorder(point)
     }
 
-    isProvinceRegionBorder(point) {
+    isBorderProvinceRegion(point) {
         const province = this.getProvince(point)
         return this.borderProvinceTable.has(province.id)
+    }
+
+    getBorderProvinceRegion(point) {
+        const province = this.getProvince(point)
+        const id = this.borderProvinceTable.get(province.id)
+        return this.plates[id]
     }
 
     map(callback) {
