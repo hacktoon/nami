@@ -4,7 +4,7 @@ import { Type } from '/lib/base/type'
 import { BaseMap } from '/model/lib/map'
 import { MapUI } from '/lib/ui/map'
 
-import SubRegionMap from '/model/map/subregion'
+import RegionGroupMap from '/model/map/regiongroup'
 
 import { MapDiagram } from './diagram'
 import { Plate } from './plate'
@@ -38,7 +38,7 @@ export default class TectonicsMap extends BaseMap {
     constructor(params) {
         super(params)
         const [width, height] = params.get('width', 'height')
-        this.subRegionMap = buildSubRegionMap(params)
+        this.subRegionMap = buildRegionGroupMap(params)
         this.plates = this.subRegionMap.map(reg => new Plate(reg.id, reg.area))
 
         this.borderProvinceTable = new Map()
@@ -96,16 +96,13 @@ class PlateGraph {
 }
 
 
-function buildSubRegionMap(params) {
-    return SubRegionMap.fromData({
+function buildRegionGroupMap(params) {
+    return RegionGroupMap.fromData({
         width: params.get('width'),
         height: params.get('height'),
         seed: params.get('seed'),
         scale: params.get('scale'),
         chance: 0.2,
         growth: 40,
-        subscale: params.get('subscale'),
-        subchance: 0.1,
-        subgrowth: 1,
     })
 }

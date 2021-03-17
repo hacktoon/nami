@@ -6,7 +6,6 @@ import { BaseMapDiagram } from '/model/lib/map'
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showBorder', 'Show border', {default: true}),
-        Type.boolean('showSubBorder', 'Show sub border', {default: false}),
     )
 
     static create(mapModel, params) {
@@ -16,26 +15,17 @@ export class MapDiagram extends BaseMapDiagram {
     constructor(mapModel, params) {
         super(mapModel)
         this.showBorder = params.get('showBorder')
-        this.showSubBorder = params.get('showSubBorder')
         this.colorMap = new RegionColorMap(mapModel.regionMap)
-        this.subcolorMap = new RegionColorMap(mapModel.subRegionMap)
     }
 
     get(point) {
         const region = this.mapModel.getRegion(point)
-        const subregion = this.mapModel.getSubRegion(point)
         const color = this.colorMap.get(region)
-        const subcolor = this.subcolorMap.get(subregion)
 
         if (this.showBorder && this.mapModel.isRegionBorder(point)) {
             return color.darken(50).toHex()
         }
-        if (this.showSubBorder && this.mapModel.isSubRegionBorder(point)) {
-            return subcolor.toHex()
-        }
-        // return subregion.id % 2 === 0 ? '#555' : '#fff' // cave system
         return color.toHex()
-        // return color.average(subcolor).toHex()
     }
 }
 
