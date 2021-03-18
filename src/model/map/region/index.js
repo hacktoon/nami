@@ -51,14 +51,14 @@ export default class RegionMap extends BaseMap {
         this.origins = PointSampling.create(width, height, scale)
         this.matrix = new RegionMatrix(width, height)
         this.graph = new Graph()
-        this.regionIndex = {}
+        this.regionIndex = new Map()
         this.regions = []
 
         const organicFills = this.origins.map((origin, id) => {
             const region = new Region(id, origin)
             const refs = {matrix: this.matrix, graph: this.graph, region}
             const fillConfig = new RegionFillConfig(refs, params)
-            this.regionIndex[region.id] = region
+            this.regionIndex.set(region.id, region)
             this.regions.push(region)
             return new OrganicFloodFill(region.origin, fillConfig)
         })
@@ -67,12 +67,17 @@ export default class RegionMap extends BaseMap {
 
     getRegion(point) {
         const id = this.matrix.getRegionId(point)
-        return this.regionIndex[id]
+        return this.regionIndex.get(id)
     }
 
     getBorderRegion(point) {
         const id = this.matrix.getBorderId(point)
-        return this.regionIndex[id]
+        return this.regionIndex.get(id)
+    }
+
+    getNeighbors(region) {
+        const edges = this.graph.getEdges(region.id)
+        return edges.map(id => this.regionIndex.get(id))
     }
 
     hasEdge(id, neighborId) {

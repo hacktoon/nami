@@ -11,8 +11,8 @@ import { MapDiagram } from './diagram'
 
 
 const SCHEMA = new Schema(
-    Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
-    Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
+    Type.number('width', 'Width', {default: 150, step: 1, min: 10, max: 500}),
+    Type.number('height', 'Height', {default: 100, step: 1, min: 10, max: 500}),
     Type.number('groupScale', 'Group scale', {default: 20, step: 1, min: 1}),
     Type.number('scale', 'Scale', {default: 5, step: 1, min: 1}),
     Type.number('growth', 'Growth', {default: 5, step: 1, min: 0}),
@@ -46,8 +46,8 @@ export default class RegionGroupMap extends BaseMap {
         this.regionMap = RegionMap.fromData(data)
 
         const groupScale = params.get('groupScale')
-        const origins = EvenPointSampling.create(width, height, groupScale)
-        this.originRegions = origins.map(pt => this.regionMap.getRegion(pt))
+        const groupOrigins = EvenPointSampling.create(width, height, groupScale)
+        // this.groupMap = buildGroupMap(groupOrigins, this.regionMap)
     }
 
     getRegion(point) {
@@ -66,3 +66,30 @@ export default class RegionGroupMap extends BaseMap {
         return this.regionMap.map(region => callback(region))
     }
 }
+
+
+function buildGroupMap(groupOrigins, regionMap) {
+    const regionSet = new Set(regionMap.map(r => r.id))
+    const groupMap = new Map()
+    let currentRegions = groupOrigins.map(pt => regionMap.getRegion(pt))
+    let level = 0
+
+    while (regionSet.size > 0) {
+        const nextRegions = []
+        regionSet.forEach(region => {
+            // get list of seeds for this region.id
+        })
+        level++
+        currentRegions = nextRegions
+    }
+
+    return groupMap
+}
+
+// if (! regionSet.has(region.id)) {
+//     groupMap.set(region.id)
+//     regionSet.add(region.id)
+// }
+// const allNeighbors = regionMap.getNeighbors(region)
+// const neighbors = allNeighbors.filter(neighbor => ! regionSet.has(neighbor.id))
+// nextRegions.push(...neighbors)
