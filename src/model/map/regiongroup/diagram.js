@@ -5,7 +5,7 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('showBorder', 'Show border', {default: true}),
+        Type.boolean('showBorder', 'Show border', {default: false}),
     )
 
     static create(mapModel, params) {
@@ -21,7 +21,6 @@ export class MapDiagram extends BaseMapDiagram {
     get(point) {
         const region = this.mapModel.getRegion(point)
         const color = this.colorMap.get(region)
-
         if (this.showBorder && this.mapModel.isRegionBorder(point)) {
             return color.darken(50).toHex()
         }

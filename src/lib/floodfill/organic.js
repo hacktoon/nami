@@ -1,5 +1,5 @@
 import { Random } from '/lib/base/random'
-import { FloodFill, MultiFill } from './index'
+import { FloodFill } from './index'
 
 
 export class OrganicFloodFill extends FloodFill {
