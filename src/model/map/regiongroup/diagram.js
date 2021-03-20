@@ -1,10 +1,12 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
+import { Color } from '/lib/base/color'
 import { BaseMapDiagram } from '/model/lib/map'
 
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
+        Type.boolean('showGroup', 'Show group', {default: true}),
         Type.boolean('showBorder', 'Show border', {default: false}),
     )
 
@@ -15,16 +17,27 @@ export class MapDiagram extends BaseMapDiagram {
     constructor(mapModel, params) {
         super(mapModel)
         this.showBorder = params.get('showBorder')
+        this.showGroup = params.get('showGroup')
         this.colorMap = new RegionColorMap(mapModel.regionMap)
+        this.groupColorMap = new GroupColorMap(mapModel.groupMap)
     }
 
     get(point) {
         const region = this.mapModel.getRegion(point)
-        const color = this.colorMap.get(region)
-        if (this.showBorder && this.mapModel.isRegionBorder(point)) {
-            return color.darken(50).toHex()
+        const regionColor = this.colorMap.get(region)
+        const [groupId, level] = this.mapModel.groupMap.get(region.id)
+        const groupColor = this.groupColorMap.get(groupId)
+
+        if (this.showGroup) {
+            if (this.showBorder && this.mapModel.isRegionBorder(point))
+                return groupColor.darken(50).toHex()
+            else
+                return groupColor.darken(level * 20).toHex()
         }
-        return color.toHex()
+        if (this.showBorder && this.mapModel.isRegionBorder(point)) {
+            return regionColor.darken(50).toHex()
+        }
+        return regionColor.toHex()
     }
 }
 
@@ -37,5 +50,19 @@ class RegionColorMap {
 
     get(region) {
         return this.map[region.id]
+    }
+}
+
+class GroupColorMap {
+    constructor(groupMap) {
+        this.map = {}
+        groupMap.forEach(entry => {
+            const [groupId, level] = entry
+            this.map[groupId] = (new Color()).brighten(level * 10)
+        })
+    }
+
+    get(groupId) {
+        return this.map[groupId]
     }
 }

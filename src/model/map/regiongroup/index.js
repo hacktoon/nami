@@ -17,7 +17,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 5, step: 1, min: 1}),
     Type.number('growth', 'Growth', {default: 5, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: 'a'})
 )
 
 
@@ -47,7 +47,7 @@ export default class RegionGroupMap extends BaseMap {
 
         const groupScale = params.get('groupScale')
         const groupOrigins = EvenPointSampling.create(width, height, groupScale)
-        // this.groupMap = buildGroupMap(groupOrigins, this.regionMap)
+        this.groupMap = buildGroupMap(groupOrigins, this.regionMap)
     }
 
     getRegion(point) {
@@ -68,28 +68,35 @@ export default class RegionGroupMap extends BaseMap {
 }
 
 
-function buildGroupMap(groupOrigins, regionMap) {
-    const regionSet = new Set(regionMap.map(r => r.id))
-    const groupMap = new Map()
-    let currentRegions = groupOrigins.map(pt => regionMap.getRegion(pt))
-    let level = 0
+class Group {
+    constructor(id) {
 
-    while (regionSet.size > 0) {
-        const nextRegions = []
-        regionSet.forEach(region => {
-            // get list of seeds for this region.id
-        })
-        level++
-        currentRegions = nextRegions
     }
-
-    return groupMap
 }
 
-// if (! regionSet.has(region.id)) {
-//     groupMap.set(region.id)
-//     regionSet.add(region.id)
-// }
-// const allNeighbors = regionMap.getNeighbors(region)
-// const neighbors = allNeighbors.filter(neighbor => ! regionSet.has(neighbor.id))
-// nextRegions.push(...neighbors)
+
+function buildGroupMap(groupOrigins, regionMap) {
+    const groupMap = new Map()
+    let level = 0
+    let seeds = groupOrigins.map((point, groupId) => {
+        const region = regionMap.getRegion(point)
+        groupMap.set(region.id, [groupId, level])
+        // seed format
+        return [region, groupId]
+    })
+
+    while (seeds.length > 0) {
+        let nextSeeds = []
+        level++
+        seeds.forEach(([region, groupId]) => {
+            const allNeighbors = regionMap.getNeighbors(region)
+            allNeighbors.forEach(neighbor => {
+                if (groupMap.has(neighbor.id)) return
+                groupMap.set(neighbor.id, [groupId, level])
+                nextSeeds.push([neighbor, groupId, level])
+            })
+        })
+        seeds = nextSeeds
+    }
+    return groupMap
+}
