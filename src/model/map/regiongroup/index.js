@@ -47,7 +47,9 @@ export default class RegionGroupMap extends BaseMap {
 
         const groupScale = params.get('groupScale')
         const groupOrigins = EvenPointSampling.create(width, height, groupScale)
-        this.groupMap = buildGroupMap(groupOrigins, this.regionMap)
+        const [groupMap, borderMap] = buildGroupMap(groupOrigins, this.regionMap)
+        this.groupMap = groupMap
+        this.borderMap = borderMap
     }
 
     getRegion(point) {
@@ -77,6 +79,7 @@ class Group {
 
 function buildGroupMap(groupOrigins, regionMap) {
     const groupMap = new Map()
+    const borderMap = new Map()
     let seeds = groupOrigins.map((point, groupId) => {
         const region = regionMap.getRegion(point)
         groupMap.set(region.id, groupId)
@@ -89,12 +92,17 @@ function buildGroupMap(groupOrigins, regionMap) {
         seeds.forEach(([region, groupId]) => {
             const allNeighbors = regionMap.getNeighbors(region)
             allNeighbors.forEach(neighbor => {
-                if (groupMap.has(neighbor.id)) return
+                if (groupMap.has(neighbor.id)) {
+                    if (groupId !== groupMap.get(neighbor.id))
+                        borderMap.set(region.id, groupId)
+                    return
+                }
                 groupMap.set(neighbor.id, groupId)
+                // seed format
                 nextSeeds.push([neighbor, groupId])
             })
         })
         seeds = nextSeeds
     }
-    return groupMap
+    return [groupMap, borderMap]
 }

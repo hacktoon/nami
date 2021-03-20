@@ -26,8 +26,12 @@ export class MapDiagram extends BaseMapDiagram {
         const region = this.mapModel.getRegion(point)
         const regionColor = this.colorMap.get(region)
         const groupId = this.mapModel.groupMap.get(region.id)
+        const isBorder = this.mapModel.borderMap.has(region.id)
         const groupColor = this.groupColorMap.get(groupId)
 
+        if (isBorder) {
+            return groupColor.darken(90).toHex()
+        }
         if (this.showGroup) {
             if (this.showBorder && this.mapModel.isRegionBorder(point)) {
                 return groupColor.darken(50).toHex()
@@ -35,7 +39,7 @@ export class MapDiagram extends BaseMapDiagram {
             return groupColor.average(regionColor).toHex()
         }
         if (this.showBorder && this.mapModel.isRegionBorder(point)) {
-            return regionColor.darken(50).toHex()
+            return groupColor.toHex()
         }
         return regionColor.toHex()
     }
