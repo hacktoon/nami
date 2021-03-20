@@ -14,8 +14,8 @@ const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 10, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 10, max: 500}),
     Type.number('groupScale', 'Group scale', {default: 30, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 3, step: 1, min: 1}),
-    Type.number('growth', 'Growth', {default: 5, step: 1, min: 0}),
+    Type.number('scale', 'Scale', {default: 2, step: 1, min: 1}),
+    Type.number('growth', 'Growth', {default: 1, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
@@ -47,9 +47,7 @@ export default class RegionGroupMap extends BaseMap {
 
         const groupScale = params.get('groupScale')
         const groupOrigins = EvenPointSampling.create(width, height, groupScale)
-        const [groupMap, borderMap] = buildGroupMap(groupOrigins, this.regionMap)
-        this.groupMap = groupMap
-        this.borderMap = borderMap
+        this.groupMap = new GroupMap(this.regionMap, groupOrigins)
     }
 
     getRegion(point) {
@@ -70,39 +68,43 @@ export default class RegionGroupMap extends BaseMap {
 }
 
 
-class Group {
-    constructor(id) {
-
-    }
-}
-
-
-function buildGroupMap(groupOrigins, regionMap) {
-    const groupMap = new Map()
-    const borderMap = new Map()
-    let seeds = groupOrigins.map((point, groupId) => {
-        const region = regionMap.getRegion(point)
-        groupMap.set(region.id, groupId)
-        // seed format
-        return [region, groupId]
-    })
-
-    while (seeds.length > 0) {
-        let nextSeeds = []
-        seeds.forEach(([region, groupId]) => {
-            const allNeighbors = regionMap.getNeighbors(region)
-            allNeighbors.forEach(neighbor => {
-                if (groupMap.has(neighbor.id)) {
-                    if (groupId !== groupMap.get(neighbor.id))
-                        borderMap.set(region.id, groupId)
-                    return
-                }
-                groupMap.set(neighbor.id, groupId)
-                // seed format
-                nextSeeds.push([neighbor, groupId])
-            })
+class GroupMap {
+    constructor(regionMap, groupOrigins) {
+        this.map = new Map()
+        const borderRegions = new Set()
+        let seeds = groupOrigins.map((point, index) => {
+            const region = regionMap.getRegion(point)
+            const groupId = index
+            this.map.set(region.id, groupId)
+            // seed format
+            return [region, groupId]
         })
-        seeds = nextSeeds
+        while (seeds.length > 0) {
+            let nextSeeds = []
+            seeds.forEach(([region, groupId]) => {
+                const allNeighbors = regionMap.getNeighbors(region)
+                allNeighbors.forEach(neighbor => {
+                    if (this.map.has(neighbor.id)) {
+                        if (groupId !== this.map.get(neighbor.id))
+                            borderRegions.add(region.id)
+                        return
+                    }
+                    this.map.set(neighbor.id, groupId)
+                    // seed format
+                    nextSeeds.push([neighbor, groupId])
+                })
+            })
+            seeds = nextSeeds
+        }
     }
-    return [groupMap, borderMap]
+
+    get(region) {
+        return this.map.get(region.id)
+    }
+
+    forEach(callback) {
+        this.map.forEach(groupId  => {
+            callback(groupId)
+        })
+    }
 }
