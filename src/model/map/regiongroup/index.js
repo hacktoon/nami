@@ -13,11 +13,11 @@ import { MapDiagram } from './diagram'
 const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 10, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 10, max: 500}),
-    Type.number('groupScale', 'Group scale', {default: 20, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 5, step: 1, min: 1}),
+    Type.number('groupScale', 'Group scale', {default: 30, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 3, step: 1, min: 1}),
     Type.number('growth', 'Growth', {default: 5, step: 1, min: 0}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: 'a'})
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 
@@ -77,23 +77,21 @@ class Group {
 
 function buildGroupMap(groupOrigins, regionMap) {
     const groupMap = new Map()
-    let level = 0
     let seeds = groupOrigins.map((point, groupId) => {
         const region = regionMap.getRegion(point)
-        groupMap.set(region.id, [groupId, level])
+        groupMap.set(region.id, groupId)
         // seed format
         return [region, groupId]
     })
 
     while (seeds.length > 0) {
         let nextSeeds = []
-        level++
         seeds.forEach(([region, groupId]) => {
             const allNeighbors = regionMap.getNeighbors(region)
             allNeighbors.forEach(neighbor => {
                 if (groupMap.has(neighbor.id)) return
-                groupMap.set(neighbor.id, [groupId, level])
-                nextSeeds.push([neighbor, groupId, level])
+                groupMap.set(neighbor.id, groupId)
+                nextSeeds.push([neighbor, groupId])
             })
         })
         seeds = nextSeeds

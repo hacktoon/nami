@@ -25,14 +25,14 @@ export class MapDiagram extends BaseMapDiagram {
     get(point) {
         const region = this.mapModel.getRegion(point)
         const regionColor = this.colorMap.get(region)
-        const [groupId, level] = this.mapModel.groupMap.get(region.id)
+        const groupId = this.mapModel.groupMap.get(region.id)
         const groupColor = this.groupColorMap.get(groupId)
 
         if (this.showGroup) {
-            if (this.showBorder && this.mapModel.isRegionBorder(point))
+            if (this.showBorder && this.mapModel.isRegionBorder(point)) {
                 return groupColor.darken(50).toHex()
-            else
-                return groupColor.darken(level * 20).toHex()
+            }
+            return groupColor.average(regionColor).toHex()
         }
         if (this.showBorder && this.mapModel.isRegionBorder(point)) {
             return regionColor.darken(50).toHex()
@@ -53,12 +53,12 @@ class RegionColorMap {
     }
 }
 
+
 class GroupColorMap {
     constructor(groupMap) {
         this.map = {}
-        groupMap.forEach(entry => {
-            const [groupId, level] = entry
-            this.map[groupId] = (new Color()).brighten(level * 10)
+        groupMap.forEach(groupId => {
+            this.map[groupId] = new Color()
         })
     }
 
