@@ -24,18 +24,19 @@ export class MapDiagram extends BaseMapDiagram {
 
     get(point) {
         const region = this.mapModel.getRegion(point)
-        const group = this.mapModel.groupMap.get(region)
+        const group = this.mapModel.getGroup(point)
         const regionColor = this.regionColorMap.get(region)
         const groupColor = this.groupColorMap.get(group)
-        let color = regionColor
 
         if (this.showGroup) {
-            color = groupColor.average(regionColor)
+            const color = regionColor.average(groupColor).average(groupColor)
+            if (this.showBorder && this.mapModel.isGroupBorder(point))
+                return color.darken(80).toHex()
+            return color.toHex()
         }
-        if (this.showBorder && this.mapModel.isRegionBorder(point)) {
-            color = groupColor
-        }
-        return color.toHex()
+        if (this.showBorder && this.mapModel.isGroupBorder(point))
+            return regionColor.darken(60).toHex()
+        return regionColor.toHex()
     }
 }
 

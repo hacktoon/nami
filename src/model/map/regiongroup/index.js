@@ -15,8 +15,8 @@ const SCHEMA = new Schema(
     Type.number('height', 'Height', {default: 100, step: 1, min: 10, max: 500}),
     Type.number('groupScale', 'Group scale', {default: 30, step: 1, min: 1}),
     Type.number('scale', 'Scale', {default: 2, step: 1, min: 1}),
-    Type.number('growth', 'Growth', {default: 1, step: 1, min: 0}),
-    Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
+    Type.number('growth', 'Growth', {default: 0, step: 1, min: 0}),
+    Type.number('chance', 'Chance', {default: 0.1, step: 0.01, min: 0.1, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -40,13 +40,11 @@ export default class RegionGroupMap extends BaseMap {
     constructor(params) {
         super(params)
         const [width, height, seed] = params.get('width', 'height', 'seed')
-
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
-        const data = {width, height, scale, seed, chance, growth}
-        this.regionMap = RegionMap.fromData(data)
-
         const groupScale = params.get('groupScale')
+        const regionData = {width, height, scale, seed, chance, growth}
         const groupOrigins = EvenPointSampling.create(width, height, groupScale)
+        this.regionMap = RegionMap.fromData(regionData)
         this.groupMap = new GroupMap(this.regionMap, groupOrigins)
     }
 
@@ -54,11 +52,12 @@ export default class RegionGroupMap extends BaseMap {
         return this.regionMap.getRegion(point)
     }
 
-    getBorderRegion(point) {
-        return this.regionMap.getBorderRegion(point)
+    getGroup(point) {
+        const region = this.regionMap.getRegion(point)
+        return this.groupMap.get(region)
     }
 
-    isRegionBorder(point) {
+    isGroupBorder(point) {
         return this.regionMap.isBorder(point)
     }
 
