@@ -18,31 +18,24 @@ export class MapDiagram extends BaseMapDiagram {
         super(mapModel)
         this.showBorder = params.get('showBorder')
         this.showGroup = params.get('showGroup')
-        this.colorMap = new RegionColorMap(mapModel.regionMap)
+        this.regionColorMap = new RegionColorMap(mapModel.regionMap)
         this.groupColorMap = new GroupColorMap(mapModel.groupMap)
     }
 
     get(point) {
         const region = this.mapModel.getRegion(point)
-        const regionColor = this.colorMap.get(region)
-        const groupId = this.mapModel.groupMap.get(region)
-        // const groupId = this.mapModel.groupMap.get(region)
-        // const isBorder = this.mapModel.borderMap.has(region.id)
-        const groupColor = this.groupColorMap.get(groupId)
+        const group = this.mapModel.groupMap.get(region)
+        const regionColor = this.regionColorMap.get(region)
+        const groupColor = this.groupColorMap.get(group)
+        let color = regionColor
 
-        // if (isBorder) {
-        //     return groupColor.darken(90).toHex()
-        // }
         if (this.showGroup) {
-            if (this.showBorder && this.mapModel.isRegionBorder(point)) {
-                return groupColor.darken(50).toHex()
-            }
-            return groupColor.average(regionColor).toHex()
+            color = groupColor.average(regionColor)
         }
         if (this.showBorder && this.mapModel.isRegionBorder(point)) {
-            return groupColor.toHex()
+            color = groupColor
         }
-        return regionColor.toHex()
+        return color.toHex()
     }
 }
 
@@ -62,12 +55,12 @@ class RegionColorMap {
 class GroupColorMap {
     constructor(groupMap) {
         this.map = {}
-        groupMap.forEach(groupId => {
-            this.map[groupId] = new Color()
+        groupMap.forEach(group => {
+            this.map[group.id] = new Color()
         })
     }
 
-    get(groupId) {
-        return this.map[groupId]
+    get(group) {
+        return this.map[group.id]
     }
 }

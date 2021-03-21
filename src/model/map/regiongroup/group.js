@@ -10,20 +10,21 @@ class Group {
 export class GroupMap {
     constructor(regionMap, groupOrigins) {
         this.regionToGroup = new Map()
-        let seedRegions = groupOrigins.map((point, groupIndex) => {
+        let seedRegions = groupOrigins.map((point, index) => {
+            const group = new Group(index)
             const region = regionMap.getRegion(point)
-            this.regionToGroup.set(region.id, groupIndex)
-            return [region, groupIndex]
+            this.regionToGroup.set(region.id, group)
+            return [region, group]
         })
 
         const grow = () => {
             let nextSeeds = []
-            seedRegions.forEach(([region, groupId]) => {
+            seedRegions.forEach(([region, group]) => {
                 const allNeighbors = regionMap.getNeighbors(region)
                 allNeighbors.forEach(neighbor => {
                     if (this.regionToGroup.has(neighbor.id)) return
-                    this.regionToGroup.set(neighbor.id, groupId)
-                    nextSeeds.push([neighbor, groupId])
+                    this.regionToGroup.set(neighbor.id, group)
+                    nextSeeds.push([neighbor, group])
                 })
             })
             return nextSeeds
