@@ -1,6 +1,5 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { Matrix } from '/lib/base/matrix'
 import { EvenPointSampling } from '/lib/base/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapUI } from '/lib/ui/map'
@@ -70,41 +69,32 @@ export default class RegionGroupMap extends BaseMap {
 
 class GroupMap {
     constructor(regionMap, groupOrigins) {
-        this.map = new Map()
-        const borderRegions = new Set()
-        let seeds = groupOrigins.map((point, index) => {
+        this.regionToGroup = new Map()
+        let seedRegions = groupOrigins.map((point, groupIndex) => {
             const region = regionMap.getRegion(point)
-            const groupId = index
-            this.map.set(region.id, groupId)
-            // seed format
-            return [region, groupId]
+            this.regionToGroup.set(region.id, groupIndex)
+            return [region, groupIndex]
         })
-        while (seeds.length > 0) {
+
+        while (seedRegions.length > 0) {
             let nextSeeds = []
-            seeds.forEach(([region, groupId]) => {
+            seedRegions.forEach(([region, groupId]) => {
                 const allNeighbors = regionMap.getNeighbors(region)
                 allNeighbors.forEach(neighbor => {
-                    if (this.map.has(neighbor.id)) {
-                        if (groupId !== this.map.get(neighbor.id))
-                            borderRegions.add(region.id)
-                        return
-                    }
-                    this.map.set(neighbor.id, groupId)
-                    // seed format
+                    if (this.regionToGroup.has(neighbor.id)) return
+                    this.regionToGroup.set(neighbor.id, groupId)
                     nextSeeds.push([neighbor, groupId])
                 })
             })
-            seeds = nextSeeds
+            seedRegions = nextSeeds
         }
     }
 
     get(region) {
-        return this.map.get(region.id)
+        return this.regionToGroup.get(region.id)
     }
 
     forEach(callback) {
-        this.map.forEach(groupId  => {
-            callback(groupId)
-        })
+        this.regionToGroup.forEach(callback)
     }
 }
