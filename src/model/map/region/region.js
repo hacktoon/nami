@@ -74,4 +74,8 @@ export class RegionFillConfig {
         this.matrix.setBorder(origin, neighborId)
         this.graph.setEdge(regionId, neighborId)
     }
+
+    getNeighbors(origin) {
+        return origin.adjacents()
+    }
 }

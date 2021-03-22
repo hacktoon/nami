@@ -21,17 +21,18 @@ export class FloodFill {
     growLayer(seeds=this.seeds) {
         let newSeeds = []
         for(let i = 0; i < seeds.length; i++) {
-            const filledNeighbors = this.fillNeighbors(seeds[i])
+            const filledNeighbors = this.#fillNeighbors(seeds[i])
             newSeeds.push(...filledNeighbors)
         }
         return newSeeds
     }
 
-    fillNeighbors(origin) {
+    #fillNeighbors(origin) {
         const filledNeighbors = []
-        const emptyNeighbors = origin.adjacents(adjacent => {
-            this.config.checkNeighbor(adjacent, origin)
-            return this.config.isEmpty(adjacent)
+        const allNeighbors = this.config.getNeighbors(origin)
+        const emptyNeighbors = allNeighbors.filter(neighbor => {
+            this.config.checkNeighbor(neighbor, origin)
+            return this.config.isEmpty(neighbor)
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)

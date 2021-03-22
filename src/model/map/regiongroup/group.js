@@ -43,3 +43,37 @@ export class GroupMap {
         this.regionToGroup.forEach(callback)
     }
 }
+
+
+
+export class GroupFillConfig {
+    constructor(refs, params) {
+        this.chance = params.get('chance')
+        this.growth = params.get('growth')
+        this.regionMap = refs.regionMap
+        this.regionToGroup = refs.regionToGroup
+        this.currentGroup = refs.group
+        this.graph = refs.graph
+    }
+
+    isEmpty(region) {
+        return this.regionToGroup.get(region.id) === undefined
+    }
+
+    setValue(region) {
+        this.regionToGroup.set(region, this.currentGroup.id)
+        this.currentGroup.area += 1
+    }
+
+    checkNeighbor(neighborRegion) {
+        const currentGroup = this.currentGroup
+        if (this.isEmpty(neighborRegion)) return
+        const neighborGroup = this.regionToGroup.get(neighborRegion)
+        if (neighborGroup.id === currentGroup.id) return
+        this.graph.setEdge(currentGroup.id, neighborGroup.id)
+    }
+
+    getNeighbors(region) {
+        return this.regionMap.getNeighbors(region)
+    }
+}
