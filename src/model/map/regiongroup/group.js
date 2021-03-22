@@ -1,6 +1,6 @@
 
 
-class Group {
+export class Group {
     constructor(id) {
         this.id = id
     }
