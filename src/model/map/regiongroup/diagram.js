@@ -6,8 +6,9 @@ import { BaseMapDiagram } from '/model/lib/map'
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showGroups', 'Show groups', {default: true}),
+        Type.boolean('showGroupBorder', 'Show group border', {default: true}),
         Type.boolean('showRegions', 'Show regions', {default: true}),
-        Type.boolean('showBorder', 'Show border', {default: false}),
+        Type.boolean('showRegionBorder', 'Show region border', {default: true}),
     )
 
     static create(mapModel, params) {
@@ -16,9 +17,10 @@ export class MapDiagram extends BaseMapDiagram {
 
     constructor(mapModel, params) {
         super(mapModel)
-        this.showBorder = params.get('showBorder')
-        this.showGroups = params.get('showGroups')
         this.showRegions = params.get('showRegions')
+        this.showGroups = params.get('showGroups')
+        this.showRegionBorder = params.get('showRegionBorder')
+        this.showGroupBorder = params.get('showGroupBorder')
         this.regionColorMap = new RegionColorMap(mapModel.regionMap)
         this.groupColorMap = new GroupColorMap(mapModel)
     }
@@ -28,18 +30,23 @@ export class MapDiagram extends BaseMapDiagram {
         const group = this.mapModel.getGroup(point)
         const regionColor = this.regionColorMap.get(region)
         const groupColor = this.groupColorMap.get(group)
+        const isRegionBorder = this.mapModel.isRegionBorder(point)
+        const isGroupBorder = this.mapModel.isGroupBorder(point)
 
-        if (this.showGroups) {
-            let color = groupColor
-            if (this.showRegions) {
-                color = regionColor.average(groupColor).average(groupColor)
-            }
-            if (this.showBorder && this.mapModel.isRegionBorder(point))
-                return color.darken(80).toHex()
-            return color.toHex()
+        if (this.showGroupBorder && isGroupBorder) {
+            return groupColor.darken(60).toHex()
         }
-        if (this.showBorder && this.mapModel.isRegionBorder(point))
+        if (this.showRegionBorder && isRegionBorder) {
+            if (this.showGroups)
+                return groupColor.brighten(60).toHex()
             return regionColor.darken(60).toHex()
+        }
+        if (this.showGroups) {
+            if (this.showRegions) {
+                return regionColor.average(groupColor).average(groupColor).toHex()
+            }
+            return groupColor.toHex()
+        }
         return regionColor.toHex()
     }
 }

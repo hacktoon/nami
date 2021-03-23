@@ -18,7 +18,7 @@ const SCHEMA = new Schema(
     Type.number('height', 'H', {default: 100, step: 1, min: 10, max: 500}),
     Type.number('groupScale', 'Scale', {default: 30, step: 1, min: 1}),
     Type.number('groupChance', 'Chance', {default: 0.2, step: 0.1, min: 0.1, max: 1}),
-    Type.number('groupGrowth', 'Growth', {default: 10, step: 1, min: 0}),
+    Type.number('groupGrowth', 'Growth', {default: 12, step: 1, min: 0}),
     Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
@@ -85,6 +85,14 @@ export default class RegionGroupMap extends BaseMap {
 
     isRegionBorder(point) {
         return this.regionMap.isBorder(point)
+    }
+
+    isGroupBorder(point) {
+        if (! this.isRegionBorder(point)) return false
+        const group = this.getGroup(point)
+        const borderRegion = this.regionMap.getBorderRegion(point)
+        const borderGroup = this.regionToGroup.get(borderRegion.id)
+        return group.id !== borderGroup.id
     }
 
     map(callback) {
