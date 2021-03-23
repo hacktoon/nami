@@ -10,7 +10,7 @@ import { OrganicFloodFill } from '/lib/floodfill/organic'
 import RegionMap from '/model/map/region'
 
 import { MapDiagram } from './diagram'
-import { Group, GroupMap, GroupFillConfig } from './group'
+import { Group, RegionGroupTable, GroupFillConfig } from './group'
 
 
 const SCHEMA = new Schema(
@@ -47,27 +47,23 @@ export default class RegionGroupMap extends BaseMap {
         const [width, height, seed] = params.get('width', 'height', 'seed')
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const groupScale = params.get('groupScale')
-        const origins = EvenPointSampling.create(width, height, groupScale)
-        this.regionMap = RegionMap.fromData({width, height, scale, seed, chance, growth})
-        this.regionToGroup = new Map()
-        this.borderRegions = new Set()
-        this.groupIndex = new Map()
+        const originPoints = EvenPointSampling.create(width, height, groupScale)
+        const regionMap = RegionMap.fromData({width, height, scale, seed, chance, growth})
+        this.table = new RegionGroupTable(regionMap)
         this.graph = new Graph()
 
-        const organicFills = origins.map((origin, id) => {
-            const region = this.regionMap.getRegion(origin)
+        const organicFills = originPoints.map((origin, id) => {
+            const region = regionMap.getRegion(origin)
             const group = new Group(id, region)
             const groupParams = {
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),
-                regionToGroup: this.regionToGroup,
-                borderRegions: this.borderRegions,
-                regionMap: this.regionMap,
+                table: this.table,
                 graph: this.graph,
-                group,
+                group: group,
             }
             const fillConfig = new GroupFillConfig(groupParams)
-            this.groupIndex.set(group.id, group)
+            this.table.add(group)
             return new OrganicFloodFill(region, fillConfig)
         })
 
@@ -75,32 +71,32 @@ export default class RegionGroupMap extends BaseMap {
     }
 
     getRegion(point) {
-        return this.regionMap.getRegion(point)
+        return this.table.regionMap.getRegion(point)
     }
 
     getGroup(point) {
-        const region = this.regionMap.getRegion(point)
-        return this.regionToGroup.get(region.id)
+        const region = this.table.regionMap.getRegion(point)
+        return this.table.get(region)
     }
 
-    isRegionBorder(point) {
-        return this.regionMap.isBorder(point)
+    isRegionBorder(point) { // TODO: change to isPointBorder
+        return this.table.regionMap.isBorder(point)
     }
 
     isGroupBorder(point) {
         if (! this.isRegionBorder(point)) return false
         const group = this.getGroup(point)
-        const borderRegion = this.regionMap.getBorderRegion(point)
-        const borderGroup = this.regionToGroup.get(borderRegion.id)
+        const borderRegion = this.table.regionMap.getBorderRegion(point)
+        const borderGroup = this.table.get(borderRegion)
         return group.id !== borderGroup.id
     }
 
     map(callback) {
-        const values = Array.from(this.groupIndex.values())
-        return values.map(callback)
+        const groups = this.table.getGroups()
+        return groups.map(callback)
     }
 
     forEach(callback) {
-        this.groupIndex.values().forEach(callback)
+        this.table.getGroups().forEach(callback)
     }
 }
