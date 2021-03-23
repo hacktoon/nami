@@ -16,9 +16,9 @@ import { Group, GroupMap, GroupFillConfig } from './group'
 const SCHEMA = new Schema(
     Type.number('width', 'W', {default: 150, step: 1, min: 10, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 10, max: 500}),
-    Type.number('groupScale', 'Scale', {default: 30, step: 1, min: 1}),
-    Type.number('groupChance', 'Chance', {default: 0.2, step: 0.1, min: 0.1, max: 1}),
-    Type.number('groupGrowth', 'Growth', {default: 12, step: 1, min: 0}),
+    Type.number('groupScale', 'Gr Scale', {default: 30, step: 1, min: 1}),
+    Type.number('groupChance', 'Gr Chance', {default: 0.2, step: 0.1, min: 0.1, max: 1}),
+    Type.number('groupGrowth', 'Gr Growth', {default: 12, step: 1, min: 0}),
     Type.number('scale', 'Rg scale', {default: 4, step: 1, min: 1}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
@@ -52,6 +52,7 @@ export default class RegionGroupMap extends BaseMap {
         const origins = EvenPointSampling.create(width, height, groupScale)
         this.regionMap = RegionMap.fromData(regionData)
         this.regionToGroup = new Map()
+        this.borderRegions = new Map()
         this.groupIndex = new Map()
         this.graph = new Graph()
         this.groups = []
@@ -62,6 +63,7 @@ export default class RegionGroupMap extends BaseMap {
             const groupParams = {
                 group, groupChance, groupGrowth,
                 regionToGroup: this.regionToGroup,
+                borderRegions: this.borderRegions,
                 regionMap: this.regionMap,
                 graph: this.graph,
             }

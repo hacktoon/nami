@@ -12,11 +12,7 @@
 - Pass RegionMap setValue to send noise point to generate continents in plate
 - Create PlateMatrix
   - For each region origin => set noise for each scanline fill
-- Create RegionMap 2 with subregion dimensions
-- Create Plate for each region 1
-- Create Plate index
-- Create Plate list
-- Create plate adjacency from region map
+- Create plate adjacency from regiongroup map
   - Convergent
     - OO : Island Arc + trench
     - OC : Trench + Orogeny
@@ -27,6 +23,7 @@
     - CC : Rift
 
 #### TerrainMap
+- Calc river basins from region graph
 - Build distance map from coast borders
 - Property (water: bool)
 - Use ScanlineFill to discover areas
@@ -36,12 +33,6 @@
 - Eliminate hard/pointy edges - smooth terrain
 - discover river paths
   - Start from river mouth points, flood fill
-
-#### OceanMap
-- Decide it's type when finished, set type on object WaterBody
-- Types: 0:none, 1:river, 2:lake, 3:sea, 5:ocean
-  - WaterBody
-    - Reference point - where fill started, used to scanline again for searches
 
 #### TemperatureMap
 - Use two opposite points on regionMap

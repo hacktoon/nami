@@ -5,9 +5,9 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('showGroups', 'Show groups', {default: false}),
+        Type.boolean('showGroups', 'Show groups', {default: true}),
         Type.boolean('showGroupBorder', 'Show group border', {default: false}),
-        Type.boolean('showRegions', 'Show regions', {default: false}),
+        Type.boolean('showRegions', 'Show regions', {default: true}),
         Type.boolean('showRegionBorder', 'Show region border', {default: false}),
     )
 
@@ -32,23 +32,26 @@ export class MapDiagram extends BaseMapDiagram {
         const groupColor = this.groupColorMap.get(group)
         const isRegionBorder = this.mapModel.isRegionBorder(point)
         const isGroupBorder = this.mapModel.isGroupBorder(point)
+        const isBorderRegion = this.mapModel.borderRegions.has(region.id)
 
         if (this.showGroupBorder && isGroupBorder) {
             return groupColor.darken(60).toHex()
         }
         if (this.showRegionBorder && isRegionBorder) {
-            if (this.showGroups)
-                return groupColor.brighten(60).toHex()
-            return regionColor.darken(60).toHex()
+            let color = this.showGroups ? groupColor.brighten(60) : regionColor.darken(60)
+            return color.toHex()
         }
         if (this.showGroups) {
             if (this.showRegions) {
-                return regionColor.average(groupColor).average(groupColor).toHex()
+                let color = regionColor.average(groupColor).average(groupColor)
+                color = isBorderRegion ? color.darken(80) : color
+                return color.toHex()
             }
             return groupColor.toHex()
         }
         if (this.showRegions) {
-            return regionColor.toHex()
+            let color = isBorderRegion ? regionColor.darken(80) : regionColor
+            return color.toHex()
         }
         return regionColor.grayscale().toHex()
     }
