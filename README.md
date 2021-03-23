@@ -8,6 +8,10 @@
 
 ## ROADMAP
 
+- LocalStorage for form fields
+- Enable onChange
+- Canvas optimization
+
 #### TectonicsMap
 - Pass RegionMap setValue to send noise point to generate continents in plate
 - Create PlateMatrix
@@ -23,9 +27,9 @@
     - CC : Rift
 
 #### TerrainMap
+- Define litoral/water/plains/mountain/hill regions
 - Calc river basins from region graph
 - Build distance map from coast borders
-- Property (water: bool)
 - Use ScanlineFill to discover areas
 - Set id's on Matrix during scanline fill
 

@@ -47,6 +47,7 @@ export default class RegionGroupMap extends BaseMap {
         const [width, height, seed] = params.get('width', 'height', 'seed')
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const groupScale = params.get('groupScale')
+
         const originPoints = EvenPointSampling.create(width, height, groupScale)
         const regionMap = RegionMap.fromData({width, height, scale, seed, chance, growth})
         this.table = new RegionGroupTable(regionMap)
@@ -54,16 +55,13 @@ export default class RegionGroupMap extends BaseMap {
 
         const organicFills = originPoints.map((origin, id) => {
             const region = regionMap.getRegion(origin)
-            const group = new Group(id, region)
-            const groupParams = {
+            const fillConfig = new GroupFillConfig({
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),
+                group: new Group(id, region),
                 table: this.table,
                 graph: this.graph,
-                group: group,
-            }
-            const fillConfig = new GroupFillConfig(groupParams)
-            this.table.add(group)
+            })
             return new OrganicFloodFill(region, fillConfig)
         })
 
@@ -75,8 +73,8 @@ export default class RegionGroupMap extends BaseMap {
     }
 
     getGroup(point) {
-        const region = this.table.regionMap.getRegion(point)
-        return this.table.get(region)
+        const region = this.table.getRegionAtPoint(point)
+        return this.table.getGroup(region)
     }
 
     isRegionBorder(point) { // TODO: change to isPointBorder
@@ -87,7 +85,7 @@ export default class RegionGroupMap extends BaseMap {
         if (! this.isRegionBorder(point)) return false
         const group = this.getGroup(point)
         const borderRegion = this.table.regionMap.getBorderRegion(point)
-        const borderGroup = this.table.get(borderRegion)
+        const borderGroup = this.table.getGroup(borderRegion)
         return group.id !== borderGroup.id
     }
 

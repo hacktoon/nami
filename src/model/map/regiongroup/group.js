@@ -22,16 +22,21 @@ export class RegionGroupTable {
         this.index = new Map()
     }
 
-    add(group) {
+    register(group) {
         this.index.set(group.id, group)
     }
 
-    set(region, group) {
+    setGroup(region, group) {
+        this.register(group)
         this.regionToGroup.set(region.id, group)
     }
 
-    get(region) {
+    getGroup(region) {
         return this.regionToGroup.get(region.id)
+    }
+
+    getRegionAtPoint(point) {
+        return this.regionMap.getRegion(point)
     }
 
     setBorder(region) {
@@ -63,14 +68,14 @@ export class GroupFillConfig {
     }
 
     setValue(region) {
-        this.table.set(region, this.currentGroup)
+        this.table.setGroup(region, this.currentGroup)
         this.currentGroup.area += region.area
     }
 
     checkNeighbor(neighborRegion, region) {
         const currentGroup = this.currentGroup
         if (this.isEmpty(neighborRegion)) return
-        const neighborGroup = this.table.get(neighborRegion)
+        const neighborGroup = this.table.getGroup(neighborRegion)
         if (neighborGroup.id === currentGroup.id) return
         this.table.setBorder(region)
         this.graph.setEdge(currentGroup.id, neighborGroup.id)
