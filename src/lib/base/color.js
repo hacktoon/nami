@@ -37,14 +37,14 @@ export class Color {
     }
 
     constructor(red=Random.int(255), green=Random.int(255), blue=Random.int(255)) {
-        this.red = clamp(red, 0, 255)
-        this.green = clamp(green, 0, 255)
-        this.blue = clamp(blue, 0, 255)
+        this.red = hexClamp(red)
+        this.green = hexClamp(green)
+        this.blue = hexClamp(blue)
     }
 
     toHex() {
         const hex = n => CHARS.charAt((n - n % 16) / 16) + CHARS.charAt(n % 16)
-        return '#' + hex(this.red) + hex(this.green) + hex(this.blue)
+        return `#${hex(this.red)}${hex(this.green)}${hex(this.blue)}`
     }
 
     invert() {
@@ -78,8 +78,20 @@ export class Color {
             Math.floor((this.blue + color.blue) / 2),
         )
     }
+
+    grayscale() {
+        // Uses the Weighted Method
+        // Grayscale  = 0.299R + 0.587G + 0.114B
+        const red = this.red * 0.299
+        const green = this.green * 0.587
+        const blue = this.blue * 0.114
+        const gray = Math.round(red + green + blue)
+        return new Color(gray, gray, gray)
+    }
 }
 
+
+const hexClamp = comp => clamp(comp, 0, 255)
 
 const expandShorthand = hex => {
     return [
