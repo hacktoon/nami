@@ -13,12 +13,13 @@ export class Group {
 
 export class GroupFillConfig {
     constructor(params) {
+        this.chance = params.groupChance
+        this.growth = params.groupGrowth
+
         this.borderRegions = params.borderRegions
         this.regionToGroup = params.regionToGroup
         this.regionMap = params.regionMap
         this.currentGroup = params.group
-        this.chance = params.groupChance
-        this.growth = params.groupGrowth
         this.graph = params.graph
     }
 
@@ -36,7 +37,7 @@ export class GroupFillConfig {
         if (this.isEmpty(neighborRegion)) return
         const neighborGroup = this.regionToGroup.get(neighborRegion.id)
         if (neighborGroup.id === currentGroup.id) return
-        this.borderRegions.set(region.id, currentGroup.id)
+        this.borderRegions.add(region.id)
         this.graph.setEdge(currentGroup.id, neighborGroup.id)
     }
 

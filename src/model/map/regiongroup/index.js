@@ -16,10 +16,10 @@ import { Group, GroupMap, GroupFillConfig } from './group'
 const SCHEMA = new Schema(
     Type.number('width', 'W', {default: 150, step: 1, min: 10, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 10, max: 500}),
-    Type.number('groupScale', 'Gr Scale', {default: 30, step: 1, min: 1}),
+    Type.number('groupScale', 'Gr Scale', {default: 33, step: 1, min: 1}),
     Type.number('groupChance', 'Gr Chance', {default: 0.2, step: 0.1, min: 0.1, max: 1}),
     Type.number('groupGrowth', 'Gr Growth', {default: 12, step: 1, min: 0}),
-    Type.number('scale', 'Rg scale', {default: 4, step: 1, min: 1}),
+    Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
@@ -46,30 +46,28 @@ export default class RegionGroupMap extends BaseMap {
         super(params)
         const [width, height, seed] = params.get('width', 'height', 'seed')
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
-        const [groupChance, groupGrowth] = params.get('groupChance', 'groupGrowth')
         const groupScale = params.get('groupScale')
-        const regionData = {width, height, scale, seed, chance, growth}
         const origins = EvenPointSampling.create(width, height, groupScale)
-        this.regionMap = RegionMap.fromData(regionData)
+        this.regionMap = RegionMap.fromData({width, height, scale, seed, chance, growth})
         this.regionToGroup = new Map()
-        this.borderRegions = new Map()
+        this.borderRegions = new Set()
         this.groupIndex = new Map()
         this.graph = new Graph()
-        this.groups = []
 
         const organicFills = origins.map((origin, id) => {
             const region = this.regionMap.getRegion(origin)
             const group = new Group(id, region)
             const groupParams = {
-                group, groupChance, groupGrowth,
+                groupChance: params.get('groupChance'),
+                groupGrowth: params.get('groupGrowth'),
                 regionToGroup: this.regionToGroup,
                 borderRegions: this.borderRegions,
                 regionMap: this.regionMap,
                 graph: this.graph,
+                group,
             }
             const fillConfig = new GroupFillConfig(groupParams)
             this.groupIndex.set(group.id, group)
-            this.groups.push(group)
             return new OrganicFloodFill(region, fillConfig)
         })
 
@@ -98,10 +96,11 @@ export default class RegionGroupMap extends BaseMap {
     }
 
     map(callback) {
-        return this.groups.map(callback)
+        const values = Array.from(this.groupIndex.values())
+        return values.map(callback)
     }
 
     forEach(callback) {
-        this.groups.forEach(callback)
+        this.groupIndex.values().forEach(callback)
     }
 }
