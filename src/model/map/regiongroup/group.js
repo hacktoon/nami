@@ -12,13 +12,13 @@ export class Group {
 
 
 export class GroupFillConfig {
-    constructor(refs, params) {
-        this.chance = params.get('chance')
-        this.growth = params.get('growth')
-        this.regionMap = refs.regionMap
-        this.regionToGroup = refs.regionToGroup
-        this.currentGroup = refs.group
-        this.graph = refs.graph
+    constructor(params) {
+        this.chance = params.groupChance
+        this.growth = params.groupGrowth
+        this.regionMap = params.regionMap
+        this.regionToGroup = params.regionToGroup
+        this.currentGroup = params.group
+        this.graph = params.graph
     }
 
     isEmpty(region) {

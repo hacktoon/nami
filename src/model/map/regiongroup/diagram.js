@@ -5,7 +5,8 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('showGroup', 'Show group', {default: true}),
+        Type.boolean('showGroups', 'Show groups', {default: true}),
+        Type.boolean('showRegions', 'Show regions', {default: true}),
         Type.boolean('showBorder', 'Show border', {default: false}),
     )
 
@@ -16,7 +17,8 @@ export class MapDiagram extends BaseMapDiagram {
     constructor(mapModel, params) {
         super(mapModel)
         this.showBorder = params.get('showBorder')
-        this.showGroup = params.get('showGroup')
+        this.showGroups = params.get('showGroups')
+        this.showRegions = params.get('showRegions')
         this.regionColorMap = new RegionColorMap(mapModel.regionMap)
         this.groupColorMap = new GroupColorMap(mapModel)
     }
@@ -27,8 +29,11 @@ export class MapDiagram extends BaseMapDiagram {
         const regionColor = this.regionColorMap.get(region)
         const groupColor = this.groupColorMap.get(group)
 
-        if (this.showGroup) {
-            const color = regionColor.average(groupColor).average(groupColor)
+        if (this.showGroups) {
+            let color = groupColor
+            if (this.showRegions) {
+                color = regionColor.average(groupColor).average(groupColor)
+            }
             if (this.showBorder && this.mapModel.isRegionBorder(point))
                 return color.darken(80).toHex()
             return color.toHex()
