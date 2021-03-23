@@ -1,6 +1,5 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { Color } from '/lib/base/color'
 import { BaseMapDiagram } from '/model/lib/map'
 
 
@@ -19,7 +18,7 @@ export class MapDiagram extends BaseMapDiagram {
         this.showBorder = params.get('showBorder')
         this.showGroup = params.get('showGroup')
         this.regionColorMap = new RegionColorMap(mapModel.regionMap)
-        this.groupColorMap = new GroupColorMap(mapModel.groupMap)
+        this.groupColorMap = new GroupColorMap(mapModel)
     }
 
     get(point) {
@@ -30,11 +29,11 @@ export class MapDiagram extends BaseMapDiagram {
 
         if (this.showGroup) {
             const color = regionColor.average(groupColor).average(groupColor)
-            if (this.showBorder && this.mapModel.isGroupBorder(point))
+            if (this.showBorder && this.mapModel.isRegionBorder(point))
                 return color.darken(80).toHex()
             return color.toHex()
         }
-        if (this.showBorder && this.mapModel.isGroupBorder(point))
+        if (this.showBorder && this.mapModel.isRegionBorder(point))
             return regionColor.darken(60).toHex()
         return regionColor.toHex()
     }
@@ -55,10 +54,8 @@ class RegionColorMap {
 
 class GroupColorMap {
     constructor(groupMap) {
-        this.map = {}
-        groupMap.forEach(group => {
-            this.map[group.id] = new Color()
-        })
+        const entries = groupMap.map(group => [group.id, group.color])
+        this.map = Object.fromEntries(entries)
     }
 
     get(group) {

@@ -89,6 +89,6 @@ export default class RegionMap extends BaseMap {
     }
 
     map(callback) {
-        return this.regions.map(region => callback(region))
+        return this.regions.map(callback)
     }
 }

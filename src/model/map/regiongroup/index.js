@@ -1,13 +1,17 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
+import { sum } from '/lib/base/number'
+import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
 import { BaseMap } from '/model/lib/map'
 import { MapUI } from '/lib/ui/map'
+import { MultiFill } from '/lib/floodfill'
+import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import RegionMap from '/model/map/region'
 
 import { MapDiagram } from './diagram'
-import { GroupMap } from './group'
+import { Group, GroupMap, GroupFillConfig } from './group'
 
 
 const SCHEMA = new Schema(
@@ -43,9 +47,29 @@ export default class RegionGroupMap extends BaseMap {
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const groupScale = params.get('groupScale')
         const regionData = {width, height, scale, seed, chance, growth}
-        const groupOrigins = EvenPointSampling.create(width, height, groupScale)
+        const origins = EvenPointSampling.create(width, height, groupScale)
         this.regionMap = RegionMap.fromData(regionData)
-        this.groupMap = new GroupMap(this.regionMap, groupOrigins)
+        this.regionToGroup = new Map()
+        this.groupIndex = new Map()
+        this.graph = new Graph()
+        this.groups = []
+
+        const organicFills = origins.map((origin, id) => {
+            const region = this.regionMap.getRegion(origin)
+            const group = new Group(id, region)
+            const refs = {
+                regionToGroup: this.regionToGroup,
+                regionMap: this.regionMap,
+                graph: this.graph,
+                group: group
+            }
+            const fillConfig = new GroupFillConfig(refs, params)
+            this.groupIndex.set(group.id, group)
+            this.groups.push(group)
+            return new OrganicFloodFill(region, fillConfig)
+        })
+
+        new MultiFill(organicFills).fill()
     }
 
     getRegion(point) {
@@ -54,14 +78,18 @@ export default class RegionGroupMap extends BaseMap {
 
     getGroup(point) {
         const region = this.regionMap.getRegion(point)
-        return this.groupMap.get(region)
+        return this.regionToGroup.get(region.id)
     }
 
-    isGroupBorder(point) {
+    isRegionBorder(point) {
         return this.regionMap.isBorder(point)
     }
 
     map(callback) {
-        return this.regionMap.map(region => callback(region))
+        return this.groups.map(callback)
+    }
+
+    forEach(callback) {
+        this.groups.forEach(callback)
     }
 }
