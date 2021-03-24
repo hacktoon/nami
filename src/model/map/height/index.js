@@ -1,7 +1,7 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { BaseMap } from '/model/lib/map'
-import { MapUI } from '/lib/ui/map'
+import { UIMap } from '/lib/ui/map'
 import { TileableDiamondSquare } from '/lib/diamondsquare'
 
 import { MapDiagram } from './diagram'
@@ -20,7 +20,7 @@ export default class HeightMap extends BaseMap {
     static id = 'HeightMap'
     static diagram = MapDiagram
     static schema = SCHEMA
-    static ui = MapUI
+    static ui = UIMap
 
     static create(params) {
         return new HeightMap(params)

@@ -8,10 +8,10 @@ import { Canvas } from '/lib/ui/canvas'
 
 import { MapScene } from '/model/lib/scene'
 
-import { MapMouseTrack } from './mouse'
+import { UIMouseMap } from './mouse'
 
 
-export function MapSceneUI({diagram}) {
+export function UIMapScene({diagram}) {
     const viewport = useRef(null)
     const [width, height] = useResize(viewport)
 
@@ -31,10 +31,10 @@ export function MapSceneUI({diagram}) {
     }
     const handleClick = point => console.info(point)
 
-    return <section className="MapSceneUI">
-        <section className="MapViewCanvasUI" ref={viewport}>
+    return <section className="UIMapScene">
+        <section className="UIMapViewCanvas" ref={viewport}>
             {viewport.current && <>
-                <MapMouseTrack
+                <UIMouseMap
                     scene={scene}
                     onDrag={handleDrag}
                     onClick={handleClick}

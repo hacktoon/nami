@@ -3,7 +3,7 @@ import { Type } from '/lib/base/type'
 import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
 import { BaseMap } from '/model/lib/map'
-import { MapUI } from '/lib/ui/map'
+import { UIMap } from '/lib/ui/map'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
@@ -30,7 +30,7 @@ export default class RegionGroupMap extends BaseMap {
     static id = 'RegionGroupMap'
     static diagram = MapDiagram
     static schema = SCHEMA
-    static ui = MapUI
+    static ui = UIMap
 
     static fromData(data) {
         const map = new Map(Object.entries(data))

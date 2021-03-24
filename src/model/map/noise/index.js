@@ -3,7 +3,7 @@ import { BaseMap } from '/model/lib/map'
 import { SimplexNoise } from '/lib/noise'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { MapUI } from '/lib/ui/map'
+import { UIMap } from '/lib/ui/map'
 
 import { MapDiagram } from './diagram'
 
@@ -22,7 +22,7 @@ export default class NoiseMap extends BaseMap {
     static diagram = MapDiagram
     static id = 'Noise map'
     static schema = SCHEMA
-    static ui = MapUI
+    static ui = UIMap
 
     static create(params) {
         return new NoiseMap(params)

@@ -5,10 +5,10 @@ import { MouseTrack } from '/lib/ui/mouse'
 import { Canvas } from '/lib/ui/canvas'
 
 
-export function MapMouseTrack({scene, ...props}) {
+export function UIMouseMap({scene, ...props}) {
     /*
-     Translates MouseTrack events in pixel points to
-     tile objects using the scene's frame
+     Translate mouse events in pixel points to
+     point objects using the scene's frame
     */
     const frame = scene.frame
 
