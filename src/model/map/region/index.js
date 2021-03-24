@@ -8,7 +8,7 @@ import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { MapDiagram } from './diagram'
-import { Region, RegionMatrix, RegionFillConfig } from './region'
+import { Region, RegionMapTable, RegionFillConfig } from './region'
 
 
 const SAMPLING_ENTRIES = [RandomPointSampling, EvenPointSampling]
@@ -49,15 +49,20 @@ export default class RegionMap extends BaseMap {
         const [scale, width, height] = params.get('scale', 'width', 'height')
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
         this.origins = PointSampling.create(width, height, scale)
-        this.matrix = new RegionMatrix(width, height)
+        this.table = new RegionMapTable(width, height)
         this.graph = new Graph()
         this.regionIndex = new Map()
         this.regions = []
 
         const organicFills = this.origins.map((origin, id) => {
             const region = new Region(id, origin)
-            const refs = {matrix: this.matrix, graph: this.graph, region}
-            const fillConfig = new RegionFillConfig(refs, params)
+            const fillConfig = new RegionFillConfig({
+                chance: params.get('chance'),
+                growth: params.get('growth'),
+                table: this.table,
+                graph: this.graph,
+                region
+            })
             this.regionIndex.set(region.id, region)
             this.regions.push(region)
             return new OrganicFloodFill(region.origin, fillConfig)
@@ -66,12 +71,12 @@ export default class RegionMap extends BaseMap {
     }
 
     getRegion(point) {
-        const id = this.matrix.getRegionId(point)
+        const id = this.table.getRegionId(point)
         return this.regionIndex.get(id)
     }
 
     getBorderRegion(point) {
-        const id = this.matrix.getBorderId(point)
+        const id = this.table.getBorderId(point)
         return this.regionIndex.get(id)
     }
 
@@ -85,7 +90,7 @@ export default class RegionMap extends BaseMap {
     }
 
     isBorder(point) {
-        return this.matrix.isBorder(point)
+        return this.table.isBorder(point)
     }
 
     map(callback) {

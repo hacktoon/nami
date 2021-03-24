@@ -16,7 +16,7 @@ export class Region {
 }
 
 
-export class RegionMatrix {
+export class RegionMapTable {
     constructor(width, height) {
         this.regionIdMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
@@ -49,29 +49,29 @@ export class RegionMatrix {
 
 
 export class RegionFillConfig {
-    constructor(refs, params) {
-        this.chance = params.get('chance')
-        this.growth = params.get('growth')
-        this.currentRegion = refs.region
-        this.graph = refs.graph
-        this.matrix = refs.matrix
+    constructor(config) {
+        this.chance = config.chance
+        this.growth = config.growth
+        this.currentRegion = config.region
+        this.graph = config.graph
+        this.table = config.table
     }
 
     isEmpty(point) {
-        return this.matrix.isEmpty(point)
+        return this.table.isEmpty(point)
     }
 
     setValue(point) {
-        this.matrix.setRegion(point, this.currentRegion.id)
+        this.table.setRegion(point, this.currentRegion.id)
         this.currentRegion.area += 1
     }
 
     checkNeighbor(neighbor, origin) {
         const regionId = this.currentRegion.id
-        const neighborId = this.matrix.getRegionId(neighbor)
+        const neighborId = this.table.getRegionId(neighbor)
         if (neighborId === NO_REGION) return
         if (neighborId === regionId) return
-        this.matrix.setBorder(origin, neighborId)
+        this.table.setBorder(origin, neighborId)
         this.graph.setEdge(regionId, neighborId)
     }
 
