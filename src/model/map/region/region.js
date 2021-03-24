@@ -18,32 +18,44 @@ export class Region {
 
 export class RegionMapTable {
     constructor(width, height) {
-        this.regionIdMatrix = new Matrix(width, height, () => NO_REGION)
+        this.idMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
+        this.index = new Map()
     }
 
     isEmpty(point) {
-        return this.regionIdMatrix.get(point) === NO_REGION
+        return this.idMatrix.get(point) === NO_REGION
     }
 
     isBorder(point) {
         return this.borderMatrix.get(point) !== NO_BORDER
     }
 
-    setRegion(point, id) {
-        return this.regionIdMatrix.set(point, id)
+    setRegion(point, region) {
+        this.index.set(region.id, region)
+        return this.idMatrix.set(point, region.id)
     }
 
     setBorder(point, id) {
         return this.borderMatrix.set(point, id)
     }
 
-    getRegionId(point) {
-        return this.regionIdMatrix.get(point)
+    getRegion(point) {
+        const id = this.idMatrix.get(point)
+        return this.index.get(id)
     }
 
-    getBorderId(point) {
-        return this.borderMatrix.get(point)
+    getRegionById(id) {
+        return this.index.get(id)
+    }
+
+    getBorderRegion(point) {
+        const id = this.borderMatrix.get(point)
+        return this.index.get(id)
+    }
+
+    forEach(callback) {
+        return this.index.forEach(callback)
     }
 }
 
@@ -52,7 +64,7 @@ export class RegionFillConfig {
     constructor(config) {
         this.chance = config.chance
         this.growth = config.growth
-        this.currentRegion = config.region
+        this.region = config.region
         this.graph = config.graph
         this.table = config.table
     }
@@ -62,17 +74,17 @@ export class RegionFillConfig {
     }
 
     setValue(point) {
-        this.table.setRegion(point, this.currentRegion.id)
-        this.currentRegion.area += 1
+        this.table.setRegion(point, this.region)
+        this.region.area += 1
     }
 
-    checkNeighbor(neighbor, origin) {
-        const regionId = this.currentRegion.id
-        const neighborId = this.table.getRegionId(neighbor)
-        if (neighborId === NO_REGION) return
-        if (neighborId === regionId) return
-        this.table.setBorder(origin, neighborId)
-        this.graph.setEdge(regionId, neighborId)
+    checkNeighbor(neighborPoint, origin) {
+        const region = this.region
+        const neighbor = this.table.getRegion(neighborPoint)
+        if (this.table.isEmpty(neighborPoint)) return
+        if (neighbor.id === region.id) return
+        this.table.setBorder(origin, neighbor.id) //TODO: use point here?
+        this.graph.setEdge(region.id, neighbor.id)
     }
 
     getNeighbors(origin) {
