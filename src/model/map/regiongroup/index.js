@@ -90,11 +90,10 @@ export default class RegionGroupMap extends BaseMap {
     }
 
     map(callback) {
-        const groups = this.table.getGroups()
-        return groups.map(callback)
+        return this.table.map(group => callback(group))
     }
 
     forEach(callback) {
-        this.table.getGroups().forEach(callback)
+        this.table.forEach(callback)
     }
 }

@@ -54,8 +54,13 @@ export class RegionMapTable {
         return this.index.get(id)
     }
 
+    map(callback) {
+        const entries = Array.from(this.index.values())
+        return entries.map(callback)
+    }
+
     forEach(callback) {
-        return this.index.forEach(callback)
+        this.index.forEach(callback)
     }
 }
 

@@ -22,12 +22,8 @@ export class RegionGroupTable {
         this.index = new Map()
     }
 
-    register(group) {
-        this.index.set(group.id, group)
-    }
-
     setGroup(region, group) {
-        this.register(group)
+        this.index.set(group.id, group)
         this.regionToGroup.set(region.id, group)
     }
 
@@ -43,12 +39,17 @@ export class RegionGroupTable {
         this.borderRegions.add(region.id)
     }
 
-    getGroups() {
-        return Array.from(this.index.values())
-    }
-
     isRegionEmpty(region) {
         return ! this.regionToGroup.has(region.id)
+    }
+
+    map(callback) {
+        const entries = Array.from(this.index.values())
+        return entries.map(callback)
+    }
+
+    forEach(callback) {
+        this.index.forEach(callback)
     }
 }
 
