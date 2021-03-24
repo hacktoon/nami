@@ -88,11 +88,7 @@ export default class RegionMap extends BaseMap {
     }
 
     map(callback) {
-        const values = []
-        this.table.forEach(region => {
-            return values.push(callback(region))
-        })
-        return values
+        return this.table.map(group => callback(group))
     }
 
     forEach(callback) {
