@@ -24,21 +24,14 @@ class SchemaInstance {
     constructor(schema, map) {
         this.schema = schema
         this.valueMap = map
-        this.types = schema.types
     }
 
     get size() {
         return this.valueMap.size
     }
 
-    update(name, value) {
-        const valueMap = new Map(this.valueMap.entries())
-        valueMap.set(name, value)
-        return new SchemaInstance(this.schema, valueMap)
-    }
-
-    has(name) {
-        return this.valueMap.has(name)
+    get types() {
+        return this.schema.types
     }
 
     get(...names) {
@@ -49,6 +42,16 @@ class SchemaInstance {
             data.push(this.valueMap.get(names[i]))
         }
         return data
+    }
+
+    has(name) {
+        return this.valueMap.has(name)
+    }
+
+    update(name, value) {
+        const valueMap = new Map(this.valueMap.entries())
+        valueMap.set(name, value)
+        return new SchemaInstance(this.schema, valueMap)
     }
 
     entries() {
