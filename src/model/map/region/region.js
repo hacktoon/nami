@@ -87,12 +87,11 @@ export class RegionFillConfig {
     }
 
     checkNeighbor(neighborPoint, origin) {
-        const region = this.region
         const neighbor = this.table.getRegion(neighborPoint)
         if (this.table.isEmpty(neighborPoint)) return
-        if (this.table.isSameRegion(region, neighbor)) return
+        if (this.table.isSameRegion(this.region, neighbor)) return
         this.table.addBorder(origin, neighbor.id) //TODO: use point here?
-        this.graph.setEdge(region.id, neighbor.id)
+        this.graph.setEdge(this.region.id, neighbor.id)
     }
 
     getNeighbors(origin) {
