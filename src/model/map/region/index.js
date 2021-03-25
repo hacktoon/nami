@@ -48,22 +48,22 @@ export default class RegionMap extends BaseMap {
         super(params)
         const [scale, width, height] = params.get('scale', 'width', 'height')
         const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
-        this.origins = PointSampling.create(width, height, scale)
-        this.table = new RegionMapTable(width, height)
-        this.graph = new Graph()
-
-        const organicFills = this.origins.map((origin, id) => {
+        const origins = PointSampling.create(width, height, scale)
+        const table = new RegionMapTable(width, height)
+        const graph = new Graph()
+        const organicFills = origins.map((origin, id) => {
             const region = new Region(id, origin)
             const fillConfig = new RegionFillConfig({
                 chance: params.get('chance'),
                 growth: params.get('growth'),
-                table: this.table,
-                graph: this.graph,
-                region
+                table, graph, region
             })
             return new OrganicFloodFill(region.origin, fillConfig)
         })
         new MultiFill(organicFills).fill()
+
+        this.table = table
+        this.graph = graph
     }
 
     getRegion(point) {

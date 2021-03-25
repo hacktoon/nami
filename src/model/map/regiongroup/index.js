@@ -47,29 +47,28 @@ export default class RegionGroupMap extends BaseMap {
         const [width, height, seed] = params.get('width', 'height', 'seed')
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const groupScale = params.get('groupScale')
-
         const originPoints = EvenPointSampling.create(width, height, groupScale)
         const regionMap = RegionMap.fromData({width, height, scale, seed, chance, growth})
-        this.table = new RegionGroupTable(regionMap)
-        this.graph = new Graph()
-
+        const table = new RegionGroupTable(regionMap)
+        const graph = new Graph()
         const organicFills = originPoints.map((origin, id) => {
             const region = regionMap.getRegion(origin)
+            const group = new Group(id, region)
             const fillConfig = new GroupFillConfig({
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),
-                group: new Group(id, region),
-                table: this.table,
-                graph: this.graph,
+                group, table, graph,
             })
             return new OrganicFloodFill(region, fillConfig)
         })
-
         new MultiFill(organicFills).fill()
+
+        this.table = table
+        this.graph = graph
     }
 
     getRegion(point) {
-        return this.table.regionMap.getRegion(point)
+        return this.table.getRegion(point)
     }
 
     getGroup(point) {
@@ -78,7 +77,7 @@ export default class RegionGroupMap extends BaseMap {
     }
 
     isRegionBorderPoint(point) {
-        return this.table.regionMap.isBorder(point)
+        return this.table.isRegionBorderPoint(point)
     }
 
     isGroupBorderPoint(point) {
