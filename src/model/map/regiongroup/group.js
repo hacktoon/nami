@@ -39,8 +39,8 @@ export class RegionGroupTable {
         return this.regionMap.getRegion(point)
     }
 
-    getBorderRegion(point) {
-        return this.regionMap.getBorderRegion(point)
+    getBorderRegions(point) {
+        return this.regionMap.getBorderRegions(point)
     }
 
     setBorder(region) {

@@ -22,7 +22,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: 'a'})
 )
 
 
@@ -83,9 +83,12 @@ export default class RegionGroupMap extends BaseMap {
     isGroupBorderPoint(point) {
         if (this.isRegionBorder(point)) {
             const group = this.getGroup(point)
-            const borderRegion = this.table.getBorderRegion(point)
-            const borderGroup = this.table.getGroup(borderRegion)
-            return group.id !== borderGroup.id
+            const borderRegions = this.table.getBorderRegions(point)
+            for(let region of borderRegions) {
+                const borderGroup = this.table.getGroup(region)
+                if (group.id !== borderGroup.id)
+                    return true
+            }
         }
         return false
     }

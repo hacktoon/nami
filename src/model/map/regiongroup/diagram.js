@@ -6,8 +6,8 @@ import { BaseMapDiagram } from '/model/lib/map'
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
         Type.boolean('showGroups', 'Show groups', {default: true}),
-        Type.boolean('showGroupBorder', 'Show group border', {default: false}),
-        Type.boolean('showRegions', 'Show regions', {default: true}),
+        Type.boolean('showGroupBorder', 'Show group border', {default: true}),
+        Type.boolean('showRegions', 'Show regions', {default: false}),
         Type.boolean('showRegionBorder', 'Show region border', {default: false}),
     )
 
