@@ -3,7 +3,6 @@ import { Matrix } from '/lib/base/matrix'
 
 
 const NO_REGION = null
-const NO_BORDER = null
 
 
 export class Region {
@@ -19,8 +18,8 @@ export class Region {
 export class RegionMapTable {
     constructor(width, height) {
         this.idMatrix = new Matrix(width, height, () => NO_REGION)
-        this.borderMatrix = new Matrix(width, height, () => NO_BORDER)
-        this.index = new Map()
+        this.borderMatrix = new Matrix(width, height, () => new Set())
+        this.idMap = new Map()
     }
 
     isEmpty(point) {
@@ -28,39 +27,39 @@ export class RegionMapTable {
     }
 
     isBorder(point) {
-        return this.borderMatrix.get(point) !== NO_BORDER
+        return this.borderMatrix.get(point).size > 0
     }
 
     setRegion(point, region) {
-        this.index.set(region.id, region)
+        this.idMap.set(region.id, region)
         return this.idMatrix.set(point, region.id)
     }
 
     getRegion(point) {
         const id = this.idMatrix.get(point)
-        return this.index.get(id)
+        return this.idMap.get(id)
     }
 
     getRegionById(id) {
-        return this.index.get(id)
+        return this.idMap.get(id)
     }
 
-    setBorder(point, id) {
-        return this.borderMatrix.set(point, id)
+    addBorder(point, id) {
+        return this.borderMatrix.get(point).add(id)
     }
 
-    getBorderRegion(point) {
-        const id = this.borderMatrix.get(point)
-        return this.index.get(id)
+    getBorderRegions(point) {
+        const ids = Array.from(this.borderMatrix.get(point))
+        return ids.map(id => this.idMap.get(id))
     }
 
     map(callback) {
-        const entries = Array.from(this.index.values())
+        const entries = Array.from(this.idMap.values())
         return entries.map(callback)
     }
 
     forEach(callback) {
-        this.index.forEach(callback)
+        this.idMap.forEach(callback)
     }
 }
 
@@ -87,8 +86,8 @@ export class RegionFillConfig {
         const region = this.region
         const neighbor = this.table.getRegion(neighborPoint)
         if (this.table.isEmpty(neighborPoint)) return
-        if (neighbor.id === region.id) return
-        this.table.setBorder(origin, neighbor.id) //TODO: use point here?
+        if (neighbor.id === region.id) return // isSameRegion
+        this.table.addBorder(origin, neighbor.id) //TODO: use point here?
         this.graph.setEdge(region.id, neighbor.id)
     }
 

@@ -5,7 +5,7 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
-        Type.boolean('showBorders', 'Show borders', {default: false}),
+        Type.boolean('showBorders', 'Show borders', {default: true}),
         Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
         Type.boolean('showSelectedRegion', 'Show selected region', {default: true}),
         Type.number('selectedRegionId', 'Select region', {default: 0, min: 0, step: 1}),
@@ -31,9 +31,9 @@ export class MapDiagram extends BaseMapDiagram {
 
         if (this.showBorders && isBorder) {
             if (this.showNeighborBorder) {
-                const neighborRegion = this.mapModel.getBorderRegion(point)
-                const borderColor = this.colorMap.get(neighborRegion)
-                return borderColor.darken(50).toHex()
+                const neighborRegions = this.mapModel.getBorderRegions(point)
+                const borderColor = this.colorMap.getMix(neighborRegions)
+                return borderColor.toHex()
             }
             return color.darken(50).toHex()
         }
@@ -58,5 +58,13 @@ class RegionColorMap {
 
     get(region) {
         return this.map[region.id]
+    }
+
+    getMix([firstRegion, ...regions]) {
+        let color = this.get(firstRegion)
+        regions.forEach(region => {
+            color = color.average(this.get(region))
+        })
+        return color
     }
 }

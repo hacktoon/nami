@@ -70,8 +70,8 @@ export default class RegionMap extends BaseMap {
         return this.table.getRegion(point)
     }
 
-    getBorderRegion(point) {
-        return this.table.getBorderRegion(point)
+    getBorderRegions(point) {
+        return this.table.getBorderRegions(point)
     }
 
     getNeighbors(region) {
