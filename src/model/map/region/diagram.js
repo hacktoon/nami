@@ -8,7 +8,7 @@ export class MapDiagram extends BaseMapDiagram {
         Type.boolean('showBorders', 'Show borders', {default: false}),
         Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
         Type.boolean('showSelectedRegion', 'Show selected region', {default: true}),
-        Type.number('selectedRegion', 'Select region', {default: 0, min: 0, step: 1}),
+        Type.number('selectedRegionId', 'Select region', {default: 0, min: 0, step: 1}),
     )
 
     static create(mapModel, params) {
@@ -20,7 +20,7 @@ export class MapDiagram extends BaseMapDiagram {
         this.showBorders = params.get('showBorders')
         this.showNeighborBorder = params.get('showNeighborBorder')
         this.showSelectedRegion = params.get('showSelectedRegion')
-        this.selectedRegion = params.get('selectedRegion')
+        this.selectedRegionId = params.get('selectedRegionId')
         this.colorMap = new RegionColorMap(mapModel)
     }
 
@@ -39,13 +39,10 @@ export class MapDiagram extends BaseMapDiagram {
         }
         if (this.showSelectedRegion) {
             const toggle = (point.x + point.y) % 2 === 0
-            if (this.selectedRegion === region.id) {
+            if (this.selectedRegionId === region.id) {
                 return toggle ? '#000' : '#FFF'
-            } else {
-                const [selectedId, currentId] = [this.selectedRegion, region.id]
-                if (this.mapModel.hasEdge(selectedId, currentId)) {
-                    return toggle ? color.darken(40).toHex() : color.toHex()
-                }
+            } else if (this.mapModel.isNeighbor(this.selectedRegionId, region.id)) {
+                return toggle ? color.darken(40).toHex() : color.toHex()
             }
         }
         return color.toHex()

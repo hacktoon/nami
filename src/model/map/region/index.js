@@ -79,7 +79,7 @@ export default class RegionMap extends BaseMap {
         return edges.map(id => this.table.getRegionById(id))
     }
 
-    hasEdge(id, neighborId) {
+    isNeighbor(id, neighborId) {
         return this.graph.hasEdge(id, neighborId)
     }
 

@@ -30,18 +30,16 @@ export class MapDiagram extends BaseMapDiagram {
         const group = this.mapModel.getGroup(point)
         const regionColor = this.regionColorMap.get(region)
         const groupColor = this.groupColorMap.get(group)
-        const isRegionBorderPoint = this.mapModel.isRegionBorderPoint(point)
-        const isGroupBorderPoint = this.mapModel.isGroupBorderPoint(point)
-        const isBorderRegion = this.mapModel.table.borderRegions.has(region.id)
 
-        if (this.showGroupBorder && isGroupBorderPoint) {
+        if (this.showGroupBorder && this.mapModel.isGroupBorderPoint(point)) {
             return groupColor.darken(60).toHex()
         }
-        if (this.showRegionBorder && isRegionBorderPoint) {
+        if (this.showRegionBorder && this.mapModel.isRegionBorder(point)) {
             let color = this.showGroups ? groupColor.brighten(60) : regionColor.darken(60)
             return color.toHex()
         }
         if (this.showGroups) {
+            const isBorderRegion = this.mapModel.table.borderRegions.has(region.id)
             if (this.showRegions) {
                 let color = regionColor.average(groupColor).average(groupColor)
                 color = isBorderRegion ? color.darken(80) : color

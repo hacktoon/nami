@@ -16,7 +16,7 @@ import { Group, RegionGroupTable, GroupFillConfig } from './group'
 const SCHEMA = new Schema(
     Type.number('width', 'W', {default: 150, step: 1, min: 10, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 10, max: 500}),
-    Type.number('groupScale', 'Gr Scale', {default: 33, step: 1, min: 1}),
+    Type.number('groupScale', 'Gr Scale', {default: 34, step: 1, min: 1}),
     Type.number('groupChance', 'Gr Chance', {default: 0.2, step: 0.1, min: 0.1, max: 1}),
     Type.number('groupGrowth', 'Gr Growth', {default: 12, step: 1, min: 0}),
     Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1}),
@@ -72,20 +72,22 @@ export default class RegionGroupMap extends BaseMap {
     }
 
     getGroup(point) {
-        const region = this.table.getRegionAtPoint(point)
+        const region = this.table.getRegion(point)
         return this.table.getGroup(region)
     }
 
-    isRegionBorderPoint(point) {
-        return this.table.isRegionBorderPoint(point)
+    isRegionBorder(point) {
+        return this.table.isRegionBorder(point)
     }
 
     isGroupBorderPoint(point) {
-        if (! this.isRegionBorderPoint(point)) return false
-        const group = this.getGroup(point)
-        const borderRegion = this.table.regionMap.getBorderRegion(point)
-        const borderGroup = this.table.getGroup(borderRegion)
-        return group.id !== borderGroup.id
+        if (this.isRegionBorder(point)) {
+            const group = this.getGroup(point)
+            const borderRegion = this.table.getBorderRegion(point)
+            const borderGroup = this.table.getGroup(borderRegion)
+            return group.id !== borderGroup.id
+        }
+        return false
     }
 
     map(callback) {

@@ -36,10 +36,6 @@ export class RegionMapTable {
         return this.idMatrix.set(point, region.id)
     }
 
-    setBorder(point, id) {
-        return this.borderMatrix.set(point, id)
-    }
-
     getRegion(point) {
         const id = this.idMatrix.get(point)
         return this.index.get(id)
@@ -47,6 +43,10 @@ export class RegionMapTable {
 
     getRegionById(id) {
         return this.index.get(id)
+    }
+
+    setBorder(point, id) {
+        return this.borderMatrix.set(point, id)
     }
 
     getBorderRegion(point) {
