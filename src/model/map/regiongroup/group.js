@@ -51,6 +51,19 @@ export class RegionGroupTable {
         return this.regionMap.isBorder(point)
     }
 
+    isGroupBorder(group, borderRegions) {
+        for(let region of borderRegions) {
+            const borderGroup = this.getGroup(region)
+            if (! this.isSameGroup(group, borderGroup))
+                return true
+        }
+        return false
+    }
+
+    isSameGroup(group, other) {
+        return group.id === other.id
+    }
+
     isRegionEmpty(region) {
         return ! this.regionToGroup.has(region.id)
     }

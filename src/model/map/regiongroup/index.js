@@ -81,16 +81,11 @@ export default class RegionGroupMap extends BaseMap {
     }
 
     isGroupBorderPoint(point) {
-        if (this.isRegionBorder(point)) {
-            const group = this.getGroup(point)
-            const borderRegions = this.table.getBorderRegions(point)
-            for(let region of borderRegions) {
-                const borderGroup = this.table.getGroup(region)
-                if (group.id !== borderGroup.id)
-                    return true
-            }
-        }
-        return false
+        if (! this.isRegionBorder(point)) return false
+        const group = this.getGroup(point)
+        const borderRegions = this.table.getBorderRegions(point)
+        return this.table.isGroupBorder(group, borderRegions)
+
     }
 
     map(callback) {
