@@ -35,6 +35,10 @@ export class RegionMapTable {
         return this.idMatrix.set(point, region.id)
     }
 
+    isSameRegion(region, other) {
+        return region.id === other.id
+    }
+
     getRegion(point) {
         const id = this.idMatrix.get(point)
         return this.idMap.get(id)
@@ -86,7 +90,7 @@ export class RegionFillConfig {
         const region = this.region
         const neighbor = this.table.getRegion(neighborPoint)
         if (this.table.isEmpty(neighborPoint)) return
-        if (neighbor.id === region.id) return // isSameRegion
+        if (this.table.isSameRegion(region, neighbor)) return
         this.table.addBorder(origin, neighbor.id) //TODO: use point here?
         this.graph.setEdge(region.id, neighbor.id)
     }
