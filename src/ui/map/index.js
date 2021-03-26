@@ -25,12 +25,18 @@ function UIMapDiagram({diagram, map}) {
     const mapDiagram = diagram.create(map, data)
 
     return <>
-        <Form className="MapDiagram"
-            onSubmit={setData}
-            data={data}
-        >
-            <Button label="Update" />
-        </Form>
-        <UIMapScene diagram={mapDiagram} />
+        <section className="UIMapSidebar">
+            <Form className="MapViewForm"
+                data={sdata}
+                onSubmit={ssetData}>
+                <Button label="Update" />
+            </Form>
+            <Form className="MapDiagram"
+                onSubmit={setData}
+                data={data}>
+                <Button label="Update" />
+            </Form>
+        </section>
+        <UIMapScene diagram={mapDiagram} sceneData={sceneData} />
     </>
 }

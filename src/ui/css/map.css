@@ -7,9 +7,9 @@
 }
 
 .UIMap .Form {
-    padding: .5rem;
-    gap: 1rem;
     display: grid;
+    gap: 1rem;
+    padding: .5rem;
 }
 
 .UIMap .Form.Map  {
@@ -19,10 +19,11 @@
     grid-column: span 2;
 }
 
-.UIMap .Form.MapDiagram {
+.UIMap .UIMapSidebar {
     background: #111;
     color: #FFF;
-    gap: .5rem;
+    display: grid;
+    gap: .1rem;
     grid-auto-flow: row;
     grid-auto-rows: min-content;
     grid-row: 2;

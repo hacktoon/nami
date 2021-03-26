@@ -11,7 +11,7 @@ import { MapScene } from '/model/lib/map/scene'
 import { UIMouseMap } from './mouse'
 
 
-export function UIMapScene({diagram}) {
+export function UIMapScene({diagram, sceneData}) {
     const viewport = useRef(null)
     const [width, height] = useResize(viewport)
 
@@ -42,23 +42,12 @@ export function UIMapScene({diagram}) {
                 <MapCanvas scene={scene} />
             </>}
         </section>
-        <Form className="MapViewForm"
-            data={data}
-            onSubmit={setData}
-        >
-            <Button label="Update" />
-        </Form>
     </section>
 }
 
 
 function MapCanvas({scene}) {
     const handleInit = canvas => scene.render(canvas)
-
-    return <Canvas
-        width={scene.width}
-        height={scene.height}
-        onInit={handleInit}
-    />
+    return <Canvas width={scene.width} height={scene.height} onInit={handleInit}/>
 }
 
