@@ -22,8 +22,8 @@ export function UIMapScene({diagram}) {
 
     const handleDragStart = () => setPrevFocus(scene.focus)
     const handleDrag = point => {
-        const dragPoint = prevFocus.plus(point)
-        setData(data.update('focus', dragPoint))
+        const focus = prevFocus.plus(point)
+        setData(data.update('focus', focus))
     }
     const handleWheel = amount => {
         const zoom = scene.zoom + amount
