@@ -2,9 +2,9 @@ import React, { useState, useRef } from 'react'
 
 import { Point } from '/lib/base/point'
 import { useResize } from '/ui'
+import { Canvas } from '/ui/canvas'
 import { Form } from '/ui/form'
 import { Button } from '/ui/form/button'
-import { Canvas } from '/ui/canvas'
 
 import { MapScene } from '/model/lib/map/scene'
 
@@ -22,12 +22,10 @@ export function UIMapScene({diagram}) {
 
     const handleDragStart = () => setPrevFocus(scene.focus)
     const handleDrag = point => {
-        const focus = prevFocus.plus(point)
-        setData(data.update('focus', focus))
+        setData(data.update('focus', prevFocus.plus(point)))
     }
     const handleWheel = amount => {
-        const zoom = scene.zoom + amount
-        setData(data.update('zoom', zoom))
+        setData(data.update('zoom', scene.zoom + amount))
     }
     const handleClick = point => console.info(point)
 

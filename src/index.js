@@ -14,8 +14,8 @@ import RegionMap from '/model/map/region'
 import RegionGroupMap from '/model/map/regiongroup'
 import NoiseMap from '/model/map/noise'
 
-import "./css/base.css"
-import "./css/map.css"
+import "/ui/css/base.css"
+import "/ui/css/map.css"
 
 
 const APPS = [
