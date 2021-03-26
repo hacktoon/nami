@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import { Form } from '/lib/ui/form'
-import { Button } from '/lib/ui/form/button'
+import { Form } from '/ui/form'
+import { Button } from '/ui/form/button'
 import { UIMapScene } from './scene'
 
 

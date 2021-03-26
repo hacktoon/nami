@@ -1,7 +1,7 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { BaseMap } from '/model/lib/map'
-import { UIMap } from '/lib/ui/map'
+import { UIMap } from '/ui/map'
 import { TileableDiamondSquare } from '/lib/diamondsquare'
 
 import { MapDiagram } from './diagram'

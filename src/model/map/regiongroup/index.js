@@ -3,7 +3,7 @@ import { Type } from '/lib/base/type'
 import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
 import { BaseMap } from '/model/lib/map'
-import { UIMap } from '/lib/ui/map'
+import { UIMap } from '/ui/map'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 

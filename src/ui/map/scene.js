@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react'
 
 import { Point } from '/lib/base/point'
-import { useResize } from '/lib/ui'
-import { Form } from '/lib/ui/form'
-import { Button } from '/lib/ui/form/button'
-import { Canvas } from '/lib/ui/canvas'
+import { useResize } from '/ui'
+import { Form } from '/ui/form'
+import { Button } from '/ui/form/button'
+import { Canvas } from '/ui/canvas'
 
 import { MapScene } from '/model/lib/scene'
 

@@ -3,7 +3,7 @@ import { BaseMap } from '/model/lib/map'
 import { SimplexNoise } from '/lib/noise'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { UIMap } from '/lib/ui/map'
+import { UIMap } from '/ui/map'
 
 import { MapDiagram } from './diagram'
 
