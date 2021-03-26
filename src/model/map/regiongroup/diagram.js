@@ -32,7 +32,7 @@ export class MapDiagram extends BaseMapDiagram {
         const groupColor = this.groupColorMap.get(group)
 
         if (this.showGroupBorder && this.mapModel.isGroupBorderPoint(point)) {
-            return groupColor.darken(50).toHex()
+            return groupColor.brighten(50).toHex()
         }
         if (this.showRegionBorder && this.mapModel.isRegionBorder(point)) {
             let color = this.showGroups ? groupColor.brighten(60) : regionColor.darken(60)
@@ -48,7 +48,7 @@ export class MapDiagram extends BaseMapDiagram {
             return groupColor.toHex()
         }
         if (this.showRegions) {
-            let color = isBorderRegion ? regionColor.darken(80) : regionColor
+            let color = isBorderRegion ? regionColor.darken(60) : regionColor
             return color.toHex()
         }
         return regionColor.grayscale().toHex()
