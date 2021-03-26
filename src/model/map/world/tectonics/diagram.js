@@ -1,6 +1,5 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { Point } from '/lib/base/point'
 import { BaseMapDiagram } from '/model/lib/map'
 
 

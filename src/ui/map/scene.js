@@ -6,7 +6,7 @@ import { Form } from '/ui/form'
 import { Button } from '/ui/form/button'
 import { Canvas } from '/ui/canvas'
 
-import { MapScene } from '/model/lib/scene'
+import { MapScene } from '/model/lib/map/scene'
 
 import { UIMouseMap } from './mouse'
 

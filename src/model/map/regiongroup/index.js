@@ -22,7 +22,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: 'a'})
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 
