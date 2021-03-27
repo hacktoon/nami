@@ -4,7 +4,7 @@ import { Color } from '/lib/base/color'
 import { Point } from '/lib/base/point'
 
 
-export function FieldSet({types, data}) {
+export function FieldSet({types, data, onChange}) {
     return types.map((type, id) => {
         const FieldComponent = TYPE_FIELD_MAP[type.type]
         const value = data.get(type.name)
@@ -13,6 +13,7 @@ export function FieldSet({types, data}) {
             key={id}
             name={type.name}
             label={type.label}
+            onChange={onChange}
             value={value}
             {...type.props}
         />
@@ -20,16 +21,20 @@ export function FieldSet({types, data}) {
 }
 
 
-function NumberField({name, label, value, ...props}) {
+function NumberField({name, label, value, onChange, ...props}) {
     const [number, setNumber] = useState(value)
-    const handleChange = e => setNumber(Number(e.target.value))
+    const handleChange = e => {
+        const inputValue = Number(e.target.value)
+        setNumber(inputValue)
+        onChange(name, inputValue)
+    }
 
     useEffect(() => setNumber(value), [value])
     return <Field type='number' label={label} value={value}>
         <input
             name={name}
             type='number'
-            value={number}
+            defaultValue={number}
             onChange={handleChange}
             {...props}
         />
@@ -37,9 +42,13 @@ function NumberField({name, label, value, ...props}) {
 }
 
 
-function TextField({name, label, value, ...props}) {
+function TextField({name, label, value, onChange, ...props}) {
     const [text, setText] = useState(value)
-    const handleChange = e => setText(String(e.target.value).trim())
+    const handleChange = e => {
+        const inputValue = String(e.target.value)
+        setText(inputValue)
+        onChange(name, inputValue)
+    }
 
     useEffect(() => setText(value), [value])
     return <Field type='text' label={label}>
@@ -54,30 +63,36 @@ function TextField({name, label, value, ...props}) {
 }
 
 
-function SelectField({name, label, value, ...props}) {
+function SelectField({name, label, value, onChange, ...props}) {
     const [selected, setSelected] = useState(value)
 
-    function buildSelectOptions() {
+    const buildSelectOptions = () => {
         const _options = props.options.map(model => [model.id, model.id])
         return _options.map((option, index) => {
             const [value, label] = option
-            return <option key={index} value={value}>{label}
+            return <option key={index} value={value}>
+                {label}
             </option>
         })
     }
 
+    const handleChange = event => onChange(name, event.target.value)
+
     useEffect(() => setSelected(value), [value])
     return <Field type='select' label={label}>
-        <select name={name} defaultValue={selected}>
+        <select name={name} defaultValue={selected} onChange={handleChange}>
             {useMemo(() => buildSelectOptions(), [value])}
         </select>
     </Field>
 }
 
 
-function BooleanField({name, label, value}) {
+function BooleanField({name, label, value, onChange}) {
     const [bool, setBool] = useState(value)
-    const handleClick = () => setBool(!bool)
+    const handleClick = () => {
+        onChange(name, String(!bool))
+        setBool(!bool)
+    }
 
     useEffect(() => setBool(value), [value])
     return <Field type='boolean' label={label} status={bool}>
@@ -87,13 +102,14 @@ function BooleanField({name, label, value}) {
 }
 
 
-function ColorField({name, label, value, ...props}) {
+function ColorField({name, label, value, onChange, ...props}) {
     const [color, setColor] = useState(value)
     const [hexColor, setHexColor] = useState(value.toHex())
     const handleChange = event => {
-        const hex = String(event.target.value).trim()
+        const hex = String(event.target.value)
         setHexColor(hex)
         setColor(Color.fromHex(hex))
+        onChange(name, hex)
     }
 
     useEffect(() => {
@@ -114,11 +130,15 @@ function ColorField({name, label, value, ...props}) {
 }
 
 
-function PointField({name, label, value, ...props}) {
+function PointField({name, label, value, onChange, ...props}) {
     const [point, setPoint] = useState(value)
     const handleXChange = e => handleChange(e.target.value, point.y)
     const handleYChange = e => handleChange(point.x, e.target.value)
-    const handleChange = (x, y) => setPoint(new Point(x, y))
+    const handleChange = (x, y) => {
+        const point = new Point(x, y)
+        onChange(name, point.hash)
+        setPoint(point)
+    }
 
     useEffect(() => setPoint(value), [value])
     return <Field type='point' label={label}>

@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react'
 
 import { Point } from '/lib/base/point'
-import { useResize } from '/ui'
 import { Canvas } from '/ui/canvas'
+import { useResize } from '/ui'
 
 import { MapScene } from '/model/lib/map/scene'
 

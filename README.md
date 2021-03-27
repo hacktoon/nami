@@ -8,6 +8,9 @@
 
 ## ROADMAP
 
+- Solve `[Violation] 'input' handler` message
+- Store form parameters in localStorage
+
 #### TectonicsMap
 - Pass RegionMap setValue to send noise point to generate continents in plate
 - Create PlateMatrix
@@ -56,4 +59,3 @@
   - Use offscreen canvas when `map.size <  screen.size`
   - Add tool to live-test drawing functions on console
 - Add/use URL with parameters
-- Store form parameters in localStorage

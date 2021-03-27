@@ -12,9 +12,7 @@ export function UIMap({model}) {
     const map = model.create(data)
 
     return <section className='UIMap'>
-        <Form className="Map"
-            data={data}
-            onSubmit={setData}>
+        <Form className="Map" data={data} onSubmit={setData}>
             <Button label="New" />
         </Form>
         <UIMapDiagram diagram={model.diagram} map={map} />
