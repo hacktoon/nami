@@ -8,10 +8,6 @@
 
 ## ROADMAP
 
-- LocalStorage for form fields
-- Enable onChange
-- Canvas optimization
-
 #### TectonicsMap
 - Pass RegionMap setValue to send noise point to generate continents in plate
 - Create PlateMatrix
@@ -56,8 +52,6 @@
   - create junction points between route ends to set midpath detours
 
 ### Interface
-- Put all form options on sidebar
-- Move sidebar to the right
 - Optimize canvas rendering
   - Use offscreen canvas when `map.size <  screen.size`
   - Add tool to live-test drawing functions on console

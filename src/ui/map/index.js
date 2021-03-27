@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 
 import { Form } from '/ui/form'
 import { Button } from '/ui/form/button'
+import { MapScene } from '/model/lib/map/scene'
+
 import { UIMapScene } from './scene'
 
 
@@ -21,22 +23,34 @@ export function UIMap({model}) {
 
 
 function UIMapDiagram({diagram, map}) {
-    const [data, setData] = useState(diagram.schema.parse())
-    const mapDiagram = diagram.create(map, data)
+    const [diagramData, setDiagramData] = useState(diagram.schema.parse())
+    const [sceneData, setSceneData] = useState(MapScene.schema.parse())
+
+    const mapDiagram = diagram.create(map, diagramData)
+
+    const handleDrag = point => setSceneData(sceneData.update('focus', point))
+    const handleWheel = amount => setSceneData(sceneData.update('zoom', amount))
+    const handleClick = point => console.info('Click', point)
 
     return <>
+        <UIMapScene
+            diagram={mapDiagram}
+            sceneData={sceneData}
+            handleDrag={handleDrag}
+            handleWheel={handleWheel}
+            handleClick={handleClick}
+        />
         <section className="UIMapSidebar">
-            <Form className="MapViewForm"
-                data={sdata}
-                onSubmit={ssetData}>
+            <Form className="MapSceneForm"
+                data={sceneData}
+                onSubmit={setSceneData}>
                 <Button label="Update" />
             </Form>
-            <Form className="MapDiagram"
-                onSubmit={setData}
-                data={data}>
+            <Form className="MapDiagramForm"
+                onSubmit={setDiagramData}
+                data={diagramData}>
                 <Button label="Update" />
             </Form>
         </section>
-        <UIMapScene diagram={mapDiagram} sceneData={sceneData} />
     </>
 }

@@ -3,7 +3,7 @@
 .UIMap {
     display: grid;
     grid-template-rows: min-content auto;
-    grid-template-columns: 20% 1fr;
+    grid-template-columns: 1fr 20%;
 }
 
 .UIMap .Form {
@@ -26,7 +26,6 @@
     gap: .1rem;
     grid-auto-flow: row;
     grid-auto-rows: min-content;
-    grid-row: 2;
 }
 
 .UIMap .UIMapScene {
@@ -37,29 +36,18 @@
         linear-gradient(-45deg, transparent 75%, #E8E8E8 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-    display: grid;
-    grid-template-rows: auto min-content;
-}
-
-.UIMap .UIMapViewCanvas {
     position: relative;
 }
 
-.UIMap .UIMapViewCanvas .MouseTrack {
+
+.UIMap .UIMapScene .MouseTrack {
     box-shadow: inset 0 0 .5rem #000;
 }
 
-.UIMap .MapViewForm {
-    background-color: #333;
+.UIMap .MapSceneForm {
     color: #FFF;
-    height: 3rem;
-    grid-auto-flow: column;
 }
 
-.UIMap .MapViewForm input {
-    background-color: #FFF;
-    color: #000;
-}
 
 /* TEST COMPONENT ======================================= */
 
