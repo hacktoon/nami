@@ -7,7 +7,6 @@ import { Form } from '/ui/form'
 import { Button } from '/ui/form/button'
 import { Title } from '/ui'
 
-import { TestApp } from '/ui/test'
 import TectonicsMap from '/model/map/world/tectonics'
 import HeightMap from '/model/map/height/'
 import RegionMap from '/model/map/region'
@@ -19,7 +18,6 @@ import "/ui/css/map.css"
 
 
 const APPS = [
-    TestApp,
     HeightMap,
     NoiseMap,
     TectonicsMap,

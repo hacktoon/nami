@@ -51,11 +51,3 @@
     box-shadow: inset 0 0 .5rem #000;
 }
 
-
-/* TEST COMPONENT ======================================= */
-
-.UITestApp {
-    background: #EEE;
-    display: block;
-    padding: .5rem;
-}
