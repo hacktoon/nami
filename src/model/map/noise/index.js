@@ -1,6 +1,6 @@
 import { Matrix } from '/lib/base/matrix'
 import { BaseMap } from '/model/lib/map'
-import { SimplexNoise } from '/lib/noise'
+import { SimplexNoise } from '/lib/fractal/noise'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { UIMap } from '/ui/map'

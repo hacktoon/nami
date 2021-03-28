@@ -2,7 +2,7 @@ import { Matrix } from '/lib/base/matrix'
 import { Point } from '/lib/base/point'
 import { Color } from '/lib/base/color'
 import { Random } from '/lib/base/random'
-import { SimplexNoise } from '/lib/noise'
+import { SimplexNoise } from '/lib/fractal/noise'
 
 /*
 TODO
