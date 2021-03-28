@@ -25,6 +25,10 @@ class BaseType {
     parse(value) {
         return value
     }
+
+    unparse(value) {
+        return String(value)
+    }
 }
 
 
@@ -52,9 +56,12 @@ class NumberType extends BaseType {
 class ColorType extends TextType {
     static type = 'color'
 
-    parse(text) {
-        const hex = super.parse(text)
+    parse(hex) {
         return Color.fromHex(hex)
+    }
+
+    unparse(color) {
+        return color.toHex()
     }
 }
 
@@ -62,8 +69,12 @@ class ColorType extends TextType {
 class PointType extends BaseType {
     static type = 'point'
 
-    parse(text) {
-        return Point.fromHash(text)
+    parse(hash) {
+        return Point.fromHash(hash)
+    }
+
+    unparse(point) {
+        return point.hash
     }
 }
 

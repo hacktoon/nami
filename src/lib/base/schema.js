@@ -17,6 +17,16 @@ export class Schema {
         }
         return new SchemaInstance(this, map)
     }
+
+    unparse(schemaInstance) {
+        const map = new Map()
+        for(let type of schemaInstance.types) {
+            const name = type.name
+            const value = schemaInstance.get(name)
+            map.set(name, type.unparse(value))
+        }
+        return map
+    }
 }
 
 

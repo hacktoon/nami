@@ -16,10 +16,13 @@ export function Form({data, onSubmit, ...props}) {
     }
 
     const handleChange = (name, value) => {
-        valueMap.set(name, value)
-        console.log(name, value);
+        // valueMap.set(name, value)
+        let raw = data.schema.unparse(data)
+        console.log(raw)
+        const schemaInstance = data.schema.parse(raw)
+        console.log(schemaInstance)
         // onSubmit(data.schema.parse(valueMap))
-        setValueMap(valueMap)
+        // setValueMap(valueMap)
     }
 
     const className = `Form ${props.className}`
