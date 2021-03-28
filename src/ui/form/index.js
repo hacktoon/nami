@@ -4,7 +4,7 @@ import { FieldSet } from './field'
 
 
 export function Form({data, onSubmit, ...props}) {
-    const [valueMap, setValueMap] = useState(data.valueMap)
+    const [valueMap, setValueMap] = useState(data.schema.unparse(data))
 
     const handleSubmit = event => {
         event.preventDefault()
@@ -16,13 +16,9 @@ export function Form({data, onSubmit, ...props}) {
     }
 
     const handleChange = (name, value) => {
-        // valueMap.set(name, value)
-        let raw = data.schema.unparse(data)
-        console.log(raw)
-        const schemaInstance = data.schema.parse(raw)
-        console.log(schemaInstance)
-        // onSubmit(data.schema.parse(valueMap))
-        // setValueMap(valueMap)
+        const map = new Map([...valueMap, [name, value]])
+        setValueMap(map)
+        onSubmit(data.schema.parse(map))
     }
 
     const className = `Form ${props.className}`
