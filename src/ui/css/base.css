@@ -95,13 +95,23 @@ canvas { display: block; }
 
 /* POINT FIELD ============================== */
 
-.Field.point .FieldValue { display: flex; }
+.Field.point .FieldValue,
+.Field.point .FieldValue .coordinate,
 .Field.point .FieldValue input {
-    margin-right: 10px;
+    display: flex;
+}
+.Field.point .FieldValue .coordinate span {
+    align-items: center;
+    background-color: #CCC;
+    color: #666;
+    display: flex;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0 .5rem;
 }
 
-.Field.point .FieldValue input:last-child {
-    margin-right: 0;
+.Field.point .FieldValue .coordinate:last-child {
+    margin-left: .5rem;
 }
 
 

@@ -143,18 +143,24 @@ function PointField({name, label, value, onChange, ...props}) {
     useEffect(() => setPoint(value), [value])
     return <Field type='point' label={label}>
         <input name={name} type='hidden' value={point.hash} />
-        <input
-            type='number'
-            value={point.x}
-            onChange={handleXChange}
-            {...props}
-        />
-        <input
-            type='number'
-            value={point.y}
-            onChange={handleYChange}
-            {...props}
-        />
+        <div className="coordinate">
+            <span>x</span>
+            <input
+                type='number'
+                value={point.x}
+                onChange={handleXChange}
+                {...props}
+            />
+        </div>
+        <div className="coordinate">
+            <span>y</span>
+            <input
+                type='number'
+                value={point.y}
+                onChange={handleYChange}
+                {...props}
+            />
+        </div>
     </Field>
 }
 
