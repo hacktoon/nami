@@ -55,6 +55,7 @@
   - create junction points between route ends to set midpath detours
 
 ### Interface
+- Cache map values in localStorage
 - Optimize canvas rendering
   - Use offscreen canvas when `map.size <  screen.size`
   - Add tool to live-test drawing functions on console

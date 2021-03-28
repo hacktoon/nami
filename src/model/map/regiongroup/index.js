@@ -14,7 +14,7 @@ import { Group, RegionGroupTable, GroupFillConfig } from './group'
 
 
 const SCHEMA = new Schema(
-    'RegionGroup',
+    'RegionGroupMap',
     Type.number('width', 'W', {default: 150, step: 1, min: 10, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 10, max: 500}),
     Type.number('groupScale', 'Gr Scale', {default: 34, step: 1, min: 1}),
@@ -49,7 +49,8 @@ export default class RegionGroupMap extends BaseMap {
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const groupScale = params.get('groupScale')
         const originPoints = EvenPointSampling.create(width, height, groupScale)
-        const regionMap = RegionMap.fromData({width, height, scale, seed, chance, growth})
+        const data = {width, height, scale, seed, chance, growth}
+        const regionMap = RegionMap.fromData(data)
         const table = new RegionGroupTable(regionMap)
         const graph = new Graph()
         const organicFills = originPoints.map((origin, id) => {
