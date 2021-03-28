@@ -26,4 +26,3 @@ export function Form({data, onSubmit, ...props}) {
         {props.children}
     </form>
 }
-

@@ -1,6 +1,7 @@
 
 export class Schema {
-    constructor(...types) {
+    constructor(name, ...types) {
+        this.name = name
         this.types = types
     }
 

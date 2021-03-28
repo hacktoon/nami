@@ -8,14 +8,14 @@ import { Point } from '/lib/base/point'
 import { Color } from '/lib/base/color'
 
 
-export function TestAppUI({model}) {
+export function UITestApp({model}) {
     const [data, setData] = useState(model.schema.parse())
 
     const handleSubmit = data => {
         setData(data)
     }
 
-    return <section className='TestAppUI'>
+    return <section className='UITestApp'>
         <button onClick={() => {
             const m = new Map([
                 ['seed', 'default'],
@@ -47,9 +47,10 @@ export function TestAppUI({model}) {
 
 
 export class TestApp {
-    static ui = TestAppUI
+    static ui = UITestApp
     static id = 'Test'
     static schema = new Schema(
+        'TestApp',
         Type.number('count', 'Count', {default: 4}),
         Type.text('seed', 'Seed', {default: 'seed'}),
         Type.boolean('active', 'Active', {default: false}),

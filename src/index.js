@@ -35,6 +35,7 @@ const appMap = new Map(APPS.map(model => {
 
 class App {
     static schema = new Schema(
+        'App',
         Type.selection('app', 'App', {default: RegionGroupMap.id, options: APPS})
     )
 }

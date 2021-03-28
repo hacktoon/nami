@@ -8,6 +8,7 @@ import { MapDiagram } from './diagram'
 
 
 const SCHEMA = new Schema(
+    'HeightMap',
     Type.number('roughness', 'Roughness', {default: 8, min: 1, step: 1}),
     Type.selection('size', 'Size', {default: 257, options: [
         {id: 257}, {id: 129}, {id: 65}

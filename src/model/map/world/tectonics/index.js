@@ -11,6 +11,7 @@ import { Plate } from './plate'
 
 
 const SCHEMA = new Schema(
+    'TectonicsMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
     Type.number('scale', 'Scale', {default: 30, step: 1, min: 1}),
@@ -26,7 +27,7 @@ const RIFT = 3
 
 
 export default class TectonicsMap extends BaseMap {
-    static id = 'Tectonics map'
+    static id = 'TectonicsMap'
     static diagram = MapDiagram
     static schema = SCHEMA
     static ui = UIMap

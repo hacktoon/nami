@@ -14,6 +14,7 @@ import { Group, RegionGroupTable, GroupFillConfig } from './group'
 
 
 const SCHEMA = new Schema(
+    'RegionGroup',
     Type.number('width', 'W', {default: 150, step: 1, min: 10, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 10, max: 500}),
     Type.number('groupScale', 'Gr Scale', {default: 34, step: 1, min: 1}),

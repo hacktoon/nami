@@ -3,13 +3,17 @@ import { Type } from '/lib/base/type'
 import { BaseMapDiagram } from '/model/lib/map'
 
 
+const SCHEMA = new Schema(
+    'RegionGroupMapDiagram',
+    Type.boolean('showGroups', 'Show groups', {default: true}),
+    Type.boolean('showGroupBorder', 'Show group border', {default: true}),
+    Type.boolean('showRegions', 'Show regions', {default: false}),
+    Type.boolean('showRegionBorder', 'Show region border', {default: false}),
+)
+
+
 export class MapDiagram extends BaseMapDiagram {
-    static schema = new Schema(
-        Type.boolean('showGroups', 'Show groups', {default: true}),
-        Type.boolean('showGroupBorder', 'Show group border', {default: true}),
-        Type.boolean('showRegions', 'Show regions', {default: false}),
-        Type.boolean('showRegionBorder', 'Show region border', {default: false}),
-    )
+    static schema = SCHEMA
 
     static create(mapModel, params) {
         return new MapDiagram(mapModel, params)

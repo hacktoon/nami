@@ -5,6 +5,7 @@ import { BaseMapDiagram } from '/model/lib/map'
 
 export class MapDiagram extends BaseMapDiagram {
     static schema = new Schema(
+        'TectonicsMapDiagram',
         Type.boolean('showPlates', 'Show plates', {default: true}),
         Type.boolean('showProvinces', 'Show provinces', {default: true}),
     )

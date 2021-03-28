@@ -15,6 +15,7 @@ const SAMPLING_ENTRIES = [RandomPointSampling, EvenPointSampling]
 const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
 
 const SCHEMA = new Schema(
+    'RegionMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 256}),
     Type.number('scale', 'Scale', {default: 20, step: 1, min: 1}),

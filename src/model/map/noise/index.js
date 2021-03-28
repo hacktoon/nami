@@ -9,6 +9,7 @@ import { MapDiagram } from './diagram'
 
 
 const SCHEMA = new Schema(
+    'NoiseMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 150, step: 1, min: 1}),
     Type.number('detail', 'Detail', {default: 8, step: 1, min: 1, max: 20}),
@@ -20,7 +21,7 @@ const SCHEMA = new Schema(
 
 export default class NoiseMap extends BaseMap {
     static diagram = MapDiagram
-    static id = 'Noise map'
+    static id = 'NoiseMap'
     static schema = SCHEMA
     static ui = UIMap
 
