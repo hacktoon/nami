@@ -1,9 +1,6 @@
 import { Color } from '/lib/base/color'
 
 
-const NO_GROUP = null
-
-
 export class Group {
     constructor(id, origin) {
         this.id = id
@@ -27,6 +24,10 @@ export class RegionGroupTable {
         this.regionToGroup.set(region.id, group)
     }
 
+    setBorder(region) {
+        this.borderRegions.add(region.id)
+    }
+
     getRegion(point) {
         return this.regionMap.getRegion(point)
     }
@@ -41,10 +42,6 @@ export class RegionGroupTable {
 
     getBorderRegions(point) {
         return this.regionMap.getBorderRegions(point)
-    }
-
-    setBorder(region) {
-        this.borderRegions.add(region.id)
     }
 
     isRegionBorder(point) {
