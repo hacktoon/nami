@@ -8,8 +8,7 @@
 
 ## ROADMAP
 
-- Solve `[Violation] 'input' handler` message
-- Store form parameters in localStorage
+
 
 #### TectonicsMap
 - Pass RegionMap setValue to send noise point to generate continents in plate
@@ -45,6 +44,7 @@
 - Value range: 0:10, varies according to month
 
 #### RainMap
+- Annual range: changes over month - winter/summer
 - Value range: 0:10, varies according to month and windmap
 
 #### Other
@@ -58,4 +58,4 @@
 - Optimize canvas rendering
   - Use offscreen canvas when `map.size <  screen.size`
   - Add tool to live-test drawing functions on console
-- Add/use URL with parameters
+- Solve `[Violation] 'input' handler` message by storing commands

@@ -6,7 +6,7 @@ import { useResize } from '/ui'
 
 import { MapScene } from '/model/lib/map/scene'
 
-import { UIMouseMap } from './mouse'
+import { UIMapMouse } from './mouse'
 
 
 export function UIMapScene(props) {
@@ -22,7 +22,7 @@ export function UIMapScene(props) {
 
     return <section className="UIMapScene" ref={viewport}>
         {viewport.current && <>
-            <UIMouseMap
+            <UIMapMouse
                 scene={scene}
                 onDrag={handleDrag}
                 onClick={handleClick}
