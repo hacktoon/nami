@@ -17,16 +17,6 @@ export class Schema {
         }
         return new SchemaInstance(this, map)
     }
-
-    unparse(schemaInstance) {
-        const map = new Map()
-        for(let type of schemaInstance.types) {
-            const name = type.name
-            const value = schemaInstance.get(name)
-            map.set(name, type.unparse(value))
-        }
-        return map
-    }
 }
 
 
@@ -54,17 +44,18 @@ class SchemaInstance {
         return data
     }
 
-    has(name) {
-        return this.valueMap.has(name)
-    }
-
     update(name, value) {
-        const valueMap = new Map(this.valueMap.entries())
-        valueMap.set(name, value)
-        return new SchemaInstance(this.schema, valueMap)
+        const map = new Map([...this.valueMap, [name, value]])
+        return new SchemaInstance(this.schema, map)
     }
 
-    entries() {
-        return this.valueMap.entries()
+    unparse() {
+        const map = new Map()
+        for(let type of this.types) {
+            const name = type.name
+            const value = this.get(name)
+            map.set(name, type.unparse(value))
+        }
+        return map
     }
 }

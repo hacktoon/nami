@@ -34,7 +34,7 @@ function NumberField({name, label, value, onChange, ...props}) {
         <input
             name={name}
             type='number'
-            defaultValue={number}
+            value={number}
             onChange={handleChange}
             {...props}
         />
@@ -142,7 +142,6 @@ function PointField({name, label, value, onChange, ...props}) {
 
     useEffect(() => setPoint(value), [value])
     return <Field type='point' label={label}>
-        <input name={name} type='hidden' value={point.hash} />
         <div className="coordinate">
             <span>x</span>
             <input

@@ -27,7 +27,7 @@ function UIMapDiagram({diagram, map}) {
     const mapDiagram = diagram.create(map, diagramData)
 
     const handleDrag = point => setSceneData(sceneData.update('focus', point))
-    const handleWheel = amount => setSceneData(sceneData.update('zoom', amount))
+    const handleWheel = zoom => setSceneData(sceneData.update('zoom', zoom))
     const handleClick = point => console.info('Click', point)
 
     return <>
@@ -42,12 +42,10 @@ function UIMapDiagram({diagram, map}) {
             <Form className="MapSceneForm"
                 data={sceneData}
                 onSubmit={setSceneData}>
-                <Button label="Update" />
             </Form>
             <Form className="MapDiagramForm"
-                onSubmit={setDiagramData}
-                data={diagramData}>
-                <Button label="Update" />
+                data={diagramData}
+                onSubmit={setDiagramData}>
             </Form>
         </section>
     </>
