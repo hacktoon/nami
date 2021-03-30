@@ -1,10 +1,10 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { BaseMapDiagram } from '/model/lib/map'
+import { TileMapDiagram } from '/model/lib/tilemap'
 
 
 const SCHEMA = new Schema(
-    'RegionMapDiagram',
+    'RegionTileMapDiagram',
     Type.boolean('showBorders', 'Show borders', {default: true}),
     Type.boolean('showNeighborBorder', 'Show neighbor border', {default: true}),
     Type.boolean('showSelectedRegion', 'Show selected region', {default: false}),
@@ -12,11 +12,11 @@ const SCHEMA = new Schema(
 )
 
 
-export class MapDiagram extends BaseMapDiagram {
+export class RegionTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
 
     static create(mapModel, params) {
-        return new MapDiagram(mapModel, params)
+        return new RegionTileMapDiagram(mapModel, params)
     }
 
     constructor(mapModel, params) {

@@ -12,8 +12,8 @@ export class Group {
 
 
 export class RegionGroupTable {
-    constructor(regionMap) {
-        this.regionMap = regionMap
+    constructor(regionTileMap) {
+        this.regionTileMap = regionTileMap
         this.regionToGroup = new Map()
         this.borderRegions = new Set()
         this.index = new Map()
@@ -29,7 +29,7 @@ export class RegionGroupTable {
     }
 
     getRegion(point) {
-        return this.regionMap.getRegion(point)
+        return this.regionTileMap.getRegion(point)
     }
 
     getGroup(region) {
@@ -37,15 +37,15 @@ export class RegionGroupTable {
     }
 
     getRegion(point) {
-        return this.regionMap.getRegion(point)
+        return this.regionTileMap.getRegion(point)
     }
 
     getBorderRegions(point) {
-        return this.regionMap.getBorderRegions(point)
+        return this.regionTileMap.getBorderRegions(point)
     }
 
     isRegionBorder(point) {
-        return this.regionMap.isBorder(point)
+        return this.regionTileMap.isBorder(point)
     }
 
     isGroupBorder(group, borderRegions) {
@@ -105,6 +105,6 @@ export class GroupFillConfig {
     }
 
     getNeighbors(region) {
-        return this.table.regionMap.getNeighbors(region)
+        return this.table.regionTileMap.getNeighbors(region)
     }
 }

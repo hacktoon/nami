@@ -10,8 +10,8 @@
 
 
 
-#### TectonicsMap
-- Pass RegionMap setValue to send noise point to generate continents in plate
+#### TectonicsTileMap
+- Pass RegionTileMap setValue to send noise point to generate continents in plate
 - Create PlateMatrix
   - For each region origin => set noise for each scanline fill
 - Create plate adjacency from regiongroup map

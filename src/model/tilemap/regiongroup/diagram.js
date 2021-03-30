@@ -1,10 +1,10 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { BaseMapDiagram } from '/model/lib/map'
+import { TileMapDiagram } from '/model/lib/tilemap'
 
 
 const SCHEMA = new Schema(
-    'RegionGroupMapDiagram',
+    'RegionGroupTileMapDiagram',
     Type.boolean('showGroups', 'Show groups', {default: true}),
     Type.boolean('showGroupBorder', 'Show group border', {default: false}),
     Type.boolean('showRegions', 'Show regions', {default: true}),
@@ -12,11 +12,11 @@ const SCHEMA = new Schema(
 )
 
 
-export class MapDiagram extends BaseMapDiagram {
+export class RegionGroupTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
 
     static create(mapModel, params) {
-        return new MapDiagram(mapModel, params)
+        return new RegionGroupTileMapDiagram(mapModel, params)
     }
 
     constructor(mapModel, params) {
@@ -25,7 +25,7 @@ export class MapDiagram extends BaseMapDiagram {
         this.showGroups = params.get('showGroups')
         this.showRegionBorder = params.get('showRegionBorder')
         this.showGroupBorder = params.get('showGroupBorder')
-        this.regionColorMap = new RegionColorMap(mapModel.table.regionMap)
+        this.regionColorMap = new RegionColorMap(mapModel.table.regionTileMap)
         this.groupColorMap = new GroupColorMap(mapModel)
     }
 
@@ -34,7 +34,7 @@ export class MapDiagram extends BaseMapDiagram {
         const group = this.mapModel.getGroup(point)
         const regionColor = this.regionColorMap.get(region)
         const groupColor = this.groupColorMap.get(group)
-        const isBorderRegion = this.mapModel.table.borderRegions.has(region.id)
+        const isBorderRegion = this.mapModel.isBorderRegion(region)
 
         if (this.showGroupBorder && this.mapModel.isGroupBorderPoint(point)) {
             return groupColor.brighten(50).toHex()
@@ -61,8 +61,8 @@ export class MapDiagram extends BaseMapDiagram {
 
 
 class RegionColorMap {
-    constructor(regionMap) {
-        const entries = regionMap.map(region => [region.id, region.color])
+    constructor(regionTileMap) {
+        const entries = regionTileMap.map(region => [region.id, region.color])
         this.map = Object.fromEntries(entries)
     }
 

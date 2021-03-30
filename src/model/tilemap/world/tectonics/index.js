@@ -1,17 +1,17 @@
 import { Matrix } from '/lib/base/matrix'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { BaseMap } from '/model/lib/map'
+import { TileMap } from '/model/lib/tilemap'
 import { UIMap } from '/ui/map'
 
-import RegionGroupMap from '/model/map/regiongroup'
+import RegionGroupTileMap from '/model/tilemap/regiongroup'
 
 import { MapDiagram } from './diagram'
 import { Plate } from './plate'
 
 
 const SCHEMA = new Schema(
-    'TectonicsMap',
+    'TectonicsTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
     Type.number('scale', 'Scale', {default: 30, step: 1, min: 1}),
@@ -26,14 +26,14 @@ const TRENCH = 2
 const RIFT = 3
 
 
-export default class TectonicsMap extends BaseMap {
-    static id = 'TectonicsMap'
+export default class TectonicsTileMap extends TileMap {
+    static id = 'TectonicsTileMap'
     static diagram = MapDiagram
     static schema = SCHEMA
     static ui = UIMap
 
     static create(params) {
-        return new TectonicsMap(params)
+        return new TectonicsTileMap(params)
     }
 
     constructor(params) {
@@ -98,7 +98,7 @@ class PlateGraph {
 
 
 function buildRegionGroupMap(params) {
-    return RegionGroupMap.fromData({
+    return RegionGroupTileMap.fromData({
         width: params.get('width'),
         height: params.get('height'),
         seed: params.get('seed'),

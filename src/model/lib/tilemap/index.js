@@ -1,7 +1,7 @@
 import { Random } from '/lib/base/random'
 
 
-export class BaseMap {
+export class TileMap {
     constructor(params) {
         this.width = params.get('width')
         this.height = params.get('height')
@@ -20,7 +20,7 @@ export class BaseMap {
 }
 
 
-export class BaseMapDiagram {
+export class TileMapDiagram {
     constructor(mapModel) {
         this.mapModel = mapModel
         this.width = mapModel.width

@@ -1,15 +1,15 @@
 import { Matrix } from '/lib/base/matrix'
-import { BaseMap } from '/model/lib/map'
+import { TileMap } from '/model/lib/tilemap'
 import { SimplexNoise } from '/lib/fractal/noise'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { UIMap } from '/ui/map'
 
-import { MapDiagram } from './diagram'
+import { NoiseTileMapDiagram } from './diagram'
 
 
 const SCHEMA = new Schema(
-    'NoiseMap',
+    'NoiseTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 150, step: 1, min: 1}),
     Type.number('detail', 'Detail', {default: 8, step: 1, min: 1, max: 20}),
@@ -19,14 +19,14 @@ const SCHEMA = new Schema(
 )
 
 
-export default class NoiseMap extends BaseMap {
-    static diagram = MapDiagram
-    static id = 'NoiseMap'
+export default class NoiseTileMap extends TileMap {
+    static diagram = NoiseTileMapDiagram
+    static id = 'NoiseTileMap'
     static schema = SCHEMA
     static ui = UIMap
 
     static create(params) {
-        return new NoiseMap(params)
+        return new NoiseTileMap(params)
     }
 
     constructor(params) {

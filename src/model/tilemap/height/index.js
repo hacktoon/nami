@@ -1,14 +1,14 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { BaseMap } from '/model/lib/map'
+import { TileMap } from '/model/lib/tilemap'
 import { UIMap } from '/ui/map'
 import { TileableDiamondSquare } from '/lib/fractal/diamondsquare'
 
-import { MapDiagram } from './diagram'
+import { HeightTileMapDiagram } from './diagram'
 
 
 const SCHEMA = new Schema(
-    'HeightMap',
+    'HeightTileMap',
     Type.number('roughness', 'Roughness', {default: 8, min: 1, step: 1}),
     Type.selection('size', 'Size', {default: 257, options: [
         {id: 257}, {id: 129}, {id: 65}
@@ -17,14 +17,14 @@ const SCHEMA = new Schema(
 )
 
 
-export default class HeightMap extends BaseMap {
-    static id = 'HeightMap'
-    static diagram = MapDiagram
+export default class HeightTileMap extends TileMap {
+    static id = 'HeightTileMap'
+    static diagram = HeightTileMapDiagram
     static schema = SCHEMA
     static ui = UIMap
 
     static create(params) {
-        return new HeightMap(params)
+        return new HeightTileMap(params)
     }
 
     constructor(params) {

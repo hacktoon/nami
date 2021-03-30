@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { Form } from '/ui/form'
 import { Button } from '/ui/form/button'
-import { MapScene } from '/model/lib/map/scene'
+import { MapScene } from '/model/lib/tilemap/scene'
 
 import { UIMapScene } from './scene'
 

@@ -2,19 +2,19 @@ import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
-import { BaseMap } from '/model/lib/map'
+import { TileMap } from '/model/lib/tilemap'
 import { UIMap } from '/ui/map'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
-import RegionMap from '/model/map/region'
+import RegionTileMap from '/model/tilemap/region'
 
-import { MapDiagram } from './diagram'
+import { RegionGroupTileMapDiagram } from './diagram'
 import { Group, RegionGroupTable, GroupFillConfig } from './group'
 
 
 const SCHEMA = new Schema(
-    'RegionGroupMap',
+    'RegionGroupTileMap',
     Type.number('width', 'W', {default: 150, step: 1, min: 10, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 10, max: 500}),
     Type.number('groupScale', 'Gr Scale', {default: 34, step: 1, min: 1}),
@@ -27,20 +27,20 @@ const SCHEMA = new Schema(
 )
 
 
-export default class RegionGroupMap extends BaseMap {
-    static id = 'RegionGroupMap'
-    static diagram = MapDiagram
+export default class RegionGroupTileMap extends TileMap {
+    static id = 'RegionGroupTileMap'
+    static diagram = RegionGroupTileMapDiagram
     static schema = SCHEMA
     static ui = UIMap
 
     static fromData(data) {
         const map = new Map(Object.entries(data))
-        const params = RegionGroupMap.schema.parse(map)
-        return new RegionGroupMap(params)
+        const params = RegionGroupTileMap.schema.parse(map)
+        return new RegionGroupTileMap(params)
     }
 
     static create(params) {
-        return new RegionGroupMap(params)
+        return new RegionGroupTileMap(params)
     }
 
     constructor(params) {
@@ -50,11 +50,12 @@ export default class RegionGroupMap extends BaseMap {
         const groupScale = params.get('groupScale')
         const originPoints = EvenPointSampling.create(width, height, groupScale)
         const data = {width, height, scale, seed, chance, growth}
-        const regionMap = RegionMap.fromData(data)
-        const table = new RegionGroupTable(regionMap)
+        const regionTileMap = RegionTileMap.fromData(data)
+        const table = new RegionGroupTable(regionTileMap)
         const graph = new Graph()
+
         const organicFills = originPoints.map((origin, id) => {
-            const region = regionMap.getRegion(origin)
+            const region = regionTileMap.getRegion(origin)
             const group = new Group(id, region)
             const fillConfig = new GroupFillConfig({
                 groupChance: params.get('groupChance'),
@@ -88,6 +89,10 @@ export default class RegionGroupMap extends BaseMap {
         const borderRegions = this.table.getBorderRegions(point)
         return this.table.isGroupBorder(group, borderRegions)
 
+    }
+
+    isBorderRegion(region) {
+        return this.table.borderRegions.has(region.id)
     }
 
     map(callback) {

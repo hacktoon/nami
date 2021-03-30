@@ -3,11 +3,11 @@ import { Type } from '/lib/base/type'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
 import { Graph } from '/lib/base/graph'
 import { UIMap } from '/ui/map'
-import { BaseMap } from '/model/lib/map'
+import { TileMap } from '/model/lib/tilemap'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
-import { MapDiagram } from './diagram'
+import { RegionTileMapDiagram } from './diagram'
 import { Region, RegionMapTable, RegionFillConfig } from './region'
 
 
@@ -15,7 +15,7 @@ const SAMPLING_ENTRIES = [RandomPointSampling, EvenPointSampling]
 const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
 
 const SCHEMA = new Schema(
-    'RegionMap',
+    'RegionTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 256}),
     Type.number('scale', 'Scale', {default: 20, step: 1, min: 1}),
@@ -29,20 +29,20 @@ const SCHEMA = new Schema(
 )
 
 
-export default class RegionMap extends BaseMap {
-    static id = 'RegionMap'
-    static diagram = MapDiagram
+export default class RegionTileMap extends TileMap {
+    static id = 'RegionTileMap'
+    static diagram = RegionTileMapDiagram
     static schema = SCHEMA
     static ui = UIMap
 
     static create(params) {
-        return new RegionMap(params)
+        return new RegionTileMap(params)
     }
 
     static fromData(data) {
         const map = new Map(Object.entries(data))
-        const params = RegionMap.schema.parse(map)
-        return new RegionMap(params)
+        const params = RegionTileMap.schema.parse(map)
+        return new RegionTileMap(params)
     }
 
     constructor(params) {

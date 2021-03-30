@@ -1,13 +1,13 @@
 import { Schema } from '/lib/base/schema'
 import { Color } from '/lib/base/color'
-import { BaseMapDiagram } from '/model/lib/map'
+import { TileMapDiagram } from '/model/lib/tilemap'
 
 
-export class MapDiagram extends BaseMapDiagram {
-    static schema = new Schema('HeightMapDiagram')
+export class HeightTileMapDiagram extends TileMapDiagram {
+    static schema = new Schema('HeightTileMapDiagram')
 
     static create(mapModel) {
-        return new MapDiagram(mapModel)
+        return new HeightTileMapDiagram(mapModel)
     }
 
     get(point) {

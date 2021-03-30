@@ -4,7 +4,7 @@ import { Point } from '/lib/base/point'
 import { Canvas } from '/ui/canvas'
 import { useResize } from '/ui'
 
-import { MapScene } from '/model/lib/map/scene'
+import { MapScene } from '/model/lib/tilemap/scene'
 
 import { UIMapMouse } from './mouse'
 

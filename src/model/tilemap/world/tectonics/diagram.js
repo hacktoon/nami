@@ -1,9 +1,9 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { BaseMapDiagram } from '/model/lib/map'
+import { TileMapDiagram } from '/model/lib/tilemap'
 
 
-export class MapDiagram extends BaseMapDiagram {
+export class MapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'TectonicsMapDiagram',
         Type.boolean('showPlates', 'Show plates', {default: true}),

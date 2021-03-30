@@ -1,5 +1,5 @@
 import { Matrix } from '/lib/base/matrix'
-import { HeightMap } from '/lib/heightmap'
+import { HeightTileMap } from '/lib/heightmap'
 
 export const VERY_DRY = 0
 export const DRY = 1
@@ -25,7 +25,7 @@ export class MoistureMap {
     }
 
     _buildMap(size, roughness) {
-        new HeightMap(size, roughness, (height, point) => {
+        new HeightTileMap(size, roughness, (height, point) => {
             let moisture = this._buildMoisture(height)
             this.matrix.set(point, moisture)
         })
