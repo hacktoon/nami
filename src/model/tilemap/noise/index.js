@@ -19,7 +19,7 @@ const SCHEMA = new Schema(
 )
 
 
-export default class NoiseTileMap extends TileMap {
+export class NoiseTileMap extends TileMap {
     static diagram = NoiseTileMapDiagram
     static id = 'NoiseTileMap'
     static schema = SCHEMA

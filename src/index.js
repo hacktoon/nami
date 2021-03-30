@@ -6,11 +6,11 @@ import { Type } from '/lib/base/type'
 import { Form } from '/ui/form'
 import { Title } from '/ui'
 
-import TectonicsTileMap from '/model/tilemap/world/tectonics'
-import HeightTileMap from '/model/tilemap/height/'
-import RegionTileMap from '/model/tilemap/region'
-import RegionGroupTileMap from '/model/tilemap/regiongroup'
-import NoiseTileMap from '/model/tilemap/noise'
+import { HeightTileMap } from '/model/tilemap/height/'
+import { NoiseTileMap } from '/model/tilemap/noise'
+import { RegionTileMap } from '/model/tilemap/region'
+import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
+import { TectonicsTileMap } from '/model/tilemap/world/tectonics'
 
 import "/ui/css/base.css"
 import "/ui/css/map.css"
@@ -26,7 +26,8 @@ const APPS = [
 
 
 const appMap = new Map(APPS.map(TileMap => {
-    return [TileMap.id, () => <TileMap.ui TileMap={TileMap} />]
+    const UITileMap = TileMap.ui
+    return [TileMap.id, () => <UITileMap TileMap={TileMap} />]
 }))
 
 

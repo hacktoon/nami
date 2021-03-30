@@ -26,7 +26,7 @@ const TRENCH = 2
 const RIFT = 3
 
 
-export default class TectonicsTileMap extends TileMap {
+export class TectonicsTileMap extends TileMap {
     static id = 'TectonicsTileMap'
     static diagram = MapDiagram
     static schema = SCHEMA

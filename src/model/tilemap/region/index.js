@@ -29,7 +29,7 @@ const SCHEMA = new Schema(
 )
 
 
-export default class RegionTileMap extends TileMap {
+export class RegionTileMap extends TileMap {
     static id = 'RegionTileMap'
     static diagram = RegionTileMapDiagram
     static schema = SCHEMA

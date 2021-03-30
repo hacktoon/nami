@@ -17,7 +17,7 @@ const SCHEMA = new Schema(
 )
 
 
-export default class HeightTileMap extends TileMap {
+export class HeightTileMap extends TileMap {
     static id = 'HeightTileMap'
     static diagram = HeightTileMapDiagram
     static schema = SCHEMA

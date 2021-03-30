@@ -7,7 +7,7 @@ import { UITileMap } from '/ui/tilemap'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
-import RegionTileMap from '/model/tilemap/region'
+import { RegionTileMap } from '/model/tilemap/region'
 
 import { RegionGroupTileMapDiagram } from './diagram'
 import { Group, RegionGroupTable, GroupFillConfig } from './group'
@@ -27,7 +27,7 @@ const SCHEMA = new Schema(
 )
 
 
-export default class RegionGroupTileMap extends TileMap {
+export class RegionGroupTileMap extends TileMap {
     static id = 'RegionGroupTileMap'
     static diagram = RegionGroupTileMapDiagram
     static schema = SCHEMA
