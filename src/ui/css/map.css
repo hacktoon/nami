@@ -1,18 +1,18 @@
 /* MAP COMPONENT ======================================= */
 
-.UIMap {
+.UITileMap {
     display: grid;
     grid-template-rows: min-content auto;
     grid-template-columns: 1fr 20%;
 }
 
-.UIMap .Form {
+.UITileMap .Form {
     display: grid;
     gap: 1rem;
     padding: .5rem;
 }
 
-.UIMap .Form.Map  {
+.UITileMap .Form.Map  {
     background: #CCC;
     grid-auto-flow: column;
     grid-row: 1;
@@ -21,21 +21,21 @@
 
 
 /* SIDEBAR ==================================================== */
-.UIMap .UIMapSidebar {
+.UITileMap .UIMapSidebar {
     background: #111;
     color: #FFF;
     padding: .4rem;
 }
 
 
-.UIMap .UIMapSidebar .Form {
+.UITileMap .UIMapSidebar .Form {
     border: 1px dashed #666;
     margin-bottom: .5rem;
 }
 
 
 /* SCENE ==================================================== */
-.UIMap .UIMapScene {
+.UITileMap .UIMapScene {
     background-color: #FFF;
     background-image: linear-gradient(45deg, #E8E8E8 25%, transparent 25%),
         linear-gradient(-45deg, #E8E8E8 25%, transparent 25%),
@@ -47,7 +47,7 @@
 }
 
 
-.UIMap .UIMapScene .MouseTrack {
+.UITileMap .UIMapScene .MouseTrack {
     box-shadow: inset 0 0 .5rem #000;
 }
 

@@ -3,7 +3,7 @@ import { Type } from '/lib/base/type'
 import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
 import { TileMap } from '/model/lib/tilemap'
-import { UIMap } from '/ui/map'
+import { UITileMap } from '/ui/tilemap'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
@@ -31,7 +31,7 @@ export default class RegionGroupTileMap extends TileMap {
     static id = 'RegionGroupTileMap'
     static diagram = RegionGroupTileMapDiagram
     static schema = SCHEMA
-    static ui = UIMap
+    static ui = UITileMap
 
     static fromData(data) {
         const map = new Map(Object.entries(data))

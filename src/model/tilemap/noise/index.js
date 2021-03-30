@@ -3,7 +3,7 @@ import { TileMap } from '/model/lib/tilemap'
 import { SimplexNoise } from '/lib/fractal/noise'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { UIMap } from '/ui/map'
+import { UITileMap } from '/ui/tilemap'
 
 import { NoiseTileMapDiagram } from './diagram'
 
@@ -23,7 +23,7 @@ export default class NoiseTileMap extends TileMap {
     static diagram = NoiseTileMapDiagram
     static id = 'NoiseTileMap'
     static schema = SCHEMA
-    static ui = UIMap
+    static ui = UITileMap
 
     static create(params) {
         return new NoiseTileMap(params)

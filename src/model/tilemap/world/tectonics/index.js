@@ -2,7 +2,7 @@ import { Matrix } from '/lib/base/matrix'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
-import { UIMap } from '/ui/map'
+import { UITileMap } from '/ui/tilemap'
 
 import RegionGroupTileMap from '/model/tilemap/regiongroup'
 
@@ -30,7 +30,7 @@ export default class TectonicsTileMap extends TileMap {
     static id = 'TectonicsTileMap'
     static diagram = MapDiagram
     static schema = SCHEMA
-    static ui = UIMap
+    static ui = UITileMap
 
     static create(params) {
         return new TectonicsTileMap(params)

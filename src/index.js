@@ -25,8 +25,8 @@ const APPS = [
 ]
 
 
-const appMap = new Map(APPS.map(model => {
-    return [model.id, () => <model.ui model={model} />]
+const appMap = new Map(APPS.map(TileMap => {
+    return [TileMap.id, () => <TileMap.ui TileMap={TileMap} />]
 }))
 
 

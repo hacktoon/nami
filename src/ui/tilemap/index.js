@@ -7,24 +7,24 @@ import { MapScene } from '/model/lib/tilemap/scene'
 import { UIMapScene } from './scene'
 
 
-export function UIMap({model}) {
-    const [data, setData] = useState(model.schema.parse())
-    const map = model.create(data)
+export function UITileMap({TileMap}) {
+    const [data, setData] = useState(TileMap.schema.parse())
+    const tilemap = TileMap.create(data)
 
-    return <section className='UIMap'>
+    return <section className='UITileMap'>
         <Form className="Map" data={data} onSubmit={setData}>
             <Button label="New" />
         </Form>
-        <UIMapDiagram diagram={model.diagram} map={map} />
+        <UITileMapDiagram diagram={TileMap.diagram} tilemap={tilemap} />
     </section>
 }
 
 
-function UIMapDiagram({diagram, map}) {
+function UITileMapDiagram({diagram, tilemap}) {
     const [diagramData, setDiagramData] = useState(diagram.schema.parse())
     const [sceneData, setSceneData] = useState(MapScene.schema.parse())
 
-    const mapDiagram = diagram.create(map, diagramData)
+    const mapDiagram = diagram.create(tilemap, diagramData)
 
     const handleDrag = point => setSceneData(sceneData.update('focus', point))
     const handleWheel = zoom => setSceneData(sceneData.update('zoom', zoom))

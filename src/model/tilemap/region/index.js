@@ -2,7 +2,7 @@ import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
 import { Graph } from '/lib/base/graph'
-import { UIMap } from '/ui/map'
+import { UITileMap } from '/ui/tilemap'
 import { TileMap } from '/model/lib/tilemap'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
@@ -33,7 +33,7 @@ export default class RegionTileMap extends TileMap {
     static id = 'RegionTileMap'
     static diagram = RegionTileMapDiagram
     static schema = SCHEMA
-    static ui = UIMap
+    static ui = UITileMap
 
     static create(params) {
         return new RegionTileMap(params)
