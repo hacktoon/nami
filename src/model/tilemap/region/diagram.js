@@ -15,27 +15,27 @@ const SCHEMA = new Schema(
 export class RegionTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
 
-    static create(mapModel, params) {
-        return new RegionTileMapDiagram(mapModel, params)
+    static create(tilemap, params) {
+        return new RegionTileMapDiagram(tilemap, params)
     }
 
-    constructor(mapModel, params) {
-        super(mapModel)
+    constructor(tilemap, params) {
+        super(tilemap)
         this.showBorders = params.get('showBorders')
         this.showNeighborBorder = params.get('showNeighborBorder')
         this.showSelectedRegion = params.get('showSelectedRegion')
         this.selectedRegionId = params.get('selectedRegionId')
-        this.colorMap = new RegionColorMap(mapModel)
+        this.colorMap = new RegionColorMap(tilemap)
     }
 
     get(point) {
-        const isBorder = this.mapModel.isBorder(point)
-        const region = this.mapModel.getRegion(point)
+        const isBorder = this.tilemap.isBorder(point)
+        const region = this.tilemap.getRegion(point)
         const color = this.colorMap.get(region)
 
         if (this.showBorders && isBorder) {
             if (this.showNeighborBorder) {
-                const neighborRegions = this.mapModel.getBorderRegions(point)
+                const neighborRegions = this.tilemap.getBorderRegions(point)
                 const borderColor = this.colorMap.getMix(neighborRegions)
                 return borderColor.toHex()
             }
@@ -45,7 +45,7 @@ export class RegionTileMapDiagram extends TileMapDiagram {
             const toggle = (point.x + point.y) % 2 === 0
             if (this.selectedRegionId === region.id) {
                 return toggle ? '#000' : '#FFF'
-            } else if (this.mapModel.isNeighbor(this.selectedRegionId, region.id)) {
+            } else if (this.tilemap.isNeighbor(this.selectedRegionId, region.id)) {
                 return toggle ? color.darken(40).toHex() : color.toHex()
             }
         }

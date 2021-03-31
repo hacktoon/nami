@@ -44,6 +44,10 @@ export class RegionGroupTable {
         return this.regionTileMap.getBorderRegions(point)
     }
 
+    hasBorderRegions(region) {
+        return this.borderRegions.has(region.id)
+    }
+
     isRegionBorder(point) {
         return this.regionTileMap.isBorder(point)
     }

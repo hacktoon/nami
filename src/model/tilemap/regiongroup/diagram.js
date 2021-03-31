@@ -15,31 +15,31 @@ const SCHEMA = new Schema(
 export class RegionGroupTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
 
-    static create(mapModel, params) {
-        return new RegionGroupTileMapDiagram(mapModel, params)
+    static create(tilemap, params) {
+        return new RegionGroupTileMapDiagram(tilemap, params)
     }
 
-    constructor(mapModel, params) {
-        super(mapModel)
+    constructor(tilemap, params) {
+        super(tilemap)
         this.showRegions = params.get('showRegions')
         this.showGroups = params.get('showGroups')
         this.showRegionBorder = params.get('showRegionBorder')
         this.showGroupBorder = params.get('showGroupBorder')
-        this.regionColorMap = new RegionColorMap(mapModel.table.regionTileMap)
-        this.groupColorMap = new GroupColorMap(mapModel)
+        this.regionColorMap = new RegionColorMap(tilemap.table.regionTileMap)
+        this.groupColorMap = new GroupColorMap(tilemap)
     }
 
     get(point) {
-        const region = this.mapModel.getRegion(point)
-        const group = this.mapModel.getGroup(point)
+        const region = this.tilemap.getRegion(point)
+        const group = this.tilemap.getGroup(point)
         const regionColor = this.regionColorMap.get(region)
         const groupColor = this.groupColorMap.get(group)
-        const isBorderRegion = this.mapModel.isBorderRegion(region)
+        const isBorderRegion = this.tilemap.isBorderRegion(region)
 
-        if (this.showGroupBorder && this.mapModel.isGroupBorderPoint(point)) {
+        if (this.showGroupBorder && this.tilemap.isGroupBorderPoint(point)) {
             return groupColor.brighten(50).toHex()
         }
-        if (this.showRegionBorder && this.mapModel.isRegionBorder(point)) {
+        if (this.showRegionBorder && this.tilemap.isRegionBorder(point)) {
             let color = this.showGroups ? groupColor.brighten(60) : regionColor.darken(60)
             return color.toHex()
         }

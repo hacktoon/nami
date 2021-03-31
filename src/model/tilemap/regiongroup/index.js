@@ -92,7 +92,7 @@ export class RegionGroupTileMap extends TileMap {
     }
 
     isBorderRegion(region) {
-        return this.table.borderRegions.has(region.id)
+        return this.table.hasBorderRegions(region)
     }
 
     map(callback) {

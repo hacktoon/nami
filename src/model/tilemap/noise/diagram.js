@@ -6,12 +6,12 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 export class NoiseTileMapDiagram extends TileMapDiagram {
     static schema = new Schema('NoiseTileMapDiagram')
 
-    static create(mapModel) {
-        return new NoiseTileMapDiagram(mapModel)
+    static create(tilemap) {
+        return new NoiseTileMapDiagram(tilemap)
     }
 
     get(point) {
-        const value = parseInt(this.mapModel.get(point), 10)
+        const value = parseInt(this.tilemap.get(point), 10)
         return new Color(value, value, value).toHex()
     }
 }
