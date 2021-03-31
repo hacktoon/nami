@@ -35,7 +35,7 @@
 
 
 /* SCENE ==================================================== */
-.UITileMap .UIMapScene {
+.UITileMap .UITileMapScene {
     background-color: #FFF;
     background-image: linear-gradient(45deg, #E8E8E8 25%, transparent 25%),
         linear-gradient(-45deg, #E8E8E8 25%, transparent 25%),
@@ -47,7 +47,7 @@
 }
 
 
-.UITileMap .UIMapScene .MouseTrack {
+.UITileMap .UITileMapScene .MouseTrack {
     box-shadow: inset 0 0 .5rem #000;
 }
 

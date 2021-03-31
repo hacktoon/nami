@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 
 import { Form } from '/ui/form'
 import { Button } from '/ui/form/button'
-import { MapScene } from '/model/lib/tilemap/scene'
+import { TileMapScene } from '/model/lib/tilemap/scene'
 
-import { UIMapScene } from './scene'
+import { UITileMapScene } from './scene'
 
 
 export function UITileMap({TileMap}) {
@@ -22,7 +22,7 @@ export function UITileMap({TileMap}) {
 
 function UITileMapDiagram({diagram, tilemap}) {
     const [diagramData, setDiagramData] = useState(diagram.schema.parse())
-    const [sceneData, setSceneData] = useState(MapScene.schema.parse())
+    const [sceneData, setSceneData] = useState(TileMapScene.schema.parse())
 
     const mapDiagram = diagram.create(tilemap, diagramData)
 
@@ -31,7 +31,7 @@ function UITileMapDiagram({diagram, tilemap}) {
     const handleClick = point => console.info('Click', point)
 
     return <>
-        <UIMapScene
+        <UITileMapScene
             diagram={mapDiagram}
             sceneData={sceneData}
             handleDrag={handleDrag}

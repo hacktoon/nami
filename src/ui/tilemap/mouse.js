@@ -5,7 +5,7 @@ import { MouseTrack } from '/ui/mouse'
 import { Canvas } from '/ui/canvas'
 
 
-export function UIMapMouse({scene, ...props}) {
+export function UITileMapMouse({scene, ...props}) {
     /*
      Translate mouse events in pixel points to
      point objects using the scene's frame

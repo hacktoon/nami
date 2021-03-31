@@ -4,25 +4,25 @@ import { Point } from '/lib/base/point'
 import { Canvas } from '/ui/canvas'
 import { useResize } from '/ui'
 
-import { MapScene } from '/model/lib/tilemap/scene'
+import { TileMapScene } from '/model/lib/tilemap/scene'
 
-import { UIMapMouse } from './mouse'
+import { UITileMapMouse } from './mouse'
 
 
-export function UIMapScene(props) {
+export function UITileMapScene(props) {
     const viewport = useRef(null)
     const [width, height] = useResize(viewport)
     const [prevFocus, setPrevFocus] = useState(new Point())
-    const scene = MapScene.create(props.diagram, width, height, props.sceneData)
+    const scene = TileMapScene.create(props.diagram, width, height, props.sceneData)
 
     const handleDragStart = () => setPrevFocus(scene.focus)
     const handleDrag = point => props.handleDrag(prevFocus.plus(point))
     const handleWheel = amount => props.handleWheel(scene.zoom + amount)
     const handleClick = point => props.handleClick(point)
 
-    return <section className="UIMapScene" ref={viewport}>
+    return <section className="UITileMapScene" ref={viewport}>
         {viewport.current && <>
-            <UIMapMouse
+            <UITileMapMouse
                 scene={scene}
                 onDrag={handleDrag}
                 onClick={handleClick}

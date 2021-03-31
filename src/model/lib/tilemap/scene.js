@@ -4,23 +4,22 @@ import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 
 
-export class MapScene {
+export class TileMapScene {
     static schema = new Schema(
-        'MapScene',
+        'TileMapScene',
         Type.point('focus', "Focus", {default: new Point(75, 50)}),
         Type.boolean('wrap', "Wrap", {default: false}),
         Type.number('zoom', "Zoom", {default: 5, step: 1, min: 1}),
     )
 
     static create(diagram, width, height, params) {
-        return new MapScene(diagram, width, height, params)
+        return new TileMapScene(diagram, width, height, params)
     }
 
     constructor(diagram, width, height, params) {
         this.diagram = diagram
         this.width = width
         this.height = height
-        // TODO: set `this.data` and add attributes dynamically
         this.wrap = params.get('wrap')
         this.focus = params.get('focus')
         this.zoom = params.get('zoom')
