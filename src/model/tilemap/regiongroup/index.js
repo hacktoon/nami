@@ -70,6 +70,10 @@ export class RegionGroupTileMap extends TileMap {
         this.graph = graph
     }
 
+    get groups() {
+        return this.table.map(g => g)
+    }
+
     getRegion(point) {
         return this.table.getRegion(point)
     }

@@ -10,6 +10,35 @@ TODO
 - need to get regions data to create the elevation map in borders
 */
 
+const OCEANIC_TYPE = 'O'
+const CONTINENTAL_TYPE = 'C'
+const NO_DEFORMATION = null
+const OROGENY = 1
+const TRENCH = 2
+const RIFT = 3
+
+
+export class TectonicsTable {
+    constructor(regionGroupTileMap) {
+        this.index = buildPlateIndex(regionGroupTileMap)
+        this.regionGroupTileMap = regionGroupTileMap
+    }
+
+    getPlate(point) {
+        const group = this.regionGroupTileMap.getGroup(point)
+        return this.index.get(group.id)
+    }
+
+    map(callback) {
+        const entries = Array.from(this.index.values())
+        return entries.map(callback)
+    }
+
+    forEach(callback) {
+        this.index.forEach(callback)
+    }
+}
+
 
 export class ContinentMatrix {
     constructor(width, height, params) {
@@ -38,10 +67,27 @@ export class ContinentMatrix {
 
 
 export class Plate {
-    constructor(id, area) {
+    constructor(id, type, area) {
         this.id = id
+        this.type = type
         this.area = area
         this.color = new Color()
         this.weight = Random.choice(1, 2, 2, 3, 3)
     }
+}
+
+
+function buildPlateIndex(regionGroupTileMap) {
+    let oceanicArea = 0
+    const halfMapArea = Math.floor(regionGroupTileMap.area / 2)
+    const cmpDescArea = (groupA, groupB) => groupB.area - groupA.area
+    const groups = regionGroupTileMap.groups.sort(cmpDescArea)
+    const index = new Map()
+    groups.forEach(group => {
+        oceanicArea += group.area
+        const type = oceanicArea < halfMapArea ? OCEANIC_TYPE : CONTINENTAL_TYPE
+        const plate = new Plate(group.id, type, group.area)
+        index.set(group.id, plate)
+    })
+    return index
 }
