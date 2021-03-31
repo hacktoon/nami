@@ -10,7 +10,7 @@ import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { RegionTileMap } from '/model/tilemap/region'
 
 import { RegionGroupTileMapDiagram } from './diagram'
-import { Group, RegionGroupTable, GroupFillConfig } from './group'
+import { RegionGroup, RegionGroupTable, GroupFillConfig } from './regiongroup'
 
 
 const SCHEMA = new Schema(
@@ -56,7 +56,7 @@ export class RegionGroupTileMap extends TileMap {
 
         const organicFills = originPoints.map((origin, id) => {
             const region = regionTileMap.getRegion(origin)
-            const group = new Group(id, region)
+            const group = new RegionGroup(id, region)
             const fillConfig = new GroupFillConfig({
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),

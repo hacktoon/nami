@@ -1,7 +1,7 @@
 import { Color } from '/lib/base/color'
 
 
-export class Group {
+export class RegionGroup {
     constructor(id, origin) {
         this.id = id
         this.origin = origin
