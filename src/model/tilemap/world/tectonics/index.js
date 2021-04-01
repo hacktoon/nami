@@ -1,4 +1,3 @@
-import { Matrix } from '/lib/base/matrix'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'

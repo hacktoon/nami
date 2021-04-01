@@ -48,27 +48,29 @@ export class RegionGroupTileMap extends TileMap {
         const [width, height, seed] = params.get('width', 'height', 'seed')
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const groupScale = params.get('groupScale')
-        const originPoints = EvenPointSampling.create(width, height, groupScale)
+        const origins = EvenPointSampling.create(width, height, groupScale)
         const data = {width, height, scale, seed, chance, growth}
         const regionTileMap = RegionTileMap.fromData(data)
-        const table = new RegionGroupTable(regionTileMap)
-        const graph = new Graph()
+        this.table = new RegionGroupTable(regionTileMap)
+        this.graph = new Graph()
 
-        const organicFills = originPoints.map((origin, id) => {
+        this._buildTable(regionTileMap, origins, params)
+    }
+
+    _buildTable(regionTileMap, origins, params) {
+        const organicFills = origins.map((origin, id) => {
             const region = regionTileMap.getRegion(origin)
             const group = new RegionGroup(id, region)
             const fillConfig = new GroupFillConfig({
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),
-                group, table, graph,
+                table: this.table,
+                graph: this.graph,
+                group,
             })
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(organicFills).fill()
-
-        this.table = table
-        this.graph = graph
-        this.origins = originPoints
     }
 
     get groups() {
