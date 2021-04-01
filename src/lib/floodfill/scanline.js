@@ -1,11 +1,12 @@
 
 export class ScanlineFill {
-    constructor(matrix, startPoint, onFill, isFillable) {
+    constructor(matrix, startPoint, config, onFill, isFillable) {
         this.startPoint = startPoint
         this.matrix = matrix
         this.rangeQueue = []
         this.onFill = onFill
         this.isFillable = isFillable
+        this.config = config
 
         this.createRange(startPoint)
     }
