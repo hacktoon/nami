@@ -68,6 +68,7 @@ export class RegionGroupTileMap extends TileMap {
 
         this.table = table
         this.graph = graph
+        this.origins = originPoints
     }
 
     get groups() {

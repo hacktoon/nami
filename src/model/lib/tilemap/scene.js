@@ -8,7 +8,7 @@ export class TileMapScene {
     static schema = new Schema(
         'TileMapScene',
         Type.point('focus', "Focus", {default: new Point(75, 50)}),
-        Type.boolean('wrap', "Wrap", {default: false}),
+        Type.boolean('wrap', "Wrap", {default: true}),
         Type.number('zoom', "Zoom", {default: 5, step: 1, min: 1}),
     )
 

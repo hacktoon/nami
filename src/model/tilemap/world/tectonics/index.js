@@ -34,9 +34,13 @@ export class TectonicsTileMap extends TileMap {
         const [width, height] = params.get('width', 'height')
         const regionGroupTileMap = buildRegionGroupMap(params)
         this.table = new TectonicsTable(regionGroupTileMap)
-        // this.matrix = new Matrix(width, height, point => {
-
-        // })
+        // console.log(regionGroupTileMap.origins);
+        // const isFillable = point => this.getId(point) == EMPTY
+        // const onFill = point => {
+        //     this._setPoint(point)
+        //     tileCount++
+        // }
+        // new ScanlineFill(this.matrix, startPoint, onFill, isFillable).fill()
     }
 
     getPlate(point) {
