@@ -28,6 +28,11 @@ export class RegionGroupTable {
         this.borderRegions.add(region.id)
     }
 
+    getBorderRegions() {
+        const ids = Array.from(this.borderRegions.values())
+        return ids.map(id => this.regionTileMap.getRegionById(id))
+    }
+
     getRegion(point) {
         return this.regionTileMap.getRegion(point)
     }
@@ -36,12 +41,8 @@ export class RegionGroupTable {
         return this.regionToGroup.get(region.id)
     }
 
-    getRegion(point) {
-        return this.regionTileMap.getRegion(point)
-    }
-
-    getBorderRegions(point) {
-        return this.regionTileMap.getBorderRegions(point)
+    getBorderRegionsAt(point) {
+        return this.regionTileMap.getBorderRegionsAt(point)
     }
 
     hasBorderRegions(region) {

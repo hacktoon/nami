@@ -52,7 +52,7 @@ export class RegionMapTable {
         return this.borderMatrix.get(point).add(id)
     }
 
-    getBorderRegions(point) {
+    getBorderRegionsAt(point) {
         const ids = Array.from(this.borderMatrix.get(point))
         return ids.map(id => this.idMap.get(id))
     }

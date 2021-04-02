@@ -71,8 +71,12 @@ export class RegionTileMap extends TileMap {
         return this.table.getRegion(point)
     }
 
-    getBorderRegions(point) {
-        return this.table.getBorderRegions(point)
+    getRegionById(id) {
+        return this.table.getRegionById(id)
+    }
+
+    getBorderRegionsAt(point) {
+        return this.table.getBorderRegionsAt(point)
     }
 
     getNeighbors(region) {

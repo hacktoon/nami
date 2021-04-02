@@ -35,7 +35,7 @@ export class RegionTileMapDiagram extends TileMapDiagram {
 
         if (this.showBorders && isBorder) {
             if (this.showNeighborBorder) {
-                const neighborRegions = this.tilemap.getBorderRegions(point)
+                const neighborRegions = this.tilemap.getBorderRegionsAt(point)
                 const borderColor = this.colorMap.getMix(neighborRegions)
                 return borderColor.toHex()
             }
