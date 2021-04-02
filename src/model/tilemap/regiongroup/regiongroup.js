@@ -28,17 +28,17 @@ export class RegionGroupTable {
         this.borderRegions.add(region.id)
     }
 
-    getBorderRegions() {
-        const ids = Array.from(this.borderRegions.values())
-        return ids.map(id => this.regionTileMap.getRegionById(id))
-    }
-
     getRegion(point) {
         return this.regionTileMap.getRegion(point)
     }
 
     getGroup(region) {
         return this.regionToGroup.get(region.id)
+    }
+
+    getRegionsAtBorders() {
+        const ids = Array.from(this.borderRegions.values())
+        return ids.map(id => this.regionTileMap.getRegionById(id))
     }
 
     getBorderRegionsAt(point) {
@@ -102,8 +102,8 @@ export class RegionGroupFillConfig {
 
     checkNeighbor(neighborRegion, region) {
         const currentGroup = this.currentGroup
-        if (this.isEmpty(neighborRegion)) return
         const neighborGroup = this.table.getGroup(neighborRegion)
+        if (this.isEmpty(neighborRegion)) return
         if (neighborGroup.id === currentGroup.id) return
         this.table.setBorder(region)
         this.graph.setEdge(currentGroup.id, neighborGroup.id)
@@ -115,29 +115,29 @@ export class RegionGroupFillConfig {
 }
 
 
-export class ConcentricFillConfig {
+export class RegionLayerFillConfig {
     constructor(params) {
         this.currentRegion = params.region
         this.table = params.table
         this.graph = params.graph
+        this.regionLayerMap = params.regionLayerMap
     }
 
     isEmpty(region) {
-        return this.table.isRegionEmpty(region)
+        return ! this.regionLayerMap.has(region.id)
     }
 
-    setValue(region) {
-        this.table.setGroup(region, this.currentRegion)
-        this.currentRegion.area += region.area
+    setValue(region, layer) {
+        this.regionLayerMap.set(region.id, layer)
     }
 
     checkNeighbor(neighborRegion, region) {
         const currentRegion = this.currentRegion
         if (this.isEmpty(neighborRegion)) return
+        const group = this.table.getGroup(region)
         const neighborGroup = this.table.getGroup(neighborRegion)
-        if (neighborGroup.id === currentRegion.id) return
-        this.table.setBorder(region)
-        this.graph.setEdge(currentRegion.id, neighborGroup.id)
+        if (neighborGroup.id != group.id) return
+
     }
 
     getNeighbors(region) {

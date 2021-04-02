@@ -15,7 +15,7 @@ import {
     RegionGroup,
     RegionGroupTable,
     RegionGroupFillConfig,
-    ConcentricFillConfig
+    RegionLayerFillConfig
  } from './regiongroup'
 
 
@@ -59,10 +59,10 @@ export class RegionGroupTileMap extends TileMap {
         const regionTileMap = RegionTileMap.fromData(data)
         this.table = new RegionGroupTable(regionTileMap)
         this.graph = new Graph()
-        this.layerMap = new Map()
+        this.regionLayerMap = new Map()
 
         this._buildTable(regionTileMap, origins, params)
-        this._buildLayerMap(regionTileMap)
+        this._buildLayerMap()
     }
 
     _buildTable(regionTileMap, origins, params) {
@@ -81,18 +81,17 @@ export class RegionGroupTileMap extends TileMap {
         new MultiFill(organicFills).fill()
     }
 
-    _buildLayerMap(regionTileMap) {
-        console.log(this.table.getBorderRegions())
-
-        // const floodFills = origins.map((origin, id) => {
-        //     const region = regionTileMap.getRegion(origin)
-        //     const fillConfig = new ConcentricFillConfig({
-        //         table: this.table,
-        //         graph: this.graph,
-        //         region,
-        //     })
-        //     return new FloodFill(region, fillConfig)
-        // })
+    _buildLayerMap() {
+        const borderRegions = this.table.getRegionsAtBorders()
+        const floodFills = borderRegions.map(region => {
+            const fillConfig = new RegionLayerFillConfig({
+                table: this.table,
+                graph: this.graph,
+                regionLayerMap: this.regionLayerMap,
+                region
+            })
+            // return new FloodFill(region, fillConfig)
+        })
         // new MultiFill(floodFills).fill()
     }
 
