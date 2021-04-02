@@ -80,7 +80,7 @@ export class RegionGroupTable {
 }
 
 
-export class GroupFillConfig {
+export class RegionGroupFillConfig {
     constructor(params) {
         this.chance = params.groupChance
         this.growth = params.groupGrowth
@@ -106,6 +106,37 @@ export class GroupFillConfig {
         if (neighborGroup.id === currentGroup.id) return
         this.table.setBorder(region)
         this.graph.setEdge(currentGroup.id, neighborGroup.id)
+    }
+
+    getNeighbors(region) {
+        return this.table.regionTileMap.getNeighbors(region)
+    }
+}
+
+
+export class ConcentricFillConfig {
+    constructor(params) {
+        this.currentRegion = params.region
+        this.table = params.table
+        this.graph = params.graph
+    }
+
+    isEmpty(region) {
+        return this.table.isRegionEmpty(region)
+    }
+
+    setValue(region) {
+        this.table.setGroup(region, this.currentRegion)
+        this.currentRegion.area += region.area
+    }
+
+    checkNeighbor(neighborRegion, region) {
+        const currentRegion = this.currentRegion
+        if (this.isEmpty(neighborRegion)) return
+        const neighborGroup = this.table.getGroup(neighborRegion)
+        if (neighborGroup.id === currentRegion.id) return
+        this.table.setBorder(region)
+        this.graph.setEdge(currentRegion.id, neighborGroup.id)
     }
 
     getNeighbors(region) {

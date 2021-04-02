@@ -5,12 +5,18 @@ import { EvenPointSampling } from '/lib/base/point/sampling'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 import { MultiFill } from '/lib/floodfill'
+import { FloodFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { RegionTileMap } from '/model/tilemap/region'
 
 import { RegionGroupTileMapDiagram } from './diagram'
-import { RegionGroup, RegionGroupTable, GroupFillConfig } from './regiongroup'
+import {
+    RegionGroup,
+    RegionGroupTable,
+    RegionGroupFillConfig,
+    ConcentricFillConfig
+ } from './regiongroup'
 
 
 const SCHEMA = new Schema(
@@ -53,15 +59,17 @@ export class RegionGroupTileMap extends TileMap {
         const regionTileMap = RegionTileMap.fromData(data)
         this.table = new RegionGroupTable(regionTileMap)
         this.graph = new Graph()
+        this.layerMap = new Map()
 
         this._buildTable(regionTileMap, origins, params)
+        // this._buildLayerMap(regionTileMap)
     }
 
     _buildTable(regionTileMap, origins, params) {
         const organicFills = origins.map((origin, id) => {
             const region = regionTileMap.getRegion(origin)
             const group = new RegionGroup(id, region)
-            const fillConfig = new GroupFillConfig({
+            const fillConfig = new RegionGroupFillConfig({
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),
                 table: this.table,
@@ -71,6 +79,20 @@ export class RegionGroupTileMap extends TileMap {
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(organicFills).fill()
+    }
+
+    _buildLayerMap(regionTileMap) {
+
+        // const floodFills = origins.map((origin, id) => {
+        //     const region = regionTileMap.getRegion(origin)
+        //     const fillConfig = new ConcentricFillConfig({
+        //         table: this.table,
+        //         graph: this.graph,
+        //         region,
+        //     })
+        //     return new FloodFill(region, fillConfig)
+        // })
+        new MultiFill(floodFills).fill()
     }
 
     get groups() {
@@ -95,7 +117,6 @@ export class RegionGroupTileMap extends TileMap {
         const group = this.getGroup(point)
         const borderRegions = this.table.getBorderRegions(point)
         return this.table.isGroupBorder(group, borderRegions)
-
     }
 
     isBorderRegion(region) {
