@@ -30,7 +30,6 @@ export class TectonicsTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const [width, height] = params.get('width', 'height')
         const regionGroupTileMap = buildRegionGroupMap(params)
         this.table = new TectonicsTable(regionGroupTileMap)
         // console.log(regionGroupTileMap.origins);

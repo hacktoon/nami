@@ -16,6 +16,8 @@ export class RegionGroupTable {
         this.regionTileMap = regionTileMap
         this.regionToGroup = new Map()
         this.borderRegions = new Set()
+        this.regionLayerMap = new Map()
+        this.borderRegionLayerMap = new Map()
         this.index = new Map()
     }
 
@@ -28,8 +30,28 @@ export class RegionGroupTable {
         this.borderRegions.add(region.id)
     }
 
+    setRegionLayer(region, layer) {
+        this.regionLayerMap.set(region.id, layer)
+    }
+
+    setBorderRegionLayer(region, layer) {
+        this.borderRegionLayerMap.set(region.id, layer)
+    }
+
+    hasBorderRegionLayer(region) {
+        return this.borderRegionLayerMap.has(region.id)
+    }
+
     getRegion(point) {
         return this.regionTileMap.getRegion(point)
+    }
+
+    getRegionLayer(region) {
+        return this.regionLayerMap.get(region.id)
+    }
+
+    getBorderRegionLayer(region) {
+        return this.borderRegionLayerMap.get(region.id)
     }
 
     getGroup(region) {
@@ -95,8 +117,9 @@ export class RegionGroupFillConfig {
         return this.table.isRegionEmpty(region)
     }
 
-    setValue(region) {
+    setValue(region, level) {
         this.table.setGroup(region, this.currentGroup)
+        this.table.setRegionLayer(region, level)
         this.currentGroup.area += region.area
     }
 
@@ -119,24 +142,17 @@ export class RegionLayerFillConfig {
     constructor(params) {
         this.currentRegion = params.region
         this.table = params.table
-        this.graph = params.graph
-        this.regionLayerMap = params.regionLayerMap
     }
 
     isEmpty(region) {
-        return ! this.regionLayerMap.has(region.id)
+        return ! this.table.hasBorderRegionLayer(region)
     }
 
     setValue(region, layer) {
-        this.regionLayerMap.set(region.id, layer)
+        this.table.setBorderRegionLayer(region, layer)
     }
 
     checkNeighbor(neighborRegion, region) {
-        const currentRegion = this.currentRegion
-        if (this.isEmpty(neighborRegion)) return
-        const group = this.table.getGroup(region)
-        const neighborGroup = this.table.getGroup(neighborRegion)
-        if (neighborGroup.id != group.id) return
 
     }
 

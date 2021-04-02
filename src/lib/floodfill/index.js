@@ -5,8 +5,8 @@ export class FloodFill {
         this.origin = origin
         this.seeds = [origin]
         this.config = config
-
-        this.config.setValue(this.origin)
+        this.level = 0
+        this.config.setValue(this.origin,  this.level)
     }
 
     canGrow() {
@@ -24,6 +24,7 @@ export class FloodFill {
             const filledNeighbors = this.#fillNeighbors(seeds[i])
             newSeeds.push(...filledNeighbors)
         }
+        if (newSeeds.length > 0) this.level += 1
         return newSeeds
     }
 
@@ -36,7 +37,7 @@ export class FloodFill {
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
-            this.config.setValue(neighbor)
+            this.config.setValue(neighbor,  this.level)
         })
         return filledNeighbors
     }

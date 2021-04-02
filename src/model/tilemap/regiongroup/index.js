@@ -59,7 +59,6 @@ export class RegionGroupTileMap extends TileMap {
         const regionTileMap = RegionTileMap.fromData(data)
         this.table = new RegionGroupTable(regionTileMap)
         this.graph = new Graph()
-        this.regionLayerMap = new Map()
 
         this._buildTable(regionTileMap, origins, params)
         this._buildLayerMap()
@@ -85,14 +84,11 @@ export class RegionGroupTileMap extends TileMap {
         const borderRegions = this.table.getRegionsAtBorders()
         const floodFills = borderRegions.map(region => {
             const fillConfig = new RegionLayerFillConfig({
-                table: this.table,
-                graph: this.graph,
-                regionLayerMap: this.regionLayerMap,
-                region
+                region, table: this.table
             })
-            // return new FloodFill(region, fillConfig)
+            return new FloodFill(region, fillConfig)
         })
-        // new MultiFill(floodFills).fill()
+        new MultiFill(floodFills).fill()
     }
 
     get groups() {
@@ -106,6 +102,14 @@ export class RegionGroupTileMap extends TileMap {
     getGroup(point) {
         const region = this.table.getRegion(point)
         return this.table.getGroup(region)
+    }
+
+    getRegionLayer(region) {
+        return this.table.getRegionLayer(region)
+    }
+
+    getBorderRegionLayer(region) {
+        return this.table.getBorderRegionLayer(region)
     }
 
     isRegionBorder(point) {

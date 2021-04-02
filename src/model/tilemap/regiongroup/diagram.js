@@ -8,6 +8,8 @@ const SCHEMA = new Schema(
     Type.boolean('showGroups', 'Show groups', {default: true}),
     Type.boolean('showGroupBorder', 'Show group border', {default: false}),
     Type.boolean('showRegions', 'Show regions', {default: true}),
+    Type.boolean('showRegionLayers', 'Show region layers', {default: true}),
+    Type.boolean('showBorderLayers', 'Show border layers', {default: true}),
     Type.boolean('showRegionBorder', 'Show region border', {default: false}),
 )
 
@@ -25,6 +27,8 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         this.showGroups = params.get('showGroups')
         this.showRegionBorder = params.get('showRegionBorder')
         this.showGroupBorder = params.get('showGroupBorder')
+        this.showRegionLayers = params.get('showRegionLayers')
+        this.showBorderLayers = params.get('showBorderLayers')
         this.regionColorMap = new RegionColorMap(tilemap.table.regionTileMap)
         this.groupColorMap = new GroupColorMap(tilemap)
     }
@@ -32,6 +36,8 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
     get(point) {
         const region = this.tilemap.getRegion(point)
         const group = this.tilemap.getGroup(point)
+        const regionLayer = this.tilemap.getRegionLayer(region)
+        const borderLayer = this.tilemap.getBorderRegionLayer(region)
         const regionColor = this.regionColorMap.get(region)
         const groupColor = this.groupColorMap.get(group)
         const isBorderRegion = this.tilemap.isBorderRegion(region)
@@ -44,12 +50,16 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
             return color.toHex()
         }
         if (this.showGroups) {
-            if (this.showRegions) {
-                let color = regionColor.average(groupColor).average(groupColor)
-                color = isBorderRegion ? color.darken(80) : color
-                return color.toHex()
+            if (! this.showRegions) return groupColor.toHex()
+            let color = regionColor.average(groupColor).average(groupColor)
+            if (isBorderRegion) return color.darken(100).toHex()
+            if (this.showBorderLayers) {
+                color = color.darken(borderLayer * 20)
             }
-            return groupColor.toHex()
+            if (this.showRegionLayers) {
+                color = color.darken(regionLayer * 3)
+            }
+            return color.toHex()
         }
         if (this.showRegions) {
             let color = isBorderRegion ? regionColor.darken(60) : regionColor
