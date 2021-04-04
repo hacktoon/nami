@@ -1,14 +1,12 @@
 
 export class ScanlineFill {
-    constructor(matrix, startPoint, onFill, canFill) {
-        this.startPoint = startPoint
-        this.matrix = matrix
+    constructor(origin, onFill, canFill) {
         this.rangeQueue = []
         this.onFill = onFill
         this.canFill = canFill
         // this.config = config
 
-        this.createRange(startPoint)
+        this.createRange(origin)
     }
 
     createRange(point) {
@@ -21,10 +19,10 @@ export class ScanlineFill {
 
     findRangeStart(originPoint) {
         let currentPoint = originPoint
-        let nextPoint = this.matrix.wrap(currentPoint.atWest())
+        let nextPoint = currentPoint.atWest()
         while (this.canFill(nextPoint) && nextPoint.x != originPoint.x) {
             currentPoint = nextPoint
-            nextPoint = this.matrix.wrap(nextPoint.atWest())
+            nextPoint = nextPoint.atWest()
         }
         return currentPoint
     }
@@ -55,12 +53,11 @@ export class ScanlineFill {
             this.onFill(point)
             this.detectRangeAbove(point.atNorth(), range)
             this.detectRangeBelow(point.atSouth(), range)
-            point = this.matrix.wrap(point.atEast())
+            point = point.atEast()
         }
     }
 
-    detectRangeAbove(referencePoint, referenceRange) {
-        let pointAbove = this.matrix.wrap(referencePoint)
+    detectRangeAbove(pointAbove, referenceRange) {
         if (this.canFill(pointAbove)) {
             if (referenceRange.canCheckAbove) {
                 this.createRange(pointAbove)
@@ -71,8 +68,7 @@ export class ScanlineFill {
         }
     }
 
-    detectRangeBelow(referencePoint, referenceRange) {
-        let pointBelow = this.matrix.wrap(referencePoint)
+    detectRangeBelow(pointBelow, referenceRange) {
         if (this.canFill(pointBelow)) {
             if (referenceRange.canCheckBelow) {
                 this.createRange(pointBelow)
@@ -97,7 +93,7 @@ export class ScanlineFill8 extends ScanlineFill {
             this.detectRangeBelow(point.atSouthwest(), range)
             this.detectRangeBelow(point.atSouth(), range)
             this.detectRangeBelow(point.atSoutheast(), range)
-            point = this.matrix.wrap(point.atEast())
+            point = point.atEast()
         }
     }
 }

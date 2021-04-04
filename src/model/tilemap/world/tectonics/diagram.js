@@ -8,7 +8,7 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 export class TectonicsTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'TectonicsTileMapDiagram',
-        Type.boolean('showPlates', 'Show plates', {default: true}),
+        Type.boolean('showPlates', 'Show plates', {default: false}),
     )
 
     static create(tilemap, params) {
