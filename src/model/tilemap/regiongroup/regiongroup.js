@@ -2,9 +2,9 @@ import { Color } from '/lib/base/color'
 
 
 export class RegionGroup {
-    constructor(id, origin) {
+    constructor(id, region) {
         this.id = id
-        this.origin = origin
+        this.origin = region.origin
         this.color = new Color()
         this.area = 0
     }

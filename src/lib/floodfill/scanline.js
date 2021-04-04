@@ -1,12 +1,12 @@
 
 export class ScanlineFill {
-    constructor(matrix, startPoint, config, onFill, isFillable) {
+    constructor(matrix, startPoint, onFill, canFill) {
         this.startPoint = startPoint
         this.matrix = matrix
         this.rangeQueue = []
         this.onFill = onFill
-        this.isFillable = isFillable
-        this.config = config
+        this.canFill = canFill
+        // this.config = config
 
         this.createRange(startPoint)
     }
@@ -22,7 +22,7 @@ export class ScanlineFill {
     findRangeStart(originPoint) {
         let currentPoint = originPoint
         let nextPoint = this.matrix.wrap(currentPoint.atWest())
-        while (this.isFillable(nextPoint) && nextPoint.x != originPoint.x) {
+        while (this.canFill(nextPoint) && nextPoint.x != originPoint.x) {
             currentPoint = nextPoint
             nextPoint = this.matrix.wrap(nextPoint.atWest())
         }
@@ -51,7 +51,7 @@ export class ScanlineFill {
     fillRange(range) {
         let point = range.point
 
-        while (this.isFillable(point)) {
+        while (this.canFill(point)) {
             this.onFill(point)
             this.detectRangeAbove(point.atNorth(), range)
             this.detectRangeBelow(point.atSouth(), range)
@@ -61,7 +61,7 @@ export class ScanlineFill {
 
     detectRangeAbove(referencePoint, referenceRange) {
         let pointAbove = this.matrix.wrap(referencePoint)
-        if (this.isFillable(pointAbove)) {
+        if (this.canFill(pointAbove)) {
             if (referenceRange.canCheckAbove) {
                 this.createRange(pointAbove)
                 referenceRange.canCheckAbove = false
@@ -73,7 +73,7 @@ export class ScanlineFill {
 
     detectRangeBelow(referencePoint, referenceRange) {
         let pointBelow = this.matrix.wrap(referencePoint)
-        if (this.isFillable(pointBelow)) {
+        if (this.canFill(pointBelow)) {
             if (referenceRange.canCheckBelow) {
                 this.createRange(pointBelow)
                 referenceRange.canCheckBelow = false
@@ -89,7 +89,7 @@ export class ScanlineFill8 extends ScanlineFill {
     fillRange(range) {
         let point = range.point
 
-        while (this.isFillable(point)) {
+        while (this.canFill(point)) {
             this.onFill(point)
             this.detectRangeAbove(point.atNorthwest(), range)
             this.detectRangeAbove(point.atNorth(), range)

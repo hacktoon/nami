@@ -13,7 +13,7 @@ const SCHEMA = new Schema(
     'TectonicsTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 34, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 35, step: 1, min: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -32,13 +32,6 @@ export class TectonicsTileMap extends TileMap {
         super(params)
         const regionGroupTileMap = buildRegionGroupMap(params)
         this.table = new TectonicsTable(regionGroupTileMap)
-        // console.log(regionGroupTileMap.origins);
-        // const isFillable = point => this.getId(point) == EMPTY
-        // const onFill = point => {
-        //     this._setPoint(point)
-        //     tileCount++
-        // }
-        // new ScanlineFill(this.matrix, startPoint, onFill, isFillable).fill()
     }
 
     getPlate(point) {
@@ -61,9 +54,9 @@ function buildRegionGroupMap(params) {
         height: params.get('height'),
         seed: params.get('seed'),
         groupScale: params.get('scale'),
-        groupChance: 0.2,
-        groupGrowth: 12,
-        scale: 2,
+        groupChance: 0.1,
+        groupGrowth: 10,
+        scale: 3,
         growth: 0,
         chance: 0.1,
     })

@@ -1,5 +1,7 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
+import { Color } from '/lib/base/color'
+
 import { TileMapDiagram } from '/model/lib/tilemap'
 
 
@@ -20,7 +22,12 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const plate = this.tilemap.getPlate(point)
-        const color = this.colorMap.get(plate)
+        // let color = this.colorMap.get(plate)
+        const continent = this.tilemap.table.geologicMap.get(point)
+        if (continent === 0) return '#27A'  // ocean
+        if (continent === 1) return '#0d85db'   // platform
+        if (continent === 2) return '#26a11f' // cont
+
 
         // if (this.showPlates && this.tilemap.isPlateBorder(point)) {
         //     return color.darken(50).toHex()
@@ -52,7 +59,13 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
 
 class PlateColorMap {
     constructor(tilemap) {
-        const entries = tilemap.map(plate => [plate.id, plate.color])
+        const entries = tilemap.map(plate => {
+            let color =  new Color(0, 250, 0).average(plate.color)
+            if (plate.isOceanic()) {
+                color = new Color(0, 0, 200)
+            }
+            return [plate.id, color]
+        })
         this.map = Object.fromEntries(entries)
     }
 
