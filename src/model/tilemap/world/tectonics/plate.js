@@ -84,25 +84,32 @@ function buildGeologicMap(plateIndex, rgTilemap) {
     const {width, height} = rgTilemap
     const matrix = new Matrix(width, height, () => EMPTY)
 
+    let baseNoise = new SimplexNoise(6, 0.8, 0.01)
+    let coastNoise = new SimplexNoise(6, 0.8, 0.02)
     rgTilemap.forEach(group => {
+        const coord = group.id * 1000
+        const offset = new Point(coord, coord)
         const plate = plateIndex.get(group.id)
-        let landNoise = new SimplexNoise(6, 0.8, 0.01)
-        let oceanNoise = new SimplexNoise(6, 0.8, 0.01)
         const canFill = point => {
             const currentGroup = rgTilemap.getGroup(point)
-            const sameGroup = group.id === currentGroup.id
-            return sameGroup && matrix.get(point) === EMPTY
+            const isCurrentGroup = group.id === currentGroup.id
+            return isCurrentGroup && matrix.get(point) === EMPTY
         }
         const onFill = point => {
-            const offset = new Point(group.id, group.id)
+            const region = rgTilemap.getRegion(point)
+            const layer = rgTilemap.getBorderRegionLayer(region)
             const noisePoint = point.plus(offset)
-            const landValue = landNoise.at(noisePoint)
-            const oceanValue = oceanNoise.at(noisePoint)
+            const baseValue = baseNoise.at(noisePoint)
+            const coastValue = coastNoise.at(noisePoint)
             let value = 0 // ocean
+
             if (plate.isOceanic()) {
-                value = oceanValue < 20 ? 1 : 0
+                value = baseValue < 20 ? 1 : 0
             } else {
-                value = landValue > 160 ? 2 : 1
+                if (layer === 0)
+                    value = coastValue > 100 ? 0 : 1
+                else
+                    value = 1 //baseValue > 160 ? 2 : 1
             }
             matrix.set(point, value)
         }
@@ -110,3 +117,5 @@ function buildGeologicMap(plateIndex, rgTilemap) {
     })
     return matrix
 }
+
+

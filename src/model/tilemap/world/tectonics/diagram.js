@@ -25,37 +25,16 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const plate = this.tilemap.getPlate(point)
         const isBorder = this.tilemap.isPlateBorderAt(point)
         const geology = this.tilemap.table.geologicMap.get(point)
+        let color = Color.fromHex('#058')  // ocean
+        if (geology === 1) color = Color.fromHex('#26a11f') // platform
+        if (geology === 2) color = Color.fromHex('#71694b') // shield
+
         if (this.showPlateBorders && isBorder) {
-            let color = this.colorMap.get(plate)
-            return color.darken(50).toHex()
+            return color.darken(30).toHex()
         }
-        if (geology === 0) return '#27A'  // ocean
-        if (geology === 1) return '#26a11f' // cont
-        if (geology === 2) return '#71694b' // cont
-
-
-        // // if (this.showProvinces && isBorderProvince) {
-        // //     return color.darken(50).toHex()
-        // // }
-        // if (this.showProvinces && isBorderProvince) {
-        //     const borderRegion = this.tilemap.getBorderProvinceRegion(point)
-        //     const defColor = this.colorMap.get(borderRegion)
-        //     return defColor.toHex()
-        // }
 
         return color.toHex()
     }
-    // get(point) {
-    //     if (this.showBorder && this.tilemap.isBorder(point)) {
-    //         return this.borderColor.toHex()
-    //     }
-    //     const value = this.tilemap.get(point)
-    //     const ocean = this.ocean.toHex()
-    //     const continent = this.continent.toHex()
-    //     if (value === 0) return ocean
-    //     if (value === 1) return '#27A'
-    //     if (value === 2) return continent
-    // }
 }
 
 
