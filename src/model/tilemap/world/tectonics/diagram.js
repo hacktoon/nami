@@ -25,8 +25,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         // let color = this.colorMap.get(plate)
         const continent = this.tilemap.table.geologicMap.get(point)
         if (continent === 0) return '#27A'  // ocean
-        if (continent === 1) return '#0d85db'   // platform
-        if (continent === 2) return '#26a11f' // cont
+        if (continent === 1) return '#26a11f' // cont
 
 
         // if (this.showPlates && this.tilemap.isPlateBorder(point)) {

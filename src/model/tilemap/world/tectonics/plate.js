@@ -24,7 +24,7 @@ export class TectonicsTable {
     constructor(regionGroupTileMap) {
         this.regionGroupTileMap = regionGroupTileMap
         this.index = buildPlateIndex(regionGroupTileMap)
-        this.geologicMap = buildGeologicMap(regionGroupTileMap)
+        this.geologicMap = buildGeologicMap(this.index, regionGroupTileMap)
     }
 
     getPlate(point) {
@@ -49,7 +49,6 @@ export class Plate {
         this.type = type
         this.area = area
         this.color = new Color()
-        this.weight = Random.choice(1, 2, 2, 3, 3)
     }
 
     isOceanic() {
@@ -74,26 +73,29 @@ function buildPlateIndex(regionGroupTileMap) {
 }
 
 
-function buildGeologicMap(tilemap) {
-    const {width, height} = tilemap
+const provinceMap = {}  // border regions depending on continents position must be islands
+
+
+function buildGeologicMap(plateIndex, rgTilemap) {
+    const {width, height} = rgTilemap
     const matrix = new Matrix(width, height, () => EMPTY)
-    tilemap.forEach(group => {
-        let simplex = new SimplexNoise(7, 0.7, 0.01)
-        if (group.id % 2 === 0)
-            simplex = new SimplexNoise(5, 0.8, 0.02)
-        const coordOffset = group.id
+
+    rgTilemap.forEach(group => {
+        const plate = plateIndex.get(group.id)
+        let simplex = new SimplexNoise(6, 0.8, 0.01)
         const canFill = point => {
-            const currentGroup = tilemap.getGroup(point)
+            const currentGroup = rgTilemap.getGroup(point)
             const sameGroup = group.id === currentGroup.id
             return sameGroup && matrix.get(point) === EMPTY
         }
         const onFill = point => {
-            const offset = new Point(coordOffset, coordOffset)
+            const offset = new Point(group.id, group.id)
             const noisePoint = point.plus(offset)
             const noise = simplex.at(noisePoint)
-            let value = 1
-            if (noise < 150) value = 2
-            if (group.id <= 2 && noise < 151) value = 0
+            let value = 0 // ocean
+            if (!plate.isOceanic()) {
+                value = noise > 150 ? 0 : 1
+            }
             matrix.set(point, value)
         }
         new ScanlineFill(group.origin, onFill, canFill).fill()

@@ -55,8 +55,8 @@ function buildRegionGroupMap(params) {
         seed: params.get('seed'),
         groupScale: params.get('scale'),
         groupChance: 0.1,
-        groupGrowth: 10,
-        scale: 2,
+        groupGrowth: 20,
+        scale: 3,
         growth: 1,
         chance: 0.1,
     })
