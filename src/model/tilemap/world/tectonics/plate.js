@@ -32,6 +32,10 @@ export class TectonicsTable {
         return this.index.get(group.id)
     }
 
+    isPlateBorderAt(point) {
+        return this.regionGroupTileMap.isGroupBorderPoint(point)
+    }
+
     map(callback) {
         const entries = Array.from(this.index.values())
         return entries.map(callback)
@@ -82,7 +86,8 @@ function buildGeologicMap(plateIndex, rgTilemap) {
 
     rgTilemap.forEach(group => {
         const plate = plateIndex.get(group.id)
-        let simplex = new SimplexNoise(6, 0.8, 0.01)
+        let landNoise = new SimplexNoise(6, 0.8, 0.01)
+        let oceanNoise = new SimplexNoise(6, 0.8, 0.01)
         const canFill = point => {
             const currentGroup = rgTilemap.getGroup(point)
             const sameGroup = group.id === currentGroup.id
@@ -91,10 +96,13 @@ function buildGeologicMap(plateIndex, rgTilemap) {
         const onFill = point => {
             const offset = new Point(group.id, group.id)
             const noisePoint = point.plus(offset)
-            const noise = simplex.at(noisePoint)
+            const landValue = landNoise.at(noisePoint)
+            const oceanValue = oceanNoise.at(noisePoint)
             let value = 0 // ocean
-            if (!plate.isOceanic()) {
-                value = noise > 150 ? 0 : 1
+            if (plate.isOceanic()) {
+                value = oceanValue < 20 ? 1 : 0
+            } else {
+                value = landValue > 160 ? 2 : 1
             }
             matrix.set(point, value)
         }

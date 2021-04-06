@@ -8,7 +8,7 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 export class TectonicsTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'TectonicsTileMapDiagram',
-        Type.boolean('showPlates', 'Show plates', {default: false}),
+        Type.boolean('showPlateBorders', 'Show plate borders', {default: true}),
     )
 
     static create(tilemap, params) {
@@ -17,20 +17,23 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
 
     constructor(tilemap, params) {
         super(tilemap)
+        this.showPlateBorders = params.get('showPlateBorders')
         this.colorMap = new PlateColorMap(tilemap)
     }
 
     get(point) {
         const plate = this.tilemap.getPlate(point)
-        // let color = this.colorMap.get(plate)
-        const continent = this.tilemap.table.geologicMap.get(point)
-        if (continent === 0) return '#27A'  // ocean
-        if (continent === 1) return '#26a11f' // cont
+        const isBorder = this.tilemap.isPlateBorderAt(point)
+        const geology = this.tilemap.table.geologicMap.get(point)
+        if (this.showPlateBorders && isBorder) {
+            let color = this.colorMap.get(plate)
+            return color.darken(50).toHex()
+        }
+        if (geology === 0) return '#27A'  // ocean
+        if (geology === 1) return '#26a11f' // cont
+        if (geology === 2) return '#71694b' // cont
 
 
-        // if (this.showPlates && this.tilemap.isPlateBorder(point)) {
-        //     return color.darken(50).toHex()
-        // }
         // // if (this.showProvinces && isBorderProvince) {
         // //     return color.darken(50).toHex()
         // // }
@@ -61,7 +64,7 @@ class PlateColorMap {
         const entries = tilemap.map(plate => {
             let color =  new Color(0, 250, 0).average(plate.color)
             if (plate.isOceanic()) {
-                color = new Color(0, 0, 200)
+                color = new Color(0, 0, 150)
             }
             return [plate.id, color]
         })

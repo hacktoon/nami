@@ -13,7 +13,7 @@ const SCHEMA = new Schema(
     'TectonicsTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 30, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 35, step: 1, min: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -38,6 +38,10 @@ export class TectonicsTileMap extends TileMap {
         return this.table.getPlate(point)
     }
 
+    isPlateBorderAt(point) {
+        return this.table.isPlateBorderAt(point)
+    }
+
     map(callback) {
         return this.table.map(plate => callback(plate))
     }
@@ -55,7 +59,7 @@ function buildRegionGroupMap(params) {
         seed: params.get('seed'),
         groupScale: params.get('scale'),
         groupChance: 0.1,
-        groupGrowth: 20,
+        groupGrowth: 0,
         scale: 3,
         growth: 1,
         chance: 0.1,
