@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import { Form } from '/ui/form'
 import { Button } from '/ui/form/button'
+import { Text } from '/ui'
 import { TileMapScene } from '/model/lib/tilemap/scene'
 
 import { UITileMapScene } from './scene'
@@ -39,6 +40,7 @@ function UITileMapDiagram({diagram, tilemap}) {
             handleClick={handleClick}
         />
         <section className="UIMapSidebar">
+            <Text>Seed: {tilemap.seed}</Text>
             <Form className="MapSceneForm"
                 data={sceneData}
                 onSubmit={setSceneData}>
