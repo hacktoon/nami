@@ -94,11 +94,10 @@ function buildGeologicMap(plateIndex, rgTilemap) {
     const {width, height} = rgTilemap
     const matrix = new Matrix(width, height, () => EMPTY)
 
-    let noise = new SimplexNoise(6, 0.8, 0.02)
-    let coastNoise = new SimplexNoise(8, 0.8, 0.04)
+    const noise = new SimplexNoise(6, 0.8, 0.02)
+    const coastNoise = new SimplexNoise(8, 0.8, 0.04)
+
     rgTilemap.forEach(group => {
-        const coord = group.id * 1000
-        const offset = new Point(coord, coord)
         const plate = plateIndex.get(group.id)
         const canFill = point => {
             const currentGroup = rgTilemap.getGroup(point)
@@ -108,9 +107,9 @@ function buildGeologicMap(plateIndex, rgTilemap) {
         const onFill = point => {
             const region = rgTilemap.getRegion(point)
             const layer = rgTilemap.getBorderRegionLayer(region)
-            const noisePoint = point ///.plus(offset)
-            const noiseValue = noise.at(noisePoint)
-            const coastValue = coastNoise.at(noisePoint)
+
+            const noiseValue = noise.at(point)
+            const coastValue = coastNoise.at(point)
 
             let value = 1 // land
             if (plate.isOceanic()) {
@@ -118,12 +117,14 @@ function buildGeologicMap(plateIndex, rgTilemap) {
             } else if (plate.isShield()) {
                 value = 1
             } else if (layer === 0) {
-                value = coastValue > 80 ? 0 : 1
+                value = coastValue > 80 ? 2 : 1
             }
+
             matrix.set(point, value)
         }
         new ScanlineFill(group.origin, onFill, canFill).fill()
     })
+    console.log();
     return matrix
 }
 

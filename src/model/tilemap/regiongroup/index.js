@@ -16,7 +16,7 @@ import {
     RegionGroupTable,
     RegionGroupFillConfig,
     RegionLayerFillConfig
- } from './regiongroup'
+ } from './model'
 
 
 const SCHEMA = new Schema(
@@ -57,27 +57,28 @@ export class RegionGroupTileMap extends TileMap {
         const origins = EvenPointSampling.create(width, height, groupScale)
         const data = {width, height, scale, seed, chance, growth}
         const regionTileMap = RegionTileMap.fromData(data)
-        this.table = new RegionGroupTable(regionTileMap)
         this.graph = new Graph()
+        this.table = this._buildTable(regionTileMap, origins, params)
 
-        this._buildTable(regionTileMap, origins, params)
         this._buildLayerMap()
     }
 
     _buildTable(regionTileMap, origins, params) {
+        const table = new RegionGroupTable(regionTileMap)
         const organicFills = origins.map((origin, id) => {
             const region = regionTileMap.getRegion(origin)
             const group = new RegionGroup(id, region)
             const fillConfig = new RegionGroupFillConfig({
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),
-                table: this.table,
                 graph: this.graph,
+                table,
                 group,
             })
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(organicFills).fill()
+        return table
     }
 
     _buildLayerMap() {

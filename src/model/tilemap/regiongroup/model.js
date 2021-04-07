@@ -19,6 +19,7 @@ export class RegionGroupTable {
         this.regionLayerMap = new Map()
         this.borderRegionLayerMap = new Map()
         this.index = new Map()
+        this.borderLayerMax = 0
     }
 
     setGroup(region, group) {
@@ -36,6 +37,7 @@ export class RegionGroupTable {
 
     setBorderRegionLayer(region, layer) {
         this.borderRegionLayerMap.set(region.id, layer)
+        this.borderLayerMax = layer
     }
 
     hasBorderRegionLayer(region) {
@@ -152,9 +154,7 @@ export class RegionLayerFillConfig {
         this.table.setBorderRegionLayer(region, layer)
     }
 
-    checkNeighbor(neighborRegion, region) {
-
-    }
+    checkNeighbor() {}
 
     getNeighbors(region) {
         return this.table.regionTileMap.getNeighbors(region)
