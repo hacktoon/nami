@@ -13,7 +13,7 @@ const SCHEMA = new Schema(
     'TectonicsTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 36, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 35, step: 1, min: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -59,9 +59,9 @@ function buildRegionGroupMap(params) {
         seed: params.get('seed'),
         groupScale: params.get('scale'),
         groupChance: 0.2,
-        groupGrowth: 8,
+        groupGrowth: 20,
         scale: 2,
-        growth: 1,
+        growth: 0,
         chance: 0.1,
     })
 }

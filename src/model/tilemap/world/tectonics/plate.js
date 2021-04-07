@@ -13,6 +13,7 @@ TODO
 
 const OCEANIC_TYPE = 'O'
 const CONTINENTAL_TYPE = 'C'
+const SHIELD_TYPE = 'S'
 const NO_DEFORMATION = null
 const OROGENY = 1
 const TRENCH = 2
@@ -58,6 +59,10 @@ export class Plate {
     isOceanic() {
         return this.type == OCEANIC_TYPE
     }
+
+    isShield() {
+        return this.type == SHIELD_TYPE
+    }
 }
 
 
@@ -67,9 +72,14 @@ function buildPlateIndex(regionGroupTileMap) {
     const cmpDescArea = (groupA, groupB) => groupB.area - groupA.area
     const groups = regionGroupTileMap.groups.sort(cmpDescArea)
     const index = new Map()
+    let hasShield = false
     groups.forEach(group => {
         oceanicArea += group.area
-        const type = oceanicArea < halfMapArea ? OCEANIC_TYPE : CONTINENTAL_TYPE
+        let type = oceanicArea < halfMapArea ? OCEANIC_TYPE : CONTINENTAL_TYPE
+        if (! hasShield && type === CONTINENTAL_TYPE) {
+            hasShield = true
+            type = SHIELD_TYPE
+        }
         const plate = new Plate(group.id, type, group.area)
         index.set(group.id, plate)
     })
@@ -84,8 +94,8 @@ function buildGeologicMap(plateIndex, rgTilemap) {
     const {width, height} = rgTilemap
     const matrix = new Matrix(width, height, () => EMPTY)
 
-    let baseNoise = new SimplexNoise(6, 0.8, 0.01)
-    let coastNoise = new SimplexNoise(6, 0.8, 0.02)
+    let noise = new SimplexNoise(6, 0.8, 0.02)
+    let coastNoise = new SimplexNoise(8, 0.8, 0.04)
     rgTilemap.forEach(group => {
         const coord = group.id * 1000
         const offset = new Point(coord, coord)
@@ -98,18 +108,17 @@ function buildGeologicMap(plateIndex, rgTilemap) {
         const onFill = point => {
             const region = rgTilemap.getRegion(point)
             const layer = rgTilemap.getBorderRegionLayer(region)
-            const noisePoint = point.plus(offset)
-            const baseValue = baseNoise.at(noisePoint)
+            const noisePoint = point ///.plus(offset)
+            const noiseValue = noise.at(noisePoint)
             const coastValue = coastNoise.at(noisePoint)
-            let value = 0 // ocean
 
+            let value = 1 // land
             if (plate.isOceanic()) {
-                value = baseValue < 20 ? 1 : 0
-            } else {
-                if (layer === 0)
-                    value = coastValue > 100 ? 0 : 1
-                else
-                    value = 1 //baseValue > 160 ? 2 : 1
+                value = noiseValue < 20 ? 1 : 0
+            } else if (plate.isShield()) {
+                value = 1
+            } else if (layer === 0) {
+                value = coastValue > 80 ? 0 : 1
             }
             matrix.set(point, value)
         }
