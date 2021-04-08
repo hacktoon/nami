@@ -21,8 +21,8 @@ import {
 
 const SCHEMA = new Schema(
     'RegionGroupTileMap',
-    Type.number('width', 'W', {default: 150, step: 1, min: 10, max: 500}),
-    Type.number('height', 'H', {default: 100, step: 1, min: 10, max: 500}),
+    Type.number('width', 'W', {default: 150, step: 1, min: 1, max: 500}),
+    Type.number('height', 'H', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('groupScale', 'Gr Scale', {default: 34, step: 1, min: 1}),
     Type.number('groupChance', 'Gr Chance', {default: 0.2, step: 0.1, min: 0.1, max: 1}),
     Type.number('groupGrowth', 'Gr Growth', {default: 12, step: 1, min: 0}),

@@ -93,7 +93,6 @@ const provinceMap = {}  // border regions depending on continents position must 
 function buildGeologicMap(plateIndex, rgTilemap) {
     const {width, height} = rgTilemap
     const matrix = new Matrix(width, height, () => EMPTY)
-
     const noise = new SimplexNoise(6, 0.8, 0.02)
     const coastNoise = new SimplexNoise(8, 0.8, 0.04)
 
@@ -101,13 +100,13 @@ function buildGeologicMap(plateIndex, rgTilemap) {
         const plate = plateIndex.get(group.id)
         const canFill = point => {
             const currentGroup = rgTilemap.getGroup(point)
-            const isCurrentGroup = group.id === currentGroup.id
-            return isCurrentGroup && matrix.get(point) === EMPTY
+            const isSameGroup = group.id === currentGroup.id
+            return isSameGroup && matrix.get(point) === EMPTY
         }
+
         const onFill = point => {
             const region = rgTilemap.getRegion(point)
             const layer = rgTilemap.getBorderRegionLayer(region)
-
             const noiseValue = noise.at(point)
             const coastValue = coastNoise.at(point)
 
@@ -122,9 +121,12 @@ function buildGeologicMap(plateIndex, rgTilemap) {
 
             matrix.set(point, value)
         }
-        new ScanlineFill(group.origin, onFill, canFill).fill()
+
+        const filterPoint = point => matrix.wrap(point)
+
+        new ScanlineFill(group.origin, onFill, canFill, filterPoint).fill()
     })
-    console.log();
+
     return matrix
 }
 

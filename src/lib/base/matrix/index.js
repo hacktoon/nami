@@ -32,4 +32,8 @@ export class Matrix {
     wrap(point) {
         return this.rect.wrap(point)
     }
+
+    forEach(callback) {
+
+    }
 }

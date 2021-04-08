@@ -1,12 +1,13 @@
 
 export class ScanlineFill {
-    constructor(origin, onFill, canFill) {
+    constructor(startPoint, onFill, canFill, filterPoint) {
+        this.startPoint = startPoint
         this.rangeQueue = []
         this.onFill = onFill
         this.canFill = canFill
-        // this.config = config
+        this.filterPoint = filterPoint
 
-        this.createRange(origin)
+        this.createRange(startPoint)
     }
 
     createRange(point) {
@@ -19,16 +20,16 @@ export class ScanlineFill {
 
     findRangeStart(originPoint) {
         let currentPoint = originPoint
-        let nextPoint = currentPoint.atWest()
+        let nextPoint = this.filterPoint(currentPoint.atWest())
         while (this.canFill(nextPoint) && nextPoint.x != originPoint.x) {
             currentPoint = nextPoint
-            nextPoint = nextPoint.atWest()
+            nextPoint = this.filterPoint(nextPoint.atWest())
         }
         return currentPoint
     }
 
     fill() {
-        while (!this.isComplete) {
+        while (! this.isComplete) {
             this.stepFill()
         }
     }
@@ -53,11 +54,12 @@ export class ScanlineFill {
             this.onFill(point)
             this.detectRangeAbove(point.atNorth(), range)
             this.detectRangeBelow(point.atSouth(), range)
-            point = point.atEast()
+            point = this.filterPoint(point.atEast())
         }
     }
 
-    detectRangeAbove(pointAbove, referenceRange) {
+    detectRangeAbove(referencePoint, referenceRange) {
+        let pointAbove = this.filterPoint(referencePoint)
         if (this.canFill(pointAbove)) {
             if (referenceRange.canCheckAbove) {
                 this.createRange(pointAbove)
@@ -68,7 +70,8 @@ export class ScanlineFill {
         }
     }
 
-    detectRangeBelow(pointBelow, referenceRange) {
+    detectRangeBelow(referencePoint, referenceRange) {
+        let pointBelow = this.filterPoint(referencePoint)
         if (this.canFill(pointBelow)) {
             if (referenceRange.canCheckBelow) {
                 this.createRange(pointBelow)
