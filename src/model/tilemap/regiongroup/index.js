@@ -92,6 +92,13 @@ export class RegionGroupTileMap extends TileMap {
         new MultiFill(floodFills).fill()
     }
 
+    get(point) {
+        return {
+            region: this.getRegion(point),
+            group: this.getGroup(point),
+        }
+    }
+
     get groups() {
         return this.table.map(group => group)
     }
