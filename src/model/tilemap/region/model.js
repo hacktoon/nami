@@ -19,7 +19,7 @@ export class RegionMapTable {
     constructor(width, height) {
         this.idMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => new Set())
-        this.idMap = new Map()
+        this.index = new Map()
     }
 
     isEmpty(point) {
@@ -31,21 +31,17 @@ export class RegionMapTable {
     }
 
     setRegion(point, region) {
-        this.idMap.set(region.id, region)
-        return this.idMatrix.set(point, region.id)
-    }
-
-    isSameRegion(region, other) {
-        return region.id === other.id
+        this.index.set(region.id, region)
+        this.idMatrix.set(point, region.id)
     }
 
     getRegion(point) {
         const id = this.idMatrix.get(point)
-        return this.idMap.get(id)
+        return this.index.get(id)
     }
 
     getRegionById(id) {
-        return this.idMap.get(id)
+        return this.index.get(id)
     }
 
     addBorder(point, id) {
@@ -54,16 +50,16 @@ export class RegionMapTable {
 
     getBorderRegionsAt(point) {
         const ids = Array.from(this.borderMatrix.get(point))
-        return ids.map(id => this.idMap.get(id))
+        return ids.map(id => this.index.get(id))
     }
 
     map(callback) {
-        const entries = Array.from(this.idMap.values())
+        const entries = Array.from(this.index.values())
         return entries.map(callback)
     }
 
     forEach(callback) {
-        this.idMap.forEach(callback)
+        this.index.forEach(callback)
     }
 }
 
@@ -89,7 +85,7 @@ export class RegionFillConfig {
     checkNeighbor(neighborPoint, origin) {
         const neighbor = this.table.getRegion(neighborPoint)
         if (this.table.isEmpty(neighborPoint)) return
-        if (this.table.isSameRegion(this.region, neighbor)) return
+        if (this.region.id === neighbor.id) return
         this.table.addBorder(origin, neighbor.id) //TODO: use point here?
         this.graph.setEdge(this.region.id, neighbor.id)
     }

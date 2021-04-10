@@ -19,7 +19,7 @@ export class RegionGroupTable {
         this.regionLayerMap = new Map()
         this.borderRegionLayerMap = new Map()
         this.index = new Map()
-        this.borderLayerMax = 0
+        this.layers = []
     }
 
     setGroup(region, group) {
@@ -37,7 +37,7 @@ export class RegionGroupTable {
 
     setBorderRegionLayer(region, layer) {
         this.borderRegionLayerMap.set(region.id, layer)
-        this.borderLayerMax = layer
+        this.layers.push(layer)
     }
 
     hasBorderRegionLayer(region) {
@@ -80,14 +80,10 @@ export class RegionGroupTable {
     isGroupBorder(group, borderRegions) {
         for(let region of borderRegions) {
             const borderGroup = this.getGroup(region)
-            if (! this.isSameGroup(group, borderGroup))
+            if (group.id !== borderGroup.id)
                 return true
         }
         return false
-    }
-
-    isSameGroup(group, other) {
-        return group.id === other.id
     }
 
     isRegionEmpty(region) {

@@ -6,7 +6,7 @@ import { UITileMap } from '/ui/tilemap'
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
 import { TectonicsTileMapDiagram } from './diagram'
-import { TectonicsTable } from './plate'
+import { TectonicsTable } from './model'
 
 
 const SCHEMA = new Schema(
