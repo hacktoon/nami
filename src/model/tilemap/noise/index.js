@@ -31,15 +31,8 @@ export class NoiseTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.detail = params.get('detail')
-        this.resolution = params.get('resolution')
-        this.scale = params.get('scale')
-
-        const simplex = new SimplexNoise(
-            this.detail,
-            this.resolution,
-            this.scale
-        )
+        const [detail, res, scale] = params.get('detail', 'resolution', 'scale')
+        const simplex = new SimplexNoise( detail, res, scale)
         this.matrix = new Matrix(this.width, this.height, point => {
             return simplex.at(point)
         })

@@ -29,7 +29,7 @@ function UITileMapDiagram({diagram, tilemap}) {
 
     const handleDrag = point => setSceneData(sceneData.update('focus', point))
     const handleWheel = zoom => setSceneData(sceneData.update('zoom', zoom))
-    const handleClick = point => console.info('Click', point)
+    const handleClick = point => console.info(tilemap.get(point))
 
     return <>
         <UITileMapScene
