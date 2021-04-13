@@ -69,9 +69,11 @@ export class RegionTileMap extends TileMap {
 
     get(point) {
         const borderIds = this.table.getBorderRegionsAt(point)
+        const region = this.table.getRegion(point)
         return {
-            id: this.table.getRegion(point).id,
-            borders: borderIds.map(r => r.id).join(','),
+            id: region.id,
+            region: region,
+            borders: borderIds.map(r => r.id).join(', '),
         }
     }
 
@@ -87,7 +89,7 @@ export class RegionTileMap extends TileMap {
         return this.table.getBorderRegionsAt(point)
     }
 
-    getNeighbors(region) {
+    getNeighborRegions(region) {
         const edges = this.graph.getEdges(region.id)
         return edges.map(id => this.table.getRegionById(id))
     }

@@ -94,8 +94,8 @@ export class RegionGroupTileMap extends TileMap {
 
     get(point) {
         return {
-            region: this.getRegion(point),
-            group: this.getGroup(point),
+            region: this.getRegion(point).id,
+            group: this.getGroup(point).id,
         }
     }
 
@@ -116,8 +116,8 @@ export class RegionGroupTileMap extends TileMap {
         return this.table.getRegionLayer(region)
     }
 
-    getBorderRegionLayer(region) {
-        return this.table.getBorderRegionLayer(region)
+    getGroupLayer(region) {
+        return this.table.getGroupLayer(region)
     }
 
     isRegionBorder(point) {

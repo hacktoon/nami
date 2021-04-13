@@ -17,6 +17,10 @@ export class TileMap {
         Random.seed = seed
         return seed
     }
+
+    get(point) {
+        return point
+    }
 }
 
 

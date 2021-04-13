@@ -52,7 +52,7 @@ export class RegionGroupTable {
         return this.regionLayerMap.get(region.id)
     }
 
-    getBorderRegionLayer(region) {
+    getGroupLayer(region) {
         return this.borderRegionLayerMap.get(region.id)
     }
 
@@ -131,7 +131,7 @@ export class RegionGroupFillConfig {
     }
 
     getNeighbors(region) {
-        return this.table.regionTileMap.getNeighbors(region)
+        return this.table.regionTileMap.getNeighborRegions(region)
     }
 }
 
@@ -153,6 +153,6 @@ export class RegionLayerFillConfig {
     checkNeighbor() {}
 
     getNeighbors(region) {
-        return this.table.regionTileMap.getNeighbors(region)
+        return this.table.regionTileMap.getNeighborRegions(region)
     }
 }

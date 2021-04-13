@@ -106,7 +106,7 @@ function buildGeologicMap(plateIndex, rgTilemap) {
 
         const onFill = point => {
             const region = rgTilemap.getRegion(point)
-            const layer = rgTilemap.getBorderRegionLayer(region)
+            const layer = rgTilemap.getGroupLayer(region)
             const noiseValue = noise.at(point)
             const coastValue = coastNoise.at(point)
 
