@@ -13,10 +13,10 @@ import { RegionTileMap } from '/model/tilemap/region'
 import { RegionGroupTileMapDiagram } from './diagram'
 import {
     RegionGroup,
-    RegionGroupTable,
+    RegionGroupData,
     RegionGroupFillConfig,
     RegionLayerFillConfig
- } from './model'
+ } from './data'
 
 
 const SCHEMA = new Schema(
@@ -58,13 +58,13 @@ export class RegionGroupTileMap extends TileMap {
         const data = {width, height, scale, seed, chance, growth}
         const regionTileMap = RegionTileMap.fromData(data)
         this.graph = new Graph()
-        this.table = this._buildTable(regionTileMap, origins, params)
+        this.data = this._buildTable(regionTileMap, origins, params)
 
         this._buildLayerMap()
     }
 
     _buildTable(regionTileMap, origins, params) {
-        const table = new RegionGroupTable(regionTileMap)
+        const data = new RegionGroupData(regionTileMap)
         const organicFills = origins.map((origin, id) => {
             const region = regionTileMap.getRegion(origin)
             const group = new RegionGroup(id, region)
@@ -72,20 +72,20 @@ export class RegionGroupTileMap extends TileMap {
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),
                 graph: this.graph,
-                table,
+                data,
                 group,
             })
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(organicFills).fill()
-        return table
+        return data
     }
 
     _buildLayerMap() {
-        const borderRegions = this.table.getRegionsAtBorders()
+        const borderRegions = this.data.getRegionsAtBorders()
         const floodFills = borderRegions.map(region => {
             const fillConfig = new RegionLayerFillConfig({
-                region, table: this.table
+                region, data: this.data
             })
             return new FloodFill(region, fillConfig)
         })
@@ -100,46 +100,46 @@ export class RegionGroupTileMap extends TileMap {
     }
 
     get groups() {
-        return this.table.map(group => group)
+        return this.data.map(group => group)
     }
 
     getRegion(point) {
-        return this.table.getRegion(point)
+        return this.data.getRegion(point)
     }
 
     getGroup(point) {
-        const region = this.table.getRegion(point)
-        return this.table.getGroup(region)
+        const region = this.data.getRegion(point)
+        return this.data.getGroup(region)
     }
 
     getRegionLayer(region) {
-        return this.table.getRegionLayer(region)
+        return this.data.getRegionLayer(region)
     }
 
     getGroupLayer(region) {
-        return this.table.getGroupLayer(region)
+        return this.data.getGroupLayer(region)
     }
 
     isRegionBorder(point) {
-        return this.table.isRegionBorder(point)
+        return this.data.isRegionBorder(point)
     }
 
     isGroupBorderPoint(point) {
         if (! this.isRegionBorder(point)) return false
         const group = this.getGroup(point)
-        const borderRegions = this.table.getBorderRegionsAt(point)
-        return this.table.isGroupBorder(group, borderRegions)
+        const borderRegions = this.data.getBorderRegionsAt(point)
+        return this.data.isGroupBorder(group, borderRegions)
     }
 
     isBorderRegion(region) {
-        return this.table.hasBorderRegions(region)
+        return this.data.hasBorderRegions(region)
     }
 
     map(callback) {
-        return this.table.map(group => callback(group))
+        return this.data.map(group => callback(group))
     }
 
     forEach(callback) {
-        this.table.forEach(callback)
+        this.data.forEach(callback)
     }
 }

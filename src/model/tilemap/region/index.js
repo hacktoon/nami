@@ -8,7 +8,7 @@ import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { RegionTileMapDiagram } from './diagram'
-import { Region, RegionMapTable, RegionFillConfig } from './model'
+import { Region, RegionMapTable, RegionFillConfig } from './data'
 
 
 const SAMPLING_ENTRIES = [RandomPointSampling, EvenPointSampling]

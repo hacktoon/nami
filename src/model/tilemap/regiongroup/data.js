@@ -11,7 +11,7 @@ export class RegionGroup {
 }
 
 
-export class RegionGroupTable {
+export class RegionGroupData {
     constructor(regionTileMap) {
         this.regionTileMap = regionTileMap
         this.regionToGroup = new Map()
@@ -107,31 +107,31 @@ export class RegionGroupFillConfig {
         this.growth = params.groupGrowth
 
         this.currentGroup = params.group
-        this.table = params.table
+        this.data = params.data
         this.graph = params.graph
     }
 
     isEmpty(region) {
-        return this.table.isRegionEmpty(region)
+        return this.data.isRegionEmpty(region)
     }
 
     setValue(region, level) {
-        this.table.setGroup(region, this.currentGroup)
-        this.table.setRegionLayer(region, level)
+        this.data.setGroup(region, this.currentGroup)
+        this.data.setRegionLayer(region, level)
         this.currentGroup.area += region.area
     }
 
     checkNeighbor(neighborRegion, region) {
         const currentGroup = this.currentGroup
-        const neighborGroup = this.table.getGroup(neighborRegion)
+        const neighborGroup = this.data.getGroup(neighborRegion)
         if (this.isEmpty(neighborRegion)) return
         if (neighborGroup.id === currentGroup.id) return
-        this.table.setBorder(region)
+        this.data.setBorder(region)
         this.graph.setEdge(currentGroup.id, neighborGroup.id)
     }
 
     getNeighbors(region) {
-        return this.table.regionTileMap.getNeighborRegions(region)
+        return this.data.regionTileMap.getNeighborRegions(region)
     }
 }
 
@@ -139,20 +139,20 @@ export class RegionGroupFillConfig {
 export class RegionLayerFillConfig {
     constructor(params) {
         this.currentRegion = params.region
-        this.table = params.table
+        this.data = params.data
     }
 
     isEmpty(region) {
-        return ! this.table.hasBorderRegionLayer(region)
+        return ! this.data.hasBorderRegionLayer(region)
     }
 
     setValue(region, layer) {
-        this.table.setBorderRegionLayer(region, layer)
+        this.data.setBorderRegionLayer(region, layer)
     }
 
     checkNeighbor() {}
 
     getNeighbors(region) {
-        return this.table.regionTileMap.getNeighborRegions(region)
+        return this.data.regionTileMap.getNeighborRegions(region)
     }
 }

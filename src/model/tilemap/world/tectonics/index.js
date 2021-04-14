@@ -5,15 +5,15 @@ import { UITileMap } from '/ui/tilemap'
 
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
+import { TectonicsData } from './data'
 import { TectonicsTileMapDiagram } from './diagram'
-import { TectonicsTable } from './model'
 
 
 const SCHEMA = new Schema(
     'TectonicsTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 35, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 32, step: 1, min: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -31,23 +31,23 @@ export class TectonicsTileMap extends TileMap {
     constructor(params) {
         super(params)
         const regionGroupTileMap = buildRegionGroupMap(params)
-        this.table = new TectonicsTable(regionGroupTileMap)
+        this.data = new TectonicsData(regionGroupTileMap)
     }
 
     getPlate(point) {
-        return this.table.getPlate(point)
+        return this.data.getPlate(point)
     }
 
     isPlateBorderAt(point) {
-        return this.table.isPlateBorderAt(point)
+        return this.data.isPlateBorderAt(point)
     }
 
     map(callback) {
-        return this.table.map(plate => callback(plate))
+        return this.data.map(plate => callback(plate))
     }
 
     forEach(callback) {
-        this.table.forEach(callback)
+        this.data.forEach(callback)
     }
 }
 

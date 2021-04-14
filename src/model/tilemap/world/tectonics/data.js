@@ -1,7 +1,5 @@
 import { Matrix } from '/lib/base/matrix'
-import { Point } from '/lib/base/point'
 import { Color } from '/lib/base/color'
-import { Random } from '/lib/base/random'
 import { SimplexNoise } from '/lib/fractal/noise'
 import { ScanlineFill } from '/lib/floodfill/scanline'
 
@@ -21,11 +19,11 @@ const RIFT = 3
 const EMPTY = null
 
 
-export class TectonicsTable {
+export class TectonicsData {
     constructor(regionGroupTileMap) {
         this.regionGroupTileMap = regionGroupTileMap
         this.index = buildPlateIndex(regionGroupTileMap)
-        this.geologicMap = buildGeologicMap(this.index, regionGroupTileMap)
+        this.geologicMatrix = buildGeologicMatrix(this.index, regionGroupTileMap)
     }
 
     getPlate(point) {
@@ -90,7 +88,7 @@ function buildPlateIndex(regionGroupTileMap) {
 const provinceMap = {}  // border regions depending on continents position must be islands
 
 
-function buildGeologicMap(plateIndex, rgTilemap) {
+function buildGeologicMatrix(plateIndex, rgTilemap) {
     const {width, height} = rgTilemap
     const matrix = new Matrix(width, height, () => EMPTY)
     const noise = new SimplexNoise(6, 0.8, 0.02)
