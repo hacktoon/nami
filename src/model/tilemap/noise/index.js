@@ -12,9 +12,9 @@ const SCHEMA = new Schema(
     'NoiseTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 150, step: 1, min: 1}),
-    Type.number('detail', 'Detail', {default: 8, step: 1, min: 1, max: 20}),
-    Type.number('resolution', 'Resolution', {default: .5, step: 0.1, min: 0.1}),
-    Type.number('scale', 'Scale', {default: .01, step: 0.01, min: 0.01}),
+    Type.number('detail', 'Detail', {default: 4, step: 1, min: 1, max: 20}),
+    Type.number('resolution', 'Resolution', {default: .4, step: 0.1, min: 0.1}),
+    Type.number('scale', 'Scale', {default: .02, step: 0.01, min: 0.01}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -31,8 +31,9 @@ export class NoiseTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const [detail, res, scale] = params.get('detail', 'resolution', 'scale')
-        const simplex = new SimplexNoise( detail, res, scale)
+        const keys = ['detail', 'resolution', 'scale']
+        const [detail, resolution, scale] = params.get(...keys)
+        const simplex = new SimplexNoise(detail, resolution, scale)
         this.matrix = new Matrix(this.width, this.height, point => {
             return simplex.at(point)
         })
