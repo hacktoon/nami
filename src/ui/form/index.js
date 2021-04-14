@@ -6,7 +6,7 @@ import { FieldSet } from './field'
 export function Form({data, onSubmit, ...props}) {
     const [formData, setFormData] = useState(data.unparse())
 
-    // detect updates to data
+    // detect updates to `data` prop
     useEffect(() => setFormData(data.unparse()), [data])
 
     const handleSubmit = event => {
