@@ -98,8 +98,9 @@ export class RegionGroupTileMap extends TileMap {
         }
     }
 
-    get groups() {
-        return this.data.map(group => group)
+    getGroupsDescOrder() {
+        const cmpDescArea = (g0, g1) => g1.area - g0.area
+        return this.data.groups.sort(cmpDescArea)
     }
 
     getRegion(point) {

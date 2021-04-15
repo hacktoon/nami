@@ -22,6 +22,10 @@ export class RegionGroupData {
         this.layers = []
     }
 
+    get groups() {
+        return Array.from(this.index.values())
+    }
+
     setGroup(region, group) {
         this.index.set(group.id, group)
         this.regionToGroup.set(region.id, group)

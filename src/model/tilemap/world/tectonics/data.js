@@ -65,13 +65,11 @@ export class Plate {
 
 
 function buildPlateIndex(regionGroupTileMap) {
-    let oceanicArea = 0
     const halfMapArea = Math.floor(regionGroupTileMap.area / 2)
-    const cmpDescArea = (groupA, groupB) => groupB.area - groupA.area
-    const groups = regionGroupTileMap.groups.sort(cmpDescArea)
     const index = new Map()
     let hasShield = false
-    groups.forEach(group => {
+    let oceanicArea = 0
+    regionGroupTileMap.getGroupsDescOrder().forEach(group => {
         oceanicArea += group.area
         let type = oceanicArea < halfMapArea ? OCEANIC_TYPE : CONTINENTAL_TYPE
         if (! hasShield && type === CONTINENTAL_TYPE) {
