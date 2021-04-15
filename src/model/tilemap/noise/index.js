@@ -11,10 +11,11 @@ import { NoiseTileMapDiagram } from './diagram'
 const SCHEMA = new Schema(
     'NoiseTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
-    Type.number('height', 'Height', {default: 150, step: 1, min: 1}),
+    Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
     Type.number('detail', 'Detail', {default: 4, step: 1, min: 1, max: 20}),
     Type.number('resolution', 'Resolution', {default: .4, step: 0.1, min: 0.1}),
     Type.number('scale', 'Scale', {default: .02, step: 0.01, min: 0.01}),
+    Type.number('range', 'Range', {default: 255, step: 1, min: 1, max: 1000}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -33,7 +34,7 @@ export class NoiseTileMap extends TileMap {
         super(params)
         const keys = ['detail', 'resolution', 'scale']
         const [detail, resolution, scale] = params.get(...keys)
-        const range = 155
+        const range = params.get('range')
         const simplex = new SimplexNoise(detail, resolution, scale, range)
         let [min, max] = [Number.MAX_VALUE, Number.MIN_VALUE]
         this.matrix = new Matrix(this.width, this.height, point => {

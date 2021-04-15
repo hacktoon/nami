@@ -7,7 +7,7 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 export class NoiseTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'NoiseTileMapDiagram',
-        Type.number('totalColors', 'Total colors', {default: 4, step: 1, min: 1, max: 256}),
+        Type.number('maxColors', 'Max colors', {default: 200, step: 1, min: 1, max: 256}),
     )
 
     static create(tilemap, params) {
@@ -16,12 +16,19 @@ export class NoiseTileMapDiagram extends TileMapDiagram {
 
     constructor(tilemap, params) {
         super(tilemap)
-        this.totalColors = params.get('totalColors')
-        console.log(tilemap.range);
+        this.maxColors = params.get('maxColors')
     }
 
     get(point) {
-        const value = parseInt(this.tilemap.get(point), 10)
+        const rawvalue = Number(this.tilemap.get(point))
+        const value = this.normalize(rawvalue)
         return new Color(value, value, value).toHex()
+    }
+
+    normalize(value) {
+        const [min, max] = this.tilemap.range
+        const step = Math.floor(((value - min) * this.maxColors) / (max - min))
+        const color = 255 / this.maxColors
+        return step * color
     }
 }
