@@ -6,20 +6,21 @@ import { Random } from '/lib/base/random'
 
 
 export class SimplexNoise {
-    constructor(iterations, persistence, scale) {
+    constructor(iterations, persistence, scale, range) {
         this.iterations = iterations
         this.persistence = persistence
         this.scale = scale
-        this.range = 255
+        this.range = range
 
         this.identity = [[1, 1], [-1, 1 ], [1, -1], [-1, -1],
                          [1, 0], [-1, 0 ], [1,  0], [-1,  0],
                          [0, 1], [ 0, -1], [0,  1], [ 0, -1]];
         const p = [];
-        for (let i=0; i<256; i++) {
+        for (let i=0; i<=255; i++) {
             p[i] = Random.int(255)
         }
-        // To remove the need for index wrapping, double the permutation table length
+        // To remove the need for index wrapping,
+        // double the permutation table length
         this.perm = [];
         for(let i=0; i<512; i++) {
             this.perm[i] = p[i & 255];

@@ -33,10 +33,19 @@ export class NoiseTileMap extends TileMap {
         super(params)
         const keys = ['detail', 'resolution', 'scale']
         const [detail, resolution, scale] = params.get(...keys)
-        const simplex = new SimplexNoise(detail, resolution, scale)
+        const range = 155
+        const simplex = new SimplexNoise(detail, resolution, scale, range)
+        let [min, max] = [Number.MAX_VALUE, Number.MIN_VALUE]
         this.matrix = new Matrix(this.width, this.height, point => {
-            return simplex.at(point)
+            const noiseValue = simplex.at(point)
+            if (noiseValue > max) {
+                max = noiseValue
+            } else if (noiseValue < min) {
+                min = noiseValue
+            }
+            return noiseValue
         })
+        this.range = [min, max]
     }
 
     get(point) {

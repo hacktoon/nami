@@ -91,8 +91,8 @@ const provinceMap = {}  // border regions depending on continents position must 
 function buildGeologicMatrix(plateIndex, rgTilemap) {
     const {width, height} = rgTilemap
     const matrix = new Matrix(width, height, () => EMPTY)
-    const noise = new SimplexNoise(6, 0.8, 0.02)
-    const coastNoise = new SimplexNoise(8, 0.8, 0.04)
+    const noise = new SimplexNoise(6, 0.8, 0.02, 255)
+    const coastNoise = new SimplexNoise(8, 0.8, 0.04, 255)
 
     rgTilemap.forEach(group => {
         const plate = plateIndex.get(group.id)
