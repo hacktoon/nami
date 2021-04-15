@@ -28,7 +28,7 @@ export class NoiseTileMapDiagram extends TileMapDiagram {
     normalize(value) {
         const [min, max] = this.tilemap.range
         const step = Math.floor(((value - min) * this.maxColors) / (max - min))
-        const color = 255 / this.maxColors
+        const color = Math.floor(256 / this.maxColors)
         return step * color
     }
 }
