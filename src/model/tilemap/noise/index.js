@@ -15,7 +15,6 @@ const SCHEMA = new Schema(
     Type.number('detail', 'Detail', {default: 4, step: 1, min: 1, max: 20}),
     Type.number('resolution', 'Resolution', {default: .4, step: 0.1, min: 0.1}),
     Type.number('scale', 'Scale', {default: .02, step: 0.01, min: 0.01}),
-    Type.number('range', 'Range', {default: 255, step: 1, min: 1, max: 1000}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -34,11 +33,10 @@ export class NoiseTileMap extends TileMap {
         super(params)
         const keys = ['detail', 'resolution', 'scale']
         const [detail, resolution, scale] = params.get(...keys)
-        const range = params.get('range')
-        const simplex = new SimplexNoise(detail, resolution, scale, range)
+        const simplex = new SimplexNoise(detail, resolution, scale)
         let [min, max] = [Number.MAX_VALUE, Number.MIN_VALUE]
         this.matrix = new Matrix(this.width, this.height, point => {
-            const noiseValue = simplex.at(point)
+            const noiseValue = simplex.get(point)
             if (noiseValue > max) {
                 max = noiseValue
             } else if (noiseValue < min) {

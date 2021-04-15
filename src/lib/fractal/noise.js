@@ -1,16 +1,16 @@
 import { Random } from '/lib/base/random'
 
 
-// example:  simplex = SimplexNoise(8, .6, 0.01, [0, 255])
+// example:  simplex = SimplexNoise(8, .6, 0.01)
 //           r = simplex.at(x, y)
 
 
 export class SimplexNoise {
-    constructor(iterations, persistence, scale, range) {
+    constructor(iterations, persistence, scale) {
         this.iterations = iterations
         this.persistence = persistence
         this.scale = scale
-        this.range = range
+        this.range = 255
 
         this.identity = [[1, 1], [-1, 1 ], [1, -1], [-1, -1],
                          [1, 0], [-1, 0 ], [1,  0], [-1,  0],
@@ -27,7 +27,7 @@ export class SimplexNoise {
         }
     }
 
-    at(point) {
+    get(point) {
         let amp = 1
         let freq = this.scale
         let noise = 0
