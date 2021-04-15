@@ -51,15 +51,14 @@ export class RegionGroupTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const [width, height, seed] = params.get('width', 'height', 'seed')
+        const [width, height] = params.get('width', 'height')
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const groupScale = params.get('groupScale')
         const origins = EvenPointSampling.create(width, height, groupScale)
-        const data = {width, height, scale, seed, chance, growth}
+        const data = {width, height, scale, seed: this.seed, chance, growth}
         const regionTileMap = RegionTileMap.fromData(data)
         this.graph = new Graph()
         this.data = this._buildTable(regionTileMap, origins, params)
-
         this._buildLayerMap()
     }
 

@@ -29,7 +29,7 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         this.showGroupBorder = params.get('showGroupBorder')
         this.showRegionLayers = params.get('showRegionLayers')
         this.showGroupLayers = params.get('showGroupLayers')
-        this.regionColorMap = new RegionColorMap(tilemap.table.regionTileMap)
+        this.regionColorMap = new RegionColorMap(tilemap.data.regionTileMap)
         this.groupColorMap = new GroupColorMap(tilemap)
     }
 

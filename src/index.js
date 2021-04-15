@@ -34,7 +34,7 @@ const appMap = new Map(APPS.map(TileMap => {
 class App {
     static schema = new Schema(
         'App',
-        Type.selection('app', 'App', {default: NoiseTileMap.id, options: APPS})
+        Type.selection('app', 'App', {default: RegionGroupTileMap.id, options: APPS})
     )
 }
 
