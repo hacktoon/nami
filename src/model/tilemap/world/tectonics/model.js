@@ -24,14 +24,19 @@ const EMPTY = null
 export class Tectonics {
     constructor(seed, params) {
         const regionGroupTileMap = buildRegionGroupMap(seed, params)
-        this.index = buildPlateIndex(regionGroupTileMap)
-        this.geologicMatrix = buildGeologicMatrix(this.index, regionGroupTileMap)
+        const index = buildPlateIndex(regionGroupTileMap)
+        this.geologyMatrix = buildGeologicMatrix(index, regionGroupTileMap)
         this.regionGroupTileMap = regionGroupTileMap
+        this.index = index
     }
 
     getPlate(point) {
         const group = this.regionGroupTileMap.getGroup(point)
         return this.index.get(group.id)
+    }
+
+    getGeology(point) {
+        return this.geologyMatrix.get(point)
     }
 
     isPlateBorder(point) {
@@ -88,9 +93,9 @@ function buildPlateIndex(regionGroupTileMap) {
     regionGroupTileMap.getGroupsDescOrder().forEach(group => {
         oceanicArea += group.area
         let type = oceanicArea < halfMapArea ? OCEANIC_TYPE : CONTINENTAL_TYPE
-        if (! hasShield && type === CONTINENTAL_TYPE) {
-            hasShield = true
+        if (type === CONTINENTAL_TYPE && ! hasShield) {
             type = SHIELD_TYPE
+            hasShield = true
         }
         const plate = new Plate(group.id, type, group.area)
         index.set(group.id, plate)

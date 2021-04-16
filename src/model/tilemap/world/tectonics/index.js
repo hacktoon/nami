@@ -36,7 +36,7 @@ export class TectonicsTileMap extends TileMap {
     }
 
     getGeology(point) {
-        return this.model.geologicMatrix.get(point)
+        return this.model.getGeology(point)
     }
 
     isPlateBorder(point) {
