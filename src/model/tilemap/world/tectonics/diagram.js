@@ -23,8 +23,8 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const plate = this.tileMap.getPlate(point)
-        const isBorder = this.tileMap.isPlateBorderAt(point)
-        const geology = this.tileMap.data.geologicMatrix.get(point)
+        const isBorder = this.tileMap.isPlateBorder(point)
+        const geology = this.tileMap.getGeology(point)
         let color = Color.fromHex('#058')  // ocean
         if (geology === 1) color = Color.fromHex('#26a11f') // platform
         if (geology === 2) color = Color.fromHex('#71694b') // shield

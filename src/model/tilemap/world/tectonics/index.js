@@ -28,23 +28,27 @@ export class TectonicsTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.data = new Tectonics(this.seed, params)
+        this.model = new Tectonics(this.seed, params)
     }
 
     getPlate(point) {
-        return this.data.getPlate(point)
+        return this.model.getPlate(point)
     }
 
-    isPlateBorderAt(point) {
-        return this.data.isPlateBorderAt(point)
+    getGeology(point) {
+        return this.model.geologicMatrix.get(point)
+    }
+
+    isPlateBorder(point) {
+        return this.model.isPlateBorder(point)
     }
 
     map(callback) {
-        return this.data.map(plate => callback(plate))
+        return this.model.map(plate => callback(plate))
     }
 
     forEach(callback) {
-        this.data.forEach(callback)
+        this.model.forEach(callback)
     }
 }
 

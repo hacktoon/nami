@@ -34,7 +34,7 @@ export class Tectonics {
         return this.index.get(group.id)
     }
 
-    isPlateBorderAt(point) {
+    isPlateBorder(point) {
         return this.regionGroupTileMap.isGroupBorderPoint(point)
     }
 
