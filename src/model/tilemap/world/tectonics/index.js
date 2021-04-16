@@ -3,9 +3,7 @@ import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
-
-import { TectonicsData } from './data'
+import { Tectonics } from './model'
 import { TectonicsTileMapDiagram } from './diagram'
 
 
@@ -30,22 +28,7 @@ export class TectonicsTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const regionGroupTileMap = this._buildRegionGroupMap(params)
-        this.data = new TectonicsData(regionGroupTileMap)
-    }
-
-    _buildRegionGroupMap(params) {
-        return RegionGroupTileMap.fromData({
-            width: params.get('width'),
-            height: params.get('height'),
-            seed: this.seed,
-            groupScale: params.get('scale'),
-            groupChance: 0.2,
-            groupGrowth: 20,
-            scale: 2,
-            growth: 0,
-            chance: 0.1,
-        })
+        this.data = new Tectonics(this.seed, params)
     }
 
     getPlate(point) {

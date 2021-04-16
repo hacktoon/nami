@@ -11,20 +11,20 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         Type.boolean('showPlateBorders', 'Show plate borders', {default: true}),
     )
 
-    static create(tilemap, params) {
-        return new TectonicsTileMapDiagram(tilemap, params)
+    static create(tileMap, params) {
+        return new TectonicsTileMapDiagram(tileMap, params)
     }
 
-    constructor(tilemap, params) {
-        super(tilemap)
+    constructor(tileMap, params) {
+        super(tileMap)
         this.showPlateBorders = params.get('showPlateBorders')
-        this.colorMap = new PlateColorMap(tilemap)
+        this.colorMap = new PlateColorMap(tileMap)
     }
 
     get(point) {
-        const plate = this.tilemap.getPlate(point)
-        const isBorder = this.tilemap.isPlateBorderAt(point)
-        const geology = this.tilemap.data.geologicMatrix.get(point)
+        const plate = this.tileMap.getPlate(point)
+        const isBorder = this.tileMap.isPlateBorderAt(point)
+        const geology = this.tileMap.data.geologicMatrix.get(point)
         let color = Color.fromHex('#058')  // ocean
         if (geology === 1) color = Color.fromHex('#26a11f') // platform
         if (geology === 2) color = Color.fromHex('#71694b') // shield
@@ -39,8 +39,8 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
 
 
 class PlateColorMap {
-    constructor(tilemap) {
-        const entries = tilemap.map(plate => {
+    constructor(tileMap) {
+        const entries = tileMap.map(plate => {
             let color =  new Color(0, 250, 0).average(plate.color)
             if (plate.isOceanic()) {
                 color = new Color(0, 0, 150)

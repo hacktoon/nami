@@ -10,26 +10,26 @@ import { UITileMapScene } from './scene'
 
 export function UITileMap({TileMap}) {
     const [data, setData] = useState(TileMap.schema.parse())
-    const tilemap = TileMap.create(data)
+    const tileMap = TileMap.create(data)
 
     return <section className='UITileMap'>
         <Form className="Map" data={data} onSubmit={setData}>
             <Button label="New" />
         </Form>
-        <UITileMapDiagram diagram={TileMap.diagram} tilemap={tilemap} />
+        <UITileMapDiagram diagram={TileMap.diagram} tileMap={tileMap} />
     </section>
 }
 
 
-function UITileMapDiagram({diagram, tilemap}) {
+function UITileMapDiagram({diagram, tileMap}) {
     const [diagramData, setDiagramData] = useState(diagram.schema.parse())
     const [sceneData, setSceneData] = useState(TileMapScene.schema.parse())
 
-    const mapDiagram = diagram.create(tilemap, diagramData)
+    const mapDiagram = diagram.create(tileMap, diagramData)
 
     const handleDrag = point => setSceneData(sceneData.update('focus', point))
     const handleWheel = zoom => setSceneData(sceneData.update('zoom', zoom))
-    const handleClick = point => console.info(tilemap.get(point))
+    const handleClick = point => console.info(tileMap.get(point))
 
     return <>
         <UITileMapScene
@@ -40,7 +40,7 @@ function UITileMapDiagram({diagram, tilemap}) {
             handleClick={handleClick}
         />
         <section className="UIMapSidebar">
-            <Text>Seed: {tilemap.seed}</Text>
+            <Text>Seed: {tileMap.seed}</Text>
             <Form className="MapSceneForm"
                 data={sceneData}
                 onSubmit={setSceneData}>

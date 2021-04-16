@@ -25,9 +25,9 @@ export class TileMap {
 
 
 export class TileMapDiagram {
-    constructor(tilemap) {
-        this.tilemap = tilemap
-        this.width = tilemap.width
-        this.height = tilemap.height
+    constructor(tileMap) {
+        this.tileMap = tileMap
+        this.width = tileMap.width
+        this.height = tileMap.height
     }
 }

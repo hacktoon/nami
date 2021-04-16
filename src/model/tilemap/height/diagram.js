@@ -6,12 +6,12 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 export class HeightTileMapDiagram extends TileMapDiagram {
     static schema = new Schema('HeightTileMapDiagram')
 
-    static create(tilemap) {
-        return new HeightTileMapDiagram(tilemap)
+    static create(tileMap) {
+        return new HeightTileMapDiagram(tileMap)
     }
 
     get(point) {
-        const height = this.tilemap.map.get(point)
+        const height = this.tileMap.map.get(point)
         const color = new Color(height, height, height)
         return color.toHex()
     }

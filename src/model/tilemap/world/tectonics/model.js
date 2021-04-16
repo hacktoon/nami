@@ -3,6 +3,8 @@ import { Color } from '/lib/base/color'
 import { SimplexNoise } from '/lib/fractal/noise'
 import { ScanlineFill } from '/lib/floodfill/scanline'
 
+import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
+
 /*
 TODO
 - make different map for platform and continent
@@ -19,11 +21,12 @@ const RIFT = 3
 const EMPTY = null
 
 
-export class TectonicsData {
-    constructor(regionGroupTileMap) {
-        this.regionGroupTileMap = regionGroupTileMap
+export class Tectonics {
+    constructor(seed, params) {
+        const regionGroupTileMap = buildRegionGroupMap(seed, params)
         this.index = buildPlateIndex(regionGroupTileMap)
         this.geologicMatrix = buildGeologicMatrix(this.index, regionGroupTileMap)
+        this.regionGroupTileMap = regionGroupTileMap
     }
 
     getPlate(point) {
@@ -36,8 +39,7 @@ export class TectonicsData {
     }
 
     map(callback) {
-        const entries = Array.from(this.index.values())
-        return entries.map(callback)
+        return Array.from(this.index.values()).map(callback)
     }
 
     forEach(callback) {
@@ -61,6 +63,20 @@ export class Plate {
     isShield() {
         return this.type == SHIELD_TYPE
     }
+}
+
+function buildRegionGroupMap(seed, params) {
+    return RegionGroupTileMap.fromData({
+        width: params.get('width'),
+        height: params.get('height'),
+        seed: seed,
+        groupScale: params.get('scale'),
+        groupChance: 0.2,
+        groupGrowth: 20,
+        scale: 2,
+        growth: 0,
+        chance: 0.1,
+    })
 }
 
 
