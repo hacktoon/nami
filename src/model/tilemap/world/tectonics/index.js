@@ -31,6 +31,10 @@ export class TectonicsTileMap extends TileMap {
         this.model = new Tectonics(this.seed, params)
     }
 
+    getPlateCount() {
+        return this.model.getPlateCount()
+    }
+
     getPlate(point) {
         return this.model.getPlate(point)
     }

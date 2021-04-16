@@ -26,8 +26,9 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const isBorder = this.tileMap.isPlateBorder(point)
         const geology = this.tileMap.getGeology(point)
         let color = Color.fromHex('#058')  // ocean
-        if (geology === 1) color = Color.fromHex('#26a11f') // platform
+        if (geology === 1) color = Color.fromHex('#26a11f') // continent
         if (geology === 2) color = Color.fromHex('#71694b') // shield
+        if (geology === 3) color = Color.fromHex('#169') // platform
 
         if (this.showPlateBorders && isBorder) {
             return color.darken(30).toHex()
