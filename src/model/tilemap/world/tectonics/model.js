@@ -26,6 +26,7 @@ export class Tectonics {
     constructor(seed, params) {
         const regionGroupTileMap = buildRegionGroupMap(seed, params)
         const index = buildPlateIndex(regionGroupTileMap)
+        const borders = buildPlateBorders(regionGroupTileMap, index)
         const noiseMap = new NoiseMap()
         this.geologyMatrix = buildGeoMatrix(index, regionGroupTileMap, noiseMap)
         this.regionGroupTileMap = regionGroupTileMap
@@ -71,6 +72,10 @@ export class Plate {
         return this.type === OCEANIC_TYPE
     }
 
+    isContinental() {
+        return this.type === CONTINENTAL_TYPE
+    }
+
     isShield() {
         return this.type === SHIELD_TYPE
     }
@@ -108,6 +113,17 @@ function buildPlateIndex(regionGroupTileMap) {
         index.set(group.id, plate)
     })
     return index
+}
+
+
+function buildPlateBorders(regionGroupTileMap, plateIndex) {
+    const map = new Map()
+    regionGroupTileMap.forEach(group => {
+        const plate = plateIndex.get(group.id)
+        const edges = regionGroupTileMap.graph.getEdges(group.id)
+        console.log(plate);
+        // console.log(`${group.id} => ${edges}`);
+    })
 }
 
 

@@ -11,7 +11,7 @@ const SCHEMA = new Schema(
     'TectonicsTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 32, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 36, step: 1, min: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
