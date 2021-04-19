@@ -141,7 +141,7 @@ function buildGeoMatrix(plateIndex, groupTilemap, noiseMap) {
 
         const onFill = point => {
             const region = groupTilemap.getRegion(point)
-            const layer = groupTilemap.getGroupLayer(region)
+            const layer = groupTilemap.getRegionLayer(region)
             const noiseValue = noiseMap.get(point)
             const coastValue = noiseMap.getCoast(point)
 
@@ -180,38 +180,6 @@ class NoiseMap {
 
     getCoast(point) {
         return this.coast.get(point)
-    }
-}
-
-
-class ScanlineFillConfig {
-    constructor(params) {
-        this.matrix = params.matrix
-
-    }
-
-    canFill(point) {
-        const currentGroup = groupTilemap.getGroup(point)
-        const isSameGroup = group.id === currentGroup.id
-        return isSameGroup && this.matrix.get(point) === EMPTY
-    }
-
-    onFill(point) {
-        const region = groupTilemap.getRegion(point)
-        const layer = groupTilemap.getGroupLayer(region)
-        const noiseValue = noise.get(point)
-        const coastValue = coastNoise.get(point)
-
-        let value = 1 // land
-        if (plate.isOceanic()) {
-            value = layer > 0 && noiseValue < 20 ? 1 : 0
-        } else if (plate.isShield()) {
-            value = 1
-        } else if (layer === 0) {
-            value = coastValue > 80 ? 2 : 1
-        }
-
-        this.matrix.set(point, value)
     }
 }
 

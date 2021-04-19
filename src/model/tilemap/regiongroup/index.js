@@ -116,10 +116,6 @@ export class RegionGroupTileMap extends TileMap {
         return this.data.getRegionLayer(region)
     }
 
-    getGroupLayer(region) {
-        return this.data.getGroupLayer(region)
-    }
-
     isRegionBorder(point) {
         return this.data.isRegionBorder(point)
     }

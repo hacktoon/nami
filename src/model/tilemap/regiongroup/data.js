@@ -17,7 +17,6 @@ export class RegionGroupData {
         this.regionToGroup = new Map()
         this.borderRegions = new Set()
         this.regionLayerMap = new Map()
-        this.borderRegionLayerMap = new Map()
         this.index = new Map()
         this.layers = []
     }
@@ -37,15 +36,11 @@ export class RegionGroupData {
 
     setRegionLayer(region, layer) {
         this.regionLayerMap.set(region.id, layer)
-    }
-
-    setBorderRegionLayer(region, layer) {
-        this.borderRegionLayerMap.set(region.id, layer)
         this.layers.push(layer)
     }
 
-    hasBorderRegionLayer(region) {
-        return this.borderRegionLayerMap.has(region.id)
+    hasRegionLayer(region) {
+        return this.regionLayerMap.has(region.id)
     }
 
     getRegion(point) {
@@ -54,10 +49,6 @@ export class RegionGroupData {
 
     getRegionLayer(region) {
         return this.regionLayerMap.get(region.id)
-    }
-
-    getGroupLayer(region) {
-        return this.borderRegionLayerMap.get(region.id)
     }
 
     getGroup(region) {
@@ -119,9 +110,8 @@ export class RegionGroupFillConfig {
         return this.data.isRegionEmpty(region)
     }
 
-    setValue(region, level) {
+    setValue(region) {
         this.data.setGroup(region, this.currentGroup)
-        this.data.setRegionLayer(region, level)
         this.currentGroup.area += region.area
     }
 
@@ -147,11 +137,11 @@ export class RegionLayerFillConfig {
     }
 
     isEmpty(region) {
-        return ! this.data.hasBorderRegionLayer(region)
+        return ! this.data.hasRegionLayer(region)
     }
 
     setValue(region, layer) {
-        this.data.setBorderRegionLayer(region, layer)
+        this.data.setRegionLayer(region, layer)
     }
 
     checkNeighbor() {}
