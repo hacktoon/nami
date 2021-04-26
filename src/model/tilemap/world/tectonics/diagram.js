@@ -8,7 +8,7 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 export class TectonicsTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'TectonicsTileMapDiagram',
-        Type.boolean('showPlateBorders', 'Show borders', {default: true}),
+        Type.boolean('showPlateBorders', 'Show borders', {default: false}),
     )
 
     static create(tileMap, params) {
@@ -22,14 +22,17 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const plate = this.tileMap.getPlate(point)
+        // const plate = this.tileMap.getPlate(point)
         const geology = this.tileMap.getGeology(point)
+        const isBorderPoint = this.tileMap.isPlateBorder(point)
         let color = Color.fromHex('#058')  // ocean
         if (geology === 1) color = Color.fromHex('#26a11f') // continent
-        if (geology === 2) color = Color.fromHex('#71694b') // shield
+        if (geology === 2) { // orogeny
+            color = Color.fromHex(isBorderPoint ? '#26a11f' : '#71694b')
+        }
         if (geology === 3) color = Color.fromHex('#169') // platform
 
-        if (this.showPlateBorders && this.tileMap.isPlateBorder(point)) {
+        if (this.showPlateBorders && isBorderPoint) {
             return color.darken(30).toHex()
         }
 
