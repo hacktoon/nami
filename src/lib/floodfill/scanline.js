@@ -1,12 +1,9 @@
 
 export class ScanlineFill {
-    constructor(startPoint, onFill, canFill, filterPoint) {
+    constructor(startPoint, config) {
         this.startPoint = startPoint
+        this.config = config
         this.rangeQueue = []
-        this.onFill = onFill
-        this.canFill = canFill
-        this.filterPoint = filterPoint
-
         this.createRange(startPoint)
     }
 
@@ -20,10 +17,10 @@ export class ScanlineFill {
 
     findRangeStart(originPoint) {
         let currentPoint = originPoint
-        let nextPoint = this.filterPoint(currentPoint.atWest())
-        while (this.canFill(nextPoint) && nextPoint.x != originPoint.x) {
+        let nextPoint = this.config.filterPoint(currentPoint.atWest())
+        while (this.config.canFill(nextPoint) && nextPoint.x != originPoint.x) {
             currentPoint = nextPoint
-            nextPoint = this.filterPoint(nextPoint.atWest())
+            nextPoint = this.config.filterPoint(nextPoint.atWest())
         }
         return currentPoint
     }
@@ -50,17 +47,17 @@ export class ScanlineFill {
     fillRange(range) {
         let point = range.point
 
-        while (this.canFill(point)) {
-            this.onFill(point)
+        while (this.config.canFill(point)) {
+            this.config.onFill(point)
             this.detectRangeAbove(point.atNorth(), range)
             this.detectRangeBelow(point.atSouth(), range)
-            point = this.filterPoint(point.atEast())
+            point = this.config.filterPoint(point.atEast())
         }
     }
 
     detectRangeAbove(referencePoint, referenceRange) {
-        let pointAbove = this.filterPoint(referencePoint)
-        if (this.canFill(pointAbove)) {
+        let pointAbove = this.config.filterPoint(referencePoint)
+        if (this.config.canFill(pointAbove)) {
             if (referenceRange.canCheckAbove) {
                 this.createRange(pointAbove)
                 referenceRange.canCheckAbove = false
@@ -71,8 +68,8 @@ export class ScanlineFill {
     }
 
     detectRangeBelow(referencePoint, referenceRange) {
-        let pointBelow = this.filterPoint(referencePoint)
-        if (this.canFill(pointBelow)) {
+        let pointBelow = this.config.filterPoint(referencePoint)
+        if (this.config.canFill(pointBelow)) {
             if (referenceRange.canCheckBelow) {
                 this.createRange(pointBelow)
                 referenceRange.canCheckBelow = false
@@ -88,7 +85,7 @@ export class ScanlineFill8 extends ScanlineFill {
     fillRange(range) {
         let point = range.point
 
-        while (this.canFill(point)) {
+        while (this.config.canFill(point)) {
             this.onFill(point)
             this.detectRangeAbove(point.atNorthwest(), range)
             this.detectRangeAbove(point.atNorth(), range)

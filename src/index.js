@@ -36,7 +36,7 @@ const appMap = new Map(APPS.map(TileMap => {
 class App {
     static schema = new Schema(
         'App',
-        Type.selection('app', 'App', {default: TemperatureTileMap.id, options: APPS})
+        Type.selection('app', 'App', {default: TectonicsTileMap.id, options: APPS})
     )
 }
 

@@ -133,38 +133,53 @@ function buildGeoMatrix(plateIndex, groupTilemap, noiseMap) {
 
     groupTilemap.forEach(group => {
         const plate = plateIndex.get(group.id)
-        const canFill = point => {
-            const currentGroup = groupTilemap.getGroup(point)
-            const isSameGroup = group.id === currentGroup.id
-            return isSameGroup && matrix.get(point) === EMPTY
-        }
-
-        const onFill = point => {
-            const region = groupTilemap.getRegion(point)
-            const layer = groupTilemap.getRegionLayer(region)
-            const noiseValue = noiseMap.get(point)
-            const coastValue = noiseMap.getCoast(point)
-
-            let value = 1 // land
-            if (plate.isOceanic()) {
-                const deep = layer === 0 ? 3 : 0
-                value = layer > 0 && noiseValue < 20 ? 1 : deep
-            } else if (plate.isShield()) {
-                value = 1
-            } else if (layer === 0) {
-                const deform = plate.id % 2 === 0 ? 2 : 0
-                value = coastValue > 80 ? deform : 1
-            }
-
-            matrix.set(point, value)
-        }
-
-        const filterPoint = point => matrix.wrap(point)
-
-        new ScanlineFill(group.origin, onFill, canFill, filterPoint).fill()
+        const config = new PlateFillConfig({
+            plate, group, matrix, groupTilemap, noiseMap
+        })
+        new ScanlineFill(group.origin, config).fill()
     })
-
     return matrix
+}
+
+
+class PlateFillConfig {
+    constructor(config) {
+        this.groupTilemap = config.groupTilemap
+        this.noiseMap = config.noiseMap
+        this.matrix = config.matrix
+        this.plate = config.plate
+        this.group = config.group
+    }
+
+    canFill(point) {
+        const currentGroup = this.groupTilemap.getGroup(point)
+        const isSameGroup = this.group.id === currentGroup.id
+        return isSameGroup && this.matrix.get(point) === EMPTY
+    }
+
+    onFill(point) {
+        const region = this.groupTilemap.getRegion(point)
+        const layer = this.groupTilemap.getRegionLayer(region)
+        const noiseValue = this.noiseMap.get(point)
+        const coastValue = this.noiseMap.getCoast(point)
+
+        let value = 1 // land
+        if (this.plate.isOceanic()) {
+            const deep = layer === 0 ? 3 : 0
+            value = layer > 0 && noiseValue < 20 ? 1 : deep
+        } else if (this.plate.isShield()) {
+            value = 1
+        } else if (layer === 0) {
+            const deform = this.plate.id % 2 === 0 ? 2 : 0
+            value = coastValue > 80 ? deform : 1
+        }
+
+        this.matrix.set(point, value)
+    }
+
+    filterPoint(point) {
+        return this.matrix.wrap(point)
+    }
 }
 
 
