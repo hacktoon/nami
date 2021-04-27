@@ -27,14 +27,16 @@ export class Temperature {
         const region = this.regionTileMap.getRegion(point)
         const center = Math.round(this.regionTileMap.height / 2)
         const offset =  Math.floor(Math.sin(region.origin.x) * 4)
-        const distanceToCenter = Math.abs(region.origin.y - center) + offset
+        const distanceToCenter = Math.abs(region.origin.y - center)
+        const temperature = distanceToCenter + offset
+        const fraction = center / 100
         let zone = POLAR
-        if (distanceToCenter < (90 * center)/100) zone = TEMPERATE
-        if (distanceToCenter < (60 * center)/100) zone = SUBTROPICAL
-        if (distanceToCenter < (35 * center)/100) zone = TROPICAL
+        if (temperature < 90 * fraction) zone = TEMPERATE
+        if (temperature < 60 * fraction) zone = SUBTROPICAL
+        if (temperature < 35 * fraction) zone = TROPICAL
         return {
             zone: zone,
-            temp: distanceToCenter
+            temp: temperature
         }
     }
 
@@ -54,8 +56,8 @@ function buildRegionMap(seed, params) {
     return RegionTileMap.fromData({
         width: params.get('width'),
         height: params.get('height'),
+        scale: params.get('scale'),
         seed: seed,
-        scale: 4,
         growth: 20,
         chance: 0.1,
     })

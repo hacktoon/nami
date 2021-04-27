@@ -11,7 +11,7 @@ const SCHEMA = new Schema(
     'TemperatureTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 3, step: 1, min: 1}),
+    Type.number('scale', 'Scale', {default: 4, step: 1, min: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
