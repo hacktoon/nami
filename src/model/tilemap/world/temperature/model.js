@@ -1,6 +1,14 @@
 import { RegionTileMap } from '/model/tilemap/region'
 
 
+const ZONE_COUNT = 4
+
+const TROPICAL = 0
+const SUBTROPICAL = 1
+const TEMPERATE = 2
+const POLAR = 3
+
+
 export class Temperature {
     constructor(seed, params) {
         const regionTileMap = buildRegionMap(seed, params)
@@ -17,9 +25,20 @@ export class Temperature {
 
     getTemperature(point) {
         const region = this.regionTileMap.getRegion(point)
-        const y = region.origin.y
-        return Math.floor(this.regionTileMap.height / y)
+        const center = Math.round(this.regionTileMap.height / 2)
+        const offset =  Math.floor(Math.sin(region.origin.x) * 4)
+        const distanceToCenter = Math.abs(region.origin.y - center) + offset
+        let zone = POLAR
+        if (distanceToCenter < (90 * center)/100) zone = TEMPERATE
+        if (distanceToCenter < (60 * center)/100) zone = SUBTROPICAL
+        if (distanceToCenter < (35 * center)/100) zone = TROPICAL
+        return {
+            zone: zone,
+            temp: distanceToCenter
+        }
     }
+
+
 
     map(callback) {
         return this.regionTileMap.map(callback)
@@ -36,8 +55,8 @@ function buildRegionMap(seed, params) {
         width: params.get('width'),
         height: params.get('height'),
         seed: seed,
-        scale: 3,
-        growth: 1,
+        scale: 4,
+        growth: 20,
         chance: 0.1,
     })
 }

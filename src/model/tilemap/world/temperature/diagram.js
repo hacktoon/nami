@@ -21,20 +21,24 @@ export class TemperatureTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const region = this.tileMap.getRegion(point)
         const temp = this.tileMap.getTemperature(point)
-        return this.colorMap.get(region).darken(temp * 20).toHex()
+        const color = this.colorMap.get(temp.zone)
+        return color.darken(temp.temp * 2).toHex()
     }
 }
 
 
 class TemperatureColorMap {
-    constructor(tileMap) {
-        const entries = tileMap.map(region => [region.id, region.color])
-        this.map = new Map(entries)
+    constructor() {
+        this.map = new Map([
+            [0, Color.fromHex('#ff4444')], // tropical
+            [1, Color.fromHex('#ffc600')], // subtropical
+            [2, Color.fromHex('#99d966')], // temperate
+            [3, Color.fromHex('#c4fdff')], // polar
+        ])
     }
 
-    get(region) {
-        return this.map.get(region.id)
+    get(zone) {
+        return this.map.get(zone)
     }
 }
