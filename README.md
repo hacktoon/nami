@@ -9,11 +9,7 @@
 ## ROADMAP
 
 
-
 #### TectonicsTileMap
-- Pass RegionTileMap setValue to send noise point to generate continents in plate
-- Create PlateMatrix
-  - For each region origin => set noise for each scanline fill
 - Create plate adjacency from regiongroup map
   - Convergent
     - OO : Island Arc + trench
@@ -24,7 +20,7 @@
     - OO : Oceanic Ridge
     - CC : Rift
 
-#### TerrainMap
+#### TerrainTileMap
 - Define litoral/water/plains/mountain/hill regions
 - Calc river basins from region graph
 - Build distance map from coast borders
@@ -32,27 +28,30 @@
 - Set id's on Matrix during scanline fill
 
 #### (MAYBE) ErosionMap
+- Use TerrainTileMap
 - Eliminate hard/pointy edges - smooth terrain
 - discover river paths
   - Start from river mouth points, flood fill
 
-#### TemperatureMap
-- Use two opposite points on regionMap
-- Value range: -50:50
+#### WindTileMap
+- Use TemperatureTileMap
 
-#### WindMap
-- Value range: 0:10, varies according to month
-
-#### RainMap
+#### RainTileMap
+- Use WindTileMap
 - Annual range: changes over month - winter/summer
 - Value range: 0:10, varies according to month and windmap
 
+#### RealmTileMap
+- Use RegionTileMap
+- Grow cities' territory
+  - discover routes
+- Some may be unclaimed
+
 #### Other
-- Create Schema inside static method `create` to use data like `region.count`
 - Set identity point method for Direction class
 - Vegetation/wildlife density: adjusted by humidity, temperature and height
 - Roads
-  - create junction points between route ends to set midpath detours
+  - create junction points between two route points to set midpath detours
 
 ### Interface
 - Cache map values in localStorage

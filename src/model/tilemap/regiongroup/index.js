@@ -51,21 +51,30 @@ export class RegionGroupTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const [width, height] = params.get('width', 'height')
-        const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
-        const groupScale = params.get('groupScale')
-        const origins = EvenPointSampling.create(width, height, groupScale)
-        const data = {width, height, scale, seed: this.seed, chance, growth}
-        const regionTileMap = RegionTileMap.fromData(data)
+        const origins = this._buildOrigins(params)
+        this.regionTileMap = this._buildRegionTileMap(params)
         this.graph = new Graph()
-        this.data = this._buildTable(regionTileMap, origins, params)
-        this._buildLayerMap()
+        this.model = this._buildTable(origins, params)
+        this._buildLayerMap(params)
     }
 
-    _buildTable(regionTileMap, origins, params) {
-        const data = new RegionGroupData(regionTileMap)
+    _buildOrigins(params) {
+        const [width, height] = params.get('width', 'height')
+        const groupScale = params.get('groupScale')
+        return EvenPointSampling.create(width, height, groupScale)
+    }
+
+    _buildRegionTileMap(params) {
+        const [width, height] = params.get('width', 'height')
+        const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
+        const data = {width, height, scale, seed: this.seed, chance, growth}
+        return RegionTileMap.fromData(data)
+    }
+
+    _buildTable(origins, params) {
+        const data = new RegionGroupData(this.regionTileMap)
         const organicFills = origins.map((origin, id) => {
-            const region = regionTileMap.getRegion(origin)
+            const region = this.regionTileMap.getRegion(origin)
             const group = new RegionGroup(id, region)
             const fillConfig = new RegionGroupFillConfig({
                 groupChance: params.get('groupChance'),
@@ -80,13 +89,15 @@ export class RegionGroupTileMap extends TileMap {
         return data
     }
 
-    _buildLayerMap() {
-        const borderRegions = this.data.getRegionsAtBorders()
+    _buildLayerMap(params) {
+        const borderRegions = this.model.getRegionsAtBorders()
         const floodFills = borderRegions.map(region => {
             const fillConfig = new RegionLayerFillConfig({
-                region, data: this.data
+                groupChance: params.get('groupChance'),
+                groupGrowth: params.get('groupGrowth'),
+                region, data: this.model
             })
-            return new FloodFill(region, fillConfig)
+            return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(floodFills).fill()
     }
@@ -100,42 +111,42 @@ export class RegionGroupTileMap extends TileMap {
 
     getGroupsDescOrder() {
         const cmpDescArea = (g0, g1) => g1.area - g0.area
-        return this.data.groups.sort(cmpDescArea)
+        return this.model.groups.sort(cmpDescArea)
     }
 
     getRegion(point) {
-        return this.data.getRegion(point)
+        return this.model.getRegion(point)
     }
 
     getGroup(point) {
-        const region = this.data.getRegion(point)
-        return this.data.getGroup(region)
+        const region = this.model.getRegion(point)
+        return this.model.getGroup(region)
     }
 
     getRegionLayer(region) {
-        return this.data.getRegionLayer(region)
+        return this.model.getRegionLayer(region)
     }
 
     isRegionBorder(point) {
-        return this.data.isRegionBorder(point)
+        return this.model.isRegionBorder(point)
     }
 
     isGroupBorderPoint(point) {
         if (! this.isRegionBorder(point)) return false
         const group = this.getGroup(point)
-        const borderRegions = this.data.getBorderRegionsAt(point)
-        return this.data.isGroupBorder(group, borderRegions)
+        const borderRegions = this.model.getBorderRegionsAt(point)
+        return this.model.isGroupBorder(group, borderRegions)
     }
 
     isBorderRegion(region) {
-        return this.data.hasBorderRegions(region)
+        return this.model.hasBorderRegions(region)
     }
 
     map(callback) {
-        return this.data.map(group => callback(group))
+        return this.model.map(group => callback(group))
     }
 
     forEach(callback) {
-        this.data.forEach(callback)
+        this.model.forEach(callback)
     }
 }

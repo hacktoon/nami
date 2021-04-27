@@ -132,6 +132,8 @@ export class RegionGroupFillConfig {
 
 export class RegionLayerFillConfig {
     constructor(params) {
+        this.chance = params.chance
+        this.growth = params.growth
         this.currentRegion = params.region
         this.data = params.data
     }
