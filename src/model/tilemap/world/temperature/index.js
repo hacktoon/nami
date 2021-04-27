@@ -9,9 +9,10 @@ import { TemperatureTileMapDiagram } from './diagram'
 
 const SCHEMA = new Schema(
     'TemperatureTileMap',
-    Type.number('width', 'Width', {default: 150, step: 1, min: 1}),
-    Type.number('height', 'Height', {default: 100, step: 1, min: 1}),
-    Type.number('scale', 'Scale', {default: 4, step: 1, min: 1}),
+    Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
+    Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
+    Type.number('scale', 'Scale', {default: 4, step: 1, min: 1, max: 100}),
+    Type.number('radiation', 'Radiation', {default: 4, step: 1, min: -50, max: 50}),
     Type.text('seed', 'Seed', {default: ''})
 )
 

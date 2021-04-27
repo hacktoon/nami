@@ -17,6 +17,7 @@ export class Temperature {
             this.index.set(region.id, region)
         })
         this.regionTileMap = regionTileMap
+        this.radiation = params.get('radiation')
     }
 
     getRegion(point) {
@@ -26,7 +27,7 @@ export class Temperature {
     getTemperature(point) {
         const region = this.regionTileMap.getRegion(point)
         const center = Math.round(this.regionTileMap.height / 2)
-        const offset =  Math.floor(Math.sin(region.origin.x) * 4)
+        const offset = this._calcOffset(region)
         const distanceToCenter = Math.abs(region.origin.y - center)
         const temperature = distanceToCenter + offset
         const fraction = center / 100
@@ -40,7 +41,10 @@ export class Temperature {
         }
     }
 
-
+    _calcOffset(region) {
+        const offset = Math.sin(region.origin.x) * 4
+        return Math.floor(offset - this.radiation)
+    }
 
     map(callback) {
         return this.regionTileMap.map(callback)

@@ -6,7 +6,6 @@ import { Type } from '/lib/base/type'
 import { Form } from '/ui/form'
 import { Title } from '/ui'
 
-import { HeightTileMap } from '/model/tilemap/height/'
 import { NoiseTileMap } from '/model/tilemap/noise'
 import { RegionTileMap } from '/model/tilemap/region'
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
@@ -18,7 +17,6 @@ import "/ui/css/map.css"
 
 
 const APPS = [
-    HeightTileMap,
     NoiseTileMap,
     RegionTileMap,
     RegionGroupTileMap,

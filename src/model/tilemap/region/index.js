@@ -8,7 +8,7 @@ import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { RegionTileMapDiagram } from './diagram'
-import { Region, RegionMapTable, RegionFillConfig } from './data'
+import { Region, RegionMapTable, RegionFillConfig } from './model'
 
 
 const SAMPLING_ENTRIES = [RandomPointSampling, EvenPointSampling]
@@ -16,10 +16,10 @@ const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
 
 const SCHEMA = new Schema(
     'RegionTileMap',
-    Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 256}),
-    Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 256}),
-    Type.number('scale', 'Scale', {default: 20, step: 1, min: 1}),
-    Type.number('growth', 'Growth', {default: 25, step: 1, min: 0}),
+    Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
+    Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
+    Type.number('scale', 'Scale', {default: 20, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 25, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
     Type.selection('pointSampling', 'Sampling', {
         default: EvenPointSampling.id,
