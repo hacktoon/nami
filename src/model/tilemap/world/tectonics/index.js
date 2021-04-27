@@ -62,3 +62,43 @@ export class TectonicsTileMap extends TileMap {
     }
 }
 
+// _buildLayerMap(params) {
+//     const borderRegions = this.model.getRegionsAtBorders()
+//     const floodFills = borderRegions.map(region => {
+//         const fillConfig = new RegionLayerFillConfig({
+//             groupChance: params.get('groupChance'),
+//             groupGrowth: params.get('groupGrowth'),
+//             model: this.model,
+//             region
+//         })
+//         return new OrganicFloodFill(region, fillConfig)
+//     })
+//     new MultiFill(floodFills).fill()
+// }
+
+// export class RegionLayerFillConfig {
+//     constructor(params) {
+//         this.chance = 0.01
+//         this.growth = 30
+//         this.currentRegion = params.region
+//         this.model = params.model
+//     }
+
+//     isEmpty(region) {
+//         return ! this.model.hasRegionLayer(region)
+//     }
+
+//     setValue(region, layer) {
+//         this.model.setRegionLayer(region, layer)
+//     }
+
+//     checkNeighbor(neighborRegion, region) {
+//         // if (! this.isEmpty(neighborRegion)) return
+//         // if (this.model.hasParentLayerRegion(neighborRegion)) return
+//         // this.model.setParentLayerRegion(neighborRegion, region)
+//     }
+
+//     getNeighbors(region) {
+//         return this.model.regionTileMap.getNeighborRegions(region)
+//     }
+// }

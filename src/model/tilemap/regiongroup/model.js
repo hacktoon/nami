@@ -16,7 +16,6 @@ export class RegionGroupData {
         this.regionTileMap = regionTileMap
         this.regionToGroup = new Map()
         this.borderRegions = new Set()
-        this.regionLayerMap = new Map()
         this.index = new Map()
         this.layers = []
     }
@@ -34,21 +33,8 @@ export class RegionGroupData {
         this.borderRegions.add(region.id)
     }
 
-    setRegionLayer(region, layer) {
-        this.regionLayerMap.set(region.id, layer)
-        this.layers.push(layer)
-    }
-
-    hasRegionLayer(region) {
-        return this.regionLayerMap.has(region.id)
-    }
-
     getRegion(point) {
         return this.regionTileMap.getRegion(point)
-    }
-
-    getRegionLayer(region) {
-        return this.regionLayerMap.get(region.id)
     }
 
     getGroup(region) {
@@ -92,63 +78,5 @@ export class RegionGroupData {
 
     forEach(callback) {
         this.index.forEach(callback)
-    }
-}
-
-
-export class RegionGroupFillConfig {
-    constructor(params) {
-        this.chance = params.groupChance
-        this.growth = params.groupGrowth
-
-        this.currentGroup = params.group
-        this.data = params.data
-        this.graph = params.graph
-    }
-
-    isEmpty(region) {
-        return this.data.isRegionEmpty(region)
-    }
-
-    setValue(region) {
-        this.data.setGroup(region, this.currentGroup)
-        this.currentGroup.area += region.area
-    }
-
-    checkNeighbor(neighborRegion, region) {
-        const currentGroup = this.currentGroup
-        const neighborGroup = this.data.getGroup(neighborRegion)
-        if (this.isEmpty(neighborRegion)) return
-        if (neighborGroup.id === currentGroup.id) return
-        this.data.setBorder(region)
-        this.graph.setEdge(currentGroup.id, neighborGroup.id)
-    }
-
-    getNeighbors(region) {
-        return this.data.regionTileMap.getNeighborRegions(region)
-    }
-}
-
-
-export class RegionLayerFillConfig {
-    constructor(params) {
-        this.chance = params.chance
-        this.growth = params.growth
-        this.currentRegion = params.region
-        this.data = params.data
-    }
-
-    isEmpty(region) {
-        return ! this.data.hasRegionLayer(region)
-    }
-
-    setValue(region, layer) {
-        this.data.setRegionLayer(region, layer)
-    }
-
-    checkNeighbor() {}
-
-    getNeighbors(region) {
-        return this.data.regionTileMap.getNeighborRegions(region)
     }
 }

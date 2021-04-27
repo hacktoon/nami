@@ -6,9 +6,9 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 const SCHEMA = new Schema(
     'RegionGroupTileMapDiagram',
     Type.boolean('showGroups', 'Show groups', {default: true}),
-    Type.boolean('showGroupBorder', 'Show group border', {default: false}),
-    Type.boolean('showRegions', 'Show regions', {default: false}),
-    Type.boolean('showLayers', 'Show layers', {default: true}),
+    Type.boolean('showGroupBorder', 'Show group border', {default: true}),
+    Type.boolean('showRegions', 'Show regions', {default: true}),
+    Type.boolean('showBorderRegion', 'Show border region', {default: false}),
     Type.boolean('showRegionBorder', 'Show region border', {default: false}),
 )
 
@@ -26,7 +26,7 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         this.showGroups = params.get('showGroups')
         this.showRegionBorder = params.get('showRegionBorder')
         this.showGroupBorder = params.get('showGroupBorder')
-        this.showLayers = params.get('showLayers')
+        this.showBorderRegion = params.get('showBorderRegion')
         this.regionColorMap = new RegionColorMap(tileMap.regionTileMap)
         this.groupColorMap = new GroupColorMap(tileMap)
     }
@@ -34,13 +34,12 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
     get(point) {
         const region = this.tileMap.getRegion(point)
         const group = this.tileMap.getGroup(point)
-        const layer = this.tileMap.getRegionLayer(region)
         const regionColor = this.regionColorMap.get(region)
         const groupColor = this.groupColorMap.get(group)
         const isBorderRegion = this.tileMap.isBorderRegion(region)
 
         if (this.showGroupBorder && this.tileMap.isGroupBorderPoint(point)) {
-            return groupColor.brighten(50).toHex()
+            return groupColor.brighten(90).toHex()
         }
         if (this.showRegionBorder && this.tileMap.isRegionBorder(point)) {
             let color = this.showGroups ? groupColor.brighten(60) : regionColor.darken(60)
@@ -50,11 +49,8 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
             let color = groupColor
             if (this.showRegions)
                 color = regionColor.average(groupColor).average(groupColor)
-            if (isBorderRegion)
+            if (isBorderRegion && this.showBorderRegion)
                 return color.darken(90).toHex()
-            if (this.showLayers) {
-                color = color.darken(layer * 20)
-            }
             return color.toHex()
         }
         if (this.showRegions) {
