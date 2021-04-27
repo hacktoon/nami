@@ -1,6 +1,6 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { RandomPointSampling, EvenPointSampling } from '/lib/base/point/sampling'
+import { EvenPointSampling } from '/lib/base/point/sampling'
 import { Graph } from '/lib/base/graph'
 import { UITileMap } from '/ui/tilemap'
 import { TileMap } from '/model/lib/tilemap'
@@ -11,9 +11,6 @@ import { RegionTileMapDiagram } from './diagram'
 import { Region, RegionMapTable, RegionFillConfig } from './model'
 
 
-const SAMPLING_ENTRIES = [RandomPointSampling, EvenPointSampling]
-const SAMPLING_MAP = new Map(SAMPLING_ENTRIES.map(model => [model.id, model]))
-
 const SCHEMA = new Schema(
     'RegionTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
@@ -21,10 +18,6 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 20, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 25, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
-    Type.selection('pointSampling', 'Sampling', {
-        default: EvenPointSampling.id,
-        options: SAMPLING_ENTRIES
-    }),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -48,8 +41,7 @@ export class RegionTileMap extends TileMap {
     constructor(params) {
         super(params)
         const [scale, width, height] = params.get('scale', 'width', 'height')
-        const PointSampling = SAMPLING_MAP.get(params.get('pointSampling'))
-        const origins = PointSampling.create(width, height, scale)
+        const origins = EvenPointSampling.create(width, height, scale)
         const table = new RegionMapTable(width, height)
         const graph = new Graph()
         const organicFills = origins.map((origin, id) => {
