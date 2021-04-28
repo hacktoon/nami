@@ -1,5 +1,6 @@
 import { Color } from '/lib/base/color'
 import { Matrix } from '/lib/base/matrix'
+import { Graph } from '/lib/base/graph'
 
 
 const NO_REGION = null
@@ -20,6 +21,7 @@ export class RegionMapTable {
         this.idMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => new Set())
         this.index = new Map()
+        this.graph = new Graph()
     }
 
     isEmpty(point) {
@@ -44,8 +46,10 @@ export class RegionMapTable {
         return this.index.get(id)
     }
 
-    addBorder(point, id) {
-        return this.borderMatrix.get(point).add(id)
+    addBorder(point, region, neighborRegion) {
+        const borderSet = this.borderMatrix.get(point)
+        borderSet.add(neighborRegion.id)
+        this.graph.setEdge(region.id, neighborRegion.id)
     }
 
     getBorderRegionsAt(point) {
@@ -69,7 +73,6 @@ export class RegionFillConfig {
         this.chance = config.chance
         this.growth = config.growth
         this.region = config.region
-        this.graph = config.graph
         this.model = config.model
     }
 
@@ -82,15 +85,14 @@ export class RegionFillConfig {
         this.region.area += 1
     }
 
-    checkNeighbor(neighborPoint, origin) {
-        const neighbor = this.model.getRegion(neighborPoint)
+    checkNeighbor(neighborPoint, originPoint) {
         if (this.model.isEmpty(neighborPoint)) return
-        if (this.region.id === neighbor.id) return
-        this.model.addBorder(origin, neighbor.id)
-        this.graph.setEdge(this.region.id, neighbor.id)
+        const neighborRegion = this.model.getRegion(neighborPoint)
+        if (this.region.id === neighborRegion.id) return
+        this.model.addBorder(originPoint, this.region, neighborRegion)
     }
 
-    getNeighbors(origin) {
-        return origin.adjacents()
+    getNeighbors(originPoint) {
+        return originPoint.adjacents()
     }
 }

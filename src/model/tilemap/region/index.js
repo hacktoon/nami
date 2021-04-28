@@ -1,7 +1,6 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { EvenPointSampling } from '/lib/base/point/sampling'
-import { Graph } from '/lib/base/graph'
 import { UITileMap } from '/ui/tilemap'
 import { TileMap } from '/model/lib/tilemap'
 import { MultiFill } from '/lib/floodfill'
@@ -16,9 +15,9 @@ const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 15, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 5, step: 1, min: 0, max: 100}),
+    Type.number('growth', 'Growth', {default: 100, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: 'a'})
 )
 
 
@@ -40,7 +39,6 @@ export class RegionTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.graph = new Graph()
         this.model = this._buildModel(params)
         // const absorbed = new Map()
         // this.graph.forEachNode(id => {
@@ -58,8 +56,8 @@ export class RegionTileMap extends TileMap {
             const fillConfig = new RegionFillConfig({
                 chance: params.get('chance'),
                 growth: params.get('growth'),
-                graph: this.graph,
-                model, region
+                model,
+                region
             })
             return new OrganicFloodFill(region.origin, fillConfig)
         })
