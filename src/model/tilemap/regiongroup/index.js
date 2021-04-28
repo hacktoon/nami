@@ -19,8 +19,8 @@ const SCHEMA = new Schema(
     Type.number('height', 'H', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('groupScale', 'Gr Scale', {default: 34, step: 1, min: 1, max: 100}),
     Type.number('groupChance', 'Gr Chance', {default: 0.2, step: 0.1, min: 0.1, max: 1}),
-    Type.number('groupGrowth', 'Gr Growth', {default: 12, step: 1, min: 0, max: 100}),
-    Type.number('scale', 'Rg scale', {default: 3, step: 1, min: 1, max: 100}),
+    Type.number('groupGrowth', 'Gr Growth', {default: 20, step: 1, min: 0, max: 100}),
+    Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
     Type.text('seed', 'Seed', {default: ''})

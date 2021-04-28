@@ -6,7 +6,7 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 const SCHEMA = new Schema(
     'RegionTileMapDiagram',
     Type.boolean('showBorders', 'Show borders', {default: true}),
-    Type.boolean('showNeighborBorder', 'Show neighbor border', {default: true}),
+    Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
     Type.boolean('showSelectedRegion', 'Show selected region', {default: false}),
     Type.number('selectedRegionId', 'Select region', {default: 0, min: 0, step: 1}),
 )

@@ -70,23 +70,23 @@ export class RegionFillConfig {
         this.growth = config.growth
         this.region = config.region
         this.graph = config.graph
-        this.table = config.table
+        this.model = config.model
     }
 
     isEmpty(point) {
-        return this.table.isEmpty(point)
+        return this.model.isEmpty(point)
     }
 
     setValue(point) {
-        this.table.setRegion(point, this.region)
+        this.model.setRegion(point, this.region)
         this.region.area += 1
     }
 
     checkNeighbor(neighborPoint, origin) {
-        const neighbor = this.table.getRegion(neighborPoint)
-        if (this.table.isEmpty(neighborPoint)) return
+        const neighbor = this.model.getRegion(neighborPoint)
+        if (this.model.isEmpty(neighborPoint)) return
         if (this.region.id === neighbor.id) return
-        this.table.addBorder(origin, neighbor.id) //TODO: use point here?
+        this.model.addBorder(origin, neighbor.id) //TODO: use point here?
         this.graph.setEdge(this.region.id, neighbor.id)
     }
 

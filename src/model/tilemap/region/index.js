@@ -15,10 +15,10 @@ const SCHEMA = new Schema(
     'RegionTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('scale', 'Scale', {default: 20, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 25, step: 1, min: 0, max: 100}),
+    Type.number('scale', 'Scale', {default: 15, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 100, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: 'a'})
 )
 
 
@@ -40,28 +40,31 @@ export class RegionTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const [scale, width, height] = params.get('scale', 'width', 'height')
+        this.graph = new Graph()
+        this.model = this._buildModel(params)
+    }
+
+    _buildModel(params) {
+        const [width, height, scale] = params.get('width', 'height', 'scale')
+        const model = new RegionMapTable(width, height)
         const origins = EvenPointSampling.create(width, height, scale)
-        const table = new RegionMapTable(width, height)
-        const graph = new Graph()
         const organicFills = origins.map((origin, id) => {
             const region = new Region(id, origin)
             const fillConfig = new RegionFillConfig({
                 chance: params.get('chance'),
                 growth: params.get('growth'),
-                table, graph, region
+                graph: this.graph,
+                model, region
             })
             return new OrganicFloodFill(region.origin, fillConfig)
         })
         new MultiFill(organicFills).fill()
-
-        this.table = table
-        this.graph = graph
+        return model
     }
 
     get(point) {
-        const borderIds = this.table.getBorderRegionsAt(point)
-        const region = this.table.getRegion(point)
+        const borderIds = this.model.getBorderRegionsAt(point)
+        const region = this.model.getRegion(point)
         return {
             id: region.id,
             region: region,
@@ -70,20 +73,20 @@ export class RegionTileMap extends TileMap {
     }
 
     getRegion(point) {
-        return this.table.getRegion(point)
+        return this.model.getRegion(point)
     }
 
     getRegionById(id) {
-        return this.table.getRegionById(id)
+        return this.model.getRegionById(id)
     }
 
     getBorderRegionsAt(point) {
-        return this.table.getBorderRegionsAt(point)
+        return this.model.getBorderRegionsAt(point)
     }
 
     getNeighborRegions(region) {
         const edges = this.graph.getEdges(region.id)
-        return edges.map(id => this.table.getRegionById(id))
+        return edges.map(id => this.model.getRegionById(id))
     }
 
     isNeighbor(id, neighborId) {
@@ -91,14 +94,14 @@ export class RegionTileMap extends TileMap {
     }
 
     isBorder(point) {
-        return this.table.isBorder(point)
+        return this.model.isBorder(point)
     }
 
     map(callback) {
-        return this.table.map(group => callback(group))
+        return this.model.map(group => callback(group))
     }
 
     forEach(callback) {
-        this.table.forEach(callback)
+        this.model.forEach(callback)
     }
 }
