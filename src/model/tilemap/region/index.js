@@ -16,9 +16,9 @@ const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 15, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 100, step: 1, min: 0, max: 100}),
+    Type.number('growth', 'Growth', {default: 5, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: 'a'})
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 
@@ -42,6 +42,11 @@ export class RegionTileMap extends TileMap {
         super(params)
         this.graph = new Graph()
         this.model = this._buildModel(params)
+        // const absorbed = new Map()
+        // this.graph.forEachNode(id => {
+        //     console.log(id, this.graph.getEdges(id).length)
+
+        // })
     }
 
     _buildModel(params) {
@@ -69,6 +74,8 @@ export class RegionTileMap extends TileMap {
             id: region.id,
             region: region,
             borders: borderIds.map(r => r.id).join(', '),
+            // borderRegions: this.getBorderRegionsAt(point),
+            neighborRegions: this.getNeighborRegions(region),
         }
     }
 
@@ -98,7 +105,7 @@ export class RegionTileMap extends TileMap {
     }
 
     map(callback) {
-        return this.model.map(group => callback(group))
+        return this.model.map(region => callback(region))
     }
 
     forEach(callback) {

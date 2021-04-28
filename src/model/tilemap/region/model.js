@@ -86,7 +86,7 @@ export class RegionFillConfig {
         const neighbor = this.model.getRegion(neighborPoint)
         if (this.model.isEmpty(neighborPoint)) return
         if (this.region.id === neighbor.id) return
-        this.model.addBorder(origin, neighbor.id) //TODO: use point here?
+        this.model.addBorder(origin, neighbor.id)
         this.graph.setEdge(this.region.id, neighbor.id)
     }
 

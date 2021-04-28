@@ -1,15 +1,15 @@
 
 export class Graph {
     constructor() {
-        this.table = {}
+        this.table = new Map()
     }
 
-    getNodes() {
-        return Object.keys(this.table).map(x => Number(x))
+    forEachNode(callback) {
+        return this.table.forEach((_, source) => callback(source))
     }
 
     getEdges(source) {
-        const edgeSet = this.table[source]
+        const edgeSet = this.table.get(source)
         if (this.hasNode(source)) {
             return Array.from(edgeSet.values())
         }
@@ -17,26 +17,24 @@ export class Graph {
     }
 
     addNode(source) {
-        if (this.hasNode(source)) {
-            return
-        }
-        this.table[source] = new Set()
+        if (this.hasNode(source)) return
+        this.table.set(source, new Set())
     }
 
     hasNode(source) {
-        return Boolean(this.table[source])
+        return this.table.has(source)
     }
 
     setEdge(source, target) {
         this.addNode(source)
         this.addNode(target)
-        this.table[source].add(target)
-        this.table[target].add(source)
+        this.table.get(source).add(target)
+        this.table.get(target).add(source)
     }
 
     hasEdge(source, target) {
-        const hasTarget = this.table[source].has(target)
-        const hasSource = this.table[target].has(source)
+        const hasTarget = this.table.get(source).has(target)
+        const hasSource = this.table.get(target).has(source)
         return hasSource && hasTarget
     }
 }
