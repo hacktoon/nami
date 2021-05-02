@@ -46,8 +46,8 @@ export class RegionGroupData {
         return ids.map(id => this.regionTileMap.getRegionById(id))
     }
 
-    getBorderRegionsAt(point) {
-        return this.regionTileMap.getBorderRegionsAt(point)
+    getTileBorderRegions(point) {
+        return this.regionTileMap.getTileBorderRegions(point)
     }
 
     hasBorderRegions(region) {

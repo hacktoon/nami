@@ -114,7 +114,7 @@ export class RegionGroupTileMap extends TileMap {
     isGroupBorderPoint(point) {
         if (! this.isRegionBorder(point)) return false
         const group = this.getGroup(point)
-        const borderRegions = this.model.getBorderRegionsAt(point)
+        const borderRegions = this.model.getTileBorderRegions(point)
         return this.model.isGroupBorder(group, borderRegions)
     }
 

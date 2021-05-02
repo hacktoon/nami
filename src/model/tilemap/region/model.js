@@ -1,9 +1,31 @@
 import { Color } from '/lib/base/color'
 import { Matrix } from '/lib/base/matrix'
 import { Graph } from '/lib/base/graph'
+import { EvenPointSampling } from '/lib/base/point/sampling'
+import { MultiFill } from '/lib/floodfill'
+import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 
 const NO_REGION = null
+
+
+export function buildModel(params) {
+    const [width, height, scale] = params.get('width', 'height', 'scale')
+    const model = new RegionMapModel(width, height)
+    const origins = EvenPointSampling.create(width, height, scale)
+    const organicFills = origins.map((origin, id) => {
+        const region = new Region(id, origin)
+        const fillConfig = new RegionFillConfig({
+            chance: params.get('chance'),
+            growth: params.get('growth'),
+            model,
+            region
+        })
+        return new OrganicFloodFill(region.origin, fillConfig)
+    })
+    new MultiFill(organicFills).fill()
+    return model
+}
 
 
 export class Region {
@@ -16,7 +38,7 @@ export class Region {
 }
 
 
-export class RegionMapTable {
+export class RegionMapModel {
     constructor(width, height) {
         this.idMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => new Set())
@@ -52,7 +74,12 @@ export class RegionMapTable {
         this.graph.setEdge(region.id, neighborRegion.id)
     }
 
-    getBorderRegionsAt(point) {
+    isNeighbor(id, neighborId) {
+        return this.graph.hasEdge(id, neighborId)
+    }
+
+    getTileBorderRegions(point) {
+        // a tile can have two different region neighbor points (Set)
         const ids = Array.from(this.borderMatrix.get(point))
         return ids.map(id => this.index.get(id))
     }

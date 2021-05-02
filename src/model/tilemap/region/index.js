@@ -1,13 +1,10 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { EvenPointSampling } from '/lib/base/point/sampling'
 import { UITileMap } from '/ui/tilemap'
 import { TileMap } from '/model/lib/tilemap'
-import { MultiFill } from '/lib/floodfill'
-import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { RegionTileMapDiagram } from './diagram'
-import { Region, RegionMapTable, RegionFillConfig } from './model'
+import { buildModel } from './model'
 
 
 const SCHEMA = new Schema(
@@ -39,40 +36,16 @@ export class RegionTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.model = this._buildModel(params)
-        // const absorbed = new Map()
-        // this.model.graph.forEachNode(id => {
-        //     console.log(id, this.model.graph.getEdges(id).length)
-
-        // })
-    }
-
-    _buildModel(params) {
-        const [width, height, scale] = params.get('width', 'height', 'scale')
-        const model = new RegionMapTable(width, height)
-        const origins = EvenPointSampling.create(width, height, scale)
-        const organicFills = origins.map((origin, id) => {
-            const region = new Region(id, origin)
-            const fillConfig = new RegionFillConfig({
-                chance: params.get('chance'),
-                growth: params.get('growth'),
-                model,
-                region
-            })
-            return new OrganicFloodFill(region.origin, fillConfig)
-        })
-        new MultiFill(organicFills).fill()
-        return model
+        this.model = buildModel(params)
     }
 
     get(point) {
-        const borderIds = this.model.getBorderRegionsAt(point)
+        const borderIds = this.model.getTileBorderRegions(point)
         const region = this.model.getRegion(point)
         return {
             id: region.id,
             region: region,
             borders: borderIds.map(r => r.id).join(', '),
-            // borderRegions: this.getBorderRegionsAt(point),
             neighborRegions: this.getNeighborRegions(region),
         }
     }
@@ -85,8 +58,8 @@ export class RegionTileMap extends TileMap {
         return this.model.getRegionById(id)
     }
 
-    getBorderRegionsAt(point) {
-        return this.model.getBorderRegionsAt(point)
+    getTileBorderRegions(point) {
+        return this.model.getTileBorderRegions(point)
     }
 
     getNeighborRegions(region) {
@@ -95,7 +68,7 @@ export class RegionTileMap extends TileMap {
     }
 
     isNeighbor(id, neighborId) {
-        return this.model.graph.hasEdge(id, neighborId)
+        return this.model.isNeighbor(id, neighborId)
     }
 
     isBorder(point) {
