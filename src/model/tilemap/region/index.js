@@ -41,8 +41,8 @@ export class RegionTileMap extends TileMap {
         super(params)
         this.model = this._buildModel(params)
         // const absorbed = new Map()
-        // this.graph.forEachNode(id => {
-        //     console.log(id, this.graph.getEdges(id).length)
+        // this.model.graph.forEachNode(id => {
+        //     console.log(id, this.model.graph.getEdges(id).length)
 
         // })
     }
@@ -90,12 +90,12 @@ export class RegionTileMap extends TileMap {
     }
 
     getNeighborRegions(region) {
-        const edges = this.graph.getEdges(region.id)
+        const edges = this.model.graph.getEdges(region.id)
         return edges.map(id => this.model.getRegionById(id))
     }
 
     isNeighbor(id, neighborId) {
-        return this.graph.hasEdge(id, neighborId)
+        return this.model.graph.hasEdge(id, neighborId)
     }
 
     isBorder(point) {
