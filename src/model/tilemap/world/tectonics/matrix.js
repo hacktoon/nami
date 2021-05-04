@@ -42,17 +42,15 @@ class PlateFillConfig {
 
     onFill(point) {
         const region = this.groupTilemap.getRegion(point)
-        const layer = this.groupTilemap.getRegionLayer(region)
         const noiseValue = this.noiseMap.get(point)
         const coastValue = this.noiseMap.getCoast(point)
 
         let value = 1 // land
         if (this.plate.isOceanic()) {
-            const deep = layer === 0 ? 3 : 0
-            value = layer > 0 && noiseValue < 20 ? 1 : deep
+            value = 0
         } else if (this.plate.isShield()) {
             value = 1
-        } else if (layer === 0) {
+        } else {
             const deform = this.plate.id % 2 === 0 ? 2 : 0
             value = coastValue > 80 ? deform : 1
         }

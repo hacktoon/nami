@@ -17,7 +17,6 @@ export class RegionGroupData {
         this.regionToGroup = new Map()
         this.borderRegions = new Set()
         this.index = new Map()
-        this.layers = []
     }
 
     get groups() {
