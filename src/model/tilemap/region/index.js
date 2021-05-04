@@ -4,7 +4,7 @@ import { UITileMap } from '/ui/tilemap'
 import { TileMap } from '/model/lib/tilemap'
 
 import { RegionTileMapDiagram } from './diagram'
-import { buildModel } from './model'
+import { RegionMapModel } from './model'
 
 
 const SCHEMA = new Schema(
@@ -36,7 +36,7 @@ export class RegionTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.model = buildModel(params)
+        this.model = new RegionMapModel(params)
     }
 
     get(point) {
