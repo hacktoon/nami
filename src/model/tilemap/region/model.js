@@ -65,12 +65,18 @@ export class RegionMapModel {
 
 export class RegionMapDataFactory {
     constructor(params) {
-        const [width, height] = params.get('width', 'height')
-        this.regions = this._buildRegions(params)
+        const [width, height, scale] = params.get('width', 'height', 'scale')
+        const origins = EvenPointSampling.create(width, height, scale)
+
+        this.regions = origins.map((origin, id) => new Region(id, origin))
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => new Set())
         this.graph = new Graph()
 
+        this._build(params)
+    }
+
+    _build(params) {
         const organicFills = this.regions.map(region => {
             const fillConfig = new RegionFillConfig(region, {
                 chance: params.get('chance'),
@@ -82,12 +88,6 @@ export class RegionMapDataFactory {
             return new OrganicFloodFill(region.origin, fillConfig)
         })
         new MultiFill(organicFills).fill()
-    }
-
-    _buildRegions(params) {
-        const [width, height, scale] = params.get('width', 'height', 'scale')
-        const origins = EvenPointSampling.create(width, height, scale)
-        return origins.map((origin, id) => new Region(id, origin))
     }
 
     getData() {
