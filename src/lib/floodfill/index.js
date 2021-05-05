@@ -9,10 +9,6 @@ export class FloodFill {
         this.config.setValue(this.origin,  this.level)
     }
 
-    canGrow() {
-        return this.seeds.length > 0
-    }
-
     grow() {
         this.seeds = this.growLayer()
         return this.seeds
@@ -24,7 +20,9 @@ export class FloodFill {
             const filledNeighbors = this.#fillNeighbors(seeds[i])
             newSeeds.push(...filledNeighbors)
         }
-        if (newSeeds.length > 0) this.level += 1
+        if (newSeeds.length > 0) {
+            this.level += 1
+        }
         return newSeeds
     }
 
