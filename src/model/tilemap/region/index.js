@@ -14,7 +14,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 15, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 100, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: 't'})
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 
@@ -36,7 +36,11 @@ export class RegionTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.model = new RegionMapModel(params)
+        const model = new RegionMapModel(params)
+        this.regions = model.regions
+        this.regionMatrix = model.regionMatrix
+        this.borderMatrix = model.borderMatrix
+        this.graph = model.graph
     }
 
     get(point) {
@@ -51,35 +55,38 @@ export class RegionTileMap extends TileMap {
     }
 
     getRegion(point) {
-        return this.model.getRegion(point)
+        const id = this.regionMatrix.get(point)
+        return this.getRegionById(id)
     }
 
     getRegionById(id) {
-        return this.model.getRegionById(id)
+        return this.regions[id]
     }
 
     getTileBorderRegions(point) {
-        return this.model.getTileBorderRegions(point)
+        // a tile can have two different region neighbor points (Set)
+        const ids = Array.from(this.borderMatrix.get(point))
+        return ids.map(id => this.getRegionById(id))
     }
 
     getNeighborRegions(region) {
-        const edges = this.model.graph.getEdges(region.id)
-        return edges.map(id => this.model.getRegionById(id))
+        const edges = this.graph.getEdges(region.id)
+        return edges.map(id => this.getRegionById(id))
     }
 
     isNeighbor(id, neighborId) {
-        return this.model.isNeighbor(id, neighborId)
+        return this.graph.hasEdge(id, neighborId)
     }
 
     isBorder(point) {
-        return this.model.isBorder(point)
+        return this.borderMatrix.get(point).size > 0
     }
 
     map(callback) {
-        return this.model.map(region => callback(region))
+        return this.regions.map(region => callback(region))
     }
 
     forEach(callback) {
-        this.model.forEach(callback)
+        this.regions.forEach(callback)
     }
 }

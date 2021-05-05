@@ -21,50 +21,6 @@ export class Region {
 
 export class RegionMapModel {
     constructor(params) {
-        const factory = new RegionMapDataFactory(params)
-        const data = factory.getData()
-        this.regions = data.regions
-        console.log(data);
-        this.regionMatrix = data.regionMatrix
-        this.borderMatrix = data.borderMatrix
-        this.graph = data.graph
-    }
-
-    isBorder(point) {
-        return this.borderMatrix.get(point).size > 0
-    }
-
-    getRegion(point) {
-        const id = this.regionMatrix.get(point)
-        return this.getRegionById(id)
-    }
-
-    getRegionById(id) {
-        return this.regions[id]
-    }
-
-    isNeighbor(id, neighborId) {
-        return this.graph.hasEdge(id, neighborId)
-    }
-
-    getTileBorderRegions(point) {
-        // a tile can have two different region neighbor points (Set)
-        const ids = Array.from(this.borderMatrix.get(point))
-        return ids.map(id => this.getRegionById(id))
-    }
-
-    map(callback) {
-        return this.regions.map(callback)
-    }
-
-    forEach(callback) {
-        this.regions.forEach(callback)
-    }
-}
-
-
-export class RegionMapDataFactory {
-    constructor(params) {
         const [width, height, scale] = params.get('width', 'height', 'scale')
         const origins = EvenPointSampling.create(width, height, scale)
 
@@ -88,15 +44,6 @@ export class RegionMapDataFactory {
             return new OrganicFloodFill(region.origin, fillConfig)
         })
         new MultiFill(organicFills).fill()
-    }
-
-    getData() {
-        return {
-            regions: this.regions,
-            regionMatrix: this.regionMatrix,
-            borderMatrix: this.borderMatrix,
-            graph: this.graph,
-        }
     }
 }
 
