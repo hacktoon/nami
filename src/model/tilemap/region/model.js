@@ -24,38 +24,31 @@ export class RegionMapModel {
         const [width, height, scale] = params.get('width', 'height', 'scale')
         const origins = EvenPointSampling.create(width, height, scale)
 
+        this.chance = params.get('chance')
+        this.growth = params.get('growth')
         this.regions = origins.map((origin, id) => new Region(id, origin))
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => new Set())
         this.graph = new Graph()
 
-        this._build(params)
-    }
-
-    _build(params) {
         const organicFills = this.regions.map(region => {
-            const fillConfig = new RegionFillConfig(region, {
-                chance: params.get('chance'),
-                growth: params.get('growth'),
-                regionMatrix: this.regionMatrix,
-                borderMatrix: this.borderMatrix,
-                graph: this.graph,
-            })
+            const fillConfig = new RegionFillConfig(this, region)
             return new OrganicFloodFill(region.origin, fillConfig)
         })
+
         new MultiFill(organicFills).fill()
     }
 }
 
 
 export class RegionFillConfig {
-    constructor(region, config) {
+    constructor(model, region) {
         this.region = region
-        this.chance = config.chance
-        this.growth = config.growth
-        this.regionMatrix = config.regionMatrix
-        this.borderMatrix = config.borderMatrix
-        this.graph = config.graph
+        this.chance = model.chance
+        this.growth = model.growth
+        this.regionMatrix = model.regionMatrix
+        this.borderMatrix = model.borderMatrix
+        this.graph = model.graph
     }
 
     isEmpty(point) {
