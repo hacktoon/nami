@@ -9,13 +9,6 @@ import { OrganicFloodFill } from '/lib/floodfill/organic'
 const NO_REGION = null
 
 
-export function buildRegions(params) {
-    const [width, height, scale] = params.get('width', 'height', 'scale')
-    const origins = EvenPointSampling.create(width, height, scale)
-    return origins.map((origin, id) => new Region(id, origin))
-}
-
-
 export class Region {
     constructor(id, origin) {
         this.id = id
@@ -28,23 +21,13 @@ export class Region {
 
 export class RegionMapModel {
     constructor(params) {
-        const [width, height] = params.get('width', 'height')
-        this.regions = buildRegions(params)
-        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
-        this.borderMatrix = new Matrix(width, height, () => new Set())
-        this.graph = new Graph()
-
-        const organicFills = this.regions.map(region => {
-            const fillConfig = new RegionFillConfig(region, {
-                chance: params.get('chance'),
-                growth: params.get('growth'),
-                idMatrix: this.regionMatrix,
-                borderMatrix: this.borderMatrix,
-                graph: this.graph,
-            })
-            return new OrganicFloodFill(region.origin, fillConfig)
-        })
-        new MultiFill(organicFills).fill()
+        const factory = new RegionMapDataFactory(params)
+        const data = factory.getData()
+        this.regions = data.regions
+        console.log(data);
+        this.regionMatrix = data.regionMatrix
+        this.borderMatrix = data.borderMatrix
+        this.graph = data.graph
     }
 
     isBorder(point) {
@@ -80,12 +63,50 @@ export class RegionMapModel {
 }
 
 
+export class RegionMapDataFactory {
+    constructor(params) {
+        const [width, height] = params.get('width', 'height')
+        this.regions = this._buildRegions(params)
+        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
+        this.borderMatrix = new Matrix(width, height, () => new Set())
+        this.graph = new Graph()
+
+        const organicFills = this.regions.map(region => {
+            const fillConfig = new RegionFillConfig(region, {
+                chance: params.get('chance'),
+                growth: params.get('growth'),
+                regionMatrix: this.regionMatrix,
+                borderMatrix: this.borderMatrix,
+                graph: this.graph,
+            })
+            return new OrganicFloodFill(region.origin, fillConfig)
+        })
+        new MultiFill(organicFills).fill()
+    }
+
+    _buildRegions(params) {
+        const [width, height, scale] = params.get('width', 'height', 'scale')
+        const origins = EvenPointSampling.create(width, height, scale)
+        return origins.map((origin, id) => new Region(id, origin))
+    }
+
+    getData() {
+        return {
+            regions: this.regions,
+            regionMatrix: this.regionMatrix,
+            borderMatrix: this.borderMatrix,
+            graph: this.graph,
+        }
+    }
+}
+
+
 export class RegionFillConfig {
     constructor(region, config) {
         this.region = region
         this.chance = config.chance
         this.growth = config.growth
-        this.regionMatrix = config.idMatrix
+        this.regionMatrix = config.regionMatrix
         this.borderMatrix = config.borderMatrix
         this.graph = config.graph
     }
