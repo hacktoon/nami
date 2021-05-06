@@ -6,7 +6,7 @@ export class FloodFill {
         this.seeds = [origin]
         this.config = config
         this.level = 0
-        this.config.setValue(this.origin,  this.level)
+        this.config.setValue(this.origin, this.level)
     }
 
     grow() {
@@ -16,8 +16,8 @@ export class FloodFill {
 
     growLayer(seeds=this.seeds) {
         let newSeeds = []
-        for(let i = 0; i < seeds.length; i++) {
-            const filledNeighbors = this.#fillNeighbors(seeds[i])
+        for(let seed of seeds) {
+            const filledNeighbors = this.#fillNeighbors(seed)
             newSeeds.push(...filledNeighbors)
         }
         if (newSeeds.length > 0) {
@@ -35,7 +35,7 @@ export class FloodFill {
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
-            this.config.setValue(neighbor,  this.level)
+            this.config.setValue(neighbor, this.level)
         })
         return filledNeighbors
     }
@@ -54,17 +54,15 @@ export class MultiFill {
         }
     }
 
-    forEach(callback) {
-        this.fills.forEach(callback)
-    }
-
     grow() {
-        let totalFull = 0
-        for(let i = 0; i < this.fills.length; i++) {
-            const filled = this.fills[i].grow()
-            if (filled.length === 0) totalFull++
+        let completedFills = 0
+        for(let fill of this.fills) {
+            const filledPoints = fill.grow()
+            if (filledPoints.length === 0) {
+                completedFills++
+            }
         }
-        if (totalFull === this.fills.length) {
+        if (completedFills === this.fills.length) {
             this.canGrow = false
         }
     }

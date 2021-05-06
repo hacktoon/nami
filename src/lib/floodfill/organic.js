@@ -29,9 +29,9 @@ export class OrganicFloodFill extends FloodFill {
 
     splitSeeds(array) {
         const first = [], second = []
-        for(let i = 0; i < array.length; i++) {
+        for(let seed of array) {
             const outputArray = Random.chance(this.chance) ? first : second
-            outputArray.push(array[i])
+            outputArray.push(seed)
         }
         return [first, second]
     }
