@@ -19,6 +19,10 @@ class FillConfig {
     checkNeighbor(adjacent, origin) {
 
     }
+
+    getNeighbors(originPoint) {
+        return originPoint.adjacents()
+    }
 }
 
 

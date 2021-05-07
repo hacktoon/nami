@@ -11,20 +11,16 @@ export class OrganicFloodFill extends FloodFill {
 
     grow() {
         this.seeds = this.growLayer()
-        this.growMore()
+        this.growRandomLayers()
         return this.seeds
     }
 
-    growMore() {
+    growRandomLayers() {
         for(let i = 0; i < this.growth; i++) {
-            this.growRandomLayer()
+            const [extra, other] = this.splitSeeds(this.seeds)
+            let extraSeeds = this.growLayer(extra)
+            this.seeds = [...other, ...extraSeeds]
         }
-    }
-
-    growRandomLayer() {
-        const [extra, other] = this.splitSeeds(this.seeds)
-        let extraSeeds = this.growLayer(extra)
-        this.seeds = [...other, ...extraSeeds]
     }
 
     splitSeeds(array) {

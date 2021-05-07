@@ -6,6 +6,7 @@ export class FloodFill {
         this.seeds = [origin]
         this.config = config
         this.level = 0
+        this.area = 0
         this.config.setValue(this.origin, this.level)
     }
 
@@ -17,7 +18,7 @@ export class FloodFill {
     growLayer(seeds=this.seeds) {
         let newSeeds = []
         for(let seed of seeds) {
-            const filledNeighbors = this.#fillNeighbors(seed)
+            const filledNeighbors = this._fillNeighbors(seed)
             newSeeds.push(...filledNeighbors)
         }
         if (newSeeds.length > 0) {
@@ -26,7 +27,7 @@ export class FloodFill {
         return newSeeds
     }
 
-    #fillNeighbors(origin) {
+    _fillNeighbors(origin) {
         const filledNeighbors = []
         const allNeighbors = this.config.getNeighbors(origin)
         const emptyNeighbors = allNeighbors.filter(neighbor => {
