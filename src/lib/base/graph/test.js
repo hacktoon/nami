@@ -27,3 +27,19 @@ test('Test graph edges', () => {
     expect(graph.hasEdge(1, 3)).toBe(false)
     expect(graph.hasEdge(3, 1)).toBe(false)
 })
+
+
+test('Test graph node removal', () => {
+    const graph = new Graph()
+    graph.setEdge(1, 2)
+    graph.setEdge(1, 3)
+    graph.setEdge(2, 3)
+    expect(graph.hasEdge(3, 1)).toBe(true)
+    graph.deleteNode(3)
+    expect(graph.hasEdge(3, 1)).toBe(false)
+    graph.deleteNode(1)
+    expect(graph.hasEdge(2, 1)).toBe(false)
+    expect(graph.hasNode(2)).toBe(true)
+    expect(graph.hasNode(1)).toBe(false)
+    expect(graph.hasNode(3)).toBe(false)
+})

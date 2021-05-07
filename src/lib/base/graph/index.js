@@ -9,16 +9,22 @@ export class Graph {
     }
 
     getEdges(source) {
+        if (! this.table.has(source)) return []
         const edgeSet = this.table.get(source)
-        if (this.hasNode(source)) {
-            return Array.from(edgeSet.values())
-        }
-        return []
+        return Array.from(edgeSet.values())
     }
 
     addNode(source) {
-        if (this.hasNode(source)) return
+        if (this.table.has(source)) return
         this.table.set(source, new Set())
+    }
+
+    deleteNode(source) {
+        if (! this.table.has(source)) return
+        for(let target of this.table.get(source)) {
+            this.table.get(target).delete(source)
+        }
+        this.table.delete(source)
     }
 
     hasNode(source) {
@@ -33,6 +39,8 @@ export class Graph {
     }
 
     hasEdge(source, target) {
+        if (! this.table.has(source)) return false
+        if (! this.table.has(target)) return false
         const hasTarget = this.table.get(source).has(target)
         const hasSource = this.table.get(target).has(source)
         return hasSource && hasTarget
