@@ -52,8 +52,8 @@ export class RegionMapModel {
             const neighbors = graph.getEdges(fill.config.id)
             const region = this._buildRegion(fill, neighbors)
             if (neighbors.length === 1 || fill.count === 1) {
-                redirects.set(region.id, neighbors[0])
                 graph.deleteNode(region.id)
+                redirects.set(region.id, neighbors[0])
                 return
             }
             regions.set(region.id, region)
@@ -95,11 +95,20 @@ class BorderMatrix {
     }
 
     get(point) {
+        const redirectedIds = new Set()
         const regionId = this._regionMatrix.get(point)
-        if (this._redirects.has(regionId)) return new Set()
-        const ids = Array.from(this._borderMatrix.get(point).values())
-        const entries = ids.filter(id => ! this._redirects.has(id))
-        return new Set(entries)
+        const borderIds = this._borderMatrix.get(point)
+        const redirRegionId = this._redirects.has(regionId)
+            ? this._redirects.get(regionId)
+            : regionId
+        for(let id of borderIds) {
+            if (this._redirects.has(id)) {
+                redirectedIds.add(this._redirects.get(regionId))
+            } else {
+                redirectedIds.add(id)
+            }
+        }
+        return redirectedIds
     }
 }
 
