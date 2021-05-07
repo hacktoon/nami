@@ -3,10 +3,10 @@
 export class FloodFill {
     constructor(origin, config) {
         this.origin = origin
-        this.seeds = [origin]
         this.config = config
+        this.seeds = [origin]
         this.level = 0
-        this.area = 0
+        this.area = this.seeds.length
         this.config.setValue(this.origin, this.level)
     }
 
@@ -37,6 +37,7 @@ export class FloodFill {
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
             this.config.setValue(neighbor, this.level)
+            this.area += 1
         })
         return filledNeighbors
     }
@@ -51,11 +52,11 @@ export class MultiFill {
 
     fill() {
         while(this.canGrow) {
-            this.grow()
+            this._growFills()
         }
     }
 
-    grow() {
+    _growFills() {
         let completedFills = 0
         for(let fill of this.fills) {
             const filledPoints = fill.grow()
