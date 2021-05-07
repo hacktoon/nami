@@ -10,47 +10,96 @@ const NO_REGION = null
 
 
 export class Region {
-    constructor({id, origin, area, color}) {
+    constructor({id, origin, area, color, neighbors}) {
         this.id = id
         this.origin = origin
         this.area = area
         this.color = color
+        this.neighbors = neighbors
     }
 }
 
 
 export class RegionMapModel {
     constructor(params) {
-        const [width, height] = params.get('width', 'height')
-
-        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
-        this.borderMatrix = new Matrix(width, height, () => new Set())
-        this.chance = params.get('chance')
-        this.growth = params.get('growth')
-        this.graph = new Graph()
-        this.regions = this._buildRegions(params)
+        const data = this._build(params)
+        this.regionMatrix = new RegionMatrix(data)
+        this.borderMatrix = new BorderMatrix(data)
+        this.regions = data.regions
+        this.graph = data.graph
     }
 
-    _buildRegions(params) {
+    _build(params) {
         const [width, height, scale] = params.get('width', 'height', 'scale')
+        const regionMatrix = new Matrix(width, height, () => NO_REGION)
+        const borderMatrix = new Matrix(width, height, () => new Set())
+        const graph = new Graph()
+        const redirects = new Map()
         const origins = EvenPointSampling.create(width, height, scale)
+        const regions = new Map()
         const multiFill = new MultiFill(origins.map((origin, id) => {
-            const fillConfig = new RegionFillConfig(id, this)
+            const fillConfig = new RegionFillConfig(id, {
+                chance: params.get('chance'),
+                growth: params.get('growth'),
+                regionMatrix,
+                borderMatrix,
+                graph
+            })
             return new OrganicFloodFill(origin, fillConfig)
         }))
 
-        return multiFill.map(fill => this._buildRegion(fill))
+        multiFill.forEach(fill => {
+            const neighbors = graph.getEdges(fill.config.id)
+            const region = this._buildRegion(fill, neighbors)
+            if (neighbors.length === 1 || fill.count === 1) {
+                redirects.set(region.id, neighbors[0])
+                graph.deleteNode(region.id)
+                return
+            }
+            regions.set(region.id, region)
+        })
+        return {regions, regionMatrix, borderMatrix, graph, redirects}
     }
 
-    _buildRegion(fill) {
-        const color = fill.count === 1 ? Color.fromHex('#FFF') : new Color()
+    _buildRegion(fill, neighbors) {
         const region = new Region({
             id: fill.config.id,
+            neighbors: new Set(neighbors),
             origin: fill.origin,
             area: fill.count,
-            color,
+            color: new Color(),
         })
         return region
+    }
+}
+
+
+class RegionMatrix {
+    constructor(data) {
+        this._matrix = data.regionMatrix
+        this._redirects = data.redirects
+    }
+
+    get(point) {
+        let id = this._matrix.get(point)
+        return this._redirects.has(id) ? this._redirects.get(id) : id
+    }
+}
+
+
+class BorderMatrix {
+    constructor(data) {
+        this._borderMatrix = data.borderMatrix
+        this._regionMatrix = data.regionMatrix
+        this._redirects = data.redirects
+    }
+
+    get(point) {
+        const regionId = this._regionMatrix.get(point)
+        if (this._redirects.has(regionId)) return new Set()
+        const ids = Array.from(this._borderMatrix.get(point).values())
+        const entries = ids.filter(id => ! this._redirects.has(id))
+        return new Set(entries)
     }
 }
 

@@ -14,7 +14,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 15, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 100, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: '1620175014634'})
+    Type.text('seed', 'Seed', {default: '1620354944574'})
     // THIS SEED HAS A 1-POINT REGION WITH TWO BORDERS
 )
 
@@ -57,18 +57,18 @@ export class RegionTileMap extends TileMap {
 
     getRegion(point) {
         const id = this.regionMatrix.get(point)
-        return this.regions[id]
+        return this.regions.get(id)
     }
 
     getTileBorderRegions(point) {
         // a tile can have two different region neighbor points (Set)
         const ids = Array.from(this.borderMatrix.get(point))
-        return ids.map(id => this.regions[id])
+        return ids.map(id => this.regions.get(id))
     }
 
     getNeighborRegions(region) {
         const edges = this.graph.getEdges(region.id)
-        return edges.map(id => this.regions[id])
+        return edges.map(id => this.regions.get(id))
     }
 
     isNeighbor(id, neighborId) {
@@ -80,7 +80,7 @@ export class RegionTileMap extends TileMap {
     }
 
     map(callback) {
-        return this.regions.map(region => callback(region))
+        return [...this.regions.values()].map(callback)
     }
 
     forEach(callback) {
