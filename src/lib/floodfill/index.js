@@ -6,8 +6,9 @@ export class FloodFill {
         this.config = config
         this.seeds = [origin]
         this.level = 0
-        this.area = this.seeds.length
-        this.config.setValue(this.origin, this.level)
+        this.count = 0
+
+        this._fillValue(this.origin)
     }
 
     grow() {
@@ -27,6 +28,11 @@ export class FloodFill {
         return newSeeds
     }
 
+    _fillValue(value) {
+        this.config.setValue(value, this.level)
+        this.count += 1
+    }
+
     _fillNeighbors(origin) {
         const filledNeighbors = []
         const allNeighbors = this.config.getNeighbors(origin)
@@ -36,8 +42,7 @@ export class FloodFill {
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
-            this.config.setValue(neighbor, this.level)
-            this.area += 1
+            this._fillValue(neighbor)
         })
         return filledNeighbors
     }
@@ -48,12 +53,14 @@ export class MultiFill {
     constructor(fills) {
         this.fills = fills
         this.canGrow = true
-    }
 
-    fill() {
         while(this.canGrow) {
             this._growFills()
         }
+    }
+
+    map(callback) {
+        return this.fills.map(callback)
     }
 
     _growFills() {

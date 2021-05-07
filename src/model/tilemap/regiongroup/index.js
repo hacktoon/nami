@@ -78,7 +78,7 @@ export class RegionGroupTileMap extends TileMap {
             })
             return new OrganicFloodFill(region, fillConfig)
         })
-        new MultiFill(organicFills).fill()
+        new MultiFill(organicFills)
         return model
     }
 

@@ -10,62 +10,74 @@ const NO_REGION = null
 
 
 export class Region {
-    constructor(id, origin) {
+    constructor({id, origin, area, color}) {
         this.id = id
         this.origin = origin
-        this.area = 0
-        this.color = new Color()
+        this.area = area
+        this.color = color
     }
 }
 
 
 export class RegionMapModel {
     constructor(params) {
-        const [width, height, scale] = params.get('width', 'height', 'scale')
-        const origins = EvenPointSampling.create(width, height, scale)
+        const [width, height] = params.get('width', 'height')
 
-        this.chance = params.get('chance')
-        this.growth = params.get('growth')
-        this.regions = origins.map((origin, id) => new Region(id, origin))
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.borderMatrix = new Matrix(width, height, () => new Set())
+        this.chance = params.get('chance')
+        this.growth = params.get('growth')
         this.graph = new Graph()
+        this.regions = this._buildRegions(params)
+    }
 
-        const organicFills = this.regions.map(region => {
-            const fillConfig = new RegionFillConfig(this, region)
-            return new OrganicFloodFill(region.origin, fillConfig)
+    _buildRegions(params) {
+        const [width, height, scale] = params.get('width', 'height', 'scale')
+        const origins = EvenPointSampling.create(width, height, scale)
+        const multiFill = new MultiFill(origins.map((origin, id) => {
+            const fillConfig = new RegionFillConfig(id, this)
+            return new OrganicFloodFill(origin, fillConfig)
+        }))
+
+        return multiFill.map(fill => this._buildRegion(fill))
+    }
+
+    _buildRegion(fill) {
+        const color = fill.count === 1 ? Color.fromHex('#FFF') : new Color()
+        const region = new Region({
+            id: fill.config.id,
+            origin: fill.origin,
+            area: fill.count,
+            color,
         })
-
-        new MultiFill(organicFills).fill()
+        return region
     }
 }
 
 
 export class RegionFillConfig {
-    constructor(model, region) {
-        this.region = region
+    constructor(id, model) {
+        this.id = id
+        this.model = model
+        // TODO: create OrganicFloodFill methods to obtain these values
         this.chance = model.chance
         this.growth = model.growth
-        this.regionMatrix = model.regionMatrix
-        this.borderMatrix = model.borderMatrix
-        this.graph = model.graph
     }
 
     isEmpty(point) {
-        return this.regionMatrix.get(point) === NO_REGION
+        return this.model.regionMatrix.get(point) === NO_REGION
     }
 
     setValue(point) {
-        this.regionMatrix.set(point, this.region.id)
-        this.region.area += 1
+        this.model.regionMatrix.set(point, this.id)
     }
 
     checkNeighbor(neighborPoint, originPoint) {
         if (this.isEmpty(neighborPoint)) return
-        const neighborId = this.regionMatrix.get(neighborPoint)
-        if (this.region.id === neighborId) return
-        this.graph.setEdge(this.region.id, neighborId)
-        this.borderMatrix.get(originPoint).add(neighborId)
+        const neighborId = this.model.regionMatrix.get(neighborPoint)
+        if (this.id === neighborId) return
+        this.model.graph.setEdge(this.id, neighborId)
+        this.model.borderMatrix.get(originPoint).add(neighborId)
     }
 
     getNeighbors(originPoint) {
