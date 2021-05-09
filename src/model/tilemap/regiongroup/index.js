@@ -1,16 +1,10 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { Graph } from '/lib/base/graph'
-import { EvenPointSampling } from '/lib/base/point/sampling'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
-import { MultiFill } from '/lib/floodfill'
-import { OrganicFloodFill } from '/lib/floodfill/organic'
-
-import { RegionTileMap } from '/model/tilemap/region'
 
 import { RegionGroupTileMapDiagram } from './diagram'
-import { RegionGroup, RegionGroupModel } from './model'
+import { RegionGroupModel } from './model'
 
 
 const SCHEMA = new Schema(
@@ -19,7 +13,7 @@ const SCHEMA = new Schema(
     Type.number('height', 'H', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('groupScale', 'Gr Scale', {default: 25, step: 1, min: 1, max: 100}),
     Type.number('groupChance', 'Gr Chance', {default: 0.2, step: 0.1, min: 0.1, max: 1}),
-    Type.number('groupGrowth', 'Gr Growth', {default: 30, step: 1, min: 0, max: 100}),
+    Type.number('groupGrowth', 'Gr Growth', {default: 25, step: 1, min: 0, max: 100}),
     Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
@@ -45,43 +39,7 @@ export class RegionGroupTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.model = this._buildModel(params)
-        this.regionTileMap = this.model.regionTileMap
-        this.graph = this.model.graph
-    }
-
-    _buildOrigins(params) {
-        const [width, height] = params.get('width', 'height')
-        const groupScale = params.get('groupScale')
-        return EvenPointSampling.create(width, height, groupScale)
-    }
-
-    _buildRegionTileMap(params) {
-        const [width, height] = params.get('width', 'height')
-        const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
-        const data = {width, height, scale, seed: this.seed, chance, growth}
-        return RegionTileMap.fromData(data)
-    }
-
-    _buildModel(params) {
-        const regionTileMap = this._buildRegionTileMap(params)
-        const graph = new Graph()
-        const origins = this._buildOrigins(params)
-        const model = new RegionGroupModel(regionTileMap)
-        const organicFills = origins.map((origin, id) => {
-            const region = regionTileMap.getRegion(origin)
-            const group = new RegionGroup(id, region)
-            const fillConfig = new RegionGroupFillConfig({
-                groupChance: params.get('groupChance'),
-                groupGrowth: params.get('groupGrowth'),
-                graph,
-                model,
-                group,
-            })
-            return new OrganicFloodFill(region, fillConfig)
-        })
-        new MultiFill(organicFills)
-        return model
+        this.model = new RegionGroupModel(this.seed, params)
     }
 
     get(point) {
@@ -93,11 +51,15 @@ export class RegionGroupTileMap extends TileMap {
 
     getGroupsDescOrder() {
         const cmpDescArea = (g0, g1) => g1.area - g0.area
-        return this.model.groups.sort(cmpDescArea)
+        return this.model.map(group => group).sort(cmpDescArea)
     }
 
     getRegion(point) {
         return this.model.getRegion(point)
+    }
+
+    getRegions() {
+        return this.model.regionTileMap.map(r => r)
     }
 
     getGroup(point) {
@@ -133,36 +95,3 @@ export class RegionGroupTileMap extends TileMap {
     }
 }
 
-
-export class RegionGroupFillConfig {
-    constructor(params) {
-        this.chance = params.groupChance
-        this.growth = params.groupGrowth
-
-        this.currentGroup = params.group
-        this.model = params.model
-        this.graph = params.graph
-    }
-
-    isEmpty(region) {
-        return this.model.isRegionEmpty(region)
-    }
-
-    setValue(region) {
-        this.model.setGroup(region, this.currentGroup)
-        this.currentGroup.area += region.area
-    }
-
-    checkNeighbor(neighborRegion, region) {
-        const currentGroup = this.currentGroup
-        const neighborGroup = this.model.getGroup(neighborRegion)
-        if (this.isEmpty(neighborRegion)) return
-        if (neighborGroup.id === currentGroup.id) return
-        this.model.setBorder(region)
-        this.graph.setEdge(currentGroup.id, neighborGroup.id)
-    }
-
-    getNeighbors(region) {
-        return this.model.regionTileMap.getNeighborRegions(region)
-    }
-}

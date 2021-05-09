@@ -1,7 +1,13 @@
 import { Color } from '/lib/base/color'
+import { MultiFill } from '/lib/floodfill'
+import { Graph } from '/lib/base/graph'
+import { EvenPointSampling } from '/lib/base/point/sampling'
+import { OrganicFloodFill } from '/lib/floodfill/organic'
+
+import { RegionTileMap } from '/model/tilemap/region'
 
 
-export class RegionGroup {
+class RegionGroup {
     constructor(id, region) {
         this.id = id
         this.origin = region.origin
@@ -12,23 +18,39 @@ export class RegionGroup {
 
 
 export class RegionGroupModel {
-    constructor(regionTileMap) {
+    constructor(seed, params) {
+        const regionTileMap = _buildRegionTileMap(seed, params)
+
         this.regionTileMap = regionTileMap
         this.regionToGroup = new Map()
         this.borderRegions = new Set()
-        this.index = new Map()
-    }
+        this.groups = new Map()
 
-    get groups() {
-        return Array.from(this.index.values())
+        const graph = new Graph()
+        const origins = _buildOrigins(params)
+        const fills = origins.map((origin, id) => {
+            const region = regionTileMap.getRegion(origin)
+            const group = new RegionGroup(id, region)
+            const fillConfig = new RegionGroupFillConfig(id, {
+                groupChance: params.get('groupChance'),
+                groupGrowth: params.get('groupGrowth'),
+                graph,
+                model: this,
+                group,
+            })
+            return new OrganicFloodFill(region, fillConfig)
+        })
+        new MultiFill(fills).forEach(fill => {
+            const group = new RegionGroup(fill.config.id, fill.origin)
+            this.groups.set(group.id, group)
+        })
     }
 
     setGroup(region, group) {
-        this.index.set(group.id, group)
         this.regionToGroup.set(region.id, group)
     }
 
-    setBorder(region) {
+    setBorder(region) {  //TODO: remove
         this.borderRegions.add(region.id)
     }
 
@@ -71,11 +93,63 @@ export class RegionGroupModel {
     }
 
     map(callback) {
-        const entries = Array.from(this.index.values())
-        return entries.map(callback)
+        const groups = Array.from(this.groups.values())
+        return groups.map(callback)
     }
 
     forEach(callback) {
-        this.index.forEach(callback)
+        this.groups.forEach(callback)
+    }
+}
+
+
+function _buildOrigins(params) {
+    const [width, height] = params.get('width', 'height')
+    const groupScale = params.get('groupScale')
+    return EvenPointSampling.create(width, height, groupScale)
+}
+
+
+function _buildRegionTileMap(seed, params) {
+    const [width, height] = params.get('width', 'height')
+    const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
+    const data = {width, height, scale, seed, chance, growth}
+    return RegionTileMap.fromData(data)
+}
+
+
+
+
+class RegionGroupFillConfig {
+    constructor(id, model) {
+        this.id = id
+        this.chance = model.groupChance
+        this.growth = model.groupGrowth
+
+        this.group = model.group
+        this.model = model.model
+        this.graph = model.graph
+    }
+
+    isEmpty(region) {
+        return this.model.isRegionEmpty(region)
+    }
+
+    setValue(region) {
+        this.model.setGroup(region, this.group)
+        this.group.area += region.area
+    }
+
+    checkNeighbor(neighborRegion, region) {
+        const currentGroup = this.group
+        const neighborGroup = this.model.getGroup(neighborRegion)
+        if (this.isEmpty(neighborRegion)) return
+        if (neighborGroup.id === currentGroup.id) return
+        this.model.setBorder(region)
+        this.graph.setEdge(currentGroup.id, neighborGroup.id)
+    }
+
+    getNeighbors(region) {
+        return this.model.regionTileMap.getNeighborRegions(region)
     }
 }
