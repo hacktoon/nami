@@ -11,7 +11,7 @@ export class RegionGroup {
 }
 
 
-export class RegionGroupData {
+export class RegionGroupModel {
     constructor(regionTileMap) {
         this.regionTileMap = regionTileMap
         this.regionToGroup = new Map()

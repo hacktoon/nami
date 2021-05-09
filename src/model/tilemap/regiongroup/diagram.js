@@ -7,8 +7,8 @@ const SCHEMA = new Schema(
     'RegionGroupTileMapDiagram',
     Type.boolean('showGroups', 'Show groups', {default: true}),
     Type.boolean('showGroupBorder', 'Show group border', {default: false}),
-    Type.boolean('showRegions', 'Show regions', {default: true}),
-    Type.boolean('showBorderRegion', 'Show border region', {default: true}),
+    Type.boolean('showRegions', 'Show regions', {default: false}),
+    Type.boolean('showBorderRegion', 'Show border region', {default: false}),
     Type.boolean('showRegionBorder', 'Show region border', {default: false}),
 )
 

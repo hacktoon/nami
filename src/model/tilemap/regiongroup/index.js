@@ -10,16 +10,16 @@ import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { RegionTileMap } from '/model/tilemap/region'
 
 import { RegionGroupTileMapDiagram } from './diagram'
-import { RegionGroup, RegionGroupData } from './model'
+import { RegionGroup, RegionGroupModel } from './model'
 
 
 const SCHEMA = new Schema(
     'RegionGroupTileMap',
     Type.number('width', 'W', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('groupScale', 'Gr Scale', {default: 34, step: 1, min: 1, max: 100}),
+    Type.number('groupScale', 'Gr Scale', {default: 25, step: 1, min: 1, max: 100}),
     Type.number('groupChance', 'Gr Chance', {default: 0.2, step: 0.1, min: 0.1, max: 1}),
-    Type.number('groupGrowth', 'Gr Growth', {default: 20, step: 1, min: 0, max: 100}),
+    Type.number('groupGrowth', 'Gr Growth', {default: 30, step: 1, min: 0, max: 100}),
     Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
@@ -45,10 +45,9 @@ export class RegionGroupTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const origins = this._buildOrigins(params)
-        this.regionTileMap = this._buildRegionTileMap(params)
-        this.graph = new Graph()
-        this.model = this._buildTable(origins, params)
+        this.model = this._buildModel(params)
+        this.regionTileMap = this.model.regionTileMap
+        this.graph = this.model.graph
     }
 
     _buildOrigins(params) {
@@ -64,15 +63,18 @@ export class RegionGroupTileMap extends TileMap {
         return RegionTileMap.fromData(data)
     }
 
-    _buildTable(origins, params) {
-        const model = new RegionGroupData(this.regionTileMap)
+    _buildModel(params) {
+        const regionTileMap = this._buildRegionTileMap(params)
+        const graph = new Graph()
+        const origins = this._buildOrigins(params)
+        const model = new RegionGroupModel(regionTileMap)
         const organicFills = origins.map((origin, id) => {
-            const region = this.regionTileMap.getRegion(origin)
+            const region = regionTileMap.getRegion(origin)
             const group = new RegionGroup(id, region)
             const fillConfig = new RegionGroupFillConfig({
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),
-                graph: this.graph,
+                graph,
                 model,
                 group,
             })
