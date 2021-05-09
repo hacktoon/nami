@@ -11,11 +11,10 @@ const SCHEMA = new Schema(
     'RegionTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('scale', 'Scale', {default: 15, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 100, step: 1, min: 0, max: 100}),
+    Type.number('scale', 'Scale', {default: 35, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 70, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: '1620354944574'})
-    // THIS SEED HAS A 1-POINT REGION WITH TWO BORDERS
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 

@@ -5,6 +5,8 @@ import { EvenPointSampling } from '/lib/base/point/sampling'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
+import { RegionMatrix, BorderMatrix } from './matrix'
+
 
 const NO_REGION = null
 
@@ -35,9 +37,9 @@ export class RegionMapModel {
         const borderMatrix = new Matrix(width, height, () => new Set())
         const graph = new Graph()
         const redirects = new Map()
-        const origins = EvenPointSampling.create(width, height, scale)
         const regions = new Map()
-        const multiFill = new MultiFill(origins.map((origin, id) => {
+        const origins = EvenPointSampling.create(width, height, scale)
+        const fills = origins.map((origin, id) => {
             const fillConfig = new RegionFillConfig(id, {
                 chance: params.get('chance'),
                 growth: params.get('growth'),
@@ -46,69 +48,29 @@ export class RegionMapModel {
                 graph
             })
             return new OrganicFloodFill(origin, fillConfig)
-        }))
+        })
 
-        multiFill.forEach(fill => {
+        new MultiFill(fills).forEach(fill => {
             const neighbors = graph.getEdges(fill.config.id)
-            const region = this._buildRegion(fill, neighbors)
-            if (neighbors.length === 1 || fill.count === 1) {
+            const region = this._buildRegion(fill)
+            if (neighbors.length === 1 || fill.count <= 2) {
                 graph.deleteNode(region.id)
                 redirects.set(region.id, neighbors[0])
                 return
             }
             regions.set(region.id, region)
         })
+
         return {regions, regionMatrix, borderMatrix, graph, redirects}
     }
 
-    _buildRegion(fill, neighbors) {
-        const region = new Region({
+    _buildRegion(fill) {
+        return new Region({
             id: fill.config.id,
-            neighbors: new Set(neighbors),
             origin: fill.origin,
             area: fill.count,
             color: new Color(),
         })
-        return region
-    }
-}
-
-
-class RegionMatrix {
-    constructor(data) {
-        this._matrix = data.regionMatrix
-        this._redirects = data.redirects
-    }
-
-    get(point) {
-        let id = this._matrix.get(point)
-        return this._redirects.has(id) ? this._redirects.get(id) : id
-    }
-}
-
-
-class BorderMatrix {
-    constructor(data) {
-        this._borderMatrix = data.borderMatrix
-        this._regionMatrix = data.regionMatrix
-        this._redirects = data.redirects
-    }
-
-    get(point) {
-        const redirectedIds = new Set()
-        const regionId = this._regionMatrix.get(point)
-        const borderIds = this._borderMatrix.get(point)
-        const redirRegionId = this._redirects.has(regionId)
-            ? this._redirects.get(regionId)
-            : regionId
-        for(let id of borderIds) {
-            if (this._redirects.has(id)) {
-                redirectedIds.add(this._redirects.get(regionId))
-            } else {
-                redirectedIds.add(id)
-            }
-        }
-        return redirectedIds
     }
 }
 
