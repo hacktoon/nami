@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "description": "A world generator",
   "main": "index.js",
-  "directories": {
-    "lib": "lib"
+  "author": "Karlisson Bezerra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hacktoon/nami/issues"
   },
+  "homepage": "https://github.com/hacktoon/nami",
   "scripts": {
     "dev": "parcel src/index.html -d build",
     "build": "parcel build src/index.html -d build --public-url ./ --no-source-maps",
@@ -15,12 +18,6 @@
     "type": "git",
     "url": "git+https://github.com/hacktoon/nami.git"
   },
-  "author": "Karlisson Bezerra",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/hacktoon/nami/issues"
-  },
-  "homepage": "https://github.com/hacktoon/nami",
   "dependencies": {
     "@babel/cli": "^7.13.0",
     "@babel/core": "^7.13.8",
