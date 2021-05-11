@@ -24,9 +24,9 @@ export class RegionGroupModel {
         this.regionTileMap = regionTileMap
         this.regionToGroup = new Map()
         this.borderRegions = new Set()
+        this.graph = new Graph()
         this.groups = new Map()
 
-        const graph = new Graph()
         const origins = _buildOrigins(params)
         const fills = origins.map((origin, id) => {
             const region = regionTileMap.getRegion(origin)
@@ -34,7 +34,6 @@ export class RegionGroupModel {
             const fillConfig = new RegionGroupFillConfig(id, {
                 groupChance: params.get('groupChance'),
                 groupGrowth: params.get('groupGrowth'),
-                graph,
                 model: this,
                 group,
             })
@@ -44,14 +43,6 @@ export class RegionGroupModel {
             const group = new RegionGroup(fill.config.id, fill.origin)
             this.groups.set(group.id, group)
         })
-    }
-
-    setGroup(region, group) {
-        this.regionToGroup.set(region.id, group)
-    }
-
-    setBorder(region) {  //TODO: remove
-        this.borderRegions.add(region.id)
     }
 
     getRegion(point) {
@@ -118,17 +109,14 @@ function _buildRegionTileMap(seed, params) {
 }
 
 
-
-
 class RegionGroupFillConfig {
     constructor(id, model) {
         this.id = id
         this.chance = model.groupChance
         this.growth = model.groupGrowth
 
-        this.group = model.group
         this.model = model.model
-        this.graph = model.graph
+        this.group = model.group
     }
 
     isEmpty(region) {
@@ -136,7 +124,7 @@ class RegionGroupFillConfig {
     }
 
     setValue(region) {
-        this.model.setGroup(region, this.group)
+        this.model.regionToGroup.set(region.id, this.group)
         this.group.area += region.area
     }
 
@@ -145,8 +133,8 @@ class RegionGroupFillConfig {
         const neighborGroup = this.model.getGroup(neighborRegion)
         if (this.isEmpty(neighborRegion)) return
         if (neighborGroup.id === currentGroup.id) return
-        this.model.setBorder(region)
-        this.graph.setEdge(currentGroup.id, neighborGroup.id)
+        this.model.borderRegions.add(region.id)
+        this.model.graph.setEdge(currentGroup.id, neighborGroup.id)
     }
 
     getNeighbors(region) {
