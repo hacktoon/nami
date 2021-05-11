@@ -19,30 +19,47 @@ class RegionGroup {
 
 export class RegionGroupModel {
     constructor(seed, params) {
-        const regionTileMap = _buildRegionTileMap(seed, params)
+        const data = this._build(seed, params)
+        this.regionTileMap = data.regionTileMap
+        this.regionToGroup = data.regionToGroup
+        this.borderRegions = data.borderRegions
+        this.groups = data.groups
+        this.graph = data.graph
+    }
 
-        this.regionTileMap = regionTileMap
-        this.regionToGroup = new Map()
-        this.borderRegions = new Set()
-        this.graph = new Graph()
-        this.groups = new Map()
-
-        const origins = _buildOrigins(params)
+    _build(seed, params) {
+        const [width, height] = params.get('width', 'height')
+        const groupScale = params.get('groupScale')
+        const regionTileMap = this._buildRegionTileMap(seed, params)
+        const data = {
+            groupChance: params.get('groupChance'),
+            groupGrowth: params.get('groupGrowth'),
+            regionToGroup: new Map(),
+            borderRegions: new Set(),
+            graph: new Graph(),
+            regionTileMap,
+        }
+        const groups = new Map()
+        const origins = EvenPointSampling.create(width, height, groupScale)
         const fills = origins.map((origin, id) => {
             const region = regionTileMap.getRegion(origin)
-            const group = new RegionGroup(id, region)
-            const fillConfig = new RegionGroupFillConfig(id, {
-                groupChance: params.get('groupChance'),
-                groupGrowth: params.get('groupGrowth'),
-                model: this,
-                group,
-            })
+            const fillConfig = new RegionGroupFillConfig(id, data)
             return new OrganicFloodFill(region, fillConfig)
         })
+
         new MultiFill(fills).forEach(fill => {
             const group = new RegionGroup(fill.config.id, fill.origin)
-            this.groups.set(group.id, group)
+            groups.set(group.id, group)
         })
+
+        return {...data, groups}
+    }
+
+    _buildRegionTileMap(seed, params) {
+        const [width, height] = params.get('width', 'height')
+        const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
+        const data = {width, height, scale, seed, chance, growth}
+        return RegionTileMap.fromData(data)
     }
 
     getRegion(point) {
@@ -50,7 +67,8 @@ export class RegionGroupModel {
     }
 
     getGroup(region) {
-        return this.regionToGroup.get(region.id)
+        const id = this.regionToGroup.get(region.id)
+        return this.groups.get(id)
     }
 
     getRegionsAtBorders() {
@@ -73,14 +91,9 @@ export class RegionGroupModel {
     isGroupBorder(group, borderRegions) {
         for(let region of borderRegions) {
             const borderGroup = this.getGroup(region)
-            if (group.id !== borderGroup.id)
-                return true
+            if (group.id !== borderGroup.id) return true
         }
         return false
-    }
-
-    isRegionEmpty(region) {
-        return ! this.regionToGroup.has(region.id)
     }
 
     map(callback) {
@@ -94,47 +107,28 @@ export class RegionGroupModel {
 }
 
 
-function _buildOrigins(params) {
-    const [width, height] = params.get('width', 'height')
-    const groupScale = params.get('groupScale')
-    return EvenPointSampling.create(width, height, groupScale)
-}
-
-
-function _buildRegionTileMap(seed, params) {
-    const [width, height] = params.get('width', 'height')
-    const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
-    const data = {width, height, scale, seed, chance, growth}
-    return RegionTileMap.fromData(data)
-}
-
-
 class RegionGroupFillConfig {
     constructor(id, model) {
         this.id = id
+        this.model = model
         this.chance = model.groupChance
         this.growth = model.groupGrowth
-
-        this.model = model.model
-        this.group = model.group
     }
 
     isEmpty(region) {
-        return this.model.isRegionEmpty(region)
+        return !this.model.regionToGroup.has(region.id)
     }
 
     setValue(region) {
-        this.model.regionToGroup.set(region.id, this.group)
-        this.group.area += region.area
+        this.model.regionToGroup.set(region.id, this.id)
     }
 
     checkNeighbor(neighborRegion, region) {
-        const currentGroup = this.group
-        const neighborGroup = this.model.getGroup(neighborRegion)
+        const neighborGroup = this.model.regionToGroup.get(region.id)
         if (this.isEmpty(neighborRegion)) return
-        if (neighborGroup.id === currentGroup.id) return
+        if (neighborGroup.id === this.id) return
         this.model.borderRegions.add(region.id)
-        this.model.graph.setEdge(currentGroup.id, neighborGroup.id)
+        this.model.graph.setEdge(this.id, neighborGroup.id)
     }
 
     getNeighbors(region) {
