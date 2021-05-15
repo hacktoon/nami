@@ -124,11 +124,11 @@ class RegionGroupFillConfig {
     }
 
     checkNeighbor(neighborRegion, region) {
-        const neighborGroup = this.model.regionToGroup.get(region.id)
         if (this.isEmpty(neighborRegion)) return
-        if (neighborGroup.id === this.id) return
+        const neighborGroupId = this.model.regionToGroup.get(neighborRegion.id)
+        if (neighborGroupId === this.id) return
         this.model.borderRegions.add(region.id)
-        this.model.graph.setEdge(this.id, neighborGroup.id)
+        this.model.graph.setEdge(this.id, neighborGroupId)
     }
 
     getNeighbors(region) {
