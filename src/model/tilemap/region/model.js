@@ -33,35 +33,33 @@ export class RegionMapModel {
 
     _build(params) {
         const [width, height, scale] = params.get('width', 'height', 'scale')
-        const regionMatrix = new Matrix(width, height, () => NO_REGION)
-        const borderMatrix = new Matrix(width, height, () => new Set())
-        const graph = new Graph()
-        const redirects = new Map()
-        const regions = new Map()
+        const data = {
+            regionMatrix: new Matrix(width, height, () => NO_REGION),
+            borderMatrix: new Matrix(width, height, () => new Set()),
+            chance: params.get('chance'),
+            growth: params.get('growth'),
+            redirects: new Map(),
+            regions: new Map(),
+            graph: new Graph(),
+        }
         const origins = EvenPointSampling.create(width, height, scale)
         const fills = origins.map((origin, id) => {
-            const fillConfig = new RegionFillConfig(id, {
-                chance: params.get('chance'),
-                growth: params.get('growth'),
-                regionMatrix,
-                borderMatrix,
-                graph
-            })
+            const fillConfig = new RegionFillConfig(id, data)
             return new OrganicFloodFill(origin, fillConfig)
         })
 
         new MultiFill(fills).forEach(fill => {
-            const neighbors = graph.getEdges(fill.config.id)
             const region = this._buildRegion(fill)
-            if (neighbors.length === 1 || fill.count <= 2) {
-                graph.deleteNode(region.id)
-                redirects.set(region.id, neighbors[0])
+            const neighborIds = data.graph.getEdges(fill.config.id)
+            if (neighborIds.length === 1 || fill.count <= 2) {
+                data.graph.deleteNode(region.id)
+                data.redirects.set(region.id, neighborIds[0])
                 return
             }
-            regions.set(region.id, region)
+            data.regions.set(region.id, region)
         })
 
-        return {regions, regionMatrix, borderMatrix, graph, redirects}
+        return data
     }
 
     _buildRegion(fill) {
