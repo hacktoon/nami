@@ -8,11 +8,11 @@ import { RegionTileMap } from '/model/tilemap/region'
 
 
 class RegionGroup {
-    constructor(id, region) {
+    constructor(id, region, count) {
         this.id = id
         this.origin = region.origin
         this.color = new Color()
-        this.area = 0
+        this.count = count
     }
 }
 
@@ -37,9 +37,9 @@ export class RegionGroupModel {
             regionToGroup: new Map(),
             borderRegions: new Set(),
             graph: new Graph(),
+            groups: new Map(),
             regionTileMap,
         }
-        const groups = new Map()
         const origins = EvenPointSampling.create(width, height, groupScale)
         const fills = origins.map((origin, id) => {
             const region = regionTileMap.getRegion(origin)
@@ -48,11 +48,11 @@ export class RegionGroupModel {
         })
 
         new MultiFill(fills).forEach(fill => {
-            const group = new RegionGroup(fill.config.id, fill.origin)
-            groups.set(group.id, group)
+            const group = new RegionGroup(fill.config.id, fill.origin, fill.count)
+            data.groups.set(group.id, group)
         })
 
-        return {...data, groups}
+        return data
     }
 
     _buildRegionTileMap(seed, params) {
@@ -60,40 +60,6 @@ export class RegionGroupModel {
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const data = {width, height, scale, seed, chance, growth}
         return RegionTileMap.fromData(data)
-    }
-
-    getRegion(point) {
-        return this.regionTileMap.getRegion(point)
-    }
-
-    getGroup(region) {
-        const id = this.regionToGroup.get(region.id)
-        return this.groups.get(id)
-    }
-
-    getRegionsAtBorders() {
-        const ids = Array.from(this.borderRegions.values())
-        return ids.map(id => this.regionTileMap.getRegionById(id))
-    }
-
-    getTileBorderRegions(point) {
-        return this.regionTileMap.getTileBorderRegions(point)
-    }
-
-    hasBorderRegions(region) {
-        return this.borderRegions.has(region.id)
-    }
-
-    isRegionBorder(point) {
-        return this.regionTileMap.isBorder(point)
-    }
-
-    isGroupBorder(group, borderRegions) {
-        for(let region of borderRegions) {
-            const borderGroup = this.getGroup(region)
-            if (group.id !== borderGroup.id) return true
-        }
-        return false
     }
 
     map(callback) {

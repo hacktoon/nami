@@ -17,7 +17,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: '1621117818113'})
 )
 
 
@@ -47,45 +47,64 @@ export class RegionGroupTileMap extends TileMap {
         return {
             region: region.id,
             group: this.getGroup(point).id,
-            hbr: this.isBorderRegion(region)
+            isBorderRegion: this.isBorderRegion(region)
         }
     }
 
     getGroupsDescOrder() {
-        const cmpDescArea = (g0, g1) => g1.area - g0.area
-        return this.model.map(group => group).sort(cmpDescArea)
+        const cmpDescendingCount = (g0, g1) => g1.count - g0.count
+        return this.model.getGroups().sort(cmpDescendingCount)
     }
 
     getRegion(point) {
-        return this.model.getRegion(point)
+        return this.model.regionTileMap.getRegion(point)
     }
 
     getRegions() {
-        return this.model.regionTileMap.map(r => r)
+        return this.model.regionTileMap.getRegions()
+    }
+
+    getGroups() {
+        return Array.from(this.model.groups.values())
     }
 
     getGroup(point) {
-        const region = this.model.getRegion(point)
-        return this.model.getGroup(region)
+        const region = this.getRegion(point)
+        const id = this.model.regionToGroup.get(region.id)
+        return this.model.groups.get(id)
     }
 
-    getRegionLayer(region) {
-        return this.model.getRegionLayer(region)
+    getBorderRegions() {
+        const ids = Array.from(this.model.borderRegions.values())
+        return ids.map(id => this.model.regionTileMap.getRegionById(id))
     }
 
     isRegionBorder(point) {
-        return this.model.isRegionBorder(point)
+        return this.model.regionTileMap.isBorder(point)
     }
 
     isGroupBorderPoint(point) {
         if (! this.isRegionBorder(point)) return false
         const group = this.getGroup(point)
-        const borderRegions = this.model.getTileBorderRegions(point)
-        return this.model.isGroupBorder(group, borderRegions)
+        const borderRegions = this.getTileBorderRegions(point)
+        return this.isGroupBorder(group, borderRegions)
+    }
+
+    isGroupBorder(group, borderRegions) {
+        for(let region of borderRegions) {
+            const id = this.model.regionToGroup.get(region.id)
+            const borderGroup = this.model.groups.get(id)
+            if (group.id !== borderGroup.id) return true
+        }
+        return false
+    }
+
+    getTileBorderRegions(point) {
+        return this.model.regionTileMap.getTileBorderRegions(point)
     }
 
     isBorderRegion(region) {
-        return this.model.hasBorderRegions(region)
+        return this.model.borderRegions.has(region.id)
     }
 
     map(callback) {
