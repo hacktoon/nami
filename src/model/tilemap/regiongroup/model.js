@@ -20,9 +20,9 @@ class RegionGroup {
 export class RegionGroupModel {
     constructor(seed, params) {
         const data = this._build(seed, params)
-        this.regionToGroup = new RegionToGroupMap(data)
+        this.regionToGroup = new RedirectRegionToGroupMap(data)
         this.regionTileMap = data.regionTileMap
-        this.borderRegions = data.borderRegions
+        this.regionNeighborsMap = data.regionNeighborsMap
         this.groups = data.groups
         this.graph = data.graph
     }
@@ -34,7 +34,7 @@ export class RegionGroupModel {
             groupChance: params.get('groupChance'),
             groupGrowth: params.get('groupGrowth'),
             regionToGroup: new Map(),
-            borderRegions: new Set(),
+            regionNeighborsMap: new RegionNeighborsMap(),
             redirects: new Map(),
             graph: new Graph(),
             groups: new Map(),
@@ -79,7 +79,7 @@ export class RegionGroupModel {
 }
 
 
-export class RegionToGroupMap {
+export class RedirectRegionToGroupMap {
     constructor(data) {
         this.data = data
     }
@@ -92,7 +92,7 @@ export class RegionToGroupMap {
 }
 
 
-export class BorderRegionSet {
+export class RedirectBorderRegionMap {
     constructor(data) {
         this.data = data
     }
@@ -100,8 +100,8 @@ export class BorderRegionSet {
     get(region) {
         // TODO: get which region I'm neighbor of
         const redirects = this.data.redirects
-        const id = this.data.borderRegions.get(region)
-        return redirects.has(id) ? redirects.get(id) : id
+        const neighId = this.data.regionNeighborsMap.get(region.id)
+        return redirects.has(neighId) ? redirects.get(neighId) : neighId
     }
 }
 
@@ -126,11 +126,37 @@ class RegionGroupFillConfig {
         if (this.isEmpty(neighborRegion)) return
         const neighborGroupId = this.model.regionToGroup.get(neighborRegion.id)
         if (neighborGroupId === this.id) return
-        this.model.borderRegions.add(region.id)
+        this.model.regionNeighborsMap.set(region.id, neighborRegion.id)
         this.model.graph.setEdge(this.id, neighborGroupId)
     }
 
     getNeighbors(region) {
         return this.model.regionTileMap.getNeighborRegions(region)
+    }
+}
+
+
+class RegionNeighborsMap {
+    constructor() {
+        this.map = new Map()
+    }
+
+    set(regionId, neighborId) {
+        if (! this.map.has(regionId)) {
+            this.map.set(regionId, new Set())
+        }
+        this.map.get(regionId).add(neighborId)
+    }
+
+    get(id) {
+        return this.map.get(id)
+    }
+
+    keys() {
+        return Array.from(this.map.keys())
+    }
+
+    has(id) {
+        return this.map.has(id)
     }
 }
