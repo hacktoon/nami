@@ -20,9 +20,9 @@ class RegionGroup {
 export class RegionGroupModel {
     constructor(seed, params) {
         const data = this._build(seed, params)
-        this.regionToGroup = new RedirectRegionToGroupMap(data)
+        this.regionNeighborsMap = new RegionNeighborsMap(data)
+        this.regionToGroup = new RegionToGroupMap(data)
         this.regionTileMap = data.regionTileMap
-        this.regionNeighborsMap = data.regionNeighborsMap
         this.groups = data.groups
         this.graph = data.graph
     }
@@ -31,14 +31,14 @@ export class RegionGroupModel {
         const [width, height] = params.get('width', 'height')
         const groupScale = params.get('groupScale')
         const data = {
+            regionTileMap: this._buildRegionTileMap(seed, params),
             groupChance: params.get('groupChance'),
             groupGrowth: params.get('groupGrowth'),
+            regionNeighborsMap: new SetMap(),
             regionToGroup: new Map(),
-            regionNeighborsMap: new RegionNeighborsMap(),
             redirects: new Map(),
             graph: new Graph(),
             groups: new Map(),
-            regionTileMap: this._buildRegionTileMap(seed, params),
         }
         const origins = EvenPointSampling.create(width, height, groupScale)
         const fills = origins.map((origin, id) => {
@@ -79,7 +79,7 @@ export class RegionGroupModel {
 }
 
 
-export class RedirectRegionToGroupMap {
+export class RegionToGroupMap {
     constructor(data) {
         this.data = data
     }
@@ -92,16 +92,35 @@ export class RedirectRegionToGroupMap {
 }
 
 
-export class RedirectBorderRegionMap {
+export class RegionNeighborsMap {
+    /*
+        This class overrides the default region neighbor SetMap.
+        It redirects overriden regions to its containing
+    */
     constructor(data) {
         this.data = data
     }
 
-    get(region) {
-        // TODO: get which region I'm neighbor of
+    // keys() {
+    //     const keys = []
+    //     const redirects = this.data.redirects
+    //     for(let id of this.data.regionNeighborsMap.keys()) {
+    //         // if (redirects.has(id)) continue
+    //         // keys.push(id)
+    //     }
+    //     return keys
+    // }
+
+    has(id) {
+        // has neighbors (filter redirects)
         const redirects = this.data.redirects
-        const neighId = this.data.regionNeighborsMap.get(region.id)
-        return redirects.has(neighId) ? redirects.get(neighId) : neighId
+        const neighborIds = redirects.has(id) ? redirects.get(id) : new Set()
+        // this.data.regionNeighborsMap
+        // for(let neighborId of neighborIds.values()) {
+
+        // }
+
+        return this.data.regionNeighborsMap.has(id)
     }
 }
 
@@ -136,16 +155,19 @@ class RegionGroupFillConfig {
 }
 
 
-class RegionNeighborsMap {
+class SetMap {
+    /*
+        This class maps a value to a Set
+    */
     constructor() {
         this.map = new Map()
     }
 
-    set(regionId, neighborId) {
-        if (! this.map.has(regionId)) {
-            this.map.set(regionId, new Set())
+    set(keyId, valueId) {
+        if (! this.map.has(keyId)) {
+            this.map.set(keyId, new Set())
         }
-        this.map.get(regionId).add(neighborId)
+        this.map.get(keyId).add(valueId)
     }
 
     get(id) {
@@ -153,7 +175,7 @@ class RegionNeighborsMap {
     }
 
     keys() {
-        return Array.from(this.map.keys())
+        return this.map.keys()
     }
 
     has(id) {

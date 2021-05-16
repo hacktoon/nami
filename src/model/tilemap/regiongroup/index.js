@@ -74,10 +74,14 @@ export class RegionGroupTileMap extends TileMap {
         return Array.from(this.model.groups.values())
     }
 
-    getBorderRegions() {
-        const ids = this.model.regionNeighborsMap.keys()
-        return ids.map(id => this.model.regionTileMap.getRegionById(id))
+    isBorderRegion(region) {
+        return this.model.regionNeighborsMap.has(region.id)
     }
+
+    // getBorderRegions() {
+    //     const ids = this.model.regionNeighborsMap.keys()
+    //     return ids.map(id => this.model.regionTileMap.getRegionById(id))
+    // }
 
     isRegionBorder(point) {
         return this.model.regionTileMap.isBorder(point)
@@ -87,22 +91,14 @@ export class RegionGroupTileMap extends TileMap {
         if (! this.isRegionBorder(point))
             return false
         const group = this.getGroup(point)
-        const tileBorderRegions = this.getTileBorderRegions(point)
-        for(let region of tileBorderRegions) {
+        const regions = this.model.regionTileMap.getTileBorderRegions(point)
+        for(let region of regions) {
             const id = this.model.regionToGroup.get(region.id)
             const borderGroup = this.model.groups.get(id)
             if (group.id !== borderGroup.id)
                 return true
         }
         return false
-    }
-
-    getTileBorderRegions(point) {
-        return this.model.regionTileMap.getTileBorderRegions(point)
-    }
-
-    isBorderRegion(region) {
-        return this.model.regionNeighborsMap.has(region.id)
     }
 
     map(callback) {
