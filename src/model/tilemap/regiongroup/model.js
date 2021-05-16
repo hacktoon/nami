@@ -20,8 +20,8 @@ class RegionGroup {
 export class RegionGroupModel {
     constructor(seed, params) {
         const data = this._build(seed, params)
+        this.regionToGroup = new RegionToGroupMap(data)
         this.regionTileMap = data.regionTileMap
-        this.regionToGroup = data.regionToGroup
         this.borderRegions = data.borderRegions
         this.groups = data.groups
         this.graph = data.graph
@@ -30,25 +30,31 @@ export class RegionGroupModel {
     _build(seed, params) {
         const [width, height] = params.get('width', 'height')
         const groupScale = params.get('groupScale')
-        const regionTileMap = this._buildRegionTileMap(seed, params)
         const data = {
             groupChance: params.get('groupChance'),
             groupGrowth: params.get('groupGrowth'),
             regionToGroup: new Map(),
             borderRegions: new Set(),
+            redirects: new Map(),
             graph: new Graph(),
             groups: new Map(),
-            regionTileMap,
+            regionTileMap: this._buildRegionTileMap(seed, params),
         }
         const origins = EvenPointSampling.create(width, height, groupScale)
         const fills = origins.map((origin, id) => {
-            const region = regionTileMap.getRegion(origin)
+            const region = data.regionTileMap.getRegion(origin)
             const fillConfig = new RegionGroupFillConfig(id, data)
             return new OrganicFloodFill(region, fillConfig)
         })
 
         new MultiFill(fills).forEach(fill => {
             const group = new RegionGroup(fill.config.id, fill.origin, fill.count)
+            const neighborIds = data.graph.getEdges(fill.config.id)
+            if (neighborIds.length === 1 || fill.count == 1) {
+                data.graph.deleteNode(group.id)
+                data.redirects.set(group.id, neighborIds[0])
+                // return
+            }
             data.groups.set(group.id, group)
         })
 
@@ -69,6 +75,33 @@ export class RegionGroupModel {
 
     forEach(callback) {
         this.groups.forEach(callback)
+    }
+}
+
+
+export class RegionToGroupMap {
+    constructor(data) {
+        this.data = data
+    }
+
+    get(region) {
+        const redirects = this.data.redirects
+        const id = this.data.regionToGroup.get(region)
+        return redirects.has(id) ? redirects.get(id) : id
+    }
+}
+
+
+export class BorderRegionSet {
+    constructor(data) {
+        this.data = data
+    }
+
+    get(region) {
+        // TODO: get which region I'm neighbor of
+        const redirects = this.data.redirects
+        const id = this.data.borderRegions.get(region)
+        return redirects.has(id) ? redirects.get(id) : id
     }
 }
 

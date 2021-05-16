@@ -47,6 +47,9 @@
   - discover routes
 - Some may be unclaimed
 
+#### ConquestTileMap
+- Mark conquered regions
+
 #### Other
 - Set identity point method for Direction class
 - Vegetation/wildlife density: adjusted by humidity, temperature and height
