@@ -53,11 +53,10 @@ export class RegionGroupModel {
             if (neighborGroupIds.length === 1 || group.count == 1) {
                 data.graph.deleteNode(group.id)
                 data.redirects.set(group.id, neighborGroupIds[0])
-                // return
+                return
             }
             data.groups.set(group.id, group)
         })
-        console.log(data.redirects);
         return data
     }
 
@@ -101,20 +100,23 @@ export class RegionNeighborsMap {
         this.data = data
     }
 
-    // keys() {
-
-    // }
-
     has(id) {
-        // has neighbors (filter redirects)
-        const redirects = this.data.redirects
-        const neighborIds = this.data.regionNeighborsMap.get(id)
-        // const redirId = redirects.has(id) ? redirects.get(id) : id
-        // for(let neighborId of neighborIds.values()) {
+        const groupId = this.data.regionToGroup.get(id)
+        if (this.data.redirects.has(groupId)) {
+            return false
+        }
+        return this._hasValidNeighbors(id)
+    }
 
-        // }
-
-        return this.data.regionNeighborsMap.has(id)
+    _hasValidNeighbors(id) {
+        const validNeighbors = []
+        for(let neighborId of this.data.regionNeighborsMap.get(id)) {
+            const neighborGroupId = this.data.regionToGroup.get(neighborId)
+            if (! this.data.redirects.has(neighborGroupId)) {
+                validNeighbors.push(neighborGroupId)
+            }
+        }
+        return validNeighbors.length > 0
     }
 }
 
