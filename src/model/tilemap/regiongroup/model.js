@@ -49,15 +49,15 @@ export class RegionGroupModel {
 
         new MultiFill(fills).forEach(fill => {
             const group = new RegionGroup(fill.config.id, fill.origin, fill.count)
-            const neighborIds = data.graph.getEdges(fill.config.id)
-            if (neighborIds.length === 1 || fill.count == 1) {
+            const neighborGroupIds = data.graph.getEdges(group.id)
+            if (neighborGroupIds.length === 1 || group.count == 1) {
                 data.graph.deleteNode(group.id)
-                data.redirects.set(group.id, neighborIds[0])
+                data.redirects.set(group.id, neighborGroupIds[0])
                 // return
             }
             data.groups.set(group.id, group)
         })
-
+        console.log(data.redirects);
         return data
     }
 
@@ -95,27 +95,21 @@ export class RegionToGroupMap {
 export class RegionNeighborsMap {
     /*
         This class overrides the default region neighbor SetMap.
-        It redirects overriden regions to its containing
+        It redirects overriden regions to its containing group neighbor region
     */
     constructor(data) {
         this.data = data
     }
 
     // keys() {
-    //     const keys = []
-    //     const redirects = this.data.redirects
-    //     for(let id of this.data.regionNeighborsMap.keys()) {
-    //         // if (redirects.has(id)) continue
-    //         // keys.push(id)
-    //     }
-    //     return keys
+
     // }
 
     has(id) {
         // has neighbors (filter redirects)
         const redirects = this.data.redirects
-        const neighborIds = redirects.has(id) ? redirects.get(id) : new Set()
-        // this.data.regionNeighborsMap
+        const neighborIds = this.data.regionNeighborsMap.get(id)
+        // const redirId = redirects.has(id) ? redirects.get(id) : id
         // for(let neighborId of neighborIds.values()) {
 
         // }
@@ -171,7 +165,10 @@ class SetMap {
     }
 
     get(id) {
-        return this.map.get(id)
+        if (this.map.has(id)) {
+            return this.map.get(id)
+        }
+        return new Set()
     }
 
     keys() {
