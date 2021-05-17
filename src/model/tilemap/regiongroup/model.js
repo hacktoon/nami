@@ -50,7 +50,7 @@ export class RegionGroupModel {
         new MultiFill(fills).forEach(fill => {
             const group = new RegionGroup(fill.config.id, fill.origin, fill.count)
             const neighborGroupIds = data.graph.getEdges(group.id)
-            if (neighborGroupIds.length === 1 || group.count == 1) {
+            if (neighborGroupIds.length === 1 && group.count <= 2) {
                 data.graph.deleteNode(group.id)
                 data.redirects.set(group.id, neighborGroupIds[0])
                 return
@@ -83,10 +83,10 @@ export class RegionToGroupMap {
         this.data = data
     }
 
-    get(region) {
+    get(id) {
         const redirects = this.data.redirects
-        const id = this.data.regionToGroup.get(region)
-        return redirects.has(id) ? redirects.get(id) : id
+        const groupId = this.data.regionToGroup.get(id)
+        return redirects.has(groupId) ? redirects.get(groupId) : groupId
     }
 }
 

@@ -28,7 +28,7 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         this.showGroupBorder = params.get('showGroupBorder')
         this.showBorderRegion = params.get('showBorderRegion')
         this.regionColorMap = new RegionColorMap(tileMap.getRegions())
-        this.groupColorMap = new GroupColorMap(tileMap)
+        this.groupColorMap = new GroupColorMap(tileMap.getGroups())
     }
 
     get(point) {
@@ -75,8 +75,8 @@ class RegionColorMap {
 
 
 class GroupColorMap {
-    constructor(groupMap) {
-        const entries = groupMap.map(group => [group.id, group.color])
+    constructor(groups) {
+        const entries = groups.map(group => [group.id, group.color])
         this.map = Object.fromEntries(entries)
     }
 
