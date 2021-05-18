@@ -11,9 +11,9 @@ const SCHEMA = new Schema(
     'RegionTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('scale', 'Scale', {default: 35, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 70, step: 1, min: 0, max: 100}),
-    Type.number('chance', 'Chance', {default: 0.2, step: 0.01, min: 0.1, max: 1}),
+    Type.number('scale', 'Scale', {default: 1, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 1, step: 1, min: 0, max: 100}),
+    Type.number('chance', 'Chance', {default: 0.1, step: 0.01, min: 0.1, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 

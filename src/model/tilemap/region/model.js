@@ -51,7 +51,7 @@ export class RegionMapModel {
         new MultiFill(fills).forEach(fill => {
             const region = this._buildRegion(fill)
             const neighborIds = data.graph.getEdges(fill.config.id)
-            if (neighborIds.length === 1 || fill.count <= 2) {
+            if (neighborIds.length === 1) {
                 data.graph.deleteNode(region.id)
                 data.redirects.set(region.id, neighborIds[0])
                 return
