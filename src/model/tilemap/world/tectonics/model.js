@@ -113,8 +113,6 @@ function buildPlateBorders(regionGroupTileMap, plateIndex) {
     const map = new Map()
     regionGroupTileMap.forEach(group => {
         const plate = plateIndex.get(group.id)
-        const edges = regionGroupTileMap.graph.getEdges(group.id)
-        console.log(plate);
         // console.log(`${group.id} => ${edges}`);
     })
 }

@@ -40,7 +40,6 @@ export class RegionGroupTileMap extends TileMap {
     constructor(params) {
         super(params)
         this.model = new RegionGroupModel(this.seed, params)
-        console.log(this.getBorderRegions());
     }
 
     get(point) {
@@ -55,7 +54,7 @@ export class RegionGroupTileMap extends TileMap {
 
     getGroupsDescOrder() {
         const cmpDescendingCount = (g0, g1) => g1.count - g0.count
-        return this.model.getGroups().sort(cmpDescendingCount)
+        return this.getGroups().sort(cmpDescendingCount)
     }
 
     getRegion(point) {
