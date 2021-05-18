@@ -8,11 +8,11 @@ import { RegionTileMap } from '/model/tilemap/region'
 
 
 class RegionGroup {
-    constructor(id, region, count) {
+    constructor(id, region, area) {
         this.id = id
         this.origin = region.origin
         this.color = new Color()
-        this.count = count
+        this.area = area
     }
 }
 
@@ -36,6 +36,7 @@ export class RegionGroupModel {
             groupGrowth: params.get('groupGrowth'),
             borderRegions: new Set(),
             regionToGroup: new Map(),
+            groupToRegions: new Map(),
             graph: new Graph(),
             groups: new Map(),
         }
@@ -46,7 +47,13 @@ export class RegionGroupModel {
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(fills).map(fill => {
-            const group = new RegionGroup(fill.config.id, fill.origin, fill.count)
+            const groupId = fill.config.id
+            let area = 0
+            for(let id of data.groupToRegions.get(groupId)) {
+                const region = data.regionTileMap.getRegionById(id)
+                area += region.area
+            }
+            const group = new RegionGroup(groupId, fill.origin, area)
             data.groups.set(group.id, group)
         })
         return data
@@ -84,6 +91,10 @@ class RegionGroupFillConfig {
 
     setValue(region) {
         this.model.regionToGroup.set(region.id, this.id)
+        if (! this.model.groupToRegions.has(this.id)) {
+            this.model.groupToRegions.set(this.id, new Set())
+        }
+        this.model.groupToRegions.get(this.id).add(region.id)
     }
 
     checkNeighbor(neighborRegion, region) {

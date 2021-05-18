@@ -81,9 +81,9 @@ function buildRegionGroupMap(seed, params) {
         height: params.get('height'),
         seed: seed,
         groupScale: params.get('scale'),
-        groupChance: 0.2,
-        groupGrowth: 36,
-        scale: 1,
+        groupChance: 0.1,
+        groupGrowth: 32,
+        scale: 2,
         growth: 0,
         chance: 0.1,
     })
@@ -91,13 +91,14 @@ function buildRegionGroupMap(seed, params) {
 
 
 function buildPlateIndex(regionGroupTileMap) {
-    const halfMapArea = Math.floor(regionGroupTileMap.area / 2)
+    const groups = regionGroupTileMap.getGroupsDescOrder()
+    const halfRegionCount = Math.floor(regionGroupTileMap.area / 3)
     const index = new Map()
     let hasShield = false
     let oceanicArea = 0
-    regionGroupTileMap.getGroupsDescOrder().forEach(group => {
+    groups.forEach(group => {
         oceanicArea += group.area
-        let type = oceanicArea < halfMapArea ? OCEANIC_TYPE : CONTINENTAL_TYPE
+        let type = oceanicArea < halfRegionCount ? OCEANIC_TYPE : CONTINENTAL_TYPE
         if (type === CONTINENTAL_TYPE && ! hasShield) {
             type = SHIELD_TYPE
             hasShield = true
