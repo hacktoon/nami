@@ -40,6 +40,7 @@ export class RegionGroupTileMap extends TileMap {
     constructor(params) {
         super(params)
         this.model = new RegionGroupModel(this.seed, params)
+        console.log(this.getBorderRegions());
     }
 
     get(point) {
@@ -80,7 +81,7 @@ export class RegionGroupTileMap extends TileMap {
     }
 
     getBorderRegions() {
-        const ids = this.model.borderRegions.keys()
+        const ids = Array.from(this.model.borderRegions.values())
         return ids.map(id => this.model.regionTileMap.getRegionById(id))
     }
 

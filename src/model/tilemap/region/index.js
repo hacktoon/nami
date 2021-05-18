@@ -59,6 +59,10 @@ export class RegionTileMap extends TileMap {
         return this.regions.get(id)
     }
 
+    getRegionById(id) {
+        return this.regions.get(id)
+    }
+
     getRegions() {
         return Array.from(this.regions.values())
     }
