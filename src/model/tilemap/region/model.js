@@ -5,19 +5,16 @@ import { EvenPointSampling } from '/lib/base/point/sampling'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
-import { RegionMatrix, BorderMatrix } from './matrix'
-
 
 const NO_REGION = null
 
 
 export class Region {
-    constructor({id, origin, area, color, neighbors}) {
+    constructor({id, origin, area}) {
         this.id = id
         this.origin = origin
         this.area = area
-        this.color = color
-        this.neighbors = neighbors
+        this.color = new Color()
     }
 }
 
@@ -25,8 +22,8 @@ export class Region {
 export class RegionMapModel {
     constructor(params) {
         const data = this._build(params)
-        this.regionMatrix = new RegionMatrix(data)
-        this.borderMatrix = new BorderMatrix(data)
+        this.regionMatrix = data.regionMatrix
+        this.borderMatrix = data.borderMatrix
         this.regions = data.regions
         this.graph = data.graph
     }
@@ -38,7 +35,6 @@ export class RegionMapModel {
             borderMatrix: new Matrix(width, height, () => new Set()),
             chance: params.get('chance'),
             growth: params.get('growth'),
-            redirects: new Map(),
             regions: new Map(),
             graph: new Graph(),
         }
@@ -49,26 +45,15 @@ export class RegionMapModel {
         })
 
         new MultiFill(fills).forEach(fill => {
-            const region = this._buildRegion(fill)
-            const neighborIds = data.graph.getEdges(fill.config.id)
-            if (neighborIds.length === 1) {
-                data.graph.deleteNode(region.id)
-                data.redirects.set(region.id, neighborIds[0])
-                return
-            }
+            const region = new Region({
+                id: fill.config.id,
+                origin: fill.origin,
+                area: fill.count
+            })
             data.regions.set(region.id, region)
         })
 
         return data
-    }
-
-    _buildRegion(fill) {
-        return new Region({
-            id: fill.config.id,
-            origin: fill.origin,
-            area: fill.count,
-            color: new Color(),
-        })
     }
 }
 

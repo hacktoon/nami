@@ -59,8 +59,12 @@ export class MultiFill {
         }
     }
 
+    map(callback) {
+        return this.fills.map(fill => callback(fill))
+    }
+
     forEach(callback) {
-        return this.fills.forEach(callback)
+        this.fills.forEach(callback)
     }
 
     _growFills() {
