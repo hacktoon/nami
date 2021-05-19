@@ -24,25 +24,26 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         super(tileMap)
         this.showPlateBorders = params.get('showPlateBorders')
         // this.colorMap = new PlateColorMap(tileMap)
+        this.deformColorMap = {
+            [DEFORMATION_RIFT]: Color.YELLOW,
+            [DEFORMATION_OROGENY]: Color.RED,
+            [DEFORMATION_TRENCH]: Color.BLUE,
+        }
     }
 
     get(point) {
         // const plate = this.tileMap.getPlate(point)
         const geology = this.tileMap.getGeology(point)
+        const region = this.tileMap.model.regionGroupTileMap.getRegion(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         let color = Color.fromHex('#058')  // ocean
         if (geology === 1) color = Color.fromHex('#26a11f') // continent
         if (this.showPlateBorders && isBorderPoint) {
             const deformation = this.tileMap.getDeformation(point)
-            if (deformation === DEFORMATION_RIFT ) {
-                return '#FF0'
-            }
-            if (deformation === DEFORMATION_OROGENY ) {
-                return '#F00'
-            }
-            if (deformation === DEFORMATION_TRENCH ) {
-                return '#00F'
-            }
+            color = this.deformColorMap[deformation] ?? color
+            return color.toHex()
+        }
+        if (this.tileMap.model.regionGroupTileMap.isBorderRegion(region)) {
             return color.darken(30).toHex()
         }
 

@@ -44,13 +44,25 @@ export class RegionGroupTileMap extends TileMap {
 
     get(point) {
         const region = this.getRegion(point)
+        const group = this.getGroup(point)
         const borderGroups = this.getNeighborGroups(point)
+        const neighborRegions = this.getNeighborRegions(region)
+        const neighborGroupIds = this.model.graph.getEdges(group.id)
+        const neighborGroups = []
+        neighborGroupIds.forEach(id => {
+            const neighborGroup = this.model.groups.get(id)
+            if (neighborGroup.id !== group.id) {
+                neighborGroups.push(neighborGroup)
+            }
+        })
+
         return {
+            group: group.id,
             region: region.id,
-            group: this.getGroup(point).id,
-            isBorderRegion: this.isBorderRegion(region),
+            neighborRegions: neighborRegions.map(r=>r.id).join(', '),
+            neighborGroups: neighborGroups.map(g=>g.id).join(', '),
             borderGroups: borderGroups.map(r=>r.id).join(', '),
-            regionArea: region.area
+            // regionArea: region.area,
         }
     }
 
@@ -81,14 +93,8 @@ export class RegionGroupTileMap extends TileMap {
         return this.model.borderRegions.has(region.id)
     }
 
-    getBorderRegions() {
-        const ids = Array.from(this.model.borderRegions.values())
-        return ids.map(id => this.model.regionTileMap.getRegionById(id))
-    }
-
-    getNeighbors(group) {
-        const edges = this.model.graph.getEdges(group.id)
-        return edges.map(id => this.model.groups.get(id))
+    getNeighborRegions(region) {
+        return this.model.regionTileMap.getNeighborRegions(region)
     }
 
     getGraph() {
@@ -99,6 +105,7 @@ export class RegionGroupTileMap extends TileMap {
         return this.model.regionTileMap.isBorder(point)
     }
 
+
     isGroupBorderPoint(point) {
         if (! this.isRegionBorder(point))
             return false
@@ -106,6 +113,7 @@ export class RegionGroupTileMap extends TileMap {
         return neighborGroups.length > 0
     }
 
+    // create borderMatrix to solve this complexity
     getNeighborGroups(point) {
         const group = this.getGroup(point)
         const regions = this.model.regionTileMap.getTileBorderRegions(point)

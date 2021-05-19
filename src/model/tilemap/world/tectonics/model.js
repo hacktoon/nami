@@ -43,8 +43,8 @@ export class TectonicsModel {
     constructor(seed, params) {
         const data = this._build(seed, params)
         this.regionGroupTileMap = data.regionGroupTileMap
-        this.plates = data.plates
         this.deformations = data.deformations
+        this.plates = data.plates
     }
 
     _build(seed, params) {
@@ -84,7 +84,6 @@ export class TectonicsModel {
             })
             deformations.set(plate.id, neighborMap)
         })
-        console.log(deformations);
         return deformations
     }
 
@@ -120,11 +119,16 @@ export class TectonicsModel {
     }
 
     getDeformation(point) {
-        const neighborGroups = this.regionGroupTileMap.getNeighborGroups(point)
-        const plate = this.getPlate(point)
-        const plateDeformations = this.deformations.get(plate.id)
-        if (neighborGroups.length > 0)
-            return plateDeformations.get(neighborGroups[0].id)
+        const region = this.regionGroupTileMap.getRegion(point)
+        const group = this.regionGroupTileMap.getGroup(point)
+        const neighborRegions = this.regionGroupTileMap.getNeighborRegions(region)
+        const neighborGroups = this.regionGroupTileMap.getGroupsForRegions(neighborRegions)
+        const plateDeformations = this.deformations.get(group.id)
+        for (let neighborGroup of neighborGroups) {
+            if (neighborGroup.id !== group.id) {
+                return plateDeformations.get(neighborGroup.id)
+            }
+        }
         return NO_DEFORMATION
     }
 

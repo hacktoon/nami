@@ -21,7 +21,24 @@ export function gradientColors(source, target, count) {
 }
 
 
+const hexClamp = comp => clamp(comp, 0, 255)
+
+
+const expandShorthand = hex => {
+    return [
+        hex[0] + hex[0],
+        hex[1] + hex[1],
+        hex[2] + hex[2]
+    ].join('')
+}
+
+
 export class Color {
+    static YELLOW = Color.fromHex('FF0')
+    static RED = Color.fromHex('F00')
+    static GREEN = Color.fromHex('0F0')
+    static BLUE = Color.fromHex('00F')
+
     static fromHex(value) {
         let hex = String(value).trim().replace('#', '')
         let length = hex.length
@@ -88,15 +105,4 @@ export class Color {
         const gray = Math.round(red + green + blue)
         return new Color(gray, gray, gray)
     }
-}
-
-
-const hexClamp = comp => clamp(comp, 0, 255)
-
-const expandShorthand = hex => {
-    return [
-        hex[0] + hex[0],
-        hex[1] + hex[1],
-        hex[2] + hex[2]
-    ].join('')
 }
