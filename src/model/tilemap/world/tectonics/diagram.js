@@ -3,6 +3,7 @@ import { Type } from '/lib/base/type'
 import { Color } from '/lib/base/color'
 
 import { TileMapDiagram } from '/model/lib/tilemap'
+import { DEFORMATION_OROGENY, DEFORMATION_TRENCH } from './model'
 
 
 export class TectonicsTileMapDiagram extends TileMapDiagram {
@@ -18,7 +19,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, params) {
         super(tileMap)
         this.showPlateBorders = params.get('showPlateBorders')
-        this.colorMap = new PlateColorMap(tileMap)
+        // this.colorMap = new PlateColorMap(tileMap)
     }
 
     get(point) {
@@ -27,12 +28,14 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         let color = Color.fromHex('#058')  // ocean
         if (geology === 1) color = Color.fromHex('#26a11f') // continent
-        if (geology === 2) { // orogeny
-            color = Color.fromHex(isBorderPoint ? '#26a11f' : '#71694b')
-        }
-        if (geology === 3) color = Color.fromHex('#169') // platform
-
         if (this.showPlateBorders && isBorderPoint) {
+            const deformation = this.tileMap.getDeformation(point)
+            if (deformation === DEFORMATION_OROGENY ) {
+                return '#F33'
+            }
+            if (deformation === DEFORMATION_TRENCH ) {
+                return '#238'
+            }
             return color.darken(30).toHex()
         }
 

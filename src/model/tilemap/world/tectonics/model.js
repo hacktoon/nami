@@ -11,9 +11,9 @@ TODO
 */
 
 const NO_DEFORMATION = null
-const DEFORMATION_OROGENY = 1
-const DEFORMATION_TRENCH = 2
-const DEFORMATION_RIFT = 3
+export const DEFORMATION_OROGENY = 1
+export const DEFORMATION_TRENCH = 2
+export const DEFORMATION_RIFT = 3
 
 const EMPTY = null
 
@@ -44,6 +44,7 @@ export class TectonicsModel {
         const data = this._build(seed, params)
         this.regionGroupTileMap = data.regionGroupTileMap
         this.plates = data.plates
+        this.deformations = data.deformations
     }
 
     _build(seed, params) {
@@ -54,7 +55,7 @@ export class TectonicsModel {
         // leave noise map for final matrix rendering
         // const noiseMap = new NoiseMap()
 
-        return {regionGroupTileMap, plates}
+        return {regionGroupTileMap, plates, deformations}
     }
 
     _buildPlates(regionGroupTileMap) {
@@ -75,22 +76,22 @@ export class TectonicsModel {
         const graph = regionGroupTileMap.getGraph()
         const deformations = new Map()
         plates.forEach(plate => {
+            const neighborMap = new Map()
             graph.getEdges(plate.id).forEach(id => {
                 const neighborPlate = plates.get(id)
-                const neighborMap = new Map()
                 const deformation =this._buildDeformation(plate, neighborPlate)
                 neighborMap.set(neighborPlate.id, deformation)
-                deformations.set(plate.id, neighborMap)
             })
+            deformations.set(plate.id, neighborMap)
         })
         console.log(deformations);
         return deformations
     }
 
     _buildDeformation(plate, neighborPlate) {
-
-        return DEFORMATION_OROGENY
-
+        if (neighborPlate.id % 2 === 0)
+            return DEFORMATION_OROGENY
+        return DEFORMATION_TRENCH
     }
 
     getPlateCount() {
@@ -110,6 +111,19 @@ export class TectonicsModel {
 
     isPlateBorder(point) {
         return this.regionGroupTileMap.isGroupBorderPoint(point)
+    }
+
+    getNeighborGroups(point) {
+        return this.regionGroupTileMap.getNeighborGroups(point)
+    }
+
+    getDeformation(point) {
+        const neighborGroups = this.regionGroupTileMap.getNeighborGroups(point)
+        const plate = this.getPlate(point)
+        const plateDeformations = this.deformations.get(plate.id)
+        if (neighborGroups.length > 0)
+            return plateDeformations.get(neighborGroups[0].id)
+        return NO_DEFORMATION
     }
 
     map(callback) {

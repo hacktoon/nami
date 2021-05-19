@@ -13,7 +13,7 @@ const SCHEMA = new Schema(
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 36, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 32, step: 1, min: 1, max: 100}),
-    Type.text('seed', 'Seed', {default: '1621384734397'})
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 
@@ -34,7 +34,12 @@ export class TectonicsTileMap extends TileMap {
 
     get(point) {
         const plate = this.getPlate(point)
-        return `Plate ${plate.id}, area ${plate.area}, type ${plate.type}`
+        const deformation = this.getDeformation(point)
+        const neighborGroups = this.model.getNeighborGroups(point)
+        return `Plate ${plate.id}, area ${plate.area},
+            type ${plate.type},
+            neighborGroups ${neighborGroups.map(g=>g.id).join(', ')},
+            deformation ${deformation}`
     }
 
     getPlateCount() {
@@ -51,6 +56,10 @@ export class TectonicsTileMap extends TileMap {
 
     isPlateBorder(point) {
         return this.model.isPlateBorder(point)
+    }
+
+    getDeformation(point) {
+        return this.model.getDeformation(point)
     }
 
     map(callback) {
