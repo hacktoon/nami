@@ -50,16 +50,16 @@ export class TectonicsTileMap extends TileMap {
         return this.model.getPlate(point)
     }
 
-    getGeology(point) {
-        return this.model.getGeology(point)
-    }
-
     isPlateBorder(point) {
         return this.model.isPlateBorder(point)
     }
 
     getDeformation(point) {
         return this.model.getDeformation(point)
+    }
+
+    getGeology(point) {
+        return this.model.getGeology(point)
     }
 
     map(callback) {
