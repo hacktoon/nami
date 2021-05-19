@@ -89,6 +89,8 @@ export class TectonicsModel {
     }
 
     _buildDeformation(plate, neighborPlate) {
+        if (neighborPlate.id % 3 === 0)
+            return DEFORMATION_RIFT
         if (neighborPlate.id % 2 === 0)
             return DEFORMATION_OROGENY
         return DEFORMATION_TRENCH
