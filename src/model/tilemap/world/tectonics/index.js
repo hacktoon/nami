@@ -3,7 +3,7 @@ import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { Tectonics } from './model'
+import { TectonicsModel } from './model'
 import { TectonicsTileMapDiagram } from './diagram'
 
 
@@ -12,6 +12,7 @@ const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 36, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 32, step: 1, min: 1, max: 100}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -28,13 +29,11 @@ export class TectonicsTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.model = new Tectonics(this.seed, params)
+        this.model = new TectonicsModel(this.seed, params)
     }
 
     get(point) {
-        return {
-            plate: this.getPlate(point)
-        }
+        return this.getPlate(point)
     }
 
     getPlateCount() {
