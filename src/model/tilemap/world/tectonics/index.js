@@ -13,7 +13,7 @@ const SCHEMA = new Schema(
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 36, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 32, step: 1, min: 1, max: 100}),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: '1621384734397'})
 )
 
 
@@ -33,7 +33,8 @@ export class TectonicsTileMap extends TileMap {
     }
 
     get(point) {
-        return this.getPlate(point)
+        const plate = this.getPlate(point)
+        return `Plate ${plate.id}, area ${plate.area}, type ${plate.type}`
     }
 
     getPlateCount() {

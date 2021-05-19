@@ -10,9 +10,15 @@ TODO
 - need to get regions data to create the elevation map in borders
 */
 
-const OCEANIC_TYPE = 'O'
-const CONTINENTAL_TYPE = 'C'
-const SHIELD_TYPE = 'S'
+const NO_DEFORMATION = null
+const DEFORMATION_OROGENY = 1
+const DEFORMATION_TRENCH = 2
+const DEFORMATION_RIFT = 3
+
+const EMPTY = null
+
+const TYPE_OCEANIC = 'O'
+const TYPE_CONTINENTAL = 'C'
 
 
 export class Plate {
@@ -24,48 +30,82 @@ export class Plate {
     }
 
     isOceanic() {
-        return this.type === OCEANIC_TYPE
+        return this.type === TYPE_OCEANIC
     }
 
     isContinental() {
-        return this.type === CONTINENTAL_TYPE
-    }
-
-    isShield() {
-        return this.type === SHIELD_TYPE
+        return this.type === TYPE_CONTINENTAL
     }
 }
 
 
 export class TectonicsModel {
     constructor(seed, params) {
+        const data = this._build(seed, params)
+        this.regionGroupTileMap = data.regionGroupTileMap
+        this.plates = data.plates
+    }
+
+    _build(seed, params) {
         const regionGroupTileMap = buildRegionGroupMap(seed, params)
-        const index = buildPlateIndex(regionGroupTileMap)
-        const borders = buildPlateBorders(regionGroupTileMap, index)
-        const noiseMap = new NoiseMap()
-        this.geologyMatrix
-        this.regionGroupTileMap = regionGroupTileMap
-        this.index = index
+        const plates = this._buildPlates(regionGroupTileMap)
+        const deformations = this._buildPlateDeformations(plates, regionGroupTileMap)
+
+        // leave noise map for final matrix rendering
+        // const noiseMap = new NoiseMap()
+
+        return {regionGroupTileMap, plates}
+    }
+
+    _buildPlates(regionGroupTileMap) {
+        const plates = new Map()
+        const groups = regionGroupTileMap.getGroupsDescOrder()
+        const halfRegionCount = Math.floor(regionGroupTileMap.area / 2)
+        let oceanicArea = 0
+        groups.forEach(group => {
+            oceanicArea += group.area
+            let type = oceanicArea < halfRegionCount ? TYPE_OCEANIC : TYPE_CONTINENTAL
+            const plate = new Plate(group.id, type, group.area)
+            plates.set(plate.id, plate)
+        })
+        return plates
+    }
+
+    _buildPlateDeformations(plates, regionGroupTileMap) {
+        const graph = regionGroupTileMap.getGraph()
+        const deformations = new Map()
+        plates.forEach(plate => {
+            graph.getEdges(plate.id).forEach(id => {
+                const neighborPlate = plates.get(id)
+                const neighborMap = new Map()
+                const deformation =this._buildDeformation(plate, neighborPlate)
+                neighborMap.set(neighborPlate.id, deformation)
+                deformations.set(plate.id, neighborMap)
+            })
+        })
+        console.log(deformations);
+        return deformations
+    }
+
+    _buildDeformation(plate, neighborPlate) {
+
+        return DEFORMATION_OROGENY
+
     }
 
     getPlateCount() {
-        return this.index.size
+        return this.plates.size
     }
 
     getPlate(point) {
         const group = this.regionGroupTileMap.getGroup(point)
-        return this.index.get(group.id)
+        return this.plates.get(group.id)
     }
 
     getGeology(point) {
         const group = this.regionGroupTileMap.getGroup(point)
-        const plate = this.index.get(group.id)
-        if (plate.isOceanic()) {
-            return 0
-        } else if (plate.isShield()) {
-            return 2
-        }
-        return 1
+        const plate = this.plates.get(group.id)
+        return plate.isOceanic() ? 0 : 1
     }
 
     isPlateBorder(point) {
@@ -73,11 +113,11 @@ export class TectonicsModel {
     }
 
     map(callback) {
-        return Array.from(this.index.values()).map(callback)
+        return Array.from(this.plates.values()).map(callback)
     }
 
     forEach(callback) {
-        this.index.forEach(callback)
+        this.plates.forEach(callback)
     }
 }
 
@@ -93,39 +133,6 @@ function buildRegionGroupMap(seed, params) {
         scale: 2,
         growth: 0,
         chance: 0.1,
-    })
-}
-
-
-function buildPlateIndex(regionGroupTileMap) {
-    const groups = regionGroupTileMap.getGroupsDescOrder()
-    const halfRegionCount = Math.floor(regionGroupTileMap.area / 2)
-    const index = new Map()
-    let hasShield = false
-    let oceanicArea = 0
-    groups.forEach(group => {
-        oceanicArea += group.area
-        let type = oceanicArea < halfRegionCount ? OCEANIC_TYPE : CONTINENTAL_TYPE
-        if (type === CONTINENTAL_TYPE && ! hasShield) {
-            type = SHIELD_TYPE
-            hasShield = true
-        }
-        const plate = new Plate(group.id, type, group.area)
-        index.set(plate.id, plate)
-    })
-    return index
-}
-
-
-function buildPlateBorders(regionGroupTileMap, plateIndex) {
-    const map = new Map()
-    let totalArea = 0
-    let oceanicArea = 0
-    plateIndex.forEach(plate => {
-        totalArea += plate.area
-        if (plate.isOceanic())
-            oceanicArea += plate.area
-        // console.log(plate);
     })
 }
 
