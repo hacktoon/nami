@@ -44,7 +44,7 @@ export class RegionTileMap extends TileMap {
     }
 
     get(point) {
-        const borderIds = this.getTileBorderRegions(point)
+        const borderIds = this.getBorderRegions(point)
         const region = this.getRegion(point)
         return {
             id: region.id,
@@ -67,7 +67,7 @@ export class RegionTileMap extends TileMap {
         return Array.from(this.regions.values())
     }
 
-    getTileBorderRegions(point) {
+    getBorderRegions(point) {
         // a tile can have two different region neighbor points (Set)
         const ids = Array.from(this.borderMatrix.get(point))
         return ids.map(id => this.regions.get(id))

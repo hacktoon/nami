@@ -46,18 +46,12 @@ export class RegionGroupTileMap extends TileMap {
         const region = this.getRegion(point)
         const group = this.getGroup(point)
         const neighborRegions = this.getNeighborRegions(region)
-        const neighborGroups = new Set()
-        neighborRegions.forEach(neighborRegion => {
-            const neighborGroupId = this.model.regionToGroup.get(neighborRegion.id)
-            if (neighborGroupId !== group.id) {
-                neighborGroups.add(neighborGroupId)
-            }
-        })
+        const neighborGroups = this.getNeighborGroups(point)
 
         return {
             group: group.id,
             region: region.id,
-            neighborGroups: Array.from(neighborGroups.values()).join(', '),
+            neighborGroups: neighborGroups.join(', '),
             neighborRegions: neighborRegions.map(r=>r.id).join(', '),
             regionArea: region.area,
         }
@@ -94,6 +88,20 @@ export class RegionGroupTileMap extends TileMap {
         return this.model.regionTileMap.getNeighborRegions(region)
     }
 
+    getNeighborGroups(point) {
+        const region = this.getRegion(point)
+        const group = this.getGroup(point)
+        const neighborRegions = this.getNeighborRegions(region)
+        const neighborGroupIds = new Set()
+        neighborRegions.forEach(neighborRegion => {
+            const id = this.model.regionToGroup.get(neighborRegion.id)
+            if (id !== group.id) {
+                neighborGroupIds.add(id)
+            }
+        })
+        return Array.from(neighborGroupIds)
+    }
+
     getGraph() {
         return this.model.graph
     }
@@ -102,25 +110,15 @@ export class RegionGroupTileMap extends TileMap {
         return this.model.regionTileMap.isBorder(point)
     }
 
-    isGroupBorderPoint(point) {
-        if (! this.isRegionBorder(point))
-            return false
-        const neighborGroups = this.getNeighborGroups(point)
-        return neighborGroups.length > 0
-    }
-
-    // create borderMatrix to solve this complexity
-    getNeighborGroups(point) {
+    isGroupBorder(point) {
+        const neighborRegions = this.model.regionTileMap.getBorderRegions(point)
+        if (neighborRegions.length === 0) return false
         const group = this.getGroup(point)
-        const regions = this.model.regionTileMap.getTileBorderRegions(point)
-        const neighborGroups = []
-        for(let region of regions) {
+        for (let region of neighborRegions) {
             const id = this.model.regionToGroup.get(region.id)
-            if (group.id !== id) {
-                neighborGroups.push(this.model.groups.get(id))
-            }
+            if (id !== group.id) return true
         }
-        return neighborGroups
+        return false
     }
 
     map(callback) {

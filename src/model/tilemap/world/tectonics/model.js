@@ -111,7 +111,7 @@ export class TectonicsModel {
     }
 
     isPlateBorder(point) {
-        return this.regionGroupTileMap.isGroupBorderPoint(point)
+        return this.regionGroupTileMap.isGroupBorder(point)
     }
 
     getNeighborGroups(point) {
