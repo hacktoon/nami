@@ -38,7 +38,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         let color = Color.fromHex('#058')  // ocean
         if (geology === 1) color = Color.fromHex('#26a11f') // continent
-        if (this.showPlateBorders && isBorderPoint) {
+        if (this.showPlateBorders) {
             const deformation = this.tileMap.getDeformation(point)
             color = this.deformColorMap[deformation] ?? color
             return color.toHex()

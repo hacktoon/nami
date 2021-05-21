@@ -60,7 +60,8 @@ export class TectonicsModel {
 
     _buildPlates(regionGroupTileMap) {
         const plates = new Map()
-        const groups = regionGroupTileMap.getGroupsDescOrder()
+        const cmpDescendingCount = (g0, g1) => g1.count - g0.count
+        const groups = regionGroupTileMap.getGroups().sort(cmpDescendingCount)
         const halfRegionCount = Math.floor(regionGroupTileMap.area / 2)
         let oceanicArea = 0
         groups.forEach(group => {
@@ -114,22 +115,13 @@ export class TectonicsModel {
         return this.regionGroupTileMap.isGroupBorder(point)
     }
 
-    getNeighborGroups(point) {
-        return this.regionGroupTileMap.getNeighborGroups(point)
-    }
-
     getDeformation(point) {
-        const region = this.regionGroupTileMap.getRegion(point)
         const group = this.regionGroupTileMap.getGroup(point)
-        const neighborRegions = this.regionGroupTileMap.getNeighborRegions(region)
-        const neighborGroups = this.regionGroupTileMap.getGroupsForRegions(neighborRegions)
+        const neighborGroups = this.regionGroupTileMap.getNeighborGroups(point)
         const plateDeformations = this.deformations.get(group.id)
-        for (let neighborGroup of neighborGroups) {
-            if (neighborGroup.id !== group.id) {
-                return plateDeformations.get(neighborGroup.id)
-            }
-        }
-        return NO_DEFORMATION
+        if (neighborGroups.length == 0)
+            return NO_DEFORMATION
+        return plateDeformations.get(neighborGroups[0].id)
     }
 
     map(callback) {

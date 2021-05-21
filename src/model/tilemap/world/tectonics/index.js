@@ -35,11 +35,7 @@ export class TectonicsTileMap extends TileMap {
     get(point) {
         const plate = this.getPlate(point)
         const deformation = this.getDeformation(point)
-        const neighborGroups = this.model.getNeighborGroups(point)
-        return `Plate ${plate.id}, area ${plate.area},
-            type ${plate.type},
-            neighborGroups ${neighborGroups.map(g=>g.id).join(', ')},
-            deformation ${deformation}`
+        return `Plate ${plate.id}, area ${plate.area}, type ${plate.type}, deformation ${deformation}`
     }
 
     getPlateCount() {
@@ -56,6 +52,10 @@ export class TectonicsTileMap extends TileMap {
 
     getDeformation(point) {
         return this.model.getDeformation(point)
+    }
+
+    getDeformationDebug(point) {
+        return this.model.getDeformationDebug(point)
     }
 
     getGeology(point) {
