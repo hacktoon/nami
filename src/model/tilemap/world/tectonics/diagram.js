@@ -6,7 +6,10 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 import {
     DEFORMATION_RIFT,
     DEFORMATION_OROGENY,
-    DEFORMATION_TRENCH
+    DEFORMATION_TRENCH,
+    DEFORMATION_CONTINENTAL_RIFT,
+    DEFORMATION_ISLAND_ARC,
+    DEFORMATION_PASSIVE_MARGIN
 } from './model'
 
 
@@ -25,9 +28,12 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         this.showPlateBorders = params.get('showPlateBorders')
         // this.colorMap = new PlateColorMap(tileMap)
         this.deformColorMap = {
+            [DEFORMATION_CONTINENTAL_RIFT]: Color.fromHex('#176113'),
             [DEFORMATION_RIFT]: Color.YELLOW,
-            [DEFORMATION_OROGENY]: Color.RED,
+            [DEFORMATION_OROGENY]: Color.fromHex('#a38216'),
             [DEFORMATION_TRENCH]: Color.BLUE,
+            [DEFORMATION_PASSIVE_MARGIN]: Color.BLUE,
+            [DEFORMATION_ISLAND_ARC]: Color.fromHex('#10ffae'),
         }
     }
 
@@ -40,13 +46,11 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         if (geology === 1) color = Color.fromHex('#26a11f') // continent
         if (this.showPlateBorders) {
             const deformation = this.tileMap.getDeformation(point)
+            if (isBorderPoint && geology === 1)
+                return color.toHex()
             color = this.deformColorMap[deformation] ?? color
             return color.toHex()
         }
-        if (this.tileMap.model.regionGroupTileMap.isBorderRegion(region)) {
-            return color.darken(30).toHex()
-        }
-
         return color.toHex()
     }
 }

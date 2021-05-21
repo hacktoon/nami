@@ -14,6 +14,9 @@ const NO_DEFORMATION = null
 export const DEFORMATION_OROGENY = 1
 export const DEFORMATION_TRENCH = 2
 export const DEFORMATION_RIFT = 3
+export const DEFORMATION_CONTINENTAL_RIFT = 4
+export const DEFORMATION_ISLAND_ARC = 5
+export const DEFORMATION_PASSIVE_MARGIN = 6
 
 const EMPTY = null
 
@@ -89,26 +92,28 @@ export class TectonicsModel {
     }
 
     _buildDeformation(plate, neighborPlate) {
-        if (neighborPlate.id % 3 === 0)
-            return DEFORMATION_RIFT
-        if (neighborPlate.id % 2 === 0)
-            return DEFORMATION_OROGENY
-        return DEFORMATION_TRENCH
-    }
-
-    getPlateCount() {
-        return this.plates.size
-    }
-
-    getPlate(point) {
-        const group = this.regionGroupTileMap.getGroup(point)
-        return this.plates.get(group.id)
-    }
-
-    getGeology(point) {
-        const group = this.regionGroupTileMap.getGroup(point)
-        const plate = this.plates.get(group.id)
-        return plate.isOceanic() ? 0 : 1
+        if (plate.isContinental()) {
+            if (neighborPlate.isContinental()) {
+                if (neighborPlate.id % 2 === 0 && plate.id % 2 === 0)
+                return DEFORMATION_CONTINENTAL_RIFT
+                return DEFORMATION_OROGENY
+            }
+            if (neighborPlate.isOceanic()) {
+                if (plate.id % 2 === 0) {
+                    return DEFORMATION_PASSIVE_MARGIN
+                }
+                return DEFORMATION_OROGENY
+            }
+        }
+        if (plate.isOceanic()) {
+            if (neighborPlate.isOceanic()) {
+                if (neighborPlate.id % 2 === 0 && plate.id % 2 === 0)
+                    return DEFORMATION_ISLAND_ARC
+                return DEFORMATION_TRENCH
+            }
+            if (neighborPlate.isContinental())
+                return DEFORMATION_TRENCH
+        }
     }
 
     isPlateBorder(point) {

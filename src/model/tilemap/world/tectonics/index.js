@@ -39,11 +39,12 @@ export class TectonicsTileMap extends TileMap {
     }
 
     getPlateCount() {
-        return this.model.getPlateCount()
+        return this.model.plates.size()
     }
 
     getPlate(point) {
-        return this.model.getPlate(point)
+        const group = this.model.regionGroupTileMap.getGroup(point)
+        return this.model.plates.get(group.id)
     }
 
     isPlateBorder(point) {
@@ -54,12 +55,10 @@ export class TectonicsTileMap extends TileMap {
         return this.model.getDeformation(point)
     }
 
-    getDeformationDebug(point) {
-        return this.model.getDeformationDebug(point)
-    }
-
     getGeology(point) {
-        return this.model.getGeology(point)
+        const group = this.model.regionGroupTileMap.getGroup(point)
+        const plate = this.model.plates.get(group.id)
+        return plate.isOceanic() ? 0 : 1
     }
 
     map(callback) {
