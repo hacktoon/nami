@@ -6,6 +6,8 @@ import { UITileMap } from '/ui/tilemap'
 import { TectonicsModel } from './model'
 import { TectonicsTileMapDiagram } from './diagram'
 
+import NO_DEFORMATION from './model'
+
 
 const SCHEMA = new Schema(
     'TectonicsTileMap',
@@ -48,11 +50,16 @@ export class TectonicsTileMap extends TileMap {
     }
 
     isPlateBorder(point) {
-        return this.model.isPlateBorder(point)
+        return this.model.regionGroupTileMap.isGroupBorder(point)
     }
 
     getDeformation(point) {
-        return this.model.getDeformation(point)
+        const group = this.model.regionGroupTileMap.getGroup(point)
+        const neighborGroups = this.model.regionGroupTileMap.getNeighborGroups(point)
+        const plateDeformations = this.model.deformations.get(group.id)
+        if (neighborGroups.length == 0)
+            return NO_DEFORMATION
+        return plateDeformations.get(neighborGroups[0].id)
     }
 
     getGeology(point) {

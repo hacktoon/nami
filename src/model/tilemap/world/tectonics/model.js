@@ -116,19 +116,6 @@ export class TectonicsModel {
         }
     }
 
-    isPlateBorder(point) {
-        return this.regionGroupTileMap.isGroupBorder(point)
-    }
-
-    getDeformation(point) {
-        const group = this.regionGroupTileMap.getGroup(point)
-        const neighborGroups = this.regionGroupTileMap.getNeighborGroups(point)
-        const plateDeformations = this.deformations.get(group.id)
-        if (neighborGroups.length == 0)
-            return NO_DEFORMATION
-        return plateDeformations.get(neighborGroups[0].id)
-    }
-
     map(callback) {
         return Array.from(this.plates.values()).map(callback)
     }
