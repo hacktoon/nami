@@ -59,7 +59,9 @@ export class TectonicsTileMap extends TileMap {
         const plateDeformations = this.model.deformations.get(group.id)
         if (neighborGroups.length == 0)
             return NO_DEFORMATION
-        return plateDeformations.get(neighborGroups[0].id)
+        const deformation = plateDeformations.get(neighborGroups[0].id)
+
+        return deformation
     }
 
     getGeology(point) {

@@ -31,8 +31,8 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
             [DEFORMATION_CONTINENTAL_RIFT]: Color.fromHex('#176113'),
             [DEFORMATION_RIFT]: Color.YELLOW,
             [DEFORMATION_OROGENY]: Color.fromHex('#a38216'),
-            [DEFORMATION_TRENCH]: Color.BLUE,
-            [DEFORMATION_PASSIVE_MARGIN]: Color.BLUE,
+            [DEFORMATION_TRENCH]: Color.fromHex('#003f6c'),
+            [DEFORMATION_PASSIVE_MARGIN]: Color.fromHex('#058'),
             [DEFORMATION_ISLAND_ARC]: Color.fromHex('#10ffae'),
         }
     }
@@ -46,8 +46,9 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         if (geology === 1) color = Color.fromHex('#26a11f') // continent
         if (this.showPlateBorders) {
             const deformation = this.tileMap.getDeformation(point)
-            if (isBorderPoint && geology === 1)
+            if (geology == 1 && deformation == DEFORMATION_OROGENY && isBorderPoint) {
                 return color.toHex()
+            }
             color = this.deformColorMap[deformation] ?? color
             return color.toHex()
         }
