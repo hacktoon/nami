@@ -1,4 +1,6 @@
 import { Color } from '/lib/base/color'
+import { Random } from '/lib/base/random'
+import { Direction } from '/lib/base/direction'
 import { SimplexNoise } from '/lib/fractal/noise'
 
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
@@ -30,6 +32,8 @@ export class Plate {
         this.type = type
         this.area = area
         this.color = new Color()
+        this.direction = Direction.randomCardinal()
+        this.speed = Random.choice(1, 1, 2, 2, 3)
     }
 
     isOceanic() {
@@ -65,11 +69,13 @@ export class TectonicsModel {
         const plates = new Map()
         const cmpDescendingCount = (g0, g1) => g1.count - g0.count
         const groups = regionGroupTileMap.getGroups().sort(cmpDescendingCount)
-        const halfRegionCount = Math.floor(regionGroupTileMap.area / 2)
+        const halfWorldArea = Math.floor(regionGroupTileMap.area / 2)
         let oceanicArea = 0
         groups.forEach(group => {
             oceanicArea += group.area
-            let type = oceanicArea < halfRegionCount ? TYPE_OCEANIC : TYPE_CONTINENTAL
+            let type = TYPE_CONTINENTAL
+            if (oceanicArea < halfWorldArea)
+                type = TYPE_OCEANIC
             const plate = new Plate(group.id, type, group.area)
             plates.set(plate.id, plate)
         })
