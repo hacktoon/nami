@@ -21,10 +21,17 @@ class CanvasContext {
         this.height = canvas.height
     }
 
-    rect(size, point, color) {
+    rect(point, size, color) {
         const {x, y} = point
         this.context.fillStyle = color
         this.context.fillRect(x, y, size, size)
+    }
+
+    text(point, text, color='#000') {
+        this.context.fillStyle = color
+        this.context.textAlign = "center"
+        this.context.font = "20px monospace"
+        this.context.fillText(text, point.x, point.y)
     }
 
     reset() {

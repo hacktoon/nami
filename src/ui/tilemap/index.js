@@ -39,7 +39,7 @@ function UITileMapDiagram({diagram, tileMap}) {
             handleWheel={handleWheel}
             handleClick={handleClick}
         />
-        <section className="UIMapSidebar">
+        <section className="UITileMapSidebar">
             <Text>Seed: {tileMap.seed}</Text>
             <Form className="MapSceneForm"
                 data={sceneData}

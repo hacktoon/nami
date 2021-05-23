@@ -77,7 +77,6 @@ export class TectonicsModel {
             if (oceanicArea < halfWorldArea)
                 type = TYPE_OCEANIC
             const plate = new Plate(group.id, type, group.origin, group.area)
-            console.log(plate, Direction.getSymbol(plate.direction));
             plates.set(plate.id, plate)
         })
         return plates
@@ -141,26 +140,31 @@ class BoundaryMap {
 
     _buildBoundary(plate, otherPlate) {
         if (plate.isContinental()) {
-            if (otherPlate.isContinental()) {
-                if (plate.id % 2 === 0 && otherPlate.id % 2 === 0)
-                    return DEFORMATION_CONTINENTAL_RIFT
-                return DEFORMATION_OROGENY
-            }
-            if (otherPlate.isOceanic()) {
-                if (plate.id % 2 === 0) {
-                    return DEFORMATION_PASSIVE_MARGIN
-                }
-                return DEFORMATION_OROGENY
-            }
+            return this._builContinentaldBoundary(plate, otherPlate)
         }
-        if (plate.isOceanic()) {
-            if (otherPlate.isOceanic()) {
-                if (plate.id % 2 === 0 && otherPlate.id % 2 === 0)
-                    return DEFORMATION_ISLAND_ARC
-                return DEFORMATION_TRENCH
+        return this._builOceanicBoundary(plate, otherPlate)
+    }
+
+    _builContinentaldBoundary(plate, otherPlate) {
+        if (otherPlate.isContinental()) {
+            if (plate.speed > otherPlate.speed)
+                return DEFORMATION_OROGENY
+            return NO_DEFORMATION
+        }
+        if (otherPlate.isOceanic()) {
+            if (plate.id % 2 === 0) {
+                return DEFORMATION_PASSIVE_MARGIN
             }
-            if (otherPlate.isContinental())
-                return DEFORMATION_TRENCH
+            return DEFORMATION_OROGENY
+        }
+    }
+
+    _builOceanicBoundary(plate, otherPlate) {
+        if (otherPlate.isContinental()) {
+            return DEFORMATION_TRENCH
+        }
+        if (otherPlate.isOceanic()) {
+            return DEFORMATION_TRENCH
         }
     }
 

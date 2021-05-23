@@ -18,7 +18,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'TectonicsTileMapDiagram',
         Type.boolean('showPlateBorders', 'Show borders', {default: true}),
-        Type.boolean('showOrigins', 'Show origins', {default: true}),
+        Type.boolean('showDirections', 'Show directions', {default: true}),
     )
 
     static create(tileMap, params) {
@@ -28,9 +28,9 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, params) {
         super(tileMap)
         this.showPlateBorders = params.get('showPlateBorders')
-        this.showOrigins = params.get('showOrigins')
+        this.showDirections = params.get('showDirections')
         // this.colorMap = new PlateColorMap(tileMap)
-        this.deformColorMap = {
+        this.boundaryColorMap = {
             [DEFORMATION_CONTINENTAL_RIFT]: Color.fromHex('#176113'),
             [DEFORMATION_RIFT]: Color.YELLOW,
             [DEFORMATION_OROGENY]: Color.fromHex('#a38216'),
@@ -42,28 +42,26 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const plate = this.tileMap.getPlate(point)
-        const region = this.tileMap.model.regionGroupTileMap.getRegion(point)
-        const isBorderPoint = this.tileMap.isPlateBorder(point)
+        // const region = this.tileMap.model.regionGroupTileMap.getRegion(point)
+        // const isBorderPoint = this.tileMap.isPlateBorder(point)
+        const isContinental = plate.isContinental()
         let color = Color.fromHex('#058')  // ocean
 
-        if (plate.isContinental()) color = Color.fromHex('#26a11f')
-        if (this.showOrigins && plate.origin.equals(point)) {
-            return color.invert().toHex()
-        }
+        if (isContinental) color = Color.fromHex('#26a11f')
         if (this.showPlateBorders) {
-            const deformation = this.tileMap.getDeformation(point)
-            if (plate.isContinental() && deformation == DEFORMATION_OROGENY && isBorderPoint) {
-                return color.toHex()
-            }
-            color = this.deformColorMap[deformation] ?? color
-            return color.toHex()
+            const boundary = this.tileMap.getDeformation(point)
+
+            color = this.boundaryColorMap[boundary] ?? color
         }
         return color.toHex()
     }
 
     getText(point) {
         const plate = this.tileMap.getPlate(point)
-        return Direction.getSymbol(plate.direction)
+        if (this.showDirections && plate.origin.equals(point)) {
+            return Direction.getSymbol(plate.direction)
+        }
+        return
     }
 }
 

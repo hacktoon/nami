@@ -21,30 +21,30 @@
 
 
 /* SIDEBAR ==================================================== */
-.UITileMap .UIMapSidebar {
+.UITileMap .UITileMapSidebar {
     background: #111;
     color: #FFF;
     padding: .4rem;
 }
 
 
-.UITileMap .UIMapSidebar .Text {
+.UITileMap .UITileMapSidebar .Text {
     border: 1px solid #555;
     margin-bottom: .5rem;
     padding: .5rem;
 }
 
-.UITileMap .UIMapSidebar .Form {
+.UITileMap .UITileMapSidebar .Form {
     border: 1px solid #555;
     margin-bottom: .5rem;
 }
 
-.UITileMap .UIMapSidebar input {
+.UITileMap .UITileMapSidebar input {
     color: #FFF;
     background-color: #555;
 }
 
-.UITileMap .UIMapSidebar .Field.point .coordinate span {
+.UITileMap .UITileMapSidebar .Field.point .coordinate span {
     color: #AAA;
     background-color: #373737;
 }
