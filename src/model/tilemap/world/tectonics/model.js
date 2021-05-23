@@ -27,12 +27,12 @@ const TYPE_CONTINENTAL = 'C'
 
 
 export class Plate {
-    constructor(id, type, area) {
+    constructor(id, type, origin, area) {
         this.id = id
         this.type = type
         this.area = area
-        this.color = new Color()
-        this.direction = Direction.randomCardinal()
+        this.origin = origin
+        this.direction = Direction.random()
         this.speed = Random.choice(1, 1, 2, 2, 3)
     }
 
@@ -76,7 +76,8 @@ export class TectonicsModel {
             let type = TYPE_CONTINENTAL
             if (oceanicArea < halfWorldArea)
                 type = TYPE_OCEANIC
-            const plate = new Plate(group.id, type, group.area)
+            const plate = new Plate(group.id, type, group.origin, group.area)
+            console.log(plate, Direction.getSymbol(plate.direction));
             plates.set(plate.id, plate)
         })
         return plates

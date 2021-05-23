@@ -2,14 +2,14 @@ import { Random } from '/lib/base/random'
 
 
 const DIRECTIONS = {
-    NORTH:     { id: 'N',  symbol: "\u25B2", inverse: 'S' },
-    EAST:      { id: 'E',  symbol: "\u25B6", inverse: 'W' },
-    SOUTH:     { id: 'S',  symbol: "\u25BC", inverse: 'N' },
-    WEST:      { id: 'W',  symbol: "\u25C0", inverse: 'E' },
-    NORTHEAST: { id: 'NE', symbol: "\u25E5", inverse: 'SW' },
-    NORTHWEST: { id: 'NW', symbol: "\u25E4", inverse: 'SE' },
-    SOUTHEAST: { id: 'SE', symbol: "\u25E2", inverse: 'NW' },
-    SOUTHWEST: { id: 'SW', symbol: "\u25E3", inverse: 'NE' }
+    WEST:      { id: 'W',  symbol: '\u2190', inverse: 'E' },
+    NORTH:     { id: 'N',  symbol: '\u2191', inverse: 'S' },
+    EAST:      { id: 'E',  symbol: '\u2192', inverse: 'W' },
+    SOUTH:     { id: 'S',  symbol: '\u2193', inverse: 'N' },
+    NORTHWEST: { id: 'NW', symbol: '\u2196', inverse: 'SE' },
+    NORTHEAST: { id: 'NE', symbol: '\u2197', inverse: 'SW' },
+    SOUTHEAST: { id: 'SE', symbol: '\u2198', inverse: 'NW' },
+    SOUTHWEST: { id: 'SW', symbol: '\u2199', inverse: 'NE' }
 }
 
 const DIRECTION_MAP = (() => {
