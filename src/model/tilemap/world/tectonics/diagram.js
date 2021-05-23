@@ -54,6 +54,11 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         }
         return color.toHex()
     }
+
+    getText(point) {
+        const plate = this.tileMap.getPlate(point)
+        return 'Opa'
+    }
 }
 
 

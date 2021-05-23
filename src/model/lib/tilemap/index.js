@@ -30,4 +30,14 @@ export class TileMapDiagram {
         this.width = tileMap.width
         this.height = tileMap.height
     }
+
+    get(point) {
+        if ((point.x + point.y) % 2 === 0)
+            return '#AAA'
+        return '#EEE'
+    }
+
+    getText(point) {
+        return point.hash
+    }
 }

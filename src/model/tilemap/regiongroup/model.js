@@ -36,7 +36,6 @@ export class RegionGroupModel {
             groupGrowth: params.get('groupGrowth'),
             borderRegions: new Set(),
             regionToGroup: new Map(),
-            groupToRegions: new Map(),
             graph: new Graph(),
             groups: new Map(),
         }
@@ -48,11 +47,7 @@ export class RegionGroupModel {
         })
         new MultiFill(fills).map(fill => {
             const groupId = fill.config.id
-            let area = 0
-            for(let id of data.groupToRegions.get(groupId)) {
-                const region = data.regionTileMap.getRegionById(id)
-                area += region.area
-            }
+            const area = fill.config.area
             const group = new RegionGroup(groupId, fill.origin, area)
             data.groups.set(group.id, group)
         })
@@ -81,6 +76,7 @@ class RegionGroupFillConfig {
     constructor(id, model) {
         this.id = id
         this.model = model
+        this.area = 0
         this.chance = model.groupChance
         this.growth = model.groupGrowth
     }
@@ -91,10 +87,7 @@ class RegionGroupFillConfig {
 
     setValue(region) {
         this.model.regionToGroup.set(region.id, this.id)
-        if (! this.model.groupToRegions.has(this.id)) {
-            this.model.groupToRegions.set(this.id, new Set())
-        }
-        this.model.groupToRegions.get(this.id).add(region.id)
+        this.area += region.area
     }
 
     checkNeighbor(neighborRegion, region) {

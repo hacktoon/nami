@@ -6,9 +6,10 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 const SCHEMA = new Schema(
     'RegionGroupTileMapDiagram',
     Type.boolean('showGroups', 'Show groups', {default: true}),
+    Type.boolean('showOrigins', 'Show origins', {default: true}),
     Type.boolean('showGroupBorder', 'Show group border', {default: true}),
     Type.boolean('showRegions', 'Show regions', {default: false}),
-    Type.boolean('showBorderRegion', 'Show border region', {default: true}),
+    Type.boolean('showBorderRegion', 'Show border region', {default: false}),
     Type.boolean('showRegionBorder', 'Show region border', {default: false}),
 )
 
@@ -22,8 +23,9 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
 
     constructor(tileMap, params) {
         super(tileMap)
-        this.showRegions = params.get('showRegions')
         this.showGroups = params.get('showGroups')
+        this.showOrigins = params.get('showOrigins')
+        this.showRegions = params.get('showRegions')
         this.showRegionBorder = params.get('showRegionBorder')
         this.showGroupBorder = params.get('showGroupBorder')
         this.showBorderRegion = params.get('showBorderRegion')
@@ -32,17 +34,22 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const region = this.tileMap.getRegion(point)
         const group = this.tileMap.getGroup(point)
-        const regionColor = this.regionColorMap.get(region)
+        const region = this.tileMap.getRegion(point)
         const groupColor = this.groupColorMap.get(group)
+        const regionColor = this.regionColorMap.get(region)
         const isBorderRegion = this.tileMap.isBorderRegion(region)
 
+        if (this.showOrigins && group.origin.equals(point)) {
+            return groupColor.invert().toHex()
+        }
         if (this.showGroupBorder && this.tileMap.isGroupBorder(point)) {
             return groupColor.darken(50).toHex()
         }
         if (this.showRegionBorder && this.tileMap.isRegionBorder(point)) {
-            let color = this.showGroups ? groupColor.brighten(50) : regionColor.darken(50)
+            let color = regionColor.darken(50)
+            if (this.showGroups)
+                color = groupColor.brighten(50)
             return color.toHex()
         }
         if (this.showGroups) {

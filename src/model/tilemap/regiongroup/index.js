@@ -52,6 +52,7 @@ export class RegionGroupTileMap extends TileMap {
             group: group.id,
             region: region.id,
             neighborGroups: neighborGroups.map(g=>g.id).join(', '),
+            groupArea: group.area,
             regionArea: region.area,
         }
     }
