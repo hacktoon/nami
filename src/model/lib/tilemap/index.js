@@ -38,6 +38,6 @@ export class TileMapDiagram {
     }
 
     getText(point) {
-        return point.hash
+        return
     }
 }
