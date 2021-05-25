@@ -6,6 +6,7 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 const SCHEMA = new Schema(
     'RegionTileMapDiagram',
     Type.boolean('showBorders', 'Show borders', {default: true}),
+    Type.boolean('showOrigins', 'Show origins', {default: true}),
     Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
     Type.boolean('showSelectedRegion', 'Show selected region', {default: false}),
     Type.number('selectedRegionId', 'Select region', {default: 0, min: 0, step: 1}),
@@ -22,6 +23,7 @@ export class RegionTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, params) {
         super(tileMap)
         this.showBorders = params.get('showBorders')
+        this.showOrigins = params.get('showOrigins')
         this.showNeighborBorder = params.get('showNeighborBorder')
         this.showSelectedRegion = params.get('showSelectedRegion')
         this.selectedRegionId = params.get('selectedRegionId')
@@ -29,10 +31,13 @@ export class RegionTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const isBorder = this.tileMap.isBorder(point)
         const region = this.tileMap.getRegion(point)
+        const isBorder = this.tileMap.isBorder(point)
         const color = this.colorMap.get(region)
 
+        if (this.showOrigins && region.origin.equals(point)) {
+            return color.invert().toHex()
+        }
         if (this.showBorders && isBorder) {
             if (this.showNeighborBorder) {
                 const neighborRegions = this.tileMap.getBorderRegions(point)

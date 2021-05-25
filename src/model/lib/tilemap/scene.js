@@ -69,7 +69,7 @@ export class TileMapScene {
         const {origin} = this.frame.rect(focus)
         return point
             .minus(origin) // get tile at scene edge
-            .multiply(this.zoom)  // make it a canvas position
+            .multiplyScalar(this.zoom)  // make it a canvas position
             .minus(this.frame.offset)  // apply viewport offset
     }
 

@@ -1,16 +1,10 @@
-import { Color } from '/lib/base/color'
 import { Random } from '/lib/base/random'
+import { Point } from '/lib/base/point'
 import { Direction } from '/lib/base/direction'
 import { SimplexNoise } from '/lib/fractal/noise'
 
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
-import { buildGeoMatrix } from './matrix'
 
-/*
-TODO
-- make different map for platform and continent
-- need to get regions data to create the elevation map in borders
-*/
 
 const NO_DEFORMATION = null
 export const DEFORMATION_OROGENY = 1
@@ -139,10 +133,20 @@ class BoundaryMap {
     }
 
     _buildBoundary(plate, otherPlate) {
+        const type = this._getBoundaryType(plate, otherPlate)
         if (plate.isContinental()) {
             return this._builContinentaldBoundary(plate, otherPlate)
         }
         return this._builOceanicBoundary(plate, otherPlate)
+    }
+
+    _getBoundaryType(plate, otherPlate) {
+        const distance = otherPlate.origin.minus(plate.origin)
+        const [dirX, dirY] = Direction.getAxis(otherPlate.direction)
+        const reference = distance.multiplyScalar(dirX, dirY)
+
+        // console.log(reference);
+        // console.log(plate.id, otherPlate.id, ' ----- ' . quadrant);
     }
 
     _builContinentaldBoundary(plate, otherPlate) {

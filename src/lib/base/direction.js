@@ -1,15 +1,15 @@
-import { Random } from '/lib/base/random'
+import { Random } from '/lib/base/random/'
 
 
 const DIRECTIONS = {
-    WEST:      { id: 'W',  symbol: '\u2190', inverse: 'E' },
-    NORTH:     { id: 'N',  symbol: '\u2191', inverse: 'S' },
-    EAST:      { id: 'E',  symbol: '\u2192', inverse: 'W' },
-    SOUTH:     { id: 'S',  symbol: '\u2193', inverse: 'N' },
-    NORTHWEST: { id: 'NW', symbol: '\u2196', inverse: 'SE' },
-    NORTHEAST: { id: 'NE', symbol: '\u2197', inverse: 'SW' },
-    SOUTHEAST: { id: 'SE', symbol: '\u2198', inverse: 'NW' },
-    SOUTHWEST: { id: 'SW', symbol: '\u2199', inverse: 'NE' }
+    WEST:      { id: 'W',  symbol: '\u2190', axis: [-1,  0]},
+    NORTH:     { id: 'N',  symbol: '\u2191', axis: [ 0, -1]},
+    EAST:      { id: 'E',  symbol: '\u2192', axis: [ 1,  0]},
+    SOUTH:     { id: 'S',  symbol: '\u2193', axis: [ 0,  1]},
+    NORTHWEST: { id: 'NW', symbol: '\u2196', axis: [-1, -1]},
+    NORTHEAST: { id: 'NE', symbol: '\u2197', axis: [ 1, -1]},
+    SOUTHEAST: { id: 'SE', symbol: '\u2198', axis: [ 1,  1]},
+    SOUTHWEST: { id: 'SW', symbol: '\u2199', axis: [-1,  1]},
 }
 
 const DIRECTION_MAP = (() => {
@@ -37,6 +37,10 @@ export class Direction {
 
     static getSymbol (id) {
         return DIRECTION_MAP[id].symbol
+    }
+
+    static getAxis(id) {
+        return DIRECTION_MAP[id].axis
     }
 
     static random () {

@@ -54,7 +54,11 @@ export class Point {
         return new Point(this.x - point.x, this.y - point.y)
     }
 
-    multiply(x, y) {
+    multiply(point) {
+        return new Point(this.x * point.x, this.y * point.y)
+    }
+
+    multiplyScalar(x, y) {
         return new Point(this.x * x, this.y * (y ?? x))
     }
 
