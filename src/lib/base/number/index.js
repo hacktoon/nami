@@ -32,7 +32,7 @@ export class Rect {
         return this.width * this.height
     }
 
-    inside(point) {
+    isInside(point) {
         const x = point.x >= 0 && point.x < this.width
         const y = point.y >= 0 && point.y < this.height
         return x && y

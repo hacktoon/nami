@@ -14,7 +14,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 10, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.1, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: '1621983473369'})
 )
 
 
@@ -47,6 +47,7 @@ export class RegionTileMap extends TileMap {
         const borderIds = this.getBorderRegions(point)
         const region = this.getRegion(point)
         return {
+            point: point.hash,
             id: region.id,
             region: region,
             borders: borderIds.map(r => r.id).join(', '),

@@ -7,9 +7,9 @@ import { Type } from '/lib/base/type'
 export class TileMapScene {
     static schema = new Schema(
         'TileMapScene',
-        Type.point('focus', "Focus", {default: new Point(75, 50)}),
+        Type.point('focus', "Focus", {default: new Point(142, 83)}),
         Type.boolean('wrap', "Wrap", {default: false}),
-        Type.number('zoom', "Zoom", {default: 6, step: 1, min: 1, max: 100}),
+        Type.number('zoom', "Zoom", {default: 30, step: 1, min: 1, max: 100}),
     )
 
     static create(diagram, width, height, params) {
@@ -45,7 +45,7 @@ export class TileMapScene {
     isWrappable(point) {
         if (this.wrap) return true
         const rect = new Rect(this.diagram.width, this.diagram.height)
-        return rect.inside(point)
+        return rect.isInside(point)
     }
 
     renderCursor(canvas, cursor) {

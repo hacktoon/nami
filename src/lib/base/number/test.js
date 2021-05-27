@@ -42,12 +42,12 @@ test('rect area', () => {
 test('point inside rect', () => {
     const rect = new Rect(10, 10)
     const point = new Point(5, 3)
-    expect(rect.inside(point)).toBe(true)
+    expect(rect.isInside(point)).toBe(true)
 })
 
 
 test('point outside rect', () => {
     const rect = new Rect(10, 10)
     const point = new Point(15, 3)
-    expect(rect.inside(point)).toBe(false)
+    expect(rect.isInside(point)).toBe(false)
 })

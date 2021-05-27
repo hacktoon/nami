@@ -33,6 +33,10 @@ export class Matrix {
         return this.rect.wrap(point)
     }
 
+    isWrappable(point) {
+        return ! this.rect.isInside(point)
+    }
+
     forEach(callback) {
 
     }
