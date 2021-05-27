@@ -83,14 +83,15 @@ export class RegionFillConfig {
         if (this.isEmpty(neighborPoint)) return
         const neighborId = this.model.regionMatrix.get(neighborPoint)
         if (this.id === neighborId) return
-        let wrappable = this.model.regionMatrix.isWrappable(fillPoint)
-        if (this.id === 95 && neighborId== 89 && wrappable) {
+        if (this.model.regionMatrix.isWrappable(fillPoint) &&
+            this.id == 89 && neighborId == 95) {
             const wrappedOrigin = this.getUnboundedOrigin(fillPoint)
 
-            const angle = angleOf(fillPoint, neighborPoint)
-            let msg = `${fillPoint.hash} to ${neighborPoint.hash}, ${angle}°`
-            msg += ` - wrappedOrigin: ${wrappedOrigin.hash}`
+            // const angle = angleOf(fillPoint, neighborPoint)
+            // let msg = `${fillPoint.hash} to ${neighborPoint.hash}, ${angle}°`
+            let msg = ` - wrappedOrigin: ${wrappedOrigin.hash}`
             console.log(msg)
+            // map(ngbId) to map(id, wrpOrg)
             // this.model.wrapMap.set(neighborId, this.id, wrappedOrigin)
         }
         this.model.graph.setEdge(this.id, neighborId)
