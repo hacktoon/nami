@@ -33,12 +33,13 @@ export class RegionMapModel {
     _build(params) {
         const [width, height, scale] = params.get('width', 'height', 'scale')
         const origins = EvenPointSampling.create(width, height, scale)
+        const regions = new Map()
         const data = {
             regionMatrix: new Matrix(width, height, () => NO_REGION),
             borderMatrix: new Matrix(width, height, () => new Set()),
+            offsetOriginMap: new OffsetOriginMap(),
             chance: params.get('chance'),
             growth: params.get('growth'),
-            regions: new Map(),
             graph: new Graph(),
             origins,
         }
@@ -53,10 +54,9 @@ export class RegionMapModel {
                 origin: fill.origin,
                 area: fill.count
             })
-            data.regions.set(region.id, region)
+            regions.set(region.id, region)
         })
-
-        return data
+        return {...data, regions}
     }
 }
 
@@ -83,16 +83,9 @@ export class RegionFillConfig {
         if (this.isEmpty(neighborPoint)) return
         const neighborId = this.model.regionMatrix.get(neighborPoint)
         if (this.id === neighborId) return
-        if (this.model.regionMatrix.isWrappable(fillPoint) &&
-            this.id == 89 && neighborId == 95) {
-            const wrappedOrigin = this.getUnboundedOrigin(fillPoint)
-
-            // const angle = angleOf(fillPoint, neighborPoint)
-            // let msg = `${fillPoint.hash} to ${neighborPoint.hash}, ${angle}°`
-            let msg = ` - wrappedOrigin: ${wrappedOrigin.hash}`
-            console.log(msg)
-            // map(ngbId) to map(id, wrpOrg)
-            // this.model.wrapMap.set(neighborId, this.id, wrappedOrigin)
+        if (this.model.regionMatrix.isWrappable(fillPoint)) {
+            const offsetOrigin = this.getOffsetOrigin(fillPoint)
+            this.model.offsetOriginMap.set(neighborId, this.id, offsetOrigin)
         }
         this.model.graph.setEdge(this.id, neighborId)
         this.model.borderMatrix.get(fillPoint).add(neighborId)
@@ -102,8 +95,9 @@ export class RegionFillConfig {
         return originPoint.adjacents()
     }
 
-    // Private methods
-    getUnboundedOrigin(fillPoint) {
+    // get the region origin out of the matrix bounds
+    // for size = 150 and range 0-149, converts (-1, 4) to (150, 4)
+    getOffsetOrigin(fillPoint) {
         const {width, height} = this.model.regionMatrix
         let {x, y} = this.origin
         if (fillPoint.x < 0) x += width
@@ -112,13 +106,42 @@ export class RegionFillConfig {
         if (fillPoint.y >= height) y -= height
         return new Point(x, y)
     }
+}
 
+
+class OffsetOriginMap {
+    constructor() {
+        this._sources = new Map()
+    }
+
+    set(source, target, point) {
+        if (! this._sources.has(source)) {
+            this._sources.set(source, new Map())
+        }
+        const targets = this._sources.get(source)
+        if (! targets.has(target)) {
+            targets.set(target, point)
+        }
+    }
+
+    has(source, target) {
+        if (! this._sources.has(source)) return false
+        return this._sources.get(source).has(target)
+    }
+
+    get(source, target) {
+        return this._sources.get(source).get(target)
+    }
 }
 
 
 function angleOf(p1, p2) {
-    let deltaY = (p1.y - p2.y);
-    let deltaX = (p2.x - p1.x);
-    let result = Math.atan2(deltaY, deltaX) * (180 / Math.PI)
+    // normalize vectors
+    const deltaY = p1.y - p2.y  // for Y getting bigger to the south
+    const deltaX = p2.x - p1.x
+    // get angle between vectors
+    let result = Math.atan2(deltaY, deltaX)
+    // convert from radians to degrees
+    result *= 180 / Math.PI
     return Math.round((result < 0) ? (360 + result) : result)
 }
