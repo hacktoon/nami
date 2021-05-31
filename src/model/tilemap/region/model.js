@@ -33,22 +33,36 @@ export class RegionMapModel {
     _build(params) {
         const [width, height, scale] = params.get('width', 'height', 'scale')
         const origins = EvenPointSampling.create(width, height, scale)
-        const regions = new Map()
         const data = {
             regionMatrix: new Matrix(width, height, () => NO_REGION),
             borderMatrix: new Matrix(width, height, () => new Set()),
             offsetOriginMap: new OffsetOriginMap(),
             chance: params.get('chance'),
             growth: params.get('growth'),
-            graph: new Graph(),
-            origins,
+            graph: new Graph()
         }
-        const fills = origins.map((origin, id) => {
+        const regions = this._buildRegions(origins, data)
+
+        regions.forEach(region => {
+            data.graph.getEdges(region.id).forEach(edgeId => {
+                let origin = regions.get(edgeId).origin
+                if (data.offsetOriginMap.has(region.id, edgeId)) {
+                    origin = data.offsetOriginMap.get(region.id, edgeId)
+                }
+                const angle = angleOf(region.origin, origin)
+                console.log(`${region.id} -> ${edgeId} = ${angle}°`);
+            })
+        })
+        return {...data, regions}
+    }
+
+    _buildRegions(origins, data) {
+        const regions = new Map()
+        const multifill = new MultiFill(origins.map((origin, id) => {
             const fillConfig = new RegionFillConfig(id, origin, data)
             return new OrganicFloodFill(origin, fillConfig)
-        })
-
-        new MultiFill(fills).forEach(fill => {
+        }))
+        multifill.forEach(fill => {
             const region = new Region({
                 id: fill.config.id,
                 origin: fill.origin,
@@ -56,7 +70,11 @@ export class RegionMapModel {
             })
             regions.set(region.id, region)
         })
-        return {...data, regions}
+        return regions
+    }
+
+    _buildAngles(regions, offsetOriginMap) {
+
     }
 }
 

@@ -56,6 +56,14 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         }
         return color.toHex()
     }
+
+    getText(point) {
+        const region = this.tileMap.getRegion(point)
+        if (region.origin.equals(point)) {
+            return String(region.id)
+        }
+        return ''
+    }
 }
 
 
