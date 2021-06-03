@@ -62,6 +62,17 @@ export class Point {
         return new Point(this.x * x, this.y * (y ?? x))
     }
 
+    angle(point) {
+        // normalize vectors
+        const deltaY = this.y - point.y  // for y getting bigger to the south
+        const deltaX = point.x - this.x
+        // get angle between vectors
+        let result = Math.atan2(deltaY, deltaX)
+        // convert from radians to degrees
+        result *= 180 / Math.PI
+        return Math.round((result < 0) ? (360 + result) : result)
+    }
+
     isAdjacent(point) {
         const x = Math.abs(this.x - point.x)
         const y = Math.abs(this.y - point.y)
