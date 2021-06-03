@@ -64,12 +64,11 @@ export class TectonicsModel {
         const cmpDescendingCount = (g0, g1) => g1.count - g0.count
         const groups = regionGroupTileMap.getGroups().sort(cmpDescendingCount)
         const halfWorldArea = Math.floor(regionGroupTileMap.area / 2)
-        let oceanicArea = 0
+        let totalOceanicArea = 0
         groups.forEach(group => {
-            oceanicArea += group.area
-            let type = TYPE_CONTINENTAL
-            if (oceanicArea < halfWorldArea)
-                type = TYPE_OCEANIC
+            totalOceanicArea += group.area
+            const isOceanic = totalOceanicArea < halfWorldArea
+            const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
             const plate = new Plate(group.id, type, group.origin, group.area)
             plates.set(plate.id, plate)
         })

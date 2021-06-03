@@ -7,9 +7,9 @@ import { Type } from '/lib/base/type'
 export class TileMapScene {
     static schema = new Schema(
         'TileMapScene',
-        Type.point('focus', "Focus", {default: new Point(142, 83)}),
+        Type.point('focus', "Focus", {default: new Point(77, 50)}),
         Type.boolean('wrap', "Wrap", {default: false}),
-        Type.number('zoom', "Zoom", {default: 16, step: 1, min: 1, max: 100}),
+        Type.number('zoom', "Zoom", {default: 6, step: 1, min: 1, max: 100}),
     )
 
     static create(diagram, width, height, params) {

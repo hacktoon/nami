@@ -14,7 +14,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 10, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: 0.1, step: 0.01, min: 0.1, max: 1}),
-    Type.text('seed', 'Seed', {default: '1621983473369'})
+    Type.text('seed', 'Seed', {default: ''})
 )
 
 
@@ -40,20 +40,21 @@ export class RegionTileMap extends TileMap {
         this.regions = model.regions
         this.regionMatrix = model.regionMatrix
         this.borderMatrix = model.borderMatrix
-        this.borderMatrix = model.borderMatrix
-        this.outboundOrigins = model.outboundOrigins
+        this.directions = model.directions
         this.graph = model.graph
     }
 
     get(point) {
-        const borderIds = this.getBorderRegions(point)
         const region = this.getRegion(point)
+        const neighbors = this.getNeighborRegions(region)
         return {
             point: point.hash,
             id: region.id,
             region: region,
-            borders: borderIds.map(r => r.id).join(', '),
-            neighborRegions: this.getNeighborRegions(region),
+            neighbors: neighbors.map(neighbor => {
+                const dir = this.getRegionsDirection(region, neighbor)
+                return `${dir.name}(${neighbor.id})`
+            }).join(', ')
         }
     }
 
@@ -62,9 +63,8 @@ export class RegionTileMap extends TileMap {
         return this.regions.get(id)
     }
 
-    getRegionOutboundOrigin(region) {
-        const id = this.regionMatrix.get(point)
-        return this.regions.get(id)
+    getRegionsDirection(sourceRegion, targetRegion) {
+        return this.directions.get(sourceRegion.id, targetRegion.id)
     }
 
     getRegionById(id) {
