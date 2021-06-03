@@ -1,3 +1,4 @@
+import { PairMap } from '/lib/base'
 import { Color } from '/lib/base/color'
 import { Matrix } from '/lib/base/matrix'
 import { Direction } from '/lib/base/direction'
@@ -125,45 +126,7 @@ export class RegionFillConfig {
         this.model.borderMatrix.get(fillPoint).add(neighborId)
     }
 
-    // get the region origin out of the matrix bounds
-    // for size = 150 and range 0-149, converts (-1, 4) to (150, 4)
-    _getOutboundOrigin(fillPoint) {
-        const {width, height} = this.model.regionMatrix
-        let {x, y} = this.origin
-        if (fillPoint.x < 0) x += width
-        if (fillPoint.y < 0) y += height
-        if (fillPoint.x >= width) x -= width
-        if (fillPoint.y >= height) y -= height
-        return new Point(x, y)
-    }
-
     getNeighbors(originPoint) {
         return originPoint.adjacents()
-    }
-}
-
-
-class PairMap {
-    constructor() {
-        this._sources = new Map()
-    }
-
-    set(source, target, point) {
-        if (! this._sources.has(source)) {
-            this._sources.set(source, new Map())
-        }
-        const targets = this._sources.get(source)
-        if (! targets.has(target)) {
-            targets.set(target, point)
-        }
-    }
-
-    has(source, target) {
-        if (! this._sources.has(source)) return false
-        return this._sources.get(source).has(target)
-    }
-
-    get(source, target) {
-        return this._sources.get(source).get(target)
     }
 }

@@ -1,5 +1,5 @@
 import { Random } from '/lib/base/random'
-import { Point } from '/lib/base/point'
+import { PairMap } from '/lib/base'
 import { Direction } from '/lib/base/direction'
 import { SimplexNoise } from '/lib/fractal/noise'
 
@@ -51,7 +51,7 @@ export class TectonicsModel {
     _build(seed, params) {
         const regionGroupTileMap = buildRegionGroupMap(seed, params)
         const plates = this._buildPlates(regionGroupTileMap)
-        const deformations = new BoundaryMap(plates, regionGroupTileMap)
+        const deformations = new RegionBoundaryMap(plates, regionGroupTileMap)
 
         // leave noise map for final matrix rendering
         // const noiseMap = new NoiseMap()
@@ -116,7 +116,7 @@ class NoiseMap {
 }
 
 
-class BoundaryMap {
+class RegionBoundaryMap {
     constructor(plates, regionGroupTileMap) {
         const graph = regionGroupTileMap.getGraph()
         this.boundaries = new Map()
@@ -142,7 +142,6 @@ class BoundaryMap {
     _getBoundaryType(plate, otherPlate) {
         const distance = otherPlate.origin.minus(plate.origin)
         const [dirX, dirY] = Direction.getAxis(otherPlate.direction)
-        const reference = distance.multiplyScalar(dirX, dirY)
 
         // console.log(reference);
         // console.log(plate.id, otherPlate.id, ' ----- ' . quadrant);
