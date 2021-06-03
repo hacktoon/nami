@@ -1,15 +1,16 @@
 import { Random } from '/lib/base/random/'
 
 
+// these id counts starts from east, anti-clockwise
 const DIRECTIONS = {
-    WEST:      { id: 'W',  symbol: '\u2190', axis: [-1,  0]},
-    NORTH:     { id: 'N',  symbol: '\u2191', axis: [ 0, -1]},
-    EAST:      { id: 'E',  symbol: '\u2192', axis: [ 1,  0]},
-    SOUTH:     { id: 'S',  symbol: '\u2193', axis: [ 0,  1]},
-    NORTHWEST: { id: 'NW', symbol: '\u2196', axis: [-1, -1]},
-    NORTHEAST: { id: 'NE', symbol: '\u2197', axis: [ 1, -1]},
-    SOUTHEAST: { id: 'SE', symbol: '\u2198', axis: [ 1,  1]},
-    SOUTHWEST: { id: 'SW', symbol: '\u2199', axis: [-1,  1]},
+    EAST:      { id: 0, name: 'E',  symbol: '\u2192', axis: [ 1,  0]},
+    NORTHEAST: { id: 1, name: 'NE', symbol: '\u2197', axis: [ 1, -1]},
+    NORTH:     { id: 2, name: 'N',  symbol: '\u2191', axis: [ 0, -1]},
+    NORTHWEST: { id: 3, name: 'NW', symbol: '\u2196', axis: [-1, -1]},
+    WEST:      { id: 4, name: 'W',  symbol: '\u2190', axis: [-1,  0]},
+    SOUTHWEST: { id: 5, name: 'SW', symbol: '\u2199', axis: [-1,  1]},
+    SOUTH:     { id: 6, name: 'S',  symbol: '\u2193', axis: [ 0,  1]},
+    SOUTHEAST: { id: 7, name: 'SE', symbol: '\u2198', axis: [ 1,  1]},
 }
 
 const DIRECTION_MAP = (() => {
@@ -30,6 +31,10 @@ export class Direction {
     static get NORTHWEST () { return DIRECTIONS.NORTHWEST.id }
     static get SOUTHEAST () { return DIRECTIONS.SOUTHEAST.id }
     static get SOUTHWEST () { return DIRECTIONS.SOUTHWEST.id }
+
+    static getById(id) {
+        return DIRECTION_MAP[id]
+    }
 
     static getName (id) {
         return DIRECTION_MAP[id].name

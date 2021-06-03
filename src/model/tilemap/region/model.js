@@ -24,6 +24,7 @@ export class Region {
 export class RegionMapModel {
     constructor(params) {
         const data = this._build(params)
+        this.outboundOrigins = data.outboundOrigins
         this.regionMatrix = data.regionMatrix
         this.borderMatrix = data.borderMatrix
         this.regions = data.regions
@@ -36,23 +37,13 @@ export class RegionMapModel {
         const data = {
             regionMatrix: new Matrix(width, height, () => NO_REGION),
             borderMatrix: new Matrix(width, height, () => new Set()),
-            offsetOriginMap: new OffsetOriginMap(),
+            outboundOrigins: new OutboundOriginMap(),
             chance: params.get('chance'),
             growth: params.get('growth'),
             graph: new Graph()
         }
         const regions = this._buildRegions(origins, data)
-
-        regions.forEach(region => {
-            data.graph.getEdges(region.id).forEach(edgeId => {
-                let origin = regions.get(edgeId).origin
-                if (data.offsetOriginMap.has(region.id, edgeId)) {
-                    origin = data.offsetOriginMap.get(region.id, edgeId)
-                }
-                const angle = angleOf(region.origin, origin)
-                console.log(`${region.id} -> ${edgeId} = ${angle}°`);
-            })
-        })
+        const angles = this._buildAngles(regions, data)
         return {...data, regions}
     }
 
@@ -73,9 +64,44 @@ export class RegionMapModel {
         return regions
     }
 
-    _buildAngles(regions, offsetOriginMap) {
 
+    _buildAngles(regions, data) {
+        regions.forEach(region => {
+            const neighborRegionIds = data.graph.getEdges(region.id)
+            neighborRegionIds.forEach(edgeId => {
+                let origin = regions.get(edgeId).origin
+                if (data.outboundOrigins.has(region.id, edgeId)) {
+                    origin = data.outboundOrigins.get(region.id, edgeId)
+                }
+                const angle = angleOf(region.origin, origin)
+                if (region.id == 25 || region.id == 63) {
+                    const direction = this._angleToDirection(angle)
+                    console.log(`${region.id} to ${edgeId} = ${angle}°, ${direction.name}`)
+                }
+            })
+        })
+        return {}
     }
+
+    _angleToDirection(angle) {
+        const degreePerDirection = 360 / 8
+        const offsetAngle = angle + Math.floor(degreePerDirection / 2)
+        const wrappedAngle = offsetAngle > 360 ? offsetAngle - 360 : offsetAngle
+        const angleIndex = Math.floor(wrappedAngle / degreePerDirection)
+        return Direction.getById(angleIndex)
+    }
+}
+
+
+function angleOf(p1, p2) {
+    // normalize vectors
+    const deltaY = p1.y - p2.y  // for Y getting bigger to the south
+    const deltaX = p2.x - p1.x
+    // get angle between vectors
+    let result = Math.atan2(deltaY, deltaX)
+    // convert from radians to degrees
+    result *= 180 / Math.PI
+    return Math.round((result < 0) ? (360 + result) : result)
 }
 
 
@@ -102,20 +128,17 @@ export class RegionFillConfig {
         const neighborId = this.model.regionMatrix.get(neighborPoint)
         if (this.id === neighborId) return
         if (this.model.regionMatrix.isWrappable(fillPoint)) {
-            const offsetOrigin = this.getOffsetOrigin(fillPoint)
-            this.model.offsetOriginMap.set(neighborId, this.id, offsetOrigin)
+            const outboundOrigin = this._getOutboundOrigin(fillPoint)
+            this.model.outboundOrigins.set(neighborId, this.id, outboundOrigin)
         }
+        // mark region when neighbor point is filled by other region
         this.model.graph.setEdge(this.id, neighborId)
         this.model.borderMatrix.get(fillPoint).add(neighborId)
     }
 
-    getNeighbors(originPoint) {
-        return originPoint.adjacents()
-    }
-
     // get the region origin out of the matrix bounds
     // for size = 150 and range 0-149, converts (-1, 4) to (150, 4)
-    getOffsetOrigin(fillPoint) {
+    _getOutboundOrigin(fillPoint) {
         const {width, height} = this.model.regionMatrix
         let {x, y} = this.origin
         if (fillPoint.x < 0) x += width
@@ -124,10 +147,14 @@ export class RegionFillConfig {
         if (fillPoint.y >= height) y -= height
         return new Point(x, y)
     }
+
+    getNeighbors(originPoint) {
+        return originPoint.adjacents()
+    }
 }
 
 
-class OffsetOriginMap {
+class OutboundOriginMap {
     constructor() {
         this._sources = new Map()
     }
@@ -150,16 +177,4 @@ class OffsetOriginMap {
     get(source, target) {
         return this._sources.get(source).get(target)
     }
-}
-
-
-function angleOf(p1, p2) {
-    // normalize vectors
-    const deltaY = p1.y - p2.y  // for Y getting bigger to the south
-    const deltaX = p2.x - p1.x
-    // get angle between vectors
-    let result = Math.atan2(deltaY, deltaX)
-    // convert from radians to degrees
-    result *= 180 / Math.PI
-    return Math.round((result < 0) ? (360 + result) : result)
 }
