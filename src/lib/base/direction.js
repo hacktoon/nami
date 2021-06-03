@@ -1,6 +1,12 @@
 import { Random } from '/lib/base/random/'
 
 
+//    135°   90°    45°
+//       NW   N   NE
+// 180°  W    .   E  0°
+//       SW   S   SE
+//    225°   270°    360°
+
 // these id counts starts from east, anti-clockwise
 const DIRECTIONS = {
     EAST:      { id: 0, name: 'E',  symbol: '\u2192', axis: [ 1,  0]},
@@ -32,10 +38,6 @@ export class Direction {
     static get SOUTHEAST () { return DIRECTIONS.SOUTHEAST.id }
     static get SOUTHWEST () { return DIRECTIONS.SOUTHWEST.id }
 
-    static getById(id) {
-        return DIRECTION_MAP[id]
-    }
-
     static getName (id) {
         return DIRECTION_MAP[id].name
     }
@@ -46,6 +48,14 @@ export class Direction {
 
     static getAxis(id) {
         return DIRECTION_MAP[id].axis
+    }
+
+    static fromAngle(angle) {
+        const degreePerDirection = 360 / 8
+        const offsetAngle = angle + degreePerDirection / 2
+        const wrappedAngle = offsetAngle > 360 ? offsetAngle - 360 : offsetAngle
+        const angleIndex = Math.floor(wrappedAngle / degreePerDirection)
+        return DIRECTION_MAP[angleIndex]
     }
 
     static random () {
