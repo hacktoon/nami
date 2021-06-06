@@ -64,14 +64,13 @@ export class RegionMapModel {
         return regions
     }
 
-
     _buildDirections(regions, data) {
         const directions = new PairMap()
         const matrix = data.regionMatrix
         regions.forEach(region => {
             data.graph.getEdges(region.id).forEach(neighborId => {
                 const neighbor = regions.get(neighborId)
-                const wrappedNeighborOrigin = this._wrapOrigin(region, neighbor, matrix)
+                const wrappedNeighborOrigin = this._wrapOrigin(matrix, region, neighbor)
                 const angle = region.origin.angle(wrappedNeighborOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(region.id, neighborId, direction)
@@ -80,7 +79,7 @@ export class RegionMapModel {
         return directions
     }
 
-    _wrapOrigin(source, target, matrix) {
+    _wrapOrigin(matrix, source, target) {
         const {x:sX, y:sY} = source.origin
         const {x:tX, y:tY} = target.origin
         const deltaX = Math.abs(sX - tX)
