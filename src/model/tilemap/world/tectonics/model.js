@@ -17,8 +17,6 @@ export const DEFORMATION_PASSIVE_MARGIN = 6
 export const DEFORMATION_FAULT = 7
 export const DEFORMATION_OCEANIC_FAULT = 8
 
-const EMPTY = null
-
 const TYPE_OCEANIC = 'O'
 const TYPE_CONTINENTAL = 'C'
 
@@ -79,7 +77,7 @@ export class TectonicsModel {
     }
 
     map(callback) {
-        return Array.from(this.plates.values()).map(callback)
+        return Array.from(this.plates.values()).map(plate => callback(plate))
     }
 
     forEach(callback) {
@@ -128,10 +126,10 @@ class RegionBoundaryMap {
             const group = regionGroupTileMap.getGroupByRegion(region)
             const fillConfig = new BoundaryRegionFillConfig({
                 id: group.id,
-                plates,
                 boundaries: this.boundaries,
-                visitedRegions,
                 regionGroupTileMap,
+                visitedRegions,
+                plates,
             })
             return new OrganicFloodFill(region, fillConfig)
         })
@@ -150,12 +148,13 @@ class RegionBoundaryMap {
 
 class BoundaryRegionFillConfig {
     constructor(data) {
+        this.id = data.id
         this.regionGroups = data.regionGroupTileMap
         this.visitedRegions = data.visitedRegions
         this.plate = data.plates.get(data.id)
         this.boundaries = data.boundaries
         this.plates = data.plates
-        this.id = data.id
+        this.energy = this.plate.speed
         this.chance = .1
         this.growth = 2
     }

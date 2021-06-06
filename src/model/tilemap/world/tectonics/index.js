@@ -57,12 +57,6 @@ export class TectonicsTileMap extends TileMap {
         return this.model.boundaries.get(region.id)
     }
 
-    getGeology(point) {
-        const group = this.model.regionGroupTileMap.getGroup(point)
-        const plate = this.model.plates.get(group.id)
-        return plate.isOceanic() ? 0 : 1
-    }
-
     map(callback) {
         return this.model.map(plate => callback(plate))
     }

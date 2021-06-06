@@ -48,10 +48,10 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const plate = this.tileMap.getPlate(point)
         // const region = this.tileMap.model.regionGroupTileMap.getRegion(point)
         // const isBorderPoint = this.tileMap.isPlateBorder(point)
-        const isContinental = plate.isContinental()
         let color = Color.fromHex('#058')  // ocean
 
-        if (isContinental) color = Color.fromHex('#26a11f')
+        if (plate.isContinental())
+            color = Color.fromHex('#26a11f')
         if (this.showPlateBorders) {
             const boundary = this.tileMap.getDeformation(point)
 
