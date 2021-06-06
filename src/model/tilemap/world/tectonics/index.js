@@ -3,10 +3,8 @@ import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { DEFORMATION_OROGENY, TectonicsModel } from './model'
+import { TectonicsModel } from './model'
 import { TectonicsTileMapDiagram } from './diagram'
-
-import NO_DEFORMATION from './model'
 
 
 const SCHEMA = new Schema(
