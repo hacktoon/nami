@@ -1,5 +1,6 @@
 import { Random } from '/lib/base/random'
-import { PairMap } from '/lib/base'
+import { MultiFill } from '/lib/floodfill'
+import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { Direction } from '/lib/base/direction'
 import { SimplexNoise } from '/lib/fractal/noise'
 
@@ -13,6 +14,7 @@ export const DEFORMATION_RIFT = 3
 export const DEFORMATION_CONTINENTAL_RIFT = 4
 export const DEFORMATION_ISLAND_ARC = 5
 export const DEFORMATION_PASSIVE_MARGIN = 6
+export const DEFORMATION_FAULT = 7
 
 const EMPTY = null
 
@@ -21,7 +23,7 @@ const TYPE_CONTINENTAL = 'C'
 
 
 export class Plate {
-    constructor(id, type, origin, area) {
+    constructor(id, origin, type, area) {
         this.id = id
         this.type = type
         this.area = area
@@ -44,19 +46,19 @@ export class TectonicsModel {
     constructor(seed, params) {
         const data = this._build(seed, params)
         this.regionGroupTileMap = data.regionGroupTileMap
-        this.deformations = data.deformations
+        this.boundaries = data.boundaries
         this.plates = data.plates
     }
 
     _build(seed, params) {
         const regionGroupTileMap = buildRegionGroupMap(seed, params)
         const plates = this._buildPlates(regionGroupTileMap)
-        const deformations = new RegionBoundaryMap(plates, regionGroupTileMap)
+        const boundaries = new RegionBoundaryMap(plates, regionGroupTileMap)
 
         // leave noise map for final matrix rendering
         // const noiseMap = new NoiseMap()
 
-        return {regionGroupTileMap, plates, deformations}
+        return {regionGroupTileMap, plates, boundaries}
     }
 
     _buildPlates(regionGroupTileMap) {
@@ -69,7 +71,7 @@ export class TectonicsModel {
             totalOceanicArea += group.area
             const isOceanic = totalOceanicArea < halfWorldArea
             const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
-            const plate = new Plate(group.id, type, group.origin, group.area)
+            const plate = new Plate(group.id, group.origin, type, group.area)
             plates.set(plate.id, plate)
         })
         return plates
@@ -118,60 +120,101 @@ class NoiseMap {
 
 class RegionBoundaryMap {
     constructor(plates, regionGroupTileMap) {
-        const graph = regionGroupTileMap.getGraph()
         this.boundaries = new Map()
-        plates.forEach(plate => {
-            const neighborMap = new Map()
-            graph.getEdges(plate.id).forEach(id => {
-                const neighborPlate = plates.get(id)
-                const deformation =this._buildBoundary(plate, neighborPlate)
-                neighborMap.set(neighborPlate.id, deformation)
+        const visitedRegions = new Set()
+        const borderRegions = regionGroupTileMap.getBorderRegions()
+        const fills = borderRegions.map(region => {
+            const group = regionGroupTileMap.getGroupByRegion(region)
+            const fillConfig = new BoundaryRegionFillConfig({
+                id: group.id,
+                plates,
+                boundaries: this.boundaries,
+                visitedRegions,
+                regionGroupTileMap,
             })
-            this.boundaries.set(plate.id, neighborMap)
+            return new OrganicFloodFill(region, fillConfig)
         })
+        new MultiFill(fills)
     }
 
-    _buildBoundary(plate, otherPlate) {
-        const type = this._getBoundaryType(plate, otherPlate)
-        if (plate.isContinental()) {
-            return this._builContinentaldBoundary(plate, otherPlate)
-        }
-        return this._builOceanicBoundary(plate, otherPlate)
+    has(regionId) {
+        return this.boundaries.has(regionId)
     }
 
-    _getBoundaryType(plate, otherPlate) {
-        const distance = otherPlate.origin.minus(plate.origin)
-        const [dirX, dirY] = Direction.getAxis(otherPlate.direction)
-
-        // console.log(reference);
-        // console.log(plate.id, otherPlate.id, ' ----- ' . quadrant);
-    }
-
-    _builContinentaldBoundary(plate, otherPlate) {
-        if (otherPlate.isContinental()) {
-            if (plate.speed > otherPlate.speed)
-                return DEFORMATION_OROGENY
-            return NO_DEFORMATION
-        }
-        if (otherPlate.isOceanic()) {
-            if (plate.id % 2 === 0) {
-                return DEFORMATION_PASSIVE_MARGIN
-            }
-            return DEFORMATION_OROGENY
-        }
-    }
-
-    _builOceanicBoundary(plate, otherPlate) {
-        if (otherPlate.isContinental()) {
-            return DEFORMATION_TRENCH
-        }
-        if (otherPlate.isOceanic()) {
-            return DEFORMATION_TRENCH
-        }
-    }
-
-    get(groupId) {
-        return this.boundaries.get(groupId)
+    get(regionId) {
+        return this.boundaries.get(regionId)
     }
 }
 
+
+class BoundaryRegionFillConfig {
+    constructor(data) {
+        this.regionGroups = data.regionGroupTileMap
+        this.visitedRegions = data.visitedRegions
+        this.plate = data.plates.get(data.id)
+        this.boundaries = data.boundaries
+        this.plates = data.plates
+        this.id = data.id
+        this.chance = .1
+        this.growth = 2
+    }
+
+    isEmpty(region) {
+        return !this.visitedRegions.has(region.id)
+    }
+
+    setValue(region) {
+        this.visitedRegions.add(region.id)
+    }
+
+    checkNeighbor(neighborRegion, region) {
+        if (this.isEmpty(neighborRegion)) return
+        const neighborGroup = this.regionGroups.getGroupByRegion(neighborRegion)
+        if (neighborGroup.id === this.id) return
+        const neighborPlate = this.plates.get(neighborGroup.id)
+        const regionsDir = this.regionGroups.getRegionsDirection(region, neighborRegion)
+        let boundary
+        if (Direction.converge(this.plate.direction, regionsDir)) {
+            boundary = this._buildConvergentBoundary(neighborPlate)
+        } else if (Direction.diverge(this.plate.direction, regionsDir)) {
+            boundary = this._buildDivergentBoundary(neighborPlate)
+        } else {
+            boundary = DEFORMATION_FAULT
+        }
+        this.boundaries.set(region.id, boundary)
+    }
+
+    _buildConvergentBoundary(other) {
+        if (this.plate.isContinental() && other.isContinental()) {
+            return DEFORMATION_OROGENY
+        }
+        if (this.plate.isOceanic() && other.isOceanic()) {
+            return DEFORMATION_ISLAND_ARC
+        }
+        if (this.plate.isContinental() && other.isOceanic()) {
+            return DEFORMATION_OROGENY
+        }
+        if (this.plate.isOceanic() && other.isContinental()) {
+            return DEFORMATION_TRENCH
+        }
+    }
+
+    _buildDivergentBoundary(other) {
+        if (this.plate.isContinental() && other.isContinental()) {
+            return DEFORMATION_CONTINENTAL_RIFT
+        }
+        if (this.plate.isOceanic() && other.isOceanic()) {
+            return DEFORMATION_RIFT
+        }
+        if (this.plate.isContinental() && other.isOceanic()) {
+            return DEFORMATION_PASSIVE_MARGIN
+        }
+        if (this.plate.isOceanic() && other.isContinental()) {
+            return DEFORMATION_RIFT
+        }
+    }
+
+    getNeighbors(region) {
+        return this.regionGroups.getNeighborRegions(region)
+    }
+}

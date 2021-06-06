@@ -38,16 +38,24 @@ export class Direction {
     static get SOUTHEAST () { return DIRECTIONS.SOUTHEAST.id }
     static get SOUTHWEST () { return DIRECTIONS.SOUTHWEST.id }
 
-    static getName (id) {
-        return DIRECTION_MAP[id].name
+    static getName (direction) {
+        return DIRECTION_MAP[direction.id].name
     }
 
-    static getSymbol (id) {
-        return DIRECTION_MAP[id].symbol
+    static getSymbol (direction) {
+        return DIRECTION_MAP[direction.id].symbol
     }
 
-    static getAxis(id) {
-        return DIRECTION_MAP[id].axis
+    static getAxis(direction) {
+        return DIRECTION_MAP[direction.id].axis
+    }
+
+    static converge(dir1, dir2) {
+        return dotProduct(dir1, dir2) > 0
+    }
+
+    static diverge(dir1, dir2) {
+        return dotProduct(dir1, dir2) < 0
     }
 
     static fromAngle(angle) {
@@ -59,7 +67,7 @@ export class Direction {
     }
 
     static random () {
-        return Random.choice(
+        const id = Random.choice(
             Direction.NORTH,
             Direction.EAST,
             Direction.SOUTH,
@@ -69,6 +77,7 @@ export class Direction {
             Direction.SOUTHEAST,
             Direction.SOUTHWEST,
         )
+        return DIRECTION_MAP[id]
     }
 
     static randomCardinal () {
@@ -79,4 +88,11 @@ export class Direction {
             Direction.WEST
         )
     }
+}
+
+
+function dotProduct(dir1, dir2) {
+    const [x1, y1] = dir1.axis
+    const [x2, y2] = dir2.axis
+    return x1 * x2 + y1 * y2
 }

@@ -3,7 +3,7 @@ import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { TectonicsModel } from './model'
+import { DEFORMATION_OROGENY, TectonicsModel } from './model'
 import { TectonicsTileMapDiagram } from './diagram'
 
 import NO_DEFORMATION from './model'
@@ -36,8 +36,9 @@ export class TectonicsTileMap extends TileMap {
 
     get(point) {
         const plate = this.getPlate(point)
+        const region = this.model.regionGroupTileMap.getRegion(point)
         const deformation = this.getDeformation(point)
-        return `Plate ${plate.id}, area ${plate.area}, type ${plate.type}, deformation ${deformation}`
+        return `ID: ${plate.id}, region: ${region.id}, type:${plate.type}, deformation ${deformation}`
     }
 
     getPlateCount() {
@@ -54,14 +55,8 @@ export class TectonicsTileMap extends TileMap {
     }
 
     getDeformation(point) {
-        const group = this.model.regionGroupTileMap.getGroup(point)
-        const neighborGroups = this.model.regionGroupTileMap.getNeighborGroups(point)
-        const plateDeformations = this.model.deformations.get(group.id)
-        if (neighborGroups.length == 0)
-            return NO_DEFORMATION
-        const deformation = plateDeformations.get(neighborGroups[0].id)
-
-        return deformation
+        const region = this.model.regionGroupTileMap.getRegion(point)
+        return this.model.boundaries.get(region.id)
     }
 
     getGeology(point) {

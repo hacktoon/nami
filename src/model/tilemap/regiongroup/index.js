@@ -46,12 +46,10 @@ export class RegionGroupTileMap extends TileMap {
     get(point) {
         const region = this.getRegion(point)
         const group = this.getGroup(point)
-        const neighborGroups = this.getNeighborGroups(point)
 
         return {
             group: group.id,
             region: region.id,
-            neighborGroups: neighborGroups.map(g=>g.id).join(', '),
             groupArea: group.area,
             regionArea: region.area,
         }
@@ -65,8 +63,22 @@ export class RegionGroupTileMap extends TileMap {
         return this.regionTileMap.getRegions()
     }
 
+    getBorderRegions() {
+        return this.regionTileMap.getRegions().filter(region => {
+            return this.isBorderRegion(region)
+        })
+    }
+
+    getRegionsDirection(sourceRegion, targetRegion) {
+        return this.regionTileMap.getRegionsDirection(sourceRegion, targetRegion)
+    }
+
     getGroup(point) {
         const region = this.getRegion(point)
+        return this.getGroupByRegion(region)
+    }
+
+    getGroupByRegion(region) {
         const id = this.model.regionToGroup.get(region.id)
         return this.model.groups.get(id)
     }
@@ -75,19 +87,10 @@ export class RegionGroupTileMap extends TileMap {
         return Array.from(this.model.groups.values())
     }
 
-    getNeighborGroups(point) {
-        const region = this.getRegion(point)
-        const group = this.getGroup(point)
-        const neighborRegions = this.regionTileMap.getNeighborRegions(region)
-        const neighborGroupIds = new Set()
-        neighborRegions.forEach(neighborRegion => {
-            const id = this.model.regionToGroup.get(neighborRegion.id)
-            if (id !== group.id) {
-                neighborGroupIds.add(id)
-            }
-        })
-        return Array.from(neighborGroupIds).map(id => this.model.groups.get(id))
+    getNeighborRegions(region) {
+        return this.regionTileMap.getNeighborRegions(region)
     }
+
 
     getGraph() {
         return this.model.graph

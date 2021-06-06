@@ -61,7 +61,6 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         if (this.showDirections && plate.origin.equals(point)) {
             return Direction.getSymbol(plate.direction)
         }
-        return
     }
 }
 

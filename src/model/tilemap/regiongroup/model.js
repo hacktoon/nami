@@ -1,7 +1,7 @@
 import { Color } from '/lib/base/color'
-import { MultiFill } from '/lib/floodfill'
 import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
+import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { RegionTileMap } from '/model/tilemap/region'
