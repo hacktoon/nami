@@ -179,39 +179,38 @@ class BoundaryRegionFillConfig {
         } else if (Direction.diverge(this.plate.direction, regionsDir)) {
             boundary = this._buildDivergentBoundary(neighborPlate)
         } else {
-            boundary = DEFORMATION_FAULT
+            boundary = this._buildTransformBoundary(neighborPlate)
         }
         this.boundaries.set(region.id, boundary)
     }
 
     _buildConvergentBoundary(other) {
-        if (this.plate.isContinental() && other.isContinental()) {
+        if (this.plate.isContinental()) {
             return DEFORMATION_OROGENY
         }
-        if (this.plate.isOceanic() && other.isOceanic()) {
+        if (other.isOceanic()) {
             return DEFORMATION_ISLAND_ARC
         }
-        if (this.plate.isContinental() && other.isOceanic()) {
-            return DEFORMATION_OROGENY
-        }
-        if (this.plate.isOceanic() && other.isContinental()) {
+        if (other.isContinental()) {
             return DEFORMATION_TRENCH
         }
     }
 
     _buildDivergentBoundary(other) {
-        if (this.plate.isContinental() && other.isContinental()) {
-            return DEFORMATION_CONTINENTAL_RIFT
+        if (this.plate.isContinental()) {
+            if (other.isOceanic())
+                return DEFORMATION_PASSIVE_MARGIN
+            if (other.isContinental())
+                return DEFORMATION_CONTINENTAL_RIFT
         }
-        if (this.plate.isOceanic() && other.isOceanic()) {
-            return DEFORMATION_RIFT
+        return DEFORMATION_RIFT
+    }
+
+    _buildTransformBoundary(other) {
+        if (this.plate.speed != other.speed) {
+            return DEFORMATION_FAULT
         }
-        if (this.plate.isContinental() && other.isOceanic()) {
-            return DEFORMATION_PASSIVE_MARGIN
-        }
-        if (this.plate.isOceanic() && other.isContinental()) {
-            return DEFORMATION_RIFT
-        }
+        return NO_DEFORMATION
     }
 
     getNeighbors(region) {

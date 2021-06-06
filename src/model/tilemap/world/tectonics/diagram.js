@@ -10,7 +10,8 @@ import {
     DEFORMATION_TRENCH,
     DEFORMATION_CONTINENTAL_RIFT,
     DEFORMATION_ISLAND_ARC,
-    DEFORMATION_PASSIVE_MARGIN
+    DEFORMATION_PASSIVE_MARGIN,
+    DEFORMATION_FAULT,
 } from './model'
 
 
@@ -37,6 +38,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
             [DEFORMATION_TRENCH]: Color.fromHex('#003f6c'),
             [DEFORMATION_PASSIVE_MARGIN]: Color.fromHex('#058'),
             [DEFORMATION_ISLAND_ARC]: Color.fromHex('#10ffae'),
+            [DEFORMATION_FAULT]: Color.fromHex('#D23'),
         }
     }
 
