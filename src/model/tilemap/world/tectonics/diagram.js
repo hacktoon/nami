@@ -12,6 +12,7 @@ import {
     DEFORMATION_ISLAND_ARC,
     DEFORMATION_PASSIVE_MARGIN,
     DEFORMATION_FAULT,
+    DEFORMATION_OCEANIC_FAULT,
 } from './model'
 
 
@@ -33,12 +34,13 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         // this.colorMap = new PlateColorMap(tileMap)
         this.boundaryColorMap = {
             [DEFORMATION_CONTINENTAL_RIFT]: Color.fromHex('#176113'),
-            [DEFORMATION_RIFT]: Color.YELLOW,
+            [DEFORMATION_RIFT]: Color.fromHex('#169'),
             [DEFORMATION_OROGENY]: Color.fromHex('#a38216'),
             [DEFORMATION_TRENCH]: Color.fromHex('#003f6c'),
-            [DEFORMATION_PASSIVE_MARGIN]: Color.fromHex('#058'),
-            [DEFORMATION_ISLAND_ARC]: Color.fromHex('#10ffae'),
-            [DEFORMATION_FAULT]: Color.fromHex('#D23'),
+            [DEFORMATION_PASSIVE_MARGIN]: Color.fromHex('#07A'),
+            [DEFORMATION_ISLAND_ARC]: Color.fromHex('#3bd4c2'),
+            [DEFORMATION_FAULT]: Color.fromHex('#d7b032'),
+            [DEFORMATION_OCEANIC_FAULT]: Color.fromHex('#003f6c'),
         }
     }
 

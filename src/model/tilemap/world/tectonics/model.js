@@ -15,6 +15,7 @@ export const DEFORMATION_CONTINENTAL_RIFT = 4
 export const DEFORMATION_ISLAND_ARC = 5
 export const DEFORMATION_PASSIVE_MARGIN = 6
 export const DEFORMATION_FAULT = 7
+export const DEFORMATION_OCEANIC_FAULT = 8
 
 const EMPTY = null
 
@@ -208,6 +209,7 @@ class BoundaryRegionFillConfig {
 
     _buildTransformBoundary(other) {
         if (this.plate.speed != other.speed) {
+            if (this.plate.isOceanic()) return DEFORMATION_OCEANIC_FAULT
             return DEFORMATION_FAULT
         }
         return NO_DEFORMATION
