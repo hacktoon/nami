@@ -35,7 +35,7 @@ export class TectonicsTileMap extends TileMap {
     get(point) {
         const plate = this.getPlate(point)
         const region = this.model.regionGroupTileMap.getRegion(point)
-        const deformation = this.getDeformation(point)
+        const deformation = this.getBoundary(point)
         return `ID: ${plate.id}, region: ${region.id}, type:${plate.type}, deformation ${deformation}`
     }
 
@@ -52,7 +52,7 @@ export class TectonicsTileMap extends TileMap {
         return this.model.regionGroupTileMap.isGroupBorder(point)
     }
 
-    getDeformation(point) {
+    getBoundary(point) {
         const region = this.model.regionGroupTileMap.getRegion(point)
         return this.model.boundaries.get(region.id)
     }
