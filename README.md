@@ -20,6 +20,9 @@
     - OO : Oceanic Ridge
     - CC : Rift
 
+  - Transform
+    - Speed difference
+
 #### TerrainTileMap
 - Define litoral/water/plains/mountain/hill regions
 - Calc river basins from region graph
@@ -47,11 +50,7 @@
   - discover routes
 - Some may be unclaimed
 
-#### ConquestTileMap
-- Mark conquered regions
-
 #### Other
-- Set identity point method for Direction class
 - Vegetation/wildlife density: adjusted by humidity, temperature and height
 - Roads
   - create junction points between two route points to set midpath detours
