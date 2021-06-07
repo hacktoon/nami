@@ -52,7 +52,7 @@ export class RegionTileMap extends TileMap {
             id: region.id,
             region: region,
             neighbors: neighbors.map(neighbor => {
-                const dir = this.getRegionsDirection(region, neighbor)
+                const dir = this.getRegionDirection(region, neighbor)
                 return `${dir.name}(${neighbor.id})`
             }).join(', ')
         }
@@ -63,7 +63,7 @@ export class RegionTileMap extends TileMap {
         return this.regions.get(id)
     }
 
-    getRegionsDirection(sourceRegion, targetRegion) {
+    getRegionDirection(sourceRegion, targetRegion) {
         return this.directions.get(sourceRegion.id, targetRegion.id)
     }
 

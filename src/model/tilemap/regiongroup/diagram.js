@@ -66,6 +66,14 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         }
         return regionColor.grayscale().toHex()
     }
+
+    getText(point) {
+        const group = this.tileMap.getGroup(point)
+        if (group.origin.equals(point)) {
+            return String(group.id)
+        }
+        return ''
+    }
 }
 
 

@@ -178,7 +178,7 @@ class BoundaryRegionFillConfig {
             }
         } else {
             const neighborPlate = this.plates.get(neighborGroup.id)
-            const regionsDir = this.regionGroups.getRegionsDirection(region, neighborRegion)
+            const regionsDir = this.regionGroups.getRegionDirection(region, neighborRegion)
             let boundary = this._buildTransformBoundary(this.plate, neighborPlate)
             if (Direction.converge(this.plate.direction, regionsDir)) {
                 boundary = this._buildConvergentBoundary(this.plate, neighborPlate)

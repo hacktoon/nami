@@ -1,4 +1,7 @@
+import { PairMap } from '/lib/base'
+import { Direction } from '/lib/base/direction'
 import { Color } from '/lib/base/color'
+import { Point } from '/lib/base/point'
 import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
 import { MultiFill } from '/lib/floodfill'
@@ -20,6 +23,7 @@ class RegionGroup {
 export class RegionGroupModel {
     constructor(seed, params) {
         const data = this._build(seed, params)
+        this.directions = data.directions
         this.borderRegions = data.borderRegions
         this.regionToGroup = data.regionToGroup
         this.regionTileMap = data.regionTileMap
@@ -37,21 +41,11 @@ export class RegionGroupModel {
             borderRegions: new Set(),
             regionToGroup: new Map(),
             graph: new Graph(),
-            groups: new Map(),
         }
         const origins = EvenPointSampling.create(width, height, groupScale)
-        const fills = origins.map((origin, id) => {
-            const region = data.regionTileMap.getRegion(origin)
-            const fillConfig = new RegionGroupFillConfig(id, data)
-            return new OrganicFloodFill(region, fillConfig)
-        })
-        new MultiFill(fills).map(fill => {
-            const groupId = fill.config.id
-            const area = fill.config.area
-            const group = new RegionGroup(groupId, fill.origin, area)
-            data.groups.set(group.id, group)
-        })
-        return data
+        const groups = this._buildGroups(origins, data)
+        const directions = this._buildDirections(groups, data)
+        return {...data, groups, directions}
     }
 
     _buildRegionTileMap(seed, params) {
@@ -59,6 +53,54 @@ export class RegionGroupModel {
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const data = {width, height, scale, seed, chance, growth}
         return RegionTileMap.fromData(data)
+    }
+
+    _buildGroups(origins, data) {
+        const groups = new Map()
+        const fills = origins.map((origin, id) => {
+            const region = data.regionTileMap.getRegion(origin)
+            const fillConfig = new RegionGroupFillConfig(id, data)
+            return new OrganicFloodFill(region, fillConfig)
+        })
+        new MultiFill(fills).map(fill => {
+            const group = new RegionGroup(
+                fill.config.id, fill.origin, fill.config.area
+            )
+            groups.set(group.id, group)
+        })
+        return groups
+    }
+
+    _buildDirections(groups, data) {
+        const directions = new PairMap()
+        const matrix = data.regionTileMap.regionMatrix
+        groups.forEach(group => {
+            data.graph.getEdges(group.id).forEach(neighborId => {
+                const neighbor = groups.get(neighborId)
+                const wrappedNeighborOrigin = this._wrapOrigin(matrix, group, neighbor)
+                const angle = group.origin.angle(wrappedNeighborOrigin)
+                const direction = Direction.fromAngle(angle)
+                directions.set(group.id, neighborId, direction)
+            })
+        })
+        return directions
+    }
+
+    _wrapOrigin(matrix, source, target) {
+        const {x:sX, y:sY} = source.origin
+        const {x:tX, y:tY} = target.origin
+        const deltaX = Math.abs(sX - tX)
+        const deltaY = Math.abs(sY - tY)
+        let {x, y} = target.origin
+        if (deltaX > matrix.width / 2) {
+            if (sX < tX) x -= matrix.width
+            if (sX > tX) x += matrix.width
+        }
+        if (deltaY > matrix.height / 2) {
+            if (sY < tY) y -= matrix.height
+            if (sY > tY) y += matrix.height
+        }
+        return new Point(x, y)
     }
 
     map(callback) {
