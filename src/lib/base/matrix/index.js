@@ -33,6 +33,24 @@ export class Matrix {
         return this.rect.wrap(point)
     }
 
+    wrapVector(sourcePoint, targetPoint) {
+        // return wrapped targetPoint in relation to sourcePoint
+        const {x:sX, y:sY} = sourcePoint
+        const {x:tX, y:tY} = targetPoint
+        let [x, y] = [tX, tY]
+        const deltaX = Math.abs(sX - tX)
+        const deltaY = Math.abs(sY - tY)
+        if (deltaX > this.width / 2) {
+            if (sX < tX) x -= this.width
+            if (sX > tX) x += this.width
+        }
+        if (deltaY > this.height / 2) {
+            if (sY < tY) y -= this.height
+            if (sY > tY) y += this.height
+        }
+        return new Point(x, y)
+    }
+
     isWrappable(point) {
         return ! this.rect.isInside(point)
     }

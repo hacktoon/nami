@@ -70,30 +70,13 @@ export class RegionMapModel {
         regions.forEach(region => {
             data.graph.getEdges(region.id).forEach(neighborId => {
                 const neighbor = regions.get(neighborId)
-                const wrappedNeighborOrigin = this._wrapOrigin(matrix, region, neighbor)
-                const angle = region.origin.angle(wrappedNeighborOrigin)
+                const neighborOrigin = matrix.wrapVector(region.origin, neighbor.origin)
+                const angle = region.origin.angle(neighborOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(region.id, neighborId, direction)
             })
         })
         return directions
-    }
-
-    _wrapOrigin(matrix, source, target) {
-        const {x:sX, y:sY} = source.origin
-        const {x:tX, y:tY} = target.origin
-        const deltaX = Math.abs(sX - tX)
-        const deltaY = Math.abs(sY - tY)
-        let {x, y} = target.origin
-        if (deltaX > matrix.width / 2) {
-            if (sX < tX) x -= matrix.width
-            if (sX > tX) x += matrix.width
-        }
-        if (deltaY > matrix.height / 2) {
-            if (sY < tY) y -= matrix.height
-            if (sY > tY) y += matrix.height
-        }
-        return new Point(x, y)
     }
 }
 

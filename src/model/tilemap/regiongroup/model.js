@@ -77,30 +77,13 @@ export class RegionGroupModel {
         groups.forEach(group => {
             data.graph.getEdges(group.id).forEach(neighborId => {
                 const neighbor = groups.get(neighborId)
-                const wrappedNeighborOrigin = this._wrapOrigin(matrix, group, neighbor)
-                const angle = group.origin.angle(wrappedNeighborOrigin)
+                const neighborOrigin = matrix.wrapVector(group.origin, neighbor.origin)
+                const angle = group.origin.angle(neighborOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(group.id, neighborId, direction)
             })
         })
         return directions
-    }
-
-    _wrapOrigin(matrix, source, target) {
-        const {x:sX, y:sY} = source.origin
-        const {x:tX, y:tY} = target.origin
-        const deltaX = Math.abs(sX - tX)
-        const deltaY = Math.abs(sY - tY)
-        let {x, y} = target.origin
-        if (deltaX > matrix.width / 2) {
-            if (sX < tX) x -= matrix.width
-            if (sX > tX) x += matrix.width
-        }
-        if (deltaY > matrix.height / 2) {
-            if (sY < tY) y -= matrix.height
-            if (sY > tY) y += matrix.height
-        }
-        return new Point(x, y)
     }
 
     map(callback) {
