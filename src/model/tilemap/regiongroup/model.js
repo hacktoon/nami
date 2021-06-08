@@ -85,15 +85,6 @@ export class RegionGroupModel {
         })
         return directions
     }
-
-    map(callback) {
-        const groups = Array.from(this.groups.values())
-        return groups.map(callback)
-    }
-
-    forEach(callback) {
-        this.groups.forEach(callback)
-    }
 }
 
 

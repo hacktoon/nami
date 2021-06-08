@@ -50,7 +50,7 @@ export class TectonicsModel {
     }
 
     _build(seed, params) {
-        const regionGroupTileMap = buildRegionGroupMap(seed, params)
+        const regionGroupTileMap = this._buildRegionGroupMap(seed, params)
         const plates = this._buildPlates(regionGroupTileMap)
         const boundaries = new RegionBoundaryMap(plates, regionGroupTileMap)
 
@@ -58,6 +58,20 @@ export class TectonicsModel {
         // const noiseMap = new NoiseMap()
 
         return {regionGroupTileMap, plates, boundaries}
+    }
+
+    _buildRegionGroupMap(seed, params) {
+        return RegionGroupTileMap.fromData({
+            width: params.get('width'),
+            height: params.get('height'),
+            seed: seed,
+            groupScale: params.get('scale'),
+            groupGrowth: params.get('growth'),
+            groupChance: 0.1,
+            scale: 2,
+            growth: 0,
+            chance: 0.1,
+        })
     }
 
     _buildPlates(regionGroupTileMap) {
@@ -83,21 +97,6 @@ export class TectonicsModel {
     forEach(callback) {
         this.plates.forEach(callback)
     }
-}
-
-
-function buildRegionGroupMap(seed, params) {
-    return RegionGroupTileMap.fromData({
-        width: params.get('width'),
-        height: params.get('height'),
-        seed: seed,
-        groupScale: params.get('scale'),
-        groupGrowth: params.get('growth'),
-        groupChance: 0.1,
-        scale: 2,
-        growth: 0,
-        chance: 0.1,
-    })
 }
 
 

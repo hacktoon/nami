@@ -128,11 +128,10 @@ export class RegionGroupTileMap extends TileMap {
     }
 
     map(callback) {
-        return this.model.map(group => callback(group))
+        return [...this.groups.values()].map(callback)
     }
 
     forEach(callback) {
-        this.model.forEach(callback)
+        this.groups.forEach(callback)
     }
 }
-
