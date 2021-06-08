@@ -1,3 +1,4 @@
+import { PairMap } from '/lib/base'
 import { Random } from '/lib/base/random'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
