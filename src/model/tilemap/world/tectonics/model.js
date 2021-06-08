@@ -5,17 +5,8 @@ import { Direction } from '/lib/base/direction'
 import { SimplexNoise } from '/lib/fractal/noise'
 
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
+import { Boundary } from './boundary'
 
-
-const NO_DEFORMATION = null
-export const DEFORMATION_OROGENY = 1
-export const DEFORMATION_TRENCH = 2
-export const DEFORMATION_RIFT = 3
-export const DEFORMATION_CONTINENTAL_RIFT = 4
-export const DEFORMATION_ISLAND_ARC = 5
-export const DEFORMATION_PASSIVE_MARGIN = 6
-export const DEFORMATION_FAULT = 7
-export const DEFORMATION_OCEANIC_FAULT = 8
 
 const TYPE_OCEANIC = 'O'
 const TYPE_CONTINENTAL = 'C'
@@ -198,32 +189,30 @@ class BoundaryRegionFillConfig {
 
     _buildConvergentBoundary(plate, other) {
         if (plate.isContinental()) {
-            return DEFORMATION_OROGENY
+            return Boundary.OROGENY
         }
         if (other.isOceanic()) {
-            return DEFORMATION_ISLAND_ARC
+            return Boundary.ISLAND_ARC
         }
-        if (other.isContinental()) {
-            return DEFORMATION_TRENCH
-        }
+        return Boundary.OCEANIC_TRENCH
     }
 
     _buildDivergentBoundary(plate, other) {
         if (plate.isContinental()) {
             if (other.isOceanic())
-                return DEFORMATION_PASSIVE_MARGIN
+                return Boundary.PASSIVE_MARGIN
             if (other.isContinental())
-                return DEFORMATION_CONTINENTAL_RIFT
+                return Boundary.CONTINENTAL_RIFT
         }
-        return DEFORMATION_RIFT
+        return Boundary.CONTINENTAL_RIFT
     }
 
     _buildTransformBoundary(plate, other) {
         if (plate.speed != other.speed) {
-            if (plate.isOceanic()) return DEFORMATION_OCEANIC_FAULT
-            return DEFORMATION_FAULT
+            if (plate.isOceanic()) return Boundary.OCEANIC_FAULT
+            return Boundary.TRANSFORM_FAULT
         }
-        return NO_DEFORMATION
+        return Boundary.NONE
     }
 
     getNeighbors(region) {

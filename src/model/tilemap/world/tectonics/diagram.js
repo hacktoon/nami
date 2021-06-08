@@ -4,16 +4,7 @@ import { Direction } from '/lib/base/direction'
 import { Color } from '/lib/base/color'
 
 import { TileMapDiagram } from '/model/lib/tilemap'
-import {
-    DEFORMATION_RIFT,
-    DEFORMATION_OROGENY,
-    DEFORMATION_TRENCH,
-    DEFORMATION_CONTINENTAL_RIFT,
-    DEFORMATION_ISLAND_ARC,
-    DEFORMATION_PASSIVE_MARGIN,
-    DEFORMATION_FAULT,
-    DEFORMATION_OCEANIC_FAULT,
-} from './model'
+import { Boundary } from './boundary'
 
 
 export class TectonicsTileMapDiagram extends TileMapDiagram {
@@ -34,16 +25,6 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         this.showBoundaries = params.get('showBoundaries')
         this.showDirections = params.get('showDirections')
         // this.colorMap = new PlateColorMap(tileMap)
-        this.boundaryColorMap = {
-            [DEFORMATION_CONTINENTAL_RIFT]: Color.fromHex('#176113'),
-            [DEFORMATION_RIFT]: Color.fromHex('#169'),
-            [DEFORMATION_OROGENY]: Color.fromHex('#a38216'),
-            [DEFORMATION_TRENCH]: Color.fromHex('#003f6c'),
-            [DEFORMATION_PASSIVE_MARGIN]: Color.fromHex('#07A'),
-            [DEFORMATION_ISLAND_ARC]: Color.fromHex('#3bd4c2'),
-            [DEFORMATION_FAULT]: Color.fromHex('#d7b032'),
-            [DEFORMATION_OCEANIC_FAULT]: Color.fromHex('#003f6c'),
-        }
     }
 
     get(point) {
@@ -53,9 +34,11 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const hex = plate.isOceanic() ? '#058' : '#26a11f'
         let color = Color.fromHex(hex)
 
-        if (this.showBoundaries) {
+        if (this.showBoundaries && ! isBorderPoint) {
             const boundary = this.tileMap.getBoundary(point)
-            color = this.boundaryColorMap[boundary] ?? color
+            if (boundary) {
+                color = Boundary.getColor(boundary, color)
+            }
         }
         if (this.showPlateBorders && isBorderPoint) {
             color = color.darken(40)
