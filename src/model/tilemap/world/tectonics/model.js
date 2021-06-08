@@ -119,6 +119,7 @@ class NoiseMap {
 class RegionBoundaryMap {
     constructor(plates, regionGroupTileMap) {
         this.boundaries = new Map()
+        this.stress = new Map()
         const visitedRegions = new Set()
         const borderRegions = regionGroupTileMap.getBorderRegions()
         const fills = borderRegions.map(region => {
@@ -126,6 +127,7 @@ class RegionBoundaryMap {
             const fillConfig = new BoundaryRegionFillConfig({
                 id: group.id,
                 boundaries: this.boundaries,
+                stress: this.stress,
                 regionGroupTileMap,
                 visitedRegions,
                 plates,
@@ -139,8 +141,12 @@ class RegionBoundaryMap {
         return this.boundaries.has(regionId)
     }
 
-    get(regionId) {
+    getBoundary(regionId) {
         return this.boundaries.get(regionId)
+    }
+
+    getStress(regionId) {
+        return this.stress.get(regionId)
     }
 }
 
@@ -153,6 +159,7 @@ class BoundaryRegionFillConfig {
         this.plate = data.plates.get(data.id)
         this.boundaries = data.boundaries
         this.plates = data.plates
+        this.stress = data.stress
         this.energy = this.plate.speed
         this.chance = .1
         this.growth = 2
@@ -162,8 +169,9 @@ class BoundaryRegionFillConfig {
         return !this.visitedRegions.has(region.id)
     }
 
-    setValue(region) {
+    setValue(region, level) {
         this.visitedRegions.add(region.id)
+        this.stress.set(region.id, level)
     }
 
     checkNeighbor(neighborRegion, region) {

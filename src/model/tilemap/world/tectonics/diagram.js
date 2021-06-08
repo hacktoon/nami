@@ -49,15 +49,18 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
     get(point) {
         const plate = this.tileMap.getPlate(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
-        let color = Color.fromHex(plate.isOceanic() ? '#058' : '#26a11f')
+        const stress = this.tileMap.getStress(point)
+        const hex = plate.isOceanic() ? '#058' : '#26a11f'
+        let color = Color.fromHex(hex)
+
         if (this.showBoundaries) {
             const boundary = this.tileMap.getBoundary(point)
             color = this.boundaryColorMap[boundary] ?? color
         }
         if (this.showPlateBorders && isBorderPoint) {
-            return color.darken(40).toHex()
+            color = color.darken(40)
         }
-        return color.toHex()
+        return color.darken(stress * 10).toHex()
     }
 
     getText(point) {

@@ -54,7 +54,12 @@ export class TectonicsTileMap extends TileMap {
 
     getBoundary(point) {
         const region = this.model.regionGroupTileMap.getRegion(point)
-        return this.model.boundaries.get(region.id)
+        return this.model.boundaries.getBoundary(region.id)
+    }
+
+    getStress(point) {
+        const region = this.model.regionGroupTileMap.getRegion(point)
+        return this.model.boundaries.getStress(region.id)
     }
 
     map(callback) {
