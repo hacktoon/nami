@@ -1,5 +1,5 @@
 import { Random } from '/lib/base/random'
-import { MultiFill } from '/lib/floodfill'
+import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { Direction } from '/lib/base/direction'
 import { SimplexNoise } from '/lib/fractal/noise'
@@ -38,17 +38,33 @@ export class TectonicsModel {
         this.regionGroupTileMap = data.regionGroupTileMap
         this.boundaries = data.boundaries
         this.plates = data.plates
+        this.stress = data.stress
     }
 
     _build(seed, params) {
         const regionGroupTileMap = this._buildRegionGroupMap(seed, params)
         const plates = this._buildPlates(regionGroupTileMap)
-        const boundaries = new RegionBoundaryMap(plates, regionGroupTileMap)
-
+        const boundaries = new Map()
+        const stress = new Map()
+        const visitedRegions = new Set()
+        const borderRegions = regionGroupTileMap.getBorderRegions()
+        const fills = borderRegions.map(region => {
+            const group = regionGroupTileMap.getGroupByRegion(region)
+            const fillConfig = new BoundaryRegionFillConfig({
+                id: group.id,
+                boundaries,
+                stress,
+                regionGroupTileMap,
+                visitedRegions,
+                plates,
+            })
+            return new OrganicFloodFill(region, fillConfig)
+        })
+        new MultiFill(fills)
         // leave noise map for final matrix rendering
         // const noiseMap = new NoiseMap()
 
-        return {regionGroupTileMap, plates, boundaries}
+        return {regionGroupTileMap, plates, boundaries, stress}
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -107,43 +123,9 @@ class NoiseMap {
 }
 
 
-class RegionBoundaryMap {
-    constructor(plates, regionGroupTileMap) {
-        this.boundaries = new Map()
-        this.stress = new Map()
-        const visitedRegions = new Set()
-        const borderRegions = regionGroupTileMap.getBorderRegions()
-        const fills = borderRegions.map(region => {
-            const group = regionGroupTileMap.getGroupByRegion(region)
-            const fillConfig = new BoundaryRegionFillConfig({
-                id: group.id,
-                boundaries: this.boundaries,
-                stress: this.stress,
-                regionGroupTileMap,
-                visitedRegions,
-                plates,
-            })
-            return new OrganicFloodFill(region, fillConfig)
-        })
-        new MultiFill(fills)
-    }
-
-    has(regionId) {
-        return this.boundaries.has(regionId)
-    }
-
-    getBoundary(regionId) {
-        return this.boundaries.get(regionId)
-    }
-
-    getStress(regionId) {
-        return this.stress.get(regionId)
-    }
-}
-
-
-class BoundaryRegionFillConfig {
+class BoundaryRegionFillConfig extends FloodFillConfig {
     constructor(data) {
+        super()
         this.id = data.id
         this.regionGroups = data.regionGroupTileMap
         this.visitedRegions = data.visitedRegions
@@ -153,7 +135,7 @@ class BoundaryRegionFillConfig {
         this.stress = data.stress
         this.energy = this.plate.speed
         this.chance = .5
-        this.growth = 1
+        this.growth = 2
     }
 
     isEmpty(region) {
@@ -223,6 +205,12 @@ class BoundaryRegionFillConfig {
 }
 
 
-function calcBoundary(region1, region2) {
+class RegionBoundaryMap {
+    constructor(plates, regionGroupTileMap) {
 
+    }
+
+    has(regionId) {
+        return this.boundaries.has(regionId)
+    }
 }
