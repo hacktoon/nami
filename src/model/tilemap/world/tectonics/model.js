@@ -152,8 +152,8 @@ class BoundaryRegionFillConfig {
         this.plates = data.plates
         this.stress = data.stress
         this.energy = this.plate.speed
-        this.chance = .1
-        this.growth = 2
+        this.chance = .5
+        this.growth = 1
     }
 
     isEmpty(region) {
@@ -177,11 +177,13 @@ class BoundaryRegionFillConfig {
         } else {
             const neighborPlate = this.plates.get(neighborGroup.id)
             const regionsDir = this.regionGroups.getRegionDirection(region, neighborRegion)
-            let boundary = this._buildTransformBoundary(this.plate, neighborPlate)
+            let boundary
             if (Direction.converge(this.plate.direction, regionsDir)) {
                 boundary = this._buildConvergentBoundary(this.plate, neighborPlate)
             } else if (Direction.diverge(this.plate.direction, regionsDir)) {
                 boundary = this._buildDivergentBoundary(this.plate, neighborPlate)
+            } else {
+                boundary = this._buildTransformBoundary(this.plate, neighborPlate)
             }
             this.boundaries.set(region.id, boundary)
         }
@@ -204,7 +206,7 @@ class BoundaryRegionFillConfig {
             if (other.isContinental())
                 return Boundary.CONTINENTAL_RIFT
         }
-        return Boundary.CONTINENTAL_RIFT
+        return Boundary.OCEANIC_RIFT
     }
 
     _buildTransformBoundary(plate, other) {
@@ -218,4 +220,9 @@ class BoundaryRegionFillConfig {
     getNeighbors(region) {
         return this.regionGroups.getNeighborRegions(region)
     }
+}
+
+
+function calcBoundary(region1, region2) {
+
 }

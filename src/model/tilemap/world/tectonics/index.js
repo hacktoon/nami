@@ -5,6 +5,7 @@ import { UITileMap } from '/ui/tilemap'
 
 import { TectonicsModel } from './model'
 import { TectonicsTileMapDiagram } from './diagram'
+import { Boundary } from './boundary'
 
 
 const SCHEMA = new Schema(
@@ -13,7 +14,7 @@ const SCHEMA = new Schema(
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 35, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 30, step: 1, min: 1, max: 100}),
-    Type.text('seed', 'Seed', {default: ''})
+    Type.text('seed', 'Seed', {default: '1623191123503'})
 )
 
 
@@ -35,8 +36,15 @@ export class TectonicsTileMap extends TileMap {
     get(point) {
         const plate = this.getPlate(point)
         const region = this.model.regionGroupTileMap.getRegion(point)
-        const deformation = this.getBoundary(point)
-        return `ID: ${plate.id}, region: ${region.id}, type:${plate.type}, deformation ${deformation}`
+        const boundary = this.getBoundary(point)
+        const stress = this.getStress(point)
+        let str = `ID: ${plate.id}, region: ${region.id}`
+            str += `, type:${plate.type}, stress: ${stress}`
+            if (boundary) {
+                str += `, boundary:${Boundary.getName(boundary)}`
+
+            }
+        return str
     }
 
     getPlateCount() {
