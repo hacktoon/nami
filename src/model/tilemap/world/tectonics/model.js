@@ -37,9 +37,9 @@ export class TectonicsModel {
     constructor(seed, params) {
         const data = this._build(seed, params)
         this.regionGroupTileMap = data.regionGroupTileMap
-        this.boundaries = data.boundaries
         this.plates = data.plates
         this.stressLevels = data.stressLevels
+        this.boundaries = data.boundaries
     }
 
     _build(seed, params) {
@@ -130,45 +130,39 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.id = data.id
-        this.regionGroups = data.regionGroupTileMap
-        this.visitedRegions = data.visitedRegions
-        this.boundaries = data.boundaries
-        this.boundaryMap = data.boundaryMap
-        this.plates = data.plates
-        this.stressLevels = data.stressLevels
+        this.data = data
 
-        this.plate = data.plates.get(data.id)
-        this.energy = this.plate.speed
+        this.energy = data.plates.get(data.id).speed
         this.chance = .5
         this.growth = 2
     }
 
     isEmpty(region) {
-        return !this.visitedRegions.has(region.id)
+        return !this.data.visitedRegions.has(region.id)
     }
 
     setValue(region, level) {
-        this.visitedRegions.add(region.id)
-        this.stressLevels.set(region.id, level)
+        this.data.visitedRegions.add(region.id)
+        this.data.stressLevels.set(region.id, level)
     }
 
     checkNeighbor(neighborRegion, region) {
         if (this.isEmpty(neighborRegion)) return
-        const neighborGroup = this.regionGroups.getGroupByRegion(neighborRegion)
+        const neighborGroup = this.data.regionGroupTileMap.getGroupByRegion(neighborRegion)
         if (neighborGroup.id === this.id) {
-            if (this.boundaries.has(region.id) && this.energy > 0) {
-                const boundary = this.boundaries.get(region.id)
+            if (this.data.boundaries.has(region.id) && this.energy > 0) {
+                const boundary = this.data.boundaries.get(region.id)
                 this.energy--
-                this.boundaries.set(neighborRegion.id, boundary)
+                this.data.boundaries.set(neighborRegion.id, boundary)
             }
         } else {
-            const boundary = this.boundaryMap.get(region, neighborRegion)
-            this.boundaries.set(region.id, boundary)
+            const boundary = this.data.boundaryMap.get(region, neighborRegion)
+            this.data.boundaries.set(region.id, boundary)
         }
     }
 
     getNeighbors(region) {
-        return this.regionGroups.getNeighborRegions(region)
+        return this.data.regionGroupTileMap.getNeighborRegions(region)
     }
 }
 
