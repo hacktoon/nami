@@ -20,7 +20,7 @@ export class Plate {
         this.area = area
         this.origin = origin
         this.direction = Direction.random()
-        this.speed = Random.choice(1, 1, 2, 2, 3)
+        this.speed = Random.choice(1, 1, 1, 2, 2, 3)
     }
 
     isOceanic() {
