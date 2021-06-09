@@ -23,7 +23,8 @@ export class TileMapScene {
         this.wrap = params.get('wrap')
         this.focus = params.get('focus')
         this.zoom = params.get('zoom')
-    this.frame = new Frame(width, height, this.focus, this.zoom)
+        this.frame = new Frame(width, height, this.focus, this.zoom)
+        this.textQueue = []
     }
 
     render(canvas) {
@@ -35,11 +36,16 @@ export class TileMapScene {
                 const color = this.diagram.get(tilePoint)
                 const text = this.diagram.getText(tilePoint)
                 canvas.rect(canvasPoint, zoom, color)
-                if (text) canvas.text(canvasPoint, text, '#FFF')
+                if (text) {
+                    this.textQueue.push([canvasPoint, text])
+                }
             } else {
                 canvas.clear(zoom, canvasPoint)
             }
         })
+        for(let [canvasPoint, text] of this.textQueue) {
+            canvas.text(canvasPoint, text, '#FFF')
+        }
     }
 
     isWrappable(point) {
