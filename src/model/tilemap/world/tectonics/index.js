@@ -67,7 +67,7 @@ export class TectonicsTileMap extends TileMap {
 
     getStress(point) {
         const region = this.model.regionGroupTileMap.getRegion(point)
-        return this.model.stress.get(region.id)
+        return this.model.stressLevels.get(region.id)
     }
 
     map(callback) {

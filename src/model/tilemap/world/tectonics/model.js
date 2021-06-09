@@ -39,14 +39,15 @@ export class TectonicsModel {
         this.regionGroupTileMap = data.regionGroupTileMap
         this.boundaries = data.boundaries
         this.plates = data.plates
-        this.stress = data.stress
+        this.stressLevels = data.stressLevels
     }
 
     _build(seed, params) {
         const regionGroupTileMap = this._buildRegionGroupMap(seed, params)
         const plates = this._buildPlates(regionGroupTileMap)
         const boundaries = new Map()
-        const stress = new Map()
+        const boundaryMap = new BoundaryMap(plates, regionGroupTileMap)
+        const stressLevels = new Map()
         const visitedRegions = new Set()
         const borderRegions = regionGroupTileMap.getBorderRegions()
         const fills = borderRegions.map(region => {
@@ -54,7 +55,8 @@ export class TectonicsModel {
             const fillConfig = new BoundaryRegionFillConfig({
                 id: group.id,
                 boundaries,
-                stress,
+                boundaryMap,
+                stressLevels,
                 regionGroupTileMap,
                 visitedRegions,
                 plates,
@@ -65,7 +67,7 @@ export class TectonicsModel {
         // leave noise map for final matrix rendering
         // const noiseMap = new NoiseMap()
 
-        return {regionGroupTileMap, plates, boundaries, stress}
+        return {regionGroupTileMap, plates, boundaries, stressLevels}
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -130,10 +132,12 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
         this.id = data.id
         this.regionGroups = data.regionGroupTileMap
         this.visitedRegions = data.visitedRegions
-        this.plate = data.plates.get(data.id)
         this.boundaries = data.boundaries
+        this.boundaryMap = data.boundaryMap
         this.plates = data.plates
-        this.stress = data.stress
+        this.stressLevels = data.stressLevels
+
+        this.plate = data.plates.get(data.id)
         this.energy = this.plate.speed
         this.chance = .5
         this.growth = 2
@@ -145,7 +149,7 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
 
     setValue(region, level) {
         this.visitedRegions.add(region.id)
-        this.stress.set(region.id, level)
+        this.stressLevels.set(region.id, level)
     }
 
     checkNeighbor(neighborRegion, region) {
@@ -158,17 +162,36 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
                 this.boundaries.set(neighborRegion.id, boundary)
             }
         } else {
-            const neighborPlate = this.plates.get(neighborGroup.id)
-            const regionsDir = this.regionGroups.getRegionDirection(region, neighborRegion)
-            let boundary
-            if (Direction.converge(this.plate.direction, regionsDir)) {
-                boundary = this._buildConvergentBoundary(this.plate, neighborPlate)
-            } else if (Direction.diverge(this.plate.direction, regionsDir)) {
-                boundary = this._buildDivergentBoundary(this.plate, neighborPlate)
-            } else {
-                boundary = this._buildTransformBoundary(this.plate, neighborPlate)
-            }
+            const boundary = this.boundaryMap.get(region, neighborRegion)
             this.boundaries.set(region.id, boundary)
+        }
+    }
+
+    getNeighbors(region) {
+        return this.regionGroups.getNeighborRegions(region)
+    }
+}
+
+
+class BoundaryMap {
+    constructor(plates, regionGroups) {
+        this.plates = plates
+        this.regionGroups= regionGroups
+    }
+
+    get(region, neighborRegion) {
+        const group = this.regionGroups.getGroupByRegion(region)
+        const neighborGroup = this.regionGroups.getGroupByRegion(neighborRegion)
+        const plate = this.plates.get(group.id)
+        const neighborPlate = this.plates.get(neighborGroup.id)
+        const regionsDir = this.regionGroups.getRegionDirection(region, neighborRegion)
+
+        if (Direction.converge(plate.direction, regionsDir)) {
+            return this._buildConvergentBoundary(plate, neighborPlate)
+        } else if (Direction.diverge(plate.direction, regionsDir)) {
+            return this._buildDivergentBoundary(plate, neighborPlate)
+        } else {
+            return this._buildTransformBoundary(plate, neighborPlate)
         }
     }
 
@@ -198,20 +221,5 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
             return Boundary.TRANSFORM_FAULT
         }
         return Boundary.NONE
-    }
-
-    getNeighbors(region) {
-        return this.regionGroups.getNeighborRegions(region)
-    }
-}
-
-
-class RegionBoundaryMap {
-    constructor(plates, regionGroupTileMap) {
-
-    }
-
-    has(regionId) {
-        return this.boundaries.has(regionId)
     }
 }
