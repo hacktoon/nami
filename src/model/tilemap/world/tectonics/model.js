@@ -174,43 +174,66 @@ class BoundaryMap {
     }
 
     get(region, neighborRegion) {
-        const group = this.regionGroups.getGroupByRegion(region)
-        const neighborGroup = this.regionGroups.getGroupByRegion(neighborRegion)
+        const rg = this.regionGroups
+        const group = rg.getGroupByRegion(region)
+        const neighborGroup = rg.getGroupByRegion(neighborRegion)
         const plate = this.plates.get(group.id)
-        const neighborPlate = this.plates.get(neighborGroup.id)
-        const regionsDir = this.regionGroups.getRegionDirection(region, neighborRegion)
+        const nghbrPlate = this.plates.get(neighborGroup.id)
+        const dir = rg.getRegionDirection(region, neighborRegion)
+        const nghbrDir = rg.getRegionDirection(neighborRegion, region)
 
-        if (Direction.converge(plate.direction, regionsDir)) {
-            return this._buildConvergentBoundary(plate, neighborPlate)
-        } else if (Direction.diverge(plate.direction, regionsDir)) {
-            return this._buildDivergentBoundary(plate, neighborPlate)
-        } else {
-            return this._buildTransformBoundary(plate, neighborPlate)
+        const converges = Direction.converge(plate.direction, dir)
+        const nghbrConverges = Direction.converge(nghbrPlate.direction, nghbrDir)
+        if (converges && nghbrConverges) {
+            return this._buildConvergentBoundary(plate, nghbrPlate)
         }
+        if (converges && ! nghbrConverges) {
+            return this._buildConvergentNegativeBoundary(plate, nghbrPlate)
+        }
+
+        const diverges = Direction.diverge(plate.direction, dir)
+        const nghbrDiverges = Direction.diverge(nghbrPlate.direction, nghbrDir)
+        if (diverges && nghbrDiverges) {
+            return this._buildDivergentBoundary(plate, nghbrPlate)
+        }
+
+        return this._buildTransformBoundary(plate, nghbrPlate)
     }
 
-    _buildConvergentBoundary(plate, other) {
+    _buildConvergentBoundary(plate, otherPlate) {
         if (plate.isContinental()) {
             return Boundary.OROGENY
         }
-        if (other.isOceanic()) {
+        if (otherPlate.isOceanic()) {
             return Boundary.ISLAND_ARC
         }
         return Boundary.OCEANIC_TRENCH
     }
 
-    _buildDivergentBoundary(plate, other) {
+    _buildConvergentNegativeBoundary(plate, otherPlate) {
+        const faster = plate.speed > otherPlate.speed
         if (plate.isContinental()) {
-            if (other.isOceanic())
+            return faster ? Boundary.OROGENY : Boundary.NONE
+        }
+        if (otherPlate.isOceanic()) {
+            return Boundary.ISLAND_ARC
+        }
+        return faster ? Boundary.OCEANIC_TRENCH : Boundary.OCEANIC_RIFT
+    }
+
+    _buildDivergentBoundary(plate, otherPlate) {
+        const faster = plate.speed > otherPlate.speed
+        if (plate.isContinental()) {
+            if (otherPlate.isOceanic())
                 return Boundary.PASSIVE_MARGIN
-            if (other.isContinental())
+            if (otherPlate.isContinental())
                 return Boundary.CONTINENTAL_RIFT
         }
         return Boundary.OCEANIC_RIFT
     }
 
-    _buildTransformBoundary(plate, other) {
-        if (plate.speed != other.speed) {
+    _buildTransformBoundary(plate, otherPlate) {
+        if (plate.speed != otherPlate.speed) {
             if (plate.isOceanic()) return Boundary.OCEANIC_FAULT
             return Boundary.TRANSFORM_FAULT
         }
