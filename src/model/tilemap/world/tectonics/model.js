@@ -21,6 +21,15 @@ export class Plate {
         this.origin = origin
         this.direction = Direction.random()
         this.speed = Random.choice(1, 1, 1, 2, 2, 3)
+        this.weight = type === TYPE_CONTINENTAL
+            ? Random.choice(1, 2, 3)
+            : Random.choice(4, 5, 6)
+    }
+
+    isHeavier(other) {
+        if (this.weight > other.weight) return true
+        if (this.weight < other.weight) return false
+        return this.id > other.id
     }
 
     isOceanic() {
@@ -182,49 +191,40 @@ class BoundaryMap {
 
     getGroupBoundary(group, neighborGroup) {
         const rgrp = this.regionGroups
-        const direction = rgrp.getGroupDirection(group, neighborGroup)
+        const directionToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
         const plate = this.plates.get(group.id)
         const nghbrPlate = this.plates.get(neighborGroup.id)
 
-        const dot = Direction.dotProduct(plate.direction, direction)
+        const dot = Direction.dotProduct(plate.direction, directionToNeighbor)
         let b
         if (dot > 0) {
-            b = this._buildConvergentBoundary(plate, nghbrPlate, dot)
+            b = this._buildConvergentBoundary(plate, nghbrPlate)
         } else if (dot < 0) {
-            b = this._buildDivergentBoundary(plate, nghbrPlate, dot)
+            b = this._buildDivergentBoundary(plate, nghbrPlate)
         } else {
             b = this._buildTransformBoundary(plate, nghbrPlate)
         }
         if (group.id == 1 && neighborGroup.id == 7) {
-            console.log(plate.direction.name, direction.name, b)
+            console.log(plate.direction.name, directionToNeighbor.name,
+                        dot, Boundary.getName(b))
         }
         return b
     }
 
-    _buildConvergentBoundary(plate, otherPlate, force) {
+    _buildConvergentBoundary(plate, otherPlate) {
         if (plate.isContinental()) {
             return Boundary.OROGENY
         }
         if (otherPlate.isOceanic()) {
+            if (plate.isHeavier(otherPlate)) {
+                return Boundary.OCEANIC_TRENCH
+            }
             return Boundary.ISLAND_ARC
         }
         return Boundary.OCEANIC_TRENCH
     }
 
-    _buildConvergentDivergentBoundary(plate, otherPlate, force) {
-        const faster = plate.speed > otherPlate.speed
-        const slower = plate.speed < otherPlate.speed
-        const same = plate.speed == otherPlate.speed
-        if (plate.isContinental()) {
-            return faster ? Boundary.OROGENY : Boundary.NONE
-        }
-        if (otherPlate.isOceanic()) {
-            return Boundary.ISLAND_ARC
-        }
-        return faster ? Boundary.OCEANIC_TRENCH : Boundary.OCEANIC_RIFT
-    }
-
-    _buildDivergentBoundary(plate, otherPlate, force) {
+    _buildDivergentBoundary(plate, otherPlate) {
         const faster = plate.speed > otherPlate.speed
         if (plate.isContinental()) {
             if (otherPlate.isOceanic())

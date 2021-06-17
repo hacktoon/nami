@@ -2,15 +2,15 @@ import { Color } from '/lib/base/color'
 
 
 const BOUNDARIES = {
-    NONE:             {id: 0, color: '#000'},
-    CONTINENTAL_RIFT: {id: 1, color: '#176113'},
-    OCEANIC_RIFT:     {id: 2, color: '#42155f'},
-    OROGENY:          {id: 3, color: '#a38216'},
-    OCEANIC_TRENCH:   {id: 4, color: '#001b36'},
-    PASSIVE_MARGIN:   {id: 5, color: '#07A'},
-    ISLAND_ARC:       {id: 6, color: '#3bd4c2'},
-    TRANSFORM_FAULT:  {id: 7, color: '#9aae6d'},
-    OCEANIC_FAULT:    {id: 8, color: '#003f6c'},
+    NONE:             {id: 0, visible: false, color: '#000'},
+    CONTINENTAL_RIFT: {id: 1, visible: true, color: '#176113'},
+    OCEANIC_RIFT:     {id: 2, visible: true, color: '#42155f'},
+    OROGENY:          {id: 3, visible: true, color: '#a38216'},
+    OCEANIC_TRENCH:   {id: 4, visible: true, color: '#001b36'},
+    PASSIVE_MARGIN:   {id: 5, visible: true, color: '#07A'},
+    ISLAND_ARC:       {id: 6, visible: true, color: '#3bd4c2'},
+    TRANSFORM_FAULT:  {id: 7, visible: false, color: '#9aae6d'},
+    OCEANIC_FAULT:    {id: 8, visible: false, color: '#003f6c'},
 }
 
 
@@ -43,6 +43,10 @@ export class Boundary {
             return Color.fromHex(BOUNDARY_MAP.get(id).color)
         }
         return defaultColor
+    }
+
+    static isVisible(id) {
+        return BOUNDARY_MAP.get(id).visible
     }
 
     static hasEdge(id) {

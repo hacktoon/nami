@@ -51,7 +51,9 @@ export class Direction {
     }
 
     static dotProduct(dir1, dir2) {
-        return dotProduct(dir1, dir2)
+        const [x1, y1] = dir1.axis
+        const [x2, y2] = dir2.axis
+        return x1 * x2 + y1 * y2
     }
 
     static fromAngle(angle) {
@@ -84,11 +86,4 @@ export class Direction {
             Direction.WEST
         )
     }
-}
-
-
-function dotProduct(dir1, dir2) {
-    const [x1, y1] = dir1.axis
-    const [x2, y2] = dir2.axis
-    return x1 * x2 + y1 * y2
 }

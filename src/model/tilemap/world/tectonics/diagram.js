@@ -34,10 +34,16 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const hex = plate.isOceanic() ? '#058' : '#26a11f'
         let color = Color.fromHex(hex)
 
-        if (this.showBoundaries && ! isBorderPoint) {
+        if (this.showBoundaries) {
             const boundary = this.tileMap.getBoundary(point)
             if (boundary) {
-                color = Boundary.getColor(boundary, color)
+                const visible = Boundary.isVisible(boundary)
+                if (visible) {
+                    color = Boundary.getColor(boundary, color)
+                } else {
+                    const chess = (point.x + point.y) % 2 === 0
+                    color = chess ? color : Boundary.getColor(boundary, color)
+                }
             }
         }
         if (this.showPlateBorders && isBorderPoint) {
