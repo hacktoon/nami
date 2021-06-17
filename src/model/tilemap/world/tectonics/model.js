@@ -45,11 +45,11 @@ export class TectonicsModel {
     _build(seed, params) {
         const regionGroupTileMap = this._buildRegionGroupMap(seed, params)
         const plates = this._buildPlates(regionGroupTileMap)
-        const boundaries = new Map()
+        const borderRegions = regionGroupTileMap.getBorderRegions()
         const boundaryMap = new BoundaryMap(plates, regionGroupTileMap)
+        const boundaries = new Map()
         const stressLevels = new Map()
         const visitedRegions = new Set()
-        const borderRegions = regionGroupTileMap.getBorderRegions()
         const fills = borderRegions.map(region => {
             const group = regionGroupTileMap.getGroupByRegion(region)
             const fillConfig = new BoundaryRegionFillConfig({
@@ -174,25 +174,34 @@ class BoundaryMap {
     }
 
     get(region, neighborRegion) {
-        const rg = this.regionGroups
-        const group = rg.getGroupByRegion(region)
-        const neighborGroup = rg.getGroupByRegion(neighborRegion)
+        const rgrp = this.regionGroups
+        const group = rgrp.getGroupByRegion(region)
+        const neighborGroup = rgrp.getGroupByRegion(neighborRegion)
+        return this.getGroupBoundary(group, neighborGroup)
+    }
+
+    getGroupBoundary(group, neighborGroup) {
+        const rgrp = this.regionGroups
+        const grpDir = rgrp.getGroupDirection(group, neighborGroup)
+        const nghbrGrpDir = rgrp.getGroupDirection(neighborGroup, group)
         const plate = this.plates.get(group.id)
         const nghbrPlate = this.plates.get(neighborGroup.id)
-        const dir = rg.getRegionDirection(region, neighborRegion)
-        const nghbrDir = rg.getRegionDirection(neighborRegion, region)
 
-        const converges = Direction.converge(plate.direction, dir)
-        const nghbrConverges = Direction.converge(nghbrPlate.direction, nghbrDir)
+        const converges = Direction.converge(plate.direction, grpDir)
+        const nghbrConverges = Direction.converge(nghbrPlate.direction, nghbrGrpDir)
+        if (group.id == 4 && neighborGroup.id == 5) {
+            const dot = Direction.dotProduct(plate.direction, grpDir)
+            console.log(plate.direction.name, grpDir.name, dot)
+        }
         if (converges && nghbrConverges) {
             return this._buildConvergentBoundary(plate, nghbrPlate)
         }
         if (converges && ! nghbrConverges) {
-            return this._buildConvergentNegativeBoundary(plate, nghbrPlate)
+            return this._buildConvergentDivergentBoundary(plate, nghbrPlate)
         }
 
-        const diverges = Direction.diverge(plate.direction, dir)
-        const nghbrDiverges = Direction.diverge(nghbrPlate.direction, nghbrDir)
+        const diverges = Direction.diverge(plate.direction, grpDir)
+        const nghbrDiverges = Direction.diverge(nghbrPlate.direction, nghbrGrpDir)
         if (diverges && nghbrDiverges) {
             return this._buildDivergentBoundary(plate, nghbrPlate)
         }
@@ -210,8 +219,10 @@ class BoundaryMap {
         return Boundary.OCEANIC_TRENCH
     }
 
-    _buildConvergentNegativeBoundary(plate, otherPlate) {
+    _buildConvergentDivergentBoundary(plate, otherPlate) {
         const faster = plate.speed > otherPlate.speed
+        const slower = plate.speed < otherPlate.speed
+        const same = plate.speed == otherPlate.speed
         if (plate.isContinental()) {
             return faster ? Boundary.OROGENY : Boundary.NONE
         }

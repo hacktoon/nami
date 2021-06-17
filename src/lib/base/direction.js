@@ -50,6 +50,10 @@ export class Direction {
         return DIRECTION_MAP[direction.id].axis
     }
 
+    static dotProduct(dir1, dir2) {
+        return dotProduct(dir1, dir2)
+    }
+
     static converge(dir1, dir2) {
         return dotProduct(dir1, dir2) > 0
     }

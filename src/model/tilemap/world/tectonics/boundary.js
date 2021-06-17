@@ -6,7 +6,7 @@ const BOUNDARIES = {
     CONTINENTAL_RIFT: {id: 1, color: '#176113'},
     OCEANIC_RIFT:     {id: 2, color: '#42155f'},
     OROGENY:          {id: 3, color: '#a38216'},
-    OCEANIC_TRENCH:   {id: 4, color: '#003f6c'},
+    OCEANIC_TRENCH:   {id: 4, color: '#001b36'},
     PASSIVE_MARGIN:   {id: 5, color: '#07A'},
     ISLAND_ARC:       {id: 6, color: '#3bd4c2'},
     TRANSFORM_FAULT:  {id: 7, color: '#9aae6d'},
@@ -42,6 +42,11 @@ export class Boundary {
         if (id !== Boundary.NONE) {
             return Color.fromHex(BOUNDARY_MAP.get(id).color)
         }
+        return defaultColor
+    }
+
+    static hasEdge(id) {
+
         return defaultColor
     }
 }
