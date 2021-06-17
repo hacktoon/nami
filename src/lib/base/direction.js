@@ -54,14 +54,6 @@ export class Direction {
         return dotProduct(dir1, dir2)
     }
 
-    static converge(dir1, dir2) {
-        return dotProduct(dir1, dir2) > 0
-    }
-
-    static diverge(dir1, dir2) {
-        return dotProduct(dir1, dir2) < 0
-    }
-
     static fromAngle(angle) {
         const degreePerDirection = 360 / 8
         const offsetAngle = angle + degreePerDirection / 2
