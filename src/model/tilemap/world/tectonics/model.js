@@ -191,37 +191,83 @@ class BoundaryMap {
 
     getGroupBoundary(group, neighborGroup) {
         const rgrp = this.regionGroups
-        const directionToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
         const plate = this.plates.get(group.id)
-        const nghbrPlate = this.plates.get(neighborGroup.id)
+        const otherPlate = this.plates.get(neighborGroup.id)
+        const dirToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
+        const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
+        // calc the dot product for each plate direction to another
+        const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
+        const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
+        return this._buildBoundary(plate, otherPlate, dotTo, dotFrom)
+    }
 
-        const dot = Direction.dotProduct(plate.direction, directionToNeighbor)
-        let b
-        if (dot > 0) {
-            b = this._buildConvergentBoundary(plate, nghbrPlate)
-        } else if (dot < 0) {
-            b = this._buildDivergentBoundary(plate, nghbrPlate)
+    _buildBoundary(plate, otherPlate, dotTo, dotFrom) {
+        let bdry
+        if (dotTo > 0) {
+            if (dotFrom > 0) {
+                bdry = this._buildConvergentBoundary(plate, otherPlate)
+            } else if (dotFrom < 0) {
+                bdry = this._buildConvergentDivergentBoundary(plate, otherPlate)
+            } else {
+                if (plate.id == 1 && otherPlate.id == 9) {
+                    console.log(plate.direction.name,
+                                dotTo, dotFrom,
+                                Boundary.getName(bdry))
+                }
+                bdry = this._buildConvergentTransformBoundary(plate, otherPlate)
+            }
+        } else if (dotTo < 0) {
+            bdry = this._buildDivergentBoundary(plate, otherPlate)
         } else {
-            b = this._buildTransformBoundary(plate, nghbrPlate)
+            bdry = this._buildTransformBoundary(plate, otherPlate)
         }
-        if (group.id == 1 && neighborGroup.id == 7) {
-            console.log(plate.direction.name, directionToNeighbor.name,
-                        dot, Boundary.getName(b))
-        }
-        return b
+
+        return bdry
     }
 
     _buildConvergentBoundary(plate, otherPlate) {
         if (plate.isContinental()) {
             return Boundary.OROGENY
-        }
-        if (otherPlate.isOceanic()) {
+        } else if (otherPlate.isOceanic()) {
             if (plate.isHeavier(otherPlate)) {
                 return Boundary.OCEANIC_TRENCH
             }
             return Boundary.ISLAND_ARC
         }
         return Boundary.OCEANIC_TRENCH
+    }
+
+    _buildConvergentDivergentBoundary(plate, otherPlate) {
+        if (plate.isContinental()) {
+            if (plate.speed > otherPlate.speed) {
+                return Boundary.EARLY_OROGENY
+            }
+            return Boundary.NONE
+        } else if (otherPlate.isContinental()) {
+            if (plate.speed > otherPlate.speed) {
+                return Boundary.OCEANIC_TRENCH
+            }
+            return Boundary.NONE
+        }
+        // oceanic > oceanic >
+        if (plate.isHeavier(otherPlate)) {
+            if (plate.speed > otherPlate.speed) {
+                return Boundary.OCEANIC_TRENCH
+            }
+            return Boundary.NONE
+        }
+        if (plate.speed > otherPlate.speed) {
+            return Boundary.ISLAND_ARC
+        }
+        return Boundary.OCEANIC_TRENCH
+    }
+
+    _buildConvergentTransformBoundary(plate, otherPlate) {
+        if (plate.speed > otherPlate.speed) {
+            if (plate.isContinental()) {
+                return Boundary.EARLY_OROGENY
+            }
+        }
     }
 
     _buildDivergentBoundary(plate, otherPlate) {

@@ -1,16 +1,20 @@
 import { Color } from '/lib/base/color'
 
+const NO_EDGE = 1
+const ONLY_EDGE = 2
+
 
 const BOUNDARIES = {
-    NONE:             {id: 0, visible: false, color: '#000'},
-    CONTINENTAL_RIFT: {id: 1, visible: true, color: '#176113'},
-    OCEANIC_RIFT:     {id: 2, visible: true, color: '#42155f'},
-    OROGENY:          {id: 3, visible: true, color: '#a38216'},
-    OCEANIC_TRENCH:   {id: 4, visible: true, color: '#001b36'},
-    PASSIVE_MARGIN:   {id: 5, visible: true, color: '#07A'},
-    ISLAND_ARC:       {id: 6, visible: true, color: '#3bd4c2'},
-    TRANSFORM_FAULT:  {id: 7, visible: false, color: '#9aae6d'},
-    OCEANIC_FAULT:    {id: 8, visible: false, color: '#003f6c'},
+    NONE:             { id: 0, visible: false, color: '#000' },
+    CONTINENTAL_RIFT: { id: 1, visible: true, color: '#0f4d4f' },
+    OCEANIC_RIFT:     { id: 2, visible: false, color: '#42155f' },
+    OROGENY:          { id: 3, visible: true, color: '#b7ad8f' },
+    EARLY_OROGENY:    { id: 4, visible: true, color: '#a38216' },
+    OCEANIC_TRENCH:   { id: 5, visible: true, color: '#001b36' },
+    PASSIVE_MARGIN:   { id: 6, visible: true, color: '#07A' },
+    ISLAND_ARC:       { id: 7, visible: true, color: '#3bd4c2' },
+    TRANSFORM_FAULT:  { id: 8, visible: false, color: '#9aae6d' },
+    OCEANIC_FAULT:    { id: 9, visible: false, color: '#003f6c' },
 }
 
 
