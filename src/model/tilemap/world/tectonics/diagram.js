@@ -56,7 +56,8 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const plate = this.tileMap.getPlate(point)
         if (this.showDirections && plate.origin.equals(point)) {
             const dir = Direction.getSymbol(plate.direction)
-            return `${plate.id}:${dir}${plate.speed}`
+            const dirName = Direction.getName(plate.direction)
+            return `${plate.id}:${dir}${dirName}`
         }
     }
 }

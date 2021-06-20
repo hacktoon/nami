@@ -22,7 +22,7 @@ const DIRECTIONS = {
 const DIRECTION_MAP = (() => {
     let _map = {}
     for(let [name, props] of Object.entries(DIRECTIONS)) {
-        _map[props.id] = {...props, name}
+        _map[props.id] = {...props, name: props.name}
     }
     return _map
 })()

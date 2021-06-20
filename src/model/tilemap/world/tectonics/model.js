@@ -20,16 +20,6 @@ export class Plate {
         this.area = area
         this.origin = origin
         this.direction = Direction.random()
-        this.speed = Random.choice(1, 1, 1, 2, 2, 3)
-        this.weight = type === TYPE_CONTINENTAL
-            ? Random.choice(1, 2, 3)
-            : Random.choice(4, 5, 6)
-    }
-
-    isHeavier(other) {
-        if (this.weight > other.weight) return true
-        if (this.weight < other.weight) return false
-        return this.id > other.id
     }
 
     isOceanic() {
@@ -202,90 +192,39 @@ class BoundaryMap {
     }
 
     _buildBoundary(plate, otherPlate, dotTo, dotFrom) {
-        let bdry
-        if (dotTo > 0) {
-            if (dotFrom > 0) {
-                bdry = this._buildConvergentBoundary(plate, otherPlate)
-            } else if (dotFrom < 0) {
-                bdry = this._buildConvergentDivergentBoundary(plate, otherPlate)
-            } else {
-                if (plate.id == 1 && otherPlate.id == 9) {
-                    console.log(plate.direction.name,
-                                dotTo, dotFrom,
-                                Boundary.getName(bdry))
-                }
-                bdry = this._buildConvergentTransformBoundary(plate, otherPlate)
-            }
-        } else if (dotTo < 0) {
-            bdry = this._buildDivergentBoundary(plate, otherPlate)
-        } else {
-            bdry = this._buildTransformBoundary(plate, otherPlate)
+        if (dotTo > 0 && dotFrom > 0) {
+            return this._buildConvergentBoundary(plate, otherPlate)
         }
-
-        return bdry
+        if (dotTo < 0 && dotFrom < 0) {
+            return this._buildDivergentBoundary(plate, otherPlate)
+        }
+        return this._buildTransformBoundary(plate, otherPlate)
     }
 
     _buildConvergentBoundary(plate, otherPlate) {
         if (plate.isContinental()) {
-            return Boundary.OROGENY
-        } else if (otherPlate.isOceanic()) {
-            if (plate.isHeavier(otherPlate)) {
+            if (otherPlate.isContinental())
+                return Boundary.OROGENY
+            else
+                return Boundary.OROGENY
+        } else {
+            if (otherPlate.isContinental())
                 return Boundary.OCEANIC_TRENCH
-            }
-            return Boundary.ISLAND_ARC
-        }
-        return Boundary.OCEANIC_TRENCH
-    }
-
-    _buildConvergentDivergentBoundary(plate, otherPlate) {
-        if (plate.isContinental()) {
-            if (plate.speed > otherPlate.speed) {
-                return Boundary.EARLY_OROGENY
-            }
-            return Boundary.NONE
-        } else if (otherPlate.isContinental()) {
-            if (plate.speed > otherPlate.speed) {
-                return Boundary.OCEANIC_TRENCH
-            }
-            return Boundary.NONE
-        }
-        // oceanic > oceanic >
-        if (plate.isHeavier(otherPlate)) {
-            if (plate.speed > otherPlate.speed) {
-                return Boundary.OCEANIC_TRENCH
-            }
-            return Boundary.NONE
-        }
-        if (plate.speed > otherPlate.speed) {
-            return Boundary.ISLAND_ARC
-        }
-        return Boundary.OCEANIC_TRENCH
-    }
-
-    _buildConvergentTransformBoundary(plate, otherPlate) {
-        if (plate.speed > otherPlate.speed) {
-            if (plate.isContinental()) {
-                return Boundary.EARLY_OROGENY
-            }
+            return Boundary.OCEANIC_RIFT
         }
     }
 
     _buildDivergentBoundary(plate, otherPlate) {
-        const faster = plate.speed > otherPlate.speed
         if (plate.isContinental()) {
-            if (otherPlate.isOceanic())
-                return Boundary.PASSIVE_MARGIN
-            if (otherPlate.isContinental())
-                return Boundary.CONTINENTAL_RIFT
+            return Boundary.PASSIVE_MARGIN
         }
         return Boundary.OCEANIC_RIFT
     }
 
     _buildTransformBoundary(plate, otherPlate) {
-        if (plate.speed != otherPlate.speed) {
-            if (plate.isOceanic()) return Boundary.OCEANIC_FAULT
+        if (plate.isContinental()) {
             return Boundary.TRANSFORM_FAULT
         }
-        return Boundary.NONE
+        return Boundary.OCEANIC_FAULT
     }
 }
