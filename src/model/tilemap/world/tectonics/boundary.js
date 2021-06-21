@@ -5,16 +5,16 @@ const ONLY_EDGE = 2
 
 
 const BOUNDARIES = {
-    NONE:             { id: 0, visible: false, color: '#000' },
-    CONTINENTAL_RIFT: { id: 1, visible: true, color: '#0f4d4f' },
-    OCEANIC_RIFT:     { id: 2, visible: false, color: '#42155f' },
-    OROGENY:          { id: 3, visible: true, color: '#b7ad8f' },
-    EARLY_OROGENY:    { id: 4, visible: true, color: '#a38216' },
-    OCEANIC_TRENCH:   { id: 5, visible: true, color: '#001b36' },
-    PASSIVE_MARGIN:   { id: 6, visible: true, color: '#07A' },
-    ISLAND_ARC:       { id: 7, visible: true, color: '#3bd4c2' },
-    TRANSFORM_FAULT:  { id: 8, visible: false, color: '#9aae6d' },
-    OCEANIC_FAULT:    { id: 9, visible: false, color: '#003f6c' },
+    NONE:             { id: 0, visible: false, color: '#000'   , border: 0},
+    CONTINENTAL_RIFT: { id: 1, visible: true, color: '#0f4d4f' , border: 0},
+    OCEANIC_RIFT:     { id: 2, visible: false, color: '#42155f', border: 0},
+    OROGENY:          { id: 3, visible: true, color: '#b7ad8f' , border: 0},
+    EARLY_OROGENY:    { id: 4, visible: true, color: '#a38216' , border: 0},
+    OCEANIC_TRENCH:   { id: 5, visible: true, color: '#001b36' , border: 0},
+    PASSIVE_MARGIN:   { id: 6, visible: true, color: '#07A'    , border: 0},
+    ISLAND_ARC:       { id: 7, visible: true, color: '#3bd4c2' , border: 0},
+    TRANSFORM_FAULT:  { id: 8, visible: false, color: '#9aae6d', border: 0},
+    OCEANIC_FAULT:    { id: 9, visible: false, color: '#003f6c', border: 0},
 }
 
 

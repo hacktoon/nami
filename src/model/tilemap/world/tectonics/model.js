@@ -20,6 +20,7 @@ export class Plate {
         this.area = area
         this.origin = origin
         this.direction = Direction.random()
+        this.speed = Random.choice(2, 5)
     }
 
     isOceanic() {
@@ -198,19 +199,21 @@ class BoundaryMap {
         if (dotTo < 0 && dotFrom < 0) {
             return this._buildDivergentBoundary(plate, otherPlate)
         }
-        return this._buildTransformBoundary(plate, otherPlate)
+        if (dotTo == 0 && dotFrom == 0) {
+            return this._buildTransformBoundary(plate, otherPlate)
+        }
+        return this._buildStrangeBoundary(plate, otherPlate, dotTo, dotFrom)
     }
 
     _buildConvergentBoundary(plate, otherPlate) {
         if (plate.isContinental()) {
-            if (otherPlate.isContinental())
-                return Boundary.OROGENY
-            else
-                return Boundary.OROGENY
+            return Boundary.OROGENY
         } else {
             if (otherPlate.isContinental())
                 return Boundary.OCEANIC_TRENCH
-            return Boundary.OCEANIC_RIFT
+            if (plate.id > otherPlate.id)
+                return Boundary.ISLAND_ARC
+            return Boundary.OCEANIC_TRENCH
         }
     }
 
@@ -226,5 +229,24 @@ class BoundaryMap {
             return Boundary.TRANSFORM_FAULT
         }
         return Boundary.OCEANIC_FAULT
+    }
+
+    _buildStrangeBoundary(plate, otherPlate, dotTo, dotFrom) {
+        if (plate.isContinental()) {
+            return Boundary.PASSIVE_MARGIN
+        }
+
+        if (dotTo > 0) {
+            if (dotFrom < 0) {
+                return Boundary.EARLY_OROGENY
+            } else {
+                return Boundary.EARLY_OROGENY
+
+            }
+            return Boundary.PASSIVE_MARGIN
+        } else {
+                return Boundary.OCEANIC_TRENCH
+            return Boundary.OCEANIC_RIFT
+        }
     }
 }
