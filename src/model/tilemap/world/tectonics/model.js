@@ -6,7 +6,7 @@ import { Direction } from '/lib/base/direction'
 import { SimplexNoise } from '/lib/fractal/noise'
 
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
-import { Boundary } from './boundary'
+import { BoundaryMap } from './boundary'
 
 
 const TYPE_OCEANIC = 'O'
@@ -20,7 +20,8 @@ export class Plate {
         this.area = area
         this.origin = origin
         this.direction = Direction.random()
-        this.speed = Random.choice(2, 5)
+        this.age = Random.choice(1, 2, 3)
+        this.weight = Random.choice(1, 2, 3)
     }
 
     isOceanic() {
@@ -166,87 +167,3 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
     }
 }
 
-
-class BoundaryMap {
-    constructor(plates, regionGroups) {
-        this.plates = plates
-        this.regionGroups= regionGroups
-    }
-
-    get(region, neighborRegion) {
-        const rgrp = this.regionGroups
-        const group = rgrp.getGroupByRegion(region)
-        const neighborGroup = rgrp.getGroupByRegion(neighborRegion)
-        return this.getGroupBoundary(group, neighborGroup)
-    }
-
-    getGroupBoundary(group, neighborGroup) {
-        const rgrp = this.regionGroups
-        const plate = this.plates.get(group.id)
-        const otherPlate = this.plates.get(neighborGroup.id)
-        const dirToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
-        const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
-        // calc the dot product for each plate direction to another
-        const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
-        const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
-        return this._buildBoundary(plate, otherPlate, dotTo, dotFrom)
-    }
-
-    _buildBoundary(plate, otherPlate, dotTo, dotFrom) {
-        if (dotTo > 0 && dotFrom > 0) {
-            return this._buildConvergentBoundary(plate, otherPlate)
-        }
-        if (dotTo < 0 && dotFrom < 0) {
-            return this._buildDivergentBoundary(plate, otherPlate)
-        }
-        if (dotTo == 0 && dotFrom == 0) {
-            return this._buildTransformBoundary(plate, otherPlate)
-        }
-        return this._buildStrangeBoundary(plate, otherPlate, dotTo, dotFrom)
-    }
-
-    _buildConvergentBoundary(plate, otherPlate) {
-        if (plate.isContinental()) {
-            return Boundary.OROGENY
-        } else {
-            if (otherPlate.isContinental())
-                return Boundary.OCEANIC_TRENCH
-            if (plate.id > otherPlate.id)
-                return Boundary.ISLAND_ARC
-            return Boundary.OCEANIC_TRENCH
-        }
-    }
-
-    _buildDivergentBoundary(plate, otherPlate) {
-        if (plate.isContinental()) {
-            return Boundary.PASSIVE_MARGIN
-        }
-        return Boundary.OCEANIC_RIFT
-    }
-
-    _buildTransformBoundary(plate, otherPlate) {
-        if (plate.isContinental()) {
-            return Boundary.TRANSFORM_FAULT
-        }
-        return Boundary.OCEANIC_FAULT
-    }
-
-    _buildStrangeBoundary(plate, otherPlate, dotTo, dotFrom) {
-        if (plate.isContinental()) {
-            return Boundary.PASSIVE_MARGIN
-        }
-
-        if (dotTo > 0) {
-            if (dotFrom < 0) {
-                return Boundary.EARLY_OROGENY
-            } else {
-                return Boundary.EARLY_OROGENY
-
-            }
-            return Boundary.PASSIVE_MARGIN
-        } else {
-                return Boundary.OCEANIC_TRENCH
-            return Boundary.OCEANIC_RIFT
-        }
-    }
-}
