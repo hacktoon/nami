@@ -20,8 +20,8 @@ export class Plate {
         this.area = area
         this.origin = origin
         this.direction = Direction.random()
-        this.age = Random.choice(1, 2, 3)
-        this.weight = Random.choice(1, 2, 3)
+        this.speed = Random.choice(1, 1, 2, 2, 3)
+        this.weight = Random.choice(1, 1, 2, 2, 3)
     }
 
     isOceanic() {
@@ -132,8 +132,8 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
         super()
         this.id = data.id
         this.data = data
-
         this.energy = data.plates.get(data.id).speed
+
         this.chance = .5
         this.growth = 2
     }

@@ -44,6 +44,9 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
                     const chess = (point.x + point.y) % 2 === 0
                     color = chess ? color : Boundary.getColor(boundary, color)
                 }
+                if (isBorderPoint && Boundary.hasBorder(boundary)) {
+                    color = Color.fromHex(hex)
+                }
             }
         }
         if (this.showPlateBorders && isBorderPoint) {

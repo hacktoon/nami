@@ -8,16 +8,17 @@ const ONLY_EDGE = 2
 
 const BOUNDARIES = {
     NONE:              { id: 0, visible: false, color: '#000'   , border: 0},
-    CONTINENTAL_RIFT:  { id: 1, visible: true, color: '#0f4d4f' , border: 0},
-    OCEANIC_RIFT:      { id: 2, visible: false, color: '#42155f', border: 0},
-    OROGENY:           { id: 3, visible: true, color: '#b7ad8f' , border: 0},
-    EARLY_OROGENY:     { id: 4, visible: true, color: '#a38216' , border: 0},
-    OCEANIC_TRENCH:    { id: 5, visible: true, color: '#001b36' , border: 0},
-    OCEANIC_CANYON:    { id: 6, visible: true, color: '#003365' , border: 0},
-    PASSIVE_MARGIN:    { id: 7, visible: true, color: '#07A'    , border: 0},
-    ISLAND_ARC:        { id: 8, visible: true, color: '#3bd4c2' , border: 0},
-    CONTINENTAL_FAULT: { id: 9, visible: false, color: '#9aae6d', border: 0},
-    OCEANIC_FAULT:     { id: 10, visible: false, color: '#003f6c', border: 0},
+    CONTINENTAL_RIFT:  { id: 1, visible: false, color: '#93792d' , border: 1},
+    OCEANIC_RIFT:      { id: 2, visible: false, color: '#42155f', border: 1},
+    OROGENY:           { id: 3, visible: true, color: '#b7ad8f' , border: 1},
+    COLLISION_OROGENY: { id: 4, visible: true, color: '#d9cfaf' , border: 0},
+    EARLY_OROGENY:     { id: 5, visible: true, color: '#a38216' , border: 1},
+    OCEANIC_TRENCH:    { id: 6, visible: true, color: '#001b36' , border: 1},
+    OCEANIC_CANYON:    { id: 7, visible: true, color: '#003365' , border: 1},
+    PASSIVE_MARGIN:    { id: 8, visible: true, color: '#07A'    , border: 0},
+    ISLAND_ARC:        { id: 9, visible: true, color: '#3bd4c2' , border: 1},
+    CONTINENTAL_FAULT: { id: 10, visible: false, color: '#9aae6d', border: 1},
+    OCEANIC_FAULT:     { id: 11, visible: false, color: '#003f6c', border: 1},
 }
 
 
@@ -35,6 +36,7 @@ export class Boundary {
     static get CONTINENTAL_RIFT () { return BOUNDARIES.CONTINENTAL_RIFT.id }
     static get OCEANIC_RIFT () { return BOUNDARIES.OCEANIC_RIFT.id }
     static get OROGENY () { return BOUNDARIES.OROGENY.id }
+    static get COLLISION_OROGENY () { return BOUNDARIES.COLLISION_OROGENY.id }
     static get EARLY_OROGENY () { return BOUNDARIES.EARLY_OROGENY.id }
     static get OCEANIC_TRENCH () { return BOUNDARIES.OCEANIC_TRENCH.id }
     static get OCEANIC_CANYON () { return BOUNDARIES.OCEANIC_CANYON.id }
@@ -58,9 +60,8 @@ export class Boundary {
         return BOUNDARY_MAP.get(id).visible
     }
 
-    static hasEdge(id) {
-
-        return defaultColor
+    static hasBorder(id) {
+        return BOUNDARY_MAP.get(id).border === 1
     }
 }
 
@@ -75,21 +76,15 @@ export class BoundaryMap {
         const rgrp = this.regionGroups
         const group = rgrp.getGroupByRegion(region)
         const neighborGroup = rgrp.getGroupByRegion(neighborRegion)
-        return this.getGroupBoundary(group, neighborGroup)
-    }
-
-    getGroupBoundary(group, neighborGroup) {
-        const rgrp = this.regionGroups
         const plate = this.plates.get(group.id)
         const otherPlate = this.plates.get(neighborGroup.id)
         const dirToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
         const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
+        // const dirToNeighbor = rgrp.getRegionDirection(region, neighborRegion)
+        // const dirFromNeighbor = rgrp.getRegionDirection(neighborRegion, region)
         // calc the dot product for each plate direction to another
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
-        if (group.id == 9 && neighborGroup.id == 2) {
-            console.log(dotTo, dotFrom)
-        }
         return this._buildBoundary(plate, otherPlate, dotTo, dotFrom)
     }
 
@@ -107,11 +102,12 @@ export class BoundaryMap {
     }
 
     _buildConvergentBoundary(p1, p2) {
-        if (p1.isContinental()) return Boundary.OROGENY
+        if (p1.isContinental()) {
+            if (p2.isContinental()) return Boundary.COLLISION_OROGENY
+            return Boundary.OROGENY
+        }
         if (p2.isContinental()) return Boundary.OCEANIC_TRENCH
-        // both oceanic
-        const heavier = p1.isHeavier(p2)
-        return heavier ? Boundary.OCEANIC_TRENCH : Boundary.ISLAND_ARC
+        return Boundary.OCEANIC_TRENCH
     }
 
     _buildSemiConvergentBoundary(p1, p2) {
