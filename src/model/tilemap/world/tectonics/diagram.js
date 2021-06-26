@@ -52,7 +52,8 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         if (this.showPlateBorders && isBorderPoint) {
             color = color.darken(40)
         }
-        return color.darken(stress * 10).toHex()
+        return color.toHex()
+        // return color.darken(stress * 10).toHex()
     }
 
     getText(point) {

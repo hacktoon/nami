@@ -2,23 +2,31 @@ import { Color } from '/lib/base/color'
 import { Direction } from '/lib/base/direction'
 
 
-const NO_EDGE = 1
-const ONLY_EDGE = 2
-
-
 const BOUNDARIES = {
-    NONE:              { id: 0, visible: false, color: '#000'   , border: 0},
-    CONTINENTAL_RIFT:  { id: 1, visible: false, color: '#93792d' , border: 1},
-    OCEANIC_RIFT:      { id: 2, visible: false, color: '#42155f', border: 1},
-    OROGENY:           { id: 3, visible: true, color: '#b7ad8f' , border: 1},
-    COLLISION_OROGENY: { id: 4, visible: true, color: '#d9cfaf' , border: 0},
-    EARLY_OROGENY:     { id: 5, visible: true, color: '#a38216' , border: 1},
-    OCEANIC_TRENCH:    { id: 6, visible: true, color: '#001b36' , border: 1},
-    OCEANIC_CANYON:    { id: 7, visible: true, color: '#003365' , border: 1},
-    PASSIVE_MARGIN:    { id: 8, visible: true, color: '#07A'    , border: 0},
-    ISLAND_ARC:        { id: 9, visible: true, color: '#3bd4c2' , border: 1},
-    CONTINENTAL_FAULT: { id: 10, visible: false, color: '#9aae6d', border: 1},
-    OCEANIC_FAULT:     { id: 11, visible: false, color: '#003f6c', border: 1},
+    NONE: {
+        id: 0, visible: false, color: '#000'   , border: 0},
+    CONTINENTAL_RIFT: {
+        id: 1, visible: false, color: '#125a0e' , border: 1},
+    OCEANIC_RIFT: {
+        id: 2, visible: false, color: '#42155f', border: 1},
+    SUBDUCTION_OROGENY: {
+        id: 3, visible: true, color: '#b7ad8f' , border: 1},
+    COLLISION_OROGENY: {
+        id: 4, visible: true, color: '#d9cfaf' , border: 0},
+    EARLY_OROGENY: {
+        id: 5, visible: true, color: '#a38216' , border: 1},
+    OCEANIC_TRENCH: {
+        id: 6, visible: true, color: '#001b36' , border: 1},
+    OCEANIC_VALLEY: {
+        id: 7, visible: true, color: '#003365' , border: 1},
+    PASSIVE_MARGIN: {
+        id: 8, visible: true, color: '#07A', border: 0},
+    ISLAND_ARC: {
+        id: 9, visible: true, color: '#3bd4c2' , border: 1},
+    CONTINENTAL_FAULT: {
+        id: 10, visible: false, color: '#9aae6d', border: 1},
+    OCEANIC_FAULT: {
+        id: 11, visible: false, color: '#003f6c', border: 1},
 }
 
 
@@ -35,11 +43,11 @@ export class Boundary {
     static get NONE () { return BOUNDARIES.NONE.id }
     static get CONTINENTAL_RIFT () { return BOUNDARIES.CONTINENTAL_RIFT.id }
     static get OCEANIC_RIFT () { return BOUNDARIES.OCEANIC_RIFT.id }
-    static get OROGENY () { return BOUNDARIES.OROGENY.id }
+    static get SUBDUCTION_OROGENY () { return BOUNDARIES.SUBDUCTION_OROGENY.id }
     static get COLLISION_OROGENY () { return BOUNDARIES.COLLISION_OROGENY.id }
     static get EARLY_OROGENY () { return BOUNDARIES.EARLY_OROGENY.id }
     static get OCEANIC_TRENCH () { return BOUNDARIES.OCEANIC_TRENCH.id }
-    static get OCEANIC_CANYON () { return BOUNDARIES.OCEANIC_CANYON.id }
+    static get OCEANIC_VALLEY () { return BOUNDARIES.OCEANIC_VALLEY.id }
     static get PASSIVE_MARGIN () { return BOUNDARIES.PASSIVE_MARGIN.id }
     static get ISLAND_ARC () { return BOUNDARIES.ISLAND_ARC.id }
     static get CONTINENTAL_FAULT () { return BOUNDARIES.CONTINENTAL_FAULT.id }
@@ -78,10 +86,10 @@ export class BoundaryMap {
         const neighborGroup = rgrp.getGroupByRegion(neighborRegion)
         const plate = this.plates.get(group.id)
         const otherPlate = this.plates.get(neighborGroup.id)
-        const dirToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
-        const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
-        // const dirToNeighbor = rgrp.getRegionDirection(region, neighborRegion)
-        // const dirFromNeighbor = rgrp.getRegionDirection(neighborRegion, region)
+        // const dirToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
+        // const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
+        const dirToNeighbor = rgrp.getRegionDirection(region, neighborRegion)
+        const dirFromNeighbor = rgrp.getRegionDirection(neighborRegion, region)
         // calc the dot product for each plate direction to another
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
@@ -98,24 +106,16 @@ export class BoundaryMap {
         if (dotTo == 0 && dotFrom == 0) {
             return this._buildTransformBoundary(p1, p2)
         }
-        return Boundary.PASSIVE_MARGIN
+        return this._buildOtherBoundary(p1, p2, dotTo, dotFrom)
     }
 
     _buildConvergentBoundary(p1, p2) {
         if (p1.isContinental()) {
             if (p2.isContinental()) return Boundary.COLLISION_OROGENY
-            return Boundary.OROGENY
+            return Boundary.SUBDUCTION_OROGENY
         }
         if (p2.isContinental()) return Boundary.OCEANIC_TRENCH
-        return Boundary.OCEANIC_TRENCH
-    }
-
-    _buildSemiConvergentBoundary(p1, p2) {
-        if (p1.isFaster(p2)) {
-            if (p1.isContinental()) return Boundary.EARLY_OROGENY
-            if (p1.isOceanic()) return Boundary.OCEANIC_TRENCH
-        }
-        return Boundary.PASSIVE_MARGIN
+        return Boundary.ISLAND_ARC
     }
 
     _buildDivergentBoundary(p1, p2) {
@@ -132,7 +132,43 @@ export class BoundaryMap {
             if (p2.isContinental()) return Boundary.CONTINENTAL_FAULT
             return Boundary.PASSIVE_MARGIN
         }
-        if (p2.isContinental()) return Boundary.OCEANIC_CANYON
+        if (p2.isContinental()) return Boundary.OCEANIC_VALLEY
         return Boundary.OCEANIC_FAULT
     }
+
+    _buildOtherBoundary(p1, p2, dotTo, dotFrom) {
+        if (dotTo > 0) {
+            if (p1.isContinental()) return Boundary.EARLY_OROGENY
+            return Boundary.OCEANIC_VALLEY
+        }
+        if (dotTo < 0) {
+            if (p1.isContinental()) return Boundary.PASSIVE_MARGIN
+            return Boundary.OCEANIC_RIFT
+        }
+        if (dotFrom > 0) {
+            if (p1.isContinental()) return Boundary.EARLY_OROGENY
+            if (p2.isContinental()) return Boundary.OCEANIC_TRENCH
+            if (p2.isOceanic()) return Boundary.ISLAND_ARC
+            return Boundary.PASSIVE_MARGIN
+        }
+        if (dotFrom < 0) {
+            if (p1.isContinental()) return Boundary.PASSIVE_MARGIN
+            if (p2.isContinental()) return Boundary.OCEANIC_RIFT
+            if (p2.isOceanic()) return Boundary.OCEANIC_RIFT
+        }
+        return Boundary.PASSIVE_MARGIN
+    }
 }
+
+
+
+// const BOUNDARIES2 = {
+//     LLCC: {id: 0, name: 'COLLISION SUBDUCTION_OROGENY',
+//         color: '#d9cfaf', border: 0,
+//     },
+//     LWCC: {id: 1, name: 'SUBDUCTION SUBDUCTION_OROGENY',
+//         color: '#b7ad8f', border: 0,
+//     },
+
+// }
+
