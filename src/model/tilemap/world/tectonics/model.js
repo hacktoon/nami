@@ -98,6 +98,17 @@ export class TectonicsModel {
             const plate = new Plate(group.id, group.origin, type, group.area)
             plates.set(plate.id, plate)
         })
+        groups.forEach(group => {
+            const neighbors = regionGroupTileMap.getNeighborGroups(group)
+            const cond = neighbors.every(neighbor => {
+                return plates.get(neighbor.id).isContinental()
+            })
+            if (cond && plates.get(group.id).isContinental()) {
+                const type = TYPE_OCEANIC
+                const plate = new Plate(group.id, group.origin, type, group.area)
+                plates.set(plate.id, plate)
+            }
+        })
         return plates
     }
 
