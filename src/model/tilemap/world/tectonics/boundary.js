@@ -14,7 +14,7 @@ const BOUNDARIES = {
     COLLISION_OROGENY: {
         id: 4, visible: true, color: '#d9cfaf' , border: 0},
     EARLY_OROGENY: {
-        id: 5, visible: true, color: '#a38216' , border: 1},
+        id: 5, visible: true, color: '#749750' , border: 1},
     OCEANIC_TRENCH: {
         id: 6, visible: true, color: '#001b36' , border: 1},
     OCEANIC_VALLEY: {

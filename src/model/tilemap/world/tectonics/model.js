@@ -143,7 +143,8 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
         super()
         this.id = data.id
         this.data = data
-        this.energy = data.plates.get(data.id).speed
+        // TODO: energy depends on group boundary map
+        this.energy = data.plates.get(data.id).speed + 4
 
         this.chance = .5
         this.growth = 2
