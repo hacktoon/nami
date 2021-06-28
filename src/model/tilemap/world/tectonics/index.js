@@ -31,43 +31,49 @@ export class TectonicsTileMap extends TileMap {
     constructor(params) {
         super(params)
         this.model = new TectonicsModel(this.seed, params)
+        this.regionGroupTileMap = this.model.regionGroupTileMap
+        this.plates = this.model.plates
     }
 
     get(point) {
         const plate = this.getPlate(point)
-        const region = this.model.regionGroupTileMap.getRegion(point)
+        const region = this.regionGroupTileMap.getRegion(point)
         const boundary = this.getBoundary(point)
         const stress = this.getStress(point)
         let str = `ID: ${plate.id}, region: ${region.id}`
             str += `, type:${plate.type}, stress: ${stress}`
             if (boundary) {
                 str += `, boundary:${Boundary.getName(boundary)}`
-
             }
         return str
     }
 
-    getPlateCount() {
-        return this.model.plates.size()
+    getPlate(point) {
+        const group = this.regionGroupTileMap.getGroup(point)
+        return this.plates.get(group.id)
     }
 
-    getPlate(point) {
-        const group = this.model.regionGroupTileMap.getGroup(point)
-        return this.model.plates.get(group.id)
+    isPlateOrigin(plate, point) {
+        const matrix = this.regionGroupTileMap.regionTileMap.regionMatrix
+        return plate.origin.equals(matrix.wrap(point))
     }
 
     isPlateBorder(point) {
-        return this.model.regionGroupTileMap.isGroupBorder(point)
+        return this.regionGroupTileMap.isGroupBorder(point)
     }
 
     getBoundary(point) {
-        const region = this.model.regionGroupTileMap.getRegion(point)
+        const region = this.regionGroupTileMap.getRegion(point)
         return this.model.boundaries.get(region.id)
     }
 
     getStress(point) {
-        const region = this.model.regionGroupTileMap.getRegion(point)
+        const region = this.regionGroupTileMap.getRegion(point)
         return this.model.stressLevels.get(region.id)
+    }
+
+    getDescription() {
+        return `${this.plates.size} plates`
     }
 
     map(callback) {

@@ -21,6 +21,10 @@ export class TileMap {
     get(point) {
         return point
     }
+
+    getDescription() {
+        return `Area: ${this.area}`
+    }
 }
 
 

@@ -89,27 +89,30 @@ export class TectonicsModel {
         const plates = new Map()
         const cmpDescendingCount = (g0, g1) => g1.count - g0.count
         const groups = regionGroupTileMap.getGroups().sort(cmpDescendingCount)
+        const typeMap = this._buildPlateTypes(regionGroupTileMap, groups)
+        groups.forEach(group => {
+            const neighborsGroups = regionGroupTileMap.getNeighborGroups(group)
+            const isLandlocked = neighborsGroups.concat(group).every(neighbor => {
+                return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
+            })
+            const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(group.id)
+            const plate = new Plate(group.id, group.origin, type, group.area)
+            plates.set(plate.id, plate)
+        })
+        return plates
+    }
+
+    _buildPlateTypes(regionGroupTileMap, groups) {
         const halfWorldArea = Math.floor(regionGroupTileMap.area / 2)
+        const typeMap = new Map()
         let totalOceanicArea = 0
         groups.forEach(group => {
             totalOceanicArea += group.area
             const isOceanic = totalOceanicArea < halfWorldArea
             const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
-            const plate = new Plate(group.id, group.origin, type, group.area)
-            plates.set(plate.id, plate)
+            typeMap.set(group.id, type)
         })
-        groups.forEach(group => {
-            const neighbors = regionGroupTileMap.getNeighborGroups(group)
-            const cond = neighbors.every(neighbor => {
-                return plates.get(neighbor.id).isContinental()
-            })
-            if (cond && plates.get(group.id).isContinental()) {
-                const type = TYPE_OCEANIC
-                const plate = new Plate(group.id, group.origin, type, group.area)
-                plates.set(plate.id, plate)
-            }
-        })
-        return plates
+        return typeMap
     }
 
     map(callback) {

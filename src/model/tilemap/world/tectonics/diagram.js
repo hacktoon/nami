@@ -37,8 +37,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         if (this.showBoundaries) {
             const boundary = this.tileMap.getBoundary(point)
             if (boundary) {
-                const visible = Boundary.isVisible(boundary)
-                if (visible) {
+                if (Boundary.isVisible(boundary)) {
                     color = Boundary.getColor(boundary, color)
                 } else {
                     const chess = (point.x + point.y) % 2 === 0
@@ -58,7 +57,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
 
     getText(point) {
         const plate = this.tileMap.getPlate(point)
-        if (this.showDirections && plate.origin.equals(point)) {
+        if (this.showDirections && this.tileMap.isPlateOrigin(plate, point)) {
             const dir = Direction.getSymbol(plate.direction)
             const dirName = Direction.getName(plate.direction)
             return `${plate.id}:${dir}${dirName}`

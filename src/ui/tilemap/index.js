@@ -41,6 +41,7 @@ function UITileMapDiagram({diagram, tileMap}) {
         />
         <section className="UITileMapSidebar">
             <Text>Seed: {tileMap.seed}</Text>
+            <Text>{tileMap.getDescription()}</Text>
             <Form className="MapSceneForm"
                 data={sceneData}
                 onSubmit={setSceneData}>

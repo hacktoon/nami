@@ -75,21 +75,26 @@ export class Boundary {
 
 
 export class BoundaryMap {
-    constructor(plates, regionGroups) {
+    constructor(plates, regionGroupTileMap) {
         this.plates = plates
-        this.regionGroups= regionGroups
+        this.regionGroupTileMap = regionGroupTileMap
+
+        regionGroupTileMap.getGroups().forEach(group => {
+            const neighbors = regionGroupTileMap.getNeighborGroups(group)
+            console.log(`${group.id} = ${neighbors.map(g=>g.id).join(', ')}`);
+        })
     }
 
     get(region, neighborRegion) {
-        const rgrp = this.regionGroups
+        const rgrp = this.regionGroupTileMap
         const group = rgrp.getGroupByRegion(region)
         const neighborGroup = rgrp.getGroupByRegion(neighborRegion)
         const plate = this.plates.get(group.id)
         const otherPlate = this.plates.get(neighborGroup.id)
-        // const dirToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
-        // const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
-        const dirToNeighbor = rgrp.getRegionDirection(region, neighborRegion)
-        const dirFromNeighbor = rgrp.getRegionDirection(neighborRegion, region)
+        const dirToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
+        const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
+        // const dirToNeighbor = rgrp.getRegionDirection(region, neighborRegion)
+        // const dirFromNeighbor = rgrp.getRegionDirection(neighborRegion, region)
         // calc the dot product for each plate direction to another
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
