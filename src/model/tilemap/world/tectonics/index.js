@@ -13,7 +13,7 @@ const SCHEMA = new Schema(
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 30, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 30, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 10, step: 1, min: 1, max: 100}),
     Type.text('seed', 'Seed', {default: ''})
 )
 

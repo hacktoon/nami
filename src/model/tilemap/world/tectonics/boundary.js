@@ -4,29 +4,29 @@ import { Direction } from '/lib/base/direction'
 
 const BOUNDARIES = {
     NONE: {
-        id: 0, visible: false, color: '#000'   , border: 0},
+        id: 0, visible: false, color: '#000'   , border: true, energy: 0},
     CONTINENTAL_RIFT: {
-        id: 1, visible: false, color: '#125a0e' , border: 1},
+        id: 1, visible: false, color: '#125a0e' , border: false, energy: 1},
     OCEANIC_RIFT: {
-        id: 2, visible: false, color: '#42155f', border: 1},
+        id: 2, visible: false, color: '#42155f', border: false, energy: 1},
     SUBDUCTION_OROGENY: {
-        id: 3, visible: true, color: '#b7ad8f' , border: 1},
+        id: 3, visible: true, color: '#ccb672' , border: false, energy: 2},
     COLLISION_OROGENY: {
-        id: 4, visible: true, color: '#d9cfaf' , border: 0},
+        id: 4, visible: true, color: '#dbd6c7' , border: true, energy: 3},
     EARLY_OROGENY: {
-        id: 5, visible: true, color: '#749750' , border: 1},
+        id: 5, visible: true, color: '#749750' , border: false, energy: 1},
     OCEANIC_TRENCH: {
-        id: 6, visible: true, color: '#001b36' , border: 1},
+        id: 6, visible: true, color: '#001b36' , border: false, energy: 1},
     OCEANIC_VALLEY: {
-        id: 7, visible: true, color: '#003365' , border: 1},
+        id: 7, visible: true, color: '#003365' , border: false, energy: 2},
     PASSIVE_MARGIN: {
-        id: 8, visible: true, color: '#07A', border: 0},
+        id: 8, visible: true, color: '#07A', border: true, energy: 3},
     ISLAND_ARC: {
-        id: 9, visible: true, color: '#3bd4c2' , border: 1},
+        id: 9, visible: true, color: '#3bd4c2' , border: false, energy: 1},
     CONTINENTAL_FAULT: {
-        id: 10, visible: false, color: '#9aae6d', border: 1},
+        id: 10, visible: false, color: '#9aae6d', border: false, energy: 1},
     OCEANIC_FAULT: {
-        id: 11, visible: false, color: '#003f6c', border: 1},
+        id: 11, visible: false, color: '#003f6c', border: false, energy: 1},
 }
 
 
@@ -69,7 +69,7 @@ export class Boundary {
     }
 
     static hasBorder(id) {
-        return BOUNDARY_MAP.get(id).border === 1
+        return BOUNDARY_MAP.get(id).border
     }
 }
 
@@ -115,7 +115,7 @@ export class BoundaryMap {
             return Boundary.SUBDUCTION_OROGENY
         }
         if (p2.isContinental()) return Boundary.OCEANIC_TRENCH
-        return Boundary.ISLAND_ARC
+        return p1.id > p2.id ? Boundary.ISLAND_ARC : Boundary.OCEANIC_TRENCH
     }
 
     _buildDivergentBoundary(p1, p2) {
