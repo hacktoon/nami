@@ -36,7 +36,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
 
         if (this.showBoundaries) {
             const boundary = this.tileMap.getBoundary(point)
-            if (boundary) {
+            if (boundary && stress < Boundary.getEnergy(boundary)) {
                 if (Boundary.isVisible(boundary)) {
                     color = Boundary.getColor(boundary, color)
                 } else {
@@ -51,8 +51,8 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         if (this.showPlateBorders && isBorderPoint) {
             color = color.darken(40)
         }
-        return color.toHex()
         // return color.darken(stress * 10).toHex()
+        return color.toHex()
     }
 
     getText(point) {

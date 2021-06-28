@@ -1,4 +1,3 @@
-import { PairMap } from '/lib/base'
 import { Random } from '/lib/base/random'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
@@ -6,7 +5,7 @@ import { Direction } from '/lib/base/direction'
 import { SimplexNoise } from '/lib/fractal/noise'
 
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
-import { BoundaryMap } from './boundary'
+import { Boundary, BoundaryMap } from './boundary'
 
 
 const TYPE_OCEANIC = 'O'
@@ -36,30 +35,27 @@ export class Plate {
 
 export class TectonicsModel {
     constructor(seed, params) {
-        const data = this._build(seed, params)
-        this.regionGroupTileMap = data.regionGroupTileMap
+        this.regionGroupTileMap = this._buildRegionGroupMap(seed, params)
+        const data = this._build()
         this.plates = data.plates
         this.stressLevels = data.stressLevels
-        this.boundaries = data.boundaries
+        this.regionBoundary = data.regionBoundary
     }
 
-    _build(seed, params) {
-        const regionGroupTileMap = this._buildRegionGroupMap(seed, params)
-        const plates = this._buildPlates(regionGroupTileMap)
-        const borderRegions = regionGroupTileMap.getBorderRegions()
-        const boundaryMap = new BoundaryMap(plates, regionGroupTileMap)
-        const boundaries = new Map()
+    _build() {
+        const plates = this._buildPlates()
+        const boundaryMap = new BoundaryMap(plates, this.regionGroupTileMap)
+        const regionBoundary = new Map()
         const stressLevels = new Map()
-        const visitedRegions = new Set()
-        const fills = borderRegions.map(region => {
-            const group = regionGroupTileMap.getGroupByRegion(region)
+        const fills = this.regionGroupTileMap.getBorderRegions().map(region => {
+            const group = this.regionGroupTileMap.getGroupByRegion(region)
+            const boundary = this._buildPlateBoundary(boundaryMap, group, region)
             const fillConfig = new BoundaryRegionFillConfig({
                 id: group.id,
-                boundaries,
-                boundaryMap,
+                regionGroupTileMap: this.regionGroupTileMap,
+                regionBoundary,
+                boundary,
                 stressLevels,
-                regionGroupTileMap,
-                visitedRegions,
                 plates,
             })
             return new OrganicFloodFill(region, fillConfig)
@@ -68,7 +64,7 @@ export class TectonicsModel {
         // leave noise map for final matrix rendering
         // const noiseMap = new NoiseMap()
 
-        return {regionGroupTileMap, plates, boundaries, stressLevels}
+        return {plates, regionBoundary, stressLevels}
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -79,19 +75,19 @@ export class TectonicsModel {
             groupScale: params.get('scale'),
             groupGrowth: params.get('growth'),
             groupChance: 0.1,
-            scale: 2,
+            scale: 1,
             growth: 0,
             chance: 0.1,
         })
     }
 
-    _buildPlates(regionGroupTileMap) {
+    _buildPlates() {
         const plates = new Map()
         const cmpDescendingCount = (g0, g1) => g1.count - g0.count
-        const groups = regionGroupTileMap.getGroups().sort(cmpDescendingCount)
-        const typeMap = this._buildPlateTypes(regionGroupTileMap, groups)
+        const groups = this.regionGroupTileMap.getGroups().sort(cmpDescendingCount)
+        const typeMap = this._buildPlateTypes(groups)
         groups.forEach(group => {
-            const neighborsGroups = regionGroupTileMap.getNeighborGroups(group)
+            const neighborsGroups = this.regionGroupTileMap.getNeighborGroups(group)
             const isLandlocked = neighborsGroups.concat(group).every(neighbor => {
                 return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
             })
@@ -102,8 +98,8 @@ export class TectonicsModel {
         return plates
     }
 
-    _buildPlateTypes(regionGroupTileMap, groups) {
-        const halfWorldArea = Math.floor(regionGroupTileMap.area / 2)
+    _buildPlateTypes(groups) {
+        const halfWorldArea = Math.floor(this.regionGroupTileMap.area / 2)
         const typeMap = new Map()
         let totalOceanicArea = 0
         groups.forEach(group => {
@@ -113,6 +109,18 @@ export class TectonicsModel {
             typeMap.set(group.id, type)
         })
         return typeMap
+    }
+
+    _buildPlateBoundary(boundaryMap, group, region) {
+        let boundary = Boundary.NONE
+        const neighborRegions = this.regionGroupTileMap.getNeighborRegions(region)
+        for(let neighbor of neighborRegions) {
+            const neighborGroup = this.regionGroupTileMap.getGroupByRegion(neighbor)
+            if (neighborGroup.id !== group.id) {
+                boundary = boundaryMap.get(region, neighbor)
+            }
+        }
+        return boundary
     }
 
     map(callback) {
@@ -145,36 +153,20 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.id = data.id
+        this.boundary = data.boundary
         this.data = data
-        // TODO: energy depends on group boundary map
-        this.energy = data.plates.get(data.id).speed+10
 
-        this.chance = .5
-        this.growth = 2
+        this.chance = .2
+        this.growth = 1
     }
 
     isEmpty(region) {
-        return !this.data.visitedRegions.has(region.id)
+        return !this.data.regionBoundary.has(region.id)
     }
 
     setValue(region, level) {
-        this.data.visitedRegions.add(region.id)
+        this.data.regionBoundary.set(region.id, this.boundary)
         this.data.stressLevels.set(region.id, level)
-    }
-
-    checkNeighbor(neighborRegion, region) {
-        if (this.isEmpty(neighborRegion)) return
-        const neighborGroup = this.data.regionGroupTileMap.getGroupByRegion(neighborRegion)
-        if (neighborGroup.id === this.id) {
-            if (this.data.boundaries.has(region.id) && this.energy > 0) {
-                const boundary = this.data.boundaries.get(region.id)
-                this.energy--
-                this.data.boundaries.set(neighborRegion.id, boundary)
-            }
-        } else {
-            const boundary = this.data.boundaryMap.get(region, neighborRegion)
-            this.data.boundaries.set(region.id, boundary)
-        }
     }
 
     getNeighbors(region) {

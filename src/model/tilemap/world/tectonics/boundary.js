@@ -1,4 +1,5 @@
 import { Color } from '/lib/base/color'
+import { PairMap } from '/lib/base'
 import { Direction } from '/lib/base/direction'
 
 
@@ -10,15 +11,15 @@ const BOUNDARIES = {
     OCEANIC_RIFT: {
         id: 2, visible: false, color: '#42155f', border: false, energy: 1},
     SUBDUCTION_OROGENY: {
-        id: 3, visible: true, color: '#ccb672' , border: false, energy: 2},
+        id: 3, visible: true, color: '#ccb672' , border: false, energy: 1},
     COLLISION_OROGENY: {
-        id: 4, visible: true, color: '#dbd6c7' , border: true, energy: 3},
+        id: 4, visible: true, color: '#dbd6c7' , border: true, energy: 2},
     EARLY_OROGENY: {
         id: 5, visible: true, color: '#749750' , border: false, energy: 1},
     OCEANIC_TRENCH: {
         id: 6, visible: true, color: '#001b36' , border: false, energy: 1},
     OCEANIC_VALLEY: {
-        id: 7, visible: true, color: '#003365' , border: false, energy: 2},
+        id: 7, visible: true, color: '#003365' , border: false, energy: 1},
     PASSIVE_MARGIN: {
         id: 8, visible: true, color: '#07A', border: true, energy: 3},
     ISLAND_ARC: {
@@ -57,6 +58,10 @@ export class Boundary {
         return BOUNDARY_MAP.get(id).name
     }
 
+    static getEnergy(id) {
+        return BOUNDARY_MAP.get(id).energy
+    }
+
     static getColor(id, defaultColor) {
         if (id !== Boundary.NONE) {
             return Color.fromHex(BOUNDARY_MAP.get(id).color)
@@ -78,24 +83,25 @@ export class BoundaryMap {
     constructor(plates, regionGroupTileMap) {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap
+        this._boundaries = new PairMap()
 
         regionGroupTileMap.getGroups().forEach(group => {
             const neighbors = regionGroupTileMap.getNeighborGroups(group)
-            console.log(`${group.id} = ${neighbors.map(g=>g.id).join(', ')}`);
+            // console.log(`${group.id} = ${neighbors.map(g=>g.id).join(', ')}`);
+            neighbors.forEach(neighbor => {
+                const boundary = this._buildGroupBoundary(group, neighbor)
+                this._boundaries.set(group.id, neighbor.id, boundary)
+                console.log(`${group.id}>${neighbor.id} = ${Boundary.getName(boundary)}`);
+            })
         })
     }
 
-    get(region, neighborRegion) {
+    _buildGroupBoundary(group, neighborGroup) {
         const rgrp = this.regionGroupTileMap
-        const group = rgrp.getGroupByRegion(region)
-        const neighborGroup = rgrp.getGroupByRegion(neighborRegion)
         const plate = this.plates.get(group.id)
         const otherPlate = this.plates.get(neighborGroup.id)
         const dirToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
         const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
-        // const dirToNeighbor = rgrp.getRegionDirection(region, neighborRegion)
-        // const dirFromNeighbor = rgrp.getRegionDirection(neighborRegion, region)
-        // calc the dot product for each plate direction to another
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
         return this._buildBoundary(plate, otherPlate, dotTo, dotFrom)
@@ -162,6 +168,13 @@ export class BoundaryMap {
             if (p2.isOceanic()) return Boundary.OCEANIC_RIFT
         }
         return Boundary.PASSIVE_MARGIN
+    }
+
+    get(region, neighborRegion) {
+        const rgrp = this.regionGroupTileMap
+        const group = rgrp.getGroupByRegion(region)
+        const neighborGroup = rgrp.getGroupByRegion(neighborRegion)
+        return this._boundaries.get(group.id, neighborGroup.id)
     }
 }
 
