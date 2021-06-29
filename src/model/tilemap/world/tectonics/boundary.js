@@ -26,7 +26,7 @@ const BOUNDARIES = {
         id: 6,  color: '#001b36', border: false, energy: 1, chance: .5, growth: 2
     },
     OCEANIC_VALLEY: {
-        id: 7,  color: '#003365', border: false, energy: 4, chance: .5, growth: 8
+        id: 7,  color: '#003365', border: false, energy: 5, chance: .5, growth: 1
     },
     ISLAND_ARC: {
         id: 8,  color: '#3bd4c2', border: false, energy: 1, chance: .5, growth: 8
@@ -38,7 +38,7 @@ const BOUNDARIES = {
         id: 10, color: '#003f6c', border: false, energy: 1, chance: .5, growth: 8
     },
     PASSIVE_MARGIN: {
-        id: 11,  color: '#0077AA',  border: true, energy: 8, chance: .8, growth: 6
+        id: 11,  color: '#0077AA',  border: true, energy: 6, chance: .5, growth: 6
     },
 }
 
@@ -183,11 +183,13 @@ export class BoundaryMap {
             return Boundary.PASSIVE_MARGIN
         }
         if (dotFrom < 0) {
+            if (p1.id == 0 && p2.id==4) console.log('aqui');
             if (p1.isContinental()) return Boundary.PASSIVE_MARGIN
             if (p2.isContinental()) return Boundary.OCEANIC_RIFT
-            if (p2.isOceanic()) return Boundary.OCEANIC_RIFT
+            return Boundary.OCEANIC_RIFT
         }
-        return Boundary.PASSIVE_MARGIN
+        if (p1.isContinental()) return Boundary.PASSIVE_MARGIN
+        return Boundary.OCEANIC_VALLEY
     }
 
     get(region, neighborRegion) {
