@@ -21,7 +21,7 @@ const BOUNDARIES = {
         land: true,
     },
     COLLISION_OROGENY: {
-        id: 4,  color: '#dbd6c7', border: true,  energy: 3, chance: .4, growth: 8,
+        id: 4,  color: '#dbd6c7', border: true,  energy: 4, chance: .6, growth: 8,
         land: true,
     },
     EARLY_OROGENY: {
@@ -32,7 +32,7 @@ const BOUNDARIES = {
         id: 6,  color: '#001b36', border: false, energy: 1, chance: .5, growth: 2,
         land: false,
     },
-    OCEANIC_VALLEY: {
+    CONTINENTAL_SLOPE: {
         id: 7,  color: '#003365', border: false, energy: 5, chance: .5, growth: 1,
         land: false,
     },
@@ -52,7 +52,7 @@ const BOUNDARIES = {
         id: 11, color: '#0b86bb', border: true,  energy: 2, chance: .4, growth: 5,
         land: false,
     },
-    PASSIVE_MARGIN: {
+    CONTINENTAL_SHELF: {
         id: 12, color: '#0077AA', border: true,  energy: 5, chance: .5, growth: 6,
         land: false,
     },
@@ -76,11 +76,11 @@ export class Boundary {
     static get COLLISION_OROGENY () { return BOUNDARIES.COLLISION_OROGENY.id }
     static get EARLY_OROGENY () { return BOUNDARIES.EARLY_OROGENY.id }
     static get OCEANIC_TRENCH () { return BOUNDARIES.OCEANIC_TRENCH.id }
-    static get OCEANIC_VALLEY () { return BOUNDARIES.OCEANIC_VALLEY.id }
+    static get CONTINENTAL_SLOPE () { return BOUNDARIES.CONTINENTAL_SLOPE.id }
     static get ISLAND_ARC () { return BOUNDARIES.ISLAND_ARC.id }
     static get CONTINENTAL_FAULT () { return BOUNDARIES.CONTINENTAL_FAULT.id }
     static get OCEANIC_FAULT () { return BOUNDARIES.OCEANIC_FAULT.id }
-    static get PASSIVE_MARGIN () { return BOUNDARIES.PASSIVE_MARGIN.id }
+    static get CONTINENTAL_SHELF () { return BOUNDARIES.CONTINENTAL_SHELF.id }
     static get EARLY_OCEAN () { return BOUNDARIES.EARLY_OCEAN.id }
 
     static getName(id) {
@@ -173,7 +173,7 @@ export class BoundaryMap {
     _buildDivergentBoundary(p1, p2) {
         if (p1.isContinental()) {
             if (p2.isContinental()) return Boundary.CONTINENTAL_RIFT
-            return Boundary.PASSIVE_MARGIN
+            return Boundary.CONTINENTAL_SHELF
         }
         if (p2.isContinental()) return Boundary.OCEANIC_RIFT
         return Boundary.OCEANIC_RIFT
@@ -184,23 +184,23 @@ export class BoundaryMap {
             if (p2.isContinental()) return Boundary.CONTINENTAL_FAULT
             return Boundary.CONTINENTAL_FAULT
         }
-        if (p2.isContinental()) return Boundary.OCEANIC_VALLEY
+        if (p2.isContinental()) return Boundary.CONTINENTAL_SLOPE
         return Boundary.OCEANIC_FAULT
     }
 
     _buildOtherBoundary(p1, p2, dotTo, dotFrom) {
         if (dotTo > 0) {
             if (p1.isContinental()) return Boundary.EARLY_OROGENY
-            return Boundary.OCEANIC_VALLEY
+            return Boundary.CONTINENTAL_SLOPE
         }
         if (dotTo < 0) {
-            if (p1.isContinental()) return Boundary.PASSIVE_MARGIN
+            if (p1.isContinental()) return Boundary.CONTINENTAL_SHELF
             return Boundary.OCEANIC_RIFT
         }
         if (dotTo == 0) {
             if (p1.isContinental()) {
                 if (p2.isContinental()) return Boundary.EARLY_OCEAN
-                return Boundary.PASSIVE_MARGIN
+                return Boundary.CONTINENTAL_SHELF
             }
             return Boundary.OCEANIC_RIFT
         }
@@ -208,15 +208,15 @@ export class BoundaryMap {
             if (p1.isContinental()) return Boundary.EARLY_OROGENY
             if (p2.isContinental()) return Boundary.OCEANIC_TRENCH
             if (p2.isOceanic()) return Boundary.ISLAND_ARC
-            return Boundary.PASSIVE_MARGIN
+            return Boundary.CONTINENTAL_SHELF
         }
         if (dotFrom < 0) {
-            if (p1.isContinental()) return Boundary.PASSIVE_MARGIN
+            if (p1.isContinental()) return Boundary.CONTINENTAL_SHELF
             if (p2.isContinental()) return Boundary.OCEANIC_RIFT
             return Boundary.OCEANIC_RIFT
         }
-        if (p1.isContinental()) return Boundary.PASSIVE_MARGIN
-        return Boundary.OCEANIC_VALLEY
+        if (p1.isContinental()) return Boundary.CONTINENTAL_SHELF
+        return Boundary.CONTINENTAL_SLOPE
     }
 
     get(region, neighborRegion) {
