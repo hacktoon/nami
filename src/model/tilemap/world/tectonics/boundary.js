@@ -48,8 +48,12 @@ const BOUNDARIES = {
         id: 10, color: '#003f6c', border: false, energy: 1, chance: .5, growth: 8,
         land: false,
     },
+    EARLY_OCEAN: {
+        id: 11, color: '#0b86bb', border: true,  energy: 2, chance: .4, growth: 5,
+        land: false,
+    },
     PASSIVE_MARGIN: {
-        id: 11, color: '#0077AA', border: true,  energy: 5, chance: .5, growth: 6,
+        id: 12, color: '#0077AA', border: true,  energy: 5, chance: .5, growth: 6,
         land: false,
     },
 }
@@ -73,10 +77,11 @@ export class Boundary {
     static get EARLY_OROGENY () { return BOUNDARIES.EARLY_OROGENY.id }
     static get OCEANIC_TRENCH () { return BOUNDARIES.OCEANIC_TRENCH.id }
     static get OCEANIC_VALLEY () { return BOUNDARIES.OCEANIC_VALLEY.id }
-    static get PASSIVE_MARGIN () { return BOUNDARIES.PASSIVE_MARGIN.id }
     static get ISLAND_ARC () { return BOUNDARIES.ISLAND_ARC.id }
     static get CONTINENTAL_FAULT () { return BOUNDARIES.CONTINENTAL_FAULT.id }
     static get OCEANIC_FAULT () { return BOUNDARIES.OCEANIC_FAULT.id }
+    static get PASSIVE_MARGIN () { return BOUNDARIES.PASSIVE_MARGIN.id }
+    static get EARLY_OCEAN () { return BOUNDARIES.EARLY_OCEAN.id }
 
     static getName(id) {
         return BOUNDARY_MAP.get(id).name
@@ -190,6 +195,13 @@ export class BoundaryMap {
         }
         if (dotTo < 0) {
             if (p1.isContinental()) return Boundary.PASSIVE_MARGIN
+            return Boundary.OCEANIC_RIFT
+        }
+        if (dotTo == 0) {
+            if (p1.isContinental()) {
+                if (p2.isContinental()) return Boundary.EARLY_OCEAN
+                return Boundary.PASSIVE_MARGIN
+            }
             return Boundary.OCEANIC_RIFT
         }
         if (dotFrom > 0) {
