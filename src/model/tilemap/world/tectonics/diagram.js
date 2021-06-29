@@ -13,7 +13,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         Type.boolean('showBoundaries', 'Show boundaries', {default: true}),
         Type.boolean('showPlateBorders', 'Show borders', {default: false}),
         Type.boolean('showDirections', 'Show directions', {default: false}),
-        Type.boolean('showRender', 'Show render', {default: true}),
+        Type.boolean('showRender', 'Show render', {default: false}),
     )
 
     static create(tileMap, params) {
