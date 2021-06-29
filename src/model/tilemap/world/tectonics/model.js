@@ -74,10 +74,10 @@ export class TectonicsModel {
             seed: seed,
             groupScale: params.get('scale'),
             groupGrowth: params.get('growth'),
-            groupChance: 0.1,
+            groupChance: .1,
             scale: 1,
             growth: 0,
-            chance: 0.1,
+            chance: .1,
         })
     }
 

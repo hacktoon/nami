@@ -5,7 +5,7 @@ import { Direction } from '/lib/base/direction'
 
 const BOUNDARIES = {
     NONE: {
-        id: 0,  color: '#000000', border: true,  energy: 0, chance: .5, growth: 8,
+        id: 0,  color: '#000000', border: true,  energy: 0, chance: 0, growth: 0,
         land: true,
     },
     CONTINENTAL_RIFT: {
@@ -21,7 +21,7 @@ const BOUNDARIES = {
         land: true,
     },
     COLLISION_OROGENY: {
-        id: 4,  color: '#dbd6c7', border: true,  energy: 3, chance: .4, growth: 4,
+        id: 4,  color: '#dbd6c7', border: true,  energy: 3, chance: .4, growth: 8,
         land: true,
     },
     EARLY_OROGENY: {
@@ -41,7 +41,7 @@ const BOUNDARIES = {
         land: true,
     },
     CONTINENTAL_FAULT: {
-        id: 9, color: '#9aae6d', border: false, energy: 1, chance: .5, growth: 8,
+        id: 9,  color: '#9aae6d', border: false, energy: 1, chance: .5, growth: 8,
         land: true,
     },
     OCEANIC_FAULT: {
@@ -49,7 +49,7 @@ const BOUNDARIES = {
         land: false,
     },
     PASSIVE_MARGIN: {
-        id: 11,  color: '#0077AA',  border: true, energy: 6, chance: .5, growth: 6,
+        id: 11, color: '#0077AA', border: true,  energy: 5, chance: .5, growth: 6,
         land: false,
     },
 }
@@ -199,7 +199,6 @@ export class BoundaryMap {
             return Boundary.PASSIVE_MARGIN
         }
         if (dotFrom < 0) {
-            if (p1.id == 0 && p2.id==4) console.log('aqui');
             if (p1.isContinental()) return Boundary.PASSIVE_MARGIN
             if (p2.isContinental()) return Boundary.OCEANIC_RIFT
             return Boundary.OCEANIC_RIFT
