@@ -153,11 +153,10 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.id = data.id
-        this.boundary = data.boundary
         this.data = data
 
-        this.chance = .2
-        this.growth = 1
+        this.chance = Boundary.getChance(data.boundary)
+        this.growth = Boundary.getGrowth(data.boundary)
     }
 
     isEmpty(region) {
@@ -165,7 +164,7 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
     }
 
     setValue(region, level) {
-        this.data.regionBoundary.set(region.id, this.boundary)
+        this.data.regionBoundary.set(region.id, this.data.boundary)
         this.data.stressLevels.set(region.id, level)
     }
 

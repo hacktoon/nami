@@ -5,29 +5,41 @@ import { Direction } from '/lib/base/direction'
 
 const BOUNDARIES = {
     NONE: {
-        id: 0, visible: false, color: '#000'   , border: true, energy: 0},
+        id: 0,  color: '#000000', border: true,  energy: 0, chance: .5, growth: 8
+    },
     CONTINENTAL_RIFT: {
-        id: 1, visible: false, color: '#125a0e' , border: false, energy: 1},
+        id: 1,  color: '#125a0e', border: false, energy: 1, chance: .5, growth: 8
+    },
     OCEANIC_RIFT: {
-        id: 2, visible: false, color: '#42155f', border: false, energy: 1},
+        id: 2,  color: '#42155f', border: false, energy: 1, chance: .5, growth: 8
+    },
     SUBDUCTION_OROGENY: {
-        id: 3, visible: true, color: '#ccb672' , border: false, energy: 1},
+        id: 3,  color: '#ccb672', border: false, energy: 3, chance: .3, growth: 3
+    },
     COLLISION_OROGENY: {
-        id: 4, visible: true, color: '#dbd6c7' , border: true, energy: 2},
+        id: 4,  color: '#dbd6c7', border: true,  energy: 3, chance: .4, growth: 4
+    },
     EARLY_OROGENY: {
-        id: 5, visible: true, color: '#749750' , border: false, energy: 1},
+        id: 5,  color: '#749750', border: false, energy: 1, chance: .5, growth: 5
+    },
     OCEANIC_TRENCH: {
-        id: 6, visible: true, color: '#001b36' , border: false, energy: 1},
+        id: 6,  color: '#001b36', border: false, energy: 1, chance: .5, growth: 2
+    },
     OCEANIC_VALLEY: {
-        id: 7, visible: true, color: '#003365' , border: false, energy: 1},
-    PASSIVE_MARGIN: {
-        id: 8, visible: true, color: '#07A', border: true, energy: 3},
+        id: 7,  color: '#003365', border: false, energy: 4, chance: .5, growth: 8
+    },
     ISLAND_ARC: {
-        id: 9, visible: true, color: '#3bd4c2' , border: false, energy: 1},
+        id: 8,  color: '#3bd4c2', border: false, energy: 1, chance: .5, growth: 8
+    },
     CONTINENTAL_FAULT: {
-        id: 10, visible: false, color: '#9aae6d', border: false, energy: 1},
+        id: 9, color: '#9aae6d', border: false, energy: 1, chance: .5, growth: 8
+    },
     OCEANIC_FAULT: {
-        id: 11, visible: false, color: '#003f6c', border: false, energy: 1},
+        id: 10, color: '#003f6c', border: false, energy: 1, chance: .5, growth: 8
+    },
+    PASSIVE_MARGIN: {
+        id: 11,  color: '#0077AA',  border: true, energy: 8, chance: .8, growth: 6
+    },
 }
 
 
@@ -56,6 +68,14 @@ export class Boundary {
 
     static getName(id) {
         return BOUNDARY_MAP.get(id).name
+    }
+
+    static getChance(id) {
+        return BOUNDARY_MAP.get(id).chance
+    }
+
+    static getGrowth(id) {
+        return BOUNDARY_MAP.get(id).growth
     }
 
     static getEnergy(id) {
@@ -91,7 +111,7 @@ export class BoundaryMap {
             neighbors.forEach(neighbor => {
                 const boundary = this._buildGroupBoundary(group, neighbor)
                 this._boundaries.set(group.id, neighbor.id, boundary)
-                console.log(`${group.id}>${neighbor.id} = ${Boundary.getName(boundary)}`);
+                // console.log(`${group.id}>${neighbor.id} = ${Boundary.getName(boundary)}`);
             })
         })
     }
@@ -134,14 +154,14 @@ export class BoundaryMap {
             if (p2.isContinental()) return Boundary.CONTINENTAL_RIFT
             return Boundary.PASSIVE_MARGIN
         }
-        if (p2.isContinental()) return Boundary.PASSIVE_MARGIN
+        if (p2.isContinental()) return Boundary.OCEANIC_RIFT
         return Boundary.OCEANIC_RIFT
     }
 
     _buildTransformBoundary(p1, p2) {
         if (p1.isContinental()) {
             if (p2.isContinental()) return Boundary.CONTINENTAL_FAULT
-            return Boundary.PASSIVE_MARGIN
+            return Boundary.CONTINENTAL_FAULT
         }
         if (p2.isContinental()) return Boundary.OCEANIC_VALLEY
         return Boundary.OCEANIC_FAULT
