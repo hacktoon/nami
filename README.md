@@ -9,7 +9,7 @@
 ## ROADMAP
 
 
-#### TectonicsTileMap
+#### GeologyTileMap
 - Create plate adjacency from regiongroup map
   - Convergent
     - OO : Island Arc + trench

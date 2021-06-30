@@ -7,16 +7,16 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 import { Boundary } from './boundary'
 
 
-export class TectonicsTileMapDiagram extends TileMapDiagram {
+export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
-        'TectonicsTileMapDiagram',
+        'GeologyTileMapDiagram',
         Type.boolean('showBoundaries', 'Show boundaries', {default: true}),
         Type.boolean('showPlateBorders', 'Show borders', {default: false}),
         Type.boolean('showDirections', 'Show directions', {default: false}),
     )
 
     static create(tileMap, params) {
-        return new TectonicsTileMapDiagram(tileMap, params)
+        return new GeologyTileMapDiagram(tileMap, params)
     }
 
     constructor(tileMap, params) {
@@ -46,7 +46,6 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
             color = color.darken(40)
         }
         return color.darken(stress * 2).toHex()
-        // return color.toHex()
     }
 
     getText(point) {

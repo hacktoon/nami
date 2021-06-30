@@ -4,12 +4,12 @@ import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
 import { TectonicsModel } from './model'
-import { TectonicsTileMapDiagram } from './diagram'
+import { GeologyTileMapDiagram } from './diagram'
 import { Boundary } from './boundary'
 
 
 const SCHEMA = new Schema(
-    'TectonicsTileMap',
+    'GeologyTileMap',
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 30, step: 1, min: 1, max: 100}),
@@ -18,14 +18,14 @@ const SCHEMA = new Schema(
 )
 
 
-export class TectonicsTileMap extends TileMap {
-    static id = 'TectonicsTileMap'
-    static diagram = TectonicsTileMapDiagram
+export class GeologyTileMap extends TileMap {
+    static id = 'GeologyTileMap'
+    static diagram = GeologyTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
 
     static create(params) {
-        return new TectonicsTileMap(params)
+        return new GeologyTileMap(params)
     }
 
     constructor(params) {
