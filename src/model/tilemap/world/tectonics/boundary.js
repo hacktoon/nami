@@ -13,23 +13,23 @@ const BOUNDARIES = {
         land: true,
     },
     OCEANIC_RIFT: {
-        id: 2,  color: '#006699', border: false, energy: 1, chance: .5, growth: 8,
+        id: 2,  color: '#006699', border: false, energy: 1, chance: .5, growth: 2,
         land: false,
     },
-    SUBDUCTION_OROGENY: {
-        id: 3,  color: '#a79e86', border: false, energy: 3, chance: .3, growth: 3,
+    COLLISION_OROGENY: {
+        id: 4,  color: '#CCCCCC', border: true,  energy: 3, chance: .5, growth: 4,
         land: true,
     },
-    COLLISION_OROGENY: {
-        id: 4,  color: '#CCCCCC', border: true,  energy: 4, chance: .6, growth: 8,
+    SUBDUCTION_OROGENY: {
+        id: 3,  color: '#a79e86', border: false, energy: 2, chance: .5, growth: 3,
         land: true,
     },
     EARLY_OROGENY: {
-        id: 5,  color: '#749750', border: false, energy: 1, chance: .5, growth: 5,
+        id: 5,  color: '#749750', border: false, energy: 1, chance: .5, growth: 2,
         land: true,
     },
     OCEANIC_TRENCH: {
-        id: 6,  color: '#001b36', border: false, energy: 1, chance: .5, growth: 2,
+        id: 6,  color: '#001b36', border: false, energy: 2, chance: .2, growth: 1,
         land: false,
     },
     ABYSSAL_PLAIN: {
