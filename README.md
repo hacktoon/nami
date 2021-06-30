@@ -9,6 +9,9 @@
 ## ROADMAP
 
 
+#### RegionGroupMap
+- Use energy prop
+
 #### PairSetMap
 - Allows two ids in any order (x, y)|(y, x) -> z
 
@@ -22,18 +25,15 @@
 
 *CONTINENTAL/OCEANIC*
 - OROGENY_SUBDUCTION
-- RIDGE_PASSIVE_MARGIN
-- BASIN_ISLAND_ARC
-- BASIN_ISLAND_ARC
+- PASSIVE_MARGIN_RIDGE
+- BACKARC_BASIN_ISLAND_ARC
 
 *OCEANIC/OCEANIC*
 - OCEANIC_RIFT
-- OCEANIC_TRENCH
+- TRENCH
 - ABYSSAL_PLAIN
 - ISLAND_ARC
 - OCEANIC_FAULT
-- EARLY_OCEAN
-- PASSIVE_MARGIN
 
 #### TerrainTileMap
 - Define litoral/water/plains/mountain/hill regions
