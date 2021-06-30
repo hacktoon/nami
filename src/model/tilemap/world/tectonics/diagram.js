@@ -13,7 +13,6 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         Type.boolean('showBoundaries', 'Show boundaries', {default: true}),
         Type.boolean('showPlateBorders', 'Show borders', {default: false}),
         Type.boolean('showDirections', 'Show directions', {default: false}),
-        Type.boolean('showRender', 'Show render', {default: false}),
     )
 
     static create(tileMap, params) {
@@ -25,8 +24,6 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         this.showPlateBorders = params.get('showPlateBorders')
         this.showBoundaries = params.get('showBoundaries')
         this.showDirections = params.get('showDirections')
-        this.showRender = params.get('showRender')
-        // this.colorMap = new PlateColorMap(tileMap)
     }
 
     get(point) {
@@ -47,9 +44,6 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         }
         if (this.showPlateBorders && isBorderPoint) {
             color = color.darken(40)
-        }
-        if (this.showRender && ! Boundary.isLand(boundary) && stress < Boundary.getEnergy(boundary)) {
-            return '#047'
         }
         return color.darken(stress * 2).toHex()
         // return color.toHex()
