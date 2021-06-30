@@ -33,7 +33,7 @@ const BOUNDARIES = {
         land: false,
     },
     ABYSSAL_PLAIN: {
-        id: 7,  color: '#003365', border: false, energy: 6, chance: .5, growth: 4,
+        id: 7,  color: '#003365', border: false, energy: 8, chance: .5, growth: 4,
         land: false,
     },
     ISLAND_ARC: {
