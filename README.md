@@ -9,19 +9,31 @@
 ## ROADMAP
 
 
+#### PairSetMap
+- Allows two ids in any order (x, y)|(y, x) -> z
+
 #### GeologyTileMap
-- Create plate adjacency from regiongroup map
-  - Convergent
-    - OO : Island Arc + trench
-    - OC : Trench + Orogeny
-    - CC : Mountain
+*CONTINENTAL/CONTINENTAL*
+- OROGENY_COLLISION
+- RIFT_UPLIFT
+- RIFT_VALLEY
+- RIFT_SEA
+- TRANSFORM_FAULT
 
-  - Divergent
-    - OO : Oceanic Ridge
-    - CC : Rift
+*CONTINENTAL/OCEANIC*
+- OROGENY_SUBDUCTION
+- RIDGE_PASSIVE_MARGIN
+- BASIN_ISLAND_ARC
+- BASIN_ISLAND_ARC
 
-  - Transform
-    - Speed difference
+*OCEANIC/OCEANIC*
+- OCEANIC_RIFT
+- OCEANIC_TRENCH
+- ABYSSAL_PLAIN
+- ISLAND_ARC
+- OCEANIC_FAULT
+- EARLY_OCEAN
+- PASSIVE_MARGIN
 
 #### TerrainTileMap
 - Define litoral/water/plains/mountain/hill regions
