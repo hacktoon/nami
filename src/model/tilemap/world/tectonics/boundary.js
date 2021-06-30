@@ -37,7 +37,7 @@ const BOUNDARIES = {
         land: false,
     },
     ISLAND_ARC: {
-        id: 8,  color: '#3bd4c2', border: false, energy: 1, chance: .5, growth: 8,
+        id: 8,  color: '#3bd4c2', border: false, energy: 1, chance: .5, growth: 1,
         land: true,
     },
     CONTINENTAL_FAULT: {
