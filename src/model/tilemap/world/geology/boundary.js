@@ -17,11 +17,11 @@ const BOUNDARIES = {
         land: false, borderColor: '#ff0000',
     },
     COLLISION_OROGENY: {
-        id: 4,  color: '#CCCCCC', border: 1,  energy: 3, chance: .5, growth: 4,
+        id: 4,  color: '#CCCCCC', border: 1,  energy: 3, chance: .5, growth: 3,
         land: true, borderColor: '#EEE',
     },
     SUBDUCTION_OROGENY: {
-        id: 3,  color: '#a79e86', border: 0, energy: 2, chance: .6, growth: 4,
+        id: 3,  color: '#a79e86', border: 0, energy: 2, chance: .6, growth: 1,
         land: true, borderColor: '#CCC',
     },
     EARLY_OROGENY: {
