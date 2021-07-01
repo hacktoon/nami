@@ -7,34 +7,6 @@
 
 
 ## ROADMAP
-
-
-#### RegionGroupMap
-- Use energy prop
-
-#### PairSetMap
-- Allows two ids in any order (x, y)|(y, x) -> z
-
-#### GeologyTileMap
-*CONTINENTAL/CONTINENTAL*
-- OROGENY_COLLISION
-- RIFT_UPLIFT
-- RIFT_VALLEY
-- RIFT_SEA
-- TRANSFORM_FAULT
-
-*CONTINENTAL/OCEANIC*
-- OROGENY_SUBDUCTION
-- PASSIVE_MARGIN_RIDGE
-- BACKARC_BASIN_ISLAND_ARC
-
-*OCEANIC/OCEANIC*
-- OCEANIC_RIFT
-- TRENCH
-- ABYSSAL_PLAIN
-- ISLAND_ARC
-- OCEANIC_FAULT
-
 #### TerrainTileMap
 - Define litoral/water/plains/mountain/hill regions
 - Calc river basins from region graph
