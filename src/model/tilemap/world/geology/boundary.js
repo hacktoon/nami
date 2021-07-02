@@ -235,9 +235,10 @@ export class BoundaryMap {
 const BOUNDARIES2 = {
     // CONTINENTAL-CONTINENTAL
     LLCC: {name: 'Collision between continents',
-        color: '#CCC', borderColor: '#EEE', energy: 3, chance: .5, growth: 3,
+        borderColor: '#EEEEEE',
+        color: '#CCCCCC', energy: 3, chance: .5, growth: 3,
     },
-    LLCT: {name: 'Early collision, sparse hills',
+    LLCT: {name: 'Early orogeny / sparse hills',
         color: '#749750', energy: 1, chance: .5, growth: 2,
     },
     LLCD: {name: 'Early fault - uplift step',
