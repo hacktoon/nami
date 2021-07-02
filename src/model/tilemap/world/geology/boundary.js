@@ -232,6 +232,10 @@ export class BoundaryMap {
 }
 
 
+// CONVERGE = 2
+// TRANSFORM = 0
+// DIVERGE = 1
+
 const BOUNDARIES2 = {
     // CONTINENTAL-CONTINENTAL
     LLCC: {name: 'Collision between continents',
@@ -239,58 +243,61 @@ const BOUNDARIES2 = {
         color: '#CCCCCC', energy: 3, chance: .5, growth: 3,
     },
     LLCT: {name: 'Early orogeny / sparse hills',
+        p2: {color: '#749750', energy: 1, chance: .5, growth: 2},
+        p0: {color: '#749750', energy: 1, chance: .5, growth: 2},
+    },
+    LLCD: {name: 'Early rift uplift / volcano field',
         color: '#749750', energy: 1, chance: .5, growth: 2,
     },
-    LLCD: {name: 'Early fault - uplift step',
-        color: '#749750', energy: 1, chance: .5, growth: 2,
-    },
-    LLTT: {name: 'Fault',
+    LLTT: {name: 'Transform Fault',
         color: '#9aae6d', energy: 1, chance: .5, growth: 8,
     },
-    LLTD: {name: 'Early continental rift',
+    LLTD: {name: 'Early continental rift / valley',
         color: '#125a0e', energy: 1, chance: .5, growth: 8,
     },
-    LLDD: {name: 'Continental rift',
+    LLDD: {name: 'Continental rift / early sea',
         color: '#125a0e', energy: 1, chance: .5, growth: 8,
     },
 
     // CONTINENTAL-OCEANIC
-    COCC: {name: 'Collision between continent and ocean',
+    LWCC: {name: 'Collision between continent and ocean',
+        p1: {color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
+        p2: {color: '#001b36', energy: 2, chance: .2, growth: 1}, //trench
+    },
+    LWCT: {name: '?',
         color: '#a79e86', energy: 2, chance: .6, growth: 1,
     },
-    COCT: {name: '?',
-        color: '#a79e86', energy: 2, chance: .6, growth: 1,
-    },
-    COCD: {name: '?',
+    LWCD: {name: '?',
         color: '#749750', energy: 1, chance: .5, growth: 2,
     },
-    COTT: {name: 'Coastal fault',  //  break regions
+    LWTT: {name: 'Coastal fault',  //  break regions
         color: '#9aae6d', energy: 1, chance: .5, growth: 8,
     },
-    COTD: {name: '?',
+    LWTD: {name: '?',
         color: '#749750', energy: 1, chance: .5, growth: 2,
     },
-    CODD: {name: 'Oceanic rift, passive margin',
+    LWDD: {name: 'Oceanic rift, passive margin',
         color: '#749750', energy: 1, chance: .5, growth: 2,
     },
 
     // OCEANIC-OCEANIC
-    OOCC: {name: 'Island arc',
-        color: '#CCCCCC', energy: 3, chance: .5, growth: 3,
+    WWCC: {name: 'Island arc',
+        p1: {color: '#3bd4c2', energy: 1, chance: .5, growth: 2}, //arc
+        p2: {color: '#001b36', energy: 2, chance: .2, growth: 1}, //trench
     },
-    OOCT: {name: 'Sea mounts arc',
+    WWCT: {name: 'Sea mounts arc',
         color: '#a79e86', energy: 2, chance: .6, growth: 1,
     },
-    OOCD: {name: 'Fault mountains',
+    WWCD: {name: 'Fault mountains',
         color: '#749750', energy: 1, chance: .5, growth: 2,
     },
-    OOTT: {name: 'Oceanic fault',
+    WWTT: {name: 'Oceanic fault',
         color: '#003f6c', energy: 1, chance: .5, growth: 8,
     },
-    OOTD: {name: 'Early oceanic rift',
+    WWTD: {name: 'Early oceanic rift',
         color: '#749750', energy: 1, chance: .5, growth: 2,
     },
-    OODD: {name: 'OCEANIC_RIFT',
+    WWDD: {name: 'OCEANIC_RIFT',
         color: '#006699', energy: 1, chance: .5, growth: 2,
     },
 }
