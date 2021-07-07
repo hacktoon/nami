@@ -163,7 +163,7 @@ export class BoundaryMap {
         if (dotTo == 0 && dotFrom == 0) {
             return this._buildTransformBoundary(p1, p2)
         }
-        const code = this.table.get(p1, p2, dotTo, dotFrom)
+        const boundary = this.table.get(p1, p2, dotTo, dotFrom)
         return this._buildOtherBoundary(p1, p2, dotTo, dotFrom)
     }
 
@@ -236,9 +236,9 @@ export class BoundaryMap {
 
 const BD_LAND = 0
 const BD_WATER = 100
-const BD_CONVERGE = 1
-const BD_DIVERGE = 4
-const BD_TRANSFORM = 16
+const BD_CONVERGE = 16
+const BD_TRANSFORM = 4
+const BD_DIVERGE = 1
 const IDMAP = {
     L: BD_LAND,
     W: BD_WATER,
@@ -261,32 +261,34 @@ class BoundaryTable {
     _parseCode(id) {
         // sum numeric codes from id chars
         const chars = Array.from(id)
-        return chars.map(ch=>IDMAP[ch]).reduce((a, b) => a + b, 0)
+        return chars.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
     }
 
     get(p1, p2, dotTo, dotFrom) {
-        const code = this._buildCode(p1, p2, dotTo, dotFrom)
+        const type1 = this._getType(p1)
+        const type2 = this._getType(p2)
+        const dir1 = this._getDir(dotTo)
+        const dir2 = this._getDir(dotFrom)
+        const code = type1 + type2 + dir1 + dir2
         const row = this._table.get(code)
-        if (code >= 200)
-        console.log(
-            `${p1.id}=>${p2.id} [${dotTo}, ${dotFrom}] | code=${code}`,
-            `weight="${p1.weight}w/${p2.weight}w"`,
-            `${row.name}, rule="${row.rule}"`,
-        )
+        const boundaryData = row.getBoundaryData(p1, p2, dir1, dir2)
+        if (code >= 200) {
+            console.log(
+                `${p1.id}=>${p2.id} [${dir1}] | code=${code}`,
+                `weight="${p1.weight}w/${p2.weight}w"`,
+                `${row.name}, b="${boundaryData.color}"`,
+            )
+        }
         return row
     }
 
-    _buildCode(p1, p2, dotTo, dotFrom) {
-        const type1 = p1.isContinental() ? BD_LAND : BD_WATER
-        const type2 = p2.isContinental() ? BD_LAND : BD_WATER
-        const dir1 = this._getDir(dotTo)
-        const dir2 = this._getDir(dotFrom)
-        return type1 + type2 + dir1 + dir2
+    _getType(plate) {
+        return plate.isContinental() ? BD_LAND : BD_WATER
     }
 
     _getDir(dir) {
         if (dir > 0) return BD_CONVERGE
-        if (dir < 0)  BD_DIVERGE
+        if (dir < 0) return BD_DIVERGE
         return BD_TRANSFORM
     }
 }
@@ -296,7 +298,23 @@ class BoundaryTableRow {
     constructor(row) {
         this.name = row.name
         this.data = row.data
-        this.rule = row.rule ?? ''
+        this.rule = row.rule ?? 'type'
+    }
+
+    getBoundaryData(p1, p2, dir1, dir2) {
+        const first = this.data[0]
+        const second = this.data.length > 1 ? this.data[1] : first
+        if (this.rule === 'weight') {
+            return p1.weight > p2.weight ? first : second
+        }
+        return dir1 > dir2 ? first : second
+    }
+}
+
+
+class Boundary2 {
+    constructor(row) {
+        this.name = row.name
     }
 }
 
@@ -306,7 +324,7 @@ const BOUNDARY_TABLE = [
     {id: 'LLCC', name: 'Collision between continents', data: [
         {height: 100, border: '#EEEEEE', color: '#CCCCCC', energy: 3, chance: .5, growth: 3}
     ]},
-    {id: 'LLCT', name: 'Early orogeny / sparse hills', rule: 'dir', data: [
+    {id: 'LLCT', name: 'Early orogeny / sparse hills', rule: 'type', data: [
         {height: 100, color: '#CCCCCC', energy: 1, chance: .5, growth: 2},
         {height: 100, color: '#749750', energy: 1, chance: .5, growth: 2}
     ]},
@@ -319,7 +337,7 @@ const BOUNDARY_TABLE = [
     {id: 'LLDT', name: 'Early continental rift / valley', data: [
         {height: 100, color: '#125a0e', energy: 1, chance: .5, growth: 8}
     ]},
-    {id: 'LLDD', name: 'Continental rift / early sea', rule: 'speed', data: [
+    {id: 'LLDD', name: 'Continental rift / early sea', rule: 'weight', data: [
         {height: 100, color: '#125a0e', energy: 2, chance: .5, growth: 8},
         {height: 100, color: '#006699', energy: 1, chance: .5, growth: 8},
     ]},

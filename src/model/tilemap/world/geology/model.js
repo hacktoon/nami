@@ -19,7 +19,6 @@ export class Plate {
         this.area = area
         this.origin = origin
         this.direction = Direction.random()
-        this.speed = Random.int(5)
         this.weight = weight
     }
 
