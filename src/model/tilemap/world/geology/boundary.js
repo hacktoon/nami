@@ -128,6 +128,7 @@ export class BoundaryMap {
     constructor(plates, regionGroupTileMap) {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap
+        this.table = new BoundaryTable(BOUNDARY_TABLE)
         this._boundaries = new PairMap()
 
         regionGroupTileMap.getGroups().forEach(group => {
@@ -162,6 +163,7 @@ export class BoundaryMap {
         if (dotTo == 0 && dotFrom == 0) {
             return this._buildTransformBoundary(p1, p2)
         }
+        const code = this.table.get(p1, p2, dotTo, dotFrom)
         return this._buildOtherBoundary(p1, p2, dotTo, dotFrom)
     }
 
@@ -232,78 +234,139 @@ export class BoundaryMap {
 }
 
 
-// CONVERGE = 2
-// TRANSFORM = 0
-// DIVERGE = 1
-
-const BOUNDARIES2 = {
-    // CONTINENTAL-CONTINENTAL ==============================
-    LLCC: {name: 'Collision between continents', data: [
-        {border: '#EEEEEE', color: '#CCCCCC', energy: 3, chance: .5, growth: 3}
-    ]},
-    LLCT: {name: 'Early orogeny / sparse hills', data: [
-        {color: '#CCCCCC', energy: 1, chance: .5, growth: 2},
-        {color: '#749750', energy: 1, chance: .5, growth: 2}
-    ]},
-    LLCD: {name: 'Early rift uplift / volcano field', data: [
-        {color: '#749750', energy: 1, chance: .5, growth: 2}
-    ]},
-    LLTT: {name: 'Transform Fault', data: [
-        {color: '#9aae6d', energy: 1, chance: .5, growth: 8}
-    ]},
-    LLDT: {name: 'Early continental rift / valley', data: [
-        {color: '#125a0e', energy: 1, chance: .5, growth: 8}
-    ]},
-    LLDD: {name: 'Continental rift / early sea', data: [
-        {color: '#125a0e', energy: 1, chance: .5, growth: 8},
-        {color: '#006699', energy: 1, chance: .5, growth: 8},
-    ]},
-
-    // CONTINENTAL-OCEANIC =================================
-    LWCC: {name: 'Cordillera orogeny', data: [
-        {color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
-        {color: '#001b36', energy: 2, chance: .2, growth: 1}, //trench
-    ]},
-    LWCT: {name: 'Early cordillera orogeny', data: [
-        {color: '#a79e86', energy: 2, chance: .6, growth: 1},
-        {color: '#001b36', energy: 2, chance: .6, growth: 1},
-    ]},
-    LWCD: {name: 'Early passive margin', data: [
-        {color: '#9aae6d', energy: 1, chance: .5, growth: 2},
-        {color: '#006699', energy: 1, chance: .5, growth: 8},
-    ]},
-    LWTT: {name: 'Coastal fault', data: [  // break regions
-        {color: '#006699', energy: 1, chance: .5, growth: 8},
-        {color: '#006699', energy: 1, chance: .5, growth: 8},
-    ]},
-    LWDT: {name: 'Early oceanic rift', data: [
-        {color: '#749750', energy: 1, chance: .5, growth: 2},
-        {color: '#006699', energy: 1, chance: .5, growth: 2}
-    ]},
-    LWDD: {name: 'Oceanic rift, passive margin', data: [
-        {color: '#006699', energy: 1, chance: .5, growth: 2}
-    ]},
-
-    // OCEANIC-OCEANIC =====================================
-    WWCC: {name: 'Island arc', data: [
-        {color: '#3bd4c2', energy: 1, chance: .5, growth: 2}, //arc
-        {color: '#001b36', energy: 2, chance: .2, growth: 1}, //trench
-    ]},
-    WWCT: {name: 'Sea mounts arc', data: [
-        {color: '#003f6c', energy: 2, chance: .6, growth: 1},
-        {color: '#001b36', energy: 2, chance: .6, growth: 1},
-    ]},
-    WWCD: {name: 'Abyssal plain', data: [
-        {color: '#003f6c', energy: 1, chance: .5, growth: 2},
-        {color: '#003f6c', energy: 1, chance: .5, growth: 2},
-    ]},
-    WWTT: {name: 'Oceanic fault', data: [
-        {color: '#003f6c', energy: 1, chance: .5, growth: 8,}
-    ]},
-    WWDT: {name: 'Early oceanic rift', data: [
-        {color: '#006699', energy: 1, chance: .5, growth: 2},
-    ]},
-    WWDD: {name: 'Oceanic rift', data: [
-        {color: '#006699', energy: 1, chance: .5, growth: 2,}
-    ]},
+const BD_LAND = 0
+const BD_WATER = 100
+const BD_CONVERGE = 1
+const BD_DIVERGE = 4
+const BD_TRANSFORM = 16
+const IDMAP = {
+    L: BD_LAND,
+    W: BD_WATER,
+    C: BD_CONVERGE,
+    D: BD_DIVERGE,
+    T: BD_TRANSFORM,
 }
+
+
+class BoundaryTable {
+    constructor(table=BOUNDARY_TABLE) {
+        this._table = new Map()
+        table.map(row => {
+            const code = this._parseCode(row.id)
+            const tableRow = new BoundaryTableRow(row)
+            this._table.set(code, tableRow)
+        })
+    }
+
+    _parseCode(id) {
+        // sum numeric codes from id chars
+        const chars = Array.from(id)
+        return chars.map(ch=>IDMAP[ch]).reduce((a, b) => a + b, 0)
+    }
+
+    get(p1, p2, dotTo, dotFrom) {
+        const code = this._buildCode(p1, p2, dotTo, dotFrom)
+        const boundary = this._table.get(code)
+        if (code == 217)
+        console.log(
+            `${p1.id}=>${p2.id} [${dotTo}, ${dotFrom}]`,
+            `${boundary.name} ${boundary.rule}`,
+        )
+        return boundary
+    }
+
+    _buildCode(p1, p2, dotTo, dotFrom) {
+        const type1 = p1.isContinental() ? BD_LAND : BD_WATER
+        const type2 = p2.isContinental() ? BD_LAND : BD_WATER
+        const dir1 = this._getDir(dotTo)
+        const dir2 = this._getDir(dotFrom)
+        return type1 + type2 + dir1 + dir2
+    }
+
+    _getDir(dir) {
+        if (dir > 0) return BD_CONVERGE
+        if (dir < 0)  BD_DIVERGE
+        return BD_TRANSFORM
+    }
+}
+
+
+class BoundaryTableRow {
+    constructor(row) {
+        this.name = row.name
+        this.data = row.data
+        this.rule = row.rule ?? ''
+    }
+}
+
+
+const BOUNDARY_TABLE = [
+    // CONTINENTAL-CONTINENTAL ---------------------------
+    {id: 'LLCC', name: 'Collision between continents', data: [
+        {height: 100, border: '#EEEEEE', color: '#CCCCCC', energy: 3, chance: .5, growth: 3}
+    ]},
+    {id: 'LLCT', name: 'Early orogeny / sparse hills', rule: 'dir', data: [
+        {height: 100, color: '#CCCCCC', energy: 1, chance: .5, growth: 2},
+        {height: 100, color: '#749750', energy: 1, chance: .5, growth: 2}
+    ]},
+    {id: 'LLCD', name: 'Early rift uplift / volcano field', data: [
+        {height: 100, color: '#749750', energy: 1, chance: .5, growth: 2}
+    ]},
+    {id: 'LLTT', name: 'Transform Fault', data: [
+        {height: 100, color: '#9aae6d', energy: 1, chance: .5, growth: 8}
+    ]},
+    {id: 'LLDT', name: 'Early continental rift / valley', data: [
+        {height: 100, color: '#125a0e', energy: 1, chance: .5, growth: 8}
+    ]},
+    {id: 'LLDD', name: 'Continental rift / early sea', rule: 'speed', data: [
+        {height: 100, color: '#125a0e', energy: 2, chance: .5, growth: 8},
+        {height: 100, color: '#006699', energy: 1, chance: .5, growth: 8},
+    ]},
+
+    // CONTINENTAL-OCEANIC ---------------------------
+    {id: 'LWCC', name: 'Cordillera orogeny', rule: 'weight', data: [
+        {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
+        {height: 50, color: '#001b36', energy: 2, chance: .2, growth: 1}, //trench
+    ]},
+    {id: 'LWCT', name: 'Early cordillera orogeny', rule: 'weight', data: [
+        {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
+        {height: 50, color: '#001b36', energy: 2, chance: .6, growth: 1}, //trench
+    ]},
+    {id: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
+        {height: 50, color: '#9aae6d', energy: 1, chance: .5, growth: 2},
+        {height: 50, color: '#006699', energy: 1, chance: .5, growth: 8},
+    ]},
+    {id: 'LWTT', name: 'Coastal fault', rule: 'weight', data: [  // break regions
+        {height: 50, color: '#006699', energy: 1, chance: .5, growth: 8},
+        {height: 50, color: '#006699', energy: 1, chance: .5, growth: 8},
+    ]},
+    {id: 'LWDT', name: 'Early oceanic rift', rule: 'weight', data: [
+        {height: 50, color: '#749750', energy: 1, chance: .5, growth: 2},
+        {height: 50, color: '#006699', energy: 1, chance: .5, growth: 2}
+    ]},
+    {id: 'LWDD', name: 'Passive margin/Oceanic rift', rule: 'weight', data: [
+        {height: 50, color: '#006699', energy: 1, chance: .5, growth: 2}
+    ]},
+
+    // OCEANIC-OCEANIC ---------------------------
+    {id: 'WWCC', name: 'Island arc', rule: 'weight', data: [
+        {height: 0, color: '#001b36', energy: 2, chance: .2, growth: 1}, //trench
+        {height: 0, color: '#3bd4c2', energy: 1, chance: .5, growth: 2}, //arc
+    ]},
+    {id: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
+        {height: 0, color: '#001b36', energy: 2, chance: .6, growth: 1}, //trench
+        {height: 0, color: '#003f6c', energy: 2, chance: .6, growth: 1}, //arc
+    ]},
+    {id: 'WWCD', name: 'Early oceanic rift', data: [
+        {height: 0, color: '#003f6c', energy: 1, chance: .5, growth: 2},
+    ]},
+    {id: 'WWTT', name: 'Oceanic fault', data: [
+        {height: 0, color: '#003f6c', energy: 1, chance: .5, growth: 8,}
+    ]},
+    {id: 'WWDT', name: 'Early oceanic rift', data: [
+        {height: 0, color: '#006699', energy: 1, chance: .5, growth: 2},
+    ]},
+    {id: 'WWDD', name: 'Oceanic rift', data: [
+        {height: 0, color: '#006699', energy: 1, chance: .5, growth: 2,}
+    ]},
+]

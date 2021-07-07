@@ -8,8 +8,8 @@ import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 import { Boundary, BoundaryMap } from './boundary'
 
 
-const TYPE_OCEANIC = 'O'
-const TYPE_CONTINENTAL = 'C'
+const TYPE_CONTINENTAL = 'L'
+const TYPE_OCEANIC = 'W'
 
 
 export class Plate {
