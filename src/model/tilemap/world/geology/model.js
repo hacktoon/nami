@@ -13,14 +13,14 @@ const TYPE_OCEANIC = 'W'
 
 
 export class Plate {
-    constructor(id, origin, type, area) {
+    constructor(id, origin, type, area, weight) {
         this.id = id
         this.type = type
         this.area = area
         this.origin = origin
         this.direction = Direction.random()
-        this.speed = Random.choice(1, 1, 2, 2, 3)
-        this.weight = Random.choice(1, 1, 2, 2, 3)
+        this.speed = Random.int(5)
+        this.weight = weight
     }
 
     isOceanic() {
@@ -92,7 +92,8 @@ export class TectonicsModel {
                 return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
             })
             const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(group.id)
-            const plate = new Plate(group.id, group.origin, type, group.area)
+            const weight = (group.id + groups.length) * (type === TYPE_OCEANIC ? -1 : 1)
+            const plate = new Plate(group.id, group.origin, type, group.area, weight)
             plates.set(plate.id, plate)
         })
         return plates

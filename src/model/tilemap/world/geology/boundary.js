@@ -266,13 +266,14 @@ class BoundaryTable {
 
     get(p1, p2, dotTo, dotFrom) {
         const code = this._buildCode(p1, p2, dotTo, dotFrom)
-        const boundary = this._table.get(code)
-        if (code == 217)
+        const row = this._table.get(code)
+        if (code >= 200)
         console.log(
-            `${p1.id}=>${p2.id} [${dotTo}, ${dotFrom}]`,
-            `${boundary.name} ${boundary.rule}`,
+            `${p1.id}=>${p2.id} [${dotTo}, ${dotFrom}] | code=${code}`,
+            `weight="${p1.weight}w/${p2.weight}w"`,
+            `${row.name}, rule="${row.rule}"`,
         )
-        return boundary
+        return row
     }
 
     _buildCode(p1, p2, dotTo, dotFrom) {
@@ -324,11 +325,11 @@ const BOUNDARY_TABLE = [
     ]},
 
     // CONTINENTAL-OCEANIC ---------------------------
-    {id: 'LWCC', name: 'Cordillera orogeny', rule: 'weight', data: [
+    {id: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
         {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
         {height: 50, color: '#001b36', energy: 2, chance: .2, growth: 1}, //trench
     ]},
-    {id: 'LWCT', name: 'Early cordillera orogeny', rule: 'weight', data: [
+    {id: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
         {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
         {height: 50, color: '#001b36', energy: 2, chance: .6, growth: 1}, //trench
     ]},
