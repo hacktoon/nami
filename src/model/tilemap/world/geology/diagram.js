@@ -35,8 +35,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         let color = Color.fromHex(hex)
 
         if (this.showBoundaries) {
-            if (boundary && stress < Boundary.getEnergy(boundary)) {
-                color = Boundary.getColor(boundary, color)
+            if (stress < Boundary.getEnergy(boundary)) {
+                color = Boundary.getColor(boundary)
                 if (isBorderPoint && !Boundary.hasBorder(boundary)) {
                     color = Color.fromHex(hex)
                 }

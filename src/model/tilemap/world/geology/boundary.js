@@ -4,10 +4,6 @@ import { Direction } from '/lib/base/direction'
 
 
 const BOUNDARIES = {
-    NONE: {
-        id: 0,  color: '#000000', border: 1,  energy: 0, chance: 0, growth: 0,
-        land: true, borderColor: '#000',
-    },
     CONTINENTAL_RIFT: {
         id: 1,  color: '#125a0e', border: 0, energy: 1, chance: .5, growth: 8,
         land: true, borderColor: '#000',
@@ -69,7 +65,6 @@ const BOUNDARY_MAP = (() => {
 
 
 export class Boundary {
-    static get NONE () { return BOUNDARIES.NONE.id }
     static get CONTINENTAL_RIFT () { return BOUNDARIES.CONTINENTAL_RIFT.id }
     static get OCEANIC_RIFT () { return BOUNDARIES.OCEANIC_RIFT.id }
     static get SUBDUCTION_OROGENY () { return BOUNDARIES.SUBDUCTION_OROGENY.id }
@@ -103,11 +98,8 @@ export class Boundary {
         return BOUNDARY_MAP.get(id).energy
     }
 
-    static getColor(id, defaultColor) {
-        if (id !== Boundary.NONE) {
-            return Color.fromHex(BOUNDARY_MAP.get(id).color)
-        }
-        return defaultColor
+    static getColor(id) {
+        return Color.fromHex(BOUNDARY_MAP.get(id).color)
     }
 
     static isVisible(id) {
@@ -249,6 +241,21 @@ const IDMAP = {
 }
 
 
+
+class Boundary2 {
+    constructor(data) {
+        this.name = data.name
+        this.chance = data.chance
+        this.energy = data.energy
+        this.growth = data.growth
+        this.height = data.height
+        this.color = data.color
+        this.border = data.border
+    }
+}
+
+
+
 class BoundaryTable {
     constructor(table=BOUNDARY_TABLE) {
         this._table = new Map()
@@ -309,26 +316,6 @@ class BoundaryTableRow {
             return new Boundary2(p1.weight > p2.weight ? first : second)
         }
         return new Boundary2(dir1 > dir2 ? first : second)
-    }
-}
-
-
-class Boundary2 {
-    constructor(data) {
-        this.name = data.name
-        this.chance = data.chance
-        this.energy = data.energy
-        this.growth = data.growth
-        this.height = data.height
-        this.color = data.color
-    }
-
-    getBorderColor(id) {
-        return BOUNDARY_MAP.get(id).borderColor
-    }
-
-    hasBorder(id) {
-        return BOUNDARY_MAP.get(id).border === 1
     }
 }
 

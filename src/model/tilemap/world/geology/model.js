@@ -112,7 +112,7 @@ export class TectonicsModel {
     }
 
     _buildPlateBoundary(boundaryMap, group, region) {
-        let boundary = Boundary.NONE
+        let boundary
         const neighborRegions = this.regionGroupTileMap.getNeighborRegions(region)
         for(let neighbor of neighborRegions) {
             const neighborGroup = this.regionGroupTileMap.getGroupByRegion(neighbor)

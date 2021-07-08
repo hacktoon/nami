@@ -42,9 +42,7 @@ export class GeologyTileMap extends TileMap {
         const stress = this.getStress(point)
         let str = `ID: ${plate.id}, region: ${region.id}`
             str += `, type:${plate.type}, stress: ${stress}`
-            if (boundary) {
-                str += `, boundary:${Boundary.getName(boundary)}`
-            }
+            str += `, boundary: ${Boundary.getName(boundary)}`
         return str
     }
 
