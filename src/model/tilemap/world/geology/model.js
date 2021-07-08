@@ -91,7 +91,7 @@ export class TectonicsModel {
                 return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
             })
             const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(group.id)
-            const weight = (group.id + groups.length) * (type === TYPE_OCEANIC ? -1 : 1)
+            const weight = group.id + (type === TYPE_OCEANIC ? groups.length * 10 : 0)
             const plate = new Plate(group.id, group.origin, type, group.area, weight)
             plates.set(plate.id, plate)
         })

@@ -154,6 +154,8 @@ export class BoundaryMap {
     }
 
     _buildBoundary(p1, p2, dotTo, dotFrom) {
+        const boundary = this.table.get(p1, p2, dotTo, dotFrom)
+
         if (dotTo > 0 && dotFrom > 0) {
             return this._buildConvergentBoundary(p1, p2)
         }
@@ -163,7 +165,6 @@ export class BoundaryMap {
         if (dotTo == 0 && dotFrom == 0) {
             return this._buildTransformBoundary(p1, p2)
         }
-        const boundary = this.table.get(p1, p2, dotTo, dotFrom)
         return this._buildOtherBoundary(p1, p2, dotTo, dotFrom)
     }
 
@@ -272,13 +273,13 @@ class BoundaryTable {
         const code = type1 + type2 + dir1 + dir2
         const row = this._table.get(code)
         const boundaryData = row.getBoundaryData(p1, p2, dir1, dir2)
-        if (code >= 200) {
-            console.log(
-                `${p1.id}=>${p2.id} [${dir1}] | code=${code}`,
-                `weight="${p1.weight}w/${p2.weight}w"`,
-                `${row.name}, b="${boundaryData.color}"`,
-            )
-        }
+        // if (p1.id == 5 && p2.id == 7) {
+        //     console.log(
+        //         `${p1.id}=>${p2.id} [${dir1}] | code=${code}`,
+        //         `weight="${p1.weight}w/${p2.weight}w"`,
+        //         `${row.id}, b="${boundaryData.color}"`,
+        //     )
+        // }
         return row
     }
 
@@ -287,15 +288,15 @@ class BoundaryTable {
     }
 
     _getDir(dir) {
-        if (dir > 0) return BD_CONVERGE
-        if (dir < 0) return BD_DIVERGE
-        return BD_TRANSFORM
+        if (dir === 0) return BD_TRANSFORM
+        return dir > 0 ? BD_CONVERGE : BD_DIVERGE
     }
 }
 
 
 class BoundaryTableRow {
     constructor(row) {
+        this.id = row.id
         this.name = row.name
         this.data = row.data
         this.rule = row.rule ?? 'type'
@@ -303,7 +304,7 @@ class BoundaryTableRow {
 
     getBoundaryData(p1, p2, dir1, dir2) {
         const first = this.data[0]
-        const second = this.data.length > 1 ? this.data[1] : first
+        const second = this.data.length === 1 ? first : this.data[1]
         if (this.rule === 'weight') {
             return p1.weight > p2.weight ? first : second
         }
@@ -313,8 +314,43 @@ class BoundaryTableRow {
 
 
 class Boundary2 {
-    constructor(row) {
-        this.name = row.name
+    constructor(data) {
+        this.name = data.name
+    }
+
+    getName(id) {
+        return BOUNDARY_MAP.get(id).name
+    }
+
+    getChance(id) {
+        return BOUNDARY_MAP.get(id).chance
+    }
+
+    getBorderColor(id) {
+        return BOUNDARY_MAP.get(id).borderColor
+    }
+
+    getGrowth(id) {
+        return BOUNDARY_MAP.get(id).growth
+    }
+
+    getEnergy(id) {
+        return BOUNDARY_MAP.get(id).energy
+    }
+
+    getColor(id, defaultColor) {
+        if (id !== Boundary.NONE) {
+            return Color.fromHex(BOUNDARY_MAP.get(id).color)
+        }
+        return defaultColor
+    }
+
+    isLand(id) {
+        return BOUNDARY_MAP.get(id).land
+    }
+
+    hasBorder(id) {
+        return BOUNDARY_MAP.get(id).border === 1
     }
 }
 
@@ -324,9 +360,9 @@ const BOUNDARY_TABLE = [
     {id: 'LLCC', name: 'Collision between continents', data: [
         {height: 100, border: '#EEEEEE', color: '#CCCCCC', energy: 3, chance: .5, growth: 3}
     ]},
-    {id: 'LLCT', name: 'Early orogeny / sparse hills', rule: 'type', data: [
-        {height: 100, color: '#CCCCCC', energy: 1, chance: .5, growth: 2},
-        {height: 100, color: '#749750', energy: 1, chance: .5, growth: 2}
+    {id: 'LLCT', name: 'Early orogeny / sparse hills', rule: 'weight', data: [
+        {height: 100, color: '#749750', energy: 1, chance: .5, growth: 2},
+        {height: 100, color: '#9aae6d', energy: 1, chance: .5, growth: 2},
     ]},
     {id: 'LLCD', name: 'Early rift uplift / volcano field', data: [
         {height: 100, color: '#749750', energy: 1, chance: .5, growth: 2}
@@ -344,12 +380,12 @@ const BOUNDARY_TABLE = [
 
     // CONTINENTAL-OCEANIC ---------------------------
     {id: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
-        {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
         {height: 50, color: '#001b36', energy: 2, chance: .2, growth: 1}, //trench
+        {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
     ]},
     {id: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
-        {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
         {height: 50, color: '#001b36', energy: 2, chance: .6, growth: 1}, //trench
+        {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
     ]},
     {id: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
         {height: 50, color: '#9aae6d', energy: 1, chance: .5, growth: 2},
@@ -376,8 +412,9 @@ const BOUNDARY_TABLE = [
         {height: 0, color: '#001b36', energy: 2, chance: .6, growth: 1}, //trench
         {height: 0, color: '#003f6c', energy: 2, chance: .6, growth: 1}, //arc
     ]},
-    {id: 'WWCD', name: 'Early oceanic rift', data: [
-        {height: 0, color: '#003f6c', energy: 1, chance: .5, growth: 2},
+    {id: 'WWCD', name: 'Early continent', rule: 'weight', data: [
+        {height: 0, color: '#003f6p', energy: 1, chance: .5, growth: 2},
+        {height: 0, color: '#003f6l', energy: 1, chance: .5, growth: 2},
     ]},
     {id: 'WWTT', name: 'Oceanic fault', data: [
         {height: 0, color: '#003f6c', energy: 1, chance: .5, growth: 8,}
