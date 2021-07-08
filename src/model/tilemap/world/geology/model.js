@@ -5,7 +5,7 @@ import { Direction } from '/lib/base/direction'
 import { SimplexNoise } from '/lib/fractal/noise'
 
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
-import { Boundary, BoundaryMap } from './boundary'
+import { BoundaryMap } from './boundary'
 
 
 const TYPE_CONTINENTAL = 'L'
@@ -155,8 +155,8 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
         this.id = data.id
         this.data = data
 
-        this.chance = Boundary.getChance(data.boundary)
-        this.growth = Boundary.getGrowth(data.boundary)
+        this.chance = data.boundary.chance
+        this.growth = data.boundary.growth
     }
 
     isEmpty(region) {

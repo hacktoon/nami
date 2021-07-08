@@ -5,7 +5,6 @@ import { UITileMap } from '/ui/tilemap'
 
 import { TectonicsModel } from './model'
 import { GeologyTileMapDiagram } from './diagram'
-import { Boundary } from './boundary'
 
 
 const SCHEMA = new Schema(
@@ -42,7 +41,7 @@ export class GeologyTileMap extends TileMap {
         const stress = this.getStress(point)
         let str = `ID: ${plate.id}, region: ${region.id}`
             str += `, type:${plate.type}, stress: ${stress}`
-            str += `, boundary: ${Boundary.getName(boundary)}`
+            str += `, boundary: ${boundary.name}`
         return str
     }
 

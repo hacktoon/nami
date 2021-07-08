@@ -4,7 +4,6 @@ import { Direction } from '/lib/base/direction'
 import { Color } from '/lib/base/color'
 
 import { TileMapDiagram } from '/model/lib/tilemap'
-import { Boundary } from './boundary'
 
 
 export class GeologyTileMapDiagram extends TileMapDiagram {
@@ -35,9 +34,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         let color = Color.fromHex(hex)
 
         if (this.showBoundaries) {
-            if (stress < Boundary.getEnergy(boundary)) {
-                color = Boundary.getColor(boundary)
-                if (isBorderPoint && !Boundary.hasBorder(boundary)) {
+            if (stress < boundary.energy) {
+                color = Color.fromHex(boundary.color)
+                if (isBorderPoint && !boundary.hasBorder()) {
                     color = Color.fromHex(hex)
                 }
             }
