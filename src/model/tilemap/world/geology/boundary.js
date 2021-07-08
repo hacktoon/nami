@@ -272,14 +272,14 @@ class BoundaryTable {
         const dir2 = this._getDir(dotFrom)
         const code = type1 + type2 + dir1 + dir2
         const row = this._table.get(code)
-        const boundaryData = row.getBoundaryData(p1, p2, dir1, dir2)
-        // if (p1.id == 5 && p2.id == 7) {
-        //     console.log(
-        //         `${p1.id}=>${p2.id} [${dir1}] | code=${code}`,
-        //         `weight="${p1.weight}w/${p2.weight}w"`,
-        //         `${row.id}, b="${boundaryData.color}"`,
-        //     )
-        // }
+        const boundary = row.getBoundary(p1, p2, dir1, dir2)
+        if (p1.id == 5 && p2.id == 7) {
+            console.log(
+                `${p1.id}=>${p2.id} [${dir1}] weight="${p1.weight}w/${p2.weight}w"`,
+                `${row.id} color="${boundary.color}" chance="${boundary.chance}"`,
+                `energy="${boundary.energy}"`,
+            )
+        }
         return row
     }
 
@@ -302,13 +302,13 @@ class BoundaryTableRow {
         this.rule = row.rule ?? 'type'
     }
 
-    getBoundaryData(p1, p2, dir1, dir2) {
+    getBoundary(p1, p2, dir1, dir2) {
         const first = this.data[0]
         const second = this.data.length === 1 ? first : this.data[1]
         if (this.rule === 'weight') {
-            return p1.weight > p2.weight ? first : second
+            return new Boundary2(p1.weight > p2.weight ? first : second)
         }
-        return dir1 > dir2 ? first : second
+        return new Boundary2(dir1 > dir2 ? first : second)
     }
 }
 
@@ -316,37 +316,15 @@ class BoundaryTableRow {
 class Boundary2 {
     constructor(data) {
         this.name = data.name
-    }
-
-    getName(id) {
-        return BOUNDARY_MAP.get(id).name
-    }
-
-    getChance(id) {
-        return BOUNDARY_MAP.get(id).chance
+        this.chance = data.chance
+        this.energy = data.energy
+        this.growth = data.growth
+        this.height = data.height
+        this.color = data.color
     }
 
     getBorderColor(id) {
         return BOUNDARY_MAP.get(id).borderColor
-    }
-
-    getGrowth(id) {
-        return BOUNDARY_MAP.get(id).growth
-    }
-
-    getEnergy(id) {
-        return BOUNDARY_MAP.get(id).energy
-    }
-
-    getColor(id, defaultColor) {
-        if (id !== Boundary.NONE) {
-            return Color.fromHex(BOUNDARY_MAP.get(id).color)
-        }
-        return defaultColor
-    }
-
-    isLand(id) {
-        return BOUNDARY_MAP.get(id).land
     }
 
     hasBorder(id) {
