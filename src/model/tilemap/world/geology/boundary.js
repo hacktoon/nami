@@ -241,7 +241,6 @@ const IDMAP = {
 }
 
 
-
 class Boundary2 {
     constructor(data) {
         this.name = data.name
@@ -255,21 +254,14 @@ class Boundary2 {
 }
 
 
-
 class BoundaryTable {
     constructor(table=BOUNDARY_TABLE) {
         this._table = new Map()
         table.map(row => {
-            const code = this._parseCode(row.id)
-            const tableRow = new BoundaryTableRow(row)
-            this._table.set(code, tableRow)
+            const chars = Array.from(row.id)
+            const code = chars.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
+            this._table.set(code, row)
         })
-    }
-
-    _parseCode(id) {
-        // sum numeric codes from id chars
-        const chars = Array.from(id)
-        return chars.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
     }
 
     get(p1, p2, dotTo, dotFrom) {
@@ -279,7 +271,7 @@ class BoundaryTable {
         const dir2 = this._getDir(dotFrom)
         const code = type1 + type2 + dir1 + dir2
         const row = this._table.get(code)
-        const boundary = row.getBoundary(p1, p2, dir1, dir2)
+        const boundary = this._getBoundary(row, p1, p2, dir1, dir2)
         if (p1.id == 5 && p2.id == 7) {
             console.log(
                 `${p1.id}=>${p2.id} [${dir1}] weight="${p1.weight}w/${p2.weight}w"`,
@@ -287,7 +279,7 @@ class BoundaryTable {
                 `energy="${boundary.energy}"`,
             )
         }
-        return row
+        return boundary
     }
 
     _getType(plate) {
@@ -298,21 +290,11 @@ class BoundaryTable {
         if (dir === 0) return BD_TRANSFORM
         return dir > 0 ? BD_CONVERGE : BD_DIVERGE
     }
-}
 
-
-class BoundaryTableRow {
-    constructor(row) {
-        this.id = row.id
-        this.name = row.name
-        this.data = row.data
-        this.rule = row.rule ?? 'type'
-    }
-
-    getBoundary(p1, p2, dir1, dir2) {
-        const first = this.data[0]
-        const second = this.data.length === 1 ? first : this.data[1]
-        if (this.rule === 'weight') {
+    _getBoundary(row, p1, p2, dir1, dir2) {
+        const first = row.data[0]
+        const second = row.data.length === 1 ? first : row.data[1]
+        if (row.rule === 'weight') {
             return new Boundary2(p1.weight > p2.weight ? first : second)
         }
         return new Boundary2(dir1 > dir2 ? first : second)
