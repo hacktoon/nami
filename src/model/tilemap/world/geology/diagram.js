@@ -36,13 +36,16 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (this.showBoundaries) {
             if (stress < boundary.energy) {
                 color = Color.fromHex(boundary.color)
-                if (isBorderPoint && !boundary.hasBorder()) {
+                if (isBorderPoint) {
                     color = Color.fromHex(hex)
+                    if (boundary.hasBorder()) {
+                        color = Color.fromHex(boundary.border)
+                    }
                 }
             }
         }
         if (this.showPlateBorders && isBorderPoint) {
-            color = color.darken(40)
+            return color.average(Color.fromHex('#F00')).toHex()
         }
         return color.darken(stress * 3).toHex()
     }

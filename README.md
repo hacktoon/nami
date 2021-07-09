@@ -28,10 +28,11 @@
 - Annual range: changes over month - winter/summer
 - Value range: 0:10, varies according to month and windmap
 
-#### RealmTileMap
-- Use RegionTileMap
-- Grow cities' territory
-  - discover routes
+#### CivilTileMap
+- generate large point distribution
+- select those next to rivers, sea and other regions
+- start a fill to determine capitals and villages
+  - define routes
 - Some may be unclaimed
 
 #### Other
