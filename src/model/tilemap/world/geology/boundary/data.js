@@ -30,11 +30,11 @@ export const BOUNDARY_TABLE = [
         {height: 100, color: '#9aae6d', energy: 1, chance: .5, growth: 8}
     ]},
     {id: 'LLDT', name: 'Medium continental rift / valley', data: [
-        {height: 100, border: '#058', color: '#069', energy: 3, chance: .5, growth: 3},
+        {height: 100, border: '#312244', color: '#069', energy: 3, chance: .5, growth: 3},
         {height: 100, border: '#058', color: '#069', energy: 3, chance: .5, growth: 3},
     ]},
     {id: 'LLDD', name: 'Continental rift / early sea', rule: 'weight', data: [
-        {height: 100, border: '#058', color: '#069', energy: 5, chance: .5, growth: 5},
+        {height: 100, border: '#312244', color: '#069', energy: 5, chance: .5, growth: 5},
         {height: 100, border: '#058', color: '#069', energy: 5, chance: .5, growth: 5},
     ]},
 
@@ -44,8 +44,8 @@ export const BOUNDARY_TABLE = [
         {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
     ]},
     {id: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
-        {height: 50, color: '#036', energy: 1, chance: .1, growth: 5}, //trench
-        {height: 50, color: '#a4ce84', energy: 1, chance: .1, growth: 10}, //mountains
+        {height: 50, color: '#025', energy: 1, chance: .5, growth: 5}, //trench
+        {height: 50, color: '#a4ce84', energy: 1, chance: .5, growth: 10}, //mountains
     ]},
     {id: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
         {height: 50, color: '#069', energy: 1, chance: .5, growth: 8},
@@ -69,8 +69,8 @@ export const BOUNDARY_TABLE = [
         {height: 0, color: '#26a11f', energy: 2, chance: .5, growth: 2}, //arc
     ]},
     {id: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
-        {height: 0, border: '#025', color: '#025', energy: 1, chance: .1, growth: 5}, //trench
-        {height: 0, color: '#26a11f', energy: 1, chance: .5, growth: 5}, //arc
+        {height: 0, border: '#036', color: '#025', energy: 1, chance: .1, growth: 5}, //trench
+        {height: 0, color: '#1fa184', energy: 1, chance: .5, growth: 5}, //arc
     ]},
     {id: 'WWCD', name: 'Early continent', rule: 'weight', data: [
         {height: 0, border: '#069', color: '#058', energy: 3, chance: .1, growth: 5},
@@ -83,6 +83,6 @@ export const BOUNDARY_TABLE = [
         {height: 0, color: '#069', energy: 1, chance: .5, growth: 2},
     ]},
     {id: 'WWDD', name: 'Oceanic rift', data: [
-        {height: 0, color: '#047', energy: 1, chance: .1, growth: 8}
+        {height: 0, border: '#312244', color: '#047', energy: 1, chance: .1, growth: 8}
     ]},
 ]

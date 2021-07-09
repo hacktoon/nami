@@ -12,19 +12,18 @@ import {
 
 
 export class BoundaryMap {
+    #table = new BoundaryTable(BOUNDARY_TABLE)
+
     constructor(plates, regionGroupTileMap) {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap
-        this.table = new BoundaryTable(BOUNDARY_TABLE)
         this._boundaries = new PairMap()
 
         regionGroupTileMap.getGroups().forEach(group => {
             const neighbors = regionGroupTileMap.getNeighborGroups(group)
-            // console.log(`${group.id} = ${neighbors.map(g=>g.id).join(', ')}`);
             neighbors.forEach(neighbor => {
                 const boundary = this._buildGroupBoundary(group, neighbor)
                 this._boundaries.set(group.id, neighbor.id, boundary)
-                // console.log(`${group.id}>${neighbor.id} = ${Boundary.getName(boundary)}`);
             })
         })
     }
@@ -37,7 +36,7 @@ export class BoundaryMap {
         const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
-        return this.table.get(plate, otherPlate, dotTo, dotFrom)
+        return this.#table.get(plate, otherPlate, dotTo, dotFrom)
     }
 
     get(region, neighborRegion) {
@@ -84,15 +83,7 @@ class BoundaryTable {
         const dir2 = this._getDir(dotFrom)
         const code = type1 + type2 + dir1 + dir2
         const row = this._table.get(code)
-        const boundary = this._getBoundary(row, p1, p2, dir1, dir2)
-        // if (p1.id == 5 && p2.id == 7) {
-        //     console.log(
-        //         `${p1.id}=>${p2.id} [${dir1}] weight="${p1.weight}w/${p2.weight}w"`,
-        //         `${row.id} color="${boundary.color}" chance="${boundary.chance}"`,
-        //         `energy="${boundary.energy}"`,
-        //     )
-        // }
-        return boundary
+        return this._getBoundary(row, p1, p2, dir1, dir2)
     }
 
     _getType(plate) {
