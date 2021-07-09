@@ -65,8 +65,8 @@ export const BOUNDARY_TABLE = [
 
     // OCEANIC-OCEANIC ---------------------------
     {id: 'WWCC', name: 'Island arc', rule: 'weight', data: [
-        {height: 0, color: '#025', energy: 2, chance: .5, growth: 2}, //trench
-        {height: 0, color: '#26a11f', energy: 2, chance: .5, growth: 2}, //arc
+        {height: 0, border: '#036', color: '#025', energy: 1, chance: .1, growth: 5}, //trench
+        {height: 0, color: '#1fa184', energy: 2, chance: .5, growth: 4}, //arc
     ]},
     {id: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
         {height: 0, border: '#036', color: '#025', energy: 1, chance: .1, growth: 5}, //trench
