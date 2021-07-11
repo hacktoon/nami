@@ -44,7 +44,7 @@ export const BOUNDARY_TABLE = [
     // trench
     {height: 50, color: '#025', energy: 3, chance: .2, growth: 1},
     // mountains
-    {height: 50, color: '#a79e86', energy: 4, chance: .6, growth: 1, depth: 1},
+    {height: 50, color: '#a79e86', energy: 5, chance: .6, growth: 2, depth: 1},
 ]},
 {id: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
     // trench
