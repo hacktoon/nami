@@ -26,27 +26,29 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const plate = this.tileMap.getPlate(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
-        const stress = this.tileMap.getStress(point)
-        const hex = plate.isOceanic() ? '#058' : '#26a11f'
         const boundary = this.tileMap.getBoundary(point)
+        const stress = this.tileMap.getStress(point)
+        const plate = this.tileMap.getPlate(point)
+        const hex = plate.isOceanic() ? '#058' : '#1c7816'
         let color = Color.fromHex(hex)
 
         if (this.showBoundaries) {
-            if (stress < boundary.energy) {
+            if (stress >= boundary.depth && stress < boundary.energy) {
                 color = Color.fromHex(boundary.color)
-                if (isBorderPoint) {
-                    color = Color.fromHex(hex)
-                    if (boundary.hasBorder()) {
-                        color = Color.fromHex(boundary.border)
-                    }
+            }
+            if (isBorderPoint) {
+                color = Color.fromHex(hex)
+                if (boundary.hasBorder()) {
+                    color = Color.fromHex(boundary.border)
                 }
             }
         }
         if (this.showPlateBorders && isBorderPoint) {
             return color.average(Color.fromHex('#F00')).toHex()
         }
+        if (plate.isContinental())
+            return color.brighten(stress * 5).toHex()
         return color.darken(stress * 3).toHex()
     }
 

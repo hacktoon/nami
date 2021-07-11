@@ -41,12 +41,16 @@ export const BOUNDARY_TABLE = [
 
 // CONTINENTAL-OCEANIC ---------------------------
 {id: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
-    {height: 50, color: '#025', energy: 2, chance: .2, growth: 1}, //trench
-    {height: 50, color: '#a79e86', energy: 2, chance: .6, growth: 1}, //mountains
+    // trench
+    {height: 50, color: '#025', energy: 3, chance: .2, growth: 1},
+    // mountains
+    {height: 50, color: '#a79e86', energy: 4, chance: .6, growth: 1, depth: 1},
 ]},
 {id: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
-    {height: 50, color: '#025', energy: 1, chance: .5, growth: 5}, //trench
-    {height: 50, color: '#a4ce84', energy: 1, chance: .5, growth: 10}, //mountains
+    // trench
+    {height: 50, color: '#025', energy: 1, chance: .5, growth: 5},
+    // mountains
+    {height: 50, color: '#a4ce84', energy: 3, chance: .5, growth: 4, depth: 1},
 ]},
 {id: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
     {height: 50, color: '#069', energy: 1, chance: .5, growth: 8},
@@ -71,7 +75,7 @@ export const BOUNDARY_TABLE = [
     {height: 0, color: '#1fa184', energy: 2, chance: .5, growth: 4},
 ]},
 {id: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
-    {height: 0, border: '#036', color: '#025', energy: 1, chance: .1, growth: 5},
+    {height: 0, border: '#069', color: '#025', energy: 4, chance: .4, growth: 2, depth: 1},
     {height: 0, color: '#1fa184', energy: 1, chance: .5, growth: 5},
 ]},
 {id: 'WWCD', name: 'Early continent', rule: 'weight', data: [

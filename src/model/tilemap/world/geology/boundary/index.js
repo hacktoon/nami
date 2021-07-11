@@ -55,6 +55,7 @@ class Boundary {
         this.chance = data.chance
         this.energy = data.energy
         this.growth = data.growth
+        this.depth = data.depth ?? 0
         this.height = data.height
         this.color = data.color
         this.border = data.border ?? null
@@ -77,17 +78,13 @@ class BoundaryTable {
     }
 
     get(p1, p2, dotTo, dotFrom) {
-        const type1 = this._getType(p1)
-        const type2 = this._getType(p2)
+        const type1 = p1.isContinental() ? BD_LAND : BD_WATER
+        const type2 = p2.isContinental() ? BD_LAND : BD_WATER
         const dir1 = this._getDir(dotTo)
         const dir2 = this._getDir(dotFrom)
         const code = type1 + type2 + dir1 + dir2
         const row = this._table.get(code)
         return this._getBoundary(row, p1, p2, dir1, dir2)
-    }
-
-    _getType(plate) {
-        return plate.isContinental() ? BD_LAND : BD_WATER
     }
 
     _getDir(dir) {
@@ -96,16 +93,12 @@ class BoundaryTable {
     }
 
     _getBoundary(row, p1, p2, dir1, dir2) {
-        const name = row.name
-        const id = row.id
         const first = row.data[0]
         const second = row.data.length === 1 ? first : row.data[1]
-        let data
+        let data = dir1 > dir2 ? first : second
         if (row.rule === 'weight') {
             data = p1.weight > p2.weight ? first : second
-        } else {
-            data = dir1 > dir2 ? first : second
         }
-        return new Boundary(id, name, data)
+        return new Boundary(row.id, row.name, data)
     }
 }
