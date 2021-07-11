@@ -27,11 +27,11 @@ export const BOUNDARY_TABLE = [
     {height: 100, border: '#0b7005', color: '#0b7005', energy: 3, chance: .5, growth: 10},
 ]},
 {id: 'LLDD', name: 'Continental rift / early sea', rule: 'weight', data: [
-    {height: 100, border: '#324', color: '#069', energy: 5, chance: .5, growth: 5},
+    {height: 100, border: '#069', color: '#069', energy: 5, chance: .5, growth: 5},
     {height: 100, border: '#058', color: '#069', energy: 5, chance: .5, growth: 5},
 ]},
 {id: 'LLDT', name: 'Medium continental rift / valley', data: [
-    {height: 100, border: '#324', color: '#069', energy: 3, chance: .5, growth: 3},
+    {height: 100, border: '#069', color: '#069', energy: 3, chance: .5, growth: 3},
     {height: 100, border: '#058', color: '#069', energy: 3, chance: .5, growth: 3},
 ]},
 {id: 'LLTT', name: 'Transform Fault', data: [
@@ -82,10 +82,11 @@ export const BOUNDARY_TABLE = [
     {height: 0, border: '#069', color: '#058', energy: 3, chance: .1, growth: 5},
     {height: 0, border: '#069', color: '#26a11f', energy: 2, chance: .1, growth: 16},
 ]},
-{id: 'WWDD', name: 'Oceanic rift', data: [
-    {height: 0, border: '#324', color: '#047', energy: 1, chance: .1, growth: 8}
+{id: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
+    {height: 0, border: '#069', color: '#047', energy: 1, chance: .1, growth: 2},
+    {height: 0, color: '#047', energy: 1, chance: .5, growth: 2},
 ]},
-{id: 'WWDT', name: 'Early 324 rift', data: [
+{id: 'WWDT', name: 'Early rift', data: [
     {height: 0, color: '#069', energy: 1, chance: .5, growth: 2},
 ]},
 {id: 'WWTT', name: 'Oceanic fault', data: [
