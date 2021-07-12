@@ -19,8 +19,8 @@ export const BOUNDARY_TABLE = [
     {height: 100, border: '#EEE', color: '#CCC', energy: 3, chance: .5, growth: 2}
 ]},
 {id: 'LLCT', name: 'Early orogeny / sparse hills', rule: 'weight', data: [
-    {height: 100, color: '#749750', energy: 1, chance: .1, growth: 6},
-    {height: 100, color: '#9aae6d', energy: 1, chance: .4, growth: 3},
+    {height: 100, color: '#749750', energy: 1, chance: .1, growth: 5},
+    {height: 100, color: '#9aae6d', energy: 2, chance: .4, growth: 5, depth: 1},
 ]},
 {id: 'LLCD', name: 'Early rift', data: [
     {height: 100, border: '#058', color: '#058', energy: 4, chance: .5, growth: 8},
@@ -42,7 +42,7 @@ export const BOUNDARY_TABLE = [
 // CONTINENTAL-OCEANIC ---------------------------
 {id: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
     // trench
-    {height: 50, color: '#025', energy: 3, chance: .2, growth: 1},
+    {height: 50, color: '#025', energy: 1, chance: .5, growth: 1},
     // mountains
     {height: 50, color: '#a79e86', energy: 5, chance: .6, growth: 2, depth: 1},
 ]},
@@ -80,7 +80,7 @@ export const BOUNDARY_TABLE = [
 ]},
 {id: 'WWCD', name: 'Early continent', rule: 'weight', data: [
     {height: 0, border: '#069', color: '#058', energy: 3, chance: .1, growth: 5},
-    {height: 0, border: '#069', color: '#26a11f', energy: 2, chance: .1, growth: 16},
+    {height: 0, border: '#069', color: '#26a11f', energy: 4, chance: .1, growth: 10},
 ]},
 {id: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
     {height: 0, border: '#069', color: '#047', energy: 1, chance: .1, growth: 2},
