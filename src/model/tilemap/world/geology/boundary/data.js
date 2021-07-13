@@ -27,12 +27,12 @@ export const BOUNDARY_TABLE = [
     {height: 100, border: '#0b7005', color: '#0b7005', energy: 3, chance: .5, growth: 10},
 ]},
 {id: 'LLDD', name: 'Continental rift / early sea', rule: 'weight', data: [
-    {height: 100, border: '#047', color: '#058', energy: 5, chance: .5, growth: 5},
-    {height: 100, border: '#058', color: '#069', energy: 5, chance: .5, growth: 5},
+    {height: 100, border: '#047', color: '#058', energy: 6, chance: .5, growth: 4},
+    {height: 100, border: '#058', color: '#069', energy: 6, chance: .5, growth: 4},
 ]},
 {id: 'LLDT', name: 'Medium continental rift / valley', data: [
-    {height: 100, border: '#047', color: '#058', energy: 3, chance: .5, growth: 10},
-    {height: 100, border: '#058', color: '#069', energy: 3, chance: .5, growth: 3},
+    {height: 100, border: '#047', color: '#058', energy: 5, chance: .5, growth: 4},
+    {height: 100, border: '#058', color: '#069', energy: 4, chance: .5, growth: 3},
 ]},
 {id: 'LLTT', name: 'Transform Fault', data: [
     {height: 100, color: '#9aae6d', energy: 1, chance: .5, growth: 8}

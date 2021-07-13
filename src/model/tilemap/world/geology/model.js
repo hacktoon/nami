@@ -35,35 +35,27 @@ export class Plate {
 export class TectonicsModel {
     constructor(seed, params) {
         this.regionGroupTileMap = this._buildRegionGroupMap(seed, params)
-        const data = this._build()
-        this.plates = data.plates
-        this.stressLevels = data.stressLevels
-        this.regionBoundary = data.regionBoundary
-    }
+        this.plates = this._buildPlates()
+        this.stressLevels = new Map()
+        this.regionBoundary = new Map()
 
-    _build() {
-        const plates = this._buildPlates()
-        const boundaryMap = new BoundaryMap(plates, this.regionGroupTileMap)
-        const regionBoundary = new Map()
-        const stressLevels = new Map()
+        const boundaryMap = new BoundaryMap(this.plates, this.regionGroupTileMap)
         const fills = this.regionGroupTileMap.getBorderRegions().map(region => {
             const group = this.regionGroupTileMap.getGroupByRegion(region)
             const boundary = this._buildPlateBoundary(boundaryMap, group, region)
             const fillConfig = new BoundaryRegionFillConfig({
-                id: group.id,
                 regionGroupTileMap: this.regionGroupTileMap,
-                regionBoundary,
+                regionBoundary: this.regionBoundary,
+                stressLevels: this.stressLevels,
+                plates: this.plates,
+                id: group.id,
                 boundary,
-                stressLevels,
-                plates,
             })
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(fills)
         // leave noise map for final matrix rendering
         // const noiseMap = new NoiseMap()
-
-        return {plates, regionBoundary, stressLevels}
     }
 
     _buildRegionGroupMap(seed, params) {
