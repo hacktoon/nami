@@ -21,7 +21,6 @@ export class GeologyModel {
                 regionGroupTileMap: this.regionGroupTileMap,
                 regionBoundary: this.regionBoundary,
                 stressLevels: this.stressLevels,
-                id: group.id,
                 boundary,
             })
             return new OrganicFloodFill(region, fillConfig)
@@ -86,24 +85,26 @@ class NoiseMap {
 class BoundaryRegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
-        this.id = data.id
-        this.data = data
+        this.regionGroupTileMap = data.regionGroupTileMap
+        this.regionBoundary = data.regionBoundary
+        this.stressLevels = data.stressLevels
+        this.boundary = data.boundary
 
         this.chance = data.boundary.chance
         this.growth = data.boundary.growth
     }
 
     isEmpty(region) {
-        return !this.data.regionBoundary.has(region.id)
+        return !this.regionBoundary.has(region.id)
     }
 
     setValue(region, level) {
-        this.data.regionBoundary.set(region.id, this.data.boundary)
-        this.data.stressLevels.set(region.id, level)
+        this.regionBoundary.set(region.id, this.boundary)
+        this.stressLevels.set(region.id, level)
     }
 
     getNeighbors(region) {
-        return this.data.regionGroupTileMap.getNeighborRegions(region)
+        return this.regionGroupTileMap.getNeighborRegions(region)
     }
 }
 
