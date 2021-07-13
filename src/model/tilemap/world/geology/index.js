@@ -3,7 +3,7 @@ import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { TectonicsModel } from './model'
+import { GeologyModel } from './model'
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -29,7 +29,7 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.model = new TectonicsModel(this.seed, params)
+        this.model = new GeologyModel(this.seed, params)
         this.regionGroupTileMap = this.model.regionGroupTileMap
         this.plates = this.model.plates
     }

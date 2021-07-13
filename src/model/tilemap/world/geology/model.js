@@ -6,7 +6,7 @@ import { BoundaryMap } from './boundary'
 import { PlateMap } from './plate'
 
 
-export class TectonicsModel {
+export class GeologyModel {
     constructor(seed, params) {
         this.regionGroupTileMap = this._buildRegionGroupMap(seed, params)
         this.plates = new PlateMap(this.regionGroupTileMap)
