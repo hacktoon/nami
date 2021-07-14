@@ -16,26 +16,27 @@ export const IDMAP = {
 export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ---------------------------
 {id: 'LLCC', name: 'Collision between continents', data: [
-    {height: 100, border: '#EEE', color: '#CCC', energy: 3, chance: .5, growth: 2}
+    {
+        height: 100, border: '#EEE', color: '#CCC',
+        energy: 3, chance: .5, growth: 2
+    }
 ]},
-{id: 'LLCT', name: 'Early orogeny / sparse hills', rule: 'weight', data: [
-    {height: 100, color: '#749750', energy: 1, chance: .1, growth: 5},
-    {height: 100, color: '#9aae6d', energy: 2, chance: .4, growth: 5, depth: 1},
+{id: 'LLCT', name: 'Old orogeny', rule: 'weight', data: [
+    {height: 100, color: '#749750', energy: 1, chance: .5, growth: 10},
+    {height: 100, energy: 0, chance: .4, growth: 5},
 ]},
-{id: 'LLCD', name: 'Early rift', data: [
-    {height: 100, border: '#058', color: '#058', energy: 4, chance: .5, growth: 2},
-    {height: 100, border: '#0b7005', color: '#0b7005', energy: 3, chance: .5, growth: 3},
+{id: 'LLCD', name: 'Intra ocean', data: [
+    {height: 100, border: '#058', color: '#058', energy: 7, chance: .5, growth: 7}
 ]},
-{id: 'LLDD', name: 'Continental rift / early sea', rule: 'weight', data: [
-    {height: 100, border: '#047', color: '#058', energy: 6, chance: .5, growth: 4},
-    {height: 100, border: '#058', color: '#069', energy: 6, chance: .5, growth: 4},
+{id: 'LLDD', name: 'Early rift sea', rule: 'weight', data: [
+    {height: 100, border: '#047', color: '#058', energy: 6, chance: .5, growth: 6},
 ]},
-{id: 'LLDT', name: 'Medium continental rift / valley', data: [
-    {height: 100, border: '#047', color: '#058', energy: 5, chance: .5, growth: 4},
-    {height: 100, border: '#058', color: '#069', energy: 4, chance: .5, growth: 3},
+{id: 'LLDT', name: 'Rift valley', data: [
+    {height: 100, border: '#065e06', color: '#065e06', energy: 2, chance: .5, growth: 5},
 ]},
 {id: 'LLTT', name: 'Transform Fault', data: [
-    {height: 100, color: '#9aae6d', energy: 1, chance: .5, growth: 8}
+    {height: 100, color: '#9aae6d', energy: 1, chance: .1, growth: 10},
+    {height: 100, color: '#9aae6d', energy: 0, chance: .1, growth: 10}
 ]},
 
 
@@ -56,12 +57,12 @@ export const DEFORM_TABLE = [
     {height: 50, color: '#069', energy: 1, chance: .5, growth: 8},
     {height: 50, border: '#058', color: '#069', energy: 1, chance: .5, growth: 2},
 ]},
-{id: 'LWDD', name: 'Passive margin/Oceanic rift', rule: 'weight', data: [
+{id: 'LWDD', name: 'Oceanic rift', rule: 'weight', data: [
     {height: 50, border: '#069', color: '#069', energy: 1, chance: .5, growth: 2}
 ]},
-{id: 'LWDT', name: 'Early oceanic rift', rule: 'weight', data: [
-    {height: 50, color: '#069', energy: 1, chance: .5, growth: 2},
-    {height: 50, color: '#749750', energy: 1, chance: .5, growth: 2},
+{id: 'LWDT', name: 'Back-arc basin', rule: 'weight', data: [
+    {height: 50, border: '#069', color: '#065e06', energy: 1, chance: .5, growth: 5},
+    {height: 50, border: '#069', color: '#069', energy: 1, chance: .5, growth: 5},
 ]},
 {id: 'LWTT', name: 'Coastal fault', rule: 'weight', data: [  // break regions
     {height: 50, color: '#069', energy: 1, chance: .5, growth: 8},
@@ -75,16 +76,14 @@ export const DEFORM_TABLE = [
     {height: 0, color: '#1fa184', energy: 2, chance: .5, growth: 4},
 ]},
 {id: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
-    {height: 0, border: '#069', color: '#025', energy: 4, chance: .4, growth: 2, depth: 1},
+    {height: 0, border: '#069', color: '#025', energy: 2, chance: .4, growth: 2, depth: 1},
     {height: 0, color: '#1fa184', energy: 1, chance: .5, growth: 5},
 ]},
-{id: 'WWCD', name: 'Big island arc', rule: 'weight', data: [
-    {height: 0, border: '#069', color: '#058', energy: 3, chance: .1, growth: 5},
-    {height: 0, border: '#069', color: '#26a11f', energy: 4, chance: .1, growth: 10},
+{id: 'WWCD', name: 'Abyssal plains', rule: 'weight', data: [
+    {height: 0, border: '#036', color: '#036', energy: 10, chance: .1, growth: 10},
 ]},
 {id: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
-    {height: 0, border: '#069', color: '#047', energy: 1, chance: .1, growth: 2},
-    {height: 0, color: '#047', energy: 1, chance: .5, growth: 2},
+    {height: 0, border: '#069', color: '#047', energy: 1, chance: .1, growth: 2}
 ]},
 {id: 'WWDT', name: 'Early rift', data: [
     {height: 0, color: '#069', energy: 1, chance: .5, growth: 2},

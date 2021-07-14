@@ -12,8 +12,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showBoundaries', 'Show boundaries', {default: true}),
         Type.boolean('showPlateBorders', 'Show borders', {default: false}),
         Type.boolean('showDirections', 'Show directions', {default: false}),
-        Type.boolean('showStress', 'Show stress', {default: true}),
-        Type.boolean('showHotspots', 'Show hotspots', {default: true}),
+        Type.boolean('showStress', 'Show stress', {default: false}),
+        Type.boolean('showHotspots', 'Show hotspots', {default: false}),
     )
 
     static create(tileMap, params) {
