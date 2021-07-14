@@ -59,6 +59,10 @@ export class PlateMap {
         return typeMap
     }
 
+    get size() {
+        return this.plates.size
+    }
+
     get(id) {
         return this.plates.get(id)
     }

@@ -3,7 +3,7 @@ import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { GeologyModel } from './model'
+import { TectonicsModel } from './model'
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -13,7 +13,7 @@ const SCHEMA = new Schema(
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 30, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 30, step: 1, min: 1, max: 100}),
-    Type.text('seed', 'Seed', {default: '1625965689604'})
+    Type.text('seed', 'Seed', {default: '1626227475008'})
 )
 
 
@@ -29,7 +29,7 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.model = new GeologyModel(this.seed, params)
+        this.model = new TectonicsModel(this.seed, params)
         this.regionGroupTileMap = this.model.regionGroupTileMap
         this.plates = this.model.plates
     }

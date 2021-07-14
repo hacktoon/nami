@@ -6,7 +6,7 @@ import { BoundaryMap } from './boundary'
 import { PlateMap } from './plate'
 
 
-export class GeologyModel {
+export class TectonicsModel {
     constructor(seed, params) {
         this.regionGroupTileMap = this._buildRegionGroupMap(seed, params)
         this.plates = new PlateMap(this.regionGroupTileMap)
@@ -29,8 +29,6 @@ export class GeologyModel {
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(fills)
-        // leave noise map for final matrix rendering
-        // const noiseMap = new NoiseMap()
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -56,18 +54,37 @@ export class GeologyModel {
             }
         }
     }
+}
 
-    map(callback) {
-        return this.plates.map(plate => callback(plate))
+
+class BoundaryRegionFillConfig extends FloodFillConfig {
+    constructor(data) {
+        super()
+        this.regionGroupTileMap = data.regionGroupTileMap
+        this.regionBoundary = data.regionBoundary
+        this.stressLevels = data.stressLevels
+        this.boundary = data.boundary
+
+        this.chance = data.boundary.chance
+        this.growth = data.boundary.growth
     }
 
-    forEach(callback) {
-        this.plates.forEach(callback)
+    isEmpty(region) {
+        return !this.regionBoundary.has(region.id)
+    }
+
+    setValue(region, level) {
+        this.regionBoundary.set(region.id, this.boundary)
+        this.stressLevels.set(region.id, level)
+    }
+
+    getNeighbors(region) {
+        return this.regionGroupTileMap.getNeighborRegions(region)
     }
 }
 
 
-class NoiseMap {
+class GeologyModel {
     constructor() {
         this.default = new SimplexNoise(6, 0.8, 0.02)
         this.coast   = new SimplexNoise(7, 0.6, 0.04)
@@ -81,33 +98,3 @@ class NoiseMap {
         return this.coast.get(point)
     }
 }
-
-
-class BoundaryRegionFillConfig extends FloodFillConfig {
-    constructor(data) {
-        super()
-        this.regionGroupTileMap = data.regionGroupTileMap
-        this.regionBoundary = data.regionBoundary
-        this.stressLevels = data.stressLevels
-        this.boundary = data.boundary
-        // this.geology = data.geology
-
-        this.chance = data.boundary.chance
-        this.growth = data.boundary.growth
-    }
-
-    isEmpty(region) {
-        return !this.regionBoundary.has(region.id)
-    }
-
-    setValue(region, level) {
-        // this.geology.set(region.id, this.geology)
-        this.regionBoundary.set(region.id, this.boundary)
-        this.stressLevels.set(region.id, level)
-    }
-
-    getNeighbors(region) {
-        return this.regionGroupTileMap.getNeighborRegions(region)
-    }
-}
-
