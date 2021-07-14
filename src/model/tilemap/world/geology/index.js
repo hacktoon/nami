@@ -39,10 +39,10 @@ export class GeologyTileMap extends TileMap {
         const region = this.regionGroupTileMap.getRegion(point)
         const stress = this.getStress(point)
         let str = `ID: ${plate.id}, region: ${region.id}`
+        str += `, stress: ${stress}`
         if (this.hasDeform(point)) {
             const deform = this.getDeform(point)
-            str += `, id: ${deform.id} stress: ${stress}`
-            str += `, deform: ${deform.name}`
+            str += `, id: ${deform.id}, deform: ${deform.name}`
         }
         return str
     }
@@ -63,17 +63,17 @@ export class GeologyTileMap extends TileMap {
 
     getDeform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        return this.model.deformRegions.get(region.id)
+        return this.model.deformRegionMap.get(region.id)
     }
 
     hasDeform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        return this.model.deformRegions.has(region.id)
+        return this.model.deformRegionMap.has(region.id)
     }
 
     getStress(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        return this.model.stressLevels.get(region.id)
+        return this.model.stressMap.get(region.id)
     }
 
     getDescription() {

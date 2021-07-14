@@ -10,8 +10,9 @@ export class DeformModel {
     constructor(seed, params) {
         this.regionGroupTileMap = this._buildRegionGroupMap(seed, params)
         this.plates = new PlateMap(this.regionGroupTileMap)
-        this.stressLevels = new Map()
-        this.deformRegions = new Map()
+        this.stressMap = new Map()
+        this.deformRegionMap = new Map()
+        this.maxStressMap = new Map()
         this._build()
     }
 
@@ -22,10 +23,13 @@ export class DeformModel {
             const deform = this._buildPlateDeform(deformMap, group, region)
             const fillConfig = new DeformRegionFillConfig({
                 regionGroupTileMap: this.regionGroupTileMap,
-                deformRegions: this.deformRegions,
-                stressLevels: this.stressLevels,
+                deformRegionMap: this.deformRegionMap,
+                stressMap: this.stressMap,
+                maxStressMap: this.maxStressMap,
                 deform,
+                group
             })
+            this.maxStressMap.set(group.id, 0)
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(fills)
@@ -61,23 +65,27 @@ class DeformRegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.regionGroupTileMap = data.regionGroupTileMap
-        this.deformRegions = data.deformRegions
-        this.stressLevels = data.stressLevels
+        this.deformRegionMap = data.deformRegionMap
+        this.maxStressMap = data.maxStressMap
+        this.stressMap = data.stressMap
         this.deform = data.deform
+        this.group = data.group
 
         this.chance = data.deform.chance
         this.growth = data.deform.growth
     }
 
     isEmpty(region) {
-        return !this.stressLevels.has(region.id)
+        return !this.stressMap.has(region.id)
     }
 
     setValue(region, level) {
-        this.stressLevels.set(region.id, level)
+        const stress = this.maxStressMap.get(this.group.id)
+        if (level > stress) this.maxStressMap.set(this.group.id, level)
         if (level >= this.deform.depth && level < this.deform.energy) {
-            this.deformRegions.set(region.id, this.deform)
+            this.deformRegionMap.set(region.id, this.deform)
         }
+        this.stressMap.set(region.id, level)
     }
 
     getNeighbors(region) {
