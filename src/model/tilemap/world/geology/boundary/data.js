@@ -23,8 +23,8 @@ export const BOUNDARY_TABLE = [
     {height: 100, color: '#9aae6d', energy: 2, chance: .4, growth: 5, depth: 1},
 ]},
 {id: 'LLCD', name: 'Early rift', data: [
-    {height: 100, border: '#058', color: '#058', energy: 4, chance: .5, growth: 8},
-    {height: 100, border: '#0b7005', color: '#0b7005', energy: 3, chance: .5, growth: 10},
+    {height: 100, border: '#058', color: '#058', energy: 4, chance: .5, growth: 2},
+    {height: 100, border: '#0b7005', color: '#0b7005', energy: 3, chance: .5, growth: 3},
 ]},
 {id: 'LLDD', name: 'Continental rift / early sea', rule: 'weight', data: [
     {height: 100, border: '#047', color: '#058', energy: 6, chance: .5, growth: 4},
