@@ -8,7 +8,7 @@ import {
     BD_TRANSFORM,
     BD_DIVERGE,
     BOUNDARY_TABLE
-} from './data'
+} from './table'
 
 
 export class BoundaryMap {
