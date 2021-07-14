@@ -12,7 +12,10 @@ export class GeologyModel {
         this.plates = new PlateMap(this.regionGroupTileMap)
         this.stressLevels = new Map()
         this.regionBoundary = new Map()
+        this._build()
+    }
 
+    _build() {
         const boundaryMap = new BoundaryMap(this.plates, this.regionGroupTileMap)
         const fills = this.regionGroupTileMap.getBorderRegions().map(region => {
             const group = this.regionGroupTileMap.getGroupByRegion(region)
@@ -45,15 +48,13 @@ export class GeologyModel {
     }
 
     _buildPlateBoundary(boundaryMap, group, region) {
-        let boundary
         const neighborRegions = this.regionGroupTileMap.getNeighborRegions(region)
         for(let neighbor of neighborRegions) {
             const neighborGroup = this.regionGroupTileMap.getGroupByRegion(neighbor)
             if (neighborGroup.id !== group.id) {
-                boundary = boundaryMap.get(region, neighbor)
+                return boundaryMap.get(region, neighbor)
             }
         }
-        return boundary
     }
 
     map(callback) {
@@ -89,6 +90,7 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
         this.regionBoundary = data.regionBoundary
         this.stressLevels = data.stressLevels
         this.boundary = data.boundary
+        // this.geology = data.geology
 
         this.chance = data.boundary.chance
         this.growth = data.boundary.growth
@@ -99,6 +101,7 @@ class BoundaryRegionFillConfig extends FloodFillConfig {
     }
 
     setValue(region, level) {
+        // this.geology.set(region.id, this.geology)
         this.regionBoundary.set(region.id, this.boundary)
         this.stressLevels.set(region.id, level)
     }

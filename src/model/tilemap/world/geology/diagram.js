@@ -12,6 +12,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showBoundaries', 'Show boundaries', {default: true}),
         Type.boolean('showPlateBorders', 'Show borders', {default: false}),
         Type.boolean('showDirections', 'Show directions', {default: false}),
+        Type.boolean('showStress', 'Show stress', {default: true}),
     )
 
     static create(tileMap, params) {
@@ -23,6 +24,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showPlateBorders = params.get('showPlateBorders')
         this.showBoundaries = params.get('showBoundaries')
         this.showDirections = params.get('showDirections')
+        this.showStress = params.get('showStress')
     }
 
     get(point) {
@@ -30,26 +32,25 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const boundary = this.tileMap.getBoundary(point)
         const stress = this.tileMap.getStress(point)
         const plate = this.tileMap.getPlate(point)
-        const hex = plate.isOceanic() ? '#058' : '#1c7816'
-        let color = Color.fromHex(hex)
+        let hex = plate.color
 
         if (this.showBoundaries) {
-            if (stress >= boundary.depth && stress < boundary.energy) {
-                color = Color.fromHex(boundary.color)
+            if (this.tileMap.hasBoundary(point)) {
+                hex = boundary.color
             }
             if (isBorderPoint) {
-                color = Color.fromHex(hex)
-                if (boundary.hasBorder()) {
-                    color = Color.fromHex(boundary.border)
-                }
+                hex = boundary.hasBorder() ? boundary.border : plate.color
             }
         }
         if (this.showPlateBorders && isBorderPoint) {
-            return color.average(Color.fromHex('#F00')).toHex()
+            return Color.fromHex(hex).average(Color.fromHex('#F00')).toHex()
         }
-        if (plate.isContinental())
-            return color.brighten(stress * 5).toHex()
-        return color.darken(stress * 3).toHex()
+        if (this.showStress) {
+            if (plate.isContinental())
+                return Color.fromHex(hex).brighten(stress * 3).toHex()
+            return Color.fromHex(hex).darken(stress * 2).toHex()
+        }
+        return hex
     }
 
     getText(point) {

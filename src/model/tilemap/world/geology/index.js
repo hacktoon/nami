@@ -64,6 +64,13 @@ export class GeologyTileMap extends TileMap {
         return this.model.regionBoundary.get(region.id)
     }
 
+    hasBoundary(point) {
+        const region = this.regionGroupTileMap.getRegion(point)
+        const stress = this.model.stressLevels.get(region.id)
+        const boundary = this.model.regionBoundary.get(region.id)
+        return stress >= boundary.depth && stress < boundary.energy
+    }
+
     getStress(point) {
         const region = this.regionGroupTileMap.getRegion(point)
         return this.model.stressLevels.get(region.id)

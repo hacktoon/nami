@@ -78,7 +78,7 @@ export const BOUNDARY_TABLE = [
     {height: 0, border: '#069', color: '#025', energy: 4, chance: .4, growth: 2, depth: 1},
     {height: 0, color: '#1fa184', energy: 1, chance: .5, growth: 5},
 ]},
-{id: 'WWCD', name: 'Early continent', rule: 'weight', data: [
+{id: 'WWCD', name: 'Big island arc', rule: 'weight', data: [
     {height: 0, border: '#069', color: '#058', energy: 3, chance: .1, growth: 5},
     {height: 0, border: '#069', color: '#26a11f', energy: 4, chance: .1, growth: 10},
 ]},
