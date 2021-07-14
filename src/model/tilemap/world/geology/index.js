@@ -3,7 +3,7 @@ import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { TectonicsModel } from './model'
+import { DeformModel } from './model'
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -29,7 +29,7 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.model = new TectonicsModel(this.seed, params)
+        this.model = new DeformModel(this.seed, params)
         this.regionGroupTileMap = this.model.regionGroupTileMap
         this.plates = this.model.plates
     }
@@ -37,11 +37,13 @@ export class GeologyTileMap extends TileMap {
     get(point) {
         const plate = this.getPlate(point)
         const region = this.regionGroupTileMap.getRegion(point)
-        const boundary = this.getBoundary(point)
         const stress = this.getStress(point)
         let str = `ID: ${plate.id}, region: ${region.id}`
-            str += `, id: ${boundary.id} stress: ${stress}`
-            str += `, boundary: ${boundary.name}`
+        if (this.hasDeform(point)) {
+            const deform = this.getDeform(point)
+            str += `, id: ${deform.id} stress: ${stress}`
+            str += `, deform: ${deform.name}`
+        }
         return str
     }
 
@@ -59,16 +61,14 @@ export class GeologyTileMap extends TileMap {
         return this.regionGroupTileMap.isGroupBorder(point)
     }
 
-    getBoundary(point) {
+    getDeform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        return this.model.regionBoundary.get(region.id)
+        return this.model.deformRegions.get(region.id)
     }
 
-    hasBoundary(point) {
+    hasDeform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        const stress = this.model.stressLevels.get(region.id)
-        const boundary = this.model.regionBoundary.get(region.id)
-        return stress >= boundary.depth && stress < boundary.energy
+        return this.model.deformRegions.has(region.id)
     }
 
     getStress(point) {

@@ -1,34 +1,34 @@
 import { PairMap } from '/lib/base'
 import { Direction } from '/lib/base/direction'
 import {
-    BD_WATER,
-    BD_LAND,
+    DEF_WATER,
+    DEF_LAND,
     IDMAP,
-    BD_CONVERGE,
-    BD_TRANSFORM,
-    BD_DIVERGE,
-    BOUNDARY_TABLE
+    DEF_CONVERGE,
+    DEF_TRANSFORM,
+    DEF_DIVERGE,
+    DEFORM_TABLE
 } from './table'
 
 
-export class BoundaryMap {
-    #table = new BoundaryTable(BOUNDARY_TABLE)
+export class DeformMap {
+    #table = new DeformTable(DEFORM_TABLE)
 
     constructor(plates, regionGroupTileMap) {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap
-        this._boundaries = new PairMap()
+        this._deforms = new PairMap()
 
         regionGroupTileMap.getGroups().forEach(group => {
             const neighbors = regionGroupTileMap.getNeighborGroups(group)
             neighbors.forEach(neighbor => {
-                const boundary = this._buildGroupBoundary(group, neighbor)
-                this._boundaries.set(group.id, neighbor.id, boundary)
+                const deform = this._buildGroupDeform(group, neighbor)
+                this._deforms.set(group.id, neighbor.id, deform)
             })
         })
     }
 
-    _buildGroupBoundary(group, neighborGroup) {
+    _buildGroupDeform(group, neighborGroup) {
         const rgrp = this.regionGroupTileMap
         const plate = this.plates.get(group.id)
         const otherPlate = this.plates.get(neighborGroup.id)
@@ -43,12 +43,12 @@ export class BoundaryMap {
         const rgrp = this.regionGroupTileMap
         const group = rgrp.getGroupByRegion(region)
         const neighborGroup = rgrp.getGroupByRegion(neighborRegion)
-        return this._boundaries.get(group.id, neighborGroup.id)
+        return this._deforms.get(group.id, neighborGroup.id)
     }
 }
 
 
-class Boundary {
+class Deform {
     constructor(id, name, data) {
         this.id = id
         this.name = name
@@ -67,8 +67,8 @@ class Boundary {
 }
 
 
-class BoundaryTable {
-    constructor(table=BOUNDARY_TABLE) {
+class DeformTable {
+    constructor(table=DEFORM_TABLE) {
         this._table = new Map()
         table.map(row => {
             const chars = Array.from(row.id)
@@ -78,27 +78,27 @@ class BoundaryTable {
     }
 
     get(p1, p2, dotTo, dotFrom) {
-        const type1 = p1.isContinental() ? BD_LAND : BD_WATER
-        const type2 = p2.isContinental() ? BD_LAND : BD_WATER
+        const type1 = p1.isContinental() ? DEF_LAND : DEF_WATER
+        const type2 = p2.isContinental() ? DEF_LAND : DEF_WATER
         const dir1 = this._getDir(dotTo)
         const dir2 = this._getDir(dotFrom)
         const code = type1 + type2 + dir1 + dir2
         const row = this._table.get(code)
-        return this._getBoundary(row, p1, p2, dir1, dir2)
+        return this._getDeform(row, p1, p2, dir1, dir2)
     }
 
     _getDir(dir) {
-        if (dir === 0) return BD_TRANSFORM
-        return dir > 0 ? BD_CONVERGE : BD_DIVERGE
+        if (dir === 0) return DEF_TRANSFORM
+        return dir > 0 ? DEF_CONVERGE : DEF_DIVERGE
     }
 
-    _getBoundary(row, p1, p2, dir1, dir2) {
+    _getDeform(row, p1, p2, dir1, dir2) {
         const first = row.data[0]
         const second = row.data.length === 1 ? first : row.data[1]
         let data = dir1 > dir2 ? first : second
         if (row.rule === 'weight') {
             data = p1.weight > p2.weight ? first : second
         }
-        return new Boundary(row.id, row.name, data)
+        return new Deform(row.id, row.name, data)
     }
 }

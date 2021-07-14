@@ -29,17 +29,17 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const isBorderPoint = this.tileMap.isPlateBorder(point)
-        const boundary = this.tileMap.getBoundary(point)
+        const deform = this.tileMap.getDeform(point)
         const stress = this.tileMap.getStress(point)
         const plate = this.tileMap.getPlate(point)
         let hex = plate.color
 
         if (this.showBoundaries) {
-            if (this.tileMap.hasBoundary(point)) {
-                hex = boundary.color
-            }
-            if (isBorderPoint) {
-                hex = boundary.hasBorder() ? boundary.border : plate.color
+            if (this.tileMap.hasDeform(point)) {
+                hex = deform.color
+                if (isBorderPoint) {
+                    hex = deform.hasBorder() ? deform.border : plate.color
+                }
             }
         }
         if (this.showPlateBorders && isBorderPoint) {

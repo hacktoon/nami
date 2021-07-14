@@ -1,19 +1,19 @@
 
-export const BD_LAND = 0
-export const BD_WATER = 100
-export const BD_CONVERGE = 16
-export const BD_TRANSFORM = 4
-export const BD_DIVERGE = 1
+export const DEF_LAND = 0
+export const DEF_WATER = 100
+export const DEF_CONVERGE = 16
+export const DEF_TRANSFORM = 4
+export const DEF_DIVERGE = 1
 export const IDMAP = {
-    L: BD_LAND,
-    W: BD_WATER,
-    C: BD_CONVERGE,
-    D: BD_DIVERGE,
-    T: BD_TRANSFORM,
+    L: DEF_LAND,
+    W: DEF_WATER,
+    C: DEF_CONVERGE,
+    D: DEF_DIVERGE,
+    T: DEF_TRANSFORM,
 }
 
 
-export const BOUNDARY_TABLE = [
+export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ---------------------------
 {id: 'LLCC', name: 'Collision between continents', data: [
     {height: 100, border: '#EEE', color: '#CCC', energy: 3, chance: .5, growth: 2}
