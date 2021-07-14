@@ -13,6 +13,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showPlateBorders', 'Show borders', {default: false}),
         Type.boolean('showDirections', 'Show directions', {default: false}),
         Type.boolean('showStress', 'Show stress', {default: true}),
+        Type.boolean('showHotspots', 'Show hotspots', {default: true}),
     )
 
     static create(tileMap, params) {
@@ -25,6 +26,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showBoundaries = params.get('showBoundaries')
         this.showDirections = params.get('showDirections')
         this.showStress = params.get('showStress')
+        this.showHotspots = params.get('showHotspots')
     }
 
     get(point) {
@@ -34,6 +36,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const plate = this.tileMap.getPlate(point)
         let hex = plate.color
 
+
+        if (this.showHotspots && this.tileMap.isMaxStress(point)) {
+            return '#F00'
+        }
         if (this.showBoundaries) {
             if (this.tileMap.hasDeform(point)) {
                 hex = deform.color

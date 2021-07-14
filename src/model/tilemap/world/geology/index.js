@@ -76,6 +76,13 @@ export class GeologyTileMap extends TileMap {
         return this.model.stressMap.get(region.id)
     }
 
+    isMaxStress(point) {
+        const region = this.regionGroupTileMap.getRegion(point)
+        const group = this.regionGroupTileMap.getGroup(point)
+        const stress = this.model.stressMap.get(region.id)
+        return stress === this.model.maxStressMap.get(group.id)
+    }
+
     getDescription() {
         return `${this.plates.size} plates`
     }
