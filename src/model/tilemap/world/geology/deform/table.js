@@ -17,18 +17,18 @@ export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ---------------------------
 {id: 'LLCC', name: 'Continental collision', data: [
     {
-        height: 100, border: '#EEE', color: '#CCC',
+        height: 100, border: '#CCC', color: '#CCC',
         energy: 4, chance: .5, growth: 2
     }
 ]},
 
 {id: 'LLCT', name: 'Old mountains', data: [
     {height: 100, color: '#749750', energy: 1, chance: .5, growth: 10},
-    {height: 100, energy: 0},
+    {energy: 0},
 ]},
 
 {id: 'LLCD', name: 'Inner sea', data: [
-    {height: 100, border: '#058', color: '#058', energy: 7, chance: .5, growth: 7},
+    {height: 100, border: '#058', color: '#058', energy: 7, chance: .5, growth: 5},
 ]},
 
 {id: 'LLDD', name: 'Rift sea', rule: 'weight', data: [
@@ -50,12 +50,12 @@ export const DEFORM_TABLE = [
 
 // CONTINENTAL-OCEANIC ---------------------------
 {id: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
-    {height: 50, color: '#036', energy: 2, chance: .5, growth: 1},
+    {height: 50, color: '#036', energy: 4, chance: .5, growth: 1},
     {height: 50, color: '#a79e86', energy: 5, chance: .5, growth: 2, depth: 1},
 ]},
 {id: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
-    {height: 50, color: '#036', energy: 1, chance: .5, growth: 5},
-    {height: 50, color: '#749750', energy: 3, chance: .5, growth: 2, depth: 2},
+    {height: 50, color: '#036', energy: 3, chance: .5, growth: 2},
+    {height: 50, color: '#749750', energy: 4, chance: .5, growth: 2, depth: 2},
 ]},
 {id: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
     {height: 50, color: '#069', energy: 1, chance: .5, growth: 8},
@@ -92,6 +92,7 @@ export const DEFORM_TABLE = [
 ]},
 {id: 'WWDT', name: 'Early rift', data: [
     {height: 0, color: '#069', energy: 1, chance: .5, growth: 2},
+    {energy: 0}
 ]},
 {id: 'WWTT', name: 'Oceanic fault', data: [
     {height: 0, color: '#003f6c', energy: 1, chance: .5, growth: 8},
