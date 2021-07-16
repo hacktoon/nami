@@ -35,7 +35,7 @@ function getDefaultData(schemaInstance) {
     if (FormCache.has(key)) {
         return FormCache.read(key)
     }
-    return schemaInstance.unparse()
+    return schemaInstance
 }
 
 

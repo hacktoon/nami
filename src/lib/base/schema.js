@@ -58,14 +58,4 @@ class SchemaInstance {
     clone() {
         return new SchemaInstance(this.name, this.valueMap, this.typeMap)
     }
-
-    unparse() {
-        const map = new Map()
-        for(let type of this.types) {
-            const name = type.name
-            const value = this.get(name)
-            map.set(name, type.unparse(value))
-        }
-        return map
-    }
 }

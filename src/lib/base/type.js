@@ -70,7 +70,6 @@ class PointType extends BaseType {
     static type = 'point'
 
     parse(hash) {
-        console.log(hash);
         return Point.fromHash(hash)
     }
 
