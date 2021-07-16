@@ -5,14 +5,14 @@ export class Schema {
         this.types = types
     }
 
-    parse(rawMap=new Map()) {
+    parse(rawValueMap=new Map()) {
         const valueMap = new Map()
         const typeMap = new Map()
         for(let type of this.types) {
             const name = type.name
             let value = type.defaultValue
-            if (rawMap.has(name)) {
-                const rawValue = rawMap.get(name)
+            if (rawValueMap.has(name)) {
+                const rawValue = rawValueMap.get(name)
                 value = type.parse(rawValue)
             }
             valueMap.set(name, value)
@@ -57,5 +57,19 @@ class SchemaInstance {
 
     clone() {
         return new SchemaInstance(this.name, this.valueMap, this.typeMap)
+    }
+
+    toString() {
+        return JSON.stringify({
+            valueMap: [...this.valueMap],
+            typeMap: [...this.typeMap]
+        })
+    }
+
+    fromString(text) {
+        const data = JSON.parse(text)
+        const valueMap = new Map(data.valueMap)
+        const typeMap = new Map(data.typeMap)
+        return new SchemaInstance(this.name, valueMap, typeMap)
     }
 }
