@@ -26,8 +26,8 @@ class BaseType {
         return value ?? this.defaultValue
     }
 
-    unparse(value) {
-        return value ? String(value) : String(this.defaultValue)
+    toString(value) {
+        return String(value)
     }
 }
 
@@ -60,7 +60,7 @@ class ColorType extends TextType {
         return Color.fromHex(hex ?? this.defaultValue)
     }
 
-    unparse(color) {
+    toString(color) {
         return color.toHex()
     }
 }
@@ -70,16 +70,10 @@ class PointType extends BaseType {
     static type = 'point'
 
     parse(hash) {
-        if (! hash) return this.defaultValue
-        try {
-            return Point.fromHash(hash)
-        } catch (e) {
-            console.warn(e)
-            return null
-        }
+        return Point.fromHash(hash ?? this.defaultValue)
     }
 
-    unparse(point) {
+    toString(point) {
         return point.hash
     }
 }
@@ -89,7 +83,10 @@ class BooleanType extends BaseType {
     static type = 'boolean'
 
     parse(text) {
-        return String(text ?? this.defaultValue) === 'true'
+        const value = String(text)
+        if (value === 'true') return true
+        if (value === 'false') return false
+        return this.defaultValue
     }
 }
 

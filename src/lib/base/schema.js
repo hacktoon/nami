@@ -31,31 +31,18 @@ export class Schema {
             const rawValue = cacheValueMap.get(name)
             valueMap.set(name, typedef.parse(rawValue))
         }
-        const instance = new SchemaInstance(this, valueMap)
-        console.log(valueMap);
-        // Storage.setItem(instance.name, instance.toString())
-        return instance
+        return new SchemaInstance(this, valueMap)
     }
 
     _getCache(name) {
         const stringEntries = Storage.getItem(name)
-        const entries = parseJSON(stringEntries)
-        return new Map(entries.map(entry => {
-            const [name, rawValue] = entry
-            const typedef = this.typeMap.get(name)
-            const value = typedef.parse(rawValue)
-            return [name, value]
-        }))
-    }
-}
-
-
-function parseJSON(text) {
-    try {
-        return JSON.parse(String(text)) ?? []
-    } catch (e) {
-        console.error(e)
-        return []
+        try {
+            const entries = JSON.parse(String(stringEntries))
+            return new Map(entries ?? [])
+        } catch (e) {
+            console.error(e)
+            return new Map()
+        }
     }
 }
 
@@ -91,7 +78,13 @@ class SchemaInstance {
         const type = this.typeMap.get(name)
         const value = type.parse(rawValue)
         const valueMap = new Map([...this.valueMap, [name, value]])
-        return new SchemaInstance(this.schema, valueMap)
+        const schemaInstance = new SchemaInstance(this.schema, valueMap)
+        Storage.setItem(schemaInstance.name, schemaInstance.toString())
+        return schemaInstance
+    }
+
+    persist() {
+        Storage.setItem(this.name, this.toString())
     }
 
     clone() {
@@ -102,7 +95,7 @@ class SchemaInstance {
         return JSON.stringify([...this.valueMap].map(entry => {
             const [name, value] = entry
             const type = this.typeMap.get(name)
-            return [name, type.unparse(value)]
+            return [name, type.toString(value)]
         }))
     }
 }
