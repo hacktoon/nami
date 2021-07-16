@@ -40,7 +40,7 @@ class App {
 
 
 function RootComponent() {
-    const [data, setData] = useState(App.schema.parse())
+    const [data, setData] = useState(App.schema.build())
     const Application = appMap.get(data.get('app'))
 
     return <section className="App">

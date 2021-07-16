@@ -5,9 +5,12 @@ export class Schema {
         this.types = types
     }
 
-    parse(rawValueMap=new Map()) {
+    build(rawValueMap=new Map()) {
+        console.log(rawValueMap);
         const valueMap = new Map()
         const typeMap = new Map()
+        // const cache = STORAGE.getItem(this.name)
+        // if (cache !== null) return this.fromString(cache)
         for(let type of this.types) {
             const name = type.name
             let value = type.defaultValue
@@ -18,14 +21,27 @@ export class Schema {
             valueMap.set(name, value)
             typeMap.set(name, type)
         }
-        return new SchemaInstance(this.name, valueMap, typeMap)
+        const instance = new SchemaInstance(this, valueMap, typeMap)
+        // STORAGE.setItem(instance.name, instance.toString())
+        return instance
+    }
+
+    parseString(text) {
+        const data = parseJSON(text)
+        const valueMap = new Map(data.map(entry => {
+            const [name, rawValue] = entry
+            const type = this.typeMap.get(name)
+            const value = type.parse(rawValue)
+            return [name, value]
+        }))
+        return new SchemaInstance(this, valueMap, this.typeMap)
     }
 }
 
 
 class SchemaInstance {
-    constructor(name, valueMap, typeMap) {
-        this.name = name
+    constructor(schema, valueMap, typeMap) {
+        this.name = schema.name
         this.valueMap = valueMap
         this.typeMap = typeMap
     }
@@ -52,11 +68,11 @@ class SchemaInstance {
         const type = this.typeMap.get(name)
         const value = type.parse(rawValue)
         const valueMap = new Map([...this.valueMap, [name, value]])
-        return new SchemaInstance(this.name, valueMap, this.typeMap)
+        return new SchemaInstance(this, valueMap, this.typeMap)
     }
 
     clone() {
-        return new SchemaInstance(this.name, this.valueMap, this.typeMap)
+        return new SchemaInstance(this, this.valueMap, this.typeMap)
     }
 
     toString() {
@@ -75,7 +91,7 @@ class SchemaInstance {
             const value = type.parse(rawValue)
             return [name, value]
         }))
-        return new SchemaInstance(this.name, valueMap, this.typeMap)
+        return new SchemaInstance(this, valueMap, this.typeMap)
     }
 }
 

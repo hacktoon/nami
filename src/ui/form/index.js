@@ -16,14 +16,14 @@ export function Form({data, onSubmit, ...props}) {
     const handleSubmit = event => {
         event.preventDefault()
         const updatedData = formData.clone()
-        STORAGE.setItem(updatedData.name, updatedData.toString())
+        // STORAGE.setItem(updatedData.name, updatedData.toString())
         setFormData(updatedData)
         onSubmit(updatedData)
     }
 
     const handleChange = (name, value) => {
         const updatedData = formData.update(name, value)
-        STORAGE.setItem(updatedData.name, updatedData.toString())
+        // STORAGE.setItem(updatedData.name, updatedData.toString())
         setFormData(updatedData)
         onSubmit(updatedData)
     }

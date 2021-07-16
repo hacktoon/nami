@@ -9,7 +9,7 @@ import { UITileMapScene } from './scene'
 
 
 export function UITileMap({TileMap}) {
-    const [data, setData] = useState(TileMap.schema.parse())
+    const [data, setData] = useState(TileMap.schema.build())
     const tileMap = TileMap.create(data)
 
     return <section className='UITileMap'>
@@ -22,8 +22,8 @@ export function UITileMap({TileMap}) {
 
 
 function UITileMapDiagram({diagram, tileMap}) {
-    const [diagramData, setDiagramData] = useState(diagram.schema.parse())
-    const [sceneData, setSceneData] = useState(TileMapScene.schema.parse())
+    const [diagramData, setDiagramData] = useState(diagram.schema.build())
+    const [sceneData, setSceneData] = useState(TileMapScene.schema.build())
 
     const mapDiagram = diagram.create(tileMap, diagramData)
 
