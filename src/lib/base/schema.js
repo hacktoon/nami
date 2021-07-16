@@ -6,7 +6,8 @@ export class Schema {
     }
 
     parse(rawMap=new Map()) {
-        const map = new Map()
+        const valueMap = new Map()
+        const typeMap = new Map()
         for(let type of this.types) {
             const name = type.name
             let value = type.defaultValue
@@ -14,17 +15,19 @@ export class Schema {
                 const rawValue = rawMap.get(name)
                 value = type.parse(rawValue)
             }
-            map.set(name, value)
+            valueMap.set(name, value)
+            typeMap.set(name, type)
         }
-        return new SchemaInstance(this, map)
+        return new SchemaInstance(this.name, valueMap, typeMap)
     }
 }
 
 
 class SchemaInstance {
-    constructor(schema, map) {
-        this.schema = schema
-        this.valueMap = map
+    constructor(name, valueMap, typeMap) {
+        this.name = name
+        this.valueMap = valueMap
+        this.typeMap = typeMap
     }
 
     get size() {
@@ -32,22 +35,28 @@ class SchemaInstance {
     }
 
     get types() {
-        return this.schema.types
+        return [...this.typeMap.values()]
     }
 
     get(...names) {
         if (names.length == 1)
             return this.valueMap.get(names[0])
         const data = []
-        for (let i=0; i<names.length; i++) {
-            data.push(this.valueMap.get(names[i]))
+        for(let name of names) {
+            data.push(this.valueMap.get(name))
         }
         return data
     }
 
-    update(name, value) {
-        const map = new Map([...this.valueMap, [name, value]])
-        return new SchemaInstance(this.schema, map)
+    update(name, rawValue) {
+        const type = this.typeMap.get(name)
+        const value = type.parse(rawValue)
+        const valueMap = new Map([...this.valueMap, [name, value]])
+        return new SchemaInstance(this.name, valueMap, this.typeMap)
+    }
+
+    clone() {
+        return new SchemaInstance(this.name, this.valueMap, this.typeMap)
     }
 
     unparse() {

@@ -70,6 +70,7 @@ class PointType extends BaseType {
     static type = 'point'
 
     parse(hash) {
+        console.log(hash);
         return Point.fromHash(hash)
     }
 
@@ -83,7 +84,7 @@ class BooleanType extends BaseType {
     static type = 'boolean'
 
     parse(text) {
-        return text === 'true'
+        return String(text) === 'true'
     }
 }
 
