@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { FieldSet } from './field'
 
 
-const STORAGE = window.localStorage
-
-
 export function Form({data, onSubmit, ...props}) {
     const [formData, setFormData] = useState(data)
     // detect updates to `data` prop
     useEffect(() => {
-        const cache = STORAGE.getItem(data.name)
-        setFormData(cache === null ? data : data.fromString(cache))
+        // const cache = STORAGE.getItem(data.name)
+        // setFormData(cache === null ? data : data.fromString(cache))
+        setFormData(data)
     }, [data])
 
     const handleSubmit = event => {

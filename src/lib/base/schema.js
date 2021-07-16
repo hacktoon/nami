@@ -1,4 +1,7 @@
 
+const Storage = window.localStorage
+
+
 export class Schema {
     constructor(name, ...types) {
         this.name = name
@@ -6,10 +9,8 @@ export class Schema {
         this.typeMap = new Map(types.map(type => [type.name, type]))
     }
 
-    build(rawValueMap=new Map()) {
+    buildFrom(rawValueMap) {
         const valueMap = new Map()
-        // const cache = STORAGE.getItem(this.name)
-        // if (cache !== null) return this.fromString(cache)
         for(let type of this.types) {
             const name = type.name
             let value = type.defaultValue
@@ -19,22 +20,45 @@ export class Schema {
             }
             valueMap.set(name, value)
         }
+        return new SchemaInstance(this, valueMap)
+    }
+
+    build() {
+        const valueMap = new Map()
+        const cacheValueMap = this._getCache(this.name)
+        for(let typedef of this.types) {
+            const name = typedef.name
+            const rawValue = cacheValueMap.get(name)
+            valueMap.set(name, typedef.parse(rawValue))
+        }
         const instance = new SchemaInstance(this, valueMap)
-        // STORAGE.setItem(instance.name, instance.toString())
+        console.log(valueMap);
+        // Storage.setItem(instance.name, instance.toString())
         return instance
     }
 
-    parseString(text) {
-        const data = parseJSON(text)
-        const valueMap = new Map(data.map(entry => {
+    _getCache(name) {
+        const stringEntries = Storage.getItem(name)
+        const entries = parseJSON(stringEntries)
+        return new Map(entries.map(entry => {
             const [name, rawValue] = entry
-            const type = this.typeMap.get(name)
-            const value = type.parse(rawValue)
+            const typedef = this.typeMap.get(name)
+            const value = typedef.parse(rawValue)
             return [name, value]
         }))
-        return new SchemaInstance(this, valueMap)
     }
 }
+
+
+function parseJSON(text) {
+    try {
+        return JSON.parse(String(text)) ?? []
+    } catch (e) {
+        console.error(e)
+        return []
+    }
+}
+
 
 
 class SchemaInstance {
@@ -80,26 +104,5 @@ class SchemaInstance {
             const type = this.typeMap.get(name)
             return [name, type.unparse(value)]
         }))
-    }
-
-    fromString(text) {
-        const data = parseJSON(text)
-        const valueMap = new Map(data.map(entry => {
-            const [name, rawValue] = entry
-            const type = this.typeMap.get(name)
-            const value = type.parse(rawValue)
-            return [name, value]
-        }))
-        return new SchemaInstance(this.schema, valueMap)
-    }
-}
-
-
-function parseJSON(text) {
-    try {
-        return JSON.parse(String(text)) ?? []
-    } catch (e) {
-        console.error(e)
-        return []
     }
 }

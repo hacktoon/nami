@@ -23,11 +23,11 @@ class BaseType {
     }
 
     parse(value) {
-        return value
+        return value ?? this.defaultValue
     }
 
     unparse(value) {
-        return String(value)
+        return value ? String(value) : String(this.defaultValue)
     }
 }
 
@@ -45,7 +45,7 @@ class NumberType extends BaseType {
     static type = 'number'
 
     parse(text) {
-        const value = Number(text) ?? 0
+        const value = Number(text ?? this.defaultValue)
         const min = this.props.min ?? -Infinity
         const max = this.props.max ?? Infinity
         return clamp(value, min, max)
@@ -57,7 +57,7 @@ class ColorType extends TextType {
     static type = 'color'
 
     parse(hex) {
-        return Color.fromHex(hex)
+        return Color.fromHex(hex ?? this.defaultValue)
     }
 
     unparse(color) {
@@ -70,7 +70,13 @@ class PointType extends BaseType {
     static type = 'point'
 
     parse(hash) {
-        return Point.fromHash(hash)
+        if (! hash) return this.defaultValue
+        try {
+            return Point.fromHash(hash)
+        } catch (e) {
+            console.warn(e)
+            return null
+        }
     }
 
     unparse(point) {
@@ -83,7 +89,7 @@ class BooleanType extends BaseType {
     static type = 'boolean'
 
     parse(text) {
-        return String(text) === 'true'
+        return String(text ?? this.defaultValue) === 'true'
     }
 }
 

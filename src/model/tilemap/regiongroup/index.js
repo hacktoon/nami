@@ -29,7 +29,7 @@ export class RegionGroupTileMap extends TileMap {
 
     static fromData(data) {
         const map = new Map(Object.entries(data))
-        const params = RegionGroupTileMap.schema.build(map)
+        const params = RegionGroupTileMap.schema.buildFrom(map)
         return new RegionGroupTileMap(params)
     }
 
