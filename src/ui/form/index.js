@@ -1,22 +1,29 @@
 import React, { useState, useEffect } from 'react'
-
 import { FieldSet } from './field'
+
+
+const STORAGE = window.localStorage
 
 
 export function Form({data, onSubmit, ...props}) {
     const [formData, setFormData] = useState(data)
     // detect updates to `data` prop
-    useEffect(() => setFormData(data), [data])
+    useEffect(() => {
+        const cache = STORAGE.getItem(data.name)
+        setFormData(cache === null ? data : data.fromString(cache))
+    }, [data])
 
     const handleSubmit = event => {
         event.preventDefault()
         const updatedData = formData.clone()
+        STORAGE.setItem(updatedData.name, updatedData.toString())
         setFormData(updatedData)
         onSubmit(updatedData)
     }
 
     const handleChange = (name, value) => {
         const updatedData = formData.update(name, value)
+        STORAGE.setItem(updatedData.name, updatedData.toString())
         setFormData(updatedData)
         onSubmit(updatedData)
     }
@@ -27,30 +34,3 @@ export function Form({data, onSubmit, ...props}) {
         {props.children}
     </form>
 }
-
-
-function getDefaultData(schemaInstance) {
-    const key = schemaInstance.name
-    if (FormCache.has(key)) {
-        return FormCache.read(key)
-    }
-    return schemaInstance
-}
-
-
-export class FormCache {
-    static save(name, formData) {
-        const text = JSON.stringify([...formData])
-        window.localStorage.setItem(name, text)
-    }
-
-    static has(name) {
-        return window.localStorage.getItem(name) !== null
-    }
-
-    static read(name) {
-        const cacheData = window.localStorage.getItem(name)
-        return new Map(JSON.parse(cacheData))
-    }
-}
-window.FormCache = FormCache

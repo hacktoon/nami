@@ -60,16 +60,31 @@ class SchemaInstance {
     }
 
     toString() {
-        return JSON.stringify({
-            valueMap: [...this.valueMap],
-            typeMap: [...this.typeMap]
-        })
+        return JSON.stringify([...this.valueMap].map(entry => {
+            const [name, value] = entry
+            const type = this.typeMap.get(name)
+            return [name, type.unparse(value)]
+        }))
     }
 
     fromString(text) {
-        const data = JSON.parse(text)
-        const valueMap = new Map(data.valueMap)
-        const typeMap = new Map(data.typeMap)
-        return new SchemaInstance(this.name, valueMap, typeMap)
+        const data = parseJSON(text)
+        const valueMap = new Map(data.map(entry => {
+            const [name, rawValue] = entry
+            const type = this.typeMap.get(name)
+            const value = type.parse(rawValue)
+            return [name, value]
+        }))
+        return new SchemaInstance(this.name, valueMap, this.typeMap)
+    }
+}
+
+
+function parseJSON(text) {
+    try {
+        return JSON.parse(String(text)) ?? []
+    } catch (e) {
+        console.error(e)
+        return []
     }
 }
