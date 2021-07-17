@@ -13,24 +13,24 @@ export class TileMapScene {
         Type.number('zoom', "Zoom", {default: 6, step: 1, min: 1, max: 100}),
     )
 
-    static create(diagram, width, height, params) {
-        return new TileMapScene(diagram, width, height, params)
+    static create(diagram, rect, params) {
+        return new TileMapScene(diagram, rect, params)
     }
 
-    constructor(diagram, width, height, params) {
+    constructor(diagram, rect, params) {
+        const [focus, wrap, zoom] = params.get('focus', 'wrap', 'zoom')
+        this.frame = new Frame(rect, focus, zoom)
+        this.focus = focus
+        this.wrap = wrap
+        this.zoom = zoom
         this.diagram = diagram
-        this.width = width
-        this.height = height
-        this.wrap = params.get('wrap')
-        this.focus = params.get('focus')
-        this.zoom = params.get('zoom')
-        this.frame = new Frame(width, height, this.focus, this.zoom)
+        this.rect = rect
         this.textQueue = []
-        console.log('new TileMapScene', this.width, this.diagram.width * this.zoom)
+        // console.log('new TileMapScene', this.width, this.diagram.width * this.zoom)
     }
 
     render(canvas) {
-        const ctx = createCanvas(this.width, this.height)
+        // const ctx = createCanvas(this.width, this.height)
 
         this.#renderFrame((tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
@@ -82,15 +82,15 @@ export class TileMapScene {
 
 
 class Frame {
-    constructor(width, height, focus, zoom) {
-        this.width = width
-        this.height = height
+    constructor(rect, focus, zoom) {
+        this.width = rect.width
+        this.height = rect.height
         this.focus = focus
         this.zoom = zoom
-        this.eastPad = Math.floor(width / 2 - zoom / 2)
-        this.northPad = Math.floor(height / 2 - zoom / 2)
-        this.westPad = width - this.eastPad - zoom
-        this.southPad = height - this.northPad - zoom
+        this.eastPad = Math.floor(rect.width / 2 - zoom / 2)
+        this.northPad = Math.floor(rect.height / 2 - zoom / 2)
+        this.westPad = rect.width - this.eastPad - zoom
+        this.southPad = rect.height - this.northPad - zoom
         const eastTileCount = Math.ceil(this.eastPad / zoom)
         const northTileCount = Math.ceil(this.northPad / zoom)
         const westTileCount = Math.ceil(this.westPad / zoom)

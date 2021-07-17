@@ -11,24 +11,27 @@ import { UITileMapMouse } from './mouse'
 
 export function UITileMapScene(props) {
     const viewport = useRef(null)
-    const [width, height] = useResize(viewport)
+    const rect = useResize(viewport)
 
     return <section className="UITileMapScene" ref={viewport}>
-        {viewport.current && <UITileMapSceneContent
-            width={width} height={height} {...props}
-        />}
+        {viewport.current && <UITileMapSceneContent rect={rect} {...props} />}
     </section>
 }
 
 
-function UITileMapSceneContent({diagram, width, height, ...props}) {
+function UITileMapSceneContent({diagram, rect, ...props}) {
     const [prevFocus, setPrevFocus] = useState(new Point())
-    const scene = TileMapScene.create(diagram, width, height, props.sceneData)
+    const scene = TileMapScene.create(diagram, rect, props.sceneData)
+
+    // TODO: calc if should create a moving canvas or not
+    // depends on wrap option
+    // depends on canvas covering all viewport
 
     const handleDragStart = () => setPrevFocus(scene.focus)
     const handleDrag = point => props.handleDrag(prevFocus.plus(point))
     const handleWheel = amount => props.handleWheel(scene.zoom + amount)
     const handleClick = point => props.handleClick(point)
+    const handleInit = canvas => scene.render(canvas)
 
     return <>
         <UITileMapMouse
@@ -38,13 +41,6 @@ function UITileMapSceneContent({diagram, width, height, ...props}) {
             onWheel={handleWheel}
             onDragStart={handleDragStart}
         />
-        <MapCanvas scene={scene} />
+        <Canvas rect={rect} onInit={handleInit}/>
     </>
 }
-
-
-function MapCanvas({scene}) {
-    const handleInit = canvas => scene.render(canvas)
-    return <Canvas width={scene.width} height={scene.height} onInit={handleInit}/>
-}
-

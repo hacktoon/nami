@@ -57,23 +57,18 @@ export function UITileMapMouse({scene, ...props}) {
             onWheel={props.onWheel}
         />
         <CursorCanvas
-            width={scene.frame.width}
-            height={scene.frame.height}
+            rect={scene.rect}
             onInit={handleCanvasInit}
         />
     </>
 }
 
 
-function CursorCanvas({width, height, ...props}) {
+function CursorCanvas({rect, ...props}) {
     const handleInit = context => {
         context.reset()
         props.onInit(context)
     }
 
-    return <Canvas className='CursorCanvas'
-        width={width}
-        height={height}
-        onInit={handleInit}
-    />
+    return <Canvas className='CursorCanvas' rect={rect} onInit={handleInit} />
 }

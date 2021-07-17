@@ -1,5 +1,7 @@
 import React, { useLayoutEffect, useState } from 'react'
 
+import { Rect } from '/lib/base/number'
+
 
 // HELPER FUNCTIONS ==============================================
 
@@ -41,5 +43,5 @@ export function useResize(containerRef) {
         setHeight(containerRef.current.clientHeight)
     }
 
-    return [width, height]
+    return new Rect(width, height)
 }
