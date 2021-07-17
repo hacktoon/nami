@@ -2,6 +2,7 @@ import { Point } from '/lib/base/point'
 import { Rect } from '/lib/base/number'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
+import { createCanvas } from '/ui/canvas'
 
 
 export class TileMapScene {
@@ -25,9 +26,12 @@ export class TileMapScene {
         this.zoom = params.get('zoom')
         this.frame = new Frame(width, height, this.focus, this.zoom)
         this.textQueue = []
+        console.log('new TileMapScene', this.width, this.diagram.width * this.zoom)
     }
 
     render(canvas) {
+        const ctx = createCanvas(this.width, this.height)
+
         this.#renderFrame((tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
                 const color = this.diagram.get(tilePoint)

@@ -47,16 +47,13 @@ class CanvasContext {
         const {x, y} = point
         this.context.fillStyle = '#FFF'
         this.context.fillRect(x, y, size, size)
-        // const innerWidth = Math.floor((size * 10) / 100)
-        // this.context.fillRect(x, y, size, innerWidth)
-        // this.context.fillRect(x, y, innerWidth, size)
     }
 }
 
 
-function createCanvas(width, height) {
+export function createCanvas(width, height) {
     const canvas = document.createElement('canvas')
     canvas.width = width
     canvas.height = height
-    return [canvas, canvas.getContext('2d')]
+    return new CanvasContext(canvas)
 }

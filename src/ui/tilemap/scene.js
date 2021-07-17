@@ -12,26 +12,34 @@ import { UITileMapMouse } from './mouse'
 export function UITileMapScene(props) {
     const viewport = useRef(null)
     const [width, height] = useResize(viewport)
+
+    return <section className="UITileMapScene" ref={viewport}>
+        {viewport.current && <UITileMapSceneContent
+            width={width} height={height} {...props}
+        />}
+    </section>
+}
+
+
+function UITileMapSceneContent({diagram, width, height, ...props}) {
     const [prevFocus, setPrevFocus] = useState(new Point())
-    const scene = TileMapScene.create(props.diagram, width, height, props.sceneData)
+    const scene = TileMapScene.create(diagram, width, height, props.sceneData)
 
     const handleDragStart = () => setPrevFocus(scene.focus)
     const handleDrag = point => props.handleDrag(prevFocus.plus(point))
     const handleWheel = amount => props.handleWheel(scene.zoom + amount)
     const handleClick = point => props.handleClick(point)
 
-    return <section className="UITileMapScene" ref={viewport}>
-        {viewport.current && <>
-            <UITileMapMouse
-                scene={scene}
-                onDrag={handleDrag}
-                onClick={handleClick}
-                onWheel={handleWheel}
-                onDragStart={handleDragStart}
-            />
-            <MapCanvas scene={scene} />
-        </>}
-    </section>
+    return <>
+        <UITileMapMouse
+            scene={scene}
+            onDrag={handleDrag}
+            onClick={handleClick}
+            onWheel={handleWheel}
+            onDragStart={handleDragStart}
+        />
+        <MapCanvas scene={scene} />
+    </>
 }
 
 
