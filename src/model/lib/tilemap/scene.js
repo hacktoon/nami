@@ -28,19 +28,17 @@ export class TileMapScene {
     }
 
     render(canvas) {
-        const zoom = this.zoom
         const rect = this.frame.rect(this.focus)
-
-        this.#renderFrame(rect, zoom, (tilePoint, canvasPoint) => {
+        this.#renderFrame(rect, this.zoom, (tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
                 const color = this.diagram.get(tilePoint)
                 const text = this.diagram.getText(tilePoint)
-                canvas.rect(canvasPoint, zoom, color)
+                canvas.rect(canvasPoint, this.zoom, color)
                 if (text) {
                     this.textQueue.push([canvasPoint, text])
                 }
             } else {
-                canvas.clear(zoom, canvasPoint)
+                canvas.clear(this.zoom, canvasPoint)
             }
         })
         for(let [canvasPoint, text] of this.textQueue) {
