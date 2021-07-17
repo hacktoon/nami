@@ -10,16 +10,14 @@ export function UITileMapMouse({scene, ...props}) {
      Translate mouse events in pixel points to
      point objects using the scene's frame
     */
-    const frame = scene.frame
-
     const [cursor, setCursor] = useState(null)
     const [focus, setFocus] = useState(new Point())
 
     const handleDragStart = () => props.onDragStart()
 
     const handleDrag = (startPoint, endPoint) => {
-        const startTilePoint = frame.tilePoint(startPoint)
-        const endTilePoint = frame.tilePoint(endPoint)
+        const startTilePoint = scene.frame.tilePoint(startPoint)
+        const endTilePoint = scene.frame.tilePoint(endPoint)
         const newFocus = startTilePoint.minus(endTilePoint)
         if (newFocus.differs(focus)) {
             setFocus(newFocus)
@@ -28,16 +26,16 @@ export function UITileMapMouse({scene, ...props}) {
     }
 
     const handleMove = mousePoint => {
-        const scenePoint = frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(frame.focus)
+        const scenePoint = scene.frame.tilePoint(mousePoint)
+        const point = scenePoint.plus(scene.frame.focus)
         if (! cursor || point.differs(cursor)) {
             setCursor(point)
         }
     }
 
     const handleClick = mousePoint => {
-        const scenePoint = frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(frame.focus)
+        const scenePoint = scene.frame.tilePoint(mousePoint)
+        const point = scenePoint.plus(scene.frame.focus)
         props.onClick(point)
     }
 
@@ -59,8 +57,8 @@ export function UITileMapMouse({scene, ...props}) {
             onWheel={props.onWheel}
         />
         <CursorCanvas
-            width={frame.width}
-            height={frame.height}
+            width={scene.frame.width}
+            height={scene.frame.height}
             onInit={handleCanvasInit}
         />
     </>
