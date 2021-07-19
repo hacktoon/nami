@@ -20,13 +20,12 @@ export class TileMapScene {
     constructor(diagram, rect, params) {
         const [focus, wrap, zoom] = params.get('focus', 'wrap', 'zoom')
         this.frame = new Frame(rect, focus, zoom)
+        this.diagram = diagram
+        this.textQueue = []
         this.focus = focus
         this.wrap = wrap
         this.zoom = zoom
-        this.diagram = diagram
-        this.rect = rect
-        this.textQueue = []
-        // console.log('new TileMapScene', this.width, this.diagram.width * this.zoom)
+        this.rect = rect  // TODO: needed only in UITileMapMouse, delete
     }
 
     render(canvas) {
@@ -61,7 +60,7 @@ export class TileMapScene {
     }
 
     #renderFrame(callback) {
-        const {origin, target} = this.frame.rect(this.focus)
+        const {origin, target} = this.frame.window(this.focus)
         for(let i = origin.x, x = 0; i <= target.x; i++, x += this.zoom) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += this.zoom) {
                 const tilePoint = new Point(i, j)
@@ -72,7 +71,7 @@ export class TileMapScene {
     }
 
     #canvasPoint(point, focus) {
-        const {origin} = this.frame.rect(focus)
+        const {origin} = this.frame.window(focus)
         return point
             .minus(origin) // get tile at scene edge
             .multiplyScalar(this.zoom)  // make it a canvas position
@@ -85,7 +84,7 @@ class Frame {
     constructor(rect, focus, zoom) {
         this.width = rect.width
         this.height = rect.height
-        this.focus = focus
+        this.focus = focus  // TODO: needed only in UITileMapMouse, delete
         this.zoom = zoom
         this.eastPad = Math.floor(rect.width / 2 - zoom / 2)
         this.northPad = Math.floor(rect.height / 2 - zoom / 2)
@@ -107,14 +106,14 @@ class Frame {
         return new Point(x, y)
     }
 
-    rect(offset=new Point()) {
+    window(offset=new Point()) {
         const origin = offset.minus(this.origin)
         const target = offset.plus(this.target)
         return {origin, target}
     }
 
     tilePoint(mousePoint) {
-        const {origin} = this.rect()
+        const {origin} = this.window()
         const mouse = mousePoint.plus(this.offset)
         const x = Math.floor(mouse.x / this.zoom)
         const y = Math.floor(mouse.y / this.zoom)
