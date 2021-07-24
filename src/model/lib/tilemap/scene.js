@@ -19,13 +19,16 @@ export class TileMapScene {
 
     constructor(diagram, rect, params) {
         const [focus, wrap, zoom] = params.get('focus', 'wrap', 'zoom')
-        this.frame = new Frame(rect, focus, zoom)
+        this.frame = new Frame(rect, zoom)
         this.diagram = diagram
         this.textQueue = []
         this.focus = focus
         this.wrap = wrap
         this.zoom = zoom
         this.rect = rect  // TODO: needed only in UITileMapMouse, delete
+
+        // TODO: send params to render method, avoid buildind an
+        // instance on every UI action
     }
 
     render(canvas) {
@@ -78,11 +81,9 @@ export class TileMapScene {
 
 
 class Frame {
-    constructor(rect, focus, zoom) {
+    constructor(rect, zoom) {
         this.width = rect.width
         this.height = rect.height
-        this.focus = focus  // TODO: needed only in UITileMapMouse, delete
-        this.zoom = zoom
         this.eastPad = Math.floor(rect.width / 2 - zoom / 2)
         this.northPad = Math.floor(rect.height / 2 - zoom / 2)
         this.westPad = rect.width - this.eastPad - zoom
@@ -93,6 +94,7 @@ class Frame {
         const southTileCount = Math.ceil(this.southPad / zoom)
         this.origin = new Point(eastTileCount, northTileCount)
         this.target = new Point(westTileCount, southTileCount)
+        this.zoom = zoom
     }
 
     get offset() {

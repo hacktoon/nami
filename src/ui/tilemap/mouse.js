@@ -27,7 +27,7 @@ export function UITileMapMouse({scene, ...props}) {
 
     const handleMove = mousePoint => {
         const scenePoint = scene.frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(scene.frame.focus)
+        const point = scenePoint.plus(scene.focus)
         if (! cursor || point.differs(cursor)) {
             setCursor(point)
         }
@@ -35,7 +35,7 @@ export function UITileMapMouse({scene, ...props}) {
 
     const handleClick = mousePoint => {
         const scenePoint = scene.frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(scene.frame.focus)
+        const point = scenePoint.plus(scene.focus)
         props.onClick(point)
     }
 
