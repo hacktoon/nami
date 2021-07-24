@@ -29,7 +29,7 @@ export class TileMapScene {
     }
 
     render(canvas) {
-        // const ctx = createCanvas(this.width, this.height)
+        const ctx = createCanvas(this.width, this.height)
 
         this.#renderFrame((tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
@@ -43,20 +43,10 @@ export class TileMapScene {
                 canvas.clear(this.zoom, canvasPoint)
             }
         })
+
         for(let [canvasPoint, text] of this.textQueue) {
             canvas.text(canvasPoint, text, '#FFF')
         }
-    }
-
-    isWrappable(point) {
-        if (this.wrap) return true
-        const rect = new Rect(this.diagram.width, this.diagram.height)
-        return rect.isInside(point)
-    }
-
-    renderCursor(canvas, cursor) {
-        const canvasPoint = this.#canvasPoint(cursor, this.focus)
-        canvas.cursor(this.zoom, canvasPoint, '#FFF')
     }
 
     #renderFrame(callback) {
@@ -70,12 +60,19 @@ export class TileMapScene {
         }
     }
 
-    #canvasPoint(point, focus) {
-        const {origin} = this.frame.window(focus)
-        return point
-            .minus(origin) // get tile at scene edge
+    isWrappable(point) {
+        if (this.wrap) return true
+        const rect = new Rect(this.diagram.width, this.diagram.height)
+        return rect.isInside(point)
+    }
+
+    renderCursor(canvas, cursor) {
+        const {origin} = this.frame.window(this.focus)
+        const canvasPoint = cursor
+            .minus(origin)              // get tile at scene edge
             .multiplyScalar(this.zoom)  // make it a canvas position
-            .minus(this.frame.offset)  // apply viewport offset
+            .minus(this.frame.offset)   // apply viewport offset
+        canvas.cursor(this.zoom, canvasPoint, '#FFF')
     }
 }
 
