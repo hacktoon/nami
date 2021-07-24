@@ -24,8 +24,8 @@ export class DeformModel {
             const fillConfig = new DeformRegionFillConfig({
                 regionGroupTileMap: this.regionGroupTileMap,
                 deformRegionMap: this.deformRegionMap,
-                stressMap: this.stressMap,
                 maxStressMap: this.maxStressMap,
+                stressMap: this.stressMap,
                 deform,
                 group
             })
@@ -63,8 +63,7 @@ export class DeformModel {
         const region = this.regionGroupTileMap.getRegion(point)
         const group = this.regionGroupTileMap.getGroup(point)
         const stress = this.stressMap.get(region.id)
-        const isMaxStress = stress === this.maxStressMap.get(group.id)
-        return isMaxStress && region.id % 2
+        return stress === this.maxStressMap.get(group.id)
     }
 }
 

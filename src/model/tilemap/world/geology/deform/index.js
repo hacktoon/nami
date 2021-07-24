@@ -48,27 +48,8 @@ export class DeformMap {
 }
 
 
-class Deform {
-    constructor(id, name, data) {
-        this.id = id
-        this.name = name
-        this.chance = data.chance
-        this.energy = data.energy
-        this.growth = data.growth
-        this.depth = data.depth ?? 0
-        this.height = data.height
-        this.color = data.color
-        this.border = data.border ?? null
-    }
-
-    hasBorder() {
-        return Boolean(this.border)
-    }
-}
-
-
 class DeformTable {
-    constructor(table=DEFORM_TABLE) {
+    constructor(table) {
         this._table = new Map()
         table.map(row => {
             const chars = Array.from(row.id)
@@ -100,5 +81,24 @@ class DeformTable {
             data = p1.weight > p2.weight ? first : second
         }
         return new Deform(row.id, row.name, data)
+    }
+}
+
+
+class Deform {
+    constructor(id, name, data) {
+        this.id = id
+        this.name = name
+        this.chance = data.chance
+        this.energy = data.energy
+        this.growth = data.growth
+        this.depth = data.depth ?? 0
+        this.height = data.height
+        this.color = data.color
+        this.border = data.border ?? null
+    }
+
+    hasBorder() {
+        return Boolean(this.border)
     }
 }
