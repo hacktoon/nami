@@ -32,7 +32,7 @@ export class TileMapScene {
     }
 
     render(canvas) {
-        const ctx = createCanvas(this.width, this.height)
+        const offscreenCanvas = createCanvas(this.width, this.height)
 
         this.#renderFrame((tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
@@ -53,7 +53,7 @@ export class TileMapScene {
     }
 
     #renderFrame(callback) {
-        const {origin, target} = this.frame.window(this.focus)
+        const {origin, target} = this.frame.tileWindow(this.focus)
         for(let i = origin.x, x = 0; i <= target.x; i++, x += this.zoom) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += this.zoom) {
                 const tilePoint = new Point(i, j)
@@ -70,7 +70,7 @@ export class TileMapScene {
     }
 
     renderCursor(canvas, cursor) {
-        const {origin} = this.frame.window(this.focus)
+        const {origin} = this.frame.tileWindow(this.focus)
         const canvasPoint = cursor
             .minus(origin)              // get tile at scene edge
             .multiplyScalar(this.zoom)  // make it a canvas position
@@ -82,37 +82,30 @@ export class TileMapScene {
 
 class Frame {
     constructor(rect, zoom) {
+        const westPad = Math.floor(rect.width / 2 - zoom / 2)
+        const northPad = Math.floor(rect.height / 2 - zoom / 2)
+        const xTileCount = Math.ceil(westPad / zoom)
+        const yTileCount = Math.ceil(northPad / zoom)
+        this.center = new Point(xTileCount, yTileCount)
+        this.offset = new Point(
+            (xTileCount * zoom) - westPad,
+            (yTileCount * zoom) - northPad
+        )
         this.width = rect.width
         this.height = rect.height
-        this.eastPad = Math.floor(rect.width / 2 - zoom / 2)
-        this.northPad = Math.floor(rect.height / 2 - zoom / 2)
-        this.westPad = rect.width - this.eastPad - zoom
-        this.southPad = rect.height - this.northPad - zoom
-        const eastTileCount = Math.ceil(this.eastPad / zoom)
-        const northTileCount = Math.ceil(this.northPad / zoom)
-        const westTileCount = Math.ceil(this.westPad / zoom)
-        const southTileCount = Math.ceil(this.southPad / zoom)
-        this.origin = new Point(eastTileCount, northTileCount)
-        this.target = new Point(westTileCount, southTileCount)
         this.zoom = zoom
     }
 
-    get offset() {
-        const eastTileCount = Math.ceil(this.eastPad / this.zoom)
-        const northTileCount = Math.ceil(this.northPad / this.zoom)
-        const x = (eastTileCount * this.zoom) - this.eastPad
-        const y = (northTileCount * this.zoom) - this.northPad
-        return new Point(x, y)
-    }
-
-    window(offset=new Point()) {
-        const origin = offset.minus(this.origin)
-        const target = offset.plus(this.target)
-        return {origin, target}
+    tileWindow(offset=new Point()) {
+        // focus defaults to 0,0.
+        return {
+            origin: offset.minus(this.center),
+            target: offset.plus(this.center)
+        }
     }
 
     tilePoint(mousePoint) {
-        const {origin} = this.window()
+        const {origin} = this.tileWindow()
         const mouse = mousePoint.plus(this.offset)
         const x = Math.floor(mouse.x / this.zoom)
         const y = Math.floor(mouse.y / this.zoom)
