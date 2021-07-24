@@ -9,7 +9,7 @@ import { TileMapDiagram } from '/model/lib/tilemap'
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
-        Type.boolean('showBoundaries', 'Show boundaries', {default: true}),
+        Type.boolean('showDeform', 'Show deforms', {default: true}),
         Type.boolean('showPlateBorders', 'Show borders', {default: false}),
         Type.boolean('showDirections', 'Show directions', {default: false}),
         Type.boolean('showStress', 'Show stress', {default: false}),
@@ -23,7 +23,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, params) {
         super(tileMap)
         this.showPlateBorders = params.get('showPlateBorders')
-        this.showBoundaries = params.get('showBoundaries')
+        this.showDeform = params.get('showDeform')
         this.showDirections = params.get('showDirections')
         this.showStress = params.get('showStress')
         this.showHotspots = params.get('showHotspots')
@@ -36,11 +36,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const plate = this.tileMap.getPlate(point)
         let hex = plate.color
 
-
         if (this.showHotspots && this.tileMap.isMaxStress(point)) {
             return '#F00'
         }
-        if (this.showBoundaries) {
+        if (this.showDeform) {
             if (this.tileMap.hasDeform(point)) {
                 hex = deform.color
                 if (isBorderPoint) {
