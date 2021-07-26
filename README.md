@@ -7,12 +7,11 @@
 
 ## ROADMAP
 #### GeologyTileMap
-- Deform is applied with a sequence of geology types
-  (peaks 10% -> mountains 10% -> none 10% -> plateaus)
-  (peaks 0% -> mountains 40% -> none 10% -> plateaus)
-- Define heights
+- Defined heights
   - trench, high sea, continental platform
   - plains, plateaus, mountains, peaks
+- Features
+  - Hotspots, volcanos
 - Discover river paths
   - Start from river mouth points, flood fill
 
