@@ -90,9 +90,8 @@ class Deform {
         this.id = id
         this.name = name
         this.chance = data.chance
-        this.maxLevel = data.maxLevel
         this.growth = data.growth
-        this.minLevel = data.minLevel ?? 0
+        this.range = data.range ?? 1
         this.height = data.height
         this.color = data.color
         this.border = data.border ?? null
@@ -102,7 +101,13 @@ class Deform {
         return Boolean(this.border)
     }
 
-    isActive() {
-        return
+    inRange(level) {
+        if (Number.isInteger(this.range)) {
+            return level >= 0 && level < this.range
+        }
+        if (Array.isArray(this.range)) {
+            return level >= this.range[0] && level < this.range[1]
+        }
+        return false
     }
 }

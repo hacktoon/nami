@@ -37,9 +37,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         let hex = plate.color
 
         if (this.showHotspots && this.tileMap.isMaxStress(point)) {
-            if (plate.isContinental())
-                return '#d1610e'
-            return '#1c7816'
+            return plate.isContinental() ? '#d1610e' : '#1c7816'
         }
         if (this.showDeform) {
             if (this.tileMap.hasDeform(point)) {
