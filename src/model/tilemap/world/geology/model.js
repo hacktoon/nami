@@ -89,7 +89,7 @@ class DeformRegionFillConfig extends FloodFillConfig {
     setValue(region, level) {
         const stress = this.maxStressMap.get(this.group.id)
         if (level > stress) this.maxStressMap.set(this.group.id, level)
-        if (level >= this.deform.depth && level < this.deform.energy) {
+        if (level >= this.deform.minLevel && level < this.deform.maxLevel) {
             this.deformRegionMap.set(region.id, this.deform)
         }
         this.stressMap.set(region.id, level)

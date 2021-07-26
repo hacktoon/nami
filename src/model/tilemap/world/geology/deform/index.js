@@ -90,9 +90,9 @@ class Deform {
         this.id = id
         this.name = name
         this.chance = data.chance
-        this.energy = data.energy
+        this.maxLevel = data.maxLevel
         this.growth = data.growth
-        this.depth = data.depth ?? 0
+        this.minLevel = data.minLevel ?? 0
         this.height = data.height
         this.color = data.color
         this.border = data.border ?? null
@@ -100,5 +100,9 @@ class Deform {
 
     hasBorder() {
         return Boolean(this.border)
+    }
+
+    isActive() {
+        return
     }
 }
