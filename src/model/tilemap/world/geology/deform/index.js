@@ -7,7 +7,8 @@ import {
     DEF_CONVERGE,
     DEF_TRANSFORM,
     DEF_DIVERGE,
-    DEFORM_TABLE
+    DEFORM_TABLE,
+    GEO_TYPES
 } from './table'
 
 
@@ -89,11 +90,11 @@ class Deform {
     constructor(id, name, data) {
         this.id = id
         this.name = name
+        this.range = data.range ?? 1
         this.chance = data.chance
         this.growth = data.growth
-        this.range = data.range ?? 1
-        this.color = data.color
-        this.border = data.border ?? null
+        this.color = data.type.color
+        this.border = data.type.border ?? data.type.color
     }
 
     hasBorder() {

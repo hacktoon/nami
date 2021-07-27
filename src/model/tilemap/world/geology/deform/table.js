@@ -12,98 +12,125 @@ export const IDMAP = {
     T: DEF_TRANSFORM,
 }
 
-
+// DEFINE GEOLOGY TYPES
 export const GEO_TYPES = {
     'PEAK': {
         height: 100, border: '#CCC', color: '#CCC',
     },
+
+    'MOUNTAIN': {
+        height: 80, color: '#a79e86',
+    },
+
+    'PLATEAU': {
+        height: 60, color: '#584',
+    },
+
+    'DEPRESSION': {
+        height: 10, color: '#061',
+    },
+
+    'PLAINS': {
+        height: 20, color: '#1c7816',
+    },
+
+    'ISLAND_ARC': {
+        height: 20, border: '#069', color: '#1c7816',
+    },
+
+    'SHALLOW_SEA': {
+        height: 0, border: '#069', color: '#069',
+    },
+
+    'DEEP_SEA': {
+        height: -10, border: '#058', color: '#058',
+    },
+
+    'TRENCH': {
+        height: -20, border: '#036', color: '#036',
+    },
 }
+
 
 
 export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ---------------------------
 {id: 'LLCC', name: 'Continental collision', data: [
-    {
-        border: '#CCC', color: '#CCC',
-        range: 3, chance: .5, growth: 4
-    }
+    {type: GEO_TYPES.PEAK, range: 3, chance: .5, growth: 4}
 ]},
 
 {id: 'LLCT', name: 'Old mountains', data: [
-    {height: 100, color: '#584', range: 1, chance: .5, growth: 10},
-    {range: 0},
+    {type: GEO_TYPES.PLATEAU, range: 1, chance: .5, growth: 10},
+    {type: GEO_TYPES.PLAINS, range: 0},
 ]},
 
 {id: 'LLCD', name: 'Inner sea', data: [
-    {height: 100, border: '#058', color: '#058', range: 7, chance: .5, growth: 5}
+    {type: GEO_TYPES.DEEP_SEA, range: 7, chance: .5, growth: 5}
 ]},
 
 {id: 'LLDD', name: 'Rift sea', rule: 'weight', data: [
-    {height: 100, border: '#058', color: '#058', range: 6, chance: .5, growth: 5}
+    {type: GEO_TYPES.DEEP_SEA, range: 6, chance: .5, growth: 5}
 ]},
 
 {id: 'LLDT', name: 'Rift valley', data: [
-    {
-        height: 100, border: '#061', color: '#061',
-        range: 1, chance: .5, growth: 8
-    },
-    {range: 0},
+    {type: GEO_TYPES.DEPRESSION, range: 1, chance: .5, growth: 8},
+    {type: GEO_TYPES.PLAINS, range: 0},
 ]},
 
 {id: 'LLTT', name: 'Transform Fault', data: [
-    {height: 100, color: '#061', range: 1, chance: .1, growth: 10},
-    {height: 100, range: 0, chance: .1, growth: 10}
+    {type: GEO_TYPES.DEPRESSION, range: 1, chance: .1, growth: 10},
+    {type: GEO_TYPES.PLAINS, range: 0}
 ]},
 
 
 // CONTINENTAL-OCEANIC ---------------------------
 {id: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
-    {height: 50, color: '#036', range: 4, chance: .5, growth: 1},
-    {height: 50, color: '#a79e86', range: [1, 5], chance: .5, growth: 2},
+    {type: GEO_TYPES.TRENCH, range: 4, chance: .5, growth: 1},
+    {type: GEO_TYPES.MOUNTAIN, range: [1, 5], chance: .5, growth: 2},
 ]},
 {id: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
-    {height: 50, color: '#036', range: 3, chance: .5, growth: 2},
-    {height: 50, color: '#584', range: [1, 4], chance: .5, growth: 2},
+    {type: GEO_TYPES.TRENCH, range: 3, chance: .5, growth: 2},
+    {type: GEO_TYPES.PLATEAU, range: [1, 4], chance: .5, growth: 2},
 ]},
 {id: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
-    {height: 50, color: '#069', range: 1, chance: .5, growth: 8},
-    {height: 50, border: '#058', color: '#069', range: 1, chance: .5, growth: 2},
+    {type: GEO_TYPES.DEEP_SEA, range: 1, chance: .5, growth: 8},
+    {type: GEO_TYPES.SHALLOW_SEA, range: 1, chance: .5, growth: 2},
 ]},
 {id: 'LWDD', name: 'Passive margin', rule: 'weight', data: [
-    {height: 50, border: '#058', color: '#069', range: 2, chance: .5, growth: 10},
-    {height: 50, border: '#069', color: '#069', range: 3, chance: .5, growth: 8}
+    {type: GEO_TYPES.SHALLOW_SEA, range: 2, chance: .5, growth: 10},
+    {type: GEO_TYPES.SHALLOW_SEA, range: 3, chance: .5, growth: 8}
 ]},
 {id: 'LWDT', name: 'Island arc basin', rule: 'weight', data: [
-    {height: 50, border: '#069', color: '#1c7816', range: 1, chance: .5, growth: 5},
-    {height: 50, border: '#069', color: '#069', range: 3, chance: .5, growth: 6},
+    {type: GEO_TYPES.ISLAND_ARC, range: 1, chance: .5, growth: 5},
+    {type: GEO_TYPES.SHALLOW_SEA, range: 3, chance: .5, growth: 6},
 ]},
 {id: 'LWTT', name: 'Coastal fault', rule: 'weight', data: [
-    {height: 50, color: '#069', range: 1, chance: .5, growth: 8},
-    {height: 50, border: '#069', color: '#069', range: 1, chance: .5, growth: 8},
+    {type: GEO_TYPES.DEEP_SEA, range: 1, chance: .5, growth: 8},
+    {type: GEO_TYPES.SHALLOW_SEA, range: 1, chance: .5, growth: 8},
 ]},
 
 
 // OCEANIC-OCEANIC ---------------------------
 {id: 'WWCC', name: 'Island arc', rule: 'weight', data: [
-    {height: 0, border: '#036', color: '#036', range: 1, chance: .1, growth: 5},
-    {height: 0, color: '#1c7816', range: 2, chance: .5, growth: 4},
+    {type: GEO_TYPES.TRENCH, range: 1, chance: .1, growth: 5},
+    {type: GEO_TYPES.ISLAND_ARC, range: 2, chance: .5, growth: 4},
 ]},
 {id: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
-    {height: 0, border: '#058', color: '#036', range: 2, chance: .4, growth: 2},
-    {height: 0, border: '#058', color: '#1c7816', range: 1, chance: .5, growth: 5},
+    {type: GEO_TYPES.TRENCH, range: 2, chance: .4, growth: 2},
+    {type: GEO_TYPES.ISLAND_ARC, range: 1, chance: .5, growth: 5},
 ]},
 {id: 'WWCD', name: 'Abyssal plains', rule: 'weight', data: [
-    {height: 0, border: '#036', color: '#036', range: 10, chance: .1, growth: 10},
+    {type: GEO_TYPES.TRENCH, range: 10, chance: .1, growth: 10},
 ]},
 {id: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
-    {height: 0, border: '#036', color: '#036', range: 2, chance: .5, growth: 10}
+    {type: GEO_TYPES.TRENCH, range: 2, chance: .5, growth: 10}
 ]},
 {id: 'WWDT', name: 'Early rift', data: [
-    {height: 0, color: '#069', range: 1, chance: .5, growth: 2},
-    {range: 0}
+    {type: GEO_TYPES.SHALLOW_SEA, range: 1, chance: .5, growth: 2},
+    {type: GEO_TYPES.DEEP_SEA, range: 0}
 ]},
 {id: 'WWTT', name: 'Oceanic fault', data: [
-    {height: 0, color: '#003f6c', range: 1, chance: .5, growth: 8},
-    {range: 0}
+    {type: GEO_TYPES.DEEP_SEA, range: 1, chance: .5, growth: 8},
+    {type: GEO_TYPES.DEEP_SEA, range: 0}
 ]},
 ]
