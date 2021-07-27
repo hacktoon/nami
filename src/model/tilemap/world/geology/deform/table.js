@@ -23,31 +23,35 @@ export const GEO_TYPES = {
     },
 
     'PLATEAU': {
-        height: 60, color: '#584',
+        height: 60, color: '#796',
     },
 
     'DEPRESSION': {
-        height: 10, color: '#061',
+        height: 10, color: '#352',
     },
 
-    'PLAINS': {
-        height: 20, color: '#1c7816',
+    'PLAIN': {
+        height: 20, color: '#574',
     },
 
     'ISLAND_ARC': {
-        height: 20, border: '#069', color: '#1c7816',
+        height: 20, border: '#058', color: '#060',
     },
 
     'SHALLOW_SEA': {
-        height: 0, border: '#069', color: '#069',
+        height: 0, border: '#058', color: '#069',
     },
 
     'DEEP_SEA': {
         height: -10, border: '#058', color: '#058',
     },
 
+    'RIFT_SEA': {
+        height: -20, border: '#058', color: '#069',
+    },
+
     'TRENCH': {
-        height: -20, border: '#036', color: '#036',
+        height: -30, border: '#036', color: '#036',
     },
 }
 
@@ -60,12 +64,13 @@ export const DEFORM_TABLE = [
 ]},
 
 {id: 'LLCT', name: 'Old mountains', data: [
-    {type: GEO_TYPES.PLATEAU, range: 1, chance: .5, growth: 10},
-    {type: GEO_TYPES.PLAINS, range: 0},
+    {type: GEO_TYPES.MOUNTAIN, range: 1, chance: .2, growth: 10},
+    {type: GEO_TYPES.PLAIN, range: 0},
 ]},
 
 {id: 'LLCD', name: 'Inner sea', data: [
-    {type: GEO_TYPES.DEEP_SEA, range: 7, chance: .5, growth: 5}
+    {type: GEO_TYPES.DEEP_SEA, range: 7, chance: .5, growth: 5},
+    {type: GEO_TYPES.SHALLOW_SEA, range: 7, chance: .5, growth: 5}
 ]},
 
 {id: 'LLDD', name: 'Rift sea', rule: 'weight', data: [
@@ -74,12 +79,12 @@ export const DEFORM_TABLE = [
 
 {id: 'LLDT', name: 'Rift valley', data: [
     {type: GEO_TYPES.DEPRESSION, range: 1, chance: .5, growth: 8},
-    {type: GEO_TYPES.PLAINS, range: 0},
+    {type: GEO_TYPES.PLAIN, range: 0},
 ]},
 
 {id: 'LLTT', name: 'Transform Fault', data: [
     {type: GEO_TYPES.DEPRESSION, range: 1, chance: .1, growth: 10},
-    {type: GEO_TYPES.PLAINS, range: 0}
+    {type: GEO_TYPES.PLAIN, range: 0}
 ]},
 
 
@@ -97,7 +102,7 @@ export const DEFORM_TABLE = [
     {type: GEO_TYPES.SHALLOW_SEA, range: 1, chance: .5, growth: 2},
 ]},
 {id: 'LWDD', name: 'Passive margin', rule: 'weight', data: [
-    {type: GEO_TYPES.SHALLOW_SEA, range: 2, chance: .5, growth: 10},
+    {type: GEO_TYPES.RIFT_SEA, range: 2, chance: .5, growth: 10},
     {type: GEO_TYPES.SHALLOW_SEA, range: 3, chance: .5, growth: 8}
 ]},
 {id: 'LWDT', name: 'Island arc basin', rule: 'weight', data: [
@@ -123,7 +128,7 @@ export const DEFORM_TABLE = [
     {type: GEO_TYPES.TRENCH, range: 10, chance: .1, growth: 10},
 ]},
 {id: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
-    {type: GEO_TYPES.TRENCH, range: 2, chance: .5, growth: 10}
+    {type: GEO_TYPES.RIFT_SEA, range: 2, chance: .5, growth: 10}
 ]},
 {id: 'WWDT', name: 'Early rift', data: [
     {type: GEO_TYPES.SHALLOW_SEA, range: 1, chance: .5, growth: 2},

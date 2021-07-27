@@ -14,7 +14,7 @@ class Plate {
         this.origin = origin
         this.direction = Direction.random()
         this.weight = weight
-        this.color = type === TYPE_OCEANIC ? '#058' : '#1c7816'
+        this.color = type === TYPE_OCEANIC ? '#058' : '#574'
     }
 
     isOceanic() {
