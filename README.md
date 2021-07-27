@@ -6,14 +6,19 @@
 
 
 ## ROADMAP
-#### GeologyTileMap
-- Defined heights
+#### TectonicsTileMap
+- Define geology types, use them in deform fill
+- Make hotspots a type of deform
+
+#### TerrainTileMap
+- Set sedimentation heads (possible river sources)
+- Define heights
   - trench, high sea, continental platform
   - plains, plateaus, mountains, peaks
 - Features
   - Hotspots, volcanos
 - Discover river paths
-  - Start from river mouth points, flood fill
+  - Start from river source points, flood fill
 
 #### ClimateTileMap
 - Start with each row in righ colum of regions of TemperatureTileMap

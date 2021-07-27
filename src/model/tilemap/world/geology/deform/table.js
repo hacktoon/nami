@@ -13,11 +13,18 @@ export const IDMAP = {
 }
 
 
+export const GEO_TYPES = {
+    'PEAK': {
+        height: 100, border: '#CCC', color: '#CCC',
+    },
+}
+
+
 export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ---------------------------
 {id: 'LLCC', name: 'Continental collision', data: [
     {
-        height: 100, border: '#CCC', color: '#CCC',
+        border: '#CCC', color: '#CCC',
         range: 3, chance: .5, growth: 4
     }
 ]},

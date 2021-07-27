@@ -92,7 +92,6 @@ class Deform {
         this.chance = data.chance
         this.growth = data.growth
         this.range = data.range ?? 1
-        this.height = data.height
         this.color = data.color
         this.border = data.border ?? null
     }
