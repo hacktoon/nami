@@ -50,7 +50,7 @@ export const GEO_TYPES = {
         height: -20, border: '#058', color: '#069',
     },
 
-    'TRENCH': {
+    'ABYSSAL_SEA': {
         height: -30, border: '#036', color: '#036',
     },
 }
@@ -74,7 +74,8 @@ export const DEFORM_TABLE = [
 ]},
 
 {id: 'LLDD', name: 'Rift sea', rule: 'weight', data: [
-    {type: GEO_TYPES.DEEP_SEA, range: 6, chance: .5, growth: 5}
+    {type: GEO_TYPES.DEEP_SEA, range: 6, chance: .5, growth: 5},
+    {type: GEO_TYPES.SHALLOW_SEA, range: 7, chance: .5, growth: 5}
 ]},
 
 {id: 'LLDT', name: 'Rift valley', data: [
@@ -90,11 +91,11 @@ export const DEFORM_TABLE = [
 
 // CONTINENTAL-OCEANIC ---------------------------
 {id: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
-    {type: GEO_TYPES.TRENCH, range: 4, chance: .5, growth: 1},
+    {type: GEO_TYPES.ABYSSAL_SEA, range: 4, chance: .5, growth: 1},
     {type: GEO_TYPES.MOUNTAIN, range: [1, 5], chance: .5, growth: 2},
 ]},
 {id: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
-    {type: GEO_TYPES.TRENCH, range: 3, chance: .5, growth: 2},
+    {type: GEO_TYPES.ABYSSAL_SEA, range: 3, chance: .5, growth: 2},
     {type: GEO_TYPES.PLATEAU, range: [1, 4], chance: .5, growth: 2},
 ]},
 {id: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
@@ -117,15 +118,15 @@ export const DEFORM_TABLE = [
 
 // OCEANIC-OCEANIC ---------------------------
 {id: 'WWCC', name: 'Island arc', rule: 'weight', data: [
-    {type: GEO_TYPES.TRENCH, range: 1, chance: .1, growth: 5},
+    {type: GEO_TYPES.ABYSSAL_SEA, range: 1, chance: .1, growth: 5},
     {type: GEO_TYPES.ISLAND_ARC, range: 2, chance: .5, growth: 4},
 ]},
 {id: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
-    {type: GEO_TYPES.TRENCH, range: 2, chance: .4, growth: 2},
+    {type: GEO_TYPES.ABYSSAL_SEA, range: 2, chance: .4, growth: 2},
     {type: GEO_TYPES.ISLAND_ARC, range: 1, chance: .5, growth: 5},
 ]},
 {id: 'WWCD', name: 'Abyssal plains', rule: 'weight', data: [
-    {type: GEO_TYPES.TRENCH, range: 10, chance: .1, growth: 10},
+    {type: GEO_TYPES.ABYSSAL_SEA, range: 10, chance: .1, growth: 10},
 ]},
 {id: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
     {type: GEO_TYPES.RIFT_SEA, range: 2, chance: .5, growth: 10}
