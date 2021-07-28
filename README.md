@@ -8,7 +8,8 @@
 ## ROADMAP
 #### TectonicsTileMap
 - Define geology types, use them in deform fill
-- Make hotspots a type of deform
+- Each deform transforms into lower/higher variants
+- Set priority for deform fill - override setValue
 
 #### TerrainTileMap
 - Set sedimentation heads (possible river sources)
