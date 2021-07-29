@@ -17,13 +17,11 @@ export class DeformMap {
         this.regionGroupTileMap = regionGroupTileMap
         this._deforms = new PairMap()
         this._deformTable = new DeformTable(DEFORM_TABLE)
-        this._deformIndex = new Map()
 
         regionGroupTileMap.getGroups().forEach(group => {
             const neighbors = regionGroupTileMap.getNeighborGroups(group)
             neighbors.forEach(neighbor => {
                 const deform = this._buildGroupDeform(group, neighbor)
-                this._deformIndex.set(deform.id, deform)
                 this._deforms.set(group.id, neighbor.id, deform)
             })
         })
@@ -38,10 +36,6 @@ export class DeformMap {
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
         return this._deformTable.build(plate, otherPlate, dotTo, dotFrom)
-    }
-
-    getById(id) {
-        return this._deformIndex.get(id)
     }
 
     get(region, neighborRegion) {

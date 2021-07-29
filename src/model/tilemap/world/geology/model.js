@@ -11,8 +11,9 @@ export class DeformModel {
         this.regionGroupTileMap = this._buildRegionGroupMap(seed, params)
         this.plates = new PlateMap(this.regionGroupTileMap)
         this.stressMap = new Map()
-        this.deformRegionMap = new Map()
+        this.regionDeformMap = new Map()
         this.maxStressMap = new Map()
+        this.deformIndex = new Map()
         this._build()
     }
 
@@ -23,12 +24,13 @@ export class DeformModel {
             const deform = this._buildPlateDeform(deformMap, group, region)
             const fillConfig = new DeformRegionFillConfig({
                 regionGroupTileMap: this.regionGroupTileMap,
-                deformRegionMap: this.deformRegionMap,
+                regionDeformMap: this.regionDeformMap,
                 maxStressMap: this.maxStressMap,
                 stressMap: this.stressMap,
                 deform,
                 group
             })
+            this.deformIndex.set(deform.id, deform)
             this.maxStressMap.set(group.id, 0)
             return new OrganicFloodFill(region, fillConfig)
         })
@@ -72,7 +74,7 @@ class DeformRegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.regionGroupTileMap = data.regionGroupTileMap
-        this.deformRegionMap = data.deformRegionMap
+        this.regionDeformMap = data.regionDeformMap
         this.maxStressMap = data.maxStressMap
         this.stressMap = data.stressMap
         this.deform = data.deform
@@ -90,7 +92,7 @@ class DeformRegionFillConfig extends FloodFillConfig {
         const stress = this.maxStressMap.get(this.group.id)
         if (level > stress) this.maxStressMap.set(this.group.id, level)
         if (this.deform.inRange(level)) {
-            this.deformRegionMap.set(region.id, this.deform)
+            this.regionDeformMap.set(region.id, this.deform)
         }
         this.stressMap.set(region.id, level)
     }
