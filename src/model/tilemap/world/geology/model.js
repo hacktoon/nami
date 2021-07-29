@@ -56,7 +56,7 @@ export class DeformModel {
         for(let neighbor of neighborRegions) {
             const neighborGroup = this.regionGroupTileMap.getGroupByRegion(neighbor)
             if (neighborGroup.id !== group.id) {
-                return deformMap.get(region, neighbor)
+                return deformMap.get(group, neighborGroup)
             }
         }
     }
@@ -84,8 +84,9 @@ class DeformRegionFillConfig extends FloodFillConfig {
         this.growth = data.deform.growth
     }
 
-    isEmpty(region) {
-        return !this.stressMap.has(region.id)
+    isEmpty(neighborRegion, originRegion) {
+        // TODO: check priority
+        return !this.stressMap.has(neighborRegion.id)
     }
 
     setValue(region, level) {

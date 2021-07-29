@@ -15,36 +15,46 @@ export const IDMAP = {
 // DEFINE GEOLOGY TYPES
 export const GEO_TYPES = {
     PEAK: {
+        water: false, priority: 0,
         border: '#CCC', color: '#CCC', steps: [
-            {max: .2, height: 100, color: '#CCC'},
-            {max: .6, height: 100, color: '#a79e86'},
+            {level: 0, color: '#CCC'},
+            {level: 1, color: '#a79e86'},
+            {level: 3, color: '#796'},
+            {level: 4, color: '#574'},
         ]
     },
-    MOUNTAIN: {
-        height: 80, color: '#a79e86',
+    MOUNTAIN: {water: false,
+        height: 80, color: '#a79e86', steps: [
+            {level: 1, color: '#a79e86'},
+            {level: 3, color: '#796'},
+            {level: 4, color: '#574'},
+        ]
     },
-    PLATEAU: {
-        height: 60, color: '#796',
+    PLATEAU: {water: false,
+        height: 60, color: '#796', steps: [
+            {level: 1, height: 60, color: '#796'},
+            {level: 4, height: 60, color: '#574'},
+        ]
     },
-    DEPRESSION: {
+    DEPRESSION: {water: false,
         height: 10, color: '#352',
     },
-    PLAIN: {
+    PLAIN: {water: false,
         height: 20, color: '#574',
     },
-    ISLAND_ARC: {
+    ISLAND_ARC: {water: false,
         height: 20, border: '#058', color: '#060',
     },
-    SHALLOW_SEA: {
+    SHALLOW_SEA: {water: true,
         height: 0, border: '#058', color: '#069',
     },
-    DEEP_SEA: {
+    DEEP_SEA: {water: true,
         height: -10, border: '#058', color: '#058',
     },
-    RIFT_SEA: {
+    RIFT_SEA: {water: true,
         height: -20, border: '#058', color: '#069',
     },
-    ABYSSAL_SEA: {
+    ABYSSAL_SEA: {water: true,
         height: -30, border: '#036', color: '#036',
     },
 }
@@ -54,7 +64,7 @@ export const GEO_TYPES = {
 export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ---------------------------
 {key: 'LLCC', name: 'Continental collision', data: [
-    {type: GEO_TYPES.PEAK, priority: 0, range: 3, chance: .5, growth: 4}
+    {type: GEO_TYPES.PEAK, range: 3, chance: .5, growth: 4}
 ]},
 
 {key: 'LLCT', name: 'Old mountains', data: [

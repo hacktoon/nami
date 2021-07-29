@@ -7,7 +7,6 @@
 
 ## ROADMAP
 #### TectonicsTileMap
-- Set only stress on fill
 - Set priority for deform fill - override setValue
 - Define geology types, use them in deform fill
 - Each deform transforms into lower/higher variants

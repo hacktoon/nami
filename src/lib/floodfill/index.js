@@ -38,7 +38,7 @@ export class FloodFill {
         const allNeighbors = this.config.getNeighbors(origin)
         const emptyNeighbors = allNeighbors.filter(neighbor => {
             this.config.checkNeighbor(neighbor, origin, this.level)
-            return this.config.isEmpty(neighbor)
+            return this.config.isEmpty(neighbor, origin, this.level)
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)

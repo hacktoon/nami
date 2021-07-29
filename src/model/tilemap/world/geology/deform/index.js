@@ -38,10 +38,7 @@ export class DeformMap {
         return this._deformTable.build(plate, otherPlate, dotTo, dotFrom)
     }
 
-    get(region, neighborRegion) {
-        const rgrp = this.regionGroupTileMap
-        const group = rgrp.getGroupByRegion(region)
-        const neighborGroup = rgrp.getGroupByRegion(neighborRegion)
+    get(group, neighborGroup) {
         return this._deforms.get(group.id, neighborGroup.id)
     }
 }
@@ -94,8 +91,10 @@ class Deform {
         this.priority = data.priority ?? 99
         this.chance = data.chance
         this.growth = data.growth
+        this.steps = data.type.steps
         this.color = data.type.color
         this.border = data.type.border ?? data.type.color
+        console.log(this.steps);
     }
 
     hasBorder() {
