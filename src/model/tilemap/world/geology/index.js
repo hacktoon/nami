@@ -42,7 +42,8 @@ export class GeologyTileMap extends TileMap {
         str += `, stress: ${stress}`
         if (this.hasDeform(point)) {
             const deform = this.getDeform(point)
-            str += `, id: ${deform.id}, deform: ${deform.name}`
+            str += `, id: ${deform.id}`
+            str += `, key: ${deform.key}, deform: ${deform.name}`
         }
         return str
     }

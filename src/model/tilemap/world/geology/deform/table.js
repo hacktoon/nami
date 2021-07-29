@@ -53,83 +53,83 @@ export const GEO_TYPES = {
 
 export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ---------------------------
-{id: 'LLCC', name: 'Continental collision', data: [
+{key: 'LLCC', name: 'Continental collision', data: [
     {type: GEO_TYPES.PEAK, priority: 0, range: 3, chance: .5, growth: 4}
 ]},
 
-{id: 'LLCT', name: 'Old mountains', data: [
+{key: 'LLCT', name: 'Old mountains', data: [
     {type: GEO_TYPES.MOUNTAIN, range: 1, chance: .2, growth: 10},
     {type: GEO_TYPES.PLAIN, range: 0},
 ]},
 
-{id: 'LLCD', name: 'Inner sea', data: [
+{key: 'LLCD', name: 'Inner sea', data: [
     {type: GEO_TYPES.DEEP_SEA, range: 7, chance: .5, growth: 5},
     {type: GEO_TYPES.SHALLOW_SEA, range: 7, chance: .5, growth: 5}
 ]},
 
-{id: 'LLDD', name: 'Rift sea', rule: 'weight', data: [
+{key: 'LLDD', name: 'Rift sea', rule: 'weight', data: [
     {type: GEO_TYPES.DEEP_SEA, range: 6, chance: .5, growth: 5},
     {type: GEO_TYPES.SHALLOW_SEA, range: 7, chance: .5, growth: 5}
 ]},
 
-{id: 'LLDT', name: 'Rift valley', data: [
+{key: 'LLDT', name: 'Rift valley', data: [
     {type: GEO_TYPES.DEPRESSION, range: 1, chance: .5, growth: 8},
     {type: GEO_TYPES.PLAIN, range: 0},
 ]},
 
-{id: 'LLTT', name: 'Transform Fault', data: [
+{key: 'LLTT', name: 'Transform Fault', data: [
     {type: GEO_TYPES.DEPRESSION, range: 1, chance: .1, growth: 10},
     {type: GEO_TYPES.PLAIN, range: 0}
 ]},
 
 
 // CONTINENTAL-OCEANIC ---------------------------
-{id: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
+{key: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
     {type: GEO_TYPES.ABYSSAL_SEA, range: 4, chance: .5, growth: 1},
     {type: GEO_TYPES.MOUNTAIN, range: [1, 5], chance: .5, growth: 2},
 ]},
-{id: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
+{key: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
     {type: GEO_TYPES.ABYSSAL_SEA, range: 3, chance: .5, growth: 2},
     {type: GEO_TYPES.PLATEAU, range: [1, 4], chance: .5, growth: 2},
 ]},
-{id: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
+{key: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
     {type: GEO_TYPES.DEEP_SEA, range: 1, chance: .5, growth: 8},
     {type: GEO_TYPES.SHALLOW_SEA, range: 1, chance: .5, growth: 2},
 ]},
-{id: 'LWDD', name: 'Passive margin', rule: 'weight', data: [
+{key: 'LWDD', name: 'Passive margin', rule: 'weight', data: [
     {type: GEO_TYPES.RIFT_SEA, range: 2, chance: .5, growth: 10},
     {type: GEO_TYPES.SHALLOW_SEA, range: 3, chance: .5, growth: 8}
 ]},
-{id: 'LWDT', name: 'Island arc basin', rule: 'weight', data: [
+{key: 'LWDT', name: 'Island arc basin', rule: 'weight', data: [
     {type: GEO_TYPES.ISLAND_ARC, range: 1, chance: .5, growth: 5},
     {type: GEO_TYPES.SHALLOW_SEA, range: 3, chance: .5, growth: 6},
 ]},
-{id: 'LWTT', name: 'Coastal fault', rule: 'weight', data: [
+{key: 'LWTT', name: 'Coastal fault', rule: 'weight', data: [
     {type: GEO_TYPES.DEEP_SEA, range: 1, chance: .5, growth: 8},
     {type: GEO_TYPES.SHALLOW_SEA, range: 1, chance: .5, growth: 8},
 ]},
 
 
 // OCEANIC-OCEANIC ---------------------------
-{id: 'WWCC', name: 'Island arc', rule: 'weight', data: [
+{key: 'WWCC', name: 'Island arc', rule: 'weight', data: [
     {type: GEO_TYPES.ABYSSAL_SEA, range: 1, chance: .1, growth: 5},
     {type: GEO_TYPES.ISLAND_ARC, range: 2, chance: .5, growth: 4},
 ]},
-{id: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
+{key: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
     {type: GEO_TYPES.ABYSSAL_SEA, range: 2, chance: .4, growth: 2},
     {type: GEO_TYPES.ISLAND_ARC, range: 1, chance: .5, growth: 5},
 ]},
-{id: 'WWCD', name: 'Abyssal plains', rule: 'weight', data: [
+{key: 'WWCD', name: 'Abyssal plains', rule: 'weight', data: [
     {type: GEO_TYPES.ABYSSAL_SEA, range: 10, chance: .1, growth: 10},
 ]},
-{id: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
+{key: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
     {type: GEO_TYPES.RIFT_SEA, range: 2, chance: .5, growth: 10}
 ]},
-{id: 'WWDT', name: 'Early rift', data: [
+{key: 'WWDT', name: 'Early rift', data: [
     {type: GEO_TYPES.SHALLOW_SEA, range: 1, chance: .5, growth: 2},
     {type: GEO_TYPES.DEEP_SEA, range: 0}
 ]},
-{id: 'WWTT', name: 'Oceanic fault', data: [
+{key: 'WWTT', name: 'Oceanic fault', data: [
     {type: GEO_TYPES.DEEP_SEA, range: 1, chance: .5, growth: 8},
     {type: GEO_TYPES.DEEP_SEA, range: 0}
 ]},

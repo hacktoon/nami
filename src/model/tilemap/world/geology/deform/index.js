@@ -8,22 +8,22 @@ import {
     DEF_TRANSFORM,
     DEF_DIVERGE,
     DEFORM_TABLE,
-    GEO_TYPES
 } from './table'
 
 
 export class DeformMap {
-    #table = new DeformTable(DEFORM_TABLE)
-
     constructor(plates, regionGroupTileMap) {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap
         this._deforms = new PairMap()
+        this._deformTable = new DeformTable(DEFORM_TABLE)
+        this._deformIndex = new Map()
 
         regionGroupTileMap.getGroups().forEach(group => {
             const neighbors = regionGroupTileMap.getNeighborGroups(group)
             neighbors.forEach(neighbor => {
                 const deform = this._buildGroupDeform(group, neighbor)
+                this._deformIndex.set(deform.id, deform)
                 this._deforms.set(group.id, neighbor.id, deform)
             })
         })
@@ -37,7 +37,11 @@ export class DeformMap {
         const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
-        return this.#table.get(plate, otherPlate, dotTo, dotFrom)
+        return this._deformTable.build(plate, otherPlate, dotTo, dotFrom)
+    }
+
+    getById(id) {
+        return this._deformIndex.get(id)
     }
 
     get(region, neighborRegion) {
@@ -50,45 +54,47 @@ export class DeformMap {
 
 
 class DeformTable {
+    #codeTable = new Map()
+
     constructor(table) {
-        this._table = new Map()
         table.map(row => {
-            const chars = Array.from(row.id)
-            const code = chars.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
-            this._table.set(code, row)
+            const key = Array.from(row.key)
+            const id = key.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
+            this.#codeTable.set(id, {...row, id})
         })
     }
 
-    get(p1, p2, dotTo, dotFrom) {
+    build(p1, p2, dotTo, dotFrom) {
         const type1 = p1.isContinental() ? DEF_LAND : DEF_WATER
         const type2 = p2.isContinental() ? DEF_LAND : DEF_WATER
-        const dir1 = this._getDir(dotTo)
-        const dir2 = this._getDir(dotFrom)
-        const code = type1 + type2 + dir1 + dir2
-        const row = this._table.get(code)
-        return this._getDeform(row, p1, p2, dir1, dir2)
+        const dir1 = this._parseDir(dotTo)
+        const dir2 = this._parseDir(dotFrom)
+        const id = type1 + type2 + dir1 + dir2
+        const row = this.#codeTable.get(id)
+        return this._buildDeform(row, p1, p2, dir1, dir2)
     }
 
-    _getDir(dir) {
+    _parseDir(dir) {
         if (dir === 0) return DEF_TRANSFORM
         return dir > 0 ? DEF_CONVERGE : DEF_DIVERGE
     }
 
-    _getDeform(row, p1, p2, dir1, dir2) {
+    _buildDeform(row, p1, p2, dir1, dir2) {
         const first = row.data[0]
         const second = row.data.length === 1 ? first : row.data[1]
         let data = dir1 > dir2 ? first : second
         if (row.rule === 'weight') {
             data = p1.weight > p2.weight ? first : second
         }
-        return new Deform(row.id, row.name, data)
+        return new Deform(row.id, row.key, row.name, data)
     }
 }
 
 
 class Deform {
-    constructor(id, name, data) {
+    constructor(id, key, name, data) {
         this.id = id
+        this.key = key
         this.name = name
         this.range = data.range ?? 1
         this.priority = data.priority ?? 99
