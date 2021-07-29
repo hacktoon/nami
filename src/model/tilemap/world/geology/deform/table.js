@@ -14,43 +14,37 @@ export const IDMAP = {
 
 // DEFINE GEOLOGY TYPES
 export const GEO_TYPES = {
-    'PEAK': {
-        height: 100, border: '#CCC', color: '#CCC',
+    PEAK: {
+        border: '#CCC', color: '#CCC', steps: [
+            {max: .2, height: 100, color: '#CCC'},
+            {max: .6, height: 100, color: '#a79e86'},
+        ]
     },
-
-    'MOUNTAIN': {
+    MOUNTAIN: {
         height: 80, color: '#a79e86',
     },
-
-    'PLATEAU': {
+    PLATEAU: {
         height: 60, color: '#796',
     },
-
-    'DEPRESSION': {
+    DEPRESSION: {
         height: 10, color: '#352',
     },
-
-    'PLAIN': {
+    PLAIN: {
         height: 20, color: '#574',
     },
-
-    'ISLAND_ARC': {
+    ISLAND_ARC: {
         height: 20, border: '#058', color: '#060',
     },
-
-    'SHALLOW_SEA': {
+    SHALLOW_SEA: {
         height: 0, border: '#058', color: '#069',
     },
-
-    'DEEP_SEA': {
+    DEEP_SEA: {
         height: -10, border: '#058', color: '#058',
     },
-
-    'RIFT_SEA': {
+    RIFT_SEA: {
         height: -20, border: '#058', color: '#069',
     },
-
-    'ABYSSAL_SEA': {
+    ABYSSAL_SEA: {
         height: -30, border: '#036', color: '#036',
     },
 }
@@ -60,7 +54,7 @@ export const GEO_TYPES = {
 export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ---------------------------
 {id: 'LLCC', name: 'Continental collision', data: [
-    {type: GEO_TYPES.PEAK, range: 3, chance: .5, growth: 4}
+    {type: GEO_TYPES.PEAK, priority: 0, range: 3, chance: .5, growth: 4}
 ]},
 
 {id: 'LLCT', name: 'Old mountains', data: [

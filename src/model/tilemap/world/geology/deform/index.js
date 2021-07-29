@@ -91,6 +91,7 @@ class Deform {
         this.id = id
         this.name = name
         this.range = data.range ?? 1
+        this.priority = data.priority ?? 99
         this.chance = data.chance
         this.growth = data.growth
         this.color = data.type.color
