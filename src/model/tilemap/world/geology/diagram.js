@@ -31,7 +31,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const isBorderPoint = this.tileMap.isPlateBorder(point)
-        const deform = this.tileMap.getDeform(point)
         const stress = this.tileMap.getStress(point)
         const plate = this.tileMap.getPlate(point)
         let hex = plate.color
@@ -41,6 +40,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
         if (this.showDeform) {
             if (this.tileMap.hasDeform(point)) {
+                const deform = this.tileMap.getDeform(point)
                 hex = deform.color
                 if (isBorderPoint) {
                     hex = deform.hasBorder() ? deform.border : plate.color

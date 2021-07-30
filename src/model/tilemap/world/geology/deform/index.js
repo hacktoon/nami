@@ -8,6 +8,7 @@ import {
     DEF_TRANSFORM,
     DEF_DIVERGE,
     DEFORM_TABLE,
+    LANDFORMS,
 } from './table'
 
 
@@ -94,11 +95,19 @@ class Deform {
         this.steps = data.type.steps
         this.color = data.type.color
         this.border = data.type.border ?? data.type.color
-        console.log(this.steps);
     }
 
     hasBorder() {
         return Boolean(this.border)
+    }
+
+    get(level) {
+        let name = this.steps[0].name
+        for(let step of this.steps) {
+            if (step.level > level) break
+            name = step.name
+        }
+        return LANDFORMS[name]
     }
 
     inRange(level) {
