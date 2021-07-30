@@ -100,7 +100,7 @@ class Deform {
     get(level) {
         let name = this.steps[0].name
         for(let step of this.steps) {
-            if (step.level > level) break
+            if (step.level >= level) break
             name = step.name
         }
         return LANDFORMS[name]

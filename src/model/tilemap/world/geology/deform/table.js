@@ -20,13 +20,13 @@ export const LANDFORMS = {
             {level: 0, name: 'PEAK'},
             {level: 1, name: 'MOUNTAIN'},
             {level: 3, name: 'PLATEAU'},
-            {level: 4, name: 'PLAIN'},
+            {level: 5, name: 'PLAIN'},
         ]
     },
     MOUNTAIN: {
         water: false, height: 80, color: '#a79e86',
         steps: [
-            {level: 1, name: 'MOUNTAIN'},
+            {level: 0, name: 'MOUNTAIN'},
             {level: 3, name: 'PLATEAU'},
             {level: 4, name: 'PLAIN'},
         ]
@@ -75,7 +75,7 @@ export const LANDFORMS = {
 export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ---------------------------
 {key: 'LLCC', name: 'Continental collision', data: [
-    {type: LANDFORMS.PEAK, range: 3, chance: .5, growth: 4},
+    {type: LANDFORMS.PEAK, range: 4, chance: .5, growth: 4},
 ]},
 {key: 'LLCT', name: 'Old mountains', data: [
     {type: LANDFORMS.MOUNTAIN, range: 1, chance: .2, growth: 10},
@@ -102,7 +102,7 @@ export const DEFORM_TABLE = [
 // CONTINENTAL-OCEANIC ---------------------------
 {key: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
     {type: LANDFORMS.TRENCH, range: 4, chance: .5, growth: 1},
-    {type: LANDFORMS.MOUNTAIN, range: [1, 5], chance: .5, growth: 2},
+    {type: LANDFORMS.MOUNTAIN, range: [1, 8], chance: .5, growth: 2},
 ]},
 {key: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
     {type: LANDFORMS.TRENCH, range: 3, chance: .5, growth: 2},
