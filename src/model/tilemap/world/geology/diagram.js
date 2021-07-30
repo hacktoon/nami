@@ -43,7 +43,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
                 const deform = this.tileMap.getDeform(point)
                 hex = deform.color
                 if (isBorderPoint) {
-                    hex = deform.hasBorder() ? deform.border : plate.color
+                    hex = deform.border ?? plate.color
                 }
             }
         }

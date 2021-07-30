@@ -96,7 +96,8 @@ class DeformRegionFillConfig extends FloodFillConfig {
             // if(this.group.id == 12 && this.deform.id === 32 && level == 0) {
             //     console.log(region.id, this.deform.get(level));
             // }
-            this.regionDeformMap.set(region.id, [this.deform, level])
+            const landform = this.deform.get(level)
+            this.regionDeformMap.set(region.id, this.deform)
         }
         this.stressMap.set(region.id, level)
     }

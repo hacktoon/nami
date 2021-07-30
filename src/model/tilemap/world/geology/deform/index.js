@@ -97,10 +97,6 @@ class Deform {
         this.border = data.type.border ?? data.type.color
     }
 
-    hasBorder() {
-        return Boolean(this.border)
-    }
-
     get(level) {
         let name = this.steps[0].name
         for(let step of this.steps) {
