@@ -8,8 +8,8 @@ import {
     DEF_TRANSFORM,
     DEF_DIVERGE,
     DEFORM_TABLE,
-    LANDFORMS,
 } from './table'
+import { LANDFORMS } from './landform'
 
 
 export class DeformMap {
@@ -88,13 +88,10 @@ class Deform {
         this.id = id
         this.key = key
         this.name = name
-        this.range = data.range ?? 1
-        this.priority = data.priority ?? 99
+        this.priority = data.priority ?? Infinity
         this.chance = data.chance
         this.growth = data.growth
-        this.steps = data.type.steps
-        this.color = data.type.color
-        this.border = data.type.border ?? data.type.color
+        this.steps = data.steps
     }
 
     get(level) {
@@ -103,16 +100,14 @@ class Deform {
             if (step.level >= level) break
             name = step.name
         }
-        return LANDFORMS[name]
-    }
-
-    inRange(level) {
-        if (Number.isInteger(this.range)) {
-            return level >= 0 && level < this.range
+        const step = LANDFORMS[name]
+        return {
+            ...step,
+            id: this.id,
+            key: this.key,
+            name: this.name,
+            color: step.color,
+            border: step.border ?? step.color,
         }
-        if (Array.isArray(this.range)) {
-            return level >= this.range[0] && level < this.range[1]
-        }
-        return false
     }
 }
