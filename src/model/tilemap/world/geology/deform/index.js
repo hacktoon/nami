@@ -91,12 +91,12 @@ class Deform {
         this.priority = data.priority ?? Infinity
         this.chance = data.chance
         this.growth = data.growth
-        this.steps = data.steps
+        this.landscape = data.landscape
     }
 
     get(level) {
-        let name = this.steps[0].name
-        for(let step of this.steps) {
+        let name = this.landscape[0].name
+        for(let step of this.landscape) {
             if (step.level >= level) break
             name = step.name
         }
