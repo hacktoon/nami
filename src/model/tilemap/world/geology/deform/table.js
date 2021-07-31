@@ -26,7 +26,10 @@ export const LANDFORMS = {
 
 
 export const DEFORM_TABLE = [
-// CONTINENTAL-CONTINENTAL ==============================================
+
+// ==============================================
+// CONTINENTAL-CONTINENTAL
+// ==============================================
 {key: 'LLCC', name: 'Continental collision', data: [
     {chance: .5, growth: 4, landscape: [
         {level: 0, name: 'PEAK'},
@@ -66,10 +69,8 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'LLDT', name: 'Rift valley', data: [
-    {landscape: [
-        {level: 0, name: 'PLAIN'}
-    ]},
-    {chance: .5, growth: 8, landscape: [
+    {landscape: [{level: 0, name: 'PLAIN'}]},
+    {chance: .2, growth: 5, landscape: [
         {level: 0, name: 'DEPRESSION'},
         {level: 1, name: 'PLAIN'},
     ]},
@@ -86,7 +87,9 @@ export const DEFORM_TABLE = [
 ]},
 
 
-// CONTINENTAL-OCEANIC ==============================================
+// ==============================================
+// CONTINENTAL-OCEANIC
+// ==============================================
 {key: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
@@ -164,7 +167,9 @@ export const DEFORM_TABLE = [
 ]},
 
 
-// OCEANIC-OCEANIC ==============================================
+// ==============================================
+// OCEANIC-OCEANIC
+// ==============================================
 {key: 'WWCC', name: 'Island arc', rule: 'weight', data: [
     {chance: .1, growth: 2, landscape: [
         {level: 0, name: 'TRENCH'}
@@ -176,6 +181,7 @@ export const DEFORM_TABLE = [
         {level: 3, name: 'DEEP_SEA'},
     ]},
 ]},
+
 {key: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
     {chance: .1, growth: 3, landscape: [
         {level: 0, name: 'TRENCH'}
