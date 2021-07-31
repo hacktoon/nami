@@ -84,8 +84,7 @@ class DeformRegionFillConfig extends FloodFillConfig {
         this.growth = data.deform.growth
     }
 
-    isEmpty(neighborRegion, originRegion) {
-        // TODO: check priority
+    isEmpty(neighborRegion) {
         return !this.stressMap.has(neighborRegion.id)
     }
 

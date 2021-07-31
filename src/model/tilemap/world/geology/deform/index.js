@@ -88,8 +88,8 @@ class Deform {
         this.id = id
         this.key = key
         this.name = name
-        this.chance = .4
-        this.growth = 5
+        this.chance = data.chance ?? .5
+        this.growth = data.growth ?? 6
         this.landscape = data.landscape
     }
 
