@@ -31,7 +31,7 @@ export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL
 // ==============================================
 {key: 'LLCC', name: 'Continental collision', data: [
-    {chance: .5, growth: 4, landscape: [
+    {landscape: [
         {level: 0, name: 'PEAK'},
         {level: 1, name: 'MOUNTAIN'},
         {level: 3, name: 'PLATEAU'},
@@ -40,7 +40,7 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'LLCT', name: 'Old mountains', data: [
-    {chance: .2, growth: 10, landscape: [
+    {landscape: [
         {level: 0, name: 'PLATEAU'},
         {level: 1, name: 'MOUNTAIN'},
         {level: 3, name: 'PLATEAU'},
@@ -50,7 +50,7 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'LLCD', name: 'Rift sea', data: [
-    {chance: .5, growth: 5, landscape: [
+    {landscape: [
         {level: 0, name: 'DEEP_SEA'},
         {level: 1, name: 'SHALLOW_SEA'},
         {level: 2, name: 'PLAIN'}
@@ -58,11 +58,11 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'LLDD', name: 'Early rift sea', rule: 'weight', data: [
-    {chance: .5, growth: 5, landscape: [
+    {landscape: [
         {level: 0, name: 'DEEP_SEA'},
         {level: 1, name: 'SHALLOW_SEA'},
     ]},
-    {chance: .5, growth: 5, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'PLAIN'}
     ]}
@@ -70,14 +70,14 @@ export const DEFORM_TABLE = [
 
 {key: 'LLDT', name: 'Rift valley', data: [
     {landscape: [{level: 0, name: 'PLAIN'}]},
-    {chance: .2, growth: 5, landscape: [
+    {landscape: [
         {level: 0, name: 'DEPRESSION'},
         {level: 1, name: 'PLAIN'},
     ]},
 ]},
 
 {key: 'LLTT', name: 'Transform Fault', data: [
-    {chance: .1, growth: 10, landscape: [
+    {landscape: [
         {level: 0, name: 'PLATEAU'},
         {level: 1, name: 'PLAIN'},
     ]},
@@ -91,12 +91,12 @@ export const DEFORM_TABLE = [
 // CONTINENTAL-OCEANIC
 // ==============================================
 {key: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
-    {chance: .5, growth: 1, landscape: [
+    {landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 1, name: 'DEEP_SEA'},
         {level: 2, name: 'SHALLOW_SEA'},
     ]},
-    {chance: .8, growth: 3, landscape: [
+    {landscape: [
         {level: 0, name: 'PLAIN'},
         {level: 1, name: 'PLATEAU'},
         {level: 2, name: 'MOUNTAIN'},
@@ -108,11 +108,11 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
-    {chance: .5, growth: 8, landscape: [
+    {landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 1, name: 'DEEP_SEA'},
     ]},
-    {chance: .2, growth: 4, landscape: [
+    {landscape: [
         {level: 0, name: 'PLAIN'},
         {level: 1, name: 'MOUNTAIN'},
         {level: 2, name: 'PLATEAU'},
@@ -121,34 +121,34 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
-    {chance: .5, growth: 5, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
     ]},
-    {chance: .5, growth: 3, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'PLAIN'},
     ]},
 ]},
 
 {key: 'LWDD', name: 'Passive margin', rule: 'weight', data: [
-    {chance: .5, growth: 10, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 3, name: 'DEEP_SEA'},
     ]},
-    {chance: .5, growth: 8, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 3, name: 'PLAIN'},
     ]},
 ]},
 
 {key: 'LWDT', name: 'Island arc basin', rule: 'weight', data: [
-    {chance: .5, growth: 6, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'ISLAND_ARC'},
         {level: 3, name: 'DEEP_SEA'},
     ]},
-    {chance: .5, growth: 2, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 2, name: 'PLAIN'},
         {level: 4, name: 'PLATEAU'},
@@ -157,10 +157,10 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'LWTT', name: 'Coastal fault', rule: 'weight', data: [
-    {chance: .5, growth: 8, landscape: [
+    {landscape: [
         {level: 0, name: 'DEEP_SEA'}
     ]},
-    {chance: .5, growth: 8, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'PLAIN'},
     ]},
@@ -171,10 +171,10 @@ export const DEFORM_TABLE = [
 // OCEANIC-OCEANIC
 // ==============================================
 {key: 'WWCC', name: 'Island arc', rule: 'weight', data: [
-    {chance: .1, growth: 2, landscape: [
+    {landscape: [
         {level: 0, name: 'TRENCH'}
     ]},
-    {chance: .5, growth: 4, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'ISLAND_ARC'},
         {level: 2, name: 'SHALLOW_SEA'},
@@ -183,10 +183,10 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
-    {chance: .1, growth: 3, landscape: [
+    {landscape: [
         {level: 0, name: 'TRENCH'}
     ]},
-    {chance: .5, growth: 5, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'ISLAND_ARC'},
         {level: 2, name: 'SHALLOW_SEA'},
@@ -195,27 +195,27 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'WWCD', name: 'Abyssal plains', rule: 'weight', data: [
-    {chance: .1, growth: 10, landscape: [{level: 0, name: 'DEEP_SEA'}]},
+    {landscape: [{level: 0, name: 'DEEP_SEA'}]},
 ]},
 
 {key: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
-    {chance: .5, growth: 5, landscape: [
+    {landscape: [
         {level: 0, name: 'DEEP_SEA'},
         {level: 3, name: 'SHALLOW_SEA'},
     ]},
-    {chance: .1, growth: 5, landscape: [{level: 1, name: 'SHALLOW_SEA'}]}
+    {landscape: [{level: 1, name: 'SHALLOW_SEA'}]}
 ]},
 
 {key: 'WWDT', name: 'Early oceanic rift', data: [
-    {chance: .2, growth: 10, landscape: [
+    {landscape: [
         {level: 0, name: 'DEEP_SEA'},
         {level: 3, name: 'SHALLOW_SEA'},
     ]},
-    {chance: .1, growth: 5, landscape: [{level: 1, name: 'SHALLOW_SEA'}]}
+    {landscape: [{level: 1, name: 'SHALLOW_SEA'}]}
 ]},
 
 {key: 'WWTT', name: 'Oceanic fault', data: [
-    {chance: .5, growth: 8, landscape: [
+    {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
     ]},
