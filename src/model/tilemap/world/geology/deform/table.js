@@ -1,5 +1,3 @@
-import { LANDFORMS } from './landform'
-
 export const DEF_LAND = 0
 export const DEF_WATER = 100
 export const DEF_CONVERGE = 16
@@ -14,10 +12,23 @@ export const IDMAP = {
 }
 
 
+export const LANDFORMS = {
+    PEAK: {water: false, color: '#AAA'},
+    MOUNTAIN: {water: false, height: 80, border: '#796', color: '#918671'},
+    PLATEAU: {water: false, height: 60, color: '#796'},
+    PLAIN: {water: false, height: 20, color: '#574'},
+    ISLAND_ARC: {water: false, height: 10, color: '#685'},
+    DEPRESSION: {water: false, height: 10, color: '#352'},
+    SHALLOW_SEA: {water: true, height: 0, color: '#069'},
+    DEEP_SEA: {water: true, height: -20, color: '#058'},
+    TRENCH: {water: true, height: -30, border: '#058', color: '#036'},
+}
+
+
 export const DEFORM_TABLE = [
 // CONTINENTAL-CONTINENTAL ==============================================
 {key: 'LLCC', name: 'Continental collision', data: [
-    {priority: 0, chance: .5, growth: 4, landscape: [
+    {chance: .5, growth: 4, landscape: [
         {level: 0, name: 'PEAK'},
         {level: 1, name: 'MOUNTAIN'},
         {level: 3, name: 'PLATEAU'},
@@ -55,12 +66,12 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'LLDT', name: 'Rift valley', data: [
+    {landscape: [
+        {level: 0, name: 'PLAIN'}
+    ]},
     {chance: .5, growth: 8, landscape: [
         {level: 0, name: 'DEPRESSION'},
         {level: 1, name: 'PLAIN'},
-    ]},
-    {landscape: [
-        {level: 0, name: 'PLAIN'}
     ]},
 ]},
 
@@ -86,8 +97,10 @@ export const DEFORM_TABLE = [
         {level: 0, name: 'PLAIN'},
         {level: 1, name: 'PLATEAU'},
         {level: 2, name: 'MOUNTAIN'},
-        {level: 3, name: 'PLATEAU'},
-        {level: 4, name: 'PLAIN'},
+        {level: 4, name: 'PLATEAU'},
+        {level: 5, name: 'PLAIN'},
+        {level: 7, name: 'PLATEAU'},
+        {level: 8, name: 'PLAIN'},
     ]},
 ]},
 
@@ -127,10 +140,10 @@ export const DEFORM_TABLE = [
 ]},
 
 {key: 'LWDT', name: 'Island arc basin', rule: 'weight', data: [
-    {chance: .9, growth: 10, landscape: [
-        {level: 0, name: 'ISLAND_ARC'},
-        {level: 1, name: 'SHALLOW_SEA'},
-        {level: 2, name: 'DEEP_SEA'},
+    {chance: .5, growth: 6, landscape: [
+        {level: 0, name: 'SHALLOW_SEA'},
+        {level: 1, name: 'ISLAND_ARC'},
+        {level: 3, name: 'DEEP_SEA'},
     ]},
     {chance: .5, growth: 2, landscape: [
         {level: 0, name: 'SHALLOW_SEA'},

@@ -8,8 +8,8 @@ import {
     DEF_TRANSFORM,
     DEF_DIVERGE,
     DEFORM_TABLE,
+    LANDFORMS
 } from './table'
-import { LANDFORMS } from './landform'
 
 
 export class DeformMap {
@@ -88,7 +88,6 @@ class Deform {
         this.id = id
         this.key = key
         this.name = name
-        this.priority = data.priority ?? Infinity
         this.chance = data.chance
         this.growth = data.growth
         this.landscape = data.landscape
