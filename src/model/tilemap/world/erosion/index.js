@@ -3,7 +3,6 @@ import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { DeformModel } from './model'
 import { ErosionTileMapDiagram } from './diagram'
 
 
