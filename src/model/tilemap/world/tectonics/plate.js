@@ -1,5 +1,4 @@
 import { Direction } from '/lib/base/direction'
-import { Random } from '/lib/base/random'
 
 
 const TYPE_CONTINENTAL = 'L'
@@ -35,13 +34,14 @@ export class PlateMap {
         const groups = this.regionGroupTileMap.getGroups().sort(cmpDescendingCount)
         const typeMap = this._buildTypes(groups)
         groups.forEach(group => {
+            const {id, origin, area} = group
             const neighborsGroups = this.regionGroupTileMap.getNeighborGroups(group)
             const isLandlocked = neighborsGroups.concat(group).every(neighbor => {
                 return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
             })
-            const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(group.id)
-            const weight = group.id + (type === TYPE_OCEANIC ? groups.length * 10 : 0)
-            const plate = new Plate(group.id, group.origin, type, group.area, weight)
+            const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(id)
+            const weight = id + (type === TYPE_OCEANIC ? groups.length * 10 : 0)
+            const plate = new Plate(id, origin, type, area, weight)
             this.plates.set(plate.id, plate)
         })
     }

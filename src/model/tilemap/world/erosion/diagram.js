@@ -25,21 +25,3 @@ export class ErosionTileMapDiagram extends TileMapDiagram {
         return '#000'
     }
 }
-
-
-class PlateColorMap {
-    constructor(tileMap) {
-        const entries = tileMap.map(plate => {
-            let color =  new Color(0, 250, 0).average(plate.color)
-            if (plate.isOceanic()) {
-                color = new Color(0, 0, 150)
-            }
-            return [plate.id, color]
-        })
-        this.map = Object.fromEntries(entries)
-    }
-
-    get(plate) {
-        return this.map[plate.id]
-    }
-}

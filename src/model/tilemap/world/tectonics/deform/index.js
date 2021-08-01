@@ -62,8 +62,8 @@ class DeformTable {
         const dir1 = this._parseDir(dotTo)
         const dir2 = this._parseDir(dotFrom)
         const id = type1 + type2 + dir1 + dir2
-        const row = this.#codeTable.get(id)
-        return this._buildDeform(row, p1, p2, dir1, dir2)
+        const deform = this.#codeTable.get(id)
+        return this._buildDeform(deform, p1, p2, dir1, dir2)
     }
 
     _parseDir(dir) {
@@ -71,23 +71,24 @@ class DeformTable {
         return dir > 0 ? DEF_CONVERGE : DEF_DIVERGE
     }
 
-    _buildDeform(row, p1, p2, dir1, dir2) {
-        const first = row.boundaries[0]
-        const second = row.boundaries.length === 1 ? first : row.boundaries[1]
+    _buildDeform(deform, p1, p2, dir1, dir2) {
+        const first = deform.boundaries[0]
+        const second = deform.boundaries.length === 1 ? first : deform.boundaries[1]
         let boundary = dir1 > dir2 ? first : second
-        if (row.rule === 'weight') {
+        if (deform.rule === 'weight') {
             boundary = p1.weight > p2.weight ? first : second
         }
-        return new Deform(row, boundary)
+        return new Deform(deform, boundary)
     }
 }
 
 
 class Deform {
-    constructor(row, boundary) {
-        this.id = row.id
-        this.key = row.key
-        this.name = row.name
+    constructor(deform, boundary) {
+        this.id = deform.id
+        this.key = deform.key
+        this.name = deform.name
+        this.priority = deform.priority ?? Infinity
         this.chance = boundary.chance ?? .5
         this.growth = boundary.growth ?? 6
         this.landscape = boundary.landscape
@@ -105,8 +106,13 @@ class Deform {
             id: this.id,
             key: this.key,
             name: this.name,
+            priority: this.priority,
             color: landform.color,
             border: landform.border ?? landform.color,
         }
+    }
+
+    isLast(level) {
+
     }
 }

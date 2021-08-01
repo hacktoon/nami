@@ -31,15 +31,16 @@ export const DEFORM_TABLE = [
 // ==============================================
 // CONTINENTAL-CONTINENTAL
 // ==============================================
-{key: 'LLCC', name: 'Continental collision', rule: 'weight',
+{key: 'LLCC', name: 'Continental collision',
+rule: 'weight', priority: 0,
 boundaries: [
-    {chance: .5, growth: 1, landscape: [
+    {chance: .5, growth: 2, landscape: [
         {level: 0, name: 'PEAK'},
         {level: 1, name: 'MOUNTAIN'},
         {level: 3, name: 'HILL'},
         {level: 5, name: 'PLAIN'},
     ]},
-    {chance: .5, growth: 1, landscape: [
+    {chance: .5, growth: 2, landscape: [
         {level: 0, name: 'MOUNTAIN'},
         {level: 1, name: 'HILL'},
         {level: 5, name: 'PLAIN'},
