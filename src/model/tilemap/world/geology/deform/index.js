@@ -72,25 +72,25 @@ class DeformTable {
     }
 
     _buildDeform(row, p1, p2, dir1, dir2) {
-        const first = row.data[0]
-        const second = row.data.length === 1 ? first : row.data[1]
-        let data = dir1 > dir2 ? first : second
+        const first = row.boundaries[0]
+        const second = row.boundaries.length === 1 ? first : row.boundaries[1]
+        let boundary = dir1 > dir2 ? first : second
         if (row.rule === 'weight') {
-            data = p1.weight > p2.weight ? first : second
+            boundary = p1.weight > p2.weight ? first : second
         }
-        return new Deform(row.id, row.key, row.name, data)
+        return new Deform(row, boundary)
     }
 }
 
 
 class Deform {
-    constructor(id, key, name, data) {
-        this.id = id
-        this.key = key
-        this.name = name
-        this.chance = data.chance ?? .5
-        this.growth = data.growth ?? 6
-        this.landscape = data.landscape
+    constructor(row, boundary) {
+        this.id = row.id
+        this.key = row.key
+        this.name = row.name
+        this.chance = boundary.chance ?? .5
+        this.growth = boundary.growth ?? 6
+        this.landscape = boundary.landscape
     }
 
     get(level) {

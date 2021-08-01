@@ -31,7 +31,8 @@ export const DEFORM_TABLE = [
 // ==============================================
 // CONTINENTAL-CONTINENTAL
 // ==============================================
-{key: 'LLCC', name: 'Continental collision', rule: 'weight', data: [
+{key: 'LLCC', name: 'Continental collision', rule: 'weight',
+boundaries: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'PEAK'},
         {level: 1, name: 'MOUNTAIN'},
@@ -45,7 +46,8 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'LLCT', name: 'Old mountains', data: [
+{key: 'LLCT', name: 'Old mountains',
+boundaries: [
     {landscape: [
         {level: 0, name: 'HILL'},
         {level: 1, name: 'PLAIN'},
@@ -59,7 +61,8 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'LLCD', name: 'Rift valley', data: [
+{key: 'LLCD', name: 'Rift valley',
+boundaries: [
     {landscape: [
         {level: 0, name: 'DEPRESSION'},
         {level: 1, name: 'PLAIN'},
@@ -73,7 +76,8 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'LLDT', name: 'Early rift sea', data: [
+{key: 'LLDT', name: 'Early rift sea',
+boundaries: [
     {chance: .1, growth: 1, landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'PLAIN'},
@@ -86,7 +90,8 @@ export const DEFORM_TABLE = [
     ]}
 ]},
 
-{key: 'LLDD', name: 'Rift sea', rule: 'weight', data: [
+{key: 'LLDD', name: 'Rift sea', rule: 'weight',
+boundaries: [
     {landscape: [
         {level: 0, name: 'DEEP_SEA'},
         {level: 1, name: 'SHALLOW_SEA'},
@@ -100,7 +105,8 @@ export const DEFORM_TABLE = [
     ]}
 ]},
 
-{key: 'LLTT', name: 'Transform Fault', rule: 'weight',data: [
+{key: 'LLTT', name: 'Transform Fault', rule: 'weight',
+boundaries: [
     {landscape: [
         {level: 0, name: 'PLAIN'},
         {level: 1, name: 'HILL'},
@@ -116,7 +122,8 @@ export const DEFORM_TABLE = [
 // ==============================================
 // CONTINENTAL-OCEANIC
 // ==============================================
-{key: 'LWCC', name: 'Cordillera', rule: 'weight', data: [
+{key: 'LWCC', name: 'Cordillera', rule: 'weight',
+boundaries: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 1, name: 'DEEP_SEA'},
@@ -133,7 +140,8 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'LWCT', name: 'Early cordillera', rule: 'weight', data: [
+{key: 'LWCT', name: 'Early cordillera', rule: 'weight',
+boundaries: [
     {chance: .2, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 1, name: 'DEEP_SEA'},
@@ -147,7 +155,8 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'LWCD', name: 'Early passive margin', rule: 'weight', data: [
+{key: 'LWCD', name: 'Early passive margin', rule: 'weight',
+boundaries: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
@@ -160,7 +169,8 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'LWDD', name: 'Passive margin', rule: 'weight', data: [
+{key: 'LWDD', name: 'Passive margin', rule: 'weight',
+boundaries: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 3, name: 'DEEP_SEA'},
@@ -173,7 +183,8 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'LWDT', name: 'Island arc basin', rule: 'weight', data: [
+{key: 'LWDT', name: 'Island arc basin', rule: 'weight',
+boundaries: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'ISLAND'},
@@ -187,7 +198,8 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'LWTT', name: 'Coastal fault', rule: 'weight', data: [
+{key: 'LWTT', name: 'Coastal fault', rule: 'weight',
+boundaries: [
     {landscape: [
         {level: 0, name: 'DEEP_SEA'}
     ]},
@@ -201,7 +213,8 @@ export const DEFORM_TABLE = [
 // ==============================================
 // OCEANIC-OCEANIC
 // ==============================================
-{key: 'WWCC', name: 'Island arc', rule: 'weight', data: [
+{key: 'WWCC', name: 'Island arc', rule: 'weight',
+boundaries: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 2, name: 'DEEP_SEA'}
@@ -214,7 +227,8 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'WWCT', name: 'Early island arc', rule: 'weight', data: [
+{key: 'WWCT', name: 'Early island arc', rule: 'weight',
+boundaries: [
     {chance: .2, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 2, name: 'DEEP_SEA'}
@@ -227,11 +241,13 @@ export const DEFORM_TABLE = [
     ]},
 ]},
 
-{key: 'WWCD', name: 'Abyssal plains', rule: 'weight', data: [
+{key: 'WWCD', name: 'Abyssal plains', rule: 'weight',
+boundaries: [
     {landscape: [{level: 0, name: 'DEEP_SEA'}]},
 ]},
 
-{key: 'WWDD', name: 'Oceanic rift', rule: 'weight', data: [
+{key: 'WWDD', name: 'Oceanic rift', rule: 'weight',
+boundaries: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
@@ -239,7 +255,8 @@ export const DEFORM_TABLE = [
     {landscape: [{level: 0, name: 'SHALLOW_SEA'}]}
 ]},
 
-{key: 'WWDT', name: 'Early oceanic rift', data: [
+{key: 'WWDT', name: 'Early oceanic rift',
+boundaries: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
@@ -247,7 +264,8 @@ export const DEFORM_TABLE = [
     {landscape: [{level: 0, name: 'SHALLOW_SEA'}]}
 ]},
 
-{key: 'WWTT', name: 'Oceanic fault', data: [
+{key: 'WWTT', name: 'Oceanic fault',
+boundaries: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},

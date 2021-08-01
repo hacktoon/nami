@@ -64,13 +64,13 @@ export class GeologyTileMap extends TileMap {
 
     getDeform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        const deform = this.model.regionDeformMap.get(region.id)
+        const deform = this.model.regionLandformMap.get(region.id)
         return deform
     }
 
     hasDeform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        return this.model.regionDeformMap.has(region.id)
+        return this.model.regionLandformMap.has(region.id)
     }
 
     getStress(point) {

@@ -1,6 +1,5 @@
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
-import { SimplexNoise } from '/lib/fractal/noise'
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 import { DeformMap } from './deform'
 import { PlateMap } from './plate'
@@ -11,7 +10,7 @@ export class DeformModel {
         this.regionGroupTileMap = this._buildRegionGroupMap(seed, params)
         this.plates = new PlateMap(this.regionGroupTileMap)
         this.stressMap = new Map()
-        this.regionDeformMap = new Map()
+        this.regionLandformMap = new Map()
         this.maxStressMap = new Map()
         this.deformIndex = new Map()
         this._build()
@@ -24,7 +23,7 @@ export class DeformModel {
             const deform = this._buildPlateDeform(deformMap, group, region)
             const fillConfig = new DeformRegionFillConfig({
                 regionGroupTileMap: this.regionGroupTileMap,
-                regionDeformMap: this.regionDeformMap,
+                regionLandformMap: this.regionLandformMap,
                 maxStressMap: this.maxStressMap,
                 stressMap: this.stressMap,
                 deform,
@@ -74,7 +73,7 @@ class DeformRegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.regionGroupTileMap = data.regionGroupTileMap
-        this.regionDeformMap = data.regionDeformMap
+        this.regionLandformMap = data.regionLandformMap
         this.maxStressMap = data.maxStressMap
         this.stressMap = data.stressMap
         this.deform = data.deform
@@ -92,27 +91,11 @@ class DeformRegionFillConfig extends FloodFillConfig {
         const stress = this.maxStressMap.get(this.group.id)
         if (level > stress) this.maxStressMap.set(this.group.id, level)
         const landform = this.deform.get(level)
-        this.regionDeformMap.set(region.id, landform)
+        this.regionLandformMap.set(region.id, landform)
         this.stressMap.set(region.id, level)
     }
 
     getNeighbors(region) {
         return this.regionGroupTileMap.getNeighborRegions(region)
-    }
-}
-
-
-class FeatureModel {
-    constructor() {
-        this.default = new SimplexNoise(6, 0.8, 0.02)
-        this.coast   = new SimplexNoise(7, 0.6, 0.04)
-    }
-
-    get(point) {
-        return this.default.get(point)
-    }
-
-    getCoast(point) {
-        return this.coast.get(point)
     }
 }
