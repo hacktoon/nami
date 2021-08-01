@@ -99,14 +99,14 @@ class Deform {
             if (step.level >= level) break
             name = step.name
         }
-        const step = LANDFORMS[name]
+        const landform = LANDFORMS[name]
         return {
-            ...step,
+            ...landform,
             id: this.id,
             key: this.key,
             name: this.name,
-            color: step.color,
-            border: step.border ?? step.color,
+            color: landform.color,
+            border: landform.border ?? landform.color,
         }
     }
 }
