@@ -6,9 +6,9 @@ import { Color } from '/lib/base/color'
 import { TileMapDiagram } from '/model/lib/tilemap'
 
 
-export class GeologyTileMapDiagram extends TileMapDiagram {
+export class TectonicsTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
-        'GeologyTileMapDiagram',
+        'TectonicsTileMapDiagram',
         Type.boolean('showDeform', 'Show deforms', {default: true}),
         Type.boolean('showPlateBorders', 'Show borders', {default: false}),
         Type.boolean('showDirections', 'Show directions', {default: false}),
@@ -17,7 +17,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     )
 
     static create(tileMap, params) {
-        return new GeologyTileMapDiagram(tileMap, params)
+        return new TectonicsTileMapDiagram(tileMap, params)
     }
 
     constructor(tileMap, params) {

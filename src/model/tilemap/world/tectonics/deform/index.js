@@ -21,9 +21,9 @@ export class DeformMap {
 
         regionGroupTileMap.getGroups().forEach(group => {
             const neighbors = regionGroupTileMap.getNeighborGroups(group)
-            neighbors.forEach(neighbor => {
-                const deform = this._buildGroupDeform(group, neighbor)
-                this._deforms.set(group.id, neighbor.id, deform)
+            neighbors.forEach(neighborGroup => {
+                const deform = this._buildGroupDeform(group, neighborGroup)
+                this._deforms.set(group.id, neighborGroup.id, deform)
             })
         })
     }
