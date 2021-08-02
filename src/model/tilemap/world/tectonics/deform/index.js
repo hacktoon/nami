@@ -111,9 +111,4 @@ class Deform {
             border: landform.border ?? landform.color,
         }
     }
-
-    isLast(level) {
-        let name = this.landscape[this.landscape.length - 1].name
-        return level >= LANDFORMS[name].level
-    }
 }

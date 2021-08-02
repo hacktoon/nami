@@ -31,7 +31,7 @@ export const DEFORM_TABLE = [
 // ==============================================
 // CONTINENTAL-CONTINENTAL
 // ==============================================
-{key: 'LLCC', name: 'Continental collision', rule: 'weight', priority: 0,
+{key: 'LLCC', name: 'Continental collision', rule: 'weight',
 boundaries: [
     {chance: .5, growth: 2, landscape: [
         {level: 0, name: 'PEAK'},
@@ -61,7 +61,7 @@ boundaries: [
     ]},
 ]},
 
-{key: 'LLCD', name: 'Rift valley', priority: 2,
+{key: 'LLCD', name: 'Rift valley',
 boundaries: [
     {landscape: [
         {level: 0, name: 'DEPRESSION'},
@@ -122,7 +122,7 @@ boundaries: [
 // ==============================================
 // CONTINENTAL-OCEANIC
 // ==============================================
-{key: 'LWCC', name: 'Cordillera', rule: 'weight', priority: 1,
+{key: 'LWCC', name: 'Cordillera', rule: 'weight',
 boundaries: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
@@ -148,7 +148,7 @@ boundaries: [
     ]},
     {landscape: [
         {level: 0, name: 'PLAIN'},
-        {level: 1, name: 'PLATEAU'},
+        {level: 1, name: 'HILL'},
         {level: 2, name: 'MOUNTAIN'},
         {level: 3, name: 'HILL'},
         {level: 5, name: 'PLAIN'},
