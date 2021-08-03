@@ -33,8 +33,8 @@ export class GeologyTileMap extends TileMap {
     constructor(params) {
         super(params)
         this.regionGroupTileMap = this._buildRegionGroupMap(this.seed, params)
-        this.model = new PlateModel(this.regionGroupTileMap)
-        this.plates = this.model.plates
+        this.plateModel = new PlateModel(this.regionGroupTileMap)
+        this.plates = this.plateModel.plates
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -69,6 +69,7 @@ export class GeologyTileMap extends TileMap {
     }
 
     isPlateOrigin(plate, point) {
+        // TODO: eliminate this dependency
         const matrix = this.regionGroupTileMap.regionTileMap.regionMatrix
         return plate.origin.equals(matrix.wrap(point))
     }
@@ -79,16 +80,16 @@ export class GeologyTileMap extends TileMap {
 
     getLandform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        return this.model.landformMap.get(region.id)
+        return this.plateModel.landformMap.get(region.id)
     }
 
     getStress(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        return this.model.stressMap.get(region.id)
+        return this.plateModel.stressMap.get(region.id)
     }
 
     isMaxStress(point) {
-        return this.model.isMaxStress(point)
+        return this.plateModel.isMaxStress(point)
     }
 
     getDescription() {
@@ -96,10 +97,10 @@ export class GeologyTileMap extends TileMap {
     }
 
     map(callback) {
-        return this.model.map(plate => callback(plate))
+        return this.plateModel.map(plate => callback(plate))
     }
 
     forEach(callback) {
-        this.model.forEach(callback)
+        this.plateModel.forEach(callback)
     }
 }
