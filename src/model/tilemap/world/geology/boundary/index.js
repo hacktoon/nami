@@ -12,7 +12,7 @@ import {
 } from './table'
 
 
-export class DeformMap {
+export class BoundaryModel {
     constructor(plates, regionGroupTileMap) {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap

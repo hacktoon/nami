@@ -1,13 +1,22 @@
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
+import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
 
-class ErosionFillConfig extends FloodFillConfig {
+export class ErosionModel {
+    constructor(seed, params) {
+
+    }
+
+}
+
+
+class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
-        this.regionGroupTileMap = data.regionGroupTileMap
-        this.regionLandformMap = data.regionLandformMap
-        this.maxStressMap = data.maxStressMap
-        this.stressMap = data.stressMap
+        this.deform = data.deform
+
+        this.chance = data.deform.chance
+        this.growth = data.deform.growth
     }
 
     isEmpty(neighborRegion) {
@@ -16,8 +25,10 @@ class ErosionFillConfig extends FloodFillConfig {
 
     setValue(region, level) {
         const stress = this.maxStressMap.get(this.group.id)
-        if (level > stress) this.maxStressMap.set(this.group.id, level)
         const landform = this.deform.get(level)
+        if (level > stress) {
+            this.maxStressMap.set(this.group.id, level)
+        }
         this.regionLandformMap.set(region.id, landform)
         this.stressMap.set(region.id, level)
     }
