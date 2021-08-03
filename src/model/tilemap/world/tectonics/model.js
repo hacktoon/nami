@@ -41,13 +41,13 @@ export class DeformModel {
         return RegionGroupTileMap.fromData({
             width: params.get('width'),
             height: params.get('height'),
-            seed: seed,
             groupScale: params.get('scale'),
             groupGrowth: params.get('growth'),
             groupChance: .1,
-            scale: 1,
-            growth: 0,
+            seed: seed,
             chance: .1,
+            growth: 0,
+            scale: 1,
         })
     }
 

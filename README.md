@@ -6,20 +6,20 @@
 
 
 ## ROADMAP
-#### TectonicsTileMap
-- Set priority for deform fill - override setValue
-- Define geology types, use them in deform fill
-- Each deform transforms into lower/higher variants
+#### GeologyTileMap
+- add features to border/color properties of landforms
+  - i.e. volcanoes to peaks, with chance
+  - hydrothermal vents on border of rifts
+- erosion
+  - pick origin points of each region, in order of landform height
+    peak -> mountain -> hill -> plain -> shallow -> deep
+  - save points in a array for each landform
+    - apply neighbor rules
 
-#### TerrainTileMap
-- Set sedimentation heads (possible river sources)
-- Define heights
-  - trench, high sea, continental platform
-  - plains, plateaus, mountains, peaks
-- Features
-  - Hotspots, volcanos
-- Discover river paths
-  - Start from river source points, flood fill
+- avoid a plate having repeated boundary types
+  - pick another (try rotating boundary types)
+- build heightMatrix
+
 
 #### ClimateTileMap
 - Start with each row in righ colum of regions of TemperatureTileMap

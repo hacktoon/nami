@@ -1,3 +1,4 @@
+import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 
 
 class ErosionFillConfig extends FloodFillConfig {
@@ -7,8 +8,6 @@ class ErosionFillConfig extends FloodFillConfig {
         this.regionLandformMap = data.regionLandformMap
         this.maxStressMap = data.maxStressMap
         this.stressMap = data.stressMap
-        this.deform = data.deform
-        this.group = data.group
     }
 
     isEmpty(neighborRegion) {
