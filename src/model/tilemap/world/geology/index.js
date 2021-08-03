@@ -6,7 +6,6 @@ import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
 import { GeologyTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
-import { ErosionModel } from './erosion'
 
 
 const ID = 'GeologyTileMap'
@@ -35,10 +34,6 @@ export class GeologyTileMap extends TileMap {
         super(params)
         this.regionGroupTileMap = this._buildRegionGroupMap(this.seed, params)
         this.plateModel = new PlateModel(this.regionGroupTileMap)
-        this.erosionModel = new ErosionModel(
-            this.regionGroupTileMap,
-            this.plateModel
-        )
         this.plates = this.plateModel.plates
     }
 
@@ -59,10 +54,9 @@ export class GeologyTileMap extends TileMap {
     get(point) {
         const plate = this.getPlate(point)
         const region = this.regionGroupTileMap.getRegion(point)
-        const stress = this.getStress(point)
         const landform = this.getLandform(point)
         let str = `ID: ${plate.id}, region(${region.id})`
-        str += `, stress: ${stress}, key: ${landform.key}`
+        str += `, key: ${landform.key}`
         str += `, boundary: ${landform.boundary}`
         str += `, landform: ${landform.name}`
         return str
@@ -86,15 +80,6 @@ export class GeologyTileMap extends TileMap {
     getLandform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
         return this.plateModel.landformMap.get(region.id)
-    }
-
-    getStress(point) {
-        const region = this.regionGroupTileMap.getRegion(point)
-        return this.plateModel.stressMap.get(region.id)
-    }
-
-    isMaxStress(point) {
-        return this.plateModel.isMaxStress(point)
     }
 
     getDescription() {

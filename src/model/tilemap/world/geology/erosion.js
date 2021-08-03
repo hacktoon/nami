@@ -30,3 +30,27 @@ class PointFillConfig extends FloodFillConfig {
 
     }
 }
+
+
+
+class RegionHeightIndex {
+    // for each height, stores all region ids in that height
+    constructor() {
+        this.map = new Map()
+    }
+
+    set(landform, regionId) {
+        if (! this.map.has(landform.name)) {
+            this.map.set(landform.name, [])
+        }
+        const regions = this.map.get(landform.name)
+        regions.push(regionId)
+    }
+
+    get(landform) {
+        if (! this.map.has(landform.name)) {
+            return []
+        }
+        return this.map.get(landform.name)
+    }
+}
