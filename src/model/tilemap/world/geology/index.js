@@ -5,8 +5,8 @@ import { UITileMap } from '/ui/tilemap'
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
 import { GeologyTileMapDiagram } from './diagram'
-import { PlateModel } from './model'
-import { ErosionModel } from './model/erosion'
+import { PlateModel } from './plate'
+import { ErosionModel } from './erosion'
 
 
 const ID = 'GeologyTileMap'

@@ -52,7 +52,7 @@ export class BoundaryModel {
 
 
 class BoundaryTable {
-    #codeTable = new Map()
+    #codeTable = new Map() // map numeric id to boundary config
 
     constructor(table) {
         table.map(row => {

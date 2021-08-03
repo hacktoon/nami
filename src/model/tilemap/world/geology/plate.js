@@ -1,7 +1,11 @@
+import { Direction } from '/lib/base/direction'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { BoundaryModel } from './boundary'
-import { PlateMap } from './plate'
+
+
+const TYPE_CONTINENTAL = 'L'
+const TYPE_OCEANIC = 'W'
 
 
 export class PlateModel {
@@ -11,7 +15,7 @@ export class PlateModel {
         this.stressMap = new Map()
         this.landformMap = new Map()
         this.maxStressMap = new Map()
-        this.heightIndex = new HeightIndex()
+        this.heightIndex = new RegionHeightIndex()
         this._build()
     }
 
@@ -92,7 +96,7 @@ class RegionFillConfig extends FloodFillConfig {
 }
 
 
-class HeightIndex {
+class RegionHeightIndex {
     // for each height, stores all region ids in that height
     constructor() {
         this.map = new Map()
@@ -111,5 +115,77 @@ class HeightIndex {
             return []
         }
         return this.map.get(landform.name)
+    }
+}
+
+
+export class PlateMap {
+    constructor(regionGroupTileMap) {
+        this.regionGroupTileMap = regionGroupTileMap
+        this.plates = new Map()
+        const cmpDescendingCount = (g0, g1) => g1.count - g0.count
+        const groups = this.regionGroupTileMap.getGroups().sort(cmpDescendingCount)
+        const typeMap = this._buildTypes(groups)
+        groups.forEach(group => {
+            const {id, origin, area} = group
+            const neighborsGroups = this.regionGroupTileMap.getNeighborGroups(group)
+            const isLandlocked = neighborsGroups.concat(group).every(neighbor => {
+                return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
+            })
+            const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(id)
+            const weight = id + (type === TYPE_OCEANIC ? groups.length * 10 : 0)
+            const plate = new Plate(id, origin, type, area, weight)
+            this.plates.set(plate.id, plate)
+        })
+    }
+
+    _buildTypes(groups) {
+        const halfWorldArea = Math.floor(this.regionGroupTileMap.area / 2)
+        const typeMap = new Map()
+        let totalOceanicArea = 0
+        groups.forEach(group => {
+            totalOceanicArea += group.area
+            const isOceanic = totalOceanicArea < halfWorldArea
+            const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
+            typeMap.set(group.id, type)
+        })
+        return typeMap
+    }
+
+    get size() {
+        return this.plates.size
+    }
+
+    get(id) {
+        return this.plates.get(id)
+    }
+
+    map(callback) {
+        return Array.from(this.plates.values()).map(plate => callback(plate))
+    }
+
+    forEach(callback) {
+        this.plates.forEach(callback)
+    }
+}
+
+
+class Plate {
+    constructor(id, origin, type, area, weight) {
+        this.id = id
+        this.type = type
+        this.area = area
+        this.origin = origin
+        this.direction = Direction.random()
+        this.weight = weight
+        this.color = type === TYPE_OCEANIC ? '#058' : '#574'
+    }
+
+    isOceanic() {
+        return this.type === TYPE_OCEANIC
+    }
+
+    isContinental() {
+        return this.type === TYPE_CONTINENTAL
     }
 }
