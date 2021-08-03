@@ -1,6 +1,6 @@
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
-import { BoundaryModel } from './boundary'
+import { BoundaryModel } from '../boundary'
 import { PlateMap } from './plate'
 
 
