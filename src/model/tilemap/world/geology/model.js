@@ -22,7 +22,7 @@ export class DeformModel {
         const fills = borderRegions.map(region => {
             const group = this.regionGroupTileMap.getGroupByRegion(region)
             const deform = this._buildPlateDeform(deformMap, group, region)
-            const fillConfig = new DeformRegionFillConfig({
+            const fillConfig = new RegionFillConfig({
                 regionGroupTileMap: this.regionGroupTileMap,
                 regionLandformMap: this.regionLandformMap,
                 maxStressMap: this.maxStressMap,
@@ -70,7 +70,7 @@ export class DeformModel {
 }
 
 
-class DeformRegionFillConfig extends FloodFillConfig {
+class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.regionGroupTileMap = data.regionGroupTileMap
