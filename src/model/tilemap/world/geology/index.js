@@ -6,6 +6,7 @@ import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
 import { GeologyTileMapDiagram } from './diagram'
 import { PlateModel } from './model'
+import { ErosionModel } from './model/erosion'
 
 
 const ID = 'GeologyTileMap'
@@ -34,6 +35,10 @@ export class GeologyTileMap extends TileMap {
         super(params)
         this.regionGroupTileMap = this._buildRegionGroupMap(this.seed, params)
         this.plateModel = new PlateModel(this.regionGroupTileMap)
+        this.erosionModel = new ErosionModel(
+            this.regionGroupTileMap,
+            this.plateModel
+        )
         this.plates = this.plateModel.plates
     }
 
