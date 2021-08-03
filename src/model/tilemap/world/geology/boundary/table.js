@@ -19,7 +19,7 @@ export const BOUNDARY_TABLE = [
 // CONTINENTAL-CONTINENTAL
 // ==============================================
 {key: 'LLCC', name: 'Continental collision', rule: 'weight',
-boundaries: [
+borders: [
     {chance: .5, growth: 2, landscape: [
         {level: 0, name: 'PEAK'},
         {level: 1, name: 'MOUNTAIN'},
@@ -34,7 +34,7 @@ boundaries: [
 ]},
 
 {key: 'LLCT', name: 'Old mountains',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'HILL'},
         {level: 1, name: 'PLAIN'},
@@ -49,7 +49,7 @@ boundaries: [
 ]},
 
 {key: 'LLCD', name: 'Rift valley',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'DEPRESSION'},
         {level: 1, name: 'PLAIN'},
@@ -64,7 +64,7 @@ boundaries: [
 ]},
 
 {key: 'LLDT', name: 'Early rift sea',
-boundaries: [
+borders: [
     {chance: .1, growth: 1, landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'PLAIN'},
@@ -78,7 +78,7 @@ boundaries: [
 ]},
 
 {key: 'LLDD', name: 'Rift sea', rule: 'weight',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'DEEP_SEA'},
         {level: 1, name: 'SHALLOW_SEA'},
@@ -93,7 +93,7 @@ boundaries: [
 ]},
 
 {key: 'LLTT', name: 'Transform Fault', rule: 'weight',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'PLAIN'},
         {level: 1, name: 'HILL'},
@@ -110,7 +110,7 @@ boundaries: [
 // CONTINENTAL-OCEANIC
 // ==============================================
 {key: 'LWCC', name: 'Cordillera', rule: 'weight',
-boundaries: [
+borders: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 1, name: 'DEEP_SEA'},
@@ -128,7 +128,7 @@ boundaries: [
 ]},
 
 {key: 'LWCT', name: 'Early cordillera', rule: 'weight',
-boundaries: [
+borders: [
     {chance: .2, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 1, name: 'DEEP_SEA'},
@@ -143,7 +143,7 @@ boundaries: [
 ]},
 
 {key: 'LWCD', name: 'Early passive margin', rule: 'weight',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
@@ -157,7 +157,7 @@ boundaries: [
 ]},
 
 {key: 'LWDD', name: 'Passive margin', rule: 'weight',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 3, name: 'DEEP_SEA'},
@@ -171,7 +171,7 @@ boundaries: [
 ]},
 
 {key: 'LWDT', name: 'Island arc basin', rule: 'weight',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'ISLAND'},
@@ -186,7 +186,7 @@ boundaries: [
 ]},
 
 {key: 'LWTT', name: 'Coastal fault', rule: 'weight',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'DEEP_SEA'}
     ]},
@@ -201,7 +201,7 @@ boundaries: [
 // OCEANIC-OCEANIC
 // ==============================================
 {key: 'WWCC', name: 'Island arc', rule: 'weight',
-boundaries: [
+borders: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 2, name: 'DEEP_SEA'}
@@ -215,7 +215,7 @@ boundaries: [
 ]},
 
 {key: 'WWCT', name: 'Early island arc', rule: 'weight',
-boundaries: [
+borders: [
     {chance: .2, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 2, name: 'DEEP_SEA'}
@@ -229,12 +229,12 @@ boundaries: [
 ]},
 
 {key: 'WWCD', name: 'Abyssal plains', rule: 'weight',
-boundaries: [
+borders: [
     {landscape: [{level: 0, name: 'DEEP_SEA'}]},
 ]},
 
 {key: 'WWDD', name: 'Oceanic rift', rule: 'weight',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
@@ -243,7 +243,7 @@ boundaries: [
 ]},
 
 {key: 'WWDT', name: 'Early oceanic rift',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
@@ -252,7 +252,7 @@ boundaries: [
 ]},
 
 {key: 'WWTT', name: 'Oceanic fault',
-boundaries: [
+borders: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},

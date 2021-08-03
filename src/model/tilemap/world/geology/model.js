@@ -1,16 +1,15 @@
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
-import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 import { BoundaryModel } from './boundary'
 import { PlateMap } from './plate'
 
 
 export class PlateModel {
-    constructor(seed, params) {
-        this.regionGroupTileMap = this._buildRegionGroupMap(seed, params)
-        this.plates = new PlateMap(this.regionGroupTileMap)
+    constructor(regionGroupTileMap) {
+        this.regionGroupTileMap = regionGroupTileMap
+        this.plates = new PlateMap(regionGroupTileMap)
         this.stressMap = new Map()
-        this.regionLandformMap = new Map()
+        this.landformMap = new Map()
         this.maxStressMap = new Map()
         this.heightIndex = new HeightIndex()
         this._build()
@@ -25,7 +24,7 @@ export class PlateModel {
             const boundary = this._buildPlateBoundary(boundaryModel, group, region)
             const fillConfig = new RegionFillConfig({
                 regionGroupTileMap: regionGroup,
-                regionLandformMap: this.regionLandformMap,
+                landformMap: this.landformMap,
                 maxStressMap: this.maxStressMap,
                 stressMap: this.stressMap,
                 heightIndex: this.heightIndex,
@@ -36,20 +35,6 @@ export class PlateModel {
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(fills)
-    }
-
-    _buildRegionGroupMap(seed, params) {
-        return RegionGroupTileMap.fromData({
-            width: params.get('width'),
-            height: params.get('height'),
-            groupScale: params.get('scale'),
-            groupGrowth: params.get('growth'),
-            groupChance: .1,
-            seed: seed,
-            chance: .1,
-            growth: 0,
-            scale: 1,
-        })
     }
 
     _buildPlateBoundary(boundaryModel, group, region) {
@@ -75,7 +60,7 @@ class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.regionGroupTileMap = data.regionGroupTileMap
-        this.regionLandformMap = data.regionLandformMap
+        this.landformMap = data.landformMap
         this.maxStressMap = data.maxStressMap
         this.heightIndex = data.heightIndex
         this.stressMap = data.stressMap
@@ -92,12 +77,12 @@ class RegionFillConfig extends FloodFillConfig {
 
     setValue(region, level) {
         const stress = this.maxStressMap.get(this.group.id)
-        const landform = this.boundary.get(level)
+        const landform = this.boundary.getLandform(level)
         if (level > stress) {
             this.maxStressMap.set(this.group.id, level)
         }
         this.heightIndex.set(landform, region.id)
-        this.regionLandformMap.set(region.id, landform)
+        this.landformMap.set(region.id, landform)
         this.stressMap.set(region.id, level)
     }
 

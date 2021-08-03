@@ -22,13 +22,13 @@ export class BoundaryModel {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap
         this._deforms = new PairMap()
-        this._deformTable = new DeformTable(BOUNDARY_TABLE)
+        this._deformTable = new BoundaryTable(BOUNDARY_TABLE)
 
         regionGroupTileMap.getGroups().forEach(group => {
             const neighbors = regionGroupTileMap.getNeighborGroups(group)
             neighbors.forEach(neighborGroup => {
-                const deform = this._buildGroupDeform(group, neighborGroup)
-                this._deforms.set(group.id, neighborGroup.id, deform)
+                const boundary = this._buildGroupDeform(group, neighborGroup)
+                this._deforms.set(group.id, neighborGroup.id, boundary)
             })
         })
     }
@@ -50,7 +50,7 @@ export class BoundaryModel {
 }
 
 
-class DeformTable {
+class BoundaryTable {
     #codeTable = new Map()
 
     constructor(table) {
@@ -67,8 +67,8 @@ class DeformTable {
         const dir1 = this._parseDir(dotTo)
         const dir2 = this._parseDir(dotFrom)
         const id = type1 + type2 + dir1 + dir2
-        const deform = this.#codeTable.get(id)
-        return this._buildDeform(deform, p1, p2, dir1, dir2)
+        const spec = this.#codeTable.get(id)
+        return this._buildBoundary(spec, p1, p2, dir1, dir2)
     }
 
     _parseDir(dir) {
@@ -76,30 +76,29 @@ class DeformTable {
         return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
     }
 
-    _buildDeform(deform, p1, p2, dir1, dir2) {
-        const first = deform.boundaries[0]
-        const second = deform.boundaries.length === 1 ? first : deform.boundaries[1]
-        let boundary = dir1 > dir2 ? first : second
-        if (deform.rule === 'weight') {
-            boundary = p1.weight > p2.weight ? first : second
+    _buildBoundary(spec, p1, p2, dir1, dir2) {
+        const first = spec.borders[0]
+        const second = spec.borders.length === 1 ? first : spec.borders[1]
+        let border = dir1 > dir2 ? first : second
+        if (spec.rule === 'weight') {
+            border = p1.weight > p2.weight ? first : second
         }
-        return new Deform(deform, boundary)
+        return new Boundary(spec, border)
     }
 }
 
 
-class Deform {
-    constructor(deform, boundary) {
-        this.id = deform.id
-        this.key = deform.key
-        this.deform = deform
-        this.priority = deform.priority ?? Infinity
-        this.chance = boundary.chance ?? .5
-        this.growth = boundary.growth ?? 6
-        this.landscape = boundary.landscape
+class Boundary {
+    constructor(spec, border) {
+        this.id = spec.id
+        this.key = spec.key
+        this.spec = spec
+        this.chance = border.chance ?? .5
+        this.growth = border.growth ?? 6
+        this.landscape = border.landscape
     }
 
-    get(level) {
+    getLandform(level) {
         let name = this.landscape[0].name
         for(let step of this.landscape) {
             if (level <= step.level) break
@@ -112,8 +111,7 @@ class Deform {
             id: this.id,
             key: this.key,
             color: landform.color,
-            priority: this.priority,
-            boundary: this.deform.name,
+            boundary: this.spec.name,
             border: landform.border ?? landform.color,
         }
     }

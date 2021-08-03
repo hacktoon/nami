@@ -2,9 +2,10 @@ import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { TileMap } from '/model/lib/tilemap'
 import { UITileMap } from '/ui/tilemap'
+import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
-import { PlateModel } from './model'
 import { GeologyTileMapDiagram } from './diagram'
+import { PlateModel } from './model'
 
 
 const ID = 'GeologyTileMap'
@@ -31,9 +32,23 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.model = new PlateModel(this.seed, params)
-        this.regionGroupTileMap = this.model.regionGroupTileMap
+        this.regionGroupTileMap = this._buildRegionGroupMap(this.seed, params)
+        this.model = new PlateModel(this.regionGroupTileMap)
         this.plates = this.model.plates
+    }
+
+    _buildRegionGroupMap(seed, params) {
+        return RegionGroupTileMap.fromData({
+            width: params.get('width'),
+            height: params.get('height'),
+            groupScale: params.get('scale'),
+            groupGrowth: params.get('growth'),
+            groupChance: .1,
+            seed: seed,
+            chance: .1,
+            growth: 0,
+            scale: 1,
+        })
     }
 
     get(point) {
@@ -64,7 +79,7 @@ export class GeologyTileMap extends TileMap {
 
     getLandform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        return this.model.regionLandformMap.get(region.id)
+        return this.model.landformMap.get(region.id)
     }
 
     getStress(point) {
