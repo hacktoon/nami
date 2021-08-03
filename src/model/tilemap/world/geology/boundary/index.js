@@ -1,15 +1,20 @@
 import { PairMap } from '/lib/base'
 import { Direction } from '/lib/base/direction'
-import {
-    DEF_WATER,
-    DEF_LAND,
-    IDMAP,
-    DEF_CONVERGE,
-    DEF_TRANSFORM,
-    DEF_DIVERGE,
-    DEFORM_TABLE,
-    LANDFORMS
-} from './table'
+import { BOUNDARY_TABLE, LANDFORMS } from './table'
+
+
+const PLATE_CONTINENTAL = 0
+const PLATE_OCEANIC = 100
+const DIR_CONVERGE = 16
+const DIR_TRANSFORM = 4
+const DIR_DIVERGE = 1
+const IDMAP = {
+    L: PLATE_CONTINENTAL,
+    W: PLATE_OCEANIC,
+    C: DIR_CONVERGE,
+    D: DIR_DIVERGE,
+    T: DIR_TRANSFORM,
+}
 
 
 export class BoundaryModel {
@@ -17,7 +22,7 @@ export class BoundaryModel {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap
         this._deforms = new PairMap()
-        this._deformTable = new DeformTable(DEFORM_TABLE)
+        this._deformTable = new DeformTable(BOUNDARY_TABLE)
 
         regionGroupTileMap.getGroups().forEach(group => {
             const neighbors = regionGroupTileMap.getNeighborGroups(group)
@@ -57,8 +62,8 @@ class DeformTable {
     }
 
     build(p1, p2, dotTo, dotFrom) {
-        const type1 = p1.isContinental() ? DEF_LAND : DEF_WATER
-        const type2 = p2.isContinental() ? DEF_LAND : DEF_WATER
+        const type1 = p1.isContinental() ? PLATE_CONTINENTAL : PLATE_OCEANIC
+        const type2 = p2.isContinental() ? PLATE_CONTINENTAL : PLATE_OCEANIC
         const dir1 = this._parseDir(dotTo)
         const dir2 = this._parseDir(dotFrom)
         const id = type1 + type2 + dir1 + dir2
@@ -67,8 +72,8 @@ class DeformTable {
     }
 
     _parseDir(dir) {
-        if (dir === 0) return DEF_TRANSFORM
-        return dir > 0 ? DEF_CONVERGE : DEF_DIVERGE
+        if (dir === 0) return DIR_TRANSFORM
+        return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
     }
 
     _buildDeform(deform, p1, p2, dir1, dir2) {

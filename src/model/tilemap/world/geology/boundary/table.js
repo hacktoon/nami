@@ -1,16 +1,3 @@
-export const DEF_LAND = 0
-export const DEF_WATER = 100
-export const DEF_CONVERGE = 16
-export const DEF_TRANSFORM = 4
-export const DEF_DIVERGE = 1
-export const IDMAP = {
-    L: DEF_LAND,
-    W: DEF_WATER,
-    C: DEF_CONVERGE,
-    D: DEF_DIVERGE,
-    T: DEF_TRANSFORM,
-}
-
 
 export const LANDFORMS = {
     PEAK: {water: false, height: 5, color: '#AAA'},
@@ -27,8 +14,7 @@ export const LANDFORMS = {
 }
 
 
-export const DEFORM_TABLE = [
-
+export const BOUNDARY_TABLE = [
 // ==============================================
 // CONTINENTAL-CONTINENTAL
 // ==============================================
