@@ -87,7 +87,7 @@ class Deform {
     constructor(deform, boundary) {
         this.id = deform.id
         this.key = deform.key
-        this.name = deform.name
+        this.deform = deform
         this.priority = deform.priority ?? Infinity
         this.chance = boundary.chance ?? .5
         this.growth = boundary.growth ?? 6
@@ -103,11 +103,12 @@ class Deform {
         const landform = LANDFORMS[name]
         return {
             ...landform,
+            name: name,
             id: this.id,
             key: this.key,
-            name: this.name,
-            priority: this.priority,
             color: landform.color,
+            priority: this.priority,
+            boundary: this.deform.name,
             border: landform.border ?? landform.color,
         }
     }

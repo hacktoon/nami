@@ -38,13 +38,11 @@ export class TectonicsTileMap extends TileMap {
         const plate = this.getPlate(point)
         const region = this.regionGroupTileMap.getRegion(point)
         const stress = this.getStress(point)
-        let str = `ID: ${plate.id}, region: ${region.id}`
-        str += `, stress: ${stress}`
-        if (this.hasDeform(point)) {
-            const deform = this.getDeform(point)
-            str += `, id: ${deform.id}`
-            str += `, key: ${deform.key}, deform: ${deform.name}`
-        }
+        const landform = this.getLandform(point)
+        let str = `ID: ${plate.id}, region(${region.id})`
+        str += `, stress: ${stress}, key: ${landform.key}`
+        str += `, boundary: ${landform.boundary}`
+        str += `, landform: ${landform.name}`
         return str
     }
 
@@ -62,15 +60,9 @@ export class TectonicsTileMap extends TileMap {
         return this.regionGroupTileMap.isGroupBorder(point)
     }
 
-    getDeform(point) {
+    getLandform(point) {
         const region = this.regionGroupTileMap.getRegion(point)
-        const deform = this.model.regionLandformMap.get(region.id)
-        return deform
-    }
-
-    hasDeform(point) {
-        const region = this.regionGroupTileMap.getRegion(point)
-        return this.model.regionLandformMap.has(region.id)
+        return this.model.regionLandformMap.get(region.id)
     }
 
     getStress(point) {

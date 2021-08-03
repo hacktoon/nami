@@ -39,12 +39,10 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
             return plate.isContinental() ? '#d1610e' : '#1c7816'
         }
         if (this.showDeform) {
-            if (this.tileMap.hasDeform(point)) {
-                const deform = this.tileMap.getDeform(point)
-                hex = deform.color
-                if (isBorderPoint) {
-                    hex = deform.border ?? plate.color
-                }
+            const deform = this.tileMap.getLandform(point)
+            hex = deform.color
+            if (isBorderPoint) {
+                hex = deform.border ?? plate.color
             }
         }
         if (this.showPlateBorders && isBorderPoint) {

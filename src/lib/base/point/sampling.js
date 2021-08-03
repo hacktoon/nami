@@ -29,6 +29,12 @@ export class EvenPointSampling {
             deletePointsInCircle(maskPoints, pointSet, center, rect)
             points.push(center)
         }
+        if (points.length === 1) {
+            const x = points[0].x + Math.round(rect.width / 2)
+            const y = points[0].y + Math.round(rect.height / 2)
+            const point = rect.wrap(new Point(x, y))
+            return [...points, point]
+        }
         return points
     }
 }
