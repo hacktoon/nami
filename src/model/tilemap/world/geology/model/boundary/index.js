@@ -1,6 +1,7 @@
 import { PairMap } from '/lib/base'
 import { Direction } from '/lib/base/direction'
-import { BOUNDARY_TABLE, LANDFORMS } from './table'
+import { BOUNDARY_TABLE } from './table'
+import { LANDFORMS } from '../landform'
 
 
 const PLATE_CONTINENTAL = 0

@@ -107,6 +107,9 @@ class HeightIndex {
     }
 
     get(landform) {
+        if (! this.map.has(landform.name)) {
+            return []
+        }
         return this.map.get(landform.name)
     }
 }
