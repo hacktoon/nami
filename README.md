@@ -4,21 +4,24 @@
 
 [https://hacktoon.github.io/nami/](https://hacktoon.github.io/nami/)
 
+## NOTES
+- RegionGroupTileMap may not be necessary
+  - Unify into region map layers
 
 ## ROADMAP
 #### GeologyTileMap
-- add features to border/color properties of landforms
+- Add features to border/color properties of landforms
   - i.e. volcanoes to peaks, with chance
   - hydrothermal vents on border of rifts
-- erosion
+- Erosion
   - pick origin points of each region, in order of landform height
     peak -> mountain -> hill -> plain -> shallow -> deep
   - save points in a array for each landform
     - apply neighbor rules
 
-- avoid a plate having repeated boundary types
+- Avoid a plate having repeated boundary types
   - pick another (try rotating boundary types)
-- build heightMatrix
+- Build heightMatrix
 
 
 #### ClimateTileMap
