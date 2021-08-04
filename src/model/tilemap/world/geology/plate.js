@@ -12,14 +12,14 @@ const TYPE_OCEANIC = 'W'
 export class PlateModel {
     constructor(regionGroupTileMap) {
         this.regionGroupTileMap = regionGroupTileMap
-        this.plates = new PlateMap(regionGroupTileMap)
+        this.plateMap = new PlateMap(regionGroupTileMap)
         this.landformMap = new Map()
         this._build()
     }
 
     _build() {
         const regionGroup = this.regionGroupTileMap
-        const boundaryModel = new BoundaryModel(this.plates, regionGroup)
+        const boundaryModel = new BoundaryModel(this.plateMap, regionGroup)
         const borderRegions = regionGroup.getBorderRegions()
         const fills = borderRegions.map(region => {
             const group = regionGroup.getGroupByRegion(region)
@@ -78,7 +78,7 @@ class RegionFillConfig extends FloodFillConfig {
 export class PlateMap {
     constructor(regionGroupTileMap) {
         this.regionGroupTileMap = regionGroupTileMap
-        this.plates = new Map()
+        this.map = new Map()
         const cmpDescendingCount = (g0, g1) => g1.count - g0.count
         const groups = this.regionGroupTileMap.getGroups().sort(cmpDescendingCount)
         const typeMap = this._buildTypes(groups)
@@ -91,7 +91,7 @@ export class PlateMap {
             const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(id)
             const weight = id + (type === TYPE_OCEANIC ? groups.length * 10 : 0)
             const plate = new Plate(id, origin, type, area, weight)
-            this.plates.set(plate.id, plate)
+            this.map.set(plate.id, plate)
         })
     }
 
@@ -109,19 +109,19 @@ export class PlateMap {
     }
 
     get size() {
-        return this.plates.size
+        return this.map.size
     }
 
     get(id) {
-        return this.plates.get(id)
+        return this.map.get(id)
     }
 
     map(callback) {
-        return Array.from(this.plates.values()).map(plate => callback(plate))
+        return Array.from(this.map.values()).map(plate => callback(plate))
     }
 
     forEach(callback) {
-        this.plates.forEach(callback)
+        this.map.forEach(callback)
     }
 }
 
