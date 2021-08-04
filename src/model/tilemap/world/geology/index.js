@@ -34,7 +34,6 @@ export class GeologyTileMap extends TileMap {
         super(params)
         this.regionGroupTileMap = this._buildRegionGroupMap(this.seed, params)
         this.plateModel = new PlateModel(this.regionGroupTileMap)
-        this.plateMap = this.plateModel.plateMap
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -64,7 +63,7 @@ export class GeologyTileMap extends TileMap {
 
     getPlate(point) {
         const group = this.regionGroupTileMap.getGroup(point)
-        return this.plateMap.get(group.id)
+        return this.plateModel.get(group.id)
     }
 
     isPlateOrigin(plate, point) {
@@ -83,7 +82,7 @@ export class GeologyTileMap extends TileMap {
     }
 
     getDescription() {
-        return `${this.plateMap.size} plates`
+        return `${this.plateModel.size} plates`
     }
 
     map(callback) {

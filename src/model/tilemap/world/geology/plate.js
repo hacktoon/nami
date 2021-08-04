@@ -44,6 +44,14 @@ export class PlateModel {
             }
         }
     }
+
+    get(id) {
+        return this.plateMap.get(id)
+    }
+
+    get size() {
+        return this.plateMap.size
+    }
 }
 
 
