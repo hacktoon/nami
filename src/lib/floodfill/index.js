@@ -4,32 +4,32 @@ export class FloodFill {
     constructor(origin, config) {
         this.origin = origin
         this.config = config
-        this.seeds = [origin]
-        this.level = 0
         this.count = 0
+        this._seeds = [origin]
+        this._level = 0
 
         this._fillValue(this.origin)
     }
 
     grow() {
-        this.seeds = this.growLayer()
-        return this.seeds
+        this._seeds = this.growLayer()
+        return this._seeds
     }
 
-    growLayer(seeds=this.seeds) {
+    growLayer(seeds=this._seeds) {
         let newSeeds = []
         for(let seed of seeds) {
             const filledNeighbors = this._fillNeighbors(seed)
             newSeeds.push(...filledNeighbors)
         }
         if (newSeeds.length > 0) {
-            this.level += 1
+            this._level += 1
         }
         return newSeeds
     }
 
     _fillValue(value) {
-        this.config.setValue(value, this.level)
+        this.config.setValue(value, this._level)
         this.count += 1
     }
 
@@ -37,8 +37,8 @@ export class FloodFill {
         const filledNeighbors = []
         const allNeighbors = this.config.getNeighbors(origin)
         const emptyNeighbors = allNeighbors.filter(neighbor => {
-            this.config.checkNeighbor(neighbor, origin, this.level)
-            return this.config.isEmpty(neighbor, origin, this.level)
+            this.config.checkNeighbor(neighbor, origin, this._level)
+            return this.config.isEmpty(neighbor, origin, this._level)
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)

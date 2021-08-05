@@ -49,6 +49,10 @@ export class PlateModel {
         return this.plateMap.get(id)
     }
 
+    getLandform(regionId) {
+        return this.landformMap.get(regionId)
+    }
+
     get size() {
         return this.plateMap.size
     }

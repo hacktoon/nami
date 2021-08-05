@@ -6,6 +6,7 @@ import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
 import { GeologyTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
+import { ErosionModel } from './erosion'
 
 
 const ID = 'GeologyTileMap'
@@ -32,8 +33,9 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.regionGroupTileMap = this._buildRegionGroupMap(this.seed, params)
-        this.plateModel = new PlateModel(this.regionGroupTileMap)
+        this.reGroupTileMap = this._buildRegionGroupMap(this.seed, params)
+        this.plateModel = new PlateModel(this.reGroupTileMap)
+        this.erosionModel = new ErosionModel(this.reGroupTileMap, this.plateModel)
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -52,33 +54,34 @@ export class GeologyTileMap extends TileMap {
 
     get(point) {
         const plate = this.getPlate(point)
-        const region = this.regionGroupTileMap.getRegion(point)
+        const region = this.reGroupTileMap.getRegion(point)
         const landform = this.getLandform(point)
-        let str = `ID: ${plate.id}, region(${region.id})`
-        str += `, key: ${landform.key}`
-        str += `, boundary: ${landform.boundary}`
-        str += `, landform: ${landform.name}`
-        return str
+        return [
+            `plate: ${plate.id}, region: ${region.id}`,
+            `, key: ${landform.boundary.key}`,
+            `, boundary: ${landform.boundary.name}`,
+            `, landform: ${landform.name}`
+        ].join('')
     }
 
     getPlate(point) {
-        const group = this.regionGroupTileMap.getGroup(point)
+        const group = this.reGroupTileMap.getGroup(point)
         return this.plateModel.get(group.id)
     }
 
     isPlateOrigin(plate, point) {
         // TODO: eliminate this dependency
-        const matrix = this.regionGroupTileMap.regionTileMap.regionMatrix
+        const matrix = this.reGroupTileMap.regionTileMap.regionMatrix
         return plate.origin.equals(matrix.wrap(point))
     }
 
     isPlateBorder(point) {
-        return this.regionGroupTileMap.isGroupBorder(point)
+        return this.reGroupTileMap.isGroupBorder(point)
     }
 
     getLandform(point) {
-        const region = this.regionGroupTileMap.getRegion(point)
-        return this.plateModel.landformMap.get(region.id)
+        const region = this.reGroupTileMap.getRegion(point)
+        return this.plateModel.getLandform(region.id)
     }
 
     getDescription() {

@@ -1,7 +1,8 @@
 import { PairMap } from '/lib/base'
 import { Direction } from '/lib/base/direction'
+
+import { LANDFORMS } from '../landform'
 import { BOUNDARY_TABLE } from './table'
-import { LANDFORMS } from './landform'
 
 
 const PLATE_CONTINENTAL = 0
@@ -77,23 +78,21 @@ class BoundaryTable {
         return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
     }
 
-    _buildBoundary(spec, p1, p2, dir1, dir2) {
-        const first = spec.borders[0]
-        const second = spec.borders.length === 1 ? first : spec.borders[1]
+    _buildBoundary(boundary, p1, p2, dir1, dir2) {
+        const first = boundary.borders[0]
+        const second = boundary.borders.length === 1 ? first : boundary.borders[1]
         let border = dir1 > dir2 ? first : second
-        if (spec.rule === 'weight') {
+        if (boundary.rule === 'weight') {
             border = p1.weight > p2.weight ? first : second
         }
-        return new Boundary(spec, border)
+        return new Boundary(boundary, border)
     }
 }
 
 
 class Boundary {
-    constructor(spec, border) {
-        this.id = spec.id
-        this.key = spec.key
-        this.spec = spec
+    constructor(boundary, border) {
+        this.boundary = boundary
         this.chance = border.chance ?? .5
         this.growth = border.growth ?? 6
         this.landscape = border.landscape
@@ -108,11 +107,8 @@ class Boundary {
         const landform = LANDFORMS[name]
         return {
             ...landform,
-            name: name,
-            id: this.id,
-            key: this.key,
+            boundary: this.boundary,
             color: landform.color,
-            boundary: this.spec.name,
             border: landform.border ?? landform.color,
         }
     }
