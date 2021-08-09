@@ -13,7 +13,7 @@ export class ErosionModel {
         this.plateModel = plateModel
         this.heightIndex = this._buildHeightIndex()
         this.landformMatrix = new Matrix(width, height, () => EMPTY)
-        this._erodePeaks()
+        this._buildErosionMap()
     }
 
     _buildHeightIndex() {
@@ -25,14 +25,15 @@ export class ErosionModel {
         return index
     }
 
-    _erodePeaks() {
+    _buildErosionMap() {
         const regions = this.heightIndex.get(LANDFORMS.PEAK)
         const fills = regions.map(region => {
             const fillConfig = new RegionFillConfig({
                 reGroupTileMap: this.reGroupTileMap,
                 matrix: this.landformMatrix,
+                region
             })
-            return new FloodFill(region, fillConfig)
+            return new FloodFill(region.origin, fillConfig)
         })
         new MultiFill(fills)
     }
@@ -45,24 +46,24 @@ class RegionFillConfig extends FloodFillConfig {
         super()
         this.reGroupTileMap = data.reGroupTileMap
         this.landformMatrix = data.matrix
+        this.region = data.region
     }
 
-    isEmpty(region) {
-        return this.landformMatrix.get(region.id) === EMPTY
+    isEmpty(point) {
+        return this.landformMatrix.get(point) === EMPTY
     }
 
-    setValue(region, level) {
-        this.landformMatrix.set(region.id, level)
+    setValue(point, level) {
+        this.landformMatrix.set(point, 'xpto')
     }
 
-    getNeighbors(region) {
-        // if (region.id == 4225){
-        //     console.log(this.reGroupTileMap.getNeighborRegions(region));
-        // }
-        const neighbors = this.reGroupTileMap.getNeighborRegions(region)
-        return neighbors.filter(region => {
-            return region
-        })
+    getNeighbors(point) {
+        const region = this.reGroupTileMap.getRegion(point)
+        const neighbors = point.adjacents()
+        if (region.id == 4225) {
+            console.log(point.hash, neighbors.map(p => p.hash));
+        }
+        return neighbors
     }
 }
 
