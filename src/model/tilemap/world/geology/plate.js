@@ -1,7 +1,7 @@
 import { Direction } from '/lib/base/direction'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
-import { BoundaryModel } from './boundary'
+import { TectonicsModel } from './tectonics'
 import { ErosionModel } from './erosion'
 
 
@@ -19,7 +19,7 @@ export class PlateModel {
 
     _build() {
         const regionGroup = this.regionGroupTileMap
-        const boundaryModel = new BoundaryModel(this.plateMap, regionGroup)
+        const boundaryModel = new TectonicsModel(this.plateMap, regionGroup)
         const borderRegions = regionGroup.getBorderRegions()
         const fills = borderRegions.map(region => {
             const group = regionGroup.getGroupByRegion(region)

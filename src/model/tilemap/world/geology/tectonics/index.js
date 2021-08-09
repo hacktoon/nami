@@ -19,7 +19,7 @@ const IDMAP = {
 }
 
 
-export class BoundaryModel {
+export class TectonicsModel {
     constructor(plates, regionGroupTileMap) {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap

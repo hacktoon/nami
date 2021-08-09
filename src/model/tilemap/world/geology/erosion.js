@@ -1,6 +1,6 @@
 import { Matrix } from '/lib/base/matrix'
 import { FloodFill, MultiFill, FloodFillConfig } from '/lib/floodfill'
-import { LANDFORMS } from './landform'
+import { LANDFORMS, Landform } from './landform'
 
 
 const EMPTY = null
@@ -30,7 +30,8 @@ export class ErosionModel {
         const fills = regions.map(region => {
             const fillConfig = new RegionFillConfig({
                 reGroupTileMap: this.reGroupTileMap,
-                matrix: this.landformMatrix,
+                plateModel: this.plateModel,
+                landformMatrix: this.landformMatrix,
                 region
             })
             return new FloodFill(region.origin, fillConfig)
@@ -45,7 +46,8 @@ class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.reGroupTileMap = data.reGroupTileMap
-        this.landformMatrix = data.matrix
+        this.landformMatrix = data.landformMatrix
+        this.plateModel = data.plateModel
         this.region = data.region
     }
 
@@ -59,14 +61,19 @@ class RegionFillConfig extends FloodFillConfig {
 
     getNeighbors(point) {
         const region = this.reGroupTileMap.getRegion(point)
+        const landform = this.plateModel.getLandform(region.id)
         const neighbors = point.adjacents()
+        const higher = neighbors.filter(neighbor => {
+            const ngbRegion = this.reGroupTileMap.getRegion(neighbor)
+            const ngbLandform = this.plateModel.getLandform(ngbRegion.id)
+            return Landform.isHigherEqualThan(landform, ngbLandform)
+        })
         if (region.id == 4225) {
-            console.log(point.hash, neighbors.map(p => p.hash));
+            console.log(point.hash, higher)
         }
-        return neighbors
+        return higher
     }
 }
-
 
 
 class HeightIndex {
