@@ -39,7 +39,7 @@ export const LANDFORMS = {
 
 
 export class Landform {
-    static isHigherEqualThan(ld1, ld2) {
-        return ld1.height >= ld2.height
+    static isHigher(ld1, ld2) {
+        return ld1.height > ld2.height
     }
 }

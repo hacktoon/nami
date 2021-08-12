@@ -12,7 +12,7 @@ export class ErosionModel {
         this.reGroupTileMap = reGroupTileMap
         this.plateModel = plateModel
         this.heightIndex = this._buildHeightIndex()
-        this.landformMatrix = new Matrix(width, height, () => EMPTY)
+        this.erosionMatrix = new Matrix(width, height, () => EMPTY)
         this._buildErosionMap()
     }
 
@@ -30,9 +30,8 @@ export class ErosionModel {
         const fills = regions.map(region => {
             const fillConfig = new RegionFillConfig({
                 reGroupTileMap: this.reGroupTileMap,
+                erosionMatrix: this.erosionMatrix,
                 plateModel: this.plateModel,
-                landformMatrix: this.landformMatrix,
-                region
             })
             return new FloodFill(region.origin, fillConfig)
         })
@@ -46,32 +45,37 @@ class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.reGroupTileMap = data.reGroupTileMap
-        this.landformMatrix = data.landformMatrix
+        this.erosionMatrix = data.erosionMatrix
         this.plateModel = data.plateModel
-        this.region = data.region
     }
 
     isEmpty(point) {
-        return this.landformMatrix.get(point) === EMPTY
+        return this.erosionMatrix.get(point) === EMPTY
     }
 
-    setValue(point, level) {
-        this.landformMatrix.set(point, 'xpto')
+    setValue(point) {
+        const region = this.reGroupTileMap.getRegion(point)
+        const landform = this.plateModel.getLandform(region.id)
+        this.erosionMatrix.set(point, landform.name)
+    }
+
+    checkNeighbor(neighborPoint, point) {
+        const debug = point.hash == '127,39' ? true : false
+        const centerRegion = this.reGroupTileMap.getRegion(point)
+        const centerLandform = this.plateModel.getLandform(centerRegion.id)
+        const ngbRegion = this.reGroupTileMap.getRegion(neighborPoint)
+        const ngbLandform = this.plateModel.getLandform(ngbRegion.id)
+        const isErosion = Landform.isHigher(centerLandform, ngbLandform)
+        if (debug) {
+            console.log(
+                `higher=${isErosion}`,
+                `${centerLandform.name} => ${ngbLandform.name}`
+            )
+        }
     }
 
     getNeighbors(point) {
-        const region = this.reGroupTileMap.getRegion(point)
-        const landform = this.plateModel.getLandform(region.id)
-        const neighbors = point.adjacents()
-        const higher = neighbors.filter(neighbor => {
-            const ngbRegion = this.reGroupTileMap.getRegion(neighbor)
-            const ngbLandform = this.plateModel.getLandform(ngbRegion.id)
-            return Landform.isHigherEqualThan(landform, ngbLandform)
-        })
-        if (region.id == 4225) {
-            console.log(point.hash, higher)
-        }
-        return higher
+        return point.adjacents()
     }
 }
 
