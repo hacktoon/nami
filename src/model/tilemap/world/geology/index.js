@@ -81,19 +81,10 @@ export class GeologyTileMap extends TileMap {
     }
 
     getLandform(point) {
-        const region = this.reGroupTileMap.getRegion(point)
-        return this.plateModel.getLandform(region.id)
+        return this.erosionModel.get(point)
     }
 
     getDescription() {
         return `${this.plateModel.size} plates`
-    }
-
-    map(callback) {
-        return this.plateModel.map(plate => callback(plate))
-    }
-
-    forEach(callback) {
-        this.plateModel.forEach(callback)
     }
 }
