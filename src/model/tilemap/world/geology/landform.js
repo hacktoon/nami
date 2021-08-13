@@ -2,19 +2,19 @@
 export const LANDFORMS = {
     PEAK: {
         name: 'PEAK', water: false, height: 5, color: '#AAA',
-        erosion: 'MOUNTAIN'
+        erodesTo: 'MOUNTAIN'
     },
     MOUNTAIN: {
         name: 'MOUNTAIN', water: false, height: 4, color: '#8b8372',
-        erosion: 'HILL'
+        erodesTo: 'HILL'
     },
     PLATEAU: {
         name: 'PLATEAU', water: false, height: 3, color: '#996',
-        erosion: 'PLAIN'
+        erodesTo: 'PLAIN'
     },
     HILL: {
-        name: 'HILL', water: false, height: 3, color: '#685',
-        erosion: 'PLAIN'
+        name: 'HILL', water: false, height: 3, color: '#585',
+        erodesTo: 'PLAIN'
     },
     PLAIN: {
         name: 'PLAIN', water: false, height: 2, color: '#574'
@@ -30,16 +30,9 @@ export const LANDFORMS = {
     },
     DEEP_SEA: {
         name: 'DEEP_SEA', water: true, height: -2, color: '#058',
-        erosion: 'TRENCH'
+        erodesTo: 'TRENCH'
     },
     TRENCH: {
         name: 'TRENCH', water: true, height: -3, border: '#058', color: '#147'
     },
-}
-
-
-export class Landform {
-    static isHigher(ld1, ld2) {
-        return ld1.height > ld2.height
-    }
 }

@@ -28,10 +28,12 @@ export class ErosionModel {
     _buildErosionMap() {
         const regions = this.heightIndex.get(LANDFORMS.PEAK)
         const fills = regions.map(region => {
-            const fillConfig = new RegionFillConfig({
+            const landform = this.plateModel.getLandform(region.id)
+            const fillConfig = new ErosionFillConfig({
                 reGroupTileMap: this.reGroupTileMap,
                 erosionMatrix: this.erosionMatrix,
                 plateModel: this.plateModel,
+                landform
             })
             return new FloodFill(region.origin, fillConfig)
         })
@@ -41,12 +43,13 @@ export class ErosionModel {
 }
 
 
-class RegionFillConfig extends FloodFillConfig {
+class ErosionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.reGroupTileMap = data.reGroupTileMap
         this.erosionMatrix = data.erosionMatrix
         this.plateModel = data.plateModel
+        this.landform = data.landform
     }
 
     isEmpty(point) {
@@ -54,28 +57,28 @@ class RegionFillConfig extends FloodFillConfig {
     }
 
     setValue(point) {
-        const region = this.reGroupTileMap.getRegion(point)
-        const landform = this.plateModel.getLandform(region.id)
-        this.erosionMatrix.set(point, landform.name)
+        const landform = this.plateModel.getLandformByPoint(point)
+        this.erosionMatrix.set(point, landform)
     }
 
-    checkNeighbor(neighborPoint, point) {
-        const debug = point.hash == '127,39' ? true : false
-        const centerRegion = this.reGroupTileMap.getRegion(point)
-        const centerLandform = this.plateModel.getLandform(centerRegion.id)
-        const ngbRegion = this.reGroupTileMap.getRegion(neighborPoint)
-        const ngbLandform = this.plateModel.getLandform(ngbRegion.id)
-        const isErosion = Landform.isHigher(centerLandform, ngbLandform)
-        if (debug) {
-            console.log(
-                `higher=${isErosion}`,
-                `${centerLandform.name} => ${ngbLandform.name}`
-            )
-        }
-    }
-
-    getNeighbors(point) {
-        return point.adjacents()
+    getNeighbors(centerPoint) {
+        const sidePoints = centerPoint.adjacents()
+        return sidePoints.filter(sidePoint => {
+            const debug = centerPoint.hash == '127,39' ? true : false
+            const centerLandform = this.plateModel.getLandformByPoint(centerPoint)
+            const sideLandform = this.plateModel.getLandformByPoint(sidePoint)
+            if (sideLandform.height + 1 < centerLandform.height) {
+                const name = centerLandform.erodesTo
+                const erodedLandform = LANDFORMS[name] ?? sideLandform
+                this.erosionMatrix.set(sidePoint, erodedLandform)
+                if (debug) {
+                    // console.log(
+                    //     `${sideLandform.name} => ${erodedLandform.name}`
+                    // )
+                }
+            }
+            return sideLandform.name === centerLandform.name
+        })
     }
 }
 

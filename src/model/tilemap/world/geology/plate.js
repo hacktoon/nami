@@ -10,22 +10,22 @@ const TYPE_OCEANIC = 'W'
 
 
 export class PlateModel {
-    constructor(regionGroupTileMap) {
-        this.regionGroupTileMap = regionGroupTileMap
-        this.plateMap = new PlateMap(regionGroupTileMap)
+    constructor(reGroupTileMap) {
+        this.reGroupTileMap = reGroupTileMap
+        this.plateMap = new PlateMap(reGroupTileMap)
         this.landformMap = new Map()
         this._build()
     }
 
     _build() {
-        const regionGroup = this.regionGroupTileMap
+        const regionGroup = this.reGroupTileMap
         const boundaryModel = new TectonicsModel(this.plateMap, regionGroup)
         const borderRegions = regionGroup.getBorderRegions()
         const fills = borderRegions.map(region => {
             const group = regionGroup.getGroupByRegion(region)
             const boundary = this._buildPlateBoundary(boundaryModel, group, region)
             const fillConfig = new RegionFillConfig({
-                regionGroupTileMap: regionGroup,
+                reGroupTileMap: regionGroup,
                 landformMap: this.landformMap,
                 boundary,
                 group
@@ -36,9 +36,9 @@ export class PlateModel {
     }
 
     _buildPlateBoundary(boundaryModel, group, region) {
-        const neighborRegions = this.regionGroupTileMap.getNeighborRegions(region)
+        const neighborRegions = this.reGroupTileMap.getNeighborRegions(region)
         for(let neighbor of neighborRegions) {
-            const neighborGroup = this.regionGroupTileMap.getGroupByRegion(neighbor)
+            const neighborGroup = this.reGroupTileMap.getGroupByRegion(neighbor)
             if (neighborGroup.id !== group.id) {
                 return boundaryModel.get(group, neighborGroup)
             }
@@ -53,6 +53,11 @@ export class PlateModel {
         return this.landformMap.get(regionId)
     }
 
+    getLandformByPoint(point) {
+        const region = this.reGroupTileMap.getRegion(point)
+        return this.landformMap.get(region.id)
+    }
+
     get size() {
         return this.plateMap.size
     }
@@ -62,7 +67,7 @@ export class PlateModel {
 class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
-        this.regionGroupTileMap = data.regionGroupTileMap
+        this.reGroupTileMap = data.reGroupTileMap
         this.landformMap = data.landformMap
         this.heightIndex = data.heightIndex
         this.boundary = data.boundary
@@ -82,21 +87,21 @@ class RegionFillConfig extends FloodFillConfig {
     }
 
     getNeighbors(region) {
-        return this.regionGroupTileMap.getNeighborRegions(region)
+        return this.reGroupTileMap.getNeighborRegions(region)
     }
 }
 
 
 export class PlateMap {
-    constructor(regionGroupTileMap) {
-        this.regionGroupTileMap = regionGroupTileMap
+    constructor(reGroupTileMap) {
+        this.reGroupTileMap = reGroupTileMap
         this.map = new Map()
         const cmpDescendingCount = (g0, g1) => g1.count - g0.count
-        const groups = this.regionGroupTileMap.getGroups().sort(cmpDescendingCount)
+        const groups = this.reGroupTileMap.getGroups().sort(cmpDescendingCount)
         const typeMap = this._buildTypes(groups)
         groups.forEach(group => {
             const {id, origin, area} = group
-            const neighborsGroups = this.regionGroupTileMap.getNeighborGroups(group)
+            const neighborsGroups = this.reGroupTileMap.getNeighborGroups(group)
             const isLandlocked = neighborsGroups.concat(group).every(neighbor => {
                 return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
             })
@@ -108,7 +113,7 @@ export class PlateMap {
     }
 
     _buildTypes(groups) {
-        const halfWorldArea = Math.floor(this.regionGroupTileMap.area / 2)
+        const halfWorldArea = Math.floor(this.reGroupTileMap.area / 2)
         const typeMap = new Map()
         let totalOceanicArea = 0
         groups.forEach(group => {
