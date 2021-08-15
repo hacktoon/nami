@@ -62,7 +62,7 @@ class ErosionFillConfig extends FloodFillConfig {
 
     getNeighbors(centerPoint) {
         const sidePoints = centerPoint.adjacents()
-        const debug = centerPoint.hash == '127,39' ? true : false
+        const debug = centerPoint.hash == '52,27' ? true : false
         return sidePoints.filter(sidePoint => {
             const centerLandform = this.landformMatrix.get(centerPoint)
             const sideLandform = this.landformMatrix.get(sidePoint)
