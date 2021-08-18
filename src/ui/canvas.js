@@ -27,6 +27,12 @@ class CanvasContext {
         this.context.fillRect(x, y, size, size)
     }
 
+    mark(point, size, color='#000') {
+        const {x, y} = point
+        this.context.fillStyle = color
+        this.context.fillRect(x, y, size, size)
+    }
+
     text(point, text, color='#000') {
         this.context.fillStyle = color
         this.context.textAlign = "center"

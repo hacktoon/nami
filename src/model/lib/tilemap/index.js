@@ -44,4 +44,8 @@ export class TileMapDiagram {
     getText(point) {
         return
     }
+
+    getMark(point) {
+        return
+    }
 }

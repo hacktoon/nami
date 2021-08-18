@@ -22,6 +22,7 @@ export class TileMapScene {
         this.frame = new Frame(rect, zoom)
         this.diagram = diagram
         this.textQueue = []
+        this.markQueue = []
         this.focus = focus
         this.wrap = wrap
         this.zoom = zoom
@@ -33,20 +34,31 @@ export class TileMapScene {
 
     render(canvas) {
         const offscreenCanvas = createCanvas(this.width, this.height)
+        const markSize = Math.round(this.zoom / 4)
+        const markCenter = Math.floor(this.zoom / 2)
 
         this.#renderFrame((tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
                 const color = this.diagram.get(tilePoint)
                 const text = this.diagram.getText(tilePoint)
+                const mark = this.diagram.getMark(tilePoint)
                 canvas.rect(canvasPoint, this.zoom, color)
                 if (text) {
                     this.textQueue.push([canvasPoint, text])
                 }
+                if (mark) {
+                    this.markQueue.push([canvasPoint, mark])
+                }
+
             } else {
                 canvas.clear(this.zoom, canvasPoint)
             }
         })
-
+        for(let [canvasPoint, mark] of this.markQueue) {
+            const offset = markCenter - markSize / 2
+            const markPoint = canvasPoint.plus(new Point(offset, offset))
+            canvas.mark(markPoint, markSize, mark)
+        }
         for(let [canvasPoint, text] of this.textQueue) {
             canvas.text(canvasPoint, text, '#FFF')
         }

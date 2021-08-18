@@ -56,4 +56,11 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             return `${plate.id}:${dir}${dirName}`
         }
     }
+
+    getMark(point) {
+        const plate = this.tileMap.getPlate(point)
+        if (this.tileMap.isRegionOrigin(point)) {
+            return Color.fromHex(plate.color).brighten(50).toHex()
+        }
+    }
 }

@@ -9,12 +9,19 @@ const EMPTY = null
 export class ErosionModel {
     constructor(reGroupTileMap, plateModel) {
         const {width, height} = reGroupTileMap
+
+        // INPUT attributes
         this.reGroupTileMap = reGroupTileMap
         this.plateModel = plateModel
+
+        // OUTPUT attributes
         this.landformRegions = this._buildLandformRegions()
         this.landformMatrix = new Matrix(width, height, point => {
             return plateModel.getLandformByPoint(point)
         })
+        // stores directions for erosion paths
+        this.erosionMatrix = new Matrix(width, height, point => EMPTY)
+
         this._buildErosionMap()
     }
 
@@ -60,11 +67,15 @@ class ErosionFillConfig extends FloodFillConfig {
         return this.landformMatrix.get(point) === EMPTY
     }
 
+    checkNeighbor(neighbor, origin) {
+
+    }
+
     getNeighbors(centerPoint) {
         const sidePoints = centerPoint.adjacents()
-        const debug = centerPoint.hash == '52,27' ? true : false
+        const debug = centerPoint.hash == '127,39' ? true : false
+        const centerLandform = this.landformMatrix.get(centerPoint)
         return sidePoints.filter(sidePoint => {
-            const centerLandform = this.landformMatrix.get(centerPoint)
             const sideLandform = this.landformMatrix.get(sidePoint)
 
             // set erosion on those lesser than landform at centerPoint

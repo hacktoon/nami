@@ -76,6 +76,12 @@ export class GeologyTileMap extends TileMap {
         return plate.origin.equals(matrix.wrap(point))
     }
 
+    // TODO: eliminate this method
+    isRegionOrigin(point) {
+        const region = this.reGroupTileMap.getRegion(point)
+        return region.origin.equals(point)
+    }
+
     isPlateBorder(point) {
         return this.reGroupTileMap.isGroupBorder(point)
     }
