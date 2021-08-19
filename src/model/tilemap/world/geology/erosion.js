@@ -15,41 +15,40 @@ export class ErosionModel {
         this.plateModel = plateModel
 
         // OUTPUT attributes
-        this.landformRegionsMap = this._buildLandformRegions()
+        // this.landformRegionsMap = this._buildLandformRegions()
         this.landformMatrix = new Matrix(width, height, point => {
             return plateModel.getLandformByPoint(point)
         })
-        this.erosionMatrix = new Matrix(width, height, () => EMPTY)
-        this._buildErosionMap()
+        // this.erosionMatrix = new Matrix(width, height, () => EMPTY)
+        // this._buildErosionMap()
     }
 
-    _buildLandformRegions() {
-        const landformRegionsMap = new LandformRegionMap()
-        this.reGroupTileMap.getRegions().forEach(region => {
-            const landform = this.plateModel.getLandform(region.id)
-            landformRegionsMap.add(landform, region)
-        })
-        return landformRegionsMap
-    }
+    // _buildLandformRegions() {
+    //     const landformRegionsMap = new LandformRegionMap()
+    //     this.reGroupTileMap.getRegions().forEach(region => {
+    //         const landform = this.plateModel.getLandform(region.id)
+    //         landformRegionsMap.add(landform, region)
+    //     })
+    //     return landformRegionsMap
+    // }
 
-    _buildErosionMap() {
-        const regions = this.landformRegionsMap.get(LANDFORMS.PEAK)
-        const fills = regions.map(region => {
-            const landform = this.plateModel.getLandform(region.id)
-            const fillConfig = new ErosionFillConfig({
-                reGroupTileMap: this.reGroupTileMap,
-                erosionMatrix: this.erosionMatrix,
-                plateModel: this.plateModel,
-                landform
-            })
-            return new FloodFill(region.origin, fillConfig)
-        })
-        new MultiFill(fills)
-    }
+    // _buildErosionMap() {
+    //     const regions = this.landformRegionsMap.get(LANDFORMS.PEAK)
+    //     const fills = regions.map(region => {
+    //         const landform = this.plateModel.getLandform(region.id)
+    //         const fillConfig = new ErosionFillConfig({
+    //             reGroupTileMap: this.reGroupTileMap,
+    //             erosionMatrix: this.erosionMatrix,
+    //             plateModel: this.plateModel,
+    //             landform
+    //         })
+    //         return new FloodFill(region.origin, fillConfig)
+    //     })
+    //     new MultiFill(fills)
+    // }
 
     get(point) {
-        const eroded = this.erosionMatrix.get(point)
-        return eroded === EMPTY ? this.landformMatrix.get(point) : eroded
+        return this.landformMatrix.get(point)
     }
 
 }
@@ -92,7 +91,8 @@ class ErosionFillConfig extends FloodFillConfig {
     }
 
     getNeighbors(centerPoint) {
-        return centerPoint.adjacents()
+        const adjacents = centerPoint.adjacents()
+        return adjacents
     }
 }
 

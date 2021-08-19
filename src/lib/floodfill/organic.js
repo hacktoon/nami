@@ -5,8 +5,8 @@ import { FloodFill } from './index'
 export class OrganicFloodFill extends FloodFill {
     constructor(origin, fillConfig) {
         super(origin, fillConfig)
-        this.growth = fillConfig.growth
-        this.chance = fillConfig.chance
+        this.growth = fillConfig.growth ?? 1
+        this.chance = fillConfig.chance ?? .1
     }
 
     grow() {
