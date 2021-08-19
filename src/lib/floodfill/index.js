@@ -28,8 +28,8 @@ export class FloodFill {
         return newSeeds
     }
 
-    _fillValue(value) {
-        this.config.setValue(value, this._level)
+    _fillValue(point) {
+        this.config.setValue(point, this._level)
         this.count += 1
     }
 

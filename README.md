@@ -7,21 +7,24 @@
 ## NOTES
 - RegionGroupTileMap may not be necessary
   - Unify into region map layers
+  - base layer: regions
+  - next layers: group1, group2, etc
 
 ## ROADMAP
 #### GeologyTileMap
-- Add features to border/color properties of landforms
-  - i.e. volcanoes to peaks, with chance
-  - hydrothermal vents on border of rifts
 - Erosion
   - pick origin points of each region, in order of landform height
     peak -> mountain -> hill -> plain -> shallow -> deep
   - save points in a array for each landform
     - apply neighbor rules
 
+- Add features to border/color properties of landforms
+  - i.e. volcanoes to peaks, with chance
+  - hydrothermal vents on border of rifts
+
 - Avoid a plate having repeated boundary types
   - pick another (try rotating boundary types)
-- Build heightMatrix
+- Build heightMatrix or landformMatrix?
 
 
 #### ClimateTileMap

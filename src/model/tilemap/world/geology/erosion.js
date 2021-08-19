@@ -15,32 +15,31 @@ export class ErosionModel {
         this.plateModel = plateModel
 
         // OUTPUT attributes
-        this.landformRegions = this._buildLandformRegions()
+        this.landformRegionsMap = this._buildLandformRegions()
         this.landformMatrix = new Matrix(width, height, point => {
             return plateModel.getLandformByPoint(point)
         })
-        // stores directions for erosion paths
-        this.erosionMatrix = new Matrix(width, height, point => EMPTY)
-
+        this.erosionMatrix = new Matrix(width, height, () => EMPTY)
         this._buildErosionMap()
     }
 
     _buildLandformRegions() {
-        const landformRegions = new LandformRegions()
+        const landformRegionsMap = new LandformRegionMap()
         this.reGroupTileMap.getRegions().forEach(region => {
             const landform = this.plateModel.getLandform(region.id)
-            landformRegions.add(landform, region)
+            landformRegionsMap.add(landform, region)
         })
-        return landformRegions
+        return landformRegionsMap
     }
 
     _buildErosionMap() {
-        const regions = this.landformRegions.get(LANDFORMS.PEAK)
+        const regions = this.landformRegionsMap.get(LANDFORMS.PEAK)
         const fills = regions.map(region => {
             const landform = this.plateModel.getLandform(region.id)
             const fillConfig = new ErosionFillConfig({
                 reGroupTileMap: this.reGroupTileMap,
-                landformMatrix: this.landformMatrix,
+                erosionMatrix: this.erosionMatrix,
+                plateModel: this.plateModel,
                 landform
             })
             return new FloodFill(region.origin, fillConfig)
@@ -49,7 +48,8 @@ export class ErosionModel {
     }
 
     get(point) {
-        return this.landformMatrix.get(point)
+        const eroded = this.erosionMatrix.get(point)
+        return eroded === EMPTY ? this.landformMatrix.get(point) : eroded
     }
 
 }
@@ -59,40 +59,46 @@ class ErosionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
         this.reGroupTileMap = data.reGroupTileMap
-        this.landformMatrix = data.landformMatrix
+        this.erosionMatrix = data.erosionMatrix
+        this.plateModel = data.plateModel
         this.landform = data.landform
     }
 
-    isEmpty(point) {
-        return this.landformMatrix.get(point) === EMPTY
+    setValue(point) {
+        // set this.landform as default
+        const landform = this.plateModel.getLandformByPoint(point)
+        return this.erosionMatrix.set(point, landform)
     }
 
-    checkNeighbor(neighbor, origin) {
+    isEmpty(point) {
+        return this.erosionMatrix.get(point) === EMPTY
+    }
 
+    checkNeighbor(sidePoint, centerPoint) {
+        const centerLandform = this.plateModel.getLandformByPoint(centerPoint)
+        const sideLandform = this.plateModel.getLandformByPoint(sidePoint)
+        const debug = centerPoint.hash == '128,39' ? true : false
+
+        // set erosion on those lesser than landform at centerPoint
+        if (centerLandform.height > sideLandform.height + 1) {
+            const name = centerLandform.erodesTo
+            const erodedLandform = LANDFORMS[name] ?? sideLandform
+            // if (debug) {
+            //     console.log(centerLandform.height, sideLandform.height, erodedLandform);
+            // }
+
+            // this.erosionMatrix.set(sidePoint, erodedLandform)
+        }
     }
 
     getNeighbors(centerPoint) {
-        const sidePoints = centerPoint.adjacents()
-        const debug = centerPoint.hash == '127,39' ? true : false
-        const centerLandform = this.landformMatrix.get(centerPoint)
-        return sidePoints.filter(sidePoint => {
-            const sideLandform = this.landformMatrix.get(sidePoint)
-
-            // set erosion on those lesser than landform at centerPoint
-            if (sideLandform.height + 1 < centerLandform.height) {
-                const name = centerLandform.erodesTo
-                const erodedLandform = LANDFORMS[name] ?? sideLandform
-                this.landformMatrix.set(sidePoint, erodedLandform)
-            }
-            // seed only those at same height
-            return sideLandform.name === centerLandform.name
-        })
+        return centerPoint.adjacents()
     }
 }
 
 
-class LandformRegions {
-    // for each landform.height, add all region.id in that height to a list
+class LandformRegionMap {
+    // for each landform, add all region.id with that landform to a list
     constructor() {
         this.map = new Map()
     }
