@@ -83,19 +83,8 @@ export class MultiFill {
 
 
 export class FloodFillConfig {
-    isEmpty(cell) {
-        return false
-    }
-
-    setValue(cell, level) {
-        return
-    }
-
-    checkNeighbor(neighbor, reference) {
-        return
-    }
-
-    getNeighbors(cell) {
-        return []
-    }
+    isEmpty(cell) { return false }
+    setValue(cell, level) {}
+    checkNeighbor(neighbor, reference) {}
+    getNeighbors(cell) { return [] }
 }

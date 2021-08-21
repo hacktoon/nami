@@ -1,5 +1,9 @@
 
 export const LANDFORMS = {
+    SUMMIT: {
+        name: 'SUMMIT', water: false, height: 1, color: '#FFF',
+        erodesTo: 'PEAK'
+    },
     PEAK: {
         name: 'PEAK', water: false, height: 5, color: '#AAA',
         erodesTo: 'MOUNTAIN'
