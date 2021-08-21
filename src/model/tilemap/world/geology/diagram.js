@@ -13,6 +13,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showPlateBorder', 'Show borders', {default: false}),
         Type.boolean('showDirection', 'Show directions', {default: false}),
         Type.boolean('showHotspot', 'Show hotspots', {default: false}),
+        Type.boolean('showErosion', 'Show erosion', {default: true}),
     )
 
     static create(tileMap, params) {
@@ -25,27 +26,32 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showLandform = params.get('showLandform')
         this.showDirection = params.get('showDirection')
         this.showHotspot = params.get('showHotspot')
+        this.showErosion = params.get('showErosion')
     }
 
     get(point) {
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         const plate = this.tileMap.getPlate(point)
-        let hex = plate.color
+        let color = Color.fromHex(plate.color)
 
-        if (this.showHotspot && plate.origin.equals(point)) {
-            return '#F00'
-        }
         if (this.showLandform) {
             const landform = this.tileMap.getLandform(point)
-            hex = landform.color
+            color = Color.fromHex(landform.color)
             if (isBorderPoint) {
-                hex = landform.border ?? plate.color
+                color = Color.fromHex(landform.border ?? plate.color)
+            }
+            if (this.showHotspot && plate.origin.equals(point)) {
+                color = Color.fromHex('#F00')
             }
         }
         if (this.showPlateBorder && isBorderPoint) {
-            return Color.fromHex(hex).average(Color.fromHex('#F00')).toHex()
+            color = color.average(Color.fromHex('#F00'))
         }
-        return hex
+        if (this.showErosion) {
+            const landform = this.tileMap.getErodedLandform(point)
+            color = Color.fromHex(landform.color)
+        }
+        return color.toHex()
     }
 
     getText(point) {
@@ -57,10 +63,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    getMark(point) {
-        const plate = this.tileMap.getPlate(point)
-        if (this.tileMap.isRegionOrigin(point)) {
-            return Color.fromHex(plate.color).brighten(50).toHex()
-        }
-    }
+    // getMark(point) {
+    //     const plate = this.tileMap.getPlate(point)
+    //     if (this.tileMap.isRegionOrigin(point)) {
+    //         return Color.fromHex(plate.color).brighten(50).toHex()
+    //     }
+    // }
 }

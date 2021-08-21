@@ -90,6 +90,10 @@ export class GeologyTileMap extends TileMap {
         return this.erosionModel.get(point)
     }
 
+    getErodedLandform(point) {
+        return this.erosionModel.getErodedLandform(point)
+    }
+
     getDescription() {
         return `${this.plateModel.size} plates`
     }
