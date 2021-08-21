@@ -1,22 +1,21 @@
 
-
 export class FloodFill {
-    constructor(origin, config) {
-        this.origin = origin
+    constructor(origin, config=new FloodFillConfig()) {
         this.config = config
-        this.count = 0
+        this.origin = origin
         this._seeds = [origin]
+        this.count = 0
         this._level = 0
 
-        this._fillValue(this.origin)
+        this._fillValue(origin)
     }
 
     grow() {
-        this._seeds = this.growLayer()
+        this._seeds = this._growLayer()
         return this._seeds
     }
 
-    growLayer(seeds=this._seeds) {
+    _growLayer(seeds=this._seeds) {
         let newSeeds = []
         for(let seed of seeds) {
             const filledNeighbors = this._fillNeighbors(seed)

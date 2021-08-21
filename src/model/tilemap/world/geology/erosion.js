@@ -1,5 +1,9 @@
 import { Matrix } from '/lib/base/matrix'
-import { FloodFill, MultiFill, FloodFillConfig } from '/lib/floodfill'
+import { Point } from '/lib/base/point'
+import {
+    FloodFill,
+    MultiFill,
+    FloodFillConfig } from '/lib/floodfill'
 import { LANDFORMS, Landform } from './landform'
 
 
@@ -21,7 +25,7 @@ export class ErosionModel {
             }
             return landform
         })
-        // this._buildErosionMap()
+        this._buildErosionMap()
     }
 
     _buildErosionMap() {
@@ -50,27 +54,30 @@ class ErosionFillConfig extends FloodFillConfig {
         this.reGroupTileMap = data.reGroupTileMap
         this.erosionMatrix = data.erosionMatrix
         this.landformMatrix = data.landformMatrix
-        this.landform = data.landform  // origin's landform
+    }
+
+    setValue(point) {
+        const landform = this.landformMatrix.get(point)
+        this.erosionMatrix.set(point, landform)
     }
 
     getNeighbors(centerPoint) {
         const adjacents = centerPoint.adjacents()
-        const centerLandform = this.landformMatrix.get(centerPoint)
-        let landform = centerLandform
+        // const centerLandform = this.landformMatrix.get(centerPoint)
+        // let landform = centerLandform
 
-        const debug = centerPoint.hash == '53,27' ? true : false
-
+        // const debug = centerPoint.hash == '53,27' ? true : false
         // discover neighbor landforms
+
+        // if (debug) console.log(adjacents)
+
         // adjacents.forEach(sidePoint => {
         //     const sideLandform = this.landformMatrix.get(sidePoint)
-        //     if (debug) {
-        //         console.log(sideLandform);
+        //     // set erosion on those lesser than landform at centerPoint
+        //     if (centerLandform.height > sideLandform.height + 1) {
+        //         const name = centerLandform.erodesTo
+        //         const erodedLandform = LANDFORMS[name] ?? sideLandform
         //     }
-            // set erosion on those lesser than landform at centerPoint
-            // if (centerLandform.height > sideLandform.height + 1) {
-            //     const name = centerLandform.erodesTo
-            //     const erodedLandform = LANDFORMS[name] ?? sideLandform
-            // }
         // })
         // need to set here because it depends on neighbors
         // if (this.isEmpty(centerPoint)) {
