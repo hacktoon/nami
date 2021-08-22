@@ -34,8 +34,10 @@ class ErosionMatrix {
         const erosionQueue = []
         const calcErosion = centerPoint => {
             let centerLandform = landformMatrix.get(centerPoint)
+
             const equals = centerPoint.adjacents((sidePoint, direction) => {
                 const sideLandform = landformMatrix.get(sidePoint)
+                // erode region by neighborhood
                 if (sideLandform.height > centerLandform.height + 1) {
                     const name = sideLandform.erodesTo
                     centerLandform = LANDFORMS[name] ?? centerLandform
@@ -44,7 +46,7 @@ class ErosionMatrix {
                 return centerLandform.name == sideLandform.name
             })
 
-            // define regions by neighborhood
+            // raise regions by neighborhood
             if (equals.length == 4) {
                 const name = centerLandform.risesTo
                 centerLandform = LANDFORMS[name] ?? centerLandform
