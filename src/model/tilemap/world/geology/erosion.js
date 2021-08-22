@@ -30,10 +30,13 @@ export class ErosionModel {
 
 class ErosionMatrix {
     constructor(width, height, landformMatrix) {
-        this.matrix = this._buildBase(width, height, landformMatrix)
+        this.matrix = this._buildMatrix(width, height, landformMatrix)
+        this.matrix = this._buildMatrix(width, height, this.matrix)
+        this.matrix = this._buildMatrix(width, height, this.matrix)
+        this.matrix = this._buildMatrix(width, height, this.matrix)
     }
 
-    _buildBase(width, height, landformMatrix) {
+    _buildMatrix(width, height, landformMatrix) {
         const erosionQueue = []
         const calcErosion = centerPoint => {
             let centerLandform = landformMatrix.get(centerPoint)
@@ -41,9 +44,9 @@ class ErosionMatrix {
                 const sideLandform = landformMatrix.get(sidePoint)
                 // erode region by neighborhood
                 if (Landform.canErode(centerLandform, sideLandform)) {
+                    erosionQueue.push(centerPoint)
                     centerLandform = Landform.erode(centerLandform, sideLandform)
                 }
-                // return those equal to center
                 return centerLandform.name == sideLandform.name
             })
             // raise regions by neighborhood
@@ -52,7 +55,9 @@ class ErosionMatrix {
             }
             return centerLandform
         }
-        return new Matrix(width, height, calcErosion)
+        const matrix = new Matrix(width, height, calcErosion)
+        // console.log(erosionQueue.length, ' points eroded');
+        return matrix
     }
 
     get(point) {
