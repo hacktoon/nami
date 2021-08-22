@@ -1,6 +1,5 @@
 import { Matrix } from '/lib/base/matrix'
-import { Point } from '/lib/base/point'
-import { LANDFORMS } from './landform'
+import { LANDFORMS, Landform } from './landform'
 
 
 const EMPTY = null
@@ -31,29 +30,29 @@ export class ErosionModel {
 
 class ErosionMatrix {
     constructor(width, height, landformMatrix) {
+        this.matrix = this._buildBase(width, height, landformMatrix)
+    }
+
+    _buildBase(width, height, landformMatrix) {
         const erosionQueue = []
         const calcErosion = centerPoint => {
             let centerLandform = landformMatrix.get(centerPoint)
-
-            const equals = centerPoint.adjacents((sidePoint, direction) => {
+            const equalNeighbors = centerPoint.adjacents((sidePoint, direction) => {
                 const sideLandform = landformMatrix.get(sidePoint)
                 // erode region by neighborhood
-                if (sideLandform.height > centerLandform.height + 1) {
-                    const name = sideLandform.erodesTo
-                    centerLandform = LANDFORMS[name] ?? centerLandform
+                if (Landform.canErode(centerLandform, sideLandform)) {
+                    centerLandform = Landform.erode(centerLandform, sideLandform)
                 }
                 // return those equal to center
                 return centerLandform.name == sideLandform.name
             })
-
             // raise regions by neighborhood
-            if (equals.length == 4) {
-                const name = centerLandform.risesTo
-                centerLandform = LANDFORMS[name] ?? centerLandform
+            if (equalNeighbors.length == 4) {
+                centerLandform = Landform.rise(centerLandform)
             }
             return centerLandform
         }
-        this.matrix = new Matrix(width, height, calcErosion)
+        return new Matrix(width, height, calcErosion)
     }
 
     get(point) {

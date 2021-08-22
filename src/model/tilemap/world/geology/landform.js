@@ -42,3 +42,20 @@ export const LANDFORMS = {
         name: 'TRENCH', water: true, height: 0, color: '#147'
     },
 }
+
+
+export class Landform {
+    static canErode(centerLandform, sideLandform) {
+        return centerLandform.height + 1 < sideLandform.height
+    }
+
+    static erode(centerLandform, sideLandform) {
+        const name = sideLandform.erodesTo
+        return LANDFORMS[name] ?? centerLandform
+    }
+
+    static rise(centerLandform) {
+        const name = centerLandform.risesTo
+        return LANDFORMS[name] ?? centerLandform
+    }
+}
