@@ -1,12 +1,12 @@
 
 export const LANDFORMS = {
     SUMMIT: {
-        name: 'SUMMIT', water: false, height: 7, color: '#FFF',
+        name: 'SUMMIT', water: false, height: 7, color: '#DDD',
         erodesTo: 'PEAK'
     },
     PEAK: {
         name: 'PEAK', water: false, height: 6, color: '#AAA',
-        erodesTo: 'MOUNTAIN'
+        erodesTo: 'MOUNTAIN', risesTo: 'SUMMIT'
     },
     MOUNTAIN: {
         name: 'MOUNTAIN', water: false, height: 5, color: '#8b8372',
