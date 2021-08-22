@@ -108,8 +108,7 @@ class Boundary {
         return {
             ...landform,
             boundary: this.boundary,
-            color: landform.color,
-            border: landform.border ?? landform.color,
+            color: landform.color
         }
     }
 }
