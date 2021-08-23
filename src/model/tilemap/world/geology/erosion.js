@@ -41,26 +41,35 @@ class ErosionMatrix {
     _erodeMatrix(width, height, baseMatrix) {
         const erosionQueue = []
         const buildMatrix = centerPoint => {
-            const neighbors = centerPoint.adjacents()
-            const sideLandforms = neighbors.map(pt => baseMatrix.get(pt))
+            // for each point in the matrix
             let centerLandform = baseMatrix.get(centerPoint)
+            let highestSideLandform = centerLandform
+            let highestSidePoint = centerPoint
             let sameNeighborCount = 0
-
-            for(let sideLandform of sideLandforms) {
-                if (Landform.canErode(centerLandform, sideLandform)) {
-                    centerLandform = Landform.erode(centerLandform, sideLandform)
-                    // erosionQueue.push(sidePoint) //ta add + 2 vezes
+            // visit each one
+            for(let sidePoint of centerPoint.adjacents()) {
+                const sideLandform = baseMatrix.get(sidePoint)
+                // get the highest landform of sides
+                if (sideLandform.height > highestSideLandform.height) {
+                    highestSideLandform = sideLandform
+                    highestSidePoint = sidePoint
                 }
-                if (centerLandform.name == sideLandform.name)
+                // is it the same landform?
+                if (centerLandform.name == sideLandform.name) {
                     sameNeighborCount++
+                }
             }
-            // raise regions by neighborhood
-            if (sameNeighborCount == 4) {
+            // erode center based on side
+            if (Landform.canErode(centerLandform, highestSideLandform)) {
+                erosionQueue.push(highestSidePoint)
+                centerLandform = Landform.erode(centerLandform, highestSideLandform)
+            } else if (sameNeighborCount == 4) {
                 centerLandform = Landform.rise(centerLandform)
             }
             return centerLandform
         }
         const matrix = new Matrix(width, height, buildMatrix)
+        console.log(erosionQueue.length);
         // console.log(`${erosionQueue.length} points eroded`)
         return [matrix, erosionQueue]
     }
