@@ -38,28 +38,29 @@ class ErosionMatrix {
         this.matrix = matrix
     }
 
-    _erodeMatrix(width, height, landformMatrix) {
+    _erodeMatrix(width, height, baseMatrix) {
         const erosionQueue = []
-        const calcErosion = centerPoint => {
-            let centerLandform = landformMatrix.get(centerPoint)
-            const sameLandforms = centerPoint.adjacents((sidePoint, _) => {
-                const sideLandform = landformMatrix.get(sidePoint)
+        const buildMatrix = centerPoint => {
+            const neighbors = centerPoint.adjacents()
+            const sideLandforms = neighbors.map(pt => baseMatrix.get(pt))
+            let centerLandform = baseMatrix.get(centerPoint)
+            let sameNeighborCount = 0
+
+            for(let sideLandform of sideLandforms) {
                 if (Landform.canErode(centerLandform, sideLandform)) {
                     centerLandform = Landform.erode(centerLandform, sideLandform)
-                    erosionQueue.push(sidePoint)
+                    // erosionQueue.push(sidePoint) //ta add + 2 vezes
                 }
-                if (centerPoint.hash === '58,52') {
-                    console.log(sideLandform.name);
-                }
-                return centerLandform.name == sideLandform.name
-            })
+                if (centerLandform.name == sideLandform.name)
+                    sameNeighborCount++
+            }
             // raise regions by neighborhood
-            if (sameLandforms.length == 4) {
+            if (sameNeighborCount == 4) {
                 centerLandform = Landform.rise(centerLandform)
             }
             return centerLandform
         }
-        const matrix = new Matrix(width, height, calcErosion)
+        const matrix = new Matrix(width, height, buildMatrix)
         // console.log(`${erosionQueue.length} points eroded`)
         return [matrix, erosionQueue]
     }
