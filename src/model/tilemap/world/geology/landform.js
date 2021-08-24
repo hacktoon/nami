@@ -24,7 +24,7 @@ export const LANDFORMS = {
     },
     PLAIN: {
         name: 'PLAIN', water: false, height: 3, color: '#574',
-        erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .02
+        erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .01
     },
     ISLAND: {
         name: 'ISLAND', water: false, height: 3, color: '#574',
@@ -35,11 +35,11 @@ export const LANDFORMS = {
     },
     SHALLOW_SEA: {
         name: 'SHALLOW_SEA', water: true, height: 2, color: '#069',
-        erodesTo: 'DEEP_SEA', risesTo: 'ISLAND', riseChance: .01
+        erodesTo: 'DEEP_SEA', risesTo: 'ISLAND', riseChance: .005
     },
     DEEP_SEA: {
         name: 'DEEP_SEA', water: true, height: 1, color: '#058',
-        risesTo: 'SHALLOW_SEA', riseChance: .01
+        risesTo: 'SHALLOW_SEA', riseChance: .005
     },
     TRENCH: {
         name: 'TRENCH', water: true, height: 0, color: '#147'

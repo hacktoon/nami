@@ -32,6 +32,8 @@ class ErosionMatrix {
     constructor(width, height, landformMatrix) {
         let matrix = this._erodeMatrix(width, height, landformMatrix)
         matrix = this._erodeMatrix(width, height, matrix)
+        matrix = this._erodeMatrix(width, height, matrix)
+        matrix = this._erodeMatrix(width, height, matrix)
 
         this.matrix = matrix
     }
