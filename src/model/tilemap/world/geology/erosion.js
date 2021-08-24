@@ -30,21 +30,22 @@ export class ErosionModel {
 
 class ErosionMatrix {
     constructor(width, height, landformMatrix) {
-        let matrix = this._erodeMatrix(width, height, landformMatrix)
-        matrix = this._erodeMatrix(width, height, matrix)
-        matrix = this._erodeMatrix(width, height, matrix)
-        matrix = this._erodeMatrix(width, height, matrix)
+        this.erosionMatrix = new Matrix(width, height, () => EMPTY)
+        let baseMatrix = this._erodeMatrix(landformMatrix)
+        baseMatrix = this._erodeMatrix(baseMatrix)
+        baseMatrix = this._erodeMatrix(baseMatrix)
+        baseMatrix = this._erodeMatrix(baseMatrix)
 
-        this.matrix = matrix
+        this.matrix = baseMatrix
     }
 
-    _erodeMatrix(width, height, baseMatrix) {
+    _erodeMatrix(baseMatrix) {
         const buildMatrix = point => {
             let landform = baseMatrix.get(point)
             let highestSideLandform = landform
             let sameNeighborCount = 0
             const sidePoints = point.adjacents()
-            // visit each one
+            // visit each side point landform
             for(let sidePoint of sidePoints) {
                 const sideLandform = baseMatrix.get(sidePoint)
                 // get the highest landform of sides
@@ -64,7 +65,7 @@ class ErosionMatrix {
             }
             return landform
         }
-        return new Matrix(width, height, buildMatrix)
+        return new Matrix(baseMatrix.width, baseMatrix.height, buildMatrix)
     }
 
     get(point) {
