@@ -49,32 +49,39 @@ class ErosionMatrix {
         const erosionQueue = []
         for(let erodedPoint of this.erosionQueue) {
             // for each point in queue, visit the adjacents
-            for(let point of erodedPoint.adjacents()) {
-                const sidePoints = point.adjacents()
-                let landform = matrix.get(point)
-                let highestSideLandform = landform
-                let sameNeighborCount = 0
-                // visit each side point landform
-                for(let sidePoint of sidePoints) {
-                    const sideLandform = matrix.get(sidePoint)
-                    // get the highest landform of sides
-                    if (sideLandform.height > highestSideLandform.height) {
-                        highestSideLandform = sideLandform
-                    }
-                    // is it the same landform?
-                    if (landform.name == sideLandform.name) {
-                        sameNeighborCount++
-                    }
+            const points = this._erodeQueueAdjacents(matrix, erodedPoint)
+            erosionQueue.push(...points)
+        }
+        return erosionQueue
+    }
+
+    _erodeQueueAdjacents(matrix, erodedPoint) {
+        const erosionQueue = []
+        for(let point of erodedPoint.adjacents()) {
+            const sidePoints = point.adjacents()
+            let landform = matrix.get(point)
+            let highestSideLandform = landform
+            let sameNeighborCount = 0
+            // visit each side point landform
+            for(let sidePoint of sidePoints) {
+                const sideLandform = matrix.get(sidePoint)
+                // get the highest landform of sides
+                if (sideLandform.height > highestSideLandform.height) {
+                    highestSideLandform = sideLandform
                 }
-                // erode center based on highest side
-                if (Landform.canErode(landform, highestSideLandform)) {
-                    landform = Landform.erode(landform, highestSideLandform)
-                    erosionQueue.push(point)
-                } else if (sameNeighborCount === sidePoints.length) {
-                    landform = Landform.rise(landform)
+                // is it the same landform?
+                if (landform.name == sideLandform.name) {
+                    sameNeighborCount++
                 }
-                matrix.set(point, landform)
             }
+            // erode center based on highest side
+            if (Landform.canErode(landform, highestSideLandform)) {
+                landform = Landform.erode(landform, highestSideLandform)
+                erosionQueue.push(point)
+            } else if (sameNeighborCount === sidePoints.length) {
+                landform = Landform.rise(landform)
+            }
+            matrix.set(point, landform)
         }
         return erosionQueue
     }
