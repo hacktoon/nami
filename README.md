@@ -12,15 +12,13 @@
 
 ## ROADMAP
 #### GeologyTileMap
+- Set hotspots on landformMatrix after basins
+- Fix depression - water border
 - Mark slope type (water)
 - pointy tiles may turn into river deltas
-- Fix depression - water border
-- Set hotspots on landformMatrix after basins
 - Add features to border/color properties of landforms
   - i.e. volcanoes to peaks, with chance
   - hydrothermal vents on border of rifts
-
-- Build heightMatrix or landformMatrix?
 
 
 #### ClimateTileMap
