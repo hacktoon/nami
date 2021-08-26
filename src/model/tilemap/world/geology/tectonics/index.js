@@ -81,10 +81,7 @@ class BoundaryTable {
     _buildBoundary(boundary, p1, p2, dir1, dir2) {
         const first = boundary.borders[0]
         const second = boundary.borders.length === 1 ? first : boundary.borders[1]
-        let border = dir1 > dir2 ? first : second
-        if (boundary.rule === 'weight') {
-            border = p1.weight > p2.weight ? first : second
-        }
+        const border = p1.weight > p2.weight ? first : second
         return new Boundary(boundary, border)
     }
 }

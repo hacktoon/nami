@@ -2,7 +2,6 @@ import { Direction } from '/lib/base/direction'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { TectonicsModel } from './tectonics'
-import { ErosionModel } from './erosion'
 
 
 const TYPE_CONTINENTAL = 'L'
@@ -28,7 +27,6 @@ export class PlateModel {
                 reGroupTileMap: regionGroup,
                 landformMap: this.landformMap,
                 boundary,
-                group
             })
             return new OrganicFloodFill(region, fillConfig)
         })
@@ -71,7 +69,6 @@ class RegionFillConfig extends FloodFillConfig {
         this.landformMap = data.landformMap
         this.heightIndex = data.heightIndex
         this.boundary = data.boundary
-        this.group = data.group
 
         this.chance = data.boundary.chance
         this.growth = data.boundary.growth
@@ -150,6 +147,7 @@ class Plate {
         this.area = area
         this.origin = origin
         this.direction = Direction.random()
+        this.hasHotspot = id % 2 === 0
         this.weight = weight
         this.color = type === TYPE_OCEANIC ? '#058' : '#574'
     }
