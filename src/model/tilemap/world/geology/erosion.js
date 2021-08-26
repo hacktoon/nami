@@ -40,7 +40,6 @@ class ErosionMatrix {
             return landformMatrix.get(point)
         })
         while(this.erosionQueue.length > 0) {
-            console.log(this.erosionQueue.length);
             this.erosionQueue = this._erodeQueue(matrix)
         }
         return matrix
@@ -49,6 +48,7 @@ class ErosionMatrix {
     _erodeQueue(matrix) {
         const erosionQueue = []
         for(let erodedPoint of this.erosionQueue) {
+            // for each point in queue, visit the adjacents
             for(let point of erodedPoint.adjacents()) {
                 const sidePoints = point.adjacents()
                 let landform = matrix.get(point)
@@ -69,12 +69,11 @@ class ErosionMatrix {
                 // erode center based on highest side
                 if (Landform.canErode(landform, highestSideLandform)) {
                     landform = Landform.erode(landform, highestSideLandform)
-                    matrix.set(point, landform)
                     erosionQueue.push(point)
                 } else if (sameNeighborCount === sidePoints.length) {
                     landform = Landform.rise(landform)
-                    matrix.set(point, landform)
                 }
+                matrix.set(point, landform)
             }
         }
         return erosionQueue
