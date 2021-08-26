@@ -47,17 +47,17 @@ class ErosionMatrix {
 
     _erodeQueue(matrix) {
         const erosionQueue = []
-        for(let erodedPoint of this.erosionQueue) {
+        for(let erodePoint of this.erosionQueue) {
             // for each point in queue, visit the adjacents
-            const points = this._erodeQueueAdjacents(matrix, erodedPoint)
+            const points = this._erodeQueueAdjacents(matrix, erodePoint)
             erosionQueue.push(...points)
         }
         return erosionQueue
     }
 
-    _erodeQueueAdjacents(matrix, erodedPoint) {
+    _erodeQueueAdjacents(matrix, erodePoint) {
         const erosionQueue = []
-        for(let point of erodedPoint.adjacents()) {
+        for(let point of erodePoint.adjacents()) {
             const sidePoints = point.adjacents()
             let landform = matrix.get(point)
             let highestSideLandform = landform
