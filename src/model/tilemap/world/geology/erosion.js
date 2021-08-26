@@ -1,10 +1,9 @@
 import { Matrix } from '/lib/base/matrix'
-import { LANDFORMS, Landform } from './landform'
+import { Landform } from './landform'
 
 
 const EMPTY = null
 
-// TODO: get border as a landform value in landform matrix calc
 
 export class ErosionModel {
     constructor(reGroupTileMap, plateModel) {
@@ -14,7 +13,7 @@ export class ErosionModel {
         this.landformMatrix = new Matrix(width, height, point => {
             return plateModel.getLandformByPoint(point)
         })
-        this.erosionMatrix = new ErosionMatrix(width, height, this.landformMatrix)
+        this.erosionMatrix = new ErosionMatrix(this.landformMatrix)
     }
 
     get(point) {
@@ -29,25 +28,55 @@ export class ErosionModel {
 
 
 class ErosionMatrix {
-    constructor(width, height, landformMatrix) {
-        this.erosionMatrix = new Matrix(width, height, () => EMPTY)
-        let baseMatrix = this._erodeMatrix(landformMatrix)
-        baseMatrix = this._erodeMatrix(baseMatrix)
-        baseMatrix = this._erodeMatrix(baseMatrix)
-        baseMatrix = this._erodeMatrix(baseMatrix)
-
-        this.matrix = baseMatrix
+    constructor(landformMatrix) {
+        this.erosionQueue = []
+        this.matrix = this._build(landformMatrix)
     }
 
-    _erodeMatrix(baseMatrix) {
+    _build(landformMatrix) {
+        let matrix = this._erodeMatrix(landformMatrix)
+        while(this.erosionQueue.length > 0) {
+            this.erosionQueue = this._erodeQueue(matrix)
+        }
+        return matrix
+    }
+
+    _erodeQueue(matrix) {
+        const erosionQueue = []
+        for(let erodedPoint of this.erosionQueue) {
+            for(let point of erodedPoint.adjacents()) {
+                const sidePoints = point.adjacents()
+                let landform = matrix.get(point)
+                let highestSideLandform = landform
+
+                // visit each side point landform
+                for(let sidePoint of sidePoints) {
+                    const sideLandform = matrix.get(sidePoint)
+                    // get the highest landform of sides
+                    if (sideLandform.height > highestSideLandform.height) {
+                        highestSideLandform = sideLandform
+                    }
+                }
+                // erode center based on highest side
+                if (Landform.canErode(landform, highestSideLandform)) {
+                    landform = Landform.erode(landform, highestSideLandform)
+                    matrix.set(point, landform)
+                    erosionQueue.push(point)
+                }
+            }
+        }
+        return erosionQueue
+    }
+
+    _erodeMatrix(matrix) {
         const buildMatrix = point => {
-            let landform = baseMatrix.get(point)
+            const sidePoints = point.adjacents()
+            let landform = matrix.get(point)
             let highestSideLandform = landform
             let sameNeighborCount = 0
-            const sidePoints = point.adjacents()
             // visit each side point landform
             for(let sidePoint of sidePoints) {
-                const sideLandform = baseMatrix.get(sidePoint)
+                const sideLandform = matrix.get(sidePoint)
                 // get the highest landform of sides
                 if (sideLandform.height > highestSideLandform.height) {
                     highestSideLandform = sideLandform
@@ -57,15 +86,16 @@ class ErosionMatrix {
                     sameNeighborCount++
                 }
             }
-            // erode center based on side
+            // erode center based on highest side
             if (Landform.canErode(landform, highestSideLandform)) {
                 landform = Landform.erode(landform, highestSideLandform)
-            } else if (sameNeighborCount == sidePoints.length) {
+                this.erosionQueue.push(point)
+            } else if (sameNeighborCount === sidePoints.length) {
                 landform = Landform.rise(landform)
             }
             return landform
         }
-        return new Matrix(baseMatrix.width, baseMatrix.height, buildMatrix)
+        return new Matrix(matrix.width, matrix.height, buildMatrix)
     }
 
     get(point) {
