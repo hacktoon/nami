@@ -24,7 +24,7 @@ export class TectonicsModel {
         this.plates = plates
         this.regionGroupTileMap = regionGroupTileMap
         this._deforms = new PairMap()
-        this._deformTable = new BoundaryTable(BOUNDARY_TABLE)
+        this._boundaryTable = new BoundaryTable(BOUNDARY_TABLE)
 
         regionGroupTileMap.getGroups().forEach(group => {
             const neighbors = regionGroupTileMap.getNeighborGroups(group)
@@ -43,7 +43,7 @@ export class TectonicsModel {
         const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
-        return this._deformTable.build(plate, otherPlate, dotTo, dotFrom)
+        return this._boundaryTable.build(plate, otherPlate, dotTo, dotFrom)
     }
 
     get(group, neighborGroup) {
@@ -70,7 +70,7 @@ class BoundaryTable {
         const dir2 = this._parseDir(dotFrom)
         const id = type1 + type2 + dir1 + dir2
         const spec = this.#codeTable.get(id)
-        return this._buildBoundary(spec, p1, p2, dir1, dir2)
+        return this._buildBoundary(spec, p1, p2)
     }
 
     _parseDir(dir) {
@@ -78,21 +78,21 @@ class BoundaryTable {
         return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
     }
 
-    _buildBoundary(boundary, p1, p2, dir1, dir2) {
-        const first = boundary.borders[0]
-        const second = boundary.borders.length === 1 ? first : boundary.borders[1]
-        const border = p1.weight > p2.weight ? first : second
-        return new Boundary(boundary, border)
+    _buildBoundary(spec, p1, p2) {
+        const first = spec.data[0]
+        const second = spec.data.length === 1 ? first : spec.data[1]
+        const data = p1.weight > p2.weight ? first : second
+        return new Boundary(spec, data)
     }
 }
 
 
 class Boundary {
-    constructor(boundary, border) {
-        this.boundary = boundary
-        this.chance = border.chance ?? .5
-        this.growth = border.growth ?? 6
-        this.landscape = border.landscape
+    constructor(spec, data) {
+        this.spec = spec
+        this.chance = data.chance ?? .5
+        this.growth = data.growth ?? 6
+        this.landscape = data.landscape
     }
 
     getLandform(level) {
@@ -104,7 +104,7 @@ class Boundary {
         const landform = LANDFORMS[name]
         return {
             ...landform,
-            boundary: this.boundary,
+            boundary: this.spec,
             color: landform.color
         }
     }

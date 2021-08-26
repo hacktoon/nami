@@ -4,7 +4,7 @@ export const BOUNDARY_TABLE = [
 // CONTINENTAL-CONTINENTAL
 // ==============================================
 {key: 'LLCC', name: 'Continental collision',
-borders: [
+data: [
     {chance: .5, growth: 2, landscape: [
         {level: 0, name: 'PEAK'},
         {level: 1, name: 'MOUNTAIN'},
@@ -19,7 +19,7 @@ borders: [
 ]},
 
 {key: 'LLCT', name: 'Old mountains',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'HILL'},
         {level: 1, name: 'PLAIN'},
@@ -34,7 +34,7 @@ borders: [
 ]},
 
 {key: 'LLCD', name: 'Rift valley',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'DEPRESSION'},
         {level: 1, name: 'PLAIN'},
@@ -49,7 +49,7 @@ borders: [
 ]},
 
 {key: 'LLDT', name: 'Early rift sea',
-borders: [
+data: [
     {chance: .1, growth: 1, landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'PLAIN'},
@@ -63,7 +63,7 @@ borders: [
 ]},
 
 {key: 'LLDD', name: 'Rift sea',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'DEEP_SEA'},
         {level: 1, name: 'SHALLOW_SEA'},
@@ -78,7 +78,7 @@ borders: [
 ]},
 
 {key: 'LLTT', name: 'Transform Fault',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'PLAIN'},
         {level: 1, name: 'HILL'},
@@ -95,7 +95,7 @@ borders: [
 // CONTINENTAL-OCEANIC
 // ==============================================
 {key: 'LWCC', name: 'Cordillera',
-borders: [
+data: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 1, name: 'DEEP_SEA'},
@@ -113,7 +113,7 @@ borders: [
 ]},
 
 {key: 'LWCT', name: 'Early cordillera',
-borders: [
+data: [
     {chance: .2, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 1, name: 'DEEP_SEA'},
@@ -128,7 +128,7 @@ borders: [
 ]},
 
 {key: 'LWCD', name: 'Early passive margin',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
@@ -142,7 +142,7 @@ borders: [
 ]},
 
 {key: 'LWDD', name: 'Passive margin',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 3, name: 'DEEP_SEA'},
@@ -156,7 +156,7 @@ borders: [
 ]},
 
 {key: 'LWDT', name: 'Island arc basin',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'ISLAND'},
@@ -171,7 +171,7 @@ borders: [
 ]},
 
 {key: 'LWTT', name: 'Coastal fault',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'DEEP_SEA'}
     ]},
@@ -186,7 +186,7 @@ borders: [
 // OCEANIC-OCEANIC
 // ==============================================
 {key: 'WWCC', name: 'Island arc',
-borders: [
+data: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 2, name: 'DEEP_SEA'}
@@ -200,7 +200,7 @@ borders: [
 ]},
 
 {key: 'WWCT', name: 'Early island arc',
-borders: [
+data: [
     {chance: .2, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
         {level: 2, name: 'DEEP_SEA'}
@@ -214,12 +214,12 @@ borders: [
 ]},
 
 {key: 'WWCD', name: 'Abyssal plains',
-borders: [
+data: [
     {landscape: [{level: 0, name: 'DEEP_SEA'}]},
 ]},
 
 {key: 'WWDD', name: 'Oceanic rift',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
@@ -228,7 +228,7 @@ borders: [
 ]},
 
 {key: 'WWDT', name: 'Early oceanic rift',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
@@ -237,7 +237,7 @@ borders: [
 ]},
 
 {key: 'WWTT', name: 'Oceanic fault',
-borders: [
+data: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'DEEP_SEA'},
