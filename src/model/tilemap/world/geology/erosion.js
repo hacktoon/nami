@@ -14,6 +14,7 @@ export class ErosionModel {
             return plateModel.getLandformByPoint(point)
         })
         this.erosionMatrix = new ErosionMatrix(this.landformMatrix)
+        // this.basinMatrix = new BasinMatrix(this.erosionMatrix)
     }
 
     get(point) {
@@ -84,6 +85,22 @@ class ErosionMatrix {
             matrix.set(point, landform)
         }
         return erosionQueue
+    }
+
+    get(point) {
+        return this.matrix.get(point)
+    }
+}
+
+
+class BasinMatrix {
+    constructor(erosionMatrix) {
+        const {width, height} = erosionMatrix
+        this.shorePoints = []
+        this.matrix = new Matrix(width, height, point => {
+            this.shorePoints.push(point)
+            return erosionMatrix.get(point)
+        })
     }
 
     get(point) {

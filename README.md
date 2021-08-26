@@ -12,18 +12,14 @@
 
 ## ROADMAP
 #### GeologyTileMap
-- Erosion
-  - pick origin points of each region, in order of landform height
-    peak -> mountain -> hill -> plain -> shallow -> deep
-  - save points in a array for each landform
-    - apply neighbor rules
-
+- Mark slope type (water)
+- pointy tiles may turn into river deltas
+- Fix depression - water border
+- Set hotspots on landformMatrix after basins
 - Add features to border/color properties of landforms
   - i.e. volcanoes to peaks, with chance
   - hydrothermal vents on border of rifts
 
-- Avoid a plate having repeated boundary types
-  - pick another (try rotating boundary types)
 - Build heightMatrix or landformMatrix?
 
 
