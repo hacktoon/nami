@@ -31,7 +31,8 @@ export const LANDFORMS = {
         erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .4
     },
     DEPRESSION: {
-        name: 'DEPRESSION', water: false, height: 2, color: '#352'
+        name: 'DEPRESSION', water: false, height: 2, color: '#4f664c',
+        risesTo: 'SHALLOW_SEA', riseChance: .1
     },
     SHALLOW_SEA: {
         name: 'SHALLOW_SEA', water: true, height: 2, color: '#069',
