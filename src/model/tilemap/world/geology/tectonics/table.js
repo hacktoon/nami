@@ -96,13 +96,13 @@ export const BOUNDARY_TABLE = [
     data: [
         {chance: .5, growth: 3, landscape: [
             {level: 0, name: 'TRENCH'},
-            {level: 4, name: 'DEEP_SEA'},
+            {level: 2, name: 'DEEP_SEA'},
         ]},
         {landscape: [
-            {level: 0, name: 'PEAK'},
-            {level: 1, name: 'MOUNTAIN'},
-            {level: 3, name: 'HILL'},
-            {level: 4, name: 'PLAIN'},
+            {level: 0, name: 'PLAIN'},
+            {level: 1, name: 'PEAK'},
+            {level: 3, name: 'MOUNTAIN'},
+            {level: 5, name: 'HILL'},
         ]},
     ]},
     // ==============================================
@@ -129,7 +129,6 @@ export const BOUNDARY_TABLE = [
             {level: 0, name: 'SHALLOW_SEA'},
             {level: 1, name: 'PLAIN'},
             {level: 2, name: 'HILL'},
-            {level: 5, name: 'PLAIN'},
         ]},
     ]},
     // ==============================================
@@ -169,8 +168,8 @@ export const BOUNDARY_TABLE = [
             {level: 1, name: 'DEEP_SEA'}
         ]},
         {landscape: [
-            {level: 0, name: 'SHALLOW_SEA'},
-            {level: 1, name: 'PLAIN'},
+            {level: 0, name: 'DEEP_SEA'},
+            {level: 1, name: 'HILL'},
         ]},
     ]},
 
@@ -184,25 +183,20 @@ export const BOUNDARY_TABLE = [
             {level: 0, name: 'TRENCH'},
             {level: 1, name: 'DEEP_SEA'}
         ]},
-        {landscape: [
+        {chance: .5, growth: 2, landscape: [
             {level: 0, name: 'SHALLOW_SEA'},
             {level: 1, name: 'ISLAND'},
-            {level: 2, name: 'SHALLOW_SEA'},
-            {level: 3, name: 'DEEP_SEA'},
+            {level: 2, name: 'DEEP_SEA'},
         ]},
     ]},
     // ==============================================
     {key: 'WWCT', name: 'Early island arc',
     data: [
-        {chance: .2, growth: 1, landscape: [
-            {level: 0, name: 'TRENCH'},
-            {level: 1, name: 'DEEP_SEA'}
-        ]},
+        {landscape: [{level: 0, name: 'DEEP_SEA'}]},
         {chance: .3, growth: 1, landscape: [
             {level: 0, name: 'SHALLOW_SEA'},
             {level: 1, name: 'ISLAND'},
-            {level: 2, name: 'SHALLOW_SEA'},
-            {level: 3, name: 'DEEP_SEA'},
+            {level: 2, name: 'DEEP_SEA'},
         ]},
     ]},
     // ==============================================

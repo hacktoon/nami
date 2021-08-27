@@ -10,7 +10,6 @@ import { ErosionModel } from './erosion'
 
 
 const ID = 'GeologyTileMap'
-
 const SCHEMA = new Schema(
     ID,
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
@@ -33,9 +32,13 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
+        const start = performance.now()
         this.reGroupTileMap = this._buildRegionGroupMap(this.seed, params)
+        console.log('region group', Math.floor(performance.now() - start) / 1000)
         this.plateModel = new PlateModel(this.reGroupTileMap)
+        console.log('plate model', Math.floor(performance.now() - start) / 1000)
         this.erosionModel = new ErosionModel(this.reGroupTileMap, this.plateModel)
+        console.log('erosion model', Math.floor(performance.now() - start) / 1000)
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -75,12 +78,6 @@ export class GeologyTileMap extends TileMap {
         // TODO: eliminate this dependency
         const matrix = this.reGroupTileMap.regionTileMap.regionMatrix
         return plate.origin.equals(matrix.wrap(point))
-    }
-
-    // TODO: eliminate this method
-    isRegionOrigin(point) {
-        const region = this.reGroupTileMap.getRegion(point)
-        return region.origin.equals(point)
     }
 
     isPlateBorder(point) {
