@@ -1,7 +1,7 @@
 import { Random } from '/lib/base/random'
 
 
-export const LANDFORMS = {
+const LANDFORMS = {
     SUMMIT: {
         name: 'SUMMIT', water: false, height: 7, color: '#DDD',
         erodesTo: 'PEAK'
@@ -30,6 +30,13 @@ export const LANDFORMS = {
         name: 'ISLAND', water: false, height: 3, color: '#574',
         erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .4
     },
+    HOTSPOT_ISLAND: {
+        name: 'HOTSPOT_ISLAND', water: false, height: 3, color: '#5b754e',
+        erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .4
+    },
+    HOTSPOT_GEYSER: {
+        name: 'HOTSPOT_GEYSER', water: false, height: 3, color: '#764'
+    },
     DEPRESSION: {
         name: 'DEPRESSION', water: false, height: 2, color: '#4f664c',
         risesTo: 'SHALLOW_SEA', riseChance: .1
@@ -49,6 +56,18 @@ export const LANDFORMS = {
 
 
 export class Landform {
+    static get(name) {
+        return LANDFORMS[name]
+    }
+
+    static getOceanicHotspot() {
+        return LANDFORMS['HOTSPOT_ISLAND']
+    }
+
+    static getContinentalHotspot() {
+        return LANDFORMS['HOTSPOT_GEYSER']
+    }
+
     static canErode(centerLandform, sideLandform) {
         return centerLandform.height + 1 < sideLandform.height
     }

@@ -1,7 +1,9 @@
 import { Direction } from '/lib/base/direction'
+import { Random } from '/lib/base/random'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { TectonicsModel } from './tectonics'
+import { Landform } from './landform'
 
 
 const TYPE_CONTINENTAL = 'L'
@@ -13,10 +15,11 @@ export class PlateModel {
         this.reGroupTileMap = reGroupTileMap
         this.plateMap = new PlateMap(reGroupTileMap)
         this.landformMap = new Map()
-        this._build()
+        this._buildLandforms()
+        this._buildHotspots()
     }
 
-    _build() {
+    _buildLandforms() {
         const regionGroup = this.reGroupTileMap
         const boundaryModel = new TectonicsModel(this.plateMap, regionGroup)
         const borderRegions = regionGroup.getBorderRegions()
@@ -31,6 +34,28 @@ export class PlateModel {
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(fills)
+    }
+
+    _buildHotspots() {
+        this.plateMap.forEach(plate => {
+            if (! plate.hasHotspot) return
+            const region = this.reGroupTileMap.getRegion(plate.origin)
+            const sideRegions = this.reGroupTileMap.getNeighborRegions(region)
+            this._buildHotspot(plate, region)
+
+            // for (let sideRegion of sideRegions) {
+            //     if (! sideRegion.id % 2 === 0) continue
+            //     const landform = Landform.getHotspotIsland()
+            //     this.landformMap.set(sideRegion.id, landform)
+            // }
+        })
+    }
+
+    _buildHotspot(plate, region) {
+        const landform = plate.isOceanic()
+            ? Landform.getOceanicHotspot()
+            : Landform.getContinentalHotspot()
+        this.landformMap.set(region.id, landform)
     }
 
     _buildPlateBoundary(boundaryModel, group, region) {

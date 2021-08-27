@@ -1,7 +1,7 @@
 import { PairMap } from '/lib/base'
 import { Direction } from '/lib/base/direction'
 
-import { LANDFORMS } from '../landform'
+import { Landform } from '../landform'
 import { BOUNDARY_TABLE } from './table'
 
 
@@ -101,11 +101,6 @@ class Boundary {
             if (level <= step.level) break
             name = step.name
         }
-        const landform = LANDFORMS[name]
-        return {
-            ...landform,
-            boundary: this.spec,
-            color: landform.color
-        }
+        return Landform.get(name)
     }
 }
