@@ -12,7 +12,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showLandform', 'Show landforms', {default: true}),
         Type.boolean('showPlateBorder', 'Show borders', {default: false}),
         Type.boolean('showDirection', 'Show directions', {default: false}),
-        Type.boolean('showHotspot', 'Show hotspots', {default: false}),
         Type.boolean('showErosion', 'Show erosion', {default: true}),
     )
 
@@ -25,7 +24,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showPlateBorder = params.get('showPlateBorder')
         this.showLandform = params.get('showLandform')
         this.showDirection = params.get('showDirection')
-        this.showHotspot = params.get('showHotspot')
         this.showErosion = params.get('showErosion')
     }
 
@@ -47,9 +45,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#F00'))
-        }
-        if (this.showHotspot && plate.origin.equals(point)) {
-            color = Color.fromHex('#F00')
         }
         return color.toHex()
     }

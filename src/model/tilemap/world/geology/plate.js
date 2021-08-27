@@ -1,4 +1,5 @@
 import { Direction } from '/lib/base/direction'
+import { Point } from '/lib/base/point'
 import { Random } from '/lib/base/random'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
@@ -8,6 +9,7 @@ import { Landform } from './landform'
 
 const TYPE_CONTINENTAL = 'L'
 const TYPE_OCEANIC = 'W'
+const HOTSPOT_CHANCE = .5
 
 
 export class PlateModel {
@@ -37,17 +39,21 @@ export class PlateModel {
     }
 
     _buildHotspots() {
+        const visitedRegions = new Set()
+        const offsets = [[3,4], [3,0], [3,3]]
+        const offsetPoints = offsets.map(p => new Point(...p))
         this.plateMap.forEach(plate => {
             if (! plate.hasHotspot) return
             const region = this.reGroupTileMap.getRegion(plate.origin)
-            const sideRegions = this.reGroupTileMap.getNeighborRegions(region)
             this._buildHotspot(plate, region)
-
-            // for (let sideRegion of sideRegions) {
-            //     if (! sideRegion.id % 2 === 0) continue
-            //     const landform = Landform.getHotspotIsland()
-            //     this.landformMap.set(sideRegion.id, landform)
-            // }
+            visitedRegions.add(region.id)
+            for (let offset of offsetPoints) {
+                const origin = plate.origin.plus(offset)
+                const nextRegion = this.reGroupTileMap.getRegion(origin)
+                if (visitedRegions.has(nextRegion.id)) continue
+                this._buildHotspot(plate, nextRegion)
+                visitedRegions.add(nextRegion.id)
+            }
         })
     }
 
@@ -172,7 +178,7 @@ class Plate {
         this.area = area
         this.origin = origin
         this.direction = Direction.random()
-        this.hasHotspot = id % 2 === 0
+        this.hasHotspot = Random.chance(HOTSPOT_CHANCE)
         this.weight = weight
         this.color = type === TYPE_OCEANIC ? '#058' : '#574'
     }
