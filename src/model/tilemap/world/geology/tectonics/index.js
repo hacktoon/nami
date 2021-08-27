@@ -20,34 +20,33 @@ const IDMAP = {
 
 
 export class TectonicsModel {
-    constructor(plates, regionGroupTileMap) {
+    constructor(plates, regionGroup) {
         this.plates = plates
-        this.regionGroupTileMap = regionGroupTileMap
-        this._deforms = new PairMap()
+        this.regionGroup = regionGroup
+        this._boundaryMap = new PairMap()
         this._boundaryTable = new BoundaryTable(BOUNDARY_TABLE)
 
-        regionGroupTileMap.getGroups().forEach(group => {
-            const neighbors = regionGroupTileMap.getNeighborGroups(group)
+        regionGroup.getGroups().forEach(group => {
+            const neighbors = regionGroup.getNeighborGroups(group)
             neighbors.forEach(neighborGroup => {
-                const boundary = this._buildGroupDeform(group, neighborGroup)
-                this._deforms.set(group.id, neighborGroup.id, boundary)
+                const boundary = this._buildGroupsBoundary(group, neighborGroup)
+                this._boundaryMap.set(group.id, neighborGroup.id, boundary)
             })
         })
     }
 
-    _buildGroupDeform(group, neighborGroup) {
-        const rgrp = this.regionGroupTileMap
+    _buildGroupsBoundary(group, neighborGroup) {
         const plate = this.plates.get(group.id)
         const otherPlate = this.plates.get(neighborGroup.id)
-        const dirToNeighbor = rgrp.getGroupDirection(group, neighborGroup)
-        const dirFromNeighbor = rgrp.getGroupDirection(neighborGroup, group)
+        const dirToNeighbor = this.regionGroup.getGroupDirection(group, neighborGroup)
+        const dirFromNeighbor = this.regionGroup.getGroupDirection(neighborGroup, group)
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
         return this._boundaryTable.build(plate, otherPlate, dotTo, dotFrom)
     }
 
     get(group, neighborGroup) {
-        return this._deforms.get(group.id, neighborGroup.id)
+        return this._boundaryMap.get(group.id, neighborGroup.id)
     }
 }
 
@@ -89,7 +88,7 @@ class BoundaryTable {
 
 class Boundary {
     constructor(spec, data) {
-        this.spec = spec
+        this.name = spec.name
         this.chance = data.chance ?? .5
         this.growth = data.growth ?? 6
         this.landscape = data.landscape

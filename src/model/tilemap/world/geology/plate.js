@@ -17,6 +17,7 @@ export class PlateModel {
         this.reGroupTileMap = reGroupTileMap
         this.plateMap = new PlateMap(reGroupTileMap)
         this.landformMap = new Map()
+        this.boundaryMap = new Map()
         this._buildLandforms()
         this._buildHotspots()
     }
@@ -31,6 +32,7 @@ export class PlateModel {
             const fillConfig = new RegionFillConfig({
                 reGroupTileMap: regionGroup,
                 landformMap: this.landformMap,
+                boundaryMap: this.boundaryMap,
                 boundary,
             })
             return new OrganicFloodFill(region, fillConfig)
@@ -99,6 +101,10 @@ export class PlateModel {
         return this.landformMap.get(regionId)
     }
 
+    getBoundary(regionId) {
+        return this.boundaryMap.get(regionId)
+    }
+
     getLandformByPoint(point) {
         const region = this.reGroupTileMap.getRegion(point)
         return this.landformMap.get(region.id)
@@ -115,6 +121,7 @@ class RegionFillConfig extends FloodFillConfig {
         super()
         this.reGroupTileMap = data.reGroupTileMap
         this.landformMap = data.landformMap
+        this.boundaryMap = data.boundaryMap
         this.heightIndex = data.heightIndex
         this.boundary = data.boundary
 
@@ -128,6 +135,7 @@ class RegionFillConfig extends FloodFillConfig {
 
     setValue(region, level) {
         const landform = this.boundary.getLandform(level)
+        this.boundaryMap.set(region.id, this.boundary)
         this.landformMap.set(region.id, landform)
     }
 

@@ -56,10 +56,12 @@ export class GeologyTileMap extends TileMap {
         const plate = this.getPlate(point)
         const region = this.reGroupTileMap.getRegion(point)
         const landform = this.getLandform(point)
+        const boundary = this.plateModel.getBoundary(region.id)
         const eroded = this.getErodedLandform(point)
         return [
             `point: ${point.hash}`,
             `, plate: ${plate.id}, region: ${region.id}@${region.origin.hash}`,
+            `, boundary: ${boundary.name}`,
             `, landform: ${landform.name} changed to ${eroded.name}`
         ].join('')
     }
