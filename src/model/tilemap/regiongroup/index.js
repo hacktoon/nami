@@ -46,7 +46,6 @@ export class RegionGroupTileMap extends TileMap {
         this.regionToGroup = model.regionToGroup
         this.groups = model.groups
         this.borderRegions = model.borderRegions
-
     }
 
     get(point) {
@@ -125,6 +124,11 @@ export class RegionGroupTileMap extends TileMap {
             if (id !== group.id) return true
         }
         return false
+    }
+
+    getAverageRegionArea() {
+        const regions = this.regionTileMap.getRegions()
+        return Math.round(this.area / regions.length)
     }
 
     map(callback) {

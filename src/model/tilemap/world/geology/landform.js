@@ -26,16 +26,17 @@ const LANDFORMS = {
         name: 'PLAIN', water: false, height: 3, color: '#574',
         erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .01
     },
+    HOTSPOT_GEYSER: {
+        name: 'HOTSPOT_GEYSER', water: false, height: 4, color: '#764',
+        erodesTo: 'PLAIN'
+    },
     ISLAND: {
         name: 'ISLAND', water: false, height: 3, color: '#574',
         erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .4
     },
     HOTSPOT_ISLAND: {
-        name: 'HOTSPOT_ISLAND', water: false, height: 3, color: '#5b754e',
+        name: 'HOTSPOT_ISLAND', water: false, height: 3, color: '#506545',
         erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .4
-    },
-    HOTSPOT_GEYSER: {
-        name: 'HOTSPOT_GEYSER', water: false, height: 3, color: '#764'
     },
     DEPRESSION: {
         name: 'DEPRESSION', water: false, height: 2, color: '#4f664c',

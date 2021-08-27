@@ -38,32 +38,6 @@ export class PlateModel {
         new MultiFill(fills)
     }
 
-    _buildHotspots() {
-        const visitedRegions = new Set()
-        const offsets = [[3,4], [3,0], [3,3]]
-        const offsetPoints = offsets.map(p => new Point(...p))
-        this.plateMap.forEach(plate => {
-            if (! plate.hasHotspot) return
-            const region = this.reGroupTileMap.getRegion(plate.origin)
-            this._buildHotspot(plate, region)
-            visitedRegions.add(region.id)
-            for (let offset of offsetPoints) {
-                const origin = plate.origin.plus(offset)
-                const nextRegion = this.reGroupTileMap.getRegion(origin)
-                if (visitedRegions.has(nextRegion.id)) continue
-                this._buildHotspot(plate, nextRegion)
-                visitedRegions.add(nextRegion.id)
-            }
-        })
-    }
-
-    _buildHotspot(plate, region) {
-        const landform = plate.isOceanic()
-            ? Landform.getOceanicHotspot()
-            : Landform.getContinentalHotspot()
-        this.landformMap.set(region.id, landform)
-    }
-
     _buildPlateBoundary(boundaryModel, group, region) {
         const neighborRegions = this.reGroupTileMap.getNeighborRegions(region)
         for(let neighbor of neighborRegions) {
@@ -72,6 +46,42 @@ export class PlateModel {
                 return boundaryModel.get(group, neighborGroup)
             }
         }
+    }
+
+    _buildHotspots() {
+        this.plateMap.forEach(plate => {
+            if (! plate.hasHotspot) return
+            if (plate.isOceanic()) {
+                const points = this._buildHotspotPoints(plate)
+                for (let point of points) {
+                    const region = this.reGroupTileMap.getRegion(point)
+                    const current = this.landformMap.get(region.id)
+                    if (current.water) {
+                        const landform = Landform.getOceanicHotspot()
+                        this.landformMap.set(region.id, landform)
+                    }
+                }
+            } else {
+                const region = this.reGroupTileMap.getRegion(plate.origin)
+                const current = this.landformMap.get(region.id)
+                if (! current.water) {
+                    const landform = Landform.getContinentalHotspot()
+                    this.landformMap.set(region.id, landform)
+                }
+            }
+        })
+    }
+
+    _buildHotspotPoints(plate) {
+        const size = this.reGroupTileMap.getAverageRegionArea()
+        const offsets = [[2,2], [3,1], [4,0]]
+        const points = [plate.origin]
+        let current = plate.origin
+        offsets.forEach(([x, y]) => {
+            current = current.plus(new Point(x, y))
+            points.push(current)
+        })
+        return points
     }
 
     get(id) {
