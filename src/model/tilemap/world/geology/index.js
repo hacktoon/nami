@@ -62,7 +62,7 @@ export class GeologyTileMap extends TileMap {
             `point: ${point.hash}`,
             `, plate: ${plate.id}, region: ${region.id}@${region.origin.hash}`,
             `, boundary: ${boundary.name}`,
-            `, landform: ${landform.name} changed to ${eroded.name}`
+            `, landform: ${eroded.name} (was ${landform.name})`
         ].join('')
     }
 

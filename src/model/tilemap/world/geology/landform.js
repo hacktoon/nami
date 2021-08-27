@@ -8,11 +8,11 @@ const LANDFORMS = {
     },
     PEAK: {
         name: 'PEAK', water: false, height: 6, color: '#AAA',
-        erodesTo: 'MOUNTAIN', risesTo: 'SUMMIT', riseChance: .4
+        erodesTo: 'MOUNTAIN', risesTo: 'SUMMIT', riseChance: .1
     },
     MOUNTAIN: {
         name: 'MOUNTAIN', water: false, height: 5, color: '#8b8372',
-        erodesTo: 'HILL', risesTo: 'PEAK', riseChance: .05
+        erodesTo: 'HILL', risesTo: 'PEAK', riseChance: .06
     },
     HILL: {
         name: 'HILL', water: false, height: 4, color: '#585',
@@ -40,7 +40,7 @@ const LANDFORMS = {
     },
     SHALLOW_SEA: {
         name: 'SHALLOW_SEA', water: true, height: 2, color: '#069',
-        erodesTo: 'DEEP_SEA', risesTo: 'ISLAND', riseChance: .007
+        erodesTo: 'DEEP_SEA', risesTo: 'ISLAND', riseChance: .01
     },
     DEEP_SEA: {
         name: 'DEEP_SEA', water: true, height: 1, color: '#058',
