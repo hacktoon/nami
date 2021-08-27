@@ -23,7 +23,7 @@ data: [
     {landscape: [
         {level: 0, name: 'HILL'},
         {level: 1, name: 'PLAIN'},
-        {level: 2, name: 'PLATEAU'},
+        {level: 2, name: 'HILL'},
         {level: 3, name: 'PLAIN'},
     ]},
     {landscape: [
@@ -43,7 +43,7 @@ data: [
     ]},
     {landscape: [
         {level: 0, name: 'PLAIN'},
-        {level: 4, name: 'PLATEAU'},
+        {level: 4, name: 'HILL'},
         {level: 7, name: 'PLAIN'},
     ]},
 ]},
@@ -98,17 +98,15 @@ data: [
 data: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
-        {level: 1, name: 'DEEP_SEA'},
         {level: 2, name: 'SHALLOW_SEA'},
     ]},
     {landscape: [
-        {level: 0, name: 'PLAIN'},
-        {level: 1, name: 'HILL'},
-        {level: 2, name: 'MOUNTAIN'},
-        {level: 4, name: 'PEAK'},
-        {level: 5, name: 'MOUNTAIN'},
-        {level: 6, name: 'HILL'},
-        {level: 7, name: 'PLAIN'},
+        {level: 0, name: 'HILL'},
+        {level: 1, name: 'MOUNTAIN'},
+        {level: 2, name: 'PEAK'},
+        {level: 3, name: 'MOUNTAIN'},
+        {level: 4, name: 'HILL'},
+        {level: 5, name: 'PLAIN'},
     ]},
 ]},
 
@@ -119,9 +117,8 @@ data: [
         {level: 1, name: 'DEEP_SEA'},
     ]},
     {landscape: [
-        {level: 0, name: 'PLAIN'},
-        {level: 1, name: 'HILL'},
-        {level: 2, name: 'MOUNTAIN'},
+        {level: 0, name: 'HILL'},
+        {level: 1, name: 'MOUNTAIN'},
         {level: 3, name: 'HILL'},
         {level: 5, name: 'PLAIN'},
     ]},
@@ -136,7 +133,7 @@ data: [
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'PLAIN'},
-        {level: 4, name: 'PLATEAU'},
+        {level: 4, name: 'MOUNTAIN'},
         {level: 5, name: 'PLAIN'},
     ]},
 ]},
@@ -173,7 +170,8 @@ data: [
 {key: 'LWTT', name: 'Coastal fault',
 data: [
     {landscape: [
-        {level: 0, name: 'DEEP_SEA'}
+        {level: 0, name: 'TRENCH'},
+        {level: 1, name: 'DEEP_SEA'}
     ]},
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
@@ -189,7 +187,7 @@ data: [
 data: [
     {chance: .5, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
-        {level: 2, name: 'DEEP_SEA'}
+        {level: 1, name: 'DEEP_SEA'}
     ]},
     {landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
@@ -203,9 +201,9 @@ data: [
 data: [
     {chance: .2, growth: 1, landscape: [
         {level: 0, name: 'TRENCH'},
-        {level: 2, name: 'DEEP_SEA'}
+        {level: 1, name: 'DEEP_SEA'}
     ]},
-    {landscape: [
+    {chance: .3, growth: 1, landscape: [
         {level: 0, name: 'SHALLOW_SEA'},
         {level: 1, name: 'ISLAND'},
         {level: 2, name: 'SHALLOW_SEA'},

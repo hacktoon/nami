@@ -14,10 +14,6 @@ const LANDFORMS = {
         name: 'MOUNTAIN', water: false, height: 5, color: '#8b8372',
         erodesTo: 'HILL', risesTo: 'PEAK', riseChance: .05
     },
-    PLATEAU: {
-        name: 'PLATEAU', water: false, height: 4, color: '#996',
-        erodesTo: 'PLAIN'
-    },
     HILL: {
         name: 'HILL', water: false, height: 4, color: '#585',
         erodesTo: 'PLAIN', risesTo: 'MOUNTAIN', riseChance: .1

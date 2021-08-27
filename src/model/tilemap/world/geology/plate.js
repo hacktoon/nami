@@ -73,12 +73,19 @@ export class PlateModel {
     }
 
     _buildHotspotPoints(plate) {
+        const count = Random.choice(2, 3)
         const size = this.reGroupTileMap.getAverageRegionArea()
-        const offsets = [[2,2], [3,1], [4,0]]
+        const offsets = []
+        const xSig = Random.choice(-1, 1)
+        const ySig = Random.choice(-1, 1)
+        for (let i = 1; i <= count; i++) {
+            const point = new Point(size + i * xSig, size + i * ySig)
+            offsets.push(point)
+        }
         const points = [plate.origin]
         let current = plate.origin
-        offsets.forEach(([x, y]) => {
-            current = current.plus(new Point(x, y))
+        offsets.forEach(point => {
+            current = current.plus(point)
             points.push(current)
         })
         return points
