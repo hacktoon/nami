@@ -3,8 +3,8 @@ import { Point } from '/lib/base/point'
 import { Random } from '/lib/base/random'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
-import { TectonicsModel } from './tectonics'
-import { Landform } from './landform'
+import { BoundaryModel } from './boundary'
+import { Landform } from '../landform'
 
 
 const TYPE_CONTINENTAL = 'L'
@@ -13,9 +13,9 @@ const HOTSPOT_CHANCE = .5
 
 
 export class PlateModel {
-    constructor(reGroupTileMap) {
-        this.reGroupTileMap = reGroupTileMap
-        this.plateMap = new PlateMap(reGroupTileMap)
+    constructor(regionGroup) {
+        this.regionGroup = regionGroup
+        this.plateMap = new PlateMap(regionGroup)
         this.landformMap = new Map()
         this.boundaryMap = new Map()
         this._buildLandforms()
@@ -23,14 +23,13 @@ export class PlateModel {
     }
 
     _buildLandforms() {
-        const regionGroup = this.reGroupTileMap
-        const boundaryModel = new TectonicsModel(this.plateMap, regionGroup)
-        const borderRegions = regionGroup.getBorderRegions()
+        const boundaryModel = new BoundaryModel(this.plateMap, this.regionGroup)
+        const borderRegions = this.regionGroup.getBorderRegions()
         const fills = borderRegions.map(region => {
-            const group = regionGroup.getGroupByRegion(region)
+            const group = this.regionGroup.getGroupByRegion(region)
             const boundary = this._buildPlateBoundary(boundaryModel, group, region)
             const fillConfig = new RegionFillConfig({
-                reGroupTileMap: regionGroup,
+                regionGroup: this.regionGroup,
                 landformMap: this.landformMap,
                 boundaryMap: this.boundaryMap,
                 boundary,
@@ -41,9 +40,9 @@ export class PlateModel {
     }
 
     _buildPlateBoundary(boundaryModel, group, region) {
-        const neighborRegions = this.reGroupTileMap.getNeighborRegions(region)
+        const neighborRegions = this.regionGroup.getNeighborRegions(region)
         for(let neighbor of neighborRegions) {
-            const neighborGroup = this.reGroupTileMap.getGroupByRegion(neighbor)
+            const neighborGroup = this.regionGroup.getGroupByRegion(neighbor)
             if (neighborGroup.id !== group.id) {
                 return boundaryModel.get(group, neighborGroup)
             }
@@ -56,7 +55,7 @@ export class PlateModel {
             if (plate.isOceanic()) {
                 const points = this._buildHotspotPoints(plate)
                 for (let point of points) {
-                    const region = this.reGroupTileMap.getRegion(point)
+                    const region = this.regionGroup.getRegion(point)
                     const current = this.landformMap.get(region.id)
                     if (current.water) {
                         const landform = Landform.getOceanicHotspot()
@@ -64,7 +63,7 @@ export class PlateModel {
                     }
                 }
             } else {
-                const region = this.reGroupTileMap.getRegion(plate.origin)
+                const region = this.regionGroup.getRegion(plate.origin)
                 const current = this.landformMap.get(region.id)
                 if (! current.water) {
                     const landform = Landform.getContinentalHotspot()
@@ -76,7 +75,7 @@ export class PlateModel {
 
     _buildHotspotPoints(plate) {
         const count = Random.choice(2, 3)
-        const size = this.reGroupTileMap.getAverageRegionArea()
+        const size = this.regionGroup.getAverageRegionArea()
         const offsets = []
         const xSig = Random.choice(-1, 1)
         const ySig = Random.choice(-1, 1)
@@ -106,7 +105,7 @@ export class PlateModel {
     }
 
     getLandformByPoint(point) {
-        const region = this.reGroupTileMap.getRegion(point)
+        const region = this.regionGroup.getRegion(point)
         return this.landformMap.get(region.id)
     }
 
@@ -119,7 +118,7 @@ export class PlateModel {
 class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
-        this.reGroupTileMap = data.reGroupTileMap
+        this.regionGroup = data.regionGroup
         this.landformMap = data.landformMap
         this.boundaryMap = data.boundaryMap
         this.heightIndex = data.heightIndex
@@ -140,7 +139,7 @@ class RegionFillConfig extends FloodFillConfig {
     }
 
     getNeighbors(region) {
-        return this.reGroupTileMap.getNeighborRegions(region)
+        return this.regionGroup.getNeighborRegions(region)
     }
 }
 
@@ -184,10 +183,6 @@ export class PlateMap {
 
     get(id) {
         return this.map.get(id)
-    }
-
-    map(callback) {
-        return Array.from(this.map.values()).map(plate => callback(plate))
     }
 
     forEach(callback) {

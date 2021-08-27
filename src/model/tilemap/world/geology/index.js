@@ -62,8 +62,8 @@ export class GeologyTileMap extends TileMap {
         const boundary = this.plateModel.getBoundary(region.id)
         const eroded = this.getErodedLandform(point)
         return [
-            `point: ${point.hash}`,
-            `, plate: ${plate.id}, region: ${region.id}@${region.origin.hash}`,
+            `point: ${point.hash}, plate: ${plate.id}`,
+            `, region: ${region.id}@${region.origin.hash}`,
             `, boundary: ${boundary.name}`,
             `, landform: ${eroded.name} (was ${landform.name})`
         ].join('')
