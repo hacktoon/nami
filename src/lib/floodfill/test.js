@@ -21,7 +21,7 @@ class FillConfig {
     }
 
     getNeighbors(originPoint) {
-        return originPoint.adjacents()
+        return Point.adjacents(originPoint)
     }
 }
 

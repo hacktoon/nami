@@ -58,10 +58,10 @@ export class Point {
         return new Point(point.x * x, point.y * (y ?? x))
     }
 
-    angle(point) {
+    static angle(p1, p2) {
         // normalize vectors
-        const deltaY = this.y - point.y  // for y getting bigger to the south
-        const deltaX = point.x - this.x
+        const deltaY = p1.y - p2.y  // for y getting bigger to the south
+        const deltaX = p2.x - p1.x
         // get angle between vectors
         let result = Math.atan2(deltaY, deltaX)
         // convert from radians to degrees
@@ -69,10 +69,10 @@ export class Point {
         return Math.round((result < 0) ? (360 + result) : result)
     }
 
-    adjacents(predicate=()=>true) {
+    static adjacents(center, predicate=()=>true) {
         const points = []
         for (let [x, y, direction] of ADJACENT_NEIGHBORHOOD) {
-            const point = new Point(this.x + x, this.y + y)
+            const point = new Point(center.x + x, center.y + y)
             if (predicate(point, direction)) {
                 points.push(point)
             }
@@ -80,10 +80,10 @@ export class Point {
         return points
     }
 
-    around(predicate=()=>true) {
+    static around(center, predicate=()=>true) {
         const points = []
         for (let [x, y, direction] of AROUND_NEIGHBORHOOD) {
-            const point = new Point(this.x + x, this.y + y)
+            const point = new Point(center.x + x, center.y + y)
             if (predicate(point, direction)) {
                 points.push(point)
             }
@@ -97,12 +97,12 @@ export class Point {
         return Math.sqrt(deltaX + deltaY)
     }
 
-    atNorth() { return new Point(this.x, this.y - 1) }
-    atSouth() { return new Point(this.x, this.y + 1) }
-    atEast() { return new Point(this.x + 1, this.y) }
-    atWest() { return new Point(this.x - 1, this.y) }
-    atNortheast() { return new Point(this.x + 1, this.y - 1) }
-    atSoutheast() { return new Point(this.x + 1, this.y + 1) }
-    atNorthwest() { return new Point(this.x - 1, this.y - 1) }
-    atSouthwest() { return new Point(this.x - 1, this.y + 1) }
+    static atNorth(p) { return new Point(p.x, p.y - 1) }
+    static atSouth(p) { return new Point(p.x, p.y + 1) }
+    static atEast(p) { return new Point(p.x + 1, p.y) }
+    static atWest(p) { return new Point(p.x - 1, p.y) }
+    static atNortheast(p) { return new Point(p.x + 1, p.y - 1) }
+    static atSoutheast(p) { return new Point(p.x + 1, p.y + 1) }
+    static atNorthwest(p) { return new Point(p.x - 1, p.y - 1) }
+    static atSouthwest(p) { return new Point(p.x - 1, p.y + 1) }
 }

@@ -1,3 +1,5 @@
+import { Point } from '/lib/base/point'
+
 
 export class ScanlineFill {
     constructor(startPoint, config) {
@@ -17,10 +19,10 @@ export class ScanlineFill {
 
     findRangeStart(originPoint) {
         let currentPoint = originPoint
-        let nextPoint = this.config.filterPoint(currentPoint.atWest())
+        let nextPoint = this.config.filterPoint(Point.atWest(currentPoint))
         while (this.config.canFill(nextPoint) && nextPoint.x != originPoint.x) {
             currentPoint = nextPoint
-            nextPoint = this.config.filterPoint(nextPoint.atWest())
+            nextPoint = this.config.filterPoint(Point.atWest(nextPoint))
         }
         return currentPoint
     }
@@ -49,9 +51,9 @@ export class ScanlineFill {
 
         while (this.config.canFill(point)) {
             this.config.onFill(point)
-            this.detectRangeAbove(point.atNorth(), range)
-            this.detectRangeBelow(point.atSouth(), range)
-            point = this.config.filterPoint(point.atEast())
+            this.detectRangeAbove(Point.atNorth(point), range)
+            this.detectRangeBelow(Point.atSouth(point), range)
+            point = this.config.filterPoint(Point.atEast(point))
         }
     }
 
@@ -87,13 +89,13 @@ export class ScanlineFill8 extends ScanlineFill {
 
         while (this.config.canFill(point)) {
             this.onFill(point)
-            this.detectRangeAbove(point.atNorthwest(), range)
-            this.detectRangeAbove(point.atNorth(), range)
-            this.detectRangeAbove(point.atNortheast(), range)
-            this.detectRangeBelow(point.atSouthwest(), range)
-            this.detectRangeBelow(point.atSouth(), range)
-            this.detectRangeBelow(point.atSoutheast(), range)
-            point = point.atEast()
+            this.detectRangeAbove(Point.atNorthwest(point), range)
+            this.detectRangeAbove(Point.atNorth(point), range)
+            this.detectRangeAbove(Point.atNortheast(point), range)
+            this.detectRangeBelow(Point.atSouthwest(point), range)
+            this.detectRangeBelow(Point.atSouth(point), range)
+            this.detectRangeBelow(Point.atSoutheast(point), range)
+            point = Point.atEast(point)
         }
     }
 }

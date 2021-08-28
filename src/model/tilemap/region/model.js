@@ -1,5 +1,6 @@
 import { PairMap } from '/lib/base'
 import { Color } from '/lib/base/color'
+import { Point } from '/lib/base/point'
 import { Matrix } from '/lib/base/matrix'
 import { Direction } from '/lib/base/direction'
 import { Graph } from '/lib/base/graph'
@@ -70,7 +71,7 @@ export class RegionMapModel {
             data.graph.getEdges(region.id).forEach(neighborId => {
                 const neighbor = regions.get(neighborId)
                 const neighborOrigin = matrix.wrapVector(region.origin, neighbor.origin)
-                const angle = region.origin.angle(neighborOrigin)
+                const angle = Point.angle(region.origin, neighborOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(region.id, neighborId, direction)
             })
@@ -108,6 +109,6 @@ export class RegionFillConfig {
     }
 
     getNeighbors(originPoint) {
-        return originPoint.adjacents()
+        return Point.adjacents(originPoint)
     }
 }

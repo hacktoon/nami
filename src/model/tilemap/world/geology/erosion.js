@@ -1,4 +1,5 @@
 import { Matrix } from '/lib/base/matrix'
+import { Point } from '/lib/base/point'
 import { Landform } from './landform'
 
 
@@ -58,8 +59,8 @@ class ErosionMatrix {
 
     _erodeQueueAdjacents(matrix, erodePoint) {
         const erosionQueue = []
-        for(let point of erodePoint.adjacents()) {
-            const sidePoints = point.adjacents()
+        for(let point of Point.adjacents(erodePoint)) {
+            const sidePoints = Point.adjacents(point)
             let landform = matrix.get(point)
             let highestSideLandform = landform
             let sameNeighborCount = 0
