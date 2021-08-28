@@ -12,7 +12,7 @@ const TYPE_OCEANIC = 'W'
 const HOTSPOT_CHANCE = .5
 
 
-export class PlateModel {
+export class TectonicsModel {
     constructor(regionGroup) {
         this.regionGroup = regionGroup
         this.plateMap = new PlateMap(regionGroup)

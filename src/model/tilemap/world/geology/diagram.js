@@ -13,6 +13,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showPlateBorder', 'Show borders', {default: false}),
         Type.boolean('showDirection', 'Show directions', {default: false}),
         Type.boolean('showErosion', 'Show erosion', {default: true}),
+        Type.boolean('showOutline', 'Show outline', {default: true}),
     )
 
     static create(tileMap, params) {
@@ -25,15 +26,16 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showLandform = params.get('showLandform')
         this.showDirection = params.get('showDirection')
         this.showErosion = params.get('showErosion')
+        this.showOutline = params.get('showOutline')
     }
 
     get(point) {
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         const plate = this.tileMap.getPlate(point)
+        const landform = this.tileMap.getErodedLandform(point)
         let color = Color.fromHex(plate.color)
 
         if (this.showLandform) {
-            const landform = this.tileMap.getLandform(point)
             color = Color.fromHex(landform.color)
             if (isBorderPoint) {
                 color = Color.fromHex(landform.color ?? plate.color)
@@ -45,6 +47,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#F00'))
+        }
+        if (this.showOutline) {
+            return landform.water ? '#069' : '#141'
         }
         return color.toHex()
     }

@@ -5,7 +5,7 @@ import { UITileMap } from '/ui/tilemap'
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
 import { GeologyTileMapDiagram } from './diagram'
-import { PlateModel } from './plate'
+import { TectonicsModel } from './plate'
 import { ErosionModel } from './erosion'
 
 
@@ -32,14 +32,15 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
+        console.log('=================================================')
         let start = performance.now()
         this.reGroupTileMap = this._buildRegionGroupMap(this.seed, params)
-        console.log('region group', Math.floor(performance.now() - start) / 1000)
+        console.log('regions', Math.floor(performance.now() - start) / 1000)
         start = performance.now()
-        this.plateModel = new PlateModel(this.reGroupTileMap)
-        console.log('plate model', Math.floor(performance.now() - start) / 1000)
+        this.tectonicsModel = new TectonicsModel(this.reGroupTileMap)
+        console.log('tectonics model', Math.floor(performance.now() - start) / 1000)
         start = performance.now()
-        this.erosionModel = new ErosionModel(this.reGroupTileMap, this.plateModel)
+        this.erosionModel = new ErosionModel(this.reGroupTileMap, this.tectonicsModel)
         console.log('erosion model', Math.floor(performance.now() - start) / 1000)
     }
 
@@ -61,7 +62,7 @@ export class GeologyTileMap extends TileMap {
         const plate = this.getPlate(point)
         const region = this.reGroupTileMap.getRegion(point)
         const landform = this.getLandform(point)
-        const boundary = this.plateModel.getBoundary(region.id)
+        const boundary = this.tectonicsModel.getBoundary(region.id)
         const eroded = this.getErodedLandform(point)
         return [
             `point: ${point.hash}, plate: ${plate.id}`,
@@ -73,7 +74,7 @@ export class GeologyTileMap extends TileMap {
 
     getPlate(point) {
         const group = this.reGroupTileMap.getGroup(point)
-        return this.plateModel.get(group.id)
+        return this.tectonicsModel.get(group.id)
     }
 
     isPlateOrigin(plate, point) {
@@ -95,6 +96,6 @@ export class GeologyTileMap extends TileMap {
     }
 
     getDescription() {
-        return `${this.plateModel.size} plates`
+        return `${this.tectonicsModel.size} plates`
     }
 }
