@@ -50,16 +50,12 @@ export class Point {
         return new Point(p1.x + p2.x, p1.y + p2.y)
     }
 
-    minus(point) {
-        return new Point(this.x - point.x, this.y - point.y)
+    static minus(p1, p2) {
+        return new Point(p1.x - p2.x, p1.y - p2.y)
     }
 
-    multiplyScalar(x, y) {
-        return new Point(this.x * x, this.y * (y ?? x))
-    }
-
-    abs() {
-        return new Point(Math.abs(this.x), Math.abs(this.y))
+    static multiplyScalar(point, x, y) {
+        return new Point(point.x * x, point.y * (y ?? x))
     }
 
     angle(point) {
@@ -71,12 +67,6 @@ export class Point {
         // convert from radians to degrees
         result *= 180 / Math.PI
         return Math.round((result < 0) ? (360 + result) : result)
-    }
-
-    isAdjacent(point) {
-        const x = Math.abs(this.x - point.x)
-        const y = Math.abs(this.y - point.y)
-        return (x == 1 && y == 0) || (x == 0 && y == 1)
     }
 
     adjacents(predicate=()=>true) {

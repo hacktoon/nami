@@ -18,7 +18,7 @@ export function UITileMapMouse({scene, ...props}) {
     const handleDrag = (startPoint, endPoint) => {
         const startTilePoint = scene.frame.tilePoint(startPoint)
         const endTilePoint = scene.frame.tilePoint(endPoint)
-        const newFocus = startTilePoint.minus(endTilePoint)
+        const newFocus = Point.minus(startTilePoint, endTilePoint)
         if (Point.differs(newFocus, focus)) {
             setFocus(newFocus)
             props.onDrag(newFocus)

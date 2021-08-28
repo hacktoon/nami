@@ -69,7 +69,7 @@ export class TileMapScene {
         for(let i = origin.x, x = 0; i <= target.x; i++, x += this.zoom) {
             for(let j = origin.y, y = 0; j <= target.y; j++, y += this.zoom) {
                 const tilePoint = new Point(i, j)
-                const canvasPoint = (new Point(x, y)).minus(this.frame.offset)
+                const canvasPoint = Point.minus(new Point(x, y), this.frame.offset)
                 callback(tilePoint, canvasPoint)
             }
         }
@@ -83,10 +83,12 @@ export class TileMapScene {
 
     renderCursor(canvas, cursor) {
         const {origin} = this.frame.tileWindow(this.focus)
-        const canvasPoint = cursor
-            .minus(origin)              // get tile at scene edge
-            .multiplyScalar(this.zoom)  // make it a canvas position
-            .minus(this.frame.offset)   // apply viewport offset
+        // get tile at scene edge
+        let canvasPoint = Point.minus(cursor, origin)
+        // make it a canvas position
+        canvasPoint = Point.multiplyScalar(canvasPoint, this.zoom)
+        // apply viewport offset
+        canvasPoint = Point.minus(canvasPoint, this.frame.offset)
         canvas.cursor(this.zoom, canvasPoint, '#FFF')
     }
 }
@@ -111,7 +113,7 @@ class Frame {
     tileWindow(offset=new Point()) {
         // focus defaults to 0,0.
         return {
-            origin: offset.minus(this.center),
+            origin: Point.minus(offset, this.center),
             target: Point.plus(offset, this.center)
         }
     }
