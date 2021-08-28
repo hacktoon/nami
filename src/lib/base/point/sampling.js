@@ -1,8 +1,8 @@
 import { repeat } from '/lib/base/function'
 import { clamp } from '/lib/base/number'
-import { Point } from '.'
-import { PointSet, PointSchedule } from './set'
 import { Rect } from '/lib/base/number'
+import { PointSet } from './set'
+import { Point } from '.'
 
 
 export class RandomPointSampling {
@@ -19,46 +19,43 @@ export class EvenPointSampling {
     static id = 'EvenPointSampling'
 
     static create(width, height, radius) {
-        const points = []
+        const samples = []
         const rect = new Rect(width, height)
-        const pointSet = PointSet.fromRect(rect)
-        const maskPoints = circleMaskPoints(radius)
+        const pointSet = new PointSet(width, height)
+        // const maskPoints = circleMaskPoints(radius)
 
         while(pointSet.size > 0) {
             const center = pointSet.random()
-            deletePointsInCircle(maskPoints, pointSet, center, rect)
-            points.push(center)
+            fillPointCircle(center, radius, point => {
+                if (pointSet.has(point)) {
+                    pointSet.delete(rect.wrap(point))
+                }
+            })
+            samples.push(center)
         }
-        if (points.length === 1) {
-            const x = points[0].x + Math.round(rect.width / 2)
-            const y = points[0].y + Math.round(rect.height / 2)
+        if (samples.length === 1) {
+            const x = samples[0].x + Math.round(width / 2)
+            const y = samples[0].y + Math.round(height / 2)
             const point = rect.wrap(new Point(x, y))
-            return [...points, point]
+            samples.push(point)
         }
-        return points
+        return samples
     }
 }
 
 
-// TODO: use better algorithm by Amit Patel
-function circleMaskPoints(radius) {
-    const center = new Point(0, 0)
-    const points = []
-    for(let i = center.x - radius; i < center.x + radius; i++) {
-        for(let j = center.y - radius; j < center.y + radius; j++) {
-            const point = new Point(i, j)
-            if (point.distance(center) <= radius) {
-                points.push(point)
-            }
+// Bounding circle algorithm
+// https://www.redblobgames.com/grids/circle-drawing/
+function fillPointCircle(center, radius, callback) {
+    const top    = center.y - radius
+    const bottom = center.y + radius
+    for (let y = top; y <= bottom; y++) {
+        const dy    = y - center.y
+        const dx    = Math.sqrt(radius * radius - dy * dy)
+        const left  = Math.ceil(center.x - dx)
+        const right = Math.floor(center.x + dx)
+        for (let x = left; x <= right; x++) {
+            callback(new Point(x, y))
         }
     }
-    return points
-}
-
-
-function deletePointsInCircle(maskPoints, pointSet, center, rect) {
-    maskPoints.forEach(maskPoint => {
-        const point = rect.wrap(center.plus(maskPoint))
-        pointSet.delete(point)
-    })
 }
