@@ -1,5 +1,4 @@
 
-
 export class Random {
     static set seed(value) {
         let seed = String(value)
@@ -17,7 +16,12 @@ export class Random {
     }
 
     static choice(...items) {
-        let index = Random.int(0, items.length-1)
+        let index = Random.int(0, items.length - 1)
+        return items[index]
+    }
+
+    static choiceFrom(items) {
+        let index = Random.int(0, items.length - 1)
         return items[index]
     }
 

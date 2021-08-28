@@ -1,7 +1,7 @@
 import { repeat } from '/lib/base/function'
 import { clamp } from '/lib/base/number'
 import { Point } from '.'
-import { PointSet } from './set'
+import { PointSet, PointSchedule } from './set'
 import { Rect } from '/lib/base/number'
 
 
