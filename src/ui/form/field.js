@@ -132,10 +132,10 @@ function ColorField({name, label, value, onChange, ...props}) {
 
 function PointField({name, label, value, onChange, ...props}) {
     const [point, setPoint] = useState(value)
-    const handleXChange = e => handleChange(e.target.value, point.y)
-    const handleYChange = e => handleChange(point.x, e.target.value)
+    const handleXChange = e => handleChange(e.target.value, point[1])
+    const handleYChange = e => handleChange(point[0], e.target.value)
     const handleChange = (x, y) => {
-        const point = new Point(x, y)
+        const point = [x, y]
         onChange(name, Point.hash(point))
         setPoint(point)
     }
@@ -146,7 +146,7 @@ function PointField({name, label, value, onChange, ...props}) {
             <span>x</span>
             <input
                 type='number'
-                value={point.x}
+                value={point[0]}
                 onChange={handleXChange}
                 {...props}
             />
@@ -155,7 +155,7 @@ function PointField({name, label, value, onChange, ...props}) {
             <span>y</span>
             <input
                 type='number'
-                value={point.y}
+                value={point[1]}
                 onChange={handleYChange}
                 {...props}
             />

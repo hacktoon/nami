@@ -57,7 +57,7 @@ export class DiamondSquare {
     }
 
     _square(point, midSize) {
-        const {x, y} = point
+        const [x, y] = point
         const average = this._averagePoints([
             [x + midSize, y - midSize],   // upper right
             [x + midSize, y + midSize],   // lower right
@@ -68,7 +68,7 @@ export class DiamondSquare {
     }
 
     _diamond(point, midSize) {
-        const {x, y} = point
+        const [x, y] = point
         const average = this._averagePoints([
             [x, y - midSize],   // top
             [x, y + midSize],   // bottom
@@ -146,8 +146,8 @@ export class TileableDiamondSquare extends DiamondSquare {
 
     _getOpposite(point) {
         let { x, y } = point
-        if (point.x === 0) x = this.size - 1
-        if (point.y === 0) y = this.size - 1
+        if (point[0] === 0) x = this.size - 1
+        if (point[1] === 0) y = this.size - 1
         return new Point(x, y)
     }
 }

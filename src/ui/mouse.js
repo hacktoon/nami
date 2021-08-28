@@ -7,7 +7,7 @@ const CLICK_TIMEOUT = 200
 
 
 export function MouseTrack(props) {
-    const [dragStart, setDragStart] = useState(new Point())
+    const [dragStart, setDragStart] = useState([0, 0])
     const [dragging, setDragging]   = useState(false)
     const [clickTimeout, setClickTimeout]   = useState(false)
 
@@ -56,7 +56,7 @@ export function MouseTrack(props) {
     function createMousePoint(event) {
         disableNativeEvent(event)
         const {offsetX, offsetY} = event.nativeEvent
-        return new Point(offsetX, offsetY)
+        return [offsetX, offsetY]
     }
 
     function disableNativeEvent(event) {

@@ -48,7 +48,7 @@ export class RegionTileMapDiagram extends TileMapDiagram {
             return color.darken(50).toHex()
         }
         if (this.showSelectedRegion) {
-            const toggle = (point.x + point.y) % 2 === 0
+            const toggle = (point[0] + point[1]) % 2 === 0
             if (this.selectedRegionId === region.id) {
                 return toggle ? '#000' : '#FFF'
             } else if (this.tileMap.isNeighbor(this.selectedRegionId, region.id)) {

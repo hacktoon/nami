@@ -28,7 +28,7 @@ export class Temperature {
         const region = this.regionTileMap.getRegion(point)
         const center = Math.round(this.regionTileMap.height / 2)
         const offset = this._calcOffset(region)
-        const distanceToCenter = Math.abs(region.origin.y - center)
+        const distanceToCenter = Math.abs(region.origin[1] - center)
         const temperature = distanceToCenter + offset
         const fraction = center / 100
         let zone = POLAR
@@ -42,7 +42,7 @@ export class Temperature {
     }
 
     _calcOffset(region) {
-        const offset = Math.sin(region.origin.x) * 4
+        const offset = Math.sin(region.origin[0]) * 4
         return Math.floor(offset - this.radiation)
     }
 

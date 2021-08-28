@@ -36,7 +36,7 @@ export class TileMapDiagram {
     }
 
     get(point) {
-        if ((point.x + point.y) % 2 === 0)
+        if ((point[0] + point[1]) % 2 === 0)
             return '#AAA'
         return '#EEE'
     }

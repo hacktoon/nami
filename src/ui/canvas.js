@@ -22,13 +22,13 @@ class CanvasContext {
     }
 
     rect(point, size, color) {
-        const {x, y} = point
+        const [x, y] = point
         this.context.fillStyle = color
         this.context.fillRect(x, y, size, size)
     }
 
     mark(point, size, color='#000') {
-        const {x, y} = point
+        const [x, y] = point
         this.context.fillStyle = color
         this.context.fillRect(x, y, size, size)
     }
@@ -37,7 +37,7 @@ class CanvasContext {
         this.context.fillStyle = color
         this.context.textAlign = "center"
         this.context.font = "20px monospace"
-        this.context.fillText(text, point.x, point.y)
+        this.context.fillText(text, point[0], point[1])
     }
 
     reset() {
@@ -45,12 +45,12 @@ class CanvasContext {
     }
 
     clear(size, point) {
-        const {x, y} = point
+        const [x, y] = point
         this.context.clearRect(x, y, size, size)
     }
 
     cursor(size, point) {
-        const {x, y} = point
+        const [x, y] = point
         this.context.fillStyle = '#FFF'
         this.context.fillRect(x, y, size, size)
     }

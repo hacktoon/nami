@@ -56,7 +56,7 @@ export class TileMapScene {
         })
         for(let [canvasPoint, mark] of this.markQueue) {
             const offset = markCenter - markSize / 2
-            const markPoint = Point.plus(canvasPoint, new Point(offset, offset))
+            const markPoint = Point.plus(canvasPoint, [offset, offset])
             canvas.mark(markPoint, markSize, mark)
         }
         for(let [canvasPoint, text] of this.textQueue) {
@@ -66,10 +66,10 @@ export class TileMapScene {
 
     #renderFrame(callback) {
         const {origin, target} = this.frame.tileWindow(this.focus)
-        for(let i = origin.x, x = 0; i <= target.x; i++, x += this.zoom) {
-            for(let j = origin.y, y = 0; j <= target.y; j++, y += this.zoom) {
-                const tilePoint = new Point(i, j)
-                const canvasPoint = Point.minus(new Point(x, y), this.frame.offset)
+        for(let i = origin[0], x = 0; i <= target[0]; i++, x += this.zoom) {
+            for(let j = origin[1], y = 0; j <= target[1]; j++, y += this.zoom) {
+                const tilePoint = [i, j]
+                const canvasPoint = Point.minus([x, y], this.frame.offset)
                 callback(tilePoint, canvasPoint)
             }
         }
@@ -100,29 +100,30 @@ class Frame {
         const northPad = Math.floor(rect.height / 2 - zoom / 2)
         const xTileCount = Math.ceil(westPad / zoom)
         const yTileCount = Math.ceil(northPad / zoom)
-        this.center = new Point(xTileCount, yTileCount)
-        this.offset = new Point(
+        this.center = [xTileCount, yTileCount]
+        this.offset = [
             (xTileCount * zoom) - westPad,
             (yTileCount * zoom) - northPad
-        )
+        ]
         this.width = rect.width
         this.height = rect.height
         this.zoom = zoom
     }
 
-    tileWindow(offset=new Point()) {
+    tileWindow(offset) {
         // focus defaults to 0,0.
+        const point = offset ?? [0, 0]
         return {
-            origin: Point.minus(offset, this.center),
-            target: Point.plus(offset, this.center)
+            origin: Point.minus(point, this.center),
+            target: Point.plus(point, this.center)
         }
     }
 
     tilePoint(mousePoint) {
         const {origin} = this.tileWindow()
         const mouse = Point.plus(mousePoint, this.offset)
-        const x = Math.floor(mouse.x / this.zoom)
-        const y = Math.floor(mouse.y / this.zoom)
-        return Point.plus(origin, new Point(x, y))
+        const x = Math.floor(mouse[0] / this.zoom)
+        const y = Math.floor(mouse[1] / this.zoom)
+        return Point.plus(origin, [x, y])
     }
 }

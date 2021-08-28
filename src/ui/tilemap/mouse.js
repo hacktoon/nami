@@ -11,7 +11,7 @@ export function UITileMapMouse({scene, ...props}) {
      point objects using the scene's frame
     */
     const [cursor, setCursor] = useState(null)
-    const [focus, setFocus] = useState(new Point())
+    const [focus, setFocus] = useState([0, 0])
 
     const handleDragStart = () => props.onDragStart()
 

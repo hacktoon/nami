@@ -80,7 +80,7 @@ export class TectonicsModel {
         const xSig = Random.choice(-1, 1)
         const ySig = Random.choice(-1, 1)
         for (let i = 1; i <= count; i++) {
-            const point = new Point(size + i * xSig, size + i * ySig)
+            const point = [size + i * xSig, size + i * ySig]
             offsets.push(point)
         }
         const points = [plate.origin]

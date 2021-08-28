@@ -3,8 +3,8 @@ import { Random } from '/lib/base/random'
 
 
 export const MidpointDisplacement = (source, target, roughness, callback=()=>{}) => {
-    const deltaX = Math.abs(source.x - target.x)
-    const deltaY = Math.abs(source.y - target.y)
+    const deltaX = Math.abs(source[0] - target[0])
+    const deltaY = Math.abs(source[1] - target[1])
     const fixedAxis = deltaX > deltaY ? 'x' : 'y'
     const displacedAxis = deltaX > deltaY ? 'y' : 'x'
     const size = Math.abs(target[fixedAxis] - source[fixedAxis])
@@ -16,7 +16,7 @@ export const MidpointDisplacement = (source, target, roughness, callback=()=>{})
             return
         const displacedValue = (p1[displacedAxis] + p2[displacedAxis]) / 2
         const variance = Random.int(-displacement, displacement)
-        const point = new Point()
+        const point = [0, 0]
 
         point[fixedAxis] = Math.floor((p1[fixedAxis] + p2[fixedAxis]) / 2)
         point[displacedAxis] = Math.round(displacedValue + variance)

@@ -20,7 +20,7 @@ export function UITileMapScene(props) {
 
 
 function UITileMapSceneContent({diagram, rect, ...props}) {
-    const [prevFocus, setPrevFocus] = useState(new Point())
+    const [prevFocus, setPrevFocus] = useState([0, 0])
     const scene = TileMapScene.create(diagram, rect, props.sceneData)
 
     // TODO: calc if should create a moving canvas or not

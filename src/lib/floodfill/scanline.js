@@ -17,10 +17,10 @@ export class ScanlineFill {
         })
     }
 
-    findRangeStart(originPoint) {
-        let currentPoint = originPoint
+    findRangeStart(origin) {
+        let currentPoint = origin
         let nextPoint = this.config.filterPoint(Point.atWest(currentPoint))
-        while (this.config.canFill(nextPoint) && nextPoint.x != originPoint.x) {
+        while (this.config.canFill(nextPoint) && nextPoint[0] != origin[0]) {
             currentPoint = nextPoint
             nextPoint = this.config.filterPoint(Point.atWest(nextPoint))
         }

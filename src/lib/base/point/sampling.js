@@ -33,9 +33,9 @@ export class EvenPointSampling {
             samples.push(center)
         }
         if (samples.length === 1) {
-            const x = samples[0].x + Math.round(width / 2)
-            const y = samples[0].y + Math.round(height / 2)
-            const point = rect.wrap(new Point(x, y))
+            const x = samples[0][0] + Math.round(width / 2)
+            const y = samples[0][1] + Math.round(height / 2)
+            const point = rect.wrap([x, y])
             samples.push(point)
         }
         return samples
@@ -46,15 +46,15 @@ export class EvenPointSampling {
 // Bounding circle algorithm
 // https://www.redblobgames.com/grids/circle-drawing/
 function fillPointCircle(center, radius, callback) {
-    const top    = center.y - radius
-    const bottom = center.y + radius
+    const top    = center[1] - radius
+    const bottom = center[1] + radius
     for (let y = top; y <= bottom; y++) {
-        const dy    = y - center.y
+        const dy    = y - center[1]
         const dx    = Math.sqrt(radius * radius - dy * dy)
-        const left  = Math.ceil(center.x - dx)
-        const right = Math.floor(center.x + dx)
+        const left  = Math.ceil(center[0] - dx)
+        const right = Math.floor(center[0] + dx)
         for (let x = left; x <= right; x++) {
-            callback(new Point(x, y))
+            callback([x, y])
         }
     }
 }

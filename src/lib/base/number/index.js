@@ -33,17 +33,17 @@ export class Rect {
     }
 
     isInside(point) {
-        const x = point.x >= 0 && point.x < this.width
-        const y = point.y >= 0 && point.y < this.height
+        const x = point[0] >= 0 && point[0] < this.width
+        const y = point[1] >= 0 && point[1] < this.height
         return x && y
     }
 
     wrap(point) {
-        let {x, y} = point
+        let [x, y] = point
         if (x >= this.width) { x %= this.width }
         if (y >= this.height) { y %= this.height }
         if (x < 0) { x = this.width - 1 - Math.abs(x + 1) % this.width }
         if (y < 0) { y = this.height - 1 - Math.abs(y + 1) % this.height }
-        return new Point(x, y)
+        return [x, y]
     }
 }

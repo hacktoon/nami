@@ -28,7 +28,7 @@ export class PointSet {
         this.#index.forEach(index => {
             const x = Math.floor(index % width)
             const y = Math.floor(index / width)
-            points.push(new Point(x, y))
+            points.push([x, y])
         })
         return points
     }
@@ -38,17 +38,17 @@ export class PointSet {
         const index = Random.choiceFrom(Array.from(this.#index))
         const x = Math.floor(index % width)
         const y = Math.floor(index / width)
-        return new Point(x, y)
+        return [x, y]
     }
 
     has(point) {
-        const index = point.x + this.#width * point.y
+        const index = point[0] + this.#width * point[1]
         return this.#index.has(index)
     }
 
     delete(point) {
         // column-major order
-        const index = point.x + this.#width * point.y
+        const index = point[0] + this.#width * point[1]
         this.#index.delete(index)
     }
 }

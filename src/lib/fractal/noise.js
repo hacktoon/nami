@@ -34,7 +34,7 @@ export class SimplexNoise {
 
         //add successively smaller, higher-frequency terms
         for(let i = 0; i < this.iterations; ++i) {
-            noise += this.#calcNoise(point.x * freq, point.y * freq) * amp
+            noise += this.#calcNoise(point[0] * freq, point[1] * freq) * amp
             amp *= this.persistence
             freq *= 2
         }
