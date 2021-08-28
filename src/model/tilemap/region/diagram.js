@@ -1,6 +1,6 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { TileMapDiagram } from '/model/lib/tilemap'
+import { TileMapDiagram } from '/lib/model/tilemap'
 
 
 const SCHEMA = new Schema(

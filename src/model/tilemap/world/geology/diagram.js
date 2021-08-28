@@ -3,7 +3,7 @@ import { Type } from '/lib/base/type'
 import { Direction } from '/lib/base/direction'
 import { Color } from '/lib/base/color'
 
-import { TileMapDiagram } from '/model/lib/tilemap'
+import { TileMapDiagram } from '/lib/model/tilemap'
 
 
 export class GeologyTileMapDiagram extends TileMapDiagram {

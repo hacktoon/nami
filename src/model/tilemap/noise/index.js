@@ -1,5 +1,5 @@
 import { Matrix } from '/lib/base/matrix'
-import { TileMap } from '/model/lib/tilemap'
+import { TileMap } from '/lib/model/tilemap'
 import { SimplexNoise } from '/lib/fractal/noise'
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'

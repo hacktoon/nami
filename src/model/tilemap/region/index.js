@@ -1,7 +1,7 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { UITileMap } from '/ui/tilemap'
-import { TileMap } from '/model/lib/tilemap'
+import { TileMap } from '/lib/model/tilemap'
 
 import { RegionTileMapDiagram } from './diagram'
 import { RegionMapModel } from './model'

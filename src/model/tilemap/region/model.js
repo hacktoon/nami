@@ -23,9 +23,7 @@ export class Region {
 
 export class RegionMapModel {
     constructor(params) {
-        const start = performance.now()
         const data = this._build(params)
-        console.log(Math.floor(performance.now() - start)/1000);
         this.directions = data.directions
         this.regionMatrix = data.regionMatrix
         this.borderMatrix = data.borderMatrix

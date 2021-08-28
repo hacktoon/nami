@@ -1,6 +1,6 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
-import { TileMap } from '/model/lib/tilemap'
+import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
@@ -32,11 +32,13 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const start = performance.now()
+        let start = performance.now()
         this.reGroupTileMap = this._buildRegionGroupMap(this.seed, params)
         console.log('region group', Math.floor(performance.now() - start) / 1000)
+        start = performance.now()
         this.plateModel = new PlateModel(this.reGroupTileMap)
         console.log('plate model', Math.floor(performance.now() - start) / 1000)
+        start = performance.now()
         this.erosionModel = new ErosionModel(this.reGroupTileMap, this.plateModel)
         console.log('erosion model', Math.floor(performance.now() - start) / 1000)
     }

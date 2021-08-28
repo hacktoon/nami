@@ -22,7 +22,6 @@ export class EvenPointSampling {
         const samples = []
         const rect = new Rect(width, height)
         const pointSet = new PointSet(width, height)
-        // const maskPoints = circleMaskPoints(radius)
 
         while(pointSet.size > 0) {
             const center = pointSet.random()

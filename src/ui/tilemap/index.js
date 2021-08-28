@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Form } from '/ui/form'
 import { Button } from '/ui/form/button'
 import { Text } from '/ui'
-import { TileMapScene } from '/model/lib/tilemap/scene'
+import { TileMapScene } from '/lib/model/tilemap/scene'
 
 import { UITileMapScene } from './scene'
 

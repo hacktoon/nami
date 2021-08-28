@@ -1,7 +1,7 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { Color } from '/lib/base/color'
-import { TileMapDiagram } from '/model/lib/tilemap'
+import { TileMapDiagram } from '/lib/model/tilemap'
 
 
 export class NoiseTileMapDiagram extends TileMapDiagram {
