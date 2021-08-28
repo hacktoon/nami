@@ -32,24 +32,24 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     get(point) {
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         const plate = this.tileMap.getPlate(point)
-        const landform = this.tileMap.getErodedLandform(point)
         let color = Color.fromHex(plate.color)
+        const erodedlandform = this.tileMap.getErodedLandform(point)
 
         if (this.showLandform) {
+            const landform = this.tileMap.getLandform(point)
             color = Color.fromHex(landform.color)
             if (isBorderPoint) {
                 color = Color.fromHex(landform.color ?? plate.color)
             }
-            if (this.showErosion) {
-                const landform = this.tileMap.getErodedLandform(point)
-                color = Color.fromHex(landform.color)
-            }
+        }
+        if (this.showErosion) {
+            color = Color.fromHex(erodedlandform.color)
+        }
+        if (this.showOutline) {
+            return erodedlandform.water ? '#069' : '#141'
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#F00'))
-        }
-        if (this.showOutline) {
-            return landform.water ? '#069' : '#141'
         }
         return color.toHex()
     }

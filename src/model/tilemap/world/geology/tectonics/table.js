@@ -7,7 +7,7 @@ export const BOUNDARY_TABLE = [
     data: [
         {chance: .5, growth: 2, landscape: [
             {level: 0, name: 'PEAK'},
-            {level: 2, name: 'MOUNTAIN'},
+            {level: 1, name: 'MOUNTAIN'},
             {level: 3, name: 'HILL'},
             {level: 5, name: 'PLAIN'},
         ]},
@@ -115,7 +115,7 @@ export const BOUNDARY_TABLE = [
         {landscape: [
             {level: 0, name: 'MOUNTAIN'},
             {level: 1, name: 'HILL'},
-            {level: 2, name: 'PLAIN'},
+            {level: 3, name: 'PLAIN'},
         ]},
     ]},
     // ==============================================
@@ -169,7 +169,8 @@ export const BOUNDARY_TABLE = [
         ]},
         {landscape: [
             {level: 0, name: 'DEEP_SEA'},
-            {level: 1, name: 'HILL'},
+            {level: 1, name: 'PLAIN'},
+            {level: 3, name: 'HILL'},
         ]},
     ]},
 

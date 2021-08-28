@@ -9,7 +9,7 @@ import { Landform } from '../landform'
 
 const TYPE_CONTINENTAL = 'L'
 const TYPE_OCEANIC = 'W'
-const HOTSPOT_CHANCE = .5
+const HOTSPOT_CHANCE = .4
 
 
 export class TectonicsModel {
