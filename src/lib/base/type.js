@@ -74,7 +74,7 @@ class PointType extends BaseType {
     }
 
     toString(point) {
-        return point.hash
+        return Point.hash(point)
     }
 }
 

@@ -1,5 +1,6 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
+import { Point } from '/lib/base/point'
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
@@ -65,8 +66,8 @@ export class GeologyTileMap extends TileMap {
         const boundary = this.tectonicsModel.getBoundary(region.id)
         const eroded = this.getErodedLandform(point)
         return [
-            `point: ${point.hash}, plate: ${plate.id}`,
-            `, region: ${region.id}@${region.origin.hash}`,
+            `point: ${Point.hash(point)}, plate: ${plate.id}`,
+            `, region: ${region.id}@${Point.hash(region.origin)}`,
             `, boundary: ${boundary.name}`,
             `, landform: ${eroded.name} (was ${landform.name})`
         ].join('')

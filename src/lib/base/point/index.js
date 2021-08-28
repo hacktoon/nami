@@ -34,8 +34,8 @@ export class Point {
         return new Point(x, y)
     }
 
-    get hash() {
-        return `${this.x},${this.y}`
+    static hash(point) {
+        return `${point.x},${point.y}`
     }
 
     equals(point) {

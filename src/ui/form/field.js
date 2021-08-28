@@ -136,7 +136,7 @@ function PointField({name, label, value, onChange, ...props}) {
     const handleYChange = e => handleChange(point.x, e.target.value)
     const handleChange = (x, y) => {
         const point = new Point(x, y)
-        onChange(name, point.hash)
+        onChange(name, Point.hash(point))
         setPoint(point)
     }
 

@@ -1,5 +1,6 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
+import { Point } from '/lib/base/point'
 import { UITileMap } from '/ui/tilemap'
 import { TileMap } from '/lib/model/tilemap'
 
@@ -48,7 +49,7 @@ export class RegionTileMap extends TileMap {
         const region = this.getRegion(point)
         const neighbors = this.getNeighborRegions(region)
         return {
-            point: point.hash,
+            point: Point.hash(point),
             id: region.id,
             region: region,
             neighbors: neighbors.map(neighbor => {

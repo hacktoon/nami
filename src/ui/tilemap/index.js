@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import { Point } from '/lib/base/point'
 import { Form } from '/ui/form'
 import { Button } from '/ui/form/button'
 import { Text } from '/ui'
@@ -27,7 +28,9 @@ function UITileMapDiagram({diagram, tileMap}) {
 
     const mapDiagram = diagram.create(tileMap, diagramData)
 
-    const handleDrag = point => setSceneData(sceneData.update('focus', point.hash))
+    const handleDrag = point => {
+        setSceneData(sceneData.update('focus', Point.hash(point)))
+    }
     const handleWheel = zoom => setSceneData(sceneData.update('zoom', zoom))
     const handleClick = point => console.info(tileMap.get(point))
 
