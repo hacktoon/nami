@@ -6,7 +6,7 @@ import { UITileMap } from '/ui/tilemap'
 import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
 
 import { GeologyTileMapDiagram } from './diagram'
-import { TectonicsModel } from './plate'
+import { TectonicsModel } from './tectonics'
 import { ErosionModel } from './erosion'
 
 
@@ -33,16 +33,17 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        console.log('=================================================')
+        console.log(this.seed);
+        // console.log('=================================================')
         let start = performance.now()
         this.reGroupTileMap = this._buildRegionGroupMap(this.seed, params)
-        console.log('regions', Math.floor(performance.now() - start) / 1000)
+        // console.log('regions', Math.floor(performance.now() - start) / 1000)
         start = performance.now()
         this.tectonicsModel = new TectonicsModel(this.reGroupTileMap)
-        console.log('tectonics model', Math.floor(performance.now() - start) / 1000)
+        // console.log('tectonics model', Math.floor(performance.now() - start) / 1000)
         start = performance.now()
         this.erosionModel = new ErosionModel(this.reGroupTileMap, this.tectonicsModel)
-        console.log('erosion model', Math.floor(performance.now() - start) / 1000)
+        // console.log('erosion model', Math.floor(performance.now() - start) / 1000)
     }
 
     _buildRegionGroupMap(seed, params) {
