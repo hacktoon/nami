@@ -1,5 +1,6 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
+import { Point } from '/lib/base/point'
 import { TileMapDiagram } from '/lib/model/tilemap'
 
 
@@ -40,7 +41,7 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         const regionColor = this.regionColorMap.get(region)
         const isBorderRegion = this.tileMap.isBorderRegion(region)
 
-        if (this.showOrigins && group.origin.equals(point)) {
+        if (this.showOrigins && Point.equals(group.origin, point)) {
             return groupColor.invert().toHex()
         }
         if (this.showGroupBorder && this.tileMap.isGroupBorder(point)) {
@@ -69,7 +70,7 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
 
     getText(point) {
         const group = this.tileMap.getGroup(point)
-        if (group.origin.equals(point)) {
+        if (Point.equals(group.origin, point)) {
             return String(group.id)
         }
         return ''

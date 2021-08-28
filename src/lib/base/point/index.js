@@ -38,8 +38,8 @@ export class Point {
         return `${point.x},${point.y}`
     }
 
-    equals(point) {
-        return this.x === point.x && this.y === point.y
+    static equals(p1, p2) {
+        return p1.x === p2.x && p1.y === p2.y
     }
 
     differs(point) {
