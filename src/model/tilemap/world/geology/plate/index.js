@@ -86,7 +86,7 @@ export class TectonicsModel {
         const points = [plate.origin]
         let current = plate.origin
         offsets.forEach(point => {
-            current = current.plus(point)
+            current = Point.plus(current, point)
             points.push(current)
         })
         return points

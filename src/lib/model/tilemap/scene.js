@@ -56,7 +56,7 @@ export class TileMapScene {
         })
         for(let [canvasPoint, mark] of this.markQueue) {
             const offset = markCenter - markSize / 2
-            const markPoint = canvasPoint.plus(new Point(offset, offset))
+            const markPoint = Point.plus(canvasPoint, new Point(offset, offset))
             canvas.mark(markPoint, markSize, mark)
         }
         for(let [canvasPoint, text] of this.textQueue) {
@@ -112,15 +112,15 @@ class Frame {
         // focus defaults to 0,0.
         return {
             origin: offset.minus(this.center),
-            target: offset.plus(this.center)
+            target: Point.plus(offset, this.center)
         }
     }
 
     tilePoint(mousePoint) {
         const {origin} = this.tileWindow()
-        const mouse = mousePoint.plus(this.offset)
+        const mouse = Point.plus(mousePoint, this.offset)
         const x = Math.floor(mouse.x / this.zoom)
         const y = Math.floor(mouse.y / this.zoom)
-        return new Point(x, y).plus(origin)
+        return Point.plus(origin, new Point(x, y))
     }
 }

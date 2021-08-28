@@ -19,7 +19,7 @@ export function UITileMapMouse({scene, ...props}) {
         const startTilePoint = scene.frame.tilePoint(startPoint)
         const endTilePoint = scene.frame.tilePoint(endPoint)
         const newFocus = startTilePoint.minus(endTilePoint)
-        if (newFocus.differs(focus)) {
+        if (Point.differs(newFocus, focus)) {
             setFocus(newFocus)
             props.onDrag(newFocus)
         }
@@ -27,15 +27,15 @@ export function UITileMapMouse({scene, ...props}) {
 
     const handleMove = mousePoint => {
         const scenePoint = scene.frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(scene.focus)
-        if (! cursor || point.differs(cursor)) {
+        const point = Point.plus(scenePoint, scene.focus)
+        if (! cursor || Point.differs(cursor, point)) {
             setCursor(point)
         }
     }
 
     const handleClick = mousePoint => {
         const scenePoint = scene.frame.tilePoint(mousePoint)
-        const point = scenePoint.plus(scene.focus)
+        const point = Point.plus(scenePoint, scene.focus)
         props.onClick(point)
     }
 

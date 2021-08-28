@@ -26,7 +26,6 @@ class FillConfig {
 }
 
 
-
 function createMatrix(p, factor=2) {
     return new Matrix(p.x * factor + 1, p.y * factor + 1, () => 0)
 }
@@ -41,7 +40,7 @@ test('origin point is filled', () => {
     const origin = new Point(4, 4)
     const matrix = createMatrix(origin)
     const fill = createBaseFill(origin, matrix)
-    const pointAt = (x, y) => origin.plus(new Point(x, y))
+    const pointAt = (x, y) => Point.plus(origin, new Point(x, y))
 
     const grown = fill.grow()
     expect(matrix.get(pointAt(0, 0))).toBe(1)

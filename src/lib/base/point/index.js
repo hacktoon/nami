@@ -42,12 +42,12 @@ export class Point {
         return p1.x === p2.x && p1.y === p2.y
     }
 
-    differs(point) {
-        return this.x !== point.x || this.y !== point.y
+    static differs(p1, p2) {
+        return p1.x !== p2.x || p1.y !== p2.y
     }
 
-    plus(point) {
-        return new Point(this.x + point.x, this.y + point.y)
+    static plus(p1, p2) {
+        return new Point(p1.x + p2.x, p1.y + p2.y)
     }
 
     minus(point) {
@@ -101,6 +101,12 @@ export class Point {
         return points
     }
 
+    static distance(p1, p2) {
+        let deltaX = Math.pow(p1.x - p2.x, 2),
+            deltaY = Math.pow(p1.y - p2.y, 2)
+        return Math.sqrt(deltaX + deltaY)
+    }
+
     atNorth() { return new Point(this.x, this.y - 1) }
     atSouth() { return new Point(this.x, this.y + 1) }
     atEast() { return new Point(this.x + 1, this.y) }
@@ -109,23 +115,4 @@ export class Point {
     atSoutheast() { return new Point(this.x + 1, this.y + 1) }
     atNorthwest() { return new Point(this.x - 1, this.y - 1) }
     atSouthwest() { return new Point(this.x - 1, this.y + 1) }
-    isAtDirection(point, dir) {
-        const north = dir === Direction.NORTH && this.y > point.y
-        const south = dir === Direction.SOUTH && this.y < point.y
-        const west = dir === Direction.WEST && this.x > point.x
-        const east = dir === Direction.SOUTH && this.x < point.x
-        return north || south || east || west
-    }
-
-    distance(point) {
-        let deltaX = Math.pow(point.x - this.x, 2),
-            deltaY = Math.pow(point.y - this.y, 2)
-        return Math.sqrt(deltaX + deltaY)
-    }
-
-    manhattanDistance(point) {
-        let deltaX = Math.abs(point.x - this.x),
-            deltaY = Math.abs(point.y - this.y)
-        return deltaX + deltaY
-    }
 }
