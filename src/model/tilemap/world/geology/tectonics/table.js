@@ -129,6 +129,7 @@ export const BOUNDARY_TABLE = [
             {level: 0, name: 'SHALLOW_SEA'},
             {level: 1, name: 'PLAIN'},
             {level: 2, name: 'HILL'},
+            {level: 4, name: 'PLAIN'},
         ]},
     ]},
     // ==============================================
