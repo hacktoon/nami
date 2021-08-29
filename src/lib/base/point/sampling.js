@@ -33,10 +33,10 @@ export class EvenPointSampling {
             samples.push(center)
         }
         if (samples.length === 1) {
-            const x = samples[0][0] + Math.round(width / 2)
-            const y = samples[0][1] + Math.round(height / 2)
-            const point = rect.wrap([x, y])
-            samples.push(point)
+            const point = samples[0]
+            const x = point[0] + Math.round(width / 2)
+            const y = point[1] + Math.round(height / 2)
+            samples.push(rect.wrap([x, y]))
         }
         return samples
     }

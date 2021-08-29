@@ -1,17 +1,16 @@
 
-
 export class PairMap {
     constructor() {
         this._sources = new Map()
     }
 
-    set(source, target, point) {
+    set(source, target, value) {
         if (! this._sources.has(source)) {
             this._sources.set(source, new Map())
         }
         const targets = this._sources.get(source)
         if (! targets.has(target)) {
-            targets.set(target, point)
+            targets.set(target, value)
         }
     }
 
