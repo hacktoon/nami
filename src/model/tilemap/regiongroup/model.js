@@ -77,8 +77,8 @@ export class RegionGroupModel {
         groups.forEach(group => {
             data.graph.getEdges(group.id).forEach(neighborId => {
                 const neighbor = groups.get(neighborId)
-                const neighborOrigin = matrix.wrapVector(group.origin, neighbor.origin)
-                const angle = Point.angle(group.origin, neighborOrigin)
+                const sideOrigin = matrix.wrapVector(group.origin, neighbor.origin)
+                const angle = Point.angle(group.origin, sideOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(group.id, neighborId, direction)
             })

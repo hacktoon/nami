@@ -7,8 +7,9 @@ import { RegionGroupTileMapDiagram } from './diagram'
 import { RegionGroupModel } from './model'
 
 
+const ID = 'RegionGroupTileMap'
 const SCHEMA = new Schema(
-    'RegionGroupTileMap',
+    ID,
     Type.number('width', 'W', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('groupScale', 'Gr Scale', {default: 34, step: 1, min: 1, max: 100}),
@@ -22,7 +23,7 @@ const SCHEMA = new Schema(
 
 
 export class RegionGroupTileMap extends TileMap {
-    static id = 'RegionGroupTileMap'
+    static id = ID
     static diagram = RegionGroupTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
@@ -41,11 +42,11 @@ export class RegionGroupTileMap extends TileMap {
         super(params)
         const model = new RegionGroupModel(this.seed, params)
         this.regionTileMap = model.regionTileMap
-        this.directions = model.directions
-        this.graph = model.graph
         this.regionToGroup = model.regionToGroup
-        this.groups = model.groups
         this.borderRegions = model.borderRegions
+        this.directions = model.directions
+        this.groups = model.groups
+        this.graph = model.graph
     }
 
     get(point) {

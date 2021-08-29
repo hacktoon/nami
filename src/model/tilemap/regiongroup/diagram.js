@@ -30,73 +30,45 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         this.showRegionBorder = params.get('showRegionBorder')
         this.showGroupBorder = params.get('showGroupBorder')
         this.showBorderRegion = params.get('showBorderRegion')
-        this.regionColorMap = new RegionColorMap(tileMap.getRegions())
-        this.groupColorMap = new GroupColorMap(tileMap.getGroups())
     }
 
     get(point) {
         const group = this.tileMap.getGroup(point)
         const region = this.tileMap.getRegion(point)
-        const groupColor = this.groupColorMap.get(group)
-        const regionColor = this.regionColorMap.get(region)
         const isBorderRegion = this.tileMap.isBorderRegion(region)
 
         if (this.showOrigins && Point.equals(group.origin, point)) {
-            return groupColor.invert().toHex()
+            return group.color.invert().toHex()
         }
         if (this.showGroupBorder && this.tileMap.isGroupBorder(point)) {
-            return groupColor.darken(50).toHex()
+            return group.color.darken(50).toHex()
         }
         if (this.showRegionBorder && this.tileMap.isRegionBorder(point)) {
-            let color = regionColor.darken(50)
+            let color = region.color.darken(50)
             if (this.showGroups)
-                color = groupColor.brighten(50)
+                color = group.color.brighten(50)
             return color.toHex()
         }
         if (this.showGroups) {
-            let color = groupColor
+            let color = group.color
             if (this.showRegions)
-                color = regionColor.average(groupColor).average(groupColor)
+                color = region.color.average(group.color).average(group.color)
             if (isBorderRegion && this.showBorderRegion)
                 return color.darken(90).toHex()
             return color.toHex()
         }
         if (this.showRegions) {
-            let color = isBorderRegion ? regionColor.brighten(50) : regionColor
+            let color = isBorderRegion ? region.color.brighten(50) : region.color
             return color.toHex()
         }
-        return regionColor.grayscale().toHex()
+        return region.color.grayscale().toHex()
     }
 
-    getText(point) {
-        const group = this.tileMap.getGroup(point)
-        if (Point.equals(group.origin, point)) {
-            return String(group.id)
-        }
-        return ''
-    }
-}
-
-
-class RegionColorMap {
-    constructor(regions) {
-        const entries = regions.map(region => [region.id, region.color])
-        this.map = Object.fromEntries(entries)
-    }
-
-    get(region) {
-        return this.map[region.id]
-    }
-}
-
-
-class GroupColorMap {
-    constructor(groups) {
-        const entries = groups.map(group => [group.id, group.color])
-        this.map = Object.fromEntries(entries)
-    }
-
-    get(group) {
-        return this.map[group.id]
-    }
+    // getText(point) {
+    //     const group = this.tileMap.getGroup(point)
+    //     if (Point.equals(group.origin, point)) {
+    //         return String(group.id)
+    //     }
+    //     return ''
+    // }
 }

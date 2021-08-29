@@ -5,16 +5,16 @@ export const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LLCC', name: 'Continental collision',
     data: [
-        {chance: .5, growth: 2, landscape: [
+        {chance: .4, growth: 6, landscape: [
             {level: 0, name: 'PEAK'},
             {level: 1, name: 'MOUNTAIN'},
             {level: 3, name: 'HILL'},
             {level: 5, name: 'PLAIN'},
         ]},
-        {chance: .5, growth: 2, landscape: [
+        {chance: .4, growth: 4, landscape: [
             {level: 0, name: 'MOUNTAIN'},
             {level: 2, name: 'HILL'},
-            {level: 5, name: 'PLAIN'},
+            {level: 4, name: 'PLAIN'},
         ]},
     ]},
     // ==============================================
@@ -77,15 +77,11 @@ export const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LLTT', name: 'Transform Fault',
     data: [
-        {landscape: [
+        {chance: .1, growth: 6, landscape: [
             {level: 0, name: 'PLAIN'},
             {level: 1, name: 'HILL'},
             {level: 2, name: 'PLAIN'},
-        ]},
-        {landscape: [
-            {level: 0, name: 'HILL'},
-            {level: 1, name: 'PLAIN'},
-        ]},
+        ]}
     ]},
 
 
@@ -96,7 +92,7 @@ export const BOUNDARY_TABLE = [
     data: [
         {chance: .5, growth: 3, landscape: [
             {level: 0, name: 'TRENCH'},
-            {level: 2, name: 'DEEP_SEA'},
+            {level: 1, name: 'DEEP_SEA'},
         ]},
         {landscape: [
             {level: 0, name: 'PLAIN'},
@@ -112,10 +108,11 @@ export const BOUNDARY_TABLE = [
             {level: 0, name: 'TRENCH'},
             {level: 1, name: 'DEEP_SEA'},
         ]},
-        {landscape: [
-            {level: 0, name: 'MOUNTAIN'},
-            {level: 1, name: 'HILL'},
-            {level: 3, name: 'PLAIN'},
+        {chance: .8, growth: 3, landscape: [
+            {level: 0, name: 'PLAIN'},
+            {level: 1, name: 'MOUNTAIN'},
+            {level: 3, name: 'HILL'},
+            {level: 4, name: 'PLAIN'},
         ]},
     ]},
     // ==============================================

@@ -33,16 +33,16 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        console.log(this.seed);
-        let start = performance.now()
-        this.reGroupTileMap = this._buildRegionGroupMap(this.seed, params)
-        console.log('regions', Math.floor(performance.now() - start) / 1000)
-        start = performance.now()
-        this.tectonicsModel = new TectonicsModel(this.reGroupTileMap)
-        console.log('tectonics model', Math.floor(performance.now() - start) / 1000)
-        start = performance.now()
-        this.erosionModel = new ErosionModel(this.reGroupTileMap, this.tectonicsModel)
-        console.log('erosion model', Math.floor(performance.now() - start) / 1000)
+        // console.log(this.seed);
+        // let start = performance.now()
+        this.regionGroup = this._buildRegionGroupMap(this.seed, params)
+        // console.log('regions', Math.floor(performance.now() - start) / 1000)
+        // start = performance.now()
+        this.tectonicsModel = new TectonicsModel(this.regionGroup)
+        // console.log('tectonics model', Math.floor(performance.now() - start) / 1000)
+        // start = performance.now()
+        this.erosionModel = new ErosionModel(this.regionGroup, this.tectonicsModel)
+        // console.log('erosion model', Math.floor(performance.now() - start) / 1000)
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -61,7 +61,7 @@ export class GeologyTileMap extends TileMap {
 
     get(point) {
         const plate = this.getPlate(point)
-        const region = this.reGroupTileMap.getRegion(point)
+        const region = this.regionGroup.getRegion(point)
         const landform = this.getLandform(point)
         const boundary = this.tectonicsModel.getBoundary(region.id)
         const eroded = this.getErodedLandform(point)
@@ -74,18 +74,18 @@ export class GeologyTileMap extends TileMap {
     }
 
     getPlate(point) {
-        const group = this.reGroupTileMap.getGroup(point)
+        const group = this.regionGroup.getGroup(point)
         return this.tectonicsModel.get(group.id)
     }
 
     isPlateOrigin(plate, point) {
         // TODO: eliminate this dependency
-        const matrix = this.reGroupTileMap.regionTileMap.regionMatrix
+        const matrix = this.regionGroup.regionTileMap.regionMatrix
         return Point.equals(plate.origin, matrix.wrap(point))
     }
 
     isPlateBorder(point) {
-        return this.reGroupTileMap.isGroupBorder(point)
+        return this.regionGroup.isGroupBorder(point)
     }
 
     getLandform(point) {
