@@ -41,9 +41,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             if (isBorderPoint) {
                 color = Color.fromHex(landform.color ?? plate.color)
             }
-        }
-        if (this.showErosion) {
-            color = Color.fromHex(erodedlandform.color)
+            if (this.showErosion) {
+                color = Color.fromHex(erodedlandform.color)
+            }
         }
         if (this.showOutline) {
             return erodedlandform.water ? '#069' : '#141'

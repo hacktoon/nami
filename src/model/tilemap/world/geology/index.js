@@ -33,16 +33,16 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        // console.log(this.seed);
-        // let start = performance.now()
+        console.log(this.seed);
+        let start = performance.now()
         this.regionGroup = this._buildRegionGroupMap(this.seed, params)
-        // console.log('regions', Math.floor(performance.now() - start) / 1000)
-        // start = performance.now()
+        console.log('regions', Math.floor(performance.now() - start) / 1000)
+        start = performance.now()
         this.tectonicsModel = new TectonicsModel(this.regionGroup)
-        // console.log('tectonics model', Math.floor(performance.now() - start) / 1000)
-        // start = performance.now()
+        console.log('tectonics model', Math.floor(performance.now() - start) / 1000)
+        start = performance.now()
         this.erosionModel = new ErosionModel(this.regionGroup, this.tectonicsModel)
-        // console.log('erosion model', Math.floor(performance.now() - start) / 1000)
+        console.log('erosion model', Math.floor(performance.now() - start) / 1000)
     }
 
     _buildRegionGroupMap(seed, params) {

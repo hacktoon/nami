@@ -41,14 +41,14 @@ export class PointSet {
         return [x, y]
     }
 
-    has(point) {
-        const index = point[0] + this.#width * point[1]
+    has([x, y]) {
+        const index = x + this.#width * y
         return this.#index.has(index)
     }
 
-    delete(point) {
+    delete([x, y]) {
         // column-major order
-        const index = point[0] + this.#width * point[1]
+        const index = x + this.#width * y
         this.#index.delete(index)
     }
 }
