@@ -33,6 +33,7 @@ class ErosionMatrix {
     constructor(landformMatrix) {
         this.erosionQueue = []
         this.matrix = this._buildMatrix(landformMatrix)
+        this.visited = null
     }
 
     _buildMatrix(landformMatrix) {
@@ -41,6 +42,7 @@ class ErosionMatrix {
             this.erosionQueue.push(point)
             return landformMatrix.get(point)
         })
+        this.visited = new Matrix(width, height, () => EMPTY)
         while(this.erosionQueue.length > 0) {
             this.erosionQueue = this._erodeQueue(matrix)
         }
@@ -74,8 +76,10 @@ class ErosionMatrix {
             // erode center based on highest side
             if (Landform.canErode(landform, highestSideLandform)) {
                 landform = Landform.erode(landform, highestSideLandform)
-                erosionQueue.push(point)
+                if (! this.visited.get(point))
+                    erosionQueue.push(point)
             }
+            this.visited.set(point, true)
             matrix.set(point, landform)
         }
         return erosionQueue
