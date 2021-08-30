@@ -58,13 +58,13 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         return color.toHex()
     }
 
-    getText(point) {
-        const region = this.tileMap.getRegion(point)
-        if (Point.equals(region.origin, point)) {
-            return String(region.id)
-        }
-        return ''
-    }
+    // getText(point) {
+    //     const region = this.tileMap.getRegion(point)
+    //     if (Point.equals(region.origin, point)) {
+    //         return String(region.id)
+    //     }
+    //     return ''
+    // }
 }
 
 
