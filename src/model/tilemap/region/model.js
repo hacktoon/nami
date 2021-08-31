@@ -42,7 +42,7 @@ export class RegionMapModel {
             growth: params.get('growth'),
             graph: new Graph()
         }
-        const regions = this._buildRegions(origins, data)
+        const regions = this._buildRegions_new(origins, data)
         return {...data, regions}
     }
 
