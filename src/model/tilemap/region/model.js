@@ -1,12 +1,11 @@
-import { PairMap } from '/lib/base'
 import { Color } from '/lib/base/color'
 import { Point } from '/lib/base/point'
 import { Matrix } from '/lib/base/matrix'
-import { Direction } from '/lib/base/direction'
 import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
+import { RegionFloodFill } from '/lib/floodfill/region'
 
 
 const NO_REGION = null
@@ -26,6 +25,7 @@ export class RegionMapModel {
     constructor(params) {
         const data = this._build(params)
         this.regionMatrix = data.regionMatrix
+        this.levelMatrix = data.levelMatrix
         this.borderMatrix = data.borderMatrix
         this.regions = data.regions
         this.graph = data.graph
@@ -36,6 +36,7 @@ export class RegionMapModel {
         const origins = EvenPointSampling.create(width, height, scale)
         const data = {
             regionMatrix: new Matrix(width, height, () => NO_REGION),
+            levelMatrix: new Matrix(width, height, () => 0),
             borderMatrix: new Matrix(width, height, () => new Set()),
             chance: params.get('chance'),
             growth: params.get('growth'),
@@ -50,6 +51,23 @@ export class RegionMapModel {
         const multifill = new MultiFill(origins.map((origin, id) => {
             const fillConfig = new RegionFillConfig(id, origin, data)
             return new OrganicFloodFill(origin, fillConfig)
+        }))
+        multifill.forEach(fill => {
+            const region = new Region({
+                id: fill.config.id,
+                origin: fill.origin,
+                area: fill.count
+            })
+            regions.set(region.id, region)
+        })
+        return regions
+    }
+
+    _buildRegions_new(origins, data) {
+        const regions = new Map()
+        const multifill = new MultiFill(origins.map((origin, id) => {
+            const fillConfig = new RegionFillConfig(id, origin, data)
+            return new RegionFloodFill(origin, fillConfig)
         }))
         multifill.forEach(fill => {
             const region = new Region({
@@ -78,8 +96,9 @@ export class RegionFillConfig {
         return this.model.regionMatrix.get(point) === NO_REGION
     }
 
-    setValue(point) {
+    setValue(point, level) {
         this.model.regionMatrix.set(point, this.id)
+        this.model.levelMatrix.set(point, level)
     }
 
     checkNeighbor(neighborPoint, fillPoint) {

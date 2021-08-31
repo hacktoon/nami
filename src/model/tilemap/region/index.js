@@ -40,8 +40,8 @@ export class RegionTileMap extends TileMap {
         const model = new RegionMapModel(params)
         this.regions = model.regions
         this.regionMatrix = model.regionMatrix
+        this.levelMatrix = model.levelMatrix
         this.borderMatrix = model.borderMatrix
-        this.directions = model.directions
         this.graph = model.graph
     }
 
@@ -64,8 +64,8 @@ export class RegionTileMap extends TileMap {
         return this.regions.get(id)
     }
 
-    getRegionDirection(sourceRegion, targetRegion) {
-        return this.directions.get(sourceRegion.id, targetRegion.id)
+    getLevel(point) {
+        return this.levelMatrix.get(point)
     }
 
     getRegionById(id) {

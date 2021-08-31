@@ -11,6 +11,7 @@ const SCHEMA = new Schema(
     Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
     Type.boolean('showSelectedRegion', 'Show selected region', {default: false}),
     Type.number('selectedRegionId', 'Select region', {default: 0, min: 0, step: 1}),
+    Type.number('level', 'Level', {default: 0, min: 0, step: 1}),
 )
 
 
@@ -28,12 +29,14 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         this.showNeighborBorder = params.get('showNeighborBorder')
         this.showSelectedRegion = params.get('showSelectedRegion')
         this.selectedRegionId = params.get('selectedRegionId')
+        this.level = params.get('level')
         this.colorMap = new RegionColorMap(tileMap)
     }
 
     get(point) {
         const region = this.tileMap.getRegion(point)
         const isBorder = this.tileMap.isBorder(point)
+        const level = this.tileMap.getLevel(point)
         const color = this.colorMap.get(region)
 
         if (this.showOrigins && Point.equals(region.origin, point)) {
@@ -55,7 +58,10 @@ export class RegionTileMapDiagram extends TileMapDiagram {
                 return toggle ? color.darken(40).toHex() : color.toHex()
             }
         }
-        return color.toHex()
+        if (level < this.level) {
+            return color.toHex()
+        }
+        return '#fff'
     }
 
     // getText(point) {
@@ -75,7 +81,7 @@ class RegionColorMap {
     }
 
     get(region) {
-        return this.map.get(region.id)
+        return this.map.get(region.id) || Color.fromHex('#FFF')
     }
 
     getMix([firstRegion, ...regions]) {
