@@ -4,7 +4,7 @@ import { Point } from '/lib/base/point'
 import { Matrix } from '/lib/base/matrix'
 import { Direction } from '/lib/base/direction'
 import { Graph } from '/lib/base/graph'
-import { EvenPointSampling, SquarePointSampling } from '/lib/base/point/sampling'
+import { EvenPointSampling } from '/lib/base/point/sampling'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
