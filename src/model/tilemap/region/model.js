@@ -25,7 +25,6 @@ export class Region {
 export class RegionMapModel {
     constructor(params) {
         const data = this._build(params)
-        this.directions = data.directions
         this.regionMatrix = data.regionMatrix
         this.borderMatrix = data.borderMatrix
         this.regions = data.regions
@@ -43,8 +42,7 @@ export class RegionMapModel {
             graph: new Graph()
         }
         const regions = this._buildRegions(origins, data)
-        const directions = this._buildDirections(regions, data)
-        return {...data, regions, directions}
+        return {...data, regions}
     }
 
     _buildRegions(origins, data) {
@@ -62,21 +60,6 @@ export class RegionMapModel {
             regions.set(region.id, region)
         })
         return regions
-    }
-
-    _buildDirections(regions, data) {
-        const directions = new PairMap()
-        const matrix = data.regionMatrix
-        regions.forEach(region => {
-            data.graph.getEdges(region.id).forEach(neighborId => {
-                const neighbor = regions.get(neighborId)
-                const neighborOrigin = matrix.wrapVector(region.origin, neighbor.origin)
-                const angle = Point.angle(region.origin, neighborOrigin)
-                const direction = Direction.fromAngle(angle)
-                directions.set(region.id, neighborId, direction)
-            })
-        })
-        return directions
     }
 }
 
@@ -110,5 +93,38 @@ export class RegionFillConfig {
 
     getNeighbors(originPoint) {
         return Point.adjacents(originPoint)
+    }
+}
+
+
+class MultiFill2 {
+    constructor(fills) {
+        this.fills = fills
+        this.canGrow = true
+
+        while(this.canGrow) {
+            this._growFills()
+        }
+    }
+
+    map(callback) {
+        return this.fills.map(fill => callback(fill))
+    }
+
+    forEach(callback) {
+        this.fills.forEach(callback)
+    }
+
+    _growFills() {
+        let completedFills = 0
+        for(let fill of this.fills) {
+            const filledPoints = fill.grow()
+            if (filledPoints.length === 0) {
+                completedFills++
+            }
+        }
+        if (completedFills === this.fills.length) {
+            this.canGrow = false
+        }
     }
 }
