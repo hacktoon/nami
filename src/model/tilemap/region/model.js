@@ -5,7 +5,7 @@ import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
-import { RegionFloodFill, RegionMultiFill } from '/lib/floodfill/region'
+import { RegionMultiFill } from './fill'
 
 
 const NO_REGION = null
@@ -79,7 +79,7 @@ export class RegionMapModel {
 }
 
 
-
+// remove this
 export class RegionFillConfig {
     constructor(id, origin, model) {
         this.id = id

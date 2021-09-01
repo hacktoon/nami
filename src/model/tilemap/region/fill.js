@@ -5,7 +5,42 @@ import { Point } from '/lib/base/point'
 const NO_REGION = null
 
 
-export class RegionFloodFill {
+export class RegionMultiFill {
+    constructor(origins, data) {
+        this.fills = origins.map((origin, id) => {
+            return new RegionFloodFill(id, origin, data)
+        })
+        this.canGrow = true
+
+        while(this.canGrow) {
+            this._growFills()
+        }
+    }
+
+    map(callback) {
+        return this.fills.map(fill => callback(fill))
+    }
+
+    forEach(callback) {
+        this.fills.forEach(callback)
+    }
+
+    _growFills() {
+        let completedFills = 0
+        for(let fill of this.fills) {
+            const filledPoints = fill.grow()
+            if (filledPoints.length === 0) {
+                completedFills++
+            }
+        }
+        if (completedFills === this.fills.length) {
+            this.canGrow = false
+        }
+    }
+}
+
+
+class RegionFloodFill {
     constructor(id, origin, model) {
         this.id = id
         this.origin = origin
@@ -94,40 +129,5 @@ export class RegionFloodFill {
 
     getNeighbors(originPoint) {
         return Point.adjacents(originPoint)
-    }
-}
-
-
-export class RegionMultiFill {
-    constructor(origins, data) {
-        this.fills = origins.map((origin, id) => {
-            return new RegionFloodFill(id, origin, data)
-        })
-        this.canGrow = true
-
-        while(this.canGrow) {
-            this._growFills()
-        }
-    }
-
-    map(callback) {
-        return this.fills.map(fill => callback(fill))
-    }
-
-    forEach(callback) {
-        this.fills.forEach(callback)
-    }
-
-    _growFills() {
-        let completedFills = 0
-        for(let fill of this.fills) {
-            const filledPoints = fill.grow()
-            if (filledPoints.length === 0) {
-                completedFills++
-            }
-        }
-        if (completedFills === this.fills.length) {
-            this.canGrow = false
-        }
     }
 }
