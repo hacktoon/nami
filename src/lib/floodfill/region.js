@@ -1,16 +1,23 @@
 import { Random } from '/lib/base/random'
-import { FloodFill } from './index'
+import { Point } from '/lib/base/point'
+
+
+const NO_REGION = null
 
 
 export class RegionFloodFill {
-    constructor(origin, fillConfig) {
-        this.config = fillConfig
+    constructor(id, origin, model) {
+        this.id = id
         this.origin = origin
+        this.model = model
         this._seeds = [origin]
-        this.count = 0
         this._level = 0
-        this.growth = fillConfig.growth ?? 1
-        this.chance = fillConfig.chance ?? .1
+        this.area = 0
+
+        this.growth = model.growth ?? 1
+        this.chance = model.chance ?? .1
+
+        this._fillValue(origin)
     }
 
     grow() {
@@ -32,16 +39,16 @@ export class RegionFloodFill {
     }
 
     _fillValue(point) {
-        this.config.setValue(point, this._level)
-        this.count += 1
+        this.setValue(point, this._level)
+        this.area += 1
     }
 
     _fillNeighbors(origin) {
         const filledNeighbors = []
-        const allNeighbors = this.config.getNeighbors(origin)
+        const allNeighbors = this.getNeighbors(origin)
         const emptyNeighbors = allNeighbors.filter(neighbor => {
-            this.config.checkNeighbor(neighbor, origin, this._level)
-            return this.config.isEmpty(neighbor, origin, this._level)
+            this.checkNeighbor(neighbor, origin, this._level)
+            return this.isEmpty(neighbor, origin, this._level)
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
@@ -65,5 +72,27 @@ export class RegionFloodFill {
             outputArray.push(seed)
         }
         return [first, second]
+    }
+
+    isEmpty(point) {
+        return this.model.regionMatrix.get(point) === NO_REGION
+    }
+
+    setValue(point, level) {
+        this.model.regionMatrix.set(point, this.id)
+        this.model.levelMatrix.set(point, level)
+    }
+
+    checkNeighbor(neighborPoint, fillPoint) {
+        if (this.isEmpty(neighborPoint)) return
+        const neighborId = this.model.regionMatrix.get(neighborPoint)
+        if (this.id === neighborId) return
+        // mark region when neighbor point is filled by other region
+        this.model.graph.setEdge(this.id, neighborId)
+        this.model.borderMatrix.get(fillPoint).add(neighborId)
+    }
+
+    getNeighbors(originPoint) {
+        return Point.adjacents(originPoint)
     }
 }
