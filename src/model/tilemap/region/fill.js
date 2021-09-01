@@ -6,9 +6,9 @@ const NO_REGION = null
 
 
 export class RegionMultiFill {
-    constructor(origins, data) {
+    constructor(origins, model) {
         this.fills = origins.map((origin, id) => {
-            return new RegionFloodFill(id, origin, data)
+            return new RegionFloodFill(id, origin, model)
         })
         this.canGrow = true
 
@@ -17,12 +17,10 @@ export class RegionMultiFill {
         }
     }
 
-    map(callback) {
-        return this.fills.map(fill => callback(fill))
-    }
-
     forEach(callback) {
-        this.fills.forEach(callback)
+        for(let fill of this.fills) {
+            callback(fill)
+        }
     }
 
     _growFills() {
