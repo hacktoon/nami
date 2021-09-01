@@ -8,17 +8,21 @@ const NO_REGION = null
 export class RegionMultiFill {
     constructor(origins, data) {
         this.origins = origins
-        this.data = data
-        this.idTable = []
-        this.seedTable = []
-        this.areaTable = []
+        this.data = {
+            ...data,
+            idTable: [],
+            seedTable: [],
+            levelTable: [],
+            areaTable: [],
+        }
         this.fills = []
         for(let id=0; id<origins.length; id++) {
             const origin = origins[id]
-            this.fills.push(new RegionFloodFill(id, origin, data))
-            this.idTable.push(id)
-            this.areaTable.push(0)
-            this.seedTable.push([origin])
+            this.fills.push(new RegionFloodFill(id, origin, this.data))
+            this.data.idTable.push(id)
+            this.data.areaTable.push(0)
+            this.data.levelTable.push(0)
+            this.data.seedTable.push([origin])
         }
         this.canGrow = true
 
