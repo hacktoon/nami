@@ -6,10 +6,20 @@ const NO_REGION = null
 
 
 export class RegionMultiFill {
-    constructor(origins, model) {
-        this.fills = origins.map((origin, id) => {
-            return new RegionFloodFill(id, origin, model)
-        })
+    constructor(origins, data) {
+        this.origins = origins
+        this.data = data
+        this.idTable = []
+        this.seedTable = []
+        this.areaTable = []
+        this.fills = []
+        for(let id=0; id<origins.length; id++) {
+            const origin = origins[id]
+            this.fills.push(new RegionFloodFill(id, origin, data))
+            this.idTable.push(id)
+            this.areaTable.push(0)
+            this.seedTable.push([origin])
+        }
         this.canGrow = true
 
         while(this.canGrow) {
@@ -39,16 +49,16 @@ export class RegionMultiFill {
 
 
 class RegionFloodFill {
-    constructor(id, origin, model) {
+    constructor(id, origin, data) {
         this.id = id
         this.origin = origin
-        this.model = model
+        this.data = data
         this._seeds = [origin]
         this._level = 0
         this.area = 0
 
-        this.growth = model.growth ?? 1
-        this.chance = model.chance ?? .1
+        this.growth = data.growth ?? 1
+        this.chance = data.chance ?? .1
 
         this._fillValue(origin)
     }
@@ -108,21 +118,21 @@ class RegionFloodFill {
     }
 
     isEmpty(point) {
-        return this.model.regionMatrix.get(point) === NO_REGION
+        return this.data.regionMatrix.get(point) === NO_REGION
     }
 
     setValue(point, level) {
-        this.model.regionMatrix.set(point, this.id)
-        this.model.levelMatrix.set(point, level)
+        this.data.regionMatrix.set(point, this.id)
+        this.data.levelMatrix.set(point, level)
     }
 
     checkNeighbor(neighborPoint, fillPoint) {
         if (this.isEmpty(neighborPoint)) return
-        const neighborId = this.model.regionMatrix.get(neighborPoint)
+        const neighborId = this.data.regionMatrix.get(neighborPoint)
         if (this.id === neighborId) return
         // mark region when neighbor point is filled by other region
-        this.model.graph.setEdge(this.id, neighborId)
-        this.model.borderMatrix.get(fillPoint).add(neighborId)
+        this.data.graph.setEdge(this.id, neighborId)
+        this.data.borderMatrix.get(fillPoint).add(neighborId)
     }
 
     getNeighbors(originPoint) {
