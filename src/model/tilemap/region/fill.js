@@ -10,18 +10,15 @@ export class RegionMultiFill {
         this.origins = origins
         this.data = {
             ...data,
-            idTable: [],
             seedTable: [],
-            levelTable: [],
-            areaTable: [],
+            levelTable: []
         }
         this.fill = new RegionFloodFill(this.data)
         for(let id=0; id<origins.length; id++) {
             const origin = origins[id]
-            this.data.idTable.push(id)
-            this.data.areaTable.push(0)
             this.data.levelTable.push(0)
             this.data.seedTable.push([origin])
+            this.data.areaTable.push(0)
             this.fill.fillPoint(id, origin)
         }
         this.canGrow = true
@@ -32,7 +29,7 @@ export class RegionMultiFill {
     }
 
     forEach(callback) {
-        for(let id of this.data.idTable) {
+        for(let id=0; id<this.origins.length; id++) {
             const origin = this.origins[id]
             const area = this.data.areaTable[id]
             callback(id, origin, area)
@@ -42,13 +39,13 @@ export class RegionMultiFill {
     _growFills() {
         let completedFills = 0
 
-        for(let id of this.data.idTable) {
+        for(let id=0; id<this.origins.length; id++) {
             const filledPoints = this.fill.grow(id)
             if (filledPoints.length === 0) {
                 completedFills++
             }
         }
-        if (completedFills === this.data.idTable.length) {
+        if (completedFills === this.origins.length) {
             this.canGrow = false
         }
     }

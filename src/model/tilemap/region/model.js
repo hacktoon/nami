@@ -27,6 +27,7 @@ export class RegionMapModel {
         this.regionMatrix = data.regionMatrix
         this.levelMatrix = data.levelMatrix
         this.borderMatrix = data.borderMatrix
+        this.areaTable = data.areaTable
         this.regions = data.regions
         this.graph = data.graph
     }
@@ -40,7 +41,8 @@ export class RegionMapModel {
             borderMatrix: new Matrix(width, height, () => new Set()),
             chance: params.get('chance'),
             growth: params.get('growth'),
-            graph: new Graph()
+            graph: new Graph(),
+            areaTable: [],
         }
         const regions = this._buildRegions_new(origins, data)
         return {...data, regions}
