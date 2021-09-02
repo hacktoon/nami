@@ -15,14 +15,14 @@ export class RegionMultiFill {
             levelTable: [],
             areaTable: [],
         }
-        this.fills = []
+        this.fill = new RegionFloodFill(this.data)
         for(let id=0; id<origins.length; id++) {
             const origin = origins[id]
-            this.fills.push(new RegionFloodFill(id, origin, this.data))
             this.data.idTable.push(id)
             this.data.areaTable.push(0)
             this.data.levelTable.push(0)
             this.data.seedTable.push([origin])
+            this.fill.fillPoint(id, origin)
         }
         this.canGrow = true
 
@@ -32,20 +32,23 @@ export class RegionMultiFill {
     }
 
     forEach(callback) {
-        for(let fill of this.fills) {
-            callback(fill)
+        for(let id of this.data.idTable) {
+            const origin = this.origins[id]
+            const area = this.data.areaTable[id]
+            callback(id, origin, area)
         }
     }
 
     _growFills() {
         let completedFills = 0
-        for(let fill of this.fills) {
-            const filledPoints = fill.grow()
+
+        for(let id of this.data.idTable) {
+            const filledPoints = this.fill.grow(id)
             if (filledPoints.length === 0) {
                 completedFills++
             }
         }
-        if (completedFills === this.fills.length) {
+        if (completedFills === this.data.idTable.length) {
             this.canGrow = false
         }
     }
@@ -53,92 +56,90 @@ export class RegionMultiFill {
 
 
 class RegionFloodFill {
-    constructor(id, origin, data) {
-        this.id = id
-        this.origin = origin
+    constructor(data) {
         this.data = data
-        this._seeds = [origin]
-        this._level = 0
-        this.area = 0
-
         this.growth = data.growth ?? 1
         this.chance = data.chance ?? .1
-
-        this._fillValue(origin)
     }
 
-    grow() {
-        this._seeds = this._growLayer()
-        this._growRandomLayers()
-        return this._seeds
+    grow(id) {
+        const seeds = this._growLayer(id, this.data.seedTable[id])
+        this.data.seedTable[id] = seeds
+        this._growRandomLayers(id)
+        return seeds
     }
 
-    _growLayer(seeds=this._seeds) {
+    fillPoint(id, point) {
+        this.setValue(id, point)
+        this.data.areaTable[id] += 1
+    }
+
+    _growLayer(id, seeds) {
         let newSeeds = []
         for(let seed of seeds) {
-            const filledNeighbors = this._fillNeighbors(seed)
+            const filledNeighbors = this._fillNeighbors(id, seed)
             newSeeds.push(...filledNeighbors)
         }
         if (newSeeds.length > 0) {
-            this._level += 1
+            this.data.levelTable[id] += 1
         }
         return newSeeds
     }
 
-    _fillValue(point) {
-        this.setValue(point, this._level)
-        this.area += 1
-    }
-
-    _fillNeighbors(origin) {
+    _fillNeighbors(id, origin) {
         const filledNeighbors = []
         const allNeighbors = this.getNeighbors(origin)
         const emptyNeighbors = allNeighbors.filter(neighbor => {
-            this.checkNeighbor(neighbor, origin, this._level)
-            return this.isEmpty(neighbor, origin, this._level)
+            this.checkNeighbor(id, neighbor, origin)
+            return this.isEmpty(neighbor)
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
-            this._fillValue(neighbor)
+            this.fillPoint(id, neighbor)
         })
         return filledNeighbors
     }
 
-    _growRandomLayers() {
+    _growRandomLayers(id) {
         for(let i = 0; i < this.growth; i++) {
-            const [extra, other] = this._splitSeeds(this._seeds)
-            let extraSeeds = this._growLayer(extra)
-            this._seeds = [...other, ...extraSeeds]
+            const [extra, other] = this._splitSeeds(this.data.seedTable[id])
+            let extraSeeds = this._growLayer(id, extra)
+            this.data.seedTable[id] = other.concat(extraSeeds)
         }
     }
 
-    _splitSeeds(array) {
+    _splitSeeds(seeds) {
         const first = [], second = []
-        for(let seed of array) {
+        for(let seed of seeds) {
             const outputArray = Random.chance(this.chance) ? first : second
             outputArray.push(seed)
         }
         return [first, second]
     }
 
+    // override
+    setValue(id, point) {
+        const level = this.data.levelTable[id]
+        this.data.regionMatrix.set(point, id)
+        this.data.levelMatrix.set(point, level)
+    }
+
+    // override
     isEmpty(point) {
         return this.data.regionMatrix.get(point) === NO_REGION
     }
 
-    setValue(point, level) {
-        this.data.regionMatrix.set(point, this.id)
-        this.data.levelMatrix.set(point, level)
-    }
-
-    checkNeighbor(neighborPoint, fillPoint) {
+    // override
+    checkNeighbor(id, neighborPoint, fillPoint) {
         if (this.isEmpty(neighborPoint)) return
         const neighborId = this.data.regionMatrix.get(neighborPoint)
-        if (this.id === neighborId) return
+        if (id === neighborId) return
         // mark region when neighbor point is filled by other region
-        this.data.graph.setEdge(this.id, neighborId)
+        this.data.graph.setEdge(id, neighborId)
         this.data.borderMatrix.get(fillPoint).add(neighborId)
     }
 
+    // override
     getNeighbors(originPoint) {
         return Point.adjacents(originPoint)
     }

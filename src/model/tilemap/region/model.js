@@ -66,12 +66,8 @@ export class RegionMapModel {
     _buildRegions_new(origins, data) {
         const regions = new Map()
         const multifill = new RegionMultiFill(origins, data)
-        multifill.forEach(fill => {
-            const region = new Region({
-                id: fill.id,
-                origin: fill.origin,
-                area: fill.area
-            })
+        multifill.forEach((id, origin, area) => {
+            const region = new Region({id, origin, area})
             regions.set(region.id, region)
         })
         return regions
