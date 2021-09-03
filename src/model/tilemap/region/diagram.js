@@ -59,7 +59,7 @@ export class RegionTileMapDiagram extends TileMapDiagram {
                 return toggle ? color.darken(40).toHex() : color.toHex()
             }
         }
-        if (level < this.level) {
+        if (level <= this.level) {
             return color.toHex()
         }
         return '#fff'

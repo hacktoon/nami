@@ -11,6 +11,7 @@ export class RegionMultiFill {
         this.seedTable = []
         this.levelTable = []
         this.model = model
+        this.canGrow = true
         this.fill = new RegionFloodFill(
             this.model,
             this.seedTable,
@@ -18,13 +19,11 @@ export class RegionMultiFill {
         )
         for(let id=0; id<origins.length; id++) {
             const origin = origins[id]
-            this.levelTable.push(0)
-            this.seedTable.push([origin])
             this.model.areaTable.push(0)
+            this.seedTable.push([origin])
+            this.levelTable.push(0)
             this.fill.fillPoint(id, origin)
         }
-        this.canGrow = true
-
         while(this.canGrow) {
             this._growFills()
         }
@@ -81,7 +80,7 @@ class RegionFloodFill {
             const filledNeighbors = this._fillNeighbors(id, seed)
             newSeeds.push(...filledNeighbors)
         }
-        if (newSeeds.length > 0) {
+        if (newSeeds.length >= 0) {
             this.levelTable[id] += 1
         }
         return newSeeds
