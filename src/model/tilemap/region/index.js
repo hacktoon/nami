@@ -72,6 +72,15 @@ export class RegionTileMap extends TileMap {
         return this.getRegionById(id)
     }
 
+    getRegionId(point) {
+        return this.regionMatrix.get(point)
+    }
+
+    getRegionOrigin(point) {
+        const id = this.regionMatrix.get(point)
+        return this.origins[id]
+    }
+
     getRegionById(id) {
         return {
             id,

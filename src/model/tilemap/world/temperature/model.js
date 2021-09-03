@@ -20,15 +20,11 @@ export class Temperature {
         this.radiation = params.get('radiation')
     }
 
-    getRegion(point) {
-        return this.regionTileMap.getRegion(point)
-    }
-
     getTemperature(point) {
-        const region = this.regionTileMap.getRegion(point)
+        const origin = this.regionTileMap.getRegionOrigin(point)
         const center = Math.round(this.regionTileMap.height / 2)
-        const offset = this._calcOffset(region)
-        const distanceToCenter = Math.abs(region.origin[1] - center)
+        const offset = this._calcOffset(origin)
+        const distanceToCenter = Math.abs(origin[1] - center)
         const temperature = distanceToCenter + offset
         const fraction = center / 100
         let zone = POLAR
@@ -41,8 +37,8 @@ export class Temperature {
         }
     }
 
-    _calcOffset(region) {
-        const offset = Math.sin(region.origin[0]) * 4
+    _calcOffset(origin) {
+        const offset = Math.sin(origin[0]) * 4
         return Math.floor(offset - this.radiation)
     }
 
@@ -62,7 +58,7 @@ function buildRegionMap(seed, params) {
         height: params.get('height'),
         scale: params.get('scale'),
         seed: seed,
-        growth: 20,
+        growth: 2,
         chance: 0.1,
     })
 }

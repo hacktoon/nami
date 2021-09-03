@@ -32,10 +32,6 @@ export class TemperatureTileMap extends TileMap {
         this.model = new Temperature(this.seed, params)
     }
 
-    getRegion(point) {
-        return this.model.getRegion(point)
-    }
-
     getTemperature(point) {
         return this.model.getTemperature(point)
     }

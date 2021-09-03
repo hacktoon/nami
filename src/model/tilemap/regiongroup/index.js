@@ -50,12 +50,12 @@ export class RegionGroupTileMap extends TileMap {
     }
 
     get(point) {
-        const region = this.getRegion(point)
+        const regionId = this.getRegionId(point)
         const group = this.getGroup(point)
         const neighbors = this.getNeighborGroups(group)
         return {
             group: group.id,
-            region: region.id,
+            region: regionId,
             neighbors: neighbors.map(neighbor => {
                 const dir = this.getGroupDirection(group, neighbor)
                 return `${dir.name}(${neighbor.id})`
