@@ -56,16 +56,12 @@ export class RegionTileMap extends TileMap {
 
     get(point) {
         const region = this.getRegion(point)
-        const neighbors = this.getNeighborRegions(region)
-        return {
-            point: Point.hash(point),
-            id: region.id,
-            region: region,
-            neighbors: neighbors.map(neighbor => {
-                const dir = this.getRegionDirection(region, neighbor)
-                return `${dir.name}(${neighbor.id})`
-            }).join(', ')
-        }
+        return [
+            `clicked: ${Point.hash(point)}`,
+            `id: ${region.id}`,
+            `area: ${region.area}`,
+            `origin: ${Point.hash(region.origin)}`,
+        ].join(', ')
     }
 
     getRegion(point) {
