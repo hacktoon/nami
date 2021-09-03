@@ -6,19 +6,21 @@ const NO_REGION = null
 
 
 export class RegionMultiFill {
-    constructor(origins, data) {
+    constructor(origins, model) {
         this.origins = origins
-        this.data = {
-            ...data,
-            seedTable: [],
-            levelTable: []
-        }
-        this.fill = new RegionFloodFill(this.data)
+        this.seedTable = []
+        this.levelTable = []
+        this.model = model
+        this.fill = new RegionFloodFill(
+            this.model,
+            this.seedTable,
+            this.levelTable,
+        )
         for(let id=0; id<origins.length; id++) {
             const origin = origins[id]
-            this.data.levelTable.push(0)
-            this.data.seedTable.push([origin])
-            this.data.areaTable.push(0)
+            this.levelTable.push(0)
+            this.seedTable.push([origin])
+            this.model.areaTable.push(0)
             this.fill.fillPoint(id, origin)
         }
         this.canGrow = true
@@ -31,7 +33,7 @@ export class RegionMultiFill {
     forEach(callback) {
         for(let id=0; id<this.origins.length; id++) {
             const origin = this.origins[id]
-            const area = this.data.areaTable[id]
+            const area = this.model.areaTable[id]
             callback(id, origin, area)
         }
     }
@@ -53,22 +55,24 @@ export class RegionMultiFill {
 
 
 class RegionFloodFill {
-    constructor(data) {
-        this.data = data
-        this.growth = data.growth ?? 1
-        this.chance = data.chance ?? .1
+    constructor(model, seedTable, levelTable) {
+        this.model = model
+        this.seedTable = seedTable
+        this.levelTable = levelTable
+        this.growth = model.growth ?? 1
+        this.chance = model.chance ?? .1
     }
 
     grow(id) {
-        const seeds = this._growLayer(id, this.data.seedTable[id])
-        this.data.seedTable[id] = seeds
+        const seeds = this._growLayer(id, this.seedTable[id])
+        this.seedTable[id] = seeds
         this._growRandomLayers(id)
         return seeds
     }
 
     fillPoint(id, point) {
         this.setValue(id, point)
-        this.data.areaTable[id] += 1
+        this.model.areaTable[id] += 1
     }
 
     _growLayer(id, seeds) {
@@ -78,7 +82,7 @@ class RegionFloodFill {
             newSeeds.push(...filledNeighbors)
         }
         if (newSeeds.length > 0) {
-            this.data.levelTable[id] += 1
+            this.levelTable[id] += 1
         }
         return newSeeds
     }
@@ -99,9 +103,9 @@ class RegionFloodFill {
 
     _growRandomLayers(id) {
         for(let i = 0; i < this.growth; i++) {
-            const [extra, other] = this._splitSeeds(this.data.seedTable[id])
+            const [extra, other] = this._splitSeeds(this.seedTable[id])
             let extraSeeds = this._growLayer(id, extra)
-            this.data.seedTable[id] = other.concat(extraSeeds)
+            this.seedTable[id] = other.concat(extraSeeds)
         }
     }
 
@@ -116,24 +120,24 @@ class RegionFloodFill {
 
     // override
     setValue(id, point) {
-        const level = this.data.levelTable[id]
-        this.data.regionMatrix.set(point, id)
-        this.data.levelMatrix.set(point, level)
+        const level = this.levelTable[id]
+        this.model.regionMatrix.set(point, id)
+        this.model.levelMatrix.set(point, level)
     }
 
     // override
     isEmpty(point) {
-        return this.data.regionMatrix.get(point) === NO_REGION
+        return this.model.regionMatrix.get(point) === NO_REGION
     }
 
     // override
     checkNeighbor(id, neighborPoint, fillPoint) {
         if (this.isEmpty(neighborPoint)) return
-        const neighborId = this.data.regionMatrix.get(neighborPoint)
+        const neighborId = this.model.regionMatrix.get(neighborPoint)
         if (id === neighborId) return
         // mark region when neighbor point is filled by other region
-        this.data.graph.setEdge(id, neighborId)
-        this.data.borderMatrix.get(fillPoint).add(neighborId)
+        this.model.graph.setEdge(id, neighborId)
+        this.model.borderMatrix.get(fillPoint).add(neighborId)
     }
 
     // override

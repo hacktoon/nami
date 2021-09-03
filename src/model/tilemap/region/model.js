@@ -1,111 +1,23 @@
-import { Color } from '/lib/base/color'
 import { Matrix } from '/lib/base/matrix'
-import { Point } from '/lib/base/point'
 import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
-import { MultiFill } from '/lib/floodfill'
-import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { RegionMultiFill } from './fill'
 
 
 const NO_REGION = null
 
 
-export class Region {
-    constructor({id, origin, area}) {
-        this.id = id
-        this.origin = origin
-        this.area = area
-        this.color = new Color()
-    }
-}
-
-
 export class RegionMapModel {
     constructor(params) {
-        const data = this._build(params)
-        this.regionMatrix = data.regionMatrix
-        this.levelMatrix = data.levelMatrix
-        this.borderMatrix = data.borderMatrix
-        this.areaTable = data.areaTable
-        this.regions = data.regions
-        this.graph = data.graph
-    }
-
-    _build(params) {
         const [width, height, scale] = params.get('width', 'height', 'scale')
-        const origins = EvenPointSampling.create(width, height, scale)
-        const data = {
-            regionMatrix: new Matrix(width, height, () => NO_REGION),
-            levelMatrix: new Matrix(width, height, () => 0),
-            borderMatrix: new Matrix(width, height, () => new Set()),
-            chance: params.get('chance'),
-            growth: params.get('growth'),
-            graph: new Graph(),
-            areaTable: [],
-        }
-        const regions = this._buildRegions_new(origins, data)
-        return {...data, regions}
-    }
-
-    _buildRegions(origins, data) {
-        const regions = new Map()
-        const multifill = new MultiFill(origins.map((origin, id) => {
-            const fillConfig = new RegionFillConfig(id, origin, data)
-            return new OrganicFloodFill(origin, fillConfig)
-        }))
-        multifill.forEach(fill => {
-            const region = new Region({
-                id: fill.config.id,
-                origin: fill.origin,
-                area: fill.count
-            })
-            regions.set(region.id, region)
-        })
-        return regions
-    }
-
-    _buildRegions_new(origins, data) {
-        const regions = new Map()
-        const multifill = new RegionMultiFill(origins, data)
-        multifill.forEach((id, origin, area) => {
-            const region = new Region({id, origin, area})
-            regions.set(region.id, region)
-        })
-        return regions
-    }
-}
-
-
-// remove this
-export class RegionFillConfig {
-    constructor(id, origin, model) {
-        this.id = id
-        this.origin = origin
-        this.model = model
-        // TODO: create OrganicFloodFill methods to obtain these values
-        this.chance = model.chance
-        this.growth = model.growth
-    }
-
-    isEmpty(point) {
-        return this.model.regionMatrix.get(point) === NO_REGION
-    }
-
-    setValue(point) {
-        this.model.regionMatrix.set(point, this.id)
-    }
-
-    checkNeighbor(neighborPoint, fillPoint) {
-        if (this.isEmpty(neighborPoint)) return
-        const neighborId = this.model.regionMatrix.get(neighborPoint)
-        if (this.id === neighborId) return
-        // mark region when neighbor point is filled by other region
-        this.model.graph.setEdge(this.id, neighborId)
-        this.model.borderMatrix.get(fillPoint).add(neighborId)
-    }
-
-    getNeighbors(originPoint) {
-        return Point.adjacents(originPoint)
+        this.origins = EvenPointSampling.create(width, height, scale)
+        this.regionMatrix = new Matrix(width, height, () => NO_REGION)
+        this.levelMatrix = new Matrix(width, height, () => 0)
+        this.borderMatrix = new Matrix(width, height, () => new Set())
+        this.chance = params.get('chance')
+        this.growth = params.get('growth')
+        this.graph = new Graph()
+        this.areaTable = []
+        new RegionMultiFill(this.origins, this)
     }
 }

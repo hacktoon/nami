@@ -1,6 +1,7 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { Point } from '/lib/base/point'
+import { Color } from '/lib/base/color'
 import { TileMapDiagram } from '/lib/model/tilemap'
 
 
@@ -76,7 +77,7 @@ export class RegionTileMapDiagram extends TileMapDiagram {
 
 class RegionColorMap {
     constructor(regionMap) {
-        const entries = regionMap.map(region => [region.id, region.color])
+        const entries = regionMap.map(region => [region.id, new Color()])
         this.map = new Map(entries)
     }
 

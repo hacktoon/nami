@@ -38,10 +38,11 @@ export class RegionTileMap extends TileMap {
     constructor(params) {
         super(params)
         const model = new RegionMapModel(params)
-        this.regions = model.regions
+        this.origins = model.origins
         this.regionMatrix = model.regionMatrix
         this.levelMatrix = model.levelMatrix
         this.borderMatrix = model.borderMatrix
+        this.areaTable = model.areaTable
         this.graph = model.graph
     }
 
@@ -61,30 +62,41 @@ export class RegionTileMap extends TileMap {
 
     getRegion(point) {
         const id = this.regionMatrix.get(point)
-        return this.regions.get(id)
+        if (! this.getRegionById(id)) {
+            console.log(id);
+        }
+        return this.getRegionById(id)
+    }
+
+    getRegionById(id) {
+        return {
+            id,
+            origin: this.origins[id],
+            area: this.areaTable[id]
+        }
+    }
+
+    getRegions() {
+        const regions = []
+        for(let id=0; id<this.origins.length; id++) {
+            regions.push(this.getRegionById(id))
+        }
+        return regions
     }
 
     getLevel(point) {
         return this.levelMatrix.get(point)
     }
 
-    getRegionById(id) {
-        return this.regions.get(id)
-    }
-
-    getRegions() {
-        return Array.from(this.regions.values())
-    }
-
     getBorderRegions(point) {
         // a single tile can have two different region neighbors
         const ids = Array.from(this.borderMatrix.get(point))
-        return ids.map(id => this.regions.get(id))
+        return ids.map(id => this.getRegionById(id))
     }
 
     getNeighborRegions(region) {
         const edges = this.graph.getEdges(region.id)
-        return edges.map(id => this.regions.get(id))
+        return edges.map(id => this.getRegionById(id))
     }
 
     isNeighbor(id, neighborId) {
@@ -96,10 +108,10 @@ export class RegionTileMap extends TileMap {
     }
 
     map(callback) {
-        return [...this.regions.values()].map(callback)
+        return this.getRegions().map(callback)
     }
 
     forEach(callback) {
-        this.regions.forEach(callback)
+        this.getRegions().forEach(callback)
     }
 }

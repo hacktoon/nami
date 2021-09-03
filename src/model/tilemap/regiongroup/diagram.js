@@ -1,6 +1,7 @@
 import { Schema } from '/lib/base/schema'
 import { Type } from '/lib/base/type'
 import { Point } from '/lib/base/point'
+import { Color } from '/lib/base/color'
 import { TileMapDiagram } from '/lib/model/tilemap'
 
 
@@ -30,12 +31,15 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         this.showRegionBorder = params.get('showRegionBorder')
         this.showGroupBorder = params.get('showGroupBorder')
         this.showBorderRegion = params.get('showBorderRegion')
+
+        this.regionColorMap = new RegionColorMap(tileMap.regionTileMap)
     }
 
     get(point) {
         const group = this.tileMap.getGroup(point)
         const region = this.tileMap.getRegion(point)
         const isBorderRegion = this.tileMap.isBorderRegion(region)
+        const regionColor = this.regionColorMap.get(region)
 
         if (this.showOrigins && Point.equals(group.origin, point)) {
             return group.color.invert().toHex()
@@ -44,7 +48,7 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
             return group.color.darken(50).toHex()
         }
         if (this.showRegionBorder && this.tileMap.isRegionBorder(point)) {
-            let color = region.color.darken(50)
+            let color = regionColor.darken(50)
             if (this.showGroups)
                 color = group.color.brighten(50)
             return color.toHex()
@@ -52,16 +56,16 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         if (this.showGroups) {
             let color = group.color
             if (this.showRegions)
-                color = region.color.average(group.color).average(group.color)
+                color = regionColor.average(group.color).average(group.color)
             if (isBorderRegion && this.showBorderRegion)
                 return color.darken(90).toHex()
             return color.toHex()
         }
         if (this.showRegions) {
-            let color = isBorderRegion ? region.color.brighten(50) : region.color
+            let color = isBorderRegion ? regionColor.brighten(50) : regionColor
             return color.toHex()
         }
-        return region.color.grayscale().toHex()
+        return regionColor.grayscale().toHex()
     }
 
     // getText(point) {
@@ -71,4 +75,24 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
     //     }
     //     return ''
     // }
+}
+
+
+class RegionColorMap {
+    constructor(regionMap) {
+        const entries = regionMap.map(region => [region.id, new Color()])
+        this.map = new Map(entries)
+    }
+
+    get(region) {
+        return this.map.get(region.id) || Color.fromHex('#FFF')
+    }
+
+    getMix([firstRegion, ...regions]) {
+        let color = this.get(firstRegion)
+        regions.forEach(region => {
+            color = color.average(this.get(region))
+        })
+        return color
+    }
 }
