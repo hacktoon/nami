@@ -1,9 +1,7 @@
 import { repeat } from '/lib/base/function'
 import { clamp } from '/lib/base/number'
 import { Rect } from '/lib/base/number'
-import { Random } from '/lib/base/random'
-import { Matrix } from '/lib/base/matrix'
-import { PointSet, PointSet2 } from './set'
+import { PointSet } from './set'
 import { Point } from '.'
 
 
@@ -27,7 +25,7 @@ export class EvenPointSampling {
 
         while(pointSet.size > 0) {
             const center = pointSet.random()
-            fillPointCircle(center, radius, point => {
+            EvenPointSampling.fillPointCircle(center, radius, point => {
                 if (pointSet.has(point)) {
                     pointSet.delete(rect.wrap(point))
                 }
@@ -42,21 +40,22 @@ export class EvenPointSampling {
         }
         return samples
     }
-}
 
-
-// Bounding circle algorithm
-// https://www.redblobgames.com/grids/circle-drawing/
-function fillPointCircle(center, radius, callback) {
-    const top    = center[1] - radius
-    const bottom = center[1] + radius
-    for (let y = top; y <= bottom; y++) {
-        const dy    = y - center[1]
-        const dx    = Math.sqrt(radius * radius - dy * dy)
-        const left  = Math.ceil(center[0] - dx)
-        const right = Math.floor(center[0] + dx)
-        for (let x = left; x <= right; x++) {
-            callback([x, y])
+    // Bounding circle algorithm
+    // https://www.redblobgames.com/grids/circle-drawing/
+    static fillPointCircle(center, radius, callback) {
+        const top    = center[1] - radius
+        const bottom = center[1] + radius
+        for (let y = top; y <= bottom; y++) {
+            const dy    = y - center[1]
+            const dx    = Math.sqrt(radius * radius - dy * dy)
+            const left  = Math.ceil(center[0] - dx)
+            const right = Math.floor(center[0] + dx)
+            for (let x = left; x <= right; x++) {
+                callback([x, y])
+            }
         }
     }
 }
+
+
