@@ -1,6 +1,7 @@
 import { repeat } from '/lib/base/function'
 import { clamp } from '/lib/base/number'
 import { Rect } from '/lib/base/number'
+import { RandomQueue } from '/lib/base/queue'
 import { PointSet } from './set'
 import { Point } from '.'
 
@@ -56,6 +57,34 @@ export class EvenPointSampling {
             }
         }
     }
+}
+
+
+export class DiscPointSampling {
+    static create(width, height, radius) {
+        const k = 30
+        const samples = []
+        const rect = new Rect(width, height)
+
+        while(pointSet.size > 0) {
+            const center = pointSet.random()
+            EvenPointSampling.fillPointCircle(center, radius, point => {
+                if (pointSet.has(point)) {
+                    pointSet.delete(rect.wrap(point))
+                }
+            })
+            samples.push(center)
+        }
+        if (samples.length === 1) {
+            const point = samples[0]
+            const x = point[0] + Math.round(width / 2)
+            const y = point[1] + Math.round(height / 2)
+            samples.push(rect.wrap([x, y]))
+        }
+        return samples
+    }
+
+
 }
 
 
