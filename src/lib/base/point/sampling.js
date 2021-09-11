@@ -66,21 +66,7 @@ export class DiscPointSampling {
         const samples = []
         const rect = new Rect(width, height)
 
-        while(pointSet.size > 0) {
-            const center = pointSet.random()
-            EvenPointSampling.fillPointCircle(center, radius, point => {
-                if (pointSet.has(point)) {
-                    pointSet.delete(rect.wrap(point))
-                }
-            })
-            samples.push(center)
-        }
-        if (samples.length === 1) {
-            const point = samples[0]
-            const x = point[0] + Math.round(width / 2)
-            const y = point[1] + Math.round(height / 2)
-            samples.push(rect.wrap([x, y]))
-        }
+
         return samples
     }
 
