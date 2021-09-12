@@ -1,7 +1,8 @@
 import { repeat } from '/lib/base/function'
 import { clamp } from '/lib/base/number'
 import { Rect } from '/lib/base/number'
-import { RandomQueue } from '/lib/base/queue'
+import { Random } from '/lib/base/random'
+import { Matrix } from '/lib/base/matrix'
 import { PointSet } from './set'
 import { Point } from '.'
 
@@ -60,17 +61,78 @@ export class EvenPointSampling {
 }
 
 
-export class DiscPointSampling {
+export class PoissonDiscSampling {
     static create(width, height, radius) {
-        const k = 30
         const samples = []
+        const spawnPoints = []
         const rect = new Rect(width, height)
+        const numSamplesBeforeRejection = 30
+        const cellSize = radius / Math.sqrt(2)
+        const mWidth = Math.floor(width / cellSize)
+        const mHeight = Math.floor(height / cellSize)
+        const grid = new Matrix(mWidth, mHeight)
+        const firstSeed = [Math.floor(width / 2), Math.floor(height / 2)]
 
+        spawnPoints.push(firstSeed)
 
+        while(spawnPoints.length > 0) {
+            const spawnIndex = Random.int(0, spawnPoints.length - 1)
+            const spawnCentre = spawnPoints[spawnIndex]
+			let candidateAccepted = false
+
+            for (let i = 0; i < numSamplesBeforeRejection; i++) {
+                let angle = Random.int(Math.PI * 2)
+                let dir = [Math.cos(angle), Math.sin(angle)]
+                let offset = Random.int(radius, 2*radius)
+                let next = [
+                    Math.floor(spawnCentre[0] + dir[0] * offset),
+                    Math.floor(spawnCentre[1] + dir[1] * offset)
+                ]
+
+                if (PoissonDiscSampling.IsValid(next, rect, cellSize, radius, samples, grid)) {
+                    const x = Math.floor(next[0] / cellSize)
+                    const y = Math.floor(next[1] / cellSize)
+					samples.push(next)
+					spawnPoints.push(next)
+					grid.set([x, y], samples.length)
+					candidateAccepted = true
+					break
+				}
+            }
+            if (! candidateAccepted) {
+				spawnPoints.splice(spawnIndex, 1)
+			}
+        }
         return samples
     }
 
+    static IsValid(next, rect, cellSize, radius, points, grid) {
+		if (next[0] >=0 && next[0] < rect.width
+            && next[1] >= 0 && next[1] < rect.height
+        ) {
+		    let cellX = Math.floor(next[0] / cellSize);
+		    let cellY = Math.floor(next[1] / cellSize);
+		    let searchStartX = Math.max(0, cellX - 2);
+		    let searchEndX = Math.min(cellX + 2, grid.width - 1);
+		    let searchStartY = Math.max(0, cellY - 2);
+		    let searchEndY = Math.min(cellY + 2, grid.height - 1);
+
+            const dblRadius = radius * radius
+			for (let x = searchStartX; x <= searchEndX; x++) {
+				for (let y = searchStartY; y <= searchEndY; y++) {
+					const pointIndex = grid.get([x, y]) - 1
+					if (pointIndex != -1) {
+						const dist = Point.distance(points[pointIndex], next)
+						if (dist < dblRadius) {
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 
 }
-
-
