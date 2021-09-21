@@ -19,9 +19,9 @@
     "url": "git+https://github.com/hacktoon/nami.git"
   },
   "dependencies": {
-    "@babel/cli": "^7.14.3",
-    "@babel/core": "^7.14.3",
-    "@babel/preset-env": "^7.14.4",
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
     "babel-preset-react": "^6.24.1",
     "parcel-bundler": "^1.9.4",
     "react": "^16.14.0",
