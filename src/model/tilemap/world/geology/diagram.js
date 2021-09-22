@@ -6,6 +6,26 @@ import { Color } from '/lib/base/color'
 import { TileMapDiagram } from '/lib/model/tilemap'
 
 
+class GeologyColorMap {
+    constructor(regionMap) {
+        const entries = regionMap.map(region => [region.id, new Color()])
+        this.map = new Map(entries)
+    }
+
+    get(region) {
+        return this.map.get(region.id) || Color.fromHex('#FFF')
+    }
+
+    getMix([firstRegion, ...regions]) {
+        let color = this.get(firstRegion)
+        regions.forEach(region => {
+            color = color.average(this.get(region))
+        })
+        return color
+    }
+}
+
+
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
@@ -15,13 +35,15 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showErosion', 'Show erosion', {default: true}),
         Type.boolean('showOutline', 'Show outline', {default: true}),
     )
+    static colorMap = GeologyColorMap
 
-    static create(tileMap, params) {
-        return new GeologyTileMapDiagram(tileMap, params)
+    static create(tileMap, colorMap, params) {
+        return new GeologyTileMapDiagram(tileMap, colorMap, params)
     }
 
-    constructor(tileMap, params) {
+    constructor(tileMap, colorMap, params) {
         super(tileMap)
+        this.colorMap = colorMap
         this.showPlateBorder = params.get('showPlateBorder')
         this.showLandform = params.get('showLandform')
         this.showDirection = params.get('showDirection')

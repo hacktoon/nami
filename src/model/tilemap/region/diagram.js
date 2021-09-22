@@ -16,22 +16,43 @@ const SCHEMA = new Schema(
 )
 
 
-export class RegionTileMapDiagram extends TileMapDiagram {
-    static schema = SCHEMA
-
-    static create(tileMap, params) {
-        return new RegionTileMapDiagram(tileMap, params)
+class RegionColorMap {
+    constructor(regionMap) {
+        const entries = regionMap.map(region => [region.id, new Color()])
+        this.map = new Map(entries)
     }
 
-    constructor(tileMap, params) {
+    get(region) {
+        return this.map.get(region.id) || Color.fromHex('#FFF')
+    }
+
+    getMix([firstRegion, ...regions]) {
+        let color = this.get(firstRegion)
+        regions.forEach(region => {
+            color = color.average(this.get(region))
+        })
+        return color
+    }
+}
+
+
+export class RegionTileMapDiagram extends TileMapDiagram {
+    static schema = SCHEMA
+    static colorMap = RegionColorMap
+
+    static create(tileMap, colorMap, params) {
+        return new RegionTileMapDiagram(tileMap, colorMap, params)
+    }
+
+    constructor(tileMap, colorMap, params) {
         super(tileMap)
+        this.colorMap = colorMap
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
         this.showNeighborBorder = params.get('showNeighborBorder')
         this.showSelectedRegion = params.get('showSelectedRegion')
         this.selectedRegionId = params.get('selectedRegionId')
         this.level = params.get('level')
-        this.colorMap = new RegionColorMap(tileMap)
     }
 
     get(point) {
@@ -72,24 +93,4 @@ export class RegionTileMapDiagram extends TileMapDiagram {
     //     }
     //     return ''
     // }
-}
-
-
-class RegionColorMap {
-    constructor(regionMap) {
-        const entries = regionMap.map(region => [region.id, new Color()])
-        this.map = new Map(entries)
-    }
-
-    get(region) {
-        return this.map.get(region.id) || Color.fromHex('#FFF')
-    }
-
-    getMix([firstRegion, ...regions]) {
-        let color = this.get(firstRegion)
-        regions.forEach(region => {
-            color = color.average(this.get(region))
-        })
-        return color
-    }
 }

@@ -1,6 +1,5 @@
 import { PairMap } from '/lib/base'
 import { Direction } from '/lib/base/direction'
-import { Color } from '/lib/base/color'
 import { Point } from '/lib/base/point'
 import { Graph } from '/lib/base/graph'
 import { EvenPointSampling } from '/lib/base/point/sampling'
@@ -14,7 +13,6 @@ class RegionGroup {
     constructor(id, region, area) {
         this.id = id
         this.origin = region.origin
-        this.color = new Color()
         this.area = area
     }
 }

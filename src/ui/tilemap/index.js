@@ -12,21 +12,26 @@ import { UITileMapScene } from './scene'
 export function UITileMap({TileMap}) {
     const [data, setData] = useState(TileMap.schema.build())
     const tileMap = TileMap.create(data)
+    const colorMap = new TileMap.diagram.colorMap(tileMap)
 
     return <section className='UITileMap'>
         <Form className="Map" data={data} onSubmit={setData}>
             <Button label="New" />
         </Form>
-        <UITileMapDiagram diagram={TileMap.diagram} tileMap={tileMap} />
+        <UITileMapDiagram
+            diagram={TileMap.diagram}
+            tileMap={tileMap}
+            colorMap={colorMap}
+        />
     </section>
 }
 
 
-function UITileMapDiagram({diagram, tileMap}) {
+function UITileMapDiagram({diagram, tileMap, colorMap}) {
     const [diagramData, setDiagramData] = useState(diagram.schema.build())
     const [sceneData, setSceneData] = useState(TileMapScene.schema.build())
 
-    const mapDiagram = diagram.create(tileMap, diagramData)
+    const mapDiagram = diagram.create(tileMap, colorMap, diagramData)
 
     const handleDrag = point => {
         setSceneData(sceneData.update('focus', Point.hash(point)))

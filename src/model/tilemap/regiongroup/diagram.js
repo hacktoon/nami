@@ -16,47 +16,71 @@ const SCHEMA = new Schema(
 )
 
 
-export class RegionGroupTileMapDiagram extends TileMapDiagram {
-    static schema = SCHEMA
+class RegionGroupColorMap {
+    #regionMap
+    #groupMap
 
-    static create(tileMap, params) {
-        return new RegionGroupTileMapDiagram(tileMap, params)
+    constructor(regionGroupMap) {
+        const regionMap = regionGroupMap.regionTileMap
+        const groups = regionGroupMap.getGroups()
+        const regionEntries = regionMap.map(region => [region.id, new Color()])
+        const groupEntries = groups.map(group => [group.id, new Color()])
+        this.#regionMap = new Map(regionEntries)
+        this.#groupMap = new Map(groupEntries)
     }
 
-    constructor(tileMap, params) {
+    getByRegion(region) {
+        return this.#regionMap.get(region.id) || Color.fromHex('#FFF')
+    }
+
+    getByGroup(group) {
+        return this.#groupMap.get(group.id) || Color.fromHex('#FFF')
+    }
+}
+
+
+export class RegionGroupTileMapDiagram extends TileMapDiagram {
+    static schema = SCHEMA
+    static colorMap = RegionGroupColorMap
+
+    static create(tileMap, colorMap, params) {
+        return new RegionGroupTileMapDiagram(tileMap, colorMap, params)
+    }
+
+    constructor(tileMap, colorMap, params) {
         super(tileMap)
+        this.colorMap = colorMap
         this.showGroups = params.get('showGroups')
         this.showOrigins = params.get('showOrigins')
         this.showRegions = params.get('showRegions')
         this.showRegionBorder = params.get('showRegionBorder')
         this.showGroupBorder = params.get('showGroupBorder')
         this.showBorderRegion = params.get('showBorderRegion')
-
-        this.regionColorMap = new RegionColorMap(tileMap.regionTileMap)
     }
 
     get(point) {
         const group = this.tileMap.getGroup(point)
         const region = this.tileMap.getRegion(point)
         const isBorderRegion = this.tileMap.isBorderRegion(region)
-        const regionColor = this.regionColorMap.get(region)
+        const groupColor = this.colorMap.getByGroup(group)
+        const regionColor = this.colorMap.getByRegion(region)
 
         if (this.showOrigins && Point.equals(group.origin, point)) {
-            return group.color.invert().toHex()
+            return groupColor.invert().toHex()
         }
         if (this.showGroupBorder && this.tileMap.isGroupBorder(point)) {
-            return group.color.darken(50).toHex()
+            return groupColor.darken(50).toHex()
         }
         if (this.showRegionBorder && this.tileMap.isRegionBorder(point)) {
             let color = regionColor.darken(50)
             if (this.showGroups)
-                color = group.color.brighten(50)
+                color = groupColor.brighten(50)
             return color.toHex()
         }
         if (this.showGroups) {
-            let color = group.color
+            let color = groupColor
             if (this.showRegions)
-                color = regionColor.average(group.color).average(group.color)
+                color = regionColor.average(groupColor).average(groupColor)
             if (isBorderRegion && this.showBorderRegion)
                 return color.darken(90).toHex()
             return color.toHex()
@@ -75,24 +99,4 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
     //     }
     //     return ''
     // }
-}
-
-
-class RegionColorMap {
-    constructor(regionMap) {
-        const entries = regionMap.map(region => [region.id, new Color()])
-        this.map = new Map(entries)
-    }
-
-    get(region) {
-        return this.map.get(region.id) || Color.fromHex('#FFF')
-    }
-
-    getMix([firstRegion, ...regions]) {
-        let color = this.get(firstRegion)
-        regions.forEach(region => {
-            color = color.average(this.get(region))
-        })
-        return color
-    }
 }
