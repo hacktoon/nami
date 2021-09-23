@@ -89,8 +89,8 @@ export class RegionGroupModel {
 class RegionGroupFillConfig {
     constructor(id, model) {
         this.id = id
-        this.model = model
         this.area = 0
+        this.model = model
         this.chance = model.groupChance
         this.growth = model.groupGrowth
     }
