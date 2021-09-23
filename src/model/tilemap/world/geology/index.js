@@ -33,16 +33,9 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        console.log(this.seed);
-        let start = performance.now()
         this.regionGroup = this._buildRegionGroupMap(this.seed, params)
-        console.log(`regions ${Math.floor(performance.now() - start) / 1000} s`)
-        start = performance.now()
         this.tectonicsModel = new TectonicsModel(this.regionGroup)
-        console.log(`tectonics ${Math.floor(performance.now() - start) / 1000} s`)
-        start = performance.now()
         this.erosionModel = new ErosionModel(this.regionGroup, this.tectonicsModel)
-        console.log(`erosion ${Math.floor(performance.now() - start) / 1000} s`)
     }
 
     _buildRegionGroupMap(seed, params) {
@@ -76,6 +69,10 @@ export class GeologyTileMap extends TileMap {
     getPlate(point) {
         const group = this.regionGroup.getGroup(point)
         return this.tectonicsModel.get(group.id)
+    }
+
+    getPlates() {
+        return this.tectonicsModel.getPlates()
     }
 
     isPlateOrigin(plate, point) {

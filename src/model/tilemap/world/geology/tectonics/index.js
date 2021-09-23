@@ -96,6 +96,10 @@ export class TectonicsModel {
         return this.plateMap.get(id)
     }
 
+    getPlates() {
+        return Array.from(this.plateMap.values())
+    }
+
     getLandform(regionId) {
         return this.landformMap.get(regionId)
     }
@@ -187,6 +191,10 @@ export class PlateMap {
 
     forEach(callback) {
         this.map.forEach(callback)
+    }
+
+    values() {
+        return this.map.values()
     }
 }
 

@@ -7,21 +7,14 @@ import { TileMapDiagram } from '/lib/model/tilemap'
 
 
 class GeologyColorMap {
-    constructor(regionMap) {
-        const entries = regionMap.map(region => [region.id, new Color()])
+    constructor(tileMap) {
+        const plates = tileMap.getPlates()
+        const entries = plates.map(plate => [plate.id, new Color()])
         this.map = new Map(entries)
     }
 
-    get(region) {
-        return this.map.get(region.id) || Color.fromHex('#FFF')
-    }
-
-    getMix([firstRegion, ...regions]) {
-        let color = this.get(firstRegion)
-        regions.forEach(region => {
-            color = color.average(this.get(region))
-        })
-        return color
+    getByPlate(plate) {
+        return this.map.get(plate.id)
     }
 }
 
@@ -52,10 +45,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const isBorderPoint = this.tileMap.isPlateBorder(point)
         const plate = this.tileMap.getPlate(point)
-        let color = Color.fromHex(plate.color)
         const erodedlandform = this.tileMap.getErodedLandform(point)
+        const isBorderPoint = this.tileMap.isPlateBorder(point)
+        let color = this.colorMap.getByPlate(plate)
 
         if (this.showLandform) {
             const landform = this.tileMap.getLandform(point)
