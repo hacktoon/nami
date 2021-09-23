@@ -208,7 +208,6 @@ class Plate {
         this.direction = Direction.random()
         this.hasHotspot = Random.chance(HOTSPOT_CHANCE)
         this.weight = weight
-        this.color = type === TYPE_OCEANIC ? '#058' : '#574'
     }
 
     isOceanic() {
