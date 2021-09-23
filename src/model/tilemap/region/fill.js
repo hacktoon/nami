@@ -10,16 +10,18 @@ export class RegionMultiFill {
         this.origins = origins
         this.seedTable = []
         this.levelTable = []
+        this.areaTable = []
         this.model = model
         this.canGrow = true
         this.fill = new RegionFloodFill(
             this.model,
             this.seedTable,
             this.levelTable,
+            this.areaTable,
         )
-        for(let id=0; id<origins.length; id++) {
+        for(let id = 0; id < origins.length; id ++) {
             const origin = origins[id]
-            this.model.areaTable.push(0)
+            this.areaTable.push(0)
             this.seedTable.push([origin])
             this.levelTable.push(0)
             this.fill.fillPoint(id, origin)
@@ -29,10 +31,14 @@ export class RegionMultiFill {
         }
     }
 
+    getArea(id) {
+        return this.areaTable[id]
+    }
+
     forEach(callback) {
-        for(let id=0; id<this.origins.length; id++) {
+        for(let id = 0; id < this.origins.length; id ++) {
             const origin = this.origins[id]
-            const area = this.model.areaTable[id]
+            const area = this.areaTable[id]
             callback(id, origin, area)
         }
     }
@@ -40,7 +46,7 @@ export class RegionMultiFill {
     _growFills() {
         let completedFills = 0
 
-        for(let id=0; id<this.origins.length; id++) {
+        for(let id = 0; id < this.origins.length; id ++) {
             const filledPoints = this.fill.grow(id)
             if (filledPoints.length === 0) {
                 completedFills++
@@ -54,9 +60,10 @@ export class RegionMultiFill {
 
 
 class RegionFloodFill {
-    constructor(model, seedTable, levelTable) {
+    constructor(model, seedTable, levelTable, areaTable) {
         this.model = model
         this.seedTable = seedTable
+        this.areaTable = areaTable
         this.levelTable = levelTable
         this.growth = model.growth ?? 1
         this.chance = model.chance ?? .1
@@ -71,7 +78,7 @@ class RegionFloodFill {
 
     fillPoint(id, point) {
         this.setValue(id, point)
-        this.model.areaTable[id] += 1
+        this.areaTable[id] += 1
     }
 
     _growLayer(id, seeds) {

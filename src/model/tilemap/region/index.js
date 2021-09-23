@@ -51,8 +51,7 @@ export class RegionTileMap extends TileMap {
         this.chance = params.get('chance')
         this.growth = params.get('growth')
         this.graph = new Graph()
-        this.areaTable = []
-        new RegionMultiFill(this.origins, this)
+        this.mapFill = new RegionMultiFill(this.origins, this)
     }
 
     get(point) {
@@ -86,7 +85,7 @@ export class RegionTileMap extends TileMap {
         return {
             id,
             origin: this.origins[id],
-            area: this.areaTable[id]
+            area: this.mapFill.getArea(id)
         }
     }
 
