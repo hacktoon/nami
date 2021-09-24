@@ -5,15 +5,15 @@ import { Point } from '/lib/base/point'
 const NO_REGION = null
 
 
-export class RegionMultiFill {
-    constructor(origins, model) {
+export class GenericMultiFill {
+    constructor(origins, model, fillClass) {
         this.origins = origins
         this.seedTable = []
         this.levelTable = []
         this.areaTable = []
         this.model = model
         this.canGrow = true
-        this.fill = new RegionFloodFill(
+        this.fill = new fillClass(
             this.model,
             this.seedTable,
             this.levelTable,
@@ -22,9 +22,9 @@ export class RegionMultiFill {
         for(let id = 0; id < origins.length; id ++) {
             const origin = origins[id]
             this.areaTable.push(0)
-            this.seedTable.push([origin])
             this.levelTable.push(0)
-            this.fill.fillPoint(id, origin)
+            this.seedTable.push([origin])
+            this.fill.fillPoint(origin, id)
         }
         while(this.canGrow) {
             this._growFills()
@@ -59,7 +59,7 @@ export class RegionMultiFill {
 }
 
 
-class RegionFloodFill {
+class GenericFloodFill {
     constructor(model, seedTable, levelTable, areaTable) {
         this.model = model
         this.seedTable = seedTable
@@ -76,7 +76,7 @@ class RegionFloodFill {
         return seeds
     }
 
-    fillPoint(id, point) {
+    fillPoint(point, id) {
         this.setValue(id, point)
         this.areaTable[id] += 1
     }
@@ -102,7 +102,7 @@ class RegionFloodFill {
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
-            this.fillPoint(id, neighbor)
+            this.fillPoint(neighbor, id)
         })
         return filledNeighbors
     }
@@ -123,31 +123,42 @@ class RegionFloodFill {
         }
         return [first, second]
     }
+}
 
-    // override
+// ===============================================
+
+class RegionFloodFill extends GenericFloodFill {
+    constructor(model, seedTable, levelTable, areaTable) {
+        super(model, seedTable, levelTable, areaTable)
+    }
+
     setValue(id, point) {
         const level = this.levelTable[id]
         this.model.regionMatrix.set(point, id)
         this.model.levelMatrix.set(point, level)
     }
 
-    // override
     isEmpty(point) {
         return this.model.regionMatrix.get(point) === NO_REGION
     }
 
-    // override
-    checkNeighbor(id, neighborPoint, fillPoint) {
+    checkNeighbor(id, neighborPoint, centerPoint) {
         if (this.isEmpty(neighborPoint)) return
         const neighborId = this.model.regionMatrix.get(neighborPoint)
         if (id === neighborId) return
         // mark region when neighbor point is filled by other region
         this.model.graph.setEdge(id, neighborId)
-        this.model.borderMatrix.get(fillPoint).add(neighborId)
+        this.model.borderMatrix.get(centerPoint).add(neighborId)
     }
 
-    // override
     getNeighbors(originPoint) {
         return Point.adjacents(originPoint)
+    }
+}
+
+
+export class RegionMultiFill extends GenericMultiFill {
+    constructor(origins, model) {
+        super(origins, model, RegionFloodFill)
     }
 }
