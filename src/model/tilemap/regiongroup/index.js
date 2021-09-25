@@ -5,6 +5,7 @@ import { UITileMap } from '/ui/tilemap'
 
 import { RegionGroupTileMapDiagram } from './diagram'
 import { RegionGroupModel } from './model'
+import { RegionGroupMultiFill } from './fill'
 
 
 const ID = 'RegionGroupTileMap'

@@ -5,7 +5,7 @@ import { Point } from '/lib/base/point'
 const NO_REGION = null
 
 
-export class GenericMultiFill {
+class GenericMultiFill {
     constructor(origins, model, fillClass) {
         this.origins = origins
         this.seedTable = []
@@ -128,10 +128,6 @@ class GenericFloodFill {
 // ===============================================
 
 class RegionFloodFill extends GenericFloodFill {
-    constructor(model, seedTable, levelTable, areaTable) {
-        super(model, seedTable, levelTable, areaTable)
-    }
-
     setValue(id, point) {
         const level = this.levelTable[id]
         this.model.regionMatrix.set(point, id)
