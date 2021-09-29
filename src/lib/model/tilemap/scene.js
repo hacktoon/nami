@@ -13,20 +13,20 @@ export class TileMapScene {
         Type.number('zoom', "Zoom", {default: 6, step: 1, min: 1, max: 100}),
     )
 
-    static create(diagram, rect, params) {
-        return new TileMapScene(diagram, rect, params)
+    static create(diagram, viewport, params) {
+        return new TileMapScene(diagram, viewport, params)
     }
 
-    constructor(diagram, rect, params) {
+    constructor(diagram, viewport, params) {
         const [focus, wrap, zoom] = params.get('focus', 'wrap', 'zoom')
-        this.frame = new Frame(rect, zoom)
+        this.frame = new Frame(viewport, zoom)
         this.diagram = diagram
         this.textQueue = []
         this.markQueue = []
         this.focus = focus
         this.wrap = wrap
         this.zoom = zoom
-        this.rect = rect  // TODO: needed only in UITileMapMouse, delete
+        this.viewport = viewport  // TODO: needed only in UITileMapMouse, delete
 
         // TODO: send params to render method, avoid buildind an
         // instance on every UI action
@@ -95,9 +95,9 @@ export class TileMapScene {
 
 
 class Frame {
-    constructor(rect, zoom) {
-        const westPad = Math.floor(rect.width / 2 - zoom / 2)
-        const northPad = Math.floor(rect.height / 2 - zoom / 2)
+    constructor(viewport, zoom) {
+        const westPad = Math.floor(viewport.width / 2 - zoom / 2)
+        const northPad = Math.floor(viewport.height / 2 - zoom / 2)
         const xTileCount = Math.ceil(westPad / zoom)
         const yTileCount = Math.ceil(northPad / zoom)
         this.center = [xTileCount, yTileCount]
@@ -105,8 +105,8 @@ class Frame {
             (xTileCount * zoom) - westPad,
             (yTileCount * zoom) - northPad
         ]
-        this.width = rect.width
-        this.height = rect.height
+        this.width = viewport.width
+        this.height = viewport.height
         this.zoom = zoom
     }
 

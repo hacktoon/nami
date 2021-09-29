@@ -1,15 +1,15 @@
 import React, { useRef, useLayoutEffect } from 'react'
 
 
-export function Canvas({rect, onInit, className='Canvas'}) {
+export function Canvas({viewport, onInit, className='Canvas'}) {
     const ref = useRef(null)
 
     useLayoutEffect(() => onInit(new CanvasContext(ref.current)))
 
     return <canvas ref={ref}
         className={className}
-        width={rect.width}
-        height={rect.height}>
+        width={viewport.width}
+        height={viewport.height}>
     </canvas>
 }
 

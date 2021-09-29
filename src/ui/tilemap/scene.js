@@ -14,14 +14,14 @@ export function UITileMapScene(props) {
     const rect = useResize(viewport)
 
     return <section className="UITileMapScene" ref={viewport}>
-        {viewport.current && <UITileMapSceneContent rect={rect} {...props} />}
+        {viewport.current && <UITileMapSceneContent viewport={rect} {...props} />}
     </section>
 }
 
 
-function UITileMapSceneContent({diagram, rect, ...props}) {
+function UITileMapSceneContent({diagram, viewport, ...props}) {
     const [prevFocus, setPrevFocus] = useState([0, 0])
-    const scene = TileMapScene.create(diagram, rect, props.sceneData)
+    const scene = TileMapScene.create(diagram, viewport, props.sceneData)
 
     // TODO: calc if should create a moving canvas or not
     // depends on wrap option
@@ -41,6 +41,6 @@ function UITileMapSceneContent({diagram, rect, ...props}) {
             onWheel={handleWheel}
             onDragStart={handleDragStart}
         />
-        <Canvas rect={rect} onInit={handleInit}/>
+        <Canvas viewport={viewport} onInit={handleInit}/>
     </>
 }
