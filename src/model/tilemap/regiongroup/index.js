@@ -50,15 +50,15 @@ export class RegionGroupTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const [width, height, seed] = params.get('width', 'height', 'seed')
         const groupScale = params.get('groupScale')
+        const [width, height, seed] = params.get('width', 'height', 'seed')
         const origins = EvenPointSampling.create(width, height, groupScale)
-        this.groupChance = params.get('groupChance')
-        this.groupGrowth = params.get('groupGrowth')
-        this.regionTileMap = this._buildRegionTileMap(seed, params)
         this.borderRegions = new Set()
         this.regionToGroup = new Map()
         this.graph = new Graph()
+        this.groupChance = params.get('groupChance')
+        this.groupGrowth = params.get('groupGrowth')
+        this.regionTileMap = this._buildRegionTileMap(seed, params)
         this.groups = this._buildGroups(origins)
         this.directions = this._buildDirections(this.groups)
     }
@@ -71,7 +71,7 @@ export class RegionGroupTileMap extends TileMap {
     }
 
     _buildGroups(origins) {
-        const groups = new Map()
+        const groups = []
         const fills = origins.map((origin, id) => {
             const region = this.regionTileMap.getRegion(origin)
             const fillConfig = new RegionGroupFillConfig(id, this)
@@ -81,7 +81,7 @@ export class RegionGroupTileMap extends TileMap {
             const group = new RegionGroup(
                 fill.config.id, fill.origin, fill.config.area
             )
-            groups.set(group.id, group)
+            groups.push(group)
         })
         return groups
     }
@@ -89,15 +89,15 @@ export class RegionGroupTileMap extends TileMap {
     _buildDirections(groups) {
         const directions = new PairMap()
         const matrix = this.regionTileMap.regionMatrix
-        groups.forEach(group => {
+        for(let group of groups) {
             this.graph.getEdges(group.id).forEach(neighborId => {
-                const neighbor = groups.get(neighborId)
+                const neighbor = groups[neighborId]
                 const sideOrigin = matrix.wrapVector(group.origin, neighbor.origin)
                 const angle = Point.angle(group.origin, sideOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(group.id, neighborId, direction)
             })
-        })
+        }
         return directions
     }
 
@@ -140,7 +140,7 @@ export class RegionGroupTileMap extends TileMap {
 
     getNeighborGroups(group) {
         const edges = this.graph.getEdges(group.id)
-        return edges.map(id => this.groups.get(id))
+        return edges.map(id => this.groups[id])
     }
 
     getGroupDirection(sourceGroup, targetGroup) {
@@ -149,11 +149,11 @@ export class RegionGroupTileMap extends TileMap {
 
     getGroupByRegion(region) {
         const id = this.regionToGroup.get(region.id)
-        return this.groups.get(id)
+        return this.groups[id]
     }
 
     getGroups() {
-        return Array.from(this.groups.values())
+        return this.groups
     }
 
     getNeighborRegions(region) {
@@ -185,7 +185,7 @@ export class RegionGroupTileMap extends TileMap {
     }
 
     map(callback) {
-        return [...this.groups.values()].map(callback)
+        return this.groups.map(callback)
     }
 
     forEach(callback) {
@@ -194,14 +194,14 @@ export class RegionGroupTileMap extends TileMap {
 }
 
 
-
 class RegionGroup {
     constructor(id, region, area) {
         this.id = id
-        this.origin = region.origin
         this.area = area
+        this.origin = region.origin
     }
 }
+
 
 class RegionGroupFillConfig {
     constructor(id, model) {

@@ -26,7 +26,7 @@ export class BoundaryModel {
         this._boundaryMap = new PairMap()
         this._boundaryTable = new BoundaryTable(BOUNDARY_TABLE)
 
-        regionGroup.getGroups().forEach(group => {
+        regionGroup.forEach(group => {
             const neighbors = regionGroup.getNeighborGroups(group)
             neighbors.forEach(neighborGroup => {
                 const boundary = this._buildGroupsBoundary(group, neighborGroup)

@@ -22,9 +22,8 @@ class RegionGroupColorMap {
 
     constructor(regionGroupMap) {
         const regionMap = regionGroupMap.regionTileMap
-        const groups = regionGroupMap.getGroups()
         const regionEntries = regionMap.map(region => [region.id, new Color()])
-        const groupEntries = groups.map(group => [group.id, new Color()])
+        const groupEntries = regionGroupMap.map(group => [group.id, new Color()])
         this.#regionMap = new Map(regionEntries)
         this.#groupMap = new Map(groupEntries)
     }
