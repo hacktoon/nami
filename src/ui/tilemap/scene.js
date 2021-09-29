@@ -10,18 +10,19 @@ import { UITileMapMouse } from './mouse'
 
 
 export function UITileMapScene(props) {
-    const viewport = useRef(null)
-    const rect = useResize(viewport)
+    const viewportRef = useRef(null)
+    const viewport = useResize(viewportRef)
+    const enabled = Boolean(viewportRef.current)
 
-    return <section className="UITileMapScene" ref={viewport}>
-        {viewport.current && <UITileMapSceneContent viewport={rect} {...props} />}
+    return <section className="UITileMapScene" ref={viewportRef}>
+        {enabled && <UITileMapSceneContent viewport={viewport} {...props} />}
     </section>
 }
 
 
 function UITileMapSceneContent({diagram, viewport, ...props}) {
-    const [prevFocus, setPrevFocus] = useState([0, 0])
     const scene = TileMapScene.create(diagram, viewport, props.sceneData)
+    const [prevFocus, setPrevFocus] = useState([0, 0])
 
     // TODO: calc if should create a moving canvas or not
     // depends on wrap option
