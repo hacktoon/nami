@@ -1,4 +1,4 @@
-import { PairMap } from '/lib/base'
+import { PairMap } from '/lib/base/map'
 import { Direction } from '/lib/base/direction'
 import { Point } from '/lib/base/point'
 import { Graph } from '/lib/base/graph'

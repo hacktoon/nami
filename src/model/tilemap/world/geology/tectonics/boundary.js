@@ -1,4 +1,4 @@
-import { PairMap } from '/lib/base'
+import { PairMap } from '/lib/base/map'
 import { Direction } from '/lib/base/direction'
 
 import { Landform } from '../landform'
