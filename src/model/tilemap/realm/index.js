@@ -59,8 +59,8 @@ export class RealmTileMap extends TileMap {
         this.groupChance = params.get('groupChance')
         this.groupGrowth = params.get('groupGrowth')
         this.regionTileMap = this._buildRegionTileMap(seed, params)
-        this.groups = this._buildGroups(origins)
-        this.directions = this._buildDirections(this.groups)
+        this.realms = this._buildGroups(origins)
+        this.directions = this._buildDirections(this.realms)
     }
 
     _buildRegionTileMap(seed, params) {
@@ -71,31 +71,32 @@ export class RealmTileMap extends TileMap {
     }
 
     _buildGroups(origins) {
-        const groups = []
+        const realms = []
         const fills = origins.map((origin, id) => {
             const region = this.regionTileMap.getRegion(origin)
-            const fillConfig = new RegionGroupFillConfig(id, this)
+            const fillConfig = new RealmFillConfig(id, this)
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(fills).map(fill => {
-            const group = new RegionGroup(
-                fill.config.id, fill.origin, fill.config.area
+            const origin = fill.origin.origin // TODO: fix this
+            const realm = new Realm(
+                fill.config.id, origin, fill.config.area
             )
-            groups.push(group)
+            realms.push(realm)
         })
-        return groups
+        return realms
     }
 
-    _buildDirections(groups) {
+    _buildDirections(realms) {
         const directions = new PairMap()
         const matrix = this.regionTileMap.regionMatrix
-        for(let group of groups) {
-            this.graph.getEdges(group.id).forEach(neighborId => {
-                const neighbor = groups[neighborId]
-                const sideOrigin = matrix.wrapVector(group.origin, neighbor.origin)
-                const angle = Point.angle(group.origin, sideOrigin)
+        for(let realm of realms) {
+            this.graph.getEdges(realm.id).forEach(neighborId => {
+                const neighbor = realms[neighborId]
+                const sideOrigin = matrix.wrapVector(realm.origin, neighbor.origin)
+                const angle = Point.angle(realm.origin, sideOrigin)
                 const direction = Direction.fromAngle(angle)
-                directions.set(group.id, neighborId, direction)
+                directions.set(realm.id, neighborId, direction)
             })
         }
         return directions
@@ -103,13 +104,13 @@ export class RealmTileMap extends TileMap {
 
     get(point) {
         const region = this.getRegion(point)
-        const group = this.getGroup(point)
-        const neighbors = this.getNeighborGroups(group)
+        const realm = this.getGroup(point)
+        const neighbors = this.getNeighborRealms(realm)
         return {
-            group: group.id,
+            realm: realm.id,
             region: region.id,
             neighbors: neighbors.map(neighbor => {
-                const dir = this.getGroupDirection(group, neighbor)
+                const dir = this.getGroupDirection(realm, neighbor)
                 return `${dir.name}(${neighbor.id})`
             }).join(', ')
         }
@@ -135,25 +136,25 @@ export class RealmTileMap extends TileMap {
 
     getGroup(point) {
         const region = this.getRegion(point)
-        return this.getGroupByRegion(region)
+        return this.getRealmByRegion(region)
     }
 
-    getNeighborGroups(group) {
-        const edges = this.graph.getEdges(group.id)
-        return edges.map(id => this.groups[id])
+    getNeighborRealms(realm) {
+        const edges = this.graph.getEdges(realm.id)
+        return edges.map(id => this.realms[id])
     }
 
     getGroupDirection(sourceGroup, targetGroup) {
         return this.directions.get(sourceGroup.id, targetGroup.id)
     }
 
-    getGroupByRegion(region) {
+    getRealmByRegion(region) {
         const id = this.regionToGroup.get(region.id)
-        return this.groups[id]
+        return this.realms[id]
     }
 
     getGroups() {
-        return this.groups
+        return this.realms
     }
 
     getNeighborRegions(region) {
@@ -171,10 +172,10 @@ export class RealmTileMap extends TileMap {
     isGroupBorder(point) {
         const neighborRegions = this.regionTileMap.getBorderRegions(point)
         if (neighborRegions.length === 0) return false
-        const group = this.getGroup(point)
+        const realm = this.getGroup(point)
         for (let region of neighborRegions) {
             const id = this.regionToGroup.get(region.id)
-            if (id !== group.id) return true
+            if (id !== realm.id) return true
         }
         return false
     }
@@ -185,25 +186,25 @@ export class RealmTileMap extends TileMap {
     }
 
     map(callback) {
-        return this.groups.map(callback)
+        return this.realms.map(callback)
     }
 
     forEach(callback) {
-        this.groups.forEach(callback)
+        this.realms.forEach(callback)
     }
 }
 
 
-class RegionGroup {
-    constructor(id, region, area) {
+class Realm {
+    constructor(id, origin, area) {
         this.id = id
         this.area = area
-        this.origin = region.origin
+        this.origin = origin
     }
 }
 
 
-class RegionGroupFillConfig {
+class RealmFillConfig {
     constructor(id, model) {
         this.id = id
         this.area = 0

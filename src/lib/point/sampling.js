@@ -1,7 +1,7 @@
 import { Rect } from '/lib/number'
 import { Random } from '/lib/random'
 import { Matrix } from '/lib/matrix'
-import { PointSet } from './set'
+import { RectPointSet, RegionOriginSet } from './set'
 import { Point } from '.'
 
 
@@ -9,7 +9,7 @@ export class EvenPointSampling {
     static create(width, height, radius) {
         const samples = []
         const rect = new Rect(width, height)
-        const pointSet = new PointSet(width, height)
+        const pointSet = new RectPointSet(width, height)
 
         while(pointSet.size > 0) {
             const center = pointSet.random()
@@ -49,14 +49,13 @@ export class EvenPointSampling {
 export class EvenRealmOriginSampling {
     static create(realm, radius) {
         const samples = []
-        const rect = new Rect(realm.width, realm.height)
-        const pointSet = new PointSet(width, height)
+        const pointSet = new RegionOriginSet(realm.getRegions())
 
         while(pointSet.size > 0) {
             const center = pointSet.random()
-            EvenPointSampling.fillPointCircle(center, radius, point => {
+            EvenRealmOriginSampling.fillRegionCircle(center, radius, point => {
                 if (pointSet.has(point)) {
-                    pointSet.delete(rect.wrap(point))
+                    pointSet.delete(point)
                 }
             })
             samples.push(center)
@@ -68,6 +67,10 @@ export class EvenRealmOriginSampling {
             samples.push(rect.wrap([x, y]))
         }
         return samples
+    }
+
+    static fillRegionCircle(center, radius, callback) {
+
     }
 }
 

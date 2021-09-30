@@ -1,7 +1,7 @@
 import { Random } from '/lib/random'
 
 
-export class PointSet {
+export class RectPointSet {
     #size
     #index
     #width
@@ -51,81 +51,54 @@ export class PointSet {
 }
 
 
-export class PointSet2 {
-    constructor(width, height) {
-        this.size = 0
-        this.map = {}
+
+export class RegionOriginSet {
+    #points
+
+    constructor(points) {
+        this.#points = points
     }
 
-    has([x, y]) {
-        if (! this.map[x]) return false
-        return this.map[x][y]
-    }
-
-    add([x, y]) {
-        if (! this.map[x]) {
-            this.map[x] = {}
-        }
-        const yobj = this.map[x]
-        if (! yobj[y]) {
-            yobj[y] = true
-            this.size++
-        }
-    }
-
-    delete(point) {
-        if (! this.has(point)) return false
-        const [x, y] = point
-        delete this.map[x][y]
-        if (Object.values(this.map[x]).length == 0) {
-            delete this.map[x]
-        }
-        this.size--
-        return true
-    }
-
-    random() {
-        const x = Random.choiceFrom(Object.keys(this.map))
-        const y = Random.choiceFrom(Object.keys(this.map[x]))
-        return [Number(x), Number(y)]
-    }
 }
 
 
+
 export class RandomPointQueue {
-	constructor(width, height) {
-		this.array = []
+    #points
+
+	constructor(points) {
+		this.#points = points
         this.width = width
         this.height = height
         const size = width * height
         for(let i = 0; i < size; i++) {
-            this.array.push(i)
+            this.#points.push(i)
         }
     }
 
 	has([x, y]) {
         const index = x + this.width * y
-        return this.array.has(index)
+        return this.#points.has(index)
     }
 
 	push(item) {
-        this.array.push(item)
+        this.#points.push(item)
     }
 
 	pop() {
-        const length = this.array.length
+        const length = this.#points.length
 
 		if (length <= 0) {
 			throw new Error('Cannot pop from empty array!')
         } else if (length == 1) {
-			return this.array.pop()
+			return this.#points.pop()
         } else {
 			const j = length - 1
 			const i = Random.int(0, j)
-            const swap = this.array[i]
-			this.array[i] = this.array[j]
-            this.array[j] = swap
+            const swap = this.#points[i]
+			this.#points[i] = this.#points[j]
+            this.#points[j] = swap
         }
-		return this.array.pop()
+		return this.#points.pop()
     }
 }
