@@ -1,20 +1,8 @@
-import { repeat } from '/lib/function'
-import { clamp } from '/lib/number'
 import { Rect } from '/lib/number'
 import { Random } from '/lib/random'
 import { Matrix } from '/lib/matrix'
 import { PointSet } from './set'
 import { Point } from '.'
-
-
-export class RandomPointSampling {
-    static id = 'RandomPointSampling'
-
-    static create(width, height, count) {
-        const parsedMaxCount = clamp(count, 1, width * height)
-        return repeat(parsedMaxCount, () => Point.random(width, height))
-    }
-}
 
 
 export class EvenPointSampling {
@@ -133,6 +121,4 @@ export class PoissonDiscSampling {
 		}
 		return false;
 	}
-
-
 }
