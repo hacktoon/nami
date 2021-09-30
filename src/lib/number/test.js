@@ -1,5 +1,5 @@
 import { interpolateNumbers, clamp, sum, Rect } from '.'
-import { Point } from '/lib/base/point'
+import { Point } from '/lib/point'
 
 
 test('int array sum', () => {

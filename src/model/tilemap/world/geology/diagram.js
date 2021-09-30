@@ -1,7 +1,7 @@
-import { Schema } from '/lib/base/schema'
-import { Type } from '/lib/base/type'
-import { Direction } from '/lib/base/direction'
-import { Color } from '/lib/base/color'
+import { Schema } from '/lib/schema'
+import { Type } from '/lib/type'
+import { Direction } from '/lib/direction'
+import { Color } from '/lib/color'
 
 import { TileMapDiagram } from '/lib/model/tilemap'
 

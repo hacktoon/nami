@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
-import { Schema } from '/lib/base/schema'
-import { Type } from '/lib/base/type'
+import { Schema } from '/lib/schema'
+import { Type } from '/lib/type'
 import { Form } from '/ui/form'
 import { Title } from '/ui'
 

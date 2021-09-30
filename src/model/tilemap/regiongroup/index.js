@@ -1,15 +1,15 @@
-import { PairMap } from '/lib/base/map'
-import { Direction } from '/lib/base/direction'
-import { Point } from '/lib/base/point'
-import { Graph } from '/lib/base/graph'
-import { EvenPointSampling } from '/lib/base/point/sampling'
+import { PairMap } from '/lib/map'
+import { Direction } from '/lib/direction'
+import { Point } from '/lib/point'
+import { Graph } from '/lib/graph'
+import { EvenPointSampling } from '/lib/point/sampling'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { RegionTileMap } from '/model/tilemap/region'
 
-import { Schema } from '/lib/base/schema'
-import { Type } from '/lib/base/type'
+import { Schema } from '/lib/schema'
+import { Type } from '/lib/type'
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 

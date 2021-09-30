@@ -1,4 +1,4 @@
-import { Graph } from '/lib/base/graph'
+import { Graph } from '/lib/graph'
 
 
 test('Add graph node', () => {

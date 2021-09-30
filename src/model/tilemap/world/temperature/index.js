@@ -1,5 +1,5 @@
-import { Schema } from '/lib/base/schema'
-import { Type } from '/lib/base/type'
+import { Schema } from '/lib/schema'
+import { Type } from '/lib/type'
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 

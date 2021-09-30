@@ -1,8 +1,8 @@
-import { clamp, sum } from '/lib/base/number'
+import { clamp, sum } from '/lib/number'
 
-import { Matrix } from '/lib/base/matrix'
-import { Point } from '/lib/base/point'
-import { Random } from '/lib/base/random'
+import { Matrix } from '/lib/matrix'
+import { Point } from '/lib/point'
+import { Random } from '/lib/random'
 
 
 const EMPTY = null

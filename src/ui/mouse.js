@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Point } from '/lib/base/point'
+import { Point } from '/lib/point'
 
 
 const CLICK_TIMEOUT = 200

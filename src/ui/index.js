@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react'
 
-import { Rect } from '/lib/base/number'
+import { Rect } from '/lib/number'
 
 
 // HELPER FUNCTIONS ==============================================

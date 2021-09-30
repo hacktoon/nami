@@ -1,4 +1,4 @@
-import { Random } from '/lib/base/random'
+import { Random } from '/lib/random'
 
 
 // example:  simplex = SimplexNoise(8, .6, 0.01)

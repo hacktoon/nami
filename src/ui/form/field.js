@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
 
-import { Color } from '/lib/base/color'
-import { Point } from '/lib/base/point'
+import { Color } from '/lib/color'
+import { Point } from '/lib/point'
 
 
 export function FieldSet({types, data, onChange}) {

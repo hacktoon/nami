@@ -1,7 +1,7 @@
-import { Point } from '/lib/base/point'
-import { Rect } from '/lib/base/number'
-import { Schema } from '/lib/base/schema'
-import { Type } from '/lib/base/type'
+import { Point } from '/lib/point'
+import { Rect } from '/lib/number'
+import { Schema } from '/lib/schema'
+import { Type } from '/lib/type'
 import { createCanvas } from '/ui/canvas'
 
 

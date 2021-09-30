@@ -1,8 +1,8 @@
-import { repeat } from '/lib/base/function'
-import { clamp } from '/lib/base/number'
-import { Rect } from '/lib/base/number'
-import { Random } from '/lib/base/random'
-import { Matrix } from '/lib/base/matrix'
+import { repeat } from '/lib/function'
+import { clamp } from '/lib/number'
+import { Rect } from '/lib/number'
+import { Random } from '/lib/random'
+import { Matrix } from '/lib/matrix'
 import { PointSet } from './set'
 import { Point } from '.'
 

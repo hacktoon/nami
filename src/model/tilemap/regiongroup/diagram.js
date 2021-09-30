@@ -1,7 +1,7 @@
-import { Schema } from '/lib/base/schema'
-import { Type } from '/lib/base/type'
-import { Point } from '/lib/base/point'
-import { Color } from '/lib/base/color'
+import { Schema } from '/lib/schema'
+import { Type } from '/lib/type'
+import { Point } from '/lib/point'
+import { Color } from '/lib/color'
 import { TileMapDiagram } from '/lib/model/tilemap'
 
 

@@ -1,5 +1,5 @@
-import { PairMap } from '/lib/base/map'
-import { Direction } from '/lib/base/direction'
+import { PairMap } from '/lib/map'
+import { Direction } from '/lib/direction'
 
 import { Landform } from '../landform'
 import { BOUNDARY_TABLE } from './table'

@@ -1,4 +1,4 @@
-import { Point } from '/lib/base/point'
+import { Point } from '/lib/point'
 import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 
 
