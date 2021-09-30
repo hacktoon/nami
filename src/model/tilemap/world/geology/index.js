@@ -33,18 +33,18 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.realm = this._buildRegionGroupMap(this.seed, params)
+        this.realm = this._buildRealmMap(this.seed, params)
         this.tectonicsModel = new TectonicsModel(this.realm)
         this.erosionModel = new ErosionModel(this.realm, this.tectonicsModel)
     }
 
-    _buildRegionGroupMap(seed, params) {
+    _buildRealmMap(seed, params) {
         return RealmTileMap.fromData({
             width: params.get('width'),
             height: params.get('height'),
-            groupScale: params.get('scale'),
-            groupGrowth: params.get('growth'),
-            groupChance: .1,
+            realmScale: params.get('scale'),
+            realmGrowth: params.get('growth'),
+            realmChance: .1,
             seed: seed,
             chance: .1,
             growth: 0,

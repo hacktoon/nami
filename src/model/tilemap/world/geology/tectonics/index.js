@@ -149,30 +149,30 @@ class RegionFillConfig extends FloodFillConfig {
 
 
 export class PlateMap {
-    constructor(reGroupTileMap) {
-        this.reGroupTileMap = reGroupTileMap
+    constructor(realmTileMap) {
+        this.realmTileMap = realmTileMap
         this.map = new Map()
         const cmpDescendingCount = (g0, g1) => g1.count - g0.count
-        const groups = this.reGroupTileMap.getGroups().sort(cmpDescendingCount)
-        const typeMap = this._buildTypes(groups)
-        groups.forEach(realm => {
+        const realms = realmTileMap.getGroups().sort(cmpDescendingCount)
+        const typeMap = this._buildTypes(realms)
+        realms.forEach(realm => {
             const {id, origin, area} = realm
-            const neighborsGroups = this.reGroupTileMap.getNeighborRealms(realm)
+            const neighborsGroups = realmTileMap.getNeighborRealms(realm)
             const isLandlocked = neighborsGroups.concat(realm).every(neighbor => {
                 return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
             })
             const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(id)
-            const weight = id + (type === TYPE_OCEANIC ? groups.length * 10 : 0)
+            const weight = id + (type === TYPE_OCEANIC ? realms.length * 10 : 0)
             const plate = new Plate(id, origin, type, area, weight)
             this.map.set(plate.id, plate)
         })
     }
 
-    _buildTypes(groups) {
-        const halfWorldArea = Math.floor(this.reGroupTileMap.area / 2)
+    _buildTypes(realms) {
+        const halfWorldArea = Math.floor(this.realmTileMap.area / 2)
         const typeMap = new Map()
         let totalOceanicArea = 0
-        groups.forEach(realm => {
+        realms.forEach(realm => {
             totalOceanicArea += realm.area
             const isOceanic = totalOceanicArea < halfWorldArea
             const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL

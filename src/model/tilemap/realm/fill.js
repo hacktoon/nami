@@ -1,7 +1,7 @@
 import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 
 
-class RegionGroupFloodFill extends GenericFloodFill {
+class RealmFloodFill extends GenericFloodFill {
     isEmpty(region) {
         return !this.model.regionToGroup.has(region.id)
     }
@@ -25,8 +25,8 @@ class RegionGroupFloodFill extends GenericFloodFill {
 }
 
 
-export class RegionGroupMultiFill extends GenericMultiFill {
+export class RealmMultiFill extends GenericMultiFill {
     constructor(origins, model) {
-        super(origins, model, RegionGroupFloodFill)
+        super(origins, model, RealmFloodFill)
     }
 }

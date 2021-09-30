@@ -13,8 +13,8 @@ import { Type } from '/lib/type'
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { RegionGroupTileMapDiagram } from './diagram'
-import { RegionGroupMultiFill } from './fill'
+import { RealmTileMapDiagram } from './diagram'
+import { RealmMultiFill } from './fill'
 
 
 const ID = 'RealmTileMap'
@@ -22,9 +22,9 @@ const SCHEMA = new Schema(
     ID,
     Type.number('width', 'W', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('groupScale', 'Gr Scale', {default: 34, step: 1, min: 1, max: 100}),
-    Type.number('groupChance', 'Gr Chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
-    Type.number('groupGrowth', 'Gr Growth', {default: 25, step: 1, min: 0, max: 100}),
+    Type.number('realmScale', 'RmScale', {default: 34, step: 1, min: 1, max: 100}),
+    Type.number('realmChance', 'RmChance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
+    Type.number('realmGrowth', 'RmGrowth', {default: 25, step: 1, min: 0, max: 100}),
     Type.number('scale', 'Rg scale', {default: 2, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Rg growth', {default: 0, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Rg chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
@@ -34,7 +34,7 @@ const SCHEMA = new Schema(
 
 export class RealmTileMap extends TileMap {
     static id = ID
-    static diagram = RegionGroupTileMapDiagram
+    static diagram = RealmTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
 
@@ -50,14 +50,14 @@ export class RealmTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const groupScale = params.get('groupScale')
+        const realmScale = params.get('realmScale')
         const [width, height, seed] = params.get('width', 'height', 'seed')
-        const origins = EvenPointSampling.create(width, height, groupScale)
+        const origins = EvenPointSampling.create(width, height, realmScale)
         this.borderRegions = new Set()
         this.regionToGroup = new Map()
         this.graph = new Graph()
-        this.groupChance = params.get('groupChance')
-        this.groupGrowth = params.get('groupGrowth')
+        this.realmChance = params.get('realmChance')
+        this.realmGrowth = params.get('realmGrowth')
         this.regionTileMap = this._buildRegionTileMap(seed, params)
         this.realms = this._buildGroups(origins)
         this.directions = this._buildDirections(this.realms)
@@ -209,8 +209,8 @@ class RealmFillConfig {
         this.id = id
         this.area = 0
         this.model = model
-        this.chance = model.groupChance
-        this.growth = model.groupGrowth
+        this.chance = model.realmChance
+        this.growth = model.realmGrowth
     }
 
     isEmpty(region) {

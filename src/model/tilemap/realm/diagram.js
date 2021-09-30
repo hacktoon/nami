@@ -6,8 +6,8 @@ import { TileMapDiagram } from '/lib/model/tilemap'
 
 
 const SCHEMA = new Schema(
-    'RegionGroupTileMapDiagram',
-    Type.boolean('showGroups', 'Show groups', {default: true}),
+    'RealmTileMapDiagram',
+    Type.boolean('showRealms', 'Show realms', {default: true}),
     Type.boolean('showOrigins', 'Show origins', {default: true}),
     Type.boolean('showRealmBorder', 'Show realm border', {default: true}),
     Type.boolean('showRegions', 'Show regions', {default: false}),
@@ -16,7 +16,7 @@ const SCHEMA = new Schema(
 )
 
 
-class RegionGroupColorMap {
+class RealmColorMap {
     #regionMap
     #realmMap
 
@@ -32,24 +32,24 @@ class RegionGroupColorMap {
         return this.#regionMap.get(region.id) || Color.fromHex('#FFF')
     }
 
-    getByGroup(realm) {
+    getByRealm(realm) {
         return this.#realmMap.get(realm.id) || Color.fromHex('#FFF')
     }
 }
 
 
-export class RegionGroupTileMapDiagram extends TileMapDiagram {
+export class RealmTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
-    static colorMap = RegionGroupColorMap
+    static colorMap = RealmColorMap
 
     static create(tileMap, colorMap, params) {
-        return new RegionGroupTileMapDiagram(tileMap, colorMap, params)
+        return new RealmTileMapDiagram(tileMap, colorMap, params)
     }
 
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.showGroups = params.get('showGroups')
+        this.showRealms = params.get('showRealms')
         this.showOrigins = params.get('showOrigins')
         this.showRegions = params.get('showRegions')
         this.showRegionBorder = params.get('showRegionBorder')
@@ -61,25 +61,25 @@ export class RegionGroupTileMapDiagram extends TileMapDiagram {
         const realm = this.tileMap.getGroup(point)
         const region = this.tileMap.getRegion(point)
         const isBorderRegion = this.tileMap.isBorderRegion(region)
-        const groupColor = this.colorMap.getByGroup(realm)
+        const realmColor = this.colorMap.getByRealm(realm)
         const regionColor = this.colorMap.getByRegion(region)
 
         if (this.showOrigins && Point.equals(realm.origin, point)) {
-            return groupColor.invert().toHex()
+            return realmColor.invert().toHex()
         }
         if (this.showRealmBorder && this.tileMap.isGroupBorder(point)) {
-            return groupColor.darken(50).toHex()
+            return realmColor.darken(50).toHex()
         }
         if (this.showRegionBorder && this.tileMap.isRegionBorder(point)) {
             let color = regionColor.darken(50)
-            if (this.showGroups)
-                color = groupColor.brighten(50)
+            if (this.showRealms)
+                color = realmColor.brighten(50)
             return color.toHex()
         }
-        if (this.showGroups) {
-            let color = groupColor
+        if (this.showRealms) {
+            let color = realmColor
             if (this.showRegions)
-                color = regionColor.average(groupColor).average(groupColor)
+                color = regionColor.average(realmColor).average(realmColor)
             if (isBorderRegion && this.showBorderRegion)
                 return color.darken(90).toHex()
             return color.toHex()

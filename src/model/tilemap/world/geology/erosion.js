@@ -7,8 +7,8 @@ const EMPTY = null
 
 
 export class ErosionModel {
-    constructor(reGroupTileMap, plateModel) {
-        const {width, height} = reGroupTileMap
+    constructor(realmTileMap, plateModel) {
+        const {width, height} = realmTileMap
 
         this.plateModel = plateModel
         this.landformMatrix = new Matrix(width, height, point => {
