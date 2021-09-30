@@ -8,7 +8,7 @@ import { Title } from '/ui'
 
 import { NoiseTileMap } from '/model/tilemap/noise'
 import { RegionTileMap } from '/model/tilemap/region'
-import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
+import { RealmTileMap } from '/model/tilemap/realm'
 import { GeologyTileMap } from '/model/tilemap/world/geology'
 import { TemperatureTileMap } from '/model/tilemap/world/temperature'
 
@@ -19,7 +19,7 @@ import "/ui/css/map.css"
 const APPS = [
     NoiseTileMap,
     RegionTileMap,
-    RegionGroupTileMap,
+    RealmTileMap,
     GeologyTileMap,
     TemperatureTileMap,
 ]

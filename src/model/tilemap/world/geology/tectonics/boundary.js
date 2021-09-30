@@ -20,14 +20,14 @@ const IDMAP = {
 
 
 export class BoundaryModel {
-    constructor(plates, regionGroup) {
+    constructor(plates, realm) {
         this.plates = plates
-        this.regionGroup = regionGroup
+        this.realm = realm
         this._boundaryMap = new PairMap()
         this._boundaryTable = new BoundaryTable(BOUNDARY_TABLE)
 
-        regionGroup.forEach(group => {
-            const neighbors = regionGroup.getNeighborGroups(group)
+        realm.forEach(group => {
+            const neighbors = realm.getNeighborGroups(group)
             neighbors.forEach(neighborGroup => {
                 const boundary = this._buildGroupsBoundary(group, neighborGroup)
                 this._boundaryMap.set(group.id, neighborGroup.id, boundary)
@@ -38,8 +38,8 @@ export class BoundaryModel {
     _buildGroupsBoundary(group, neighborGroup) {
         const plate = this.plates.get(group.id)
         const otherPlate = this.plates.get(neighborGroup.id)
-        const dirToNeighbor = this.regionGroup.getGroupDirection(group, neighborGroup)
-        const dirFromNeighbor = this.regionGroup.getGroupDirection(neighborGroup, group)
+        const dirToNeighbor = this.realm.getGroupDirection(group, neighborGroup)
+        const dirFromNeighbor = this.realm.getGroupDirection(neighborGroup, group)
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
         return this._boundaryTable.build(plate, otherPlate, dotTo, dotFrom)

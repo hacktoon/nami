@@ -5,7 +5,7 @@
 [https://hacktoon.github.io/nami/](https://hacktoon.github.io/nami/)
 
 ## NOTES
-- RegionGroupTileMap may not be necessary
+- RealmTileMap may not be necessary
   - Unify into region map layers
   - base layer: regions
   - next layers: group1, group2, etc

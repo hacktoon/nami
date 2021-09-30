@@ -13,9 +13,9 @@ const HOTSPOT_CHANCE = .4
 
 
 export class TectonicsModel {
-    constructor(regionGroup) {
-        this.regionGroup = regionGroup
-        this.plateMap = new PlateMap(regionGroup)
+    constructor(realm) {
+        this.realm = realm
+        this.plateMap = new PlateMap(realm)
         this.landformMap = new Map()
         this.boundaryMap = new Map()
         this._buildLandforms()
@@ -23,13 +23,13 @@ export class TectonicsModel {
     }
 
     _buildLandforms() {
-        const boundaryModel = new BoundaryModel(this.plateMap, this.regionGroup)
-        const borderRegions = this.regionGroup.getBorderRegions()
+        const boundaryModel = new BoundaryModel(this.plateMap, this.realm)
+        const borderRegions = this.realm.getBorderRegions()
         const fills = borderRegions.map(region => {
-            const group = this.regionGroup.getGroupByRegion(region)
+            const group = this.realm.getGroupByRegion(region)
             const boundary = this._buildPlateBoundary(boundaryModel, group, region)
             const fillConfig = new RegionFillConfig({
-                regionGroup: this.regionGroup,
+                realm: this.realm,
                 landformMap: this.landformMap,
                 boundaryMap: this.boundaryMap,
                 boundary,
@@ -40,9 +40,9 @@ export class TectonicsModel {
     }
 
     _buildPlateBoundary(boundaryModel, group, region) {
-        const neighborRegions = this.regionGroup.getNeighborRegions(region)
+        const neighborRegions = this.realm.getNeighborRegions(region)
         for(let neighbor of neighborRegions) {
-            const neighborGroup = this.regionGroup.getGroupByRegion(neighbor)
+            const neighborGroup = this.realm.getGroupByRegion(neighbor)
             if (neighborGroup.id !== group.id) {
                 return boundaryModel.get(group, neighborGroup)
             }
@@ -55,7 +55,7 @@ export class TectonicsModel {
             if (plate.isOceanic()) {
                 const points = this._buildHotspotPoints(plate)
                 for (let point of points) {
-                    const region = this.regionGroup.getRegion(point)
+                    const region = this.realm.getRegion(point)
                     const current = this.landformMap.get(region.id)
                     if (current.water) {
                         const landform = Landform.getOceanicHotspot()
@@ -63,7 +63,7 @@ export class TectonicsModel {
                     }
                 }
             } else {
-                const region = this.regionGroup.getRegion(plate.origin)
+                const region = this.realm.getRegion(plate.origin)
                 const current = this.landformMap.get(region.id)
                 if (! current.water) {
                     const landform = Landform.getContinentalHotspot()
@@ -75,7 +75,7 @@ export class TectonicsModel {
 
     _buildHotspotPoints(plate) {
         const count = Random.choice(2, 3)
-        const size = this.regionGroup.getAverageRegionArea()
+        const size = this.realm.getAverageRegionArea()
         const offsets = []
         const xSig = Random.choice(-1, 1)
         const ySig = Random.choice(-1, 1)
@@ -109,7 +109,7 @@ export class TectonicsModel {
     }
 
     getLandformByPoint(point) {
-        const region = this.regionGroup.getRegion(point)
+        const region = this.realm.getRegion(point)
         return this.landformMap.get(region.id)
     }
 
@@ -122,7 +122,7 @@ export class TectonicsModel {
 class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
-        this.regionGroup = data.regionGroup
+        this.realm = data.realm
         this.landformMap = data.landformMap
         this.boundaryMap = data.boundaryMap
         this.heightIndex = data.heightIndex
@@ -143,7 +143,7 @@ class RegionFillConfig extends FloodFillConfig {
     }
 
     getNeighbors(region) {
-        return this.regionGroup.getNeighborRegions(region)
+        return this.realm.getNeighborRegions(region)
     }
 }
 

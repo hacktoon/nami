@@ -17,7 +17,7 @@ import { RegionGroupTileMapDiagram } from './diagram'
 import { RegionGroupMultiFill } from './fill'
 
 
-const ID = 'RegionGroupTileMap'
+const ID = 'RealmTileMap'
 const SCHEMA = new Schema(
     ID,
     Type.number('width', 'W', {default: 150, step: 1, min: 1, max: 500}),
@@ -32,7 +32,7 @@ const SCHEMA = new Schema(
 )
 
 
-export class RegionGroupTileMap extends TileMap {
+export class RealmTileMap extends TileMap {
     static id = ID
     static diagram = RegionGroupTileMapDiagram
     static schema = SCHEMA
@@ -40,12 +40,12 @@ export class RegionGroupTileMap extends TileMap {
 
     static fromData(data) {
         const map = new Map(Object.entries(data))
-        const params = RegionGroupTileMap.schema.buildFrom(map)
-        return new RegionGroupTileMap(params)
+        const params = RealmTileMap.schema.buildFrom(map)
+        return new RealmTileMap(params)
     }
 
     static create(params) {
-        return new RegionGroupTileMap(params)
+        return new RealmTileMap(params)
     }
 
     constructor(params) {

@@ -3,7 +3,7 @@ import { Type } from '/lib/type'
 import { Point } from '/lib/point'
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
-import { RegionGroupTileMap } from '/model/tilemap/regiongroup'
+import { RealmTileMap } from '/model/tilemap/realm'
 
 import { GeologyTileMapDiagram } from './diagram'
 import { TectonicsModel } from './tectonics'
@@ -33,13 +33,13 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.regionGroup = this._buildRegionGroupMap(this.seed, params)
-        this.tectonicsModel = new TectonicsModel(this.regionGroup)
-        this.erosionModel = new ErosionModel(this.regionGroup, this.tectonicsModel)
+        this.realm = this._buildRegionGroupMap(this.seed, params)
+        this.tectonicsModel = new TectonicsModel(this.realm)
+        this.erosionModel = new ErosionModel(this.realm, this.tectonicsModel)
     }
 
     _buildRegionGroupMap(seed, params) {
-        return RegionGroupTileMap.fromData({
+        return RealmTileMap.fromData({
             width: params.get('width'),
             height: params.get('height'),
             groupScale: params.get('scale'),
@@ -54,7 +54,7 @@ export class GeologyTileMap extends TileMap {
 
     get(point) {
         const plate = this.getPlate(point)
-        const region = this.regionGroup.getRegion(point)
+        const region = this.realm.getRegion(point)
         const landform = this.getLandform(point)
         const boundary = this.tectonicsModel.getBoundary(region.id)
         const eroded = this.getErodedLandform(point)
@@ -67,7 +67,7 @@ export class GeologyTileMap extends TileMap {
     }
 
     getPlate(point) {
-        const group = this.regionGroup.getGroup(point)
+        const group = this.realm.getGroup(point)
         return this.tectonicsModel.get(group.id)
     }
 
@@ -77,12 +77,12 @@ export class GeologyTileMap extends TileMap {
 
     isPlateOrigin(plate, point) {
         // TODO: eliminate this dependency
-        const matrix = this.regionGroup.regionTileMap.regionMatrix
+        const matrix = this.realm.regionTileMap.regionMatrix
         return Point.equals(plate.origin, matrix.wrap(point))
     }
 
     isPlateBorder(point) {
-        return this.regionGroup.isGroupBorder(point)
+        return this.realm.isGroupBorder(point)
     }
 
     getLandform(point) {
