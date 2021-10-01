@@ -47,15 +47,17 @@ export class EvenPointSampling {
 }
 
 export class EvenRealmOriginSampling {
-    static create(realm, radius) {
+    static create(realmTileMap, radius) {
+        const origins = realmTileMap.getRegions().map(regions => regions.origin)
+        const {width, height} = realmTileMap
+        const regionOriginSet = new RegionOriginSet(width, height, origins)
         const samples = []
-        const pointSet = new RegionOriginSet(realm.getRegions())
 
-        while(pointSet.size > 0) {
-            const center = pointSet.random()
+        while(regionOriginSet.size > 0) {
+            const center = regionOriginSet.random()
             EvenRealmOriginSampling.fillRegionCircle(center, radius, point => {
-                if (pointSet.has(point)) {
-                    pointSet.delete(point)
+                if (regionOriginSet.has(point)) {
+                    regionOriginSet.delete(point)
                 }
             })
             samples.push(center)
@@ -64,7 +66,7 @@ export class EvenRealmOriginSampling {
             const point = samples[0]
             const x = point[0] + Math.round(width / 2)
             const y = point[1] + Math.round(height / 2)
-            samples.push(rect.wrap([x, y]))
+            samples.push([x, y])
         }
         return samples
     }
