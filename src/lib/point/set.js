@@ -1,141 +1,53 @@
 import { Random } from '/lib/random'
 
 
-export class RectPointSet {
-    #size
-    #index
-    #width
-
-    constructor(width, height) {
-        this.#size = width * height
-        this.#index = new Set()
-        this.#width = width
-        for(let i = 0; i < this.#size; i++) {
-            this.#index.add(i)
-        }
-    }
-
-    get size() {
-        return this.#index.size
-    }
-
-    get points() {
-        const points = []
-        const width = this.#width
-        this.#index.forEach(index => {
-            const x = Math.floor(index % width)
-            const y = Math.floor(index / width)
-            points.push([x, y])
-        })
-        return points
-    }
-
-    random() {
-        const width = this.#width
-        const index = Random.choiceFrom(Array.from(this.#index))
-        const x = Math.floor(index % width)
-        const y = Math.floor(index / width)
-        return [x, y]
-    }
-
-    has([x, y]) {
-        const index = x + this.#width * y
-        return this.#index.has(index)
-    }
-
-    delete([x, y]) {
-        // column-major order
-        const index = x + this.#width * y
-        this.#index.delete(index)
-    }
-}
-
-
-export class RegionOriginSet {
-    #index
-    #width
-
-    constructor(width, height, origins) {
-        this.#width = width
-        this.#index = new Set()
-        for(let i = 0; i < origins.length; i++) {
-            const [x, y] = origins[i]
-            this.#index.add(x + this.#width * y)
-        }
-    }
-
-    get size() {
-        return this.#index.size
-    }
-
-    get points() {
-        const points = []
-        const width = this.#width
-        this.#index.forEach(index => {
-            const x = Math.floor(index % width)
-            const y = Math.floor(index / width)
-            points.push([x, y])
-        })
-        return points
-    }
-
-    random() {
-        const width = this.#width
-        const index = Random.choiceFrom(Array.from(this.#index))
-        const x = Math.floor(index % width)
-        const y = Math.floor(index / width)
-        return [x, y]
-    }
-
-    has([x, y]) {
-        const index = x + this.#width * y
-        return this.#index.has(index)
-    }
-
-    delete([x, y]) {
-        // column-major order
-        const index = x + this.#width * y
-        this.#index.delete(index)
-    }
-}
-
-
-export class SparsePointSet {
-    constructor(width, height) {
+export class PointSet {
+    constructor(width, height, points=null) {
         this.size = 0
-        this.map = {}
-    }
-
-    has([x, y]) {
-        if (! this.map[x]) return false
-        return this.map[x][y]
+        this.map = new Map()
+        if (points === null) {
+            for(let x=0; x<width; x++) {
+                for(let y=0; y<height; y++) {
+                    this.add([x, y])
+                }
+            }
+        } else {
+            for(let point of points) {
+                this.add(point)
+            }
+        }
     }
 
     add([x, y]) {
-        if (! this.map[x]) {
-            this.map[x] = {}
+        if (! this.map.has(x)) {
+            this.map.set(x, new Set())
         }
-        const yobj = this.map[x]
-        if (! yobj[y]) {
-            yobj[y] = true
+        const column = this.map.get(x)
+        if (! column.has(y)) {
+            column.add(y)
             this.size++
         }
+    }
+
+    has([x, y]) {
+        if (! this.map.has(x)) return false
+        return this.map.get(x).has(y)
     }
 
     delete(point) {
         if (! this.has(point)) return false
         const [x, y] = point
-        delete this.map[x][y]
-        if (Object.values(this.map[x]).length == 0) {
-            delete this.map[x]
+        const column = this.map.get(x)
+        column.delete(y)
+        if (column.size === 0) {
+            this.map.delete(x)
         }
         this.size--
-        return true
     }
 
     random() {
-        const x = Random.choiceFrom(Object.keys(this.map))
-        const y = Random.choiceFrom(Object.keys(this.map[x]))
+        const x = Random.choiceFrom(Array.from(this.map.keys()))
+        const y = Random.choiceFrom(Array.from(this.map.get(x).keys()))
         return [Number(x), Number(y)]
     }
 }
