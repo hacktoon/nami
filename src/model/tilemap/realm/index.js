@@ -2,7 +2,7 @@ import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
 import { Graph } from '/lib/graph'
-import { EvenPointSampling } from '/lib/point/sampling'
+import { EvenPointSampling, EvenRealmOriginSampling } from '/lib/point/sampling'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
 
@@ -52,13 +52,15 @@ export class RealmTileMap extends TileMap {
         super(params)
         const realmScale = params.get('realmScale')
         const [width, height, seed] = params.get('width', 'height', 'seed')
-        const origins = EvenPointSampling.create(width, height, realmScale)
+        this.regionTileMap = this._buildRegionTileMap(seed, params)
+        const regionOrigins = this.regionTileMap.getRegions()
+                              .map(regions => regions.origin)
+        const origins = EvenRealmOriginSampling.create(width, height, regionOrigins, realmScale)
+        this.realmChance = params.get('realmChance')
+        this.realmGrowth = params.get('realmGrowth')
         this.borderRegions = new Set()
         this.regionToGroup = new Map()
         this.graph = new Graph()
-        this.realmChance = params.get('realmChance')
-        this.realmGrowth = params.get('realmGrowth')
-        this.regionTileMap = this._buildRegionTileMap(seed, params)
         this.realms = this._buildGroups(origins)
         this.directions = this._buildDirections(this.realms)
     }

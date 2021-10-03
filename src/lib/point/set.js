@@ -52,18 +52,15 @@ export class RectPointSet {
 
 
 export class RegionOriginSet {
-    #size
     #index
     #width
 
     constructor(width, height, origins) {
-        this.#size = width * height
         this.#width = width
         this.#index = new Set()
         for(let i = 0; i < origins.length; i++) {
             const [x, y] = origins[i]
-            const index = x + this.#width * y
-            this.#index.add(index)
+            this.#index.add(x + this.#width * y)
         }
     }
 
