@@ -42,9 +42,9 @@ export class TectonicsModel {
     _buildPlateBoundary(boundaryModel, realm, region) {
         const neighborRegions = this.realmTileMap.getNeighborRegions(region)
         for(let neighbor of neighborRegions) {
-            const neighborGroup = this.realmTileMap.getRealmByRegion(neighbor)
-            if (neighborGroup.id !== realm.id) {
-                return boundaryModel.get(realm, neighborGroup)
+            const neighborRealm = this.realmTileMap.getRealmByRegion(neighbor)
+            if (neighborRealm.id !== realm.id) {
+                return boundaryModel.get(realm, neighborRealm)
             }
         }
     }
@@ -153,12 +153,12 @@ export class PlateMap {
         this.realmTileMap = realmTileMap
         this.map = new Map()
         const cmpDescendingCount = (g0, g1) => g1.count - g0.count
-        const realms = realmTileMap.getGroups().sort(cmpDescendingCount)
+        const realms = realmTileMap.getRealms().sort(cmpDescendingCount)
         const typeMap = this._buildTypes(realms)
         realms.forEach(realm => {
             const {id, origin, area} = realm
-            const neighborsGroups = realmTileMap.getNeighborRealms(realm)
-            const isLandlocked = neighborsGroups.concat(realm).every(neighbor => {
+            const neighborsRealms = realmTileMap.getNeighborRealms(realm)
+            const isLandlocked = neighborsRealms.concat(realm).every(neighbor => {
                 return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
             })
             const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(id)

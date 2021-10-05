@@ -28,25 +28,25 @@ export class BoundaryModel {
 
         realmTileMap.forEach(realm => {
             const neighbors = realmTileMap.getNeighborRealms(realm)
-            neighbors.forEach(neighborGroup => {
-                const boundary = this._buildGroupsBoundary(realm, neighborGroup)
-                this._boundaryMap.set(realm.id, neighborGroup.id, boundary)
+            neighbors.forEach(neighborRealm => {
+                const boundary = this._buildRealmsBoundary(realm, neighborRealm)
+                this._boundaryMap.set(realm.id, neighborRealm.id, boundary)
             })
         })
     }
 
-    _buildGroupsBoundary(realm, neighborGroup) {
+    _buildRealmsBoundary(realm, neighborRealm) {
         const plate = this.plates.get(realm.id)
-        const otherPlate = this.plates.get(neighborGroup.id)
-        const dirToNeighbor = this.realmTileMap.getGroupDirection(realm, neighborGroup)
-        const dirFromNeighbor = this.realmTileMap.getGroupDirection(neighborGroup, realm)
+        const otherPlate = this.plates.get(neighborRealm.id)
+        const dirToNeighbor = this.realmTileMap.getRealmDirection(realm, neighborRealm)
+        const dirFromNeighbor = this.realmTileMap.getRealmDirection(neighborRealm, realm)
         const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
         const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
         return this._boundaryTable.build(plate, otherPlate, dotTo, dotFrom)
     }
 
-    get(realm, neighborGroup) {
-        return this._boundaryMap.get(realm.id, neighborGroup.id)
+    get(realm, neighborRealm) {
+        return this._boundaryMap.get(realm.id, neighborRealm.id)
     }
 }
 

@@ -67,7 +67,7 @@ export class GeologyTileMap extends TileMap {
     }
 
     getPlate(point) {
-        const realm = this.realm.getGroup(point)
+        const realm = this.realm.getRealm(point)
         return this.tectonicsModel.get(realm.id)
     }
 
@@ -82,7 +82,7 @@ export class GeologyTileMap extends TileMap {
     }
 
     isPlateBorder(point) {
-        return this.realm.isGroupBorder(point)
+        return this.realm.isRealmBorder(point)
     }
 
     getLandform(point) {

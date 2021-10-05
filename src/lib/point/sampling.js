@@ -69,9 +69,10 @@ export class EvenRealmOriginSampling {
     static fillPointCircle(center, radius, callback) {
         const top    = center[1] - radius
         const bottom = center[1] + radius
+        const radpow = radius * radius
         for (let y = top; y <= bottom; y++) {
             const dy    = y - center[1]
-            const dx    = Math.sqrt(radius * radius - dy * dy)
+            const dx    = Math.sqrt(radpow - dy * dy)
             const left  = Math.ceil(center[0] - dx)
             const right = Math.floor(center[0] + dx)
             for (let x = left; x <= right; x++) {

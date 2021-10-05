@@ -58,7 +58,7 @@ export class RealmTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const realm = this.tileMap.getGroup(point)
+        const realm = this.tileMap.getRealm(point)
         const region = this.tileMap.getRegion(point)
         const isBorderRegion = this.tileMap.isBorderRegion(region)
         const realmColor = this.colorMap.getByRealm(realm)
@@ -67,7 +67,7 @@ export class RealmTileMapDiagram extends TileMapDiagram {
         if (this.showOrigins && Point.equals(realm.origin, point)) {
             return realmColor.invert().toHex()
         }
-        if (this.showRealmBorder && this.tileMap.isGroupBorder(point)) {
+        if (this.showRealmBorder && this.tileMap.isRealmBorder(point)) {
             return realmColor.darken(50).toHex()
         }
         if (this.showRegionBorder && this.tileMap.isRegionBorder(point)) {
@@ -92,7 +92,7 @@ export class RealmTileMapDiagram extends TileMapDiagram {
     }
 
     // getText(point) {
-    //     const realm = this.tileMap.getGroup(point)
+    //     const realm = this.tileMap.getRealm(point)
     //     if (Point.equals(realm.origin, point)) {
     //         return String(realm.id)
     //     }
