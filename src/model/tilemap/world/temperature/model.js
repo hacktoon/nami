@@ -18,6 +18,7 @@ export class Temperature {
         })
         this.regionTileMap = regionTileMap
         this.radiation = params.get('radiation')
+        this.frequency = params.get('frequency')
     }
 
     getTemperature(point) {
@@ -38,8 +39,8 @@ export class Temperature {
     }
 
     _calcOffset(origin) {
-        const offset = Math.sin(origin[0]) * 4
-        return Math.floor(offset - this.radiation)
+        const offset = Math.sin(origin[0]) * this.frequency
+        return Math.floor(offset + this.radiation)
     }
 
     map(callback) {
@@ -58,7 +59,7 @@ function buildRegionMap(seed, params) {
         height: params.get('height'),
         scale: params.get('scale'),
         seed: seed,
-        growth: 2,
+        growth: 1,
         chance: 0.1,
     })
 }
