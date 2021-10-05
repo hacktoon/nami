@@ -92,13 +92,14 @@ export class RealmTileMap extends TileMap {
         const directions = new PairMap()
         const matrix = this.regionTileMap.regionMatrix
         for(let realm of realms) {
-            this.graph.getEdges(realm.id).forEach(neighborId => {
+            const neighbors = this.graph.getEdges(realm.id)
+            for(let neighborId of neighbors) {
                 const neighbor = realms[neighborId]
                 const sideOrigin = matrix.wrapVector(realm.origin, neighbor.origin)
                 const angle = Point.angle(realm.origin, sideOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(realm.id, neighborId, direction)
-            })
+            }
         }
         return directions
     }
@@ -117,6 +118,15 @@ export class RealmTileMap extends TileMap {
         }
     }
 
+    getRealm(point) {
+        const region = this.getRegion(point)
+        return this.getRealmByRegion(region)
+    }
+
+    getRealms() {
+        return this.realms
+    }
+
     getRegion(point) {
         return this.regionTileMap.getRegion(point)
     }
@@ -131,15 +141,6 @@ export class RealmTileMap extends TileMap {
         })
     }
 
-    getRegionDirection(sourceRegion, targetRegion) {
-        return this.regionTileMap.getRegionDirection(sourceRegion, targetRegion)
-    }
-
-    getRealm(point) {
-        const region = this.getRegion(point)
-        return this.getRealmByRegion(region)
-    }
-
     getNeighborRealms(realm) {
         const edges = this.graph.getEdges(realm.id)
         return edges.map(id => this.realms[id])
@@ -152,10 +153,6 @@ export class RealmTileMap extends TileMap {
     getRealmByRegion(region) {
         const id = this.regionToRealm.get(region.id)
         return this.realms[id]
-    }
-
-    getRealms() {
-        return this.realms
     }
 
     getNeighborRegions(region) {
