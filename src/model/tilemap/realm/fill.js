@@ -3,7 +3,7 @@ import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 
 class RealmFloodFill extends GenericFloodFill {
     isEmpty(region) {
-        return !this.model.regionToRealm.has(region.id)
+        return ! this.model.regionToRealm.has(region.id)
     }
 
     setValue(region) {

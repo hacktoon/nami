@@ -61,7 +61,7 @@ export class RealmTileMap extends TileMap {
         this.regionToRealm = new Map()
         this.graph = new Graph()
         this.realms = this._buildRealms()
-        this.directions = this._buildDirections(this.realms)
+        this.directions = this._buildDirections()
     }
 
     _buildRegionTileMap(params) {
@@ -88,17 +88,18 @@ export class RealmTileMap extends TileMap {
         return realms
     }
 
-    _buildDirections(realms) {
+    _buildDirections() {
         const directions = new PairMap()
         const matrix = this.regionTileMap.regionMatrix
-        for(let realm of realms) {
-            const neighbors = this.graph.getEdges(realm.id)
+        for(let id=0; id<this.origins.length; id++) {
+            const origin = this.origins[id]
+            const neighbors = this.graph.getEdges(id)
             for(let neighborId of neighbors) {
-                const neighbor = realms[neighborId]
-                const sideOrigin = matrix.wrapVector(realm.origin, neighbor.origin)
-                const angle = Point.angle(realm.origin, sideOrigin)
+                const neighborOrigin = this.origins[neighborId]
+                const sideOrigin = matrix.wrapVector(origin, neighborOrigin)
+                const angle = Point.angle(origin, sideOrigin)
                 const direction = Direction.fromAngle(angle)
-                directions.set(realm.id, neighborId, direction)
+                directions.set(id, neighborId, direction)
             }
         }
         return directions
