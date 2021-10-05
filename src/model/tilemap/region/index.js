@@ -3,7 +3,7 @@ import { Type } from '/lib/type'
 import { Point } from '/lib/point'
 import { Matrix } from '/lib/matrix'
 import { Graph } from '/lib/graph'
-import { EvenPointSampling, PoissonDiscSampling } from '/lib/point/sampling'
+import { EvenPointSampling } from '/lib/point/sampling'
 
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
@@ -44,14 +44,13 @@ export class RegionTileMap extends TileMap {
         super(params)
         const [width, height, scale] = params.get('width', 'height', 'scale')
         this.origins = EvenPointSampling.create(width, height, scale)
-        // this.origins = PoissonDiscSampling.create(width, height, scale)
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.levelMatrix = new Matrix(width, height, () => 0)
         this.borderMatrix = new Matrix(width, height, () => new Set())
         this.chance = params.get('chance')
         this.growth = params.get('growth')
         this.graph = new Graph()
-        this.mapFill = new RegionMultiFill(this.origins, this)
+        this.mapFill = new RegionMultiFill(this)
     }
 
     get(point) {

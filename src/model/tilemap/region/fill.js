@@ -34,7 +34,7 @@ class RegionFloodFill extends GenericFloodFill {
 
 
 export class RegionMultiFill extends GenericMultiFill {
-    constructor(origins, model) {
-        super(origins, model, RegionFloodFill)
+    constructor(model) {
+        super(model.origins, model, RegionFloodFill)
     }
 }
