@@ -51,6 +51,10 @@ export class RegionTileMap extends TileMap {
         this.growth = params.get('growth')
         this.graph = new Graph()
         this.mapFill = new RegionMultiFill(this)
+        this.regions = []
+        for(let id=0; id<this.origins.length; id++) {
+            this.regions.push(this.getRegionById(id))
+        }
     }
 
     get(point) {
@@ -65,10 +69,10 @@ export class RegionTileMap extends TileMap {
 
     getRegion(point) {
         const id = this.regionMatrix.get(point)
-        if (! this.getRegionById(id)) {
-            console.error(`region ${id} not found`);
+        if (this.getRegionById(id)) {
+            return this.getRegionById(id)
         }
-        return this.getRegionById(id)
+        console.error(`region ${id} not found`);
     }
 
     getRegionId(point) {
@@ -89,11 +93,7 @@ export class RegionTileMap extends TileMap {
     }
 
     getRegions() {
-        const regions = []
-        for(let id=0; id<this.origins.length; id++) {
-            regions.push(this.getRegionById(id))
-        }
-        return regions
+        return this.regions
     }
 
     getLevel(point) {

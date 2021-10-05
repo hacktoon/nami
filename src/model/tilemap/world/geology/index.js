@@ -33,12 +33,14 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.realm = this._buildRealmMap(this.seed, params)
-        this.tectonicsModel = new TectonicsModel(this.realm)
-        this.erosionModel = new ErosionModel(this.realm, this.tectonicsModel)
+        let t0 = performance.now()
+        this.realmTileMap = this._buildRealmTileMap(this.seed, params)
+        console.log(performance.now() - t0);
+        this.tectonicsModel = new TectonicsModel(this.realmTileMap)
+        this.erosionModel = new ErosionModel(this.realmTileMap, this.tectonicsModel)
     }
 
-    _buildRealmMap(seed, params) {
+    _buildRealmTileMap(seed, params) {
         return RealmTileMap.fromData({
             width: params.get('width'),
             height: params.get('height'),
@@ -54,7 +56,7 @@ export class GeologyTileMap extends TileMap {
 
     get(point) {
         const plate = this.getPlate(point)
-        const region = this.realm.getRegion(point)
+        const region = this.realmTileMap.getRegion(point)
         const landform = this.getLandform(point)
         const boundary = this.tectonicsModel.getBoundary(region.id)
         const eroded = this.getErodedLandform(point)
@@ -67,7 +69,7 @@ export class GeologyTileMap extends TileMap {
     }
 
     getPlate(point) {
-        const realm = this.realm.getRealm(point)
+        const realm = this.realmTileMap.getRealm(point)
         return this.tectonicsModel.get(realm.id)
     }
 
@@ -77,12 +79,12 @@ export class GeologyTileMap extends TileMap {
 
     isPlateOrigin(plate, point) {
         // TODO: eliminate this dependency
-        const matrix = this.realm.regionTileMap.regionMatrix
+        const matrix = this.realmTileMap.regionTileMap.regionMatrix
         return Point.equals(plate.origin, matrix.wrap(point))
     }
 
     isPlateBorder(point) {
-        return this.realm.isRealmBorder(point)
+        return this.realmTileMap.isRealmBorder(point)
     }
 
     getLandform(point) {
