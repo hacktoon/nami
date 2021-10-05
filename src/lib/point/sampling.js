@@ -47,13 +47,13 @@ export class EvenPointSampling {
 
 export class EvenRealmOriginSampling {
     static create(width, height, points, radius) {
-        const regionOriginSet = new PointSet(width, height, points)
+        const pointSet = new PointSet(width, height, points)
         const samples = []
 
-        while(regionOriginSet.size > 0) {
-            const center = regionOriginSet.random()
+        while(pointSet.size > 0) {
+            const center = pointSet.random()
             EvenRealmOriginSampling.fillPointCircle(center, radius, point => {
-                regionOriginSet.delete(point)
+                pointSet.delete(point)
             })
             samples.push(center)
         }
