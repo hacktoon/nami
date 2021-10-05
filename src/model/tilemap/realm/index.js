@@ -2,17 +2,17 @@ import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
 import { Graph } from '/lib/graph'
-import { EvenPointSampling, EvenRealmOriginSampling } from '/lib/point/sampling'
 import { MultiFill } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
-
-import { RegionTileMap } from '/model/tilemap/region'
 
 import { Schema } from '/lib/schema'
 import { Type } from '/lib/type'
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
+import { RegionTileMap } from '/model/tilemap/region'
+
+import { RealmPointSampling } from './sampling'
 import { RealmTileMapDiagram } from './diagram'
 import { RealmMultiFill } from './fill'
 
@@ -50,31 +50,30 @@ export class RealmTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const realmScale = params.get('realmScale')
-        const [width, height, seed] = params.get('width', 'height', 'seed')
-        this.regionTileMap = this._buildRegionTileMap(seed, params)
-        const regionOrigins = this.regionTileMap.getRegions()
-                              .map(regions => regions.origin)
-        const origins = EvenRealmOriginSampling.create(width, height, regionOrigins, realmScale)
+        this.regionTileMap = this._buildRegionTileMap(params)
+        this.origins = RealmPointSampling.create(
+            this.regionTileMap,
+            params.get('realmScale')
+        )
         this.realmChance = params.get('realmChance')
         this.realmGrowth = params.get('realmGrowth')
         this.borderRegions = new Set()
         this.regionToRealm = new Map()
         this.graph = new Graph()
-        this.realms = this._buildRealms(origins)
+        this.realms = this._buildRealms()
         this.directions = this._buildDirections(this.realms)
     }
 
-    _buildRegionTileMap(seed, params) {
-        const [width, height] = params.get('width', 'height')
+    _buildRegionTileMap(params) {
+        const [width, height, seed] = params.get('width', 'height', 'seed')
         const [scale, chance, growth] = params.get('scale', 'chance', 'growth')
         const data = {width, height, scale, seed, chance, growth}
         return RegionTileMap.fromData(data)
     }
 
-    _buildRealms(origins) {
+    _buildRealms() {
         const realms = []
-        const fills = origins.map((origin, id) => {
+        const fills = this.origins.map((origin, id) => {
             const region = this.regionTileMap.getRegion(origin)
             const fillConfig = new RealmFillConfig(id, this)
             return new OrganicFloodFill(region, fillConfig)
