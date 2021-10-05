@@ -2,8 +2,8 @@ import { PointSet } from '/lib/point/set'
 
 
 export class RealmPointSampling {
-    static create(realmTileMap, radius) {
-        const {width, height, origins} = realmTileMap
+    static create(regionTileMap, radius) {
+        const {width, height, origins} = regionTileMap
         const pointSet = new PointSet(width, height, origins)
         const samples = []
 
