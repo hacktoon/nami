@@ -187,8 +187,7 @@ export class RealmTileMap extends TileMap {
     }
 
     getAverageRegionArea() {
-        const regions = this.regionTileMap.getRegions()
-        return Math.round(this.area / regions.length)
+        return Math.round(this.area / this.regionTileMap.size)
     }
 
     map(callback) {

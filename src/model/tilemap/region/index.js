@@ -57,6 +57,10 @@ export class RegionTileMap extends TileMap {
         }
     }
 
+    get size() {
+        return this.origins.length
+    }
+
     get(point) {
         const region = this.getRegion(point)
         return [
@@ -69,10 +73,11 @@ export class RegionTileMap extends TileMap {
 
     getRegion(point) {
         const id = this.regionMatrix.get(point)
-        if (this.getRegionById(id)) {
-            return this.getRegionById(id)
-        }
-        console.error(`region ${id} not found`);
+        return this.getRegionById(id)
+    }
+
+    getRegions() {
+        return this.regions
     }
 
     getRegionId(point) {
@@ -84,16 +89,17 @@ export class RegionTileMap extends TileMap {
         return this.origins[id]
     }
 
+    getRegionArea(point) {
+        const id = this.regionMatrix.get(point)
+        return this.mapFill.getArea(id)
+    }
+
     getRegionById(id) {
         return {
             id,
             origin: this.origins[id],
             area: this.mapFill.getArea(id)
         }
-    }
-
-    getRegions() {
-        return this.regions
     }
 
     getLevel(point) {
