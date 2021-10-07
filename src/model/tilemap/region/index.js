@@ -50,11 +50,8 @@ export class RegionTileMap extends TileMap {
         this.chance = params.get('chance')
         this.growth = params.get('growth')
         this.graph = new Graph()
+        this.regions = this.origins.map((_, id) => id)
         this.mapFill = new RegionMultiFill(this)
-        this.regions = []
-        for(let id=0; id<this.origins.length; id++) {
-            this.regions.push(this.getRegionById(id))
-        }
     }
 
     get size() {
@@ -62,26 +59,23 @@ export class RegionTileMap extends TileMap {
     }
 
     get(point) {
-        const region = this.getRegion(point)
+        const regionId = this.getRegion(point)
+        const regionArea = this.getRegionArea(point)
+        const regionOrigin = this.getRegionOrigin(point)
         return [
             `clicked: ${Point.hash(point)}`,
-            `id: ${region.id}`,
-            `area: ${region.area}`,
-            `origin: ${Point.hash(region.origin)}`,
+            `id: ${regionId}`,
+            `area: ${regionArea}`,
+            `origin: ${Point.hash(regionOrigin)}`,
         ].join(', ')
     }
 
     getRegion(point) {
-        const id = this.regionMatrix.get(point)
-        return this.getRegionById(id)
+        return this.regionMatrix.get(point)
     }
 
     getRegions() {
         return this.regions
-    }
-
-    getRegionId(point) {
-        return this.regionMatrix.get(point)
     }
 
     getRegionOrigin(point) {
@@ -94,12 +88,8 @@ export class RegionTileMap extends TileMap {
         return this.mapFill.getArea(id)
     }
 
-    getRegionById(id) {
-        return {
-            id,
-            origin: this.origins[id],
-            area: this.mapFill.getArea(id)
-        }
+    getRegionAreaById(id) {
+        return this.mapFill.getArea(id)
     }
 
     getLevel(point) {
@@ -108,17 +98,15 @@ export class RegionTileMap extends TileMap {
 
     getBorderRegions(point) {
         // a single tile can have two different region neighbors
-        const ids = Array.from(this.borderMatrix.get(point))
-        return ids.map(id => this.getRegionById(id))
+        return Array.from(this.borderMatrix.get(point))
     }
 
-    getNeighborRegions(region) {
-        const edges = this.graph.getEdges(region.id)
-        return edges.map(id => this.getRegionById(id))
+    getNeighborRegions(regionId) {
+        return this.graph.getEdges(regionId)
     }
 
-    isNeighbor(id, neighborId) {
-        return this.graph.hasEdge(id, neighborId)
+    isNeighbor(regionId, neighborId) {
+        return this.graph.hasEdge(regionId, neighborId)
     }
 
     isBorder(point) {

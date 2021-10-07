@@ -75,9 +75,9 @@ export class RealmTileMap extends TileMap {
     _buildMapFill() {
         const mapFill = []
         const fills = this.origins.map((origin, id) => {
-            const region = this.regionTileMap.getRegion(origin)
+            const regionId = this.regionTileMap.getRegion(origin)
             const fillConfig = new RealmFillConfig(id, this)
-            return new OrganicFloodFill(region, fillConfig)
+            return new OrganicFloodFill(regionId, fillConfig)
         })
         new MultiFill(fills).map(fill => {
             mapFill[fill.config.id] = fill
@@ -87,6 +87,7 @@ export class RealmTileMap extends TileMap {
 
     _buildDirections() {
         const directions = new PairMap()
+        // TODO: remove this dependency
         const matrix = this.regionTileMap.regionMatrix
         for(let id=0; id<this.origins.length; id++) {
             const origin = this.origins[id]
@@ -103,12 +104,12 @@ export class RealmTileMap extends TileMap {
     }
 
     get(point) {
-        const region = this.getRegion(point)
+        const regionId = this.getRegion(point)
         const realmId = this.getRealm(point)
         const neighbors = this.getNeighborRealms(realmId)
         return {
             realm: realmId,
-            region: region.id,
+            region: regionId,
             neighbors: neighbors.map(neighborId => {
                 const dir = this.getRealmDirection(realmId, neighborId)
                 return `${dir.name}(${neighborId})`
@@ -117,8 +118,8 @@ export class RealmTileMap extends TileMap {
     }
 
     getRealm(point) {
-        const region = this.getRegion(point)
-        return this.getRealmByRegion(region)
+        const regionId = this.getRegion(point)
+        return this.getRealmByRegion(regionId)
     }
 
     getRealmOrigin(point) {
@@ -151,13 +152,17 @@ export class RealmTileMap extends TileMap {
         return this.regionTileMap.getRegion(point)
     }
 
+    getRegionOrigin(point) {
+        return this.regionTileMap.getRegionOrigin(point)
+    }
+
     getRegions() {
         return this.regionTileMap.getRegions()
     }
 
     getBorderRegions() {
-        return this.regionTileMap.getRegions().filter(region => {
-            return this.isBorderRegion(region)
+        return this.regionTileMap.regions.filter(regionId => {
+            return this.isBorderRegion(regionId)
         })
     }
 
@@ -169,16 +174,16 @@ export class RealmTileMap extends TileMap {
         return this.directions.get(sourceRealmId, targetRealmId)
     }
 
-    getRealmByRegion(region) {
-        return this.regionToRealm.get(region.id)
+    getRealmByRegion(regionId) {
+        return this.regionToRealm.get(regionId)
     }
 
-    getNeighborRegions(region) {
-        return this.regionTileMap.getNeighborRegions(region)
+    getNeighborRegions(regionId) {
+        return this.regionTileMap.getNeighborRegions(regionId)
     }
 
-    isBorderRegion(region) {
-        return this.borderRegions.has(region.id)
+    isBorderRegion(regionId) {
+        return this.borderRegions.has(regionId)
     }
 
     isRegionBorder(point) {
@@ -186,11 +191,11 @@ export class RealmTileMap extends TileMap {
     }
 
     isRealmBorder(point) {
-        const neighborRegions = this.regionTileMap.getBorderRegions(point)
-        if (neighborRegions.length === 0) return false
+        const neighborRegionIds = this.regionTileMap.getBorderRegions(point)
+        if (neighborRegionIds.length === 0) return false
         const realmId = this.getRealm(point)
-        for (let region of neighborRegions) {
-            const id = this.regionToRealm.get(region.id)
+        for (let regionId of neighborRegionIds) {
+            const id = this.regionToRealm.get(regionId)
             if (id !== realmId) return true
         }
         return false
@@ -219,24 +224,24 @@ class RealmFillConfig {
         this.growth = model.realmGrowth
     }
 
-    isEmpty(region) {
-        return !this.model.regionToRealm.has(region.id)
+    isEmpty(regionId) {
+        return !this.model.regionToRealm.has(regionId)
     }
 
-    setValue(region) {
-        this.model.regionToRealm.set(region.id, this.id)
-        this.area += region.area
+    setValue(regionId) {
+        this.model.regionToRealm.set(regionId, this.id)
+        this.area += this.model.regionTileMap.getRegionAreaById(regionId)
     }
 
-    checkNeighbor(neighborRegion, region) {
-        if (this.isEmpty(neighborRegion)) return
-        const neighborRealmId = this.model.regionToRealm.get(neighborRegion.id)
+    checkNeighbor(neighborRegionId, regionId) {
+        if (this.isEmpty(neighborRegionId)) return
+        const neighborRealmId = this.model.regionToRealm.get(neighborRegionId)
         if (neighborRealmId === this.id) return
-        this.model.borderRegions.add(region.id)
+        this.model.borderRegions.add(regionId)
         this.model.graph.setEdge(this.id, neighborRealmId)
     }
 
-    getNeighbors(region) {
-        return this.model.regionTileMap.getNeighborRegions(region)
+    getNeighbors(regionId) {
+        return this.model.regionTileMap.getNeighborRegions(regionId)
     }
 }

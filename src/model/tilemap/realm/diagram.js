@@ -22,14 +22,14 @@ class RealmColorMap {
 
     constructor(realmTileMap) {
         const regionMap = realmTileMap.regionTileMap
-        const regionEntries = regionMap.map(region => [region.id, new Color()])
+        const regionEntries = regionMap.map(regionId => [regionId, new Color()])
         const realmEntries = realmTileMap.map(realmId => [realmId, new Color()])
         this.#regionMap = new Map(regionEntries)
         this.#realmMap = new Map(realmEntries)
     }
 
-    getByRegion(region) {
-        return this.#regionMap.get(region.id) || Color.fromHex('#FFF')
+    getByRegion(regionId) {
+        return this.#regionMap.get(regionId) || Color.fromHex('#FFF')
     }
 
     getByRealm(realmId) {
@@ -60,10 +60,11 @@ export class RealmTileMapDiagram extends TileMapDiagram {
     get(point) {
         const realmId = this.tileMap.getRealm(point)
         const realmOrigin = this.tileMap.getRealmOrigin(point)
-        const region = this.tileMap.getRegion(point)
-        const isBorderRegion = this.tileMap.isBorderRegion(region)
+        const regionId = this.tileMap.getRegion(point)
         const realmColor = this.colorMap.getByRealm(realmId)
-        const regionColor = this.colorMap.getByRegion(region)
+        const regionColor = this.colorMap.getByRegion(regionId)
+        const isBorderRegion = this.tileMap.isBorderRegion(regionId)
+        let color = realmColor
 
         if (this.showOrigins && Point.equals(realmOrigin, point)) {
             return realmColor.invert().toHex()
@@ -72,21 +73,20 @@ export class RealmTileMapDiagram extends TileMapDiagram {
             return realmColor.darken(50).toHex()
         }
         if (this.showRegionBorder && this.tileMap.isRegionBorder(point)) {
-            let color = regionColor.darken(50)
+            color = regionColor.darken(50)
             if (this.showRealms)
                 color = realmColor.brighten(50)
             return color.toHex()
         }
         if (this.showRealms) {
-            let color = realmColor
             if (this.showRegions)
                 color = regionColor.average(realmColor).average(realmColor)
-            if (isBorderRegion && this.showBorderRegion)
+            if (this.showBorderRegion && isBorderRegion)
                 return color.darken(90).toHex()
             return color.toHex()
         }
         if (this.showRegions) {
-            let color = isBorderRegion ? regionColor.brighten(50) : regionColor
+            color = isBorderRegion ? regionColor.brighten(50) : regionColor
             return color.toHex()
         }
         return regionColor.grayscale().toHex()

@@ -24,25 +24,25 @@ export class TectonicsModel {
 
     _buildLandforms() {
         const boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
-        const borderRegions = this.realmTileMap.getBorderRegions()
-        const fills = borderRegions.map(region => {
-            const realmId = this.realmTileMap.getRealmByRegion(region)
-            const boundary = this._buildBoundary(boundaryModel, realmId, region)
+        const borderRegionIds = this.realmTileMap.getBorderRegions()
+        const fills = borderRegionIds.map(regionId => {
+            const realmId = this.realmTileMap.getRealmByRegion(regionId)
+            const boundary = this._buildBoundary(boundaryModel, realmId, regionId)
             const fillConfig = new RegionFillConfig({
                 realmTileMap: this.realmTileMap,
                 landformMap: this.landformMap,
                 boundaryMap: this.boundaryMap,
                 boundary,
             })
-            return new OrganicFloodFill(region, fillConfig)
+            return new OrganicFloodFill(regionId, fillConfig)
         })
         new MultiFill(fills)
     }
 
-    _buildBoundary(boundaryModel, realmId, region) {
-        const neighborRegions = this.realmTileMap.getNeighborRegions(region)
-        for(let neighbor of neighborRegions) {
-            const neighborRealmId = this.realmTileMap.getRealmByRegion(neighbor)
+    _buildBoundary(boundaryModel, realmId, regionId) {
+        const neighborRegionIds = this.realmTileMap.getNeighborRegions(regionId)
+        for(let neighborId of neighborRegionIds) {
+            const neighborRealmId = this.realmTileMap.getRealmByRegion(neighborId)
             if (neighborRealmId !== realmId) {
                 return boundaryModel.get(realmId, neighborRealmId)
             }
@@ -55,19 +55,19 @@ export class TectonicsModel {
             if (plate.isOceanic()) {
                 const points = this._buildHotspotPoints(plate)
                 for (let point of points) {
-                    const region = this.realmTileMap.getRegion(point)
-                    const current = this.landformMap.get(region.id)
+                    const regionId = this.realmTileMap.getRegion(point)
+                    const current = this.landformMap.get(regionId)
                     if (current.water) {
                         const landform = Landform.getOceanicHotspot()
-                        this.landformMap.set(region.id, landform)
+                        this.landformMap.set(regionId, landform)
                     }
                 }
             } else {
-                const region = this.realmTileMap.getRegion(plate.origin)
-                const current = this.landformMap.get(region.id)
+                const regionId = this.realmTileMap.getRegion(plate.origin)
+                const current = this.landformMap.get(regionId)
                 if (! current.water) {
                     const landform = Landform.getContinentalHotspot()
-                    this.landformMap.set(region.id, landform)
+                    this.landformMap.set(regionId, landform)
                 }
             }
         })
@@ -85,10 +85,10 @@ export class TectonicsModel {
         }
         const points = [plate.origin]
         let current = plate.origin
-        offsets.forEach(point => {
+        for(let point of offsets) {
             current = Point.plus(current, point)
             points.push(current)
-        })
+        }
         return points
     }
 
@@ -109,8 +109,8 @@ export class TectonicsModel {
     }
 
     getLandformByPoint(point) {
-        const region = this.realmTileMap.getRegion(point)
-        return this.landformMap.get(region.id)
+        const regionId = this.realmTileMap.getRegion(point)
+        return this.landformMap.get(regionId)
     }
 
     get size() {
@@ -132,18 +132,18 @@ class RegionFillConfig extends FloodFillConfig {
         this.growth = data.boundary.growth
     }
 
-    isEmpty(neighborRegion) {
-        return !this.landformMap.has(neighborRegion.id)
+    isEmpty(neighborRegionId) {
+        return !this.landformMap.has(neighborRegionId)
     }
 
-    setValue(region, level) {
+    setValue(regionId, level) {
         const landform = this.boundary.getLandform(level)
-        this.boundaryMap.set(region.id, this.boundary)
-        this.landformMap.set(region.id, landform)
+        this.boundaryMap.set(regionId, this.boundary)
+        this.landformMap.set(regionId, landform)
     }
 
-    getNeighbors(region) {
-        return this.realmTileMap.getNeighborRegions(region)
+    getNeighbors(regionId) {
+        return this.realmTileMap.getNeighborRegions(regionId)
     }
 }
 

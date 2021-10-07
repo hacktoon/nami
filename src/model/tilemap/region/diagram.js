@@ -17,20 +17,22 @@ const SCHEMA = new Schema(
 
 
 class RegionColorMap {
+    #map
+
     constructor(regionMap) {
-        const entries = regionMap.map(region => [region.id, new Color()])
-        this.map = new Map(entries)
+        const entries = regionMap.map(regionId => [regionId, new Color()])
+        this.#map = new Map(entries)
     }
 
-    get(region) {
-        return this.map.get(region.id) || Color.fromHex('#FFF')
+    get(regionId) {
+        return this.#map.get(regionId) || Color.fromHex('#FFF')
     }
 
-    getMix([firstRegion, ...regions]) {
-        let color = this.get(firstRegion)
-        regions.forEach(region => {
-            color = color.average(this.get(region))
-        })
+    getMix([firstRegionId, ...regionIds]) {
+        let color = this.get(firstRegionId)
+        for(let regionId of regionIds) {
+            color = color.average(this.get(regionId))
+        }
         return color
     }
 }
@@ -56,15 +58,15 @@ export class RegionTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const region = this.tileMap.getRegion(point)
-        const isBorder = this.tileMap.isBorder(point)
+        const regionId = this.tileMap.getRegion(point)
+        const regionOrigin = this.tileMap.getRegionOrigin(point)
         const level = this.tileMap.getLevel(point)
-        const color = this.colorMap.get(region)
+        const color = this.colorMap.get(regionId)
 
-        if (this.showOrigins && Point.equals(region.origin, point)) {
+        if (this.showOrigins && Point.equals(regionOrigin, point)) {
             return color.invert().toHex()
         }
-        if (this.showBorders && isBorder) {
+        if (this.showBorders && this.tileMap.isBorder(point)) {
             if (this.showNeighborBorder) {
                 const neighborRegions = this.tileMap.getBorderRegions(point)
                 const borderColor = this.colorMap.getMix(neighborRegions)
@@ -74,9 +76,9 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         }
         if (this.showSelectedRegion) {
             const toggle = (point[0] + point[1]) % 2 === 0
-            if (this.selectedRegionId === region.id) {
+            if (this.selectedRegionId === regionId) {
                 return toggle ? '#000' : '#FFF'
-            } else if (this.tileMap.isNeighbor(this.selectedRegionId, region.id)) {
+            } else if (this.tileMap.isNeighbor(this.selectedRegionId, regionId)) {
                 return toggle ? color.darken(40).toHex() : color.toHex()
             }
         }

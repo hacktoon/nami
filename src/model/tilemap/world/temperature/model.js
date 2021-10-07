@@ -1,8 +1,6 @@
 import { RegionTileMap } from '/model/tilemap/region'
 
 
-const ZONE_COUNT = 4
-
 const TROPICAL = 0
 const SUBTROPICAL = 1
 const TEMPERATE = 2
@@ -12,10 +10,6 @@ const POLAR = 3
 export class Temperature {
     constructor(seed, params) {
         const regionTileMap = buildRegionMap(seed, params)
-        this.index = new Map()
-        regionTileMap.forEach(region => {
-            this.index.set(region.id, region)
-        })
         this.regionTileMap = regionTileMap
         this.radiation = params.get('radiation')
         this.frequency = params.get('frequency')
@@ -41,14 +35,6 @@ export class Temperature {
     _calcOffset(origin) {
         const offset = Math.sin(origin[0]) * this.frequency
         return Math.floor(offset + this.radiation)
-    }
-
-    map(callback) {
-        return this.regionTileMap.map(callback)
-    }
-
-    forEach(callback) {
-        this.regionTileMap.forEach(callback)
     }
 }
 
