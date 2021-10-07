@@ -2,31 +2,31 @@ import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 
 
 class RealmFloodFill extends GenericFloodFill {
-    isEmpty(region) {
-        return ! this.model.regionToRealm.has(region.id)
+    isEmpty(regionId) {
+        return ! this.model.regionToRealm.has(regionId)
     }
 
-    setValue(region) {
-        this.model.regionToRealm.set(region.id, this.id)
-        this.area += region.area
+    setValue(regionId) {
+        this.model.regionToRealm.set(regionId, this.id)
+        this.area += this.model.regionTileMap.getRegionAreaById(regionId)
     }
 
-    checkNeighbor(neighborRegion, region) {
-        if (this.isEmpty(neighborRegion)) return
-        const neighborRealmId = this.model.regionToRealm.get(neighborRegion.id)
+    checkNeighbor(neighborRegionId, regionId) {
+        if (this.isEmpty(neighborRegionId)) return
+        const neighborRealmId = this.model.regionToRealm.get(neighborRegionId)
         if (neighborRealmId === this.id) return
-        this.model.borderRegions.add(region.id)
+        this.model.borderRegions.add(regionId)
         this.model.graph.setEdge(this.id, neighborRealmId)
     }
 
-    getNeighbors(region) {
-        return this.model.regionTileMap.getNeighborRegions(region)
+    getNeighbors(regionId) {
+        return this.model.regionTileMap.getNeighborRegions(regionId)
     }
 }
 
 
 export class RealmMultiFill extends GenericMultiFill {
-    constructor(origins, model) {
-        super(origins, model, RealmFloodFill)
+    constructor(model) {
+        super(model.origins, model, RealmFloodFill)
     }
 }
