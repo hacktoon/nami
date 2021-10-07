@@ -23,7 +23,7 @@ class RealmColorMap {
     constructor(realmTileMap) {
         const regionMap = realmTileMap.regionTileMap
         const regionEntries = regionMap.map(region => [region.id, new Color()])
-        const realmEntries = realmTileMap.map(realm => [realm.id, new Color()])
+        const realmEntries = realmTileMap.map(realmId => [realmId, new Color()])
         this.#regionMap = new Map(regionEntries)
         this.#realmMap = new Map(realmEntries)
     }
@@ -32,8 +32,8 @@ class RealmColorMap {
         return this.#regionMap.get(region.id) || Color.fromHex('#FFF')
     }
 
-    getByRealm(realm) {
-        return this.#realmMap.get(realm.id) || Color.fromHex('#FFF')
+    getByRealm(realmId) {
+        return this.#realmMap.get(realmId) || Color.fromHex('#FFF')
     }
 }
 
@@ -58,13 +58,14 @@ export class RealmTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const realm = this.tileMap.getRealm(point)
+        const realmId = this.tileMap.getRealm(point)
+        const realmOrigin = this.tileMap.getRealmOrigin(point)
         const region = this.tileMap.getRegion(point)
         const isBorderRegion = this.tileMap.isBorderRegion(region)
-        const realmColor = this.colorMap.getByRealm(realm)
+        const realmColor = this.colorMap.getByRealm(realmId)
         const regionColor = this.colorMap.getByRegion(region)
 
-        if (this.showOrigins && Point.equals(realm.origin, point)) {
+        if (this.showOrigins && Point.equals(realmOrigin, point)) {
             return realmColor.invert().toHex()
         }
         if (this.showRealmBorder && this.tileMap.isRealmBorder(point)) {

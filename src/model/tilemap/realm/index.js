@@ -60,7 +60,7 @@ export class RealmTileMap extends TileMap {
         this.borderRegions = new Set()
         this.regionToRealm = new Map()
         this.graph = new Graph()
-        this.realms = []
+        this.realms = this.origins.map((_, id) => id)
         this.mapFill = this._buildMapFill()
         this.directions = this._buildDirections()
     }
@@ -80,9 +80,7 @@ export class RealmTileMap extends TileMap {
             return new OrganicFloodFill(region, fillConfig)
         })
         new MultiFill(fills).map(fill => {
-            const id = fill.config.id
-            mapFill[id] = fill
-            this.realms.push(id)
+            mapFill[fill.config.id] = fill
         })
         return mapFill
     }
@@ -123,14 +121,30 @@ export class RealmTileMap extends TileMap {
         return this.getRealmByRegion(region)
     }
 
+    getRealmOrigin(point) {
+        const id = this.getRealm(point)
+        return this.origins[id]
+    }
+
+    getRealmOriginById(id) {
+        return this.origins[id]
+    }
+
+    getRealmAreaById(id) {
+        return this.mapFill[id].config.area
+    }
+
     getRealms() {
-        return this.realms.map(id => {
-            return {
-                id,
-                origin: this.origins[id],
-                area: this.mapFill[id].config.area
-            }
-        })
+        return this.realms
+    }
+
+    getRealmsDescOrder() {
+        const cmpDescendingCount = (id0, id1) => {
+            const area0 = this.mapFill[id0].config.area
+            const area1 = this.mapFill[id1].config.area
+            return area1 - area0
+        }
+        return this.realms.sort(cmpDescendingCount)
     }
 
     getRegion(point) {
@@ -147,20 +161,16 @@ export class RealmTileMap extends TileMap {
         })
     }
 
-    getNeighborRealms(realm) {
-        const edges = this.graph.getEdges(realm.id)
-        const realms = this.getRealms()
-        return edges.map(id => realms[id])
+    getNeighborRealms(realmId) {
+        return this.graph.getEdges(realmId)
     }
 
-    getRealmDirection(sourceRealm, targetRealm) {
-        return this.directions.get(sourceRealm.id, targetRealm.id)
+    getRealmDirection(sourceRealmId, targetRealmId) {
+        return this.directions.get(sourceRealmId, targetRealmId)
     }
 
     getRealmByRegion(region) {
-        const id = this.regionToRealm.get(region.id)
-        const realms = this.getRealms()
-        return realms[id]
+        return this.regionToRealm.get(region.id)
     }
 
     getNeighborRegions(region) {
@@ -178,10 +188,10 @@ export class RealmTileMap extends TileMap {
     isRealmBorder(point) {
         const neighborRegions = this.regionTileMap.getBorderRegions(point)
         if (neighborRegions.length === 0) return false
-        const realm = this.getRealm(point)
+        const realmId = this.getRealm(point)
         for (let region of neighborRegions) {
             const id = this.regionToRealm.get(region.id)
-            if (id !== realm.id) return true
+            if (id !== realmId) return true
         }
         return false
     }
@@ -191,13 +201,11 @@ export class RealmTileMap extends TileMap {
     }
 
     map(callback) {
-        const realms = this.getRealms()
-        return realms.map(callback)
+        return this.realms.map(callback)
     }
 
     forEach(callback) {
-        const realms = this.getRealms()
-        realms.forEach(callback)
+        this.realms.forEach(callback)
     }
 }
 

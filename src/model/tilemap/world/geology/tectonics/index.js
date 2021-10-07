@@ -26,10 +26,10 @@ export class TectonicsModel {
         const boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
         const borderRegions = this.realmTileMap.getBorderRegions()
         const fills = borderRegions.map(region => {
-            const realm = this.realmTileMap.getRealmByRegion(region)
-            const boundary = this._buildPlateBoundary(boundaryModel, realm, region)
+            const realmId = this.realmTileMap.getRealmByRegion(region)
+            const boundary = this._buildBoundary(boundaryModel, realmId, region)
             const fillConfig = new RegionFillConfig({
-                realm: this.realmTileMap,
+                realmTileMap: this.realmTileMap,
                 landformMap: this.landformMap,
                 boundaryMap: this.boundaryMap,
                 boundary,
@@ -39,12 +39,12 @@ export class TectonicsModel {
         new MultiFill(fills)
     }
 
-    _buildPlateBoundary(boundaryModel, realm, region) {
+    _buildBoundary(boundaryModel, realmId, region) {
         const neighborRegions = this.realmTileMap.getNeighborRegions(region)
         for(let neighbor of neighborRegions) {
-            const neighborRealm = this.realmTileMap.getRealmByRegion(neighbor)
-            if (neighborRealm.id !== realm.id) {
-                return boundaryModel.get(realm, neighborRealm)
+            const neighborRealmId = this.realmTileMap.getRealmByRegion(neighbor)
+            if (neighborRealmId !== realmId) {
+                return boundaryModel.get(realmId, neighborRealmId)
             }
         }
     }
@@ -122,7 +122,7 @@ export class TectonicsModel {
 class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
-        this.realmTileMap = data.realm
+        this.realmTileMap = data.realmTileMap
         this.landformMap = data.landformMap
         this.boundaryMap = data.boundaryMap
         this.heightIndex = data.heightIndex
@@ -150,20 +150,22 @@ class RegionFillConfig extends FloodFillConfig {
 
 export class PlateMap {
     constructor(realmTileMap) {
-        this.realmTileMap = realmTileMap
         this.map = new Map()
-        const cmpDescendingCount = (g0, g1) => g1.count - g0.count
-        const realms = realmTileMap.getRealms().sort(cmpDescendingCount)
+        this.realmTileMap = realmTileMap
+        const realms = realmTileMap.getRealmsDescOrder()
         const typeMap = this._buildTypes(realms)
-        realms.forEach(realm => {
-            const {id, origin, area} = realm
-            const neighborsRealms = realmTileMap.getNeighborRealms(realm)
-            const isLandlocked = neighborsRealms.concat(realm).every(neighbor => {
-                return typeMap.get(neighbor.id) === TYPE_CONTINENTAL
-            })
-            const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(id)
-            const weight = id + (type === TYPE_OCEANIC ? realms.length * 10 : 0)
-            const plate = new Plate(id, origin, type, area, weight)
+        realms.forEach(realmId => {
+            const origin = realmTileMap.getRealmOriginById(realmId)
+            const area = realmTileMap.getRealmAreaById(realmId)
+            const neighborsRealms = realmTileMap.getNeighborRealms(realmId)
+            const isLandlocked = neighborsRealms.concat(realmId)
+                .every(neighborId => {
+                    return typeMap.get(neighborId) === TYPE_CONTINENTAL
+                })
+            const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(realmId)
+            const baseWeight = (type === TYPE_OCEANIC ? realms.length * 10 : 0)
+            const weight = realmId + baseWeight
+            const plate = new Plate(realmId, origin, type, area, weight)
             this.map.set(plate.id, plate)
         })
     }
@@ -172,11 +174,11 @@ export class PlateMap {
         const halfWorldArea = Math.floor(this.realmTileMap.area / 2)
         const typeMap = new Map()
         let totalOceanicArea = 0
-        realms.forEach(realm => {
-            totalOceanicArea += realm.area
+        realms.forEach(realmId => {
+            totalOceanicArea += this.realmTileMap.getRealmAreaById(realmId)
             const isOceanic = totalOceanicArea < halfWorldArea
             const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
-            typeMap.set(realm.id, type)
+            typeMap.set(realmId, type)
         })
         return typeMap
     }

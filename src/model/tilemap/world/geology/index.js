@@ -69,8 +69,8 @@ export class GeologyTileMap extends TileMap {
     }
 
     getPlate(point) {
-        const realm = this.realmTileMap.getRealm(point)
-        return this.tectonicsModel.get(realm.id)
+        const realmId = this.realmTileMap.getRealm(point)
+        return this.tectonicsModel.get(realmId)
     }
 
     getPlates() {
