@@ -126,10 +126,10 @@ export class RegionTileMap extends TileMap {
     }
 
     map(callback) {
-        return this.getRegions().map(callback)
+        return this.regions.map(callback)
     }
 
     forEach(callback) {
-        this.getRegions().forEach(callback)
+        this.regions.forEach(callback)
     }
 }

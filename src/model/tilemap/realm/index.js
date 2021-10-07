@@ -104,14 +104,14 @@ export class RealmTileMap extends TileMap {
 
     get(point) {
         const region = this.getRegion(point)
-        const realm = this.getRealm(point)
-        const neighbors = this.getNeighborRealms(realm)
+        const realmId = this.getRealm(point)
+        const neighbors = this.getNeighborRealms(realmId)
         return {
-            realm: realm.id,
+            realm: realmId,
             region: region.id,
-            neighbors: neighbors.map(neighbor => {
-                const dir = this.getRealmDirection(realm, neighbor)
-                return `${dir.name}(${neighbor.id})`
+            neighbors: neighbors.map(neighborId => {
+                const dir = this.getRealmDirection(realmId, neighborId)
+                return `${dir.name}(${neighborId})`
             }).join(', ')
         }
     }
@@ -139,12 +139,12 @@ export class RealmTileMap extends TileMap {
     }
 
     getRealmsDescOrder() {
-        const cmpDescendingCount = (id0, id1) => {
+        const cmpDescendingArea = (id0, id1) => {
             const area0 = this.mapFill[id0].config.area
             const area1 = this.mapFill[id1].config.area
             return area1 - area0
         }
-        return this.realms.sort(cmpDescendingCount)
+        return this.realms.sort(cmpDescendingArea)
     }
 
     getRegion(point) {
