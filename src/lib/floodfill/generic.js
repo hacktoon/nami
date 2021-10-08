@@ -64,9 +64,17 @@ export class GenericFloodFill {
         return seeds
     }
 
-    fillValue(point, id) {
-        this.setValue(id, point)
-        this.areaTable[id] += 1
+    fillValue(value, id) {
+        this.setValue(id, value)
+        this.areaTable[id] += this.getArea(value)
+    }
+
+    setValue(id, value) {
+
+    }
+
+    getArea(value) {
+        return 1
     }
 
     _growLayer(id, seeds) {

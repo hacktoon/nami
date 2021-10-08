@@ -10,6 +10,10 @@ class RealmFloodFill extends GenericFloodFill {
         this.model.regionToRealm.set(regionId, id)
     }
 
+    getArea(regionId) {
+        return this.model.regionTileMap.getRegionAreaById(regionId)
+    }
+
     checkNeighbor(id, neighborRegionId, centerRegionId) {
         if (this.isEmpty(neighborRegionId)) return
         const neighborRealmId = this.model.regionToRealm.get(neighborRegionId)
