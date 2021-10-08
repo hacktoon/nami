@@ -8,7 +8,6 @@ class RealmFloodFill extends GenericFloodFill {
 
     setValue(regionId) {
         this.model.regionToRealm.set(regionId, this.id)
-        this.area += this.model.regionTileMap.getRegionAreaById(regionId)
     }
 
     checkNeighbor(neighborRegionId, regionId) {
@@ -27,6 +26,9 @@ class RealmFloodFill extends GenericFloodFill {
 
 export class RealmMultiFill extends GenericMultiFill {
     constructor(model) {
-        super(model.origins, model, RealmFloodFill)
+        const regionIds = model.origins.map(origin => {
+            return model.regionTileMap.getRegion(origin)
+        })
+        super(regionIds, model, RealmFloodFill)
     }
 }

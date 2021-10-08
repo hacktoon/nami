@@ -62,6 +62,7 @@ export class RealmTileMap extends TileMap {
         this.graph = new Graph()
         this.realms = this.origins.map((_, id) => id)
         this.mapFill = this._buildMapFill()
+        // this.mapFill2 = new RealmMultiFill(this)
         this.directions = this._buildDirections()
     }
 
