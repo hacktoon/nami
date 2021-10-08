@@ -20,7 +20,7 @@ export class GenericMultiFill {
             this.areaTable.push(0)
             this.levelTable.push(0)
             this.seedTable.push([origin])
-            this.fill.fillPoint(origin, id)
+            this.fill.fillValue(origin, id)
         }
         while(this.canGrow) {
             this._growFills()
@@ -29,14 +29,6 @@ export class GenericMultiFill {
 
     getArea(id) {
         return this.areaTable[id]
-    }
-
-    forEach(callback) {
-        for(let id = 0; id < this.origins.length; id ++) {
-            const origin = this.origins[id]
-            const area = this.areaTable[id]
-            callback(id, origin, area)
-        }
     }
 
     _growFills() {
@@ -72,7 +64,7 @@ export class GenericFloodFill {
         return seeds
     }
 
-    fillPoint(point, id) {
+    fillValue(point, id) {
         this.setValue(id, point)
         this.areaTable[id] += 1
     }
@@ -98,7 +90,7 @@ export class GenericFloodFill {
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
-            this.fillPoint(neighbor, id)
+            this.fillValue(neighbor, id)
         })
         return filledNeighbors
     }
