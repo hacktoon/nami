@@ -42,15 +42,15 @@ export class GeologyTileMap extends TileMap {
 
     _buildRealmTileMap(seed, params) {
         return RealmTileMap.fromData({
+            seed: seed,
             width: params.get('width'),
             height: params.get('height'),
-            realmScale: params.get('scale'),
-            realmGrowth: params.get('growth'),
-            realmChance: .1,
-            seed: seed,
+            scale: params.get('scale'),
+            growth: params.get('growth'),
             chance: .1,
-            growth: 0,
-            scale: 1,
+            rgChance: .1,
+            rgGrowth: 0,
+            rgScale: 1,
         })
     }
 
