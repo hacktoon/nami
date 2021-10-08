@@ -2,8 +2,6 @@ import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
 import { Graph } from '/lib/graph'
-import { MultiFill } from '/lib/floodfill'
-import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { Schema } from '/lib/schema'
 import { Type } from '/lib/type'
@@ -61,8 +59,7 @@ export class RealmTileMap extends TileMap {
         this.regionToRealm = new Map()
         this.graph = new Graph()
         this.realms = this.origins.map((_, id) => id)
-        this.mapFill = this._buildMapFill()
-        this.mapFill2 = new RealmMultiFill(this)
+        this.mapFill = new RealmMultiFill(this)
         this.directions = this._buildDirections()
     }
 
@@ -74,18 +71,6 @@ export class RealmTileMap extends TileMap {
         return RegionTileMap.fromData(data)
     }
 
-    _buildMapFill() {
-        const mapFill = []
-        const fills = this.origins.map((origin, id) => {
-            const regionId = this.regionTileMap.getRegion(origin)
-            const fillConfig = new RealmFillConfig(id, this)
-            return new OrganicFloodFill(regionId, fillConfig)
-        })
-        new MultiFill(fills).map(fill => {
-            mapFill[fill.config.id] = fill
-        })
-        return mapFill
-    }
 
     _buildDirections() {
         const directions = new PairMap()
@@ -134,7 +119,7 @@ export class RealmTileMap extends TileMap {
     }
 
     getRealmAreaById(id) {
-        return this.mapFill[id].config.area
+        return this.mapFill.getArea(id)
     }
 
     getRealms() {
@@ -143,8 +128,8 @@ export class RealmTileMap extends TileMap {
 
     getRealmsDescOrder() {
         const cmpDescendingArea = (id0, id1) => {
-            const area0 = this.mapFill[id0].config.area
-            const area1 = this.mapFill[id1].config.area
+            const area0 = this.mapFill.getArea(id0)
+            const area1 = this.mapFill.getArea(id1)
             return area1 - area0
         }
         return this.realms.sort(cmpDescendingArea)
