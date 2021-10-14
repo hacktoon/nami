@@ -99,4 +99,8 @@ export class GeologyTileMap extends TileMap {
     getDescription() {
         return `${this.tectonicsModel.size} plates`
     }
+
+    map(callback) {
+        this.tectonicsModel.getPlates().map(callback)
+    }
 }
