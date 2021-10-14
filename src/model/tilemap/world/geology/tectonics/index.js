@@ -116,6 +116,14 @@ export class TectonicsModel {
         return this.landformMap.get(regionId)
     }
 
+    isOceanic(plateId) {
+        return this.plateMap.isOceanic(plateId)
+    }
+
+    isContinental(plateId) {
+        return this.plateMap.isContinental(plateId)
+    }
+
     get size() {
         return this.plateMap.size
     }

@@ -16,8 +16,8 @@ export class PlateMap {
         realms.forEach(realmId => {
             const origin = realmTileMap.getRealmOriginById(realmId)
             const area = realmTileMap.getRealmAreaById(realmId)
-            const neighborsRealms = realmTileMap.getNeighborRealms(realmId)
-            const isLandlocked = neighborsRealms.concat(realmId)
+            const isLandlocked = realmTileMap.getNeighborRealms(realmId)
+                .concat(realmId)
                 .every(neighborId => {
                     return typeMap.get(neighborId) === TYPE_CONTINENTAL
                 })
@@ -48,6 +48,14 @@ export class PlateMap {
 
     get(id) {
         return this.plates.get(id)
+    }
+
+    isOceanic(plateId) {
+        return this.plates.get(plateId) === TYPE_OCEANIC
+    }
+
+    isContinental(plateId) {
+        return this.plates.get(plateId) === TYPE_CONTINENTAL
     }
 
     forEach(callback) {

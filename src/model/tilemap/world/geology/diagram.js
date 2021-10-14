@@ -9,7 +9,7 @@ import { TileMapDiagram } from '/lib/model/tilemap'
 class GeologyColorMap {
     constructor(tileMap) {
         const entries = tileMap.map(plate => {
-            const hex = plate.isOceanic() ? '#058' : '#574'
+            const hex = tileMap.isOceanic(plate.id) ? '#058' : '#574'
             return [plate.id, Color.fromHex(hex)]
         })
         this.map = new Map(entries)

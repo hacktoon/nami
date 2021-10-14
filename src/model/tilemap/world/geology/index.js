@@ -88,6 +88,14 @@ export class GeologyTileMap extends TileMap {
         return this.realmTileMap.isRealmBorder(point)
     }
 
+    isOceanic(plateId) {
+        return this.tectonicsModel.isOceanic(plateId)
+    }
+
+    isContinental(plateId) {
+        return this.tectonicsModel.isContinental(plateId)
+    }
+
     getLandform(point) {
         return this.erosionModel.get(point)
     }
