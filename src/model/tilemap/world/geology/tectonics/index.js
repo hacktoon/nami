@@ -29,6 +29,8 @@ export class TectonicsModel {
     _buildLandforms() {
         const boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
         const borderRegionIds = this.realmTileMap.getBorderRegions()
+        // create boundaryMap here and pass to fill
+        // const boundaryMap = this._buildBoundary(boundaryModel, realmId, regionId)
         const fills = borderRegionIds.map(regionId => {
             const realmId = this.realmTileMap.getRealmByRegion(regionId)
             const boundary = this._buildBoundary(boundaryModel, realmId, regionId)
