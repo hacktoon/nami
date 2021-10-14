@@ -7,11 +7,7 @@ import { OrganicFloodFill } from '/lib/floodfill/organic'
 import { Landform } from '../landform'
 import { BoundaryModel } from './boundary'
 import { PlateMultiFill } from './fill'
-
-
-const TYPE_CONTINENTAL = 'L'
-const TYPE_OCEANIC = 'W'
-const HOTSPOT_CHANCE = .4
+import { PlateMap } from './plate'
 
 
 export class TectonicsModel {
@@ -24,6 +20,7 @@ export class TectonicsModel {
         this.growth = params.get('growth')
         this._buildLandforms()
         this._buildHotspots()
+        // this.mapFill = new PlateMultiFill(this)
     }
 
     _buildLandforms() {
@@ -150,79 +147,5 @@ class RegionFillConfig extends FloodFillConfig {
 
     getNeighbors(regionId) {
         return this.realmTileMap.getNeighborRegions(regionId)
-    }
-}
-
-
-export class PlateMap {
-    constructor(realmTileMap) {
-        this.map = new Map()
-        this.realmTileMap = realmTileMap
-        const realms = realmTileMap.getRealmsDescOrder()
-        const typeMap = this._buildTypes(realms)
-        realms.forEach(realmId => {
-            const origin = realmTileMap.getRealmOriginById(realmId)
-            const area = realmTileMap.getRealmAreaById(realmId)
-            const neighborsRealms = realmTileMap.getNeighborRealms(realmId)
-            const isLandlocked = neighborsRealms.concat(realmId)
-                .every(neighborId => {
-                    return typeMap.get(neighborId) === TYPE_CONTINENTAL
-                })
-            const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(realmId)
-            const baseWeight = (type === TYPE_OCEANIC ? realms.length * 10 : 0)
-            const weight = realmId + baseWeight
-            const plate = new Plate(realmId, origin, type, area, weight)
-            this.map.set(plate.id, plate)
-        })
-    }
-
-    _buildTypes(realms) {
-        const halfWorldArea = Math.floor(this.realmTileMap.area / 2)
-        const typeMap = new Map()
-        let totalOceanicArea = 0
-        realms.forEach(realmId => {
-            totalOceanicArea += this.realmTileMap.getRealmAreaById(realmId)
-            const isOceanic = totalOceanicArea < halfWorldArea
-            const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
-            typeMap.set(realmId, type)
-        })
-        return typeMap
-    }
-
-    get size() {
-        return this.map.size
-    }
-
-    get(id) {
-        return this.map.get(id)
-    }
-
-    forEach(callback) {
-        this.map.forEach(callback)
-    }
-
-    values() {
-        return this.map.values()
-    }
-}
-
-
-class Plate {
-    constructor(id, origin, type, area, weight) {
-        this.id = id
-        this.type = type
-        this.area = area
-        this.origin = origin
-        this.direction = Direction.random()
-        this.hasHotspot = Random.chance(HOTSPOT_CHANCE)
-        this.weight = weight
-    }
-
-    isOceanic() {
-        return this.type === TYPE_OCEANIC
-    }
-
-    isContinental() {
-        return this.type === TYPE_CONTINENTAL
     }
 }

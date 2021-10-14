@@ -20,9 +20,7 @@ class PlateFloodFill extends GenericFloodFill {
 
 export class PlateMultiFill extends GenericMultiFill {
     constructor(model) {
-        const regionIds = model.origins.map(origin => {
-            return model.getRegion(origin)
-        })
-        super(regionIds, model, PlateFloodFill)
+        const borderRegionIds = model.realmTileMap.getBorderRegions()
+        super(borderRegionIds, model, PlateFloodFill)
     }
 }
