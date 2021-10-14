@@ -15,8 +15,12 @@ class GeologyColorMap {
         this.map = new Map(entries)
     }
 
-    getByPlate(plate) {
-        return this.map.get(plate.id)
+    getByPlate(plateId) {
+        return this.map.get(plateId)
+    }
+
+    getByOutline(landform) {
+        return landform.water ? '#069' : '#141'
     }
 }
 
@@ -50,7 +54,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const plate = this.tileMap.getPlate(point)
         const erodedlandform = this.tileMap.getErodedLandform(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
-        let color = this.colorMap.getByPlate(plate)
+        let color = this.colorMap.getByPlate(plate.id)
 
         if (this.showLandform) {
             const landform = this.tileMap.getLandform(point)
@@ -63,7 +67,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             }
         }
         if (this.showOutline) {
-            return erodedlandform.water ? '#069' : '#141'
+            return this.colorMap.getByOutline(erodedlandform)
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#F00'))

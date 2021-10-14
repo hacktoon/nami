@@ -34,15 +34,15 @@ export class GeologyTileMap extends TileMap {
     constructor(params) {
         super(params)
         let t0 = performance.now()
-        this.realmTileMap = this._buildRealmTileMap(this.seed, params)
-        console.log(performance.now() - t0);
+        this.realmTileMap = this._buildRealmTileMap(params)
         this.tectonicsModel = new TectonicsModel(this.realmTileMap, params)
-        this.erosionModel = new ErosionModel(this.realmTileMap, this.tectonicsModel)
+        this.erosionModel = new ErosionModel(this)
+        console.log(performance.now() - t0);
     }
 
-    _buildRealmTileMap(seed, params) {
+    _buildRealmTileMap(params) {
         return RealmTileMap.fromData({
-            seed: seed,
+            seed: params.get('seed'),
             width: params.get('width'),
             height: params.get('height'),
             scale: params.get('scale'),

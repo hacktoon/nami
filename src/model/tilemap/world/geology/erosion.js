@@ -7,15 +7,12 @@ const EMPTY = null
 
 
 export class ErosionModel {
-    constructor(realmTileMap, plateModel) {
-        const {width, height} = realmTileMap
-
-        this.plateModel = plateModel
+    constructor(model) {
+        const {width, height} = model
         this.landformMatrix = new Matrix(width, height, point => {
-            return plateModel.getLandformByPoint(point)
+            return model.tectonicsModel.getLandformByPoint(point)
         })
         this.erosionMatrix = new ErosionMatrix(this.landformMatrix)
-        // this.basinMatrix = new BasinMatrix(this.erosionMatrix)
     }
 
     get(point) {
@@ -25,7 +22,6 @@ export class ErosionModel {
     getErodedLandform(point) {
         return this.erosionMatrix.get(point)
     }
-
 }
 
 
