@@ -23,6 +23,7 @@ export class RealmPointSampling {
         return samples
     }
 
+    // TODO: optimize this code to realms
     static fillPointCircle(center, radius, callback) {
         const top    = center[1] - radius
         const bottom = center[1] + radius

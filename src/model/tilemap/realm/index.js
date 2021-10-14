@@ -200,35 +200,3 @@ export class RealmTileMap extends TileMap {
         this.realms.forEach(callback)
     }
 }
-
-
-class RealmFillConfig {
-    constructor(id, model) {
-        this.id = id
-        this.area = 0
-        this.model = model
-        this.chance = model.chance
-        this.growth = model.growth
-    }
-
-    isEmpty(regionId) {
-        return !this.model.regionToRealm.has(regionId)
-    }
-
-    setValue(regionId) {
-        this.model.regionToRealm.set(regionId, this.id)
-        this.area += this.model.regionTileMap.getRegionAreaById(regionId)
-    }
-
-    checkNeighbor(neighborRegionId, regionId) {
-        if (this.isEmpty(neighborRegionId)) return
-        const neighborRealmId = this.model.regionToRealm.get(neighborRegionId)
-        if (neighborRealmId === this.id) return
-        this.model.borderRegions.add(regionId)
-        this.model.graph.setEdge(this.id, neighborRealmId)
-    }
-
-    getNeighbors(regionId) {
-        return this.model.regionTileMap.getNeighborRegions(regionId)
-    }
-}

@@ -3,8 +3,10 @@ import { Point } from '/lib/point'
 import { Random } from '/lib/random'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
 import { OrganicFloodFill } from '/lib/floodfill/organic'
-import { BoundaryModel } from './boundary'
+
 import { Landform } from '../landform'
+import { BoundaryModel } from './boundary'
+import { PlateMultiFill } from './fill'
 
 
 const TYPE_CONTINENTAL = 'L'
@@ -13,11 +15,13 @@ const HOTSPOT_CHANCE = .4
 
 
 export class TectonicsModel {
-    constructor(realmTileMap) {
+    constructor(realmTileMap, params) {
         this.realmTileMap = realmTileMap
         this.plateMap = new PlateMap(realmTileMap)
         this.landformMap = new Map()
         this.boundaryMap = new Map()
+        this.chance = params.get('chance')
+        this.growth = params.get('growth')
         this._buildLandforms()
         this._buildHotspots()
     }
