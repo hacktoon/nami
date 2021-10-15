@@ -59,9 +59,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (this.showLandform) {
             const landform = this.tileMap.getLandform(point)
             color = Color.fromHex(landform.color)
-            if (isBorderPoint) {
-                color = Color.fromHex(landform.color ?? plate.color)
-            }
             if (this.showErosion) {
                 color = Color.fromHex(erodedlandform.color)
             }
@@ -77,9 +74,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     getText(point) {
         const plate = this.tileMap.getPlate(point)
-        if (this.showDirection && this.tileMap.isPlateOrigin(plate, point)) {
-            const dir = Direction.getSymbol(plate.direction)
-            const dirName = Direction.getName(plate.direction)
+        const plateDirection = this.tileMap.getPlateDirection(point)
+        if (this.showDirection && this.tileMap.isPlateOrigin(plate.id, point)) {
+            const dir = Direction.getSymbol(plateDirection)
+            const dirName = Direction.getName(plateDirection)
             return `${plate.id}:${dir}${dirName}`
         }
     }

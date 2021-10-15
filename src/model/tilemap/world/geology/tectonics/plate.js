@@ -51,11 +51,11 @@ export class PlateMap {
     }
 
     isOceanic(plateId) {
-        return this.plates.get(plateId) === TYPE_OCEANIC
+        return this.plates.get(plateId).type === TYPE_OCEANIC
     }
 
     isContinental(plateId) {
-        return this.plates.get(plateId) === TYPE_CONTINENTAL
+        return this.plates.get(plateId).type === TYPE_CONTINENTAL
     }
 
     forEach(callback) {
