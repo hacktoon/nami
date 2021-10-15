@@ -55,7 +55,7 @@ export class TectonicsModel {
     _buildHotspots() {
         this.plateMap.forEach(plate => {
             if (! plate.hasHotspot) return
-            if (plate.isOceanic()) {
+            if (this.plateMap.isOceanic(plate.id)) {
                 const points = this._buildHotspotPoints(plate)
                 for (let point of points) {
                     const regionId = this.realmTileMap.getRegion(point)
@@ -100,7 +100,7 @@ export class TectonicsModel {
     }
 
     getPlates() {
-        return Array.from(this.plateMap.values())
+        return this.realmTileMap.getRealms()
     }
 
     getPlateDirection(realmId) {
@@ -122,10 +122,6 @@ export class TectonicsModel {
 
     isOceanic(plateId) {
         return this.plateMap.isOceanic(plateId)
-    }
-
-    isContinental(plateId) {
-        return this.plateMap.isContinental(plateId)
     }
 
     get size() {

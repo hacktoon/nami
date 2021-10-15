@@ -15,6 +15,7 @@ export class PlateMap {
         const typeMap = this._buildTypes(realms)
 
         this.directions = []
+        this.types = []
 
         realms.forEach(realmId => {
             const origin = realmTileMap.getRealmOriginById(realmId)
@@ -29,7 +30,8 @@ export class PlateMap {
             const weight = realmId + baseWeight
             const plate = new Plate(realmId, origin, type, area, weight)
             this.directions.push(Direction.random())
-            this.plates.set(plate.id, plate)
+            this.types.push(type)
+            this.plates.set(realmId, plate)
         })
     }
 
@@ -62,10 +64,6 @@ export class PlateMap {
         return this.plates.get(plateId).type === TYPE_OCEANIC
     }
 
-    isContinental(plateId) {
-        return this.plates.get(plateId).type === TYPE_CONTINENTAL
-    }
-
     forEach(callback) {
         this.plates.forEach(callback)
     }
@@ -88,13 +86,5 @@ class Plate {
         this.origin = origin
         this.hasHotspot = Random.chance(HOTSPOT_CHANCE)
         this.weight = weight
-    }
-
-    isOceanic() {
-        return this.type === TYPE_OCEANIC
-    }
-
-    isContinental() {
-        return this.type === TYPE_CONTINENTAL
     }
 }

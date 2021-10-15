@@ -83,10 +83,6 @@ export class GeologyTileMap extends TileMap {
         return this.realmTileMap.getRealmOriginById(realmId)
     }
 
-    getPlates() {
-        return this.tectonicsModel.getPlates()
-    }
-
     isPlateOrigin(plateId, point) {
         // TODO: eliminate this dependency
         const matrix = this.realmTileMap.regionTileMap.regionMatrix
@@ -102,10 +98,6 @@ export class GeologyTileMap extends TileMap {
         return this.tectonicsModel.isOceanic(plateId)
     }
 
-    isContinental(plateId) {
-        return this.tectonicsModel.isContinental(plateId)
-    }
-
     getLandform(point) {
         return this.erosionModel.get(point)
     }
@@ -119,6 +111,7 @@ export class GeologyTileMap extends TileMap {
     }
 
     map(callback) {
-        return this.tectonicsModel.getPlates().map(callback)
+        const plates = this.tectonicsModel.getPlates()
+        return plates.map(callback)
     }
 }

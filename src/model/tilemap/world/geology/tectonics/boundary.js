@@ -24,7 +24,7 @@ export class BoundaryModel {
         this.plateMap = plateMap
         this.realmTileMap = realmTileMap
         this._boundaryMap = new PairMap()
-        this._boundaryTable = new BoundaryTable(BOUNDARY_TABLE)
+        this._boundaryTable = new BoundaryTable(this.plateMap, BOUNDARY_TABLE)
 
         realmTileMap.forEach(realmId => {
             const neighbors = realmTileMap.getNeighborRealms(realmId)
@@ -56,7 +56,8 @@ export class BoundaryModel {
 class BoundaryTable {
     #codeTable = new Map() // map numeric id to boundary config
 
-    constructor(table) {
+    constructor(plateMap, table) {
+        this.plateMap = plateMap
         table.map(row => {
             const key = Array.from(row.key)
             const id = key.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
@@ -65,8 +66,8 @@ class BoundaryTable {
     }
 
     build(p1, p2, dotTo, dotFrom) {
-        const type1 = p1.isContinental() ? PLATE_CONTINENTAL : PLATE_OCEANIC
-        const type2 = p2.isContinental() ? PLATE_CONTINENTAL : PLATE_OCEANIC
+        const type1 = this.plateMap.isOceanic(p1.id) ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const type2 = this.plateMap.isOceanic(p2.id) ? PLATE_OCEANIC : PLATE_CONTINENTAL
         const dir1 = this._parseDir(dotTo)
         const dir2 = this._parseDir(dotFrom)
         const id = type1 + type2 + dir1 + dir2

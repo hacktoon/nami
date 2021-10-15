@@ -109,6 +109,10 @@ export class RealmTileMap extends TileMap {
         return this.getRealmByRegion(regionId)
     }
 
+    getRealms() {
+        return this.realms
+    }
+
     getRealmOrigin(point) {
         const id = this.getRealm(point)
         return this.origins[id]
@@ -120,10 +124,6 @@ export class RealmTileMap extends TileMap {
 
     getRealmAreaById(id) {
         return this.mapFill.getArea(id)
-    }
-
-    getRealms() {
-        return this.realms
     }
 
     getRealmsDescOrder() {
