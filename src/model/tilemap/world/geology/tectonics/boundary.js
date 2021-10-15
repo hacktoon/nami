@@ -20,8 +20,8 @@ const IDMAP = {
 
 
 export class BoundaryModel {
-    constructor(plates, realmTileMap) {
-        this.plates = plates
+    constructor(plateMap, realmTileMap) {
+        this.plateMap = plateMap
         this.realmTileMap = realmTileMap
         this._boundaryMap = new PairMap()
         this._boundaryTable = new BoundaryTable(BOUNDARY_TABLE)
@@ -36,12 +36,14 @@ export class BoundaryModel {
     }
 
     _buildRealmsBoundary(realmId, neighborRealmId) {
-        const plate = this.plates.get(realmId)
-        const otherPlate = this.plates.get(neighborRealmId)
+        const plate = this.plateMap.get(realmId)
+        const otherPlate = this.plateMap.get(neighborRealmId)
         const dirToNeighbor = this.realmTileMap.getRealmDirection(realmId, neighborRealmId)
         const dirFromNeighbor = this.realmTileMap.getRealmDirection(neighborRealmId, realmId)
-        const dotTo = Direction.dotProduct(plate.direction, dirToNeighbor)
-        const dotFrom = Direction.dotProduct(otherPlate.direction, dirFromNeighbor)
+        const plateDir = this.plateMap.getDirection(realmId)
+        const neighborPlateDir = this.plateMap.getDirection(neighborRealmId)
+        const dotTo = Direction.dotProduct(plateDir, dirToNeighbor)
+        const dotFrom = Direction.dotProduct(neighborPlateDir, dirFromNeighbor)
         return this._boundaryTable.build(plate, otherPlate, dotTo, dotFrom)
     }
 

@@ -51,10 +51,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const plate = this.tileMap.getPlate(point)
+        const plateId = this.tileMap.getPlate(point)
         const erodedlandform = this.tileMap.getErodedLandform(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
-        let color = this.colorMap.getByPlate(plate.id)
+        let color = this.colorMap.getByPlate(plateId)
 
         if (this.showLandform) {
             const landform = this.tileMap.getLandform(point)
@@ -73,12 +73,12 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     getText(point) {
-        const plate = this.tileMap.getPlate(point)
+        const plateId = this.tileMap.getPlate(point)
         const plateDirection = this.tileMap.getPlateDirection(point)
-        if (this.showDirection && this.tileMap.isPlateOrigin(plate.id, point)) {
+        if (this.showDirection && this.tileMap.isPlateOrigin(plateId, point)) {
             const dir = Direction.getSymbol(plateDirection)
             const dirName = Direction.getName(plateDirection)
-            return `${plate.id}:${dir}${dirName}`
+            return `${plateId}:${dir}${dirName}`
         }
     }
 

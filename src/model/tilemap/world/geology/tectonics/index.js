@@ -103,6 +103,10 @@ export class TectonicsModel {
         return Array.from(this.plateMap.values())
     }
 
+    getPlateDirection(realmId) {
+        return this.plateMap.getDirection(realmId)
+    }
+
     getLandform(regionId) {
         return this.landformMap.get(regionId)
     }
