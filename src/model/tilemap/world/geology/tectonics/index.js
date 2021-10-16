@@ -53,30 +53,35 @@ export class TectonicsModel {
     }
 
     _buildHotspots() {
+        // TODO: this method shoud return mutated landforms
         this.plateMap.forEach(plate => {
-            if (! plate.hasHotspot) return
+            if (! this.plateMap.hasHotspot(plate.id))
+                return
+            const plateOrigin = this.plateMap.getOrigin(plate.id)
             if (this.plateMap.isOceanic(plate.id)) {
-                const points = this._buildHotspotPoints(plate)
+                const points = this._buildHotspotPoints(plateOrigin)
                 for (let point of points) {
                     const regionId = this.realmTileMap.getRegion(point)
                     const current = this.landformMap.get(regionId)
                     if (current.water) {
                         const landform = Landform.getOceanicHotspot()
+                        // TODO: remove this set
                         this.landformMap.set(regionId, landform)
                     }
                 }
             } else {
-                const regionId = this.realmTileMap.getRegion(plate.origin)
+                const regionId = this.realmTileMap.getRegion(plateOrigin)
                 const current = this.landformMap.get(regionId)
                 if (! current.water) {
                     const landform = Landform.getContinentalHotspot()
+                    // TODO: remove this set
                     this.landformMap.set(regionId, landform)
                 }
             }
         })
     }
 
-    _buildHotspotPoints(plate) {
+    _buildHotspotPoints(plateOrigin) {
         const count = Random.choice(2, 3)
         const size = this.realmTileMap.getAverageRegionArea()
         const offsets = []
@@ -86,8 +91,8 @@ export class TectonicsModel {
             const point = [size + i * xSig, size + i * ySig]
             offsets.push(point)
         }
-        const points = [plate.origin]
-        let current = plate.origin
+        const points = [plateOrigin]
+        let current = plateOrigin
         for(let point of offsets) {
             current = Point.plus(current, point)
             points.push(current)
