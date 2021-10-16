@@ -25,10 +25,9 @@ export class TectonicsModel {
 
     _buildLandforms() {
         const boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
-        const borderRegionIds = this.realmTileMap.getBorderRegions()
         // create boundaryMap here and pass to fill
         // const boundaryMap = this._buildBoundary(boundaryModel, realmId, regionId)
-        const fills = borderRegionIds.map(regionId => {
+        const fills = this.realmTileMap.getBorderRegions().map(regionId => {
             const realmId = this.realmTileMap.getRealmByRegion(regionId)
             const boundary = this._buildBoundary(boundaryModel, realmId, regionId)
             const fillConfig = new RegionFillConfig({
@@ -53,7 +52,7 @@ export class TectonicsModel {
     }
 
     _buildHotspots() {
-        // TODO: this method shoud return mutated landforms
+        // TODO: this method shoud return a new landform array
         this.plateMap.forEach(plate => {
             if (! this.plateMap.hasHotspot(plate.id))
                 return

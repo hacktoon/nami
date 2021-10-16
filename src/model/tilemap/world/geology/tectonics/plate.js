@@ -9,13 +9,12 @@ const HOTSPOT_CHANCE = .4
 
 export class PlateMap {
     constructor(realmTileMap) {
+        const realms = realmTileMap.getRealmsDescOrder()
         this.plates = new Map()
         this.realmTileMap = realmTileMap
-        const realms = realmTileMap.getRealmsDescOrder()
-        const typeMap = this._buildTypes(realms)
+        this.types = this._buildTypes(realms)
 
         this.directions = []
-        this.types = []
         this.weights = []
         this._hasHotspot = []
 
@@ -23,28 +22,27 @@ export class PlateMap {
             const isLandlocked = realmTileMap.getNeighborRealms(realmId)
                 .concat(realmId)
                 .every(neighborId => {
-                    return typeMap.get(neighborId) === TYPE_CONTINENTAL
+                    return this.types[neighborId] === TYPE_CONTINENTAL
                 })
-            const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(realmId)
+            const type = isLandlocked ? TYPE_OCEANIC : this.types[realmId]
             const baseWeight = (type === TYPE_OCEANIC ? realms.length * 10 : 0)
             this._hasHotspot.push(Random.chance(HOTSPOT_CHANCE))
             this.directions.push(Direction.random())
             this.weights.push(realmId + baseWeight)
-            this.types.push(type)
         })
     }
 
     _buildTypes(realms) {
+        const types = []
         const halfWorldArea = Math.floor(this.realmTileMap.area / 2)
-        const typeMap = new Map()
         let totalOceanicArea = 0
         realms.forEach(realmId => {
             totalOceanicArea += this.realmTileMap.getRealmAreaById(realmId)
             const isOceanic = totalOceanicArea < halfWorldArea
             const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
-            typeMap.set(realmId, type)
+            types.push(type)
         })
-        return typeMap
+        return types
     }
 
     get size() {
