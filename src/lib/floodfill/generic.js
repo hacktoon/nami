@@ -11,9 +11,11 @@ export class GenericMultiFill {
         this.canGrow = true
         this.fill = new fillClass(
             this.model,
-            this.seedTable,
-            this.levelTable,
-            this.areaTable,
+            {
+                seedTable: this.seedTable,
+                levelTable: this.levelTable,
+                areaTable: this.areaTable,
+            }
         )
         for(let id = 0; id < origins.length; id ++) {
             const origin = origins[id]
@@ -48,11 +50,11 @@ export class GenericMultiFill {
 
 
 export class GenericFloodFill {
-    constructor(model, seedTable, levelTable, areaTable) {
+    constructor(model, table) {
         this.model = model
-        this.seedTable = seedTable
-        this.areaTable = areaTable
-        this.levelTable = levelTable
+        this.seedTable = table.seedTable
+        this.areaTable = table.areaTable
+        this.levelTable = table.levelTable
         this.growth = model.growth ?? 1
         this.chance = model.chance ?? .1
     }

@@ -5,8 +5,6 @@ import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 const NO_REGION = null
 
 
-// ===============================================
-
 class RegionFloodFill extends GenericFloodFill {
     setValue(id, point) {
         const level = this.levelTable[id]
@@ -34,7 +32,15 @@ class RegionFloodFill extends GenericFloodFill {
 
 
 export class RegionMultiFill extends GenericMultiFill {
-    constructor(model) {
+    constructor(model, params) {
         super(model.origins, model, RegionFloodFill)
+    }
+
+    getChance(origin) {
+        return this.params.get('chance')
+    }
+
+    getGrowth(origin) {
+        return this.params.get('growth')
     }
 }

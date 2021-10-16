@@ -3,17 +3,17 @@ import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 
 class PlateFloodFill extends GenericFloodFill {
     isEmpty(neighborRegionId) {
-        return !this.landformMap.has(neighborRegionId)
+        return !this.model.landformMap.has(neighborRegionId)
     }
 
     setValue(regionId, level) {
-        const landform = this.boundary.getLandform(level)
-        this.boundaryMap.set(regionId, this.boundary)
-        this.landformMap.set(regionId, landform)
+        const landform = this.model.boundary.getLandform(level)
+        this.model.deformationMap.set(regionId, this.model.boundary)
+        this.model.landformMap.set(regionId, landform)
     }
 
     getNeighbors(regionId) {
-        return this.realmTileMap.getNeighborRegions(regionId)
+        return this.model.realmTileMap.getNeighborRegions(regionId)
     }
 }
 

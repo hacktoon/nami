@@ -15,9 +15,7 @@ export class TectonicsModel {
         this.realmTileMap = realmTileMap
         this.plateMap = new PlateMap(realmTileMap)
         this.landformMap = new Map()
-        this.boundaryMap = new Map()
-        this.chance = params.get('chance')
-        this.growth = params.get('growth')
+        this.deformationMap = new Map()
 
         this.boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
         // this.regionBoundaries = new Map()
@@ -39,7 +37,7 @@ export class TectonicsModel {
             const fillConfig = new RegionFillConfig({
                 realmTileMap: this.realmTileMap,
                 landformMap: this.landformMap,
-                boundaryMap: this.boundaryMap,
+                deformationMap: this.deformationMap,
                 boundary,
             })
             return new OrganicFloodFill(regionId, fillConfig)
@@ -121,8 +119,8 @@ export class TectonicsModel {
         return this.landformMap.get(regionId)
     }
 
-    getBoundary(regionId) {
-        return this.boundaryMap.get(regionId)
+    getDeformation(regionId) {
+        return this.deformationMap.get(regionId)
     }
 
     getLandformByPoint(point) {
@@ -145,8 +143,7 @@ class RegionFillConfig extends FloodFillConfig {
         super()
         this.realmTileMap = data.realmTileMap
         this.landformMap = data.landformMap
-        this.boundaryMap = data.boundaryMap
-        this.heightIndex = data.heightIndex
+        this.deformationMap = data.deformationMap
         this.boundary = data.boundary
 
         this.chance = data.boundary.chance
@@ -159,7 +156,7 @@ class RegionFillConfig extends FloodFillConfig {
 
     setValue(regionId, level) {
         const landform = this.boundary.getLandform(level)
-        this.boundaryMap.set(regionId, this.boundary)
+        this.deformationMap.set(regionId, this.boundary)
         this.landformMap.set(regionId, landform)
     }
 
