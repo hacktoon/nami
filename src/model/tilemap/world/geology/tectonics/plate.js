@@ -67,7 +67,7 @@ export class PlateMap {
     }
 
     isOceanic(plateId) {
-        return this.plates.get(plateId).type === TYPE_OCEANIC
+        return this.types[plateId] === TYPE_OCEANIC
     }
 
     hasHotspot(plateId) {
