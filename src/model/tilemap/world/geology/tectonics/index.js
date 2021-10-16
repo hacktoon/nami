@@ -18,18 +18,24 @@ export class TectonicsModel {
         this.boundaryMap = new Map()
         this.chance = params.get('chance')
         this.growth = params.get('growth')
+
+        this.boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
+        // this.regionBoundaries = new Map()
+        // this.realmTileMap.getBorderRegions().forEach(regionId => {
+        //     const realmId = this.realmTileMap.getRealmByRegion(regionId)
+        //     const boundary = this._buildBoundary(realmId, regionId)
+        //     this.regionBoundaries.set(regionId, boundary)
+        // })
+
         this._buildLandforms()
-        this._buildHotspots()
         // this.mapFill = new PlateMultiFill(this)
+        this._buildHotspots()
     }
 
     _buildLandforms() {
-        const boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
-        // TODO: create boundaryMap here and pass to fill
-        // const boundaryMap = this._buildBoundary(boundaryModel, realmId, regionId)
         const fills = this.realmTileMap.getBorderRegions().map(regionId => {
             const realmId = this.realmTileMap.getRealmByRegion(regionId)
-            const boundary = this._buildBoundary(boundaryModel, realmId, regionId)
+            const boundary = this._buildBoundary(realmId, regionId)
             const fillConfig = new RegionFillConfig({
                 realmTileMap: this.realmTileMap,
                 landformMap: this.landformMap,
@@ -41,12 +47,12 @@ export class TectonicsModel {
         new MultiFill(fills)
     }
 
-    _buildBoundary(boundaryModel, realmId, regionId) {
+    _buildBoundary(realmId, regionId) {
         const neighborRegionIds = this.realmTileMap.getNeighborRegions(regionId)
         for(let neighborId of neighborRegionIds) {
             const neighborRealmId = this.realmTileMap.getRealmByRegion(neighborId)
             if (neighborRealmId !== realmId) {
-                return boundaryModel.get(realmId, neighborRealmId)
+                return this.boundaryModel.get(realmId, neighborRealmId)
             }
         }
     }
