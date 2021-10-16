@@ -16,11 +16,10 @@ export class PlateMap {
 
         this.directions = []
         this.types = []
+        this.weights = []
         this._hasHotspot = []
 
         realms.forEach(realmId => {
-            const origin = realmTileMap.getRealmOriginById(realmId)
-            const area = realmTileMap.getRealmAreaById(realmId)
             const isLandlocked = realmTileMap.getNeighborRealms(realmId)
                 .concat(realmId)
                 .every(neighborId => {
@@ -28,12 +27,10 @@ export class PlateMap {
                 })
             const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(realmId)
             const baseWeight = (type === TYPE_OCEANIC ? realms.length * 10 : 0)
-            const weight = realmId + baseWeight
-            const plate = new Plate(realmId, origin, type, area, weight)
+            this.weights.push(realmId + baseWeight)
             this.directions.push(Direction.random())
             this.types.push(type)
             this._hasHotspot.push(Random.chance(HOTSPOT_CHANCE))
-            this.plates.set(realmId, plate)
         })
     }
 
@@ -54,16 +51,12 @@ export class PlateMap {
         return this.plates.size
     }
 
-    get(plateId) {
-        return this.plates.get(plateId)
-    }
-
     getDirection(plateId) {
         return this.directions[plateId]
     }
 
-    getOrigin(plateId) {
-        return this.realmTileMap.getRealmOriginById(plateId)
+    getWeight(plateId) {
+        return this.weights[plateId]
     }
 
     isOceanic(plateId) {
@@ -80,20 +73,5 @@ export class PlateMap {
 
     map(callback) {
         this.plates.map(callback)
-    }
-
-    values() {
-        return this.plates.values()
-    }
-}
-
-
-class Plate {
-    constructor(id, origin, type, area, weight) {
-        this.id = id
-        this.type = type
-        this.area = area
-        this.origin = origin
-        this.weight = weight
     }
 }

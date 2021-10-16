@@ -36,15 +36,13 @@ export class BoundaryModel {
     }
 
     _buildRealmsBoundary(realmId, neighborRealmId) {
-        const plate = this.plateMap.get(realmId)
-        const otherPlate = this.plateMap.get(neighborRealmId)
         const dirToNeighbor = this.realmTileMap.getRealmDirection(realmId, neighborRealmId)
         const dirFromNeighbor = this.realmTileMap.getRealmDirection(neighborRealmId, realmId)
         const plateDir = this.plateMap.getDirection(realmId)
         const neighborPlateDir = this.plateMap.getDirection(neighborRealmId)
         const dotTo = Direction.dotProduct(plateDir, dirToNeighbor)
         const dotFrom = Direction.dotProduct(neighborPlateDir, dirFromNeighbor)
-        return this._boundaryTable.build(plate, otherPlate, dotTo, dotFrom)
+        return this._boundaryTable.build(realmId, neighborRealmId, dotTo, dotFrom)
     }
 
     get(realmId, neighborRealmId) {
@@ -65,14 +63,14 @@ class BoundaryTable {
         })
     }
 
-    build(p1, p2, dotTo, dotFrom) {
-        const type1 = this.plateMap.isOceanic(p1.id) ? PLATE_OCEANIC : PLATE_CONTINENTAL
-        const type2 = this.plateMap.isOceanic(p2.id) ? PLATE_OCEANIC : PLATE_CONTINENTAL
+    build(realmId, neighborRealmId, dotTo, dotFrom) {
+        const type1 = this.plateMap.isOceanic(realmId) ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const type2 = this.plateMap.isOceanic(neighborRealmId) ? PLATE_OCEANIC : PLATE_CONTINENTAL
         const dir1 = this._parseDir(dotTo)
         const dir2 = this._parseDir(dotFrom)
         const id = type1 + type2 + dir1 + dir2
         const spec = this.#codeTable.get(id)
-        return this._buildBoundary(spec, p1, p2)
+        return this._buildBoundary(spec, realmId, neighborRealmId)
     }
 
     _parseDir(dir) {
@@ -80,10 +78,12 @@ class BoundaryTable {
         return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
     }
 
-    _buildBoundary(spec, p1, p2) {
+    _buildBoundary(spec, realmId, neighborRealmId) {
         const first = spec.data[0]
         const second = spec.data.length === 1 ? first : spec.data[1]
-        const data = p1.weight > p2.weight ? first : second
+        const realmWeight = this.plateMap.getWeight(realmId)
+        const neighborRealmWeight = this.plateMap.getWeight(neighborRealmId)
+        const data = realmWeight > neighborRealmWeight ? first : second
         return new Boundary(spec, data)
     }
 }
