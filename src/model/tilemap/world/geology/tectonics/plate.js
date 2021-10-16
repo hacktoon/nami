@@ -27,10 +27,10 @@ export class PlateMap {
                 })
             const type = isLandlocked ? TYPE_OCEANIC : typeMap.get(realmId)
             const baseWeight = (type === TYPE_OCEANIC ? realms.length * 10 : 0)
-            this.weights.push(realmId + baseWeight)
-            this.directions.push(Direction.random())
-            this.types.push(type)
             this._hasHotspot.push(Random.chance(HOTSPOT_CHANCE))
+            this.directions.push(Direction.random())
+            this.weights.push(realmId + baseWeight)
+            this.types.push(type)
         })
     }
 
@@ -48,7 +48,7 @@ export class PlateMap {
     }
 
     get size() {
-        return this.plates.size
+        return this.realmTileMap.size
     }
 
     getDirection(plateId) {

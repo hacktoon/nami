@@ -104,6 +104,10 @@ export class RealmTileMap extends TileMap {
         }
     }
 
+    get size() {
+        return this.origins.length
+    }
+
     getRealm(point) {
         const regionId = this.getRegion(point)
         return this.getRealmByRegion(regionId)
