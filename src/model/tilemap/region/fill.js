@@ -34,6 +34,7 @@ class RegionFloodFill extends GenericFloodFill {
 export class RegionMultiFill extends GenericMultiFill {
     constructor(model, params) {
         super(model.origins, model, RegionFloodFill)
+        this.params = params
     }
 
     getChance(origin) {

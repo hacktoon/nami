@@ -2,27 +2,27 @@ import { Random } from '/lib/random'
 
 
 export class GenericMultiFill {
-    constructor(origins, model, fillClass) {
+    constructor(origins, model, FillClass) {
         this.origins = origins
         this.seedTable = []
         this.levelTable = []
         this.areaTable = []
+        this.growthTable = []
+        this.chanceTable = []
         this.model = model
         this.canGrow = true
-        this.fill = new fillClass(
-            this.model,
-            {
-                seedTable: this.seedTable,
-                levelTable: this.levelTable,
-                areaTable: this.areaTable,
-            }
-        )
-        for(let id = 0; id < origins.length; id ++) {
-            const origin = origins[id]
+        this.filler = new FillClass(this)
+    }
+
+    fill() {
+        for(let id = 0; id < this.origins.length; id ++) {
+            const origin = this.origins[id]
             this.areaTable.push(0)
             this.levelTable.push(0)
             this.seedTable.push([origin])
-            this.fill.fillValue(origin, id)
+            this.growthTable.push(this.getGrowth(origin))
+            this.chanceTable.push(this.getChance(origin))
+            this.filler.fillValue(origin, id)
         }
         while(this.canGrow) {
             this._growFills()
@@ -33,11 +33,19 @@ export class GenericMultiFill {
         return this.areaTable[id]
     }
 
+    getChance(origin) {
+        return .1
+    }
+
+    getGrowth(origin) {
+        return 0
+    }
+
     _growFills() {
         let completedFills = 0
 
         for(let id = 0; id < this.origins.length; id ++) {
-            const filledPoints = this.fill.grow(id)
+            const filledPoints = this.filler.grow(id)
             if (filledPoints.length === 0) {
                 completedFills++
             }
@@ -50,13 +58,13 @@ export class GenericMultiFill {
 
 
 export class GenericFloodFill {
-    constructor(model, table) {
-        this.model = model
-        this.seedTable = table.seedTable
-        this.areaTable = table.areaTable
-        this.levelTable = table.levelTable
-        this.growth = model.growth ?? 1
-        this.chance = model.chance ?? .1
+    constructor(controller) {
+        this.model = controller.model
+        this.seedTable = controller.seedTable
+        this.areaTable = controller.areaTable
+        this.levelTable = controller.levelTable
+        this.growth = controller.model.growth ?? 1
+        this.chance = controller.model.chance ?? .1
     }
 
     grow(id) {

@@ -29,10 +29,18 @@ class RealmFloodFill extends GenericFloodFill {
 
 
 export class RealmMultiFill extends GenericMultiFill {
-    constructor(model) {
-        const regionIds = model.origins.map(origin => {
-            return model.getRegion(origin)
-        })
+    constructor(model, params) {
+        const origins = model.origins
+        const regionIds = origins.map(origin => model.getRegion(origin))
         super(regionIds, model, RealmFloodFill)
+        this.params = params
+    }
+
+    getChance(origin) {
+        return this.params.get('chance')
+    }
+
+    getGrowth(origin) {
+        return this.params.get('growth')
     }
 }

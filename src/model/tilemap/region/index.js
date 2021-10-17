@@ -47,11 +47,10 @@ export class RegionTileMap extends TileMap {
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.levelMatrix = new Matrix(width, height, () => 0)
         this.borderMatrix = new Matrix(width, height, () => new Set())
-        this.chance = params.get('chance')
-        this.growth = params.get('growth')
         this.graph = new Graph()
         this.regions = this.origins.map((_, id) => id)
-        this.mapFill = new RegionMultiFill(this)
+        this.mapFill = new RegionMultiFill(this, params)
+        this.mapFill.fill()
     }
 
     get size() {
