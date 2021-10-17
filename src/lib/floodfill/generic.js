@@ -4,12 +4,12 @@ import { Random } from '/lib/random'
 export class GenericMultiFill {
     constructor(origins, model, FillClass) {
         this.origins = origins
+        this.model = model
         this.seedTable = []
         this.levelTable = []
         this.areaTable = []
         this.growthTable = []
         this.chanceTable = []
-        this.model = model
         this.canGrow = true
         this.filler = new FillClass(this)
     }

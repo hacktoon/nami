@@ -16,17 +16,15 @@ export class TectonicsModel {
         this.plateMap = new PlateMap(realmTileMap)
         this.landformMap = new Map()
         this.deformationMap = new Map()
-
         this.boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
         this.regionBoundaryMap = new Map()
         this.realmTileMap.getBorderRegions().forEach(regionId => {
-            const realmId = this.realmTileMap.getRealmByRegion(regionId)
-            const boundary = this._buildBoundary(realmId, regionId)
+            const boundary = this._buildBoundary(regionId)
             this.regionBoundaryMap.set(regionId, boundary)
         })
-
         this._buildLandforms()
         // this.mapFill = new PlateMultiFill(this)
+        // this.mapFill.fill()
         this._buildHotspots()
     }
 
@@ -44,7 +42,8 @@ export class TectonicsModel {
         new MultiFill(fills)
     }
 
-    _buildBoundary(realmId, regionId) {
+    _buildBoundary(regionId) {
+        const realmId = this.realmTileMap.getRealmByRegion(regionId)
         const neighborRegionIds = this.realmTileMap.getNeighborRegions(regionId)
         for(let neighborId of neighborRegionIds) {
             const neighborRealmId = this.realmTileMap.getRealmByRegion(neighborId)
@@ -99,10 +98,6 @@ export class TectonicsModel {
             points.push(current)
         }
         return points
-    }
-
-    get(id) {
-        return this.plateMap.get(id)
     }
 
     getPlates() {
