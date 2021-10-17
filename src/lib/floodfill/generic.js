@@ -63,8 +63,8 @@ export class GenericFloodFill {
         this.seedTable = controller.seedTable
         this.areaTable = controller.areaTable
         this.levelTable = controller.levelTable
-        this.growth = controller.model.growth ?? 1
-        this.chance = controller.model.chance ?? .1
+        this.growthTable = controller.growthTable
+        this.chanceTable = controller.chanceTable
     }
 
     grow(id) {
@@ -106,17 +106,19 @@ export class GenericFloodFill {
     }
 
     _growRandomLayers(id) {
-        for(let i = 0; i < this.growth; i++) {
-            const [extra, other] = this._splitSeeds(this.seedTable[id])
+        const growth = this.growthTable[id]
+        for(let i = 0; i < growth; i++) {
+            const [extra, other] = this._splitSeeds(id, this.seedTable[id])
             let extraSeeds = this._growLayer(id, extra)
             this.seedTable[id] = other.concat(extraSeeds)
         }
     }
 
-    _splitSeeds(seeds) {
+    _splitSeeds(id, seeds) {
         const first = [], second = []
+        const chance = this.chanceTable[id]
         for(let seed of seeds) {
-            const outputArray = Random.chance(this.chance) ? first : second
+            const outputArray = Random.chance(chance) ? first : second
             outputArray.push(seed)
         }
         return [first, second]
