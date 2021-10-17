@@ -18,12 +18,12 @@ export class TectonicsModel {
         this.deformationMap = new Map()
 
         this.boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
-        // this.regionBoundaries = new Map()
-        // this.realmTileMap.getBorderRegions().forEach(regionId => {
-        //     const realmId = this.realmTileMap.getRealmByRegion(regionId)
-        //     const boundary = this._buildBoundary(realmId, regionId)
-        //     this.regionBoundaries.set(regionId, boundary)
-        // })
+        this.regionBoundaryMap = new Map()
+        this.realmTileMap.getBorderRegions().forEach(regionId => {
+            const realmId = this.realmTileMap.getRealmByRegion(regionId)
+            const boundary = this._buildBoundary(realmId, regionId)
+            this.regionBoundaryMap.set(regionId, boundary)
+        })
 
         this._buildLandforms()
         // this.mapFill = new PlateMultiFill(this)
@@ -32,13 +32,12 @@ export class TectonicsModel {
 
     _buildLandforms() {
         const fills = this.realmTileMap.getBorderRegions().map(regionId => {
-            const realmId = this.realmTileMap.getRealmByRegion(regionId)
-            const boundary = this._buildBoundary(realmId, regionId)
             const fillConfig = new RegionFillConfig({
                 realmTileMap: this.realmTileMap,
                 landformMap: this.landformMap,
                 deformationMap: this.deformationMap,
-                boundary,
+                regionBoundaryMap: this.regionBoundaryMap,
+                regionId,
             })
             return new OrganicFloodFill(regionId, fillConfig)
         })
@@ -88,8 +87,7 @@ export class TectonicsModel {
         const count = Random.choice(2, 3)
         const size = this.realmTileMap.getAverageRegionArea()
         const offsets = []
-        const xSig = Random.choice(-1, 1)
-        const ySig = Random.choice(-1, 1)
+        const [xSig, ySig] = [Random.choice(-1, 1), Random.choice(-1, 1)]
         for (let i = 1; i <= count; i++) {
             const point = [size + i * xSig, size + i * ySig]
             offsets.push(point)
@@ -141,13 +139,13 @@ export class TectonicsModel {
 class RegionFillConfig extends FloodFillConfig {
     constructor(data) {
         super()
-        this.realmTileMap = data.realmTileMap
         this.landformMap = data.landformMap
+        this.realmTileMap = data.realmTileMap
         this.deformationMap = data.deformationMap
-        this.boundary = data.boundary
-
-        this.chance = data.boundary.chance
-        this.growth = data.boundary.growth
+        this.regionBoundaryMap = data.regionBoundaryMap
+        this.boundary = this.regionBoundaryMap.get(data.regionId)
+        this.chance = this.boundary.chance
+        this.growth = this.boundary.growth
     }
 
     isEmpty(neighborRegionId) {

@@ -22,7 +22,7 @@ export class GenericMultiFill {
             this.seedTable.push([origin])
             this.growthTable.push(this.getGrowth(origin))
             this.chanceTable.push(this.getChance(origin))
-            this.filler.fillValue(origin, id)
+            this.filler._fillValue(origin, id)
         }
         while(this.canGrow) {
             this._growFills()
@@ -74,17 +74,9 @@ export class GenericFloodFill {
         return seeds
     }
 
-    fillValue(value, id) {
+    _fillValue(value, id) {
         this.setValue(id, value)
         this.areaTable[id] += this.getArea(value)
-    }
-
-    setValue(id, value) {
-
-    }
-
-    getArea(value) {
-        return 1
     }
 
     _growLayer(id, seeds) {
@@ -108,7 +100,7 @@ export class GenericFloodFill {
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
-            this.fillValue(neighbor, id)
+            this._fillValue(neighbor, id)
         })
         return filledNeighbors
     }
@@ -128,5 +120,23 @@ export class GenericFloodFill {
             outputArray.push(seed)
         }
         return [first, second]
+    }
+
+    // EXTENSIBLE METHODS ==========================
+
+    setValue(id, value) { }
+
+    isEmpty(origin) {
+        return []
+    }
+
+    getNeighbors(origin) {
+        return []
+    }
+
+    checkNeighbor(origin) { }
+
+    getArea(value) {
+        return 1
     }
 }
