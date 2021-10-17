@@ -21,11 +21,11 @@ const SCHEMA = new Schema(
     Type.number('width', 'W', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 34, step: 1, min: 1, max: 100}),
-    Type.number('chance', 'Chance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
+    Type.number('chance', 'Chance', {default: .1, step: .1, min: .1, max: 1}),
     Type.number('growth', 'Growth', {default: 25, step: 1, min: 0, max: 100}),
     Type.number('rgScale', 'RgScale', {default: 2, step: 1, min: 1, max: 100}),
     Type.number('rgGrowth', 'RgGrowth', {default: 0, step: 1, min: 0, max: 100}),
-    Type.number('rgChance', 'RgChance', {default: 0.1, step: 0.1, min: 0.1, max: 1}),
+    Type.number('rgChance', 'RgChance', {default: .1, step: .1, min: .1, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -138,24 +138,6 @@ export class RealmTileMap extends TileMap {
         return this.realms.sort(cmpDescendingArea)
     }
 
-    getRegion(point) {
-        return this.regionTileMap.getRegion(point)
-    }
-
-    getRegionOrigin(point) {
-        return this.regionTileMap.getRegionOrigin(point)
-    }
-
-    getRegions() {
-        return this.regionTileMap.getRegions()
-    }
-
-    getBorderRegions() {
-        return this.regionTileMap.regions.filter(regionId => {
-            return this.isBorderRegion(regionId)
-        })
-    }
-
     getNeighborRealms(realmId) {
         return this.graph.getEdges(realmId)
     }
@@ -168,6 +150,35 @@ export class RealmTileMap extends TileMap {
         return this.regionToRealm.get(regionId)
     }
 
+    isRealmBorder(point) {
+        const neighborRegionIds = this.regionTileMap.getBorderRegions(point)
+        if (neighborRegionIds.length === 0) return false
+        const realmId = this.getRealm(point)
+        for (let regionId of neighborRegionIds) {
+            const id = this.regionToRealm.get(regionId)
+            if (id !== realmId) return true
+        }
+        return false
+    }
+
+    getRegion(point) {
+        return this.regionTileMap.getRegion(point)
+    }
+
+    getRegions() {
+        return this.regionTileMap.getRegions()
+    }
+
+    getRegionOrigin(point) {
+        return this.regionTileMap.getRegionOrigin(point)
+    }
+
+    getBorderRegions() {
+        return this.regionTileMap.regions.filter(regionId => {
+            return this.isBorderRegion(regionId)
+        })
+    }
+
     getNeighborRegions(regionId) {
         return this.regionTileMap.getNeighborRegions(regionId)
     }
@@ -178,17 +189,6 @@ export class RealmTileMap extends TileMap {
 
     isRegionBorder(point) {
         return this.regionTileMap.isBorder(point)
-    }
-
-    isRealmBorder(point) {
-        const neighborRegionIds = this.regionTileMap.getBorderRegions(point)
-        if (neighborRegionIds.length === 0) return false
-        const realmId = this.getRealm(point)
-        for (let regionId of neighborRegionIds) {
-            const id = this.regionToRealm.get(regionId)
-            if (id !== realmId) return true
-        }
-        return false
     }
 
     getAverageRegionArea() {
