@@ -3,7 +3,6 @@ import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 
 class PlateFloodFill extends GenericFloodFill {
     setValue(id, regionId) {
-        console.log('----> ', id, regionId);
         const boundary = this.model.regionBoundaryMap.get(regionId)
         const landform = boundary.getLandform(regionId)
         this.model.deformationMap.set(regionId, boundary)
@@ -22,8 +21,8 @@ class PlateFloodFill extends GenericFloodFill {
 
 export class PlateMultiFill extends GenericMultiFill {
     constructor(model) {
-        const borderRegionIds = model.realmTileMap.getBorderRegions()
-        super(borderRegionIds, model, PlateFloodFill)
+        const regionIds = model.realmTileMap.getBorderRegions()
+        super(regionIds, model, PlateFloodFill)
     }
 
     getChance(regionId) {

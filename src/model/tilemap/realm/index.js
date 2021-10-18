@@ -60,6 +60,7 @@ export class RealmTileMap extends TileMap {
         this.mapFill = new RealmMultiFill(this, params)
         this.mapFill.fill()
         this.directions = this._buildDirections()
+        this._borderRegions = this._buildBorderRegions()
     }
 
     _buildRegionTileMap(params) {
@@ -70,6 +71,11 @@ export class RealmTileMap extends TileMap {
         return RegionTileMap.fromData(data)
     }
 
+    _buildBorderRegions() {
+        return this.regionTileMap.regions.filter(regionId => {
+            return this.isBorderRegion(regionId)
+        })
+    }
 
     _buildDirections() {
         const directions = new PairMap()
@@ -174,9 +180,7 @@ export class RealmTileMap extends TileMap {
     }
 
     getBorderRegions() {
-        return this.regionTileMap.regions.filter(regionId => {
-            return this.isBorderRegion(regionId)
-        })
+        return this._borderRegions
     }
 
     getNeighborRegions(regionId) {

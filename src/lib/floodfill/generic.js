@@ -1,70 +1,14 @@
 import { Random } from '/lib/random'
 
 
-export class GenericMultiFill {
-    constructor(origins, model, FillClass) {
-        this.origins = origins
-        this.model = model
-        this.seedTable = []
-        this.levelTable = []
-        this.areaTable = []
-        this.growthTable = []
-        this.chanceTable = []
-        this.canGrow = true
-        this.filler = new FillClass(this)
-    }
-
-    fill(x) {
-        for(let id = 0; id < this.origins.length; id ++) {
-            const origin = this.origins[id]
-            this.areaTable.push(0)
-            this.levelTable.push(0)
-            this.seedTable.push([origin])
-            this.growthTable.push(this.getGrowth(origin))
-            this.chanceTable.push(this.getChance(origin))
-            this.filler._fillValue(id, origin)
-        }
-        while(this.canGrow) {
-            this._growFills()
-        }
-    }
-
-    getArea(id) {
-        return this.areaTable[id]
-    }
-
-    getChance(origin) {
-        return .1
-    }
-
-    getGrowth(origin) {
-        return 0
-    }
-
-    _growFills() {
-        let completedFills = 0
-
-        for(let id = 0; id < this.origins.length; id ++) {
-            const filledPoints = this.filler.grow(id)
-            if (filledPoints.length === 0) {
-                completedFills++
-            }
-        }
-        if (completedFills === this.origins.length) {
-            this.canGrow = false
-        }
-    }
-}
-
-
 export class GenericFloodFill {
-    constructor(controller) {
-        this.model = controller.model
-        this.seedTable = controller.seedTable
-        this.areaTable = controller.areaTable
-        this.levelTable = controller.levelTable
-        this.growthTable = controller.growthTable
-        this.chanceTable = controller.chanceTable
+    constructor(multiFill) {
+        this.model = multiFill.model
+        this.seedTable = multiFill.seedTable
+        this.areaTable = multiFill.areaTable
+        this.levelTable = multiFill.levelTable
+        this.growthTable = multiFill.growthTable
+        this.chanceTable = multiFill.chanceTable
     }
 
     grow(id) {
@@ -140,5 +84,61 @@ export class GenericFloodFill {
 
     getArea(value) {
         return 1
+    }
+}
+
+
+export class GenericMultiFill {
+    constructor(origins, model, FillClass) {
+        this.origins = origins
+        this.model = model
+        this.seedTable = []
+        this.levelTable = []
+        this.areaTable = []
+        this.growthTable = []
+        this.chanceTable = []
+        this.canGrow = true
+        this.filler = new FillClass(this)
+    }
+
+    fill(x) {
+        for(let id = 0; id < this.origins.length; id ++) {
+            const origin = this.origins[id]
+            this.areaTable.push(0)
+            this.levelTable.push(0)
+            this.seedTable.push([origin])
+            this.growthTable.push(this.getGrowth(origin))
+            this.chanceTable.push(this.getChance(origin))
+            this.filler._fillValue(id, origin)
+        }
+        while(this.canGrow) {
+            this._growFills()
+        }
+    }
+
+    getArea(id) {
+        return this.areaTable[id]
+    }
+
+    getChance(origin) {
+        return .1
+    }
+
+    getGrowth(origin) {
+        return 0
+    }
+
+    _growFills() {
+        let completedFills = 0
+
+        for(let id = 0; id < this.origins.length; id ++) {
+            const filledPoints = this.filler.grow(id)
+            if (filledPoints.length === 0) {
+                completedFills++
+            }
+        }
+        if (completedFills === this.origins.length) {
+            this.canGrow = false
+        }
     }
 }

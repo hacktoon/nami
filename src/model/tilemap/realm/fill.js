@@ -6,20 +6,20 @@ class RealmFloodFill extends GenericFloodFill {
         return ! this.model.regionToRealm.has(regionId)
     }
 
-    setValue(id, regionId) {
-        this.model.regionToRealm.set(regionId, id)
+    setValue(realmId, regionId) {
+        this.model.regionToRealm.set(regionId, realmId)
     }
 
     getArea(regionId) {
         return this.model.regionTileMap.getRegionAreaById(regionId)
     }
 
-    checkNeighbor(id, neighborRegionId, centerRegionId) {
+    checkNeighbor(realmId, neighborRegionId, centerRegionId) {
         if (this.isEmpty(neighborRegionId)) return
         const neighborRealmId = this.model.regionToRealm.get(neighborRegionId)
-        if (neighborRealmId === id) return
+        if (neighborRealmId === realmId) return
         this.model.borderRegions.add(centerRegionId)
-        this.model.graph.setEdge(id, neighborRealmId)
+        this.model.graph.setEdge(realmId, neighborRealmId)
     }
 
     getNeighbors(regionId) {
