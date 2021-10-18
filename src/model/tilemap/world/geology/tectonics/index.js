@@ -24,7 +24,7 @@ export class TectonicsModel {
         })
         this._buildLandforms()
         // this.mapFill = new PlateMultiFill(this)
-        // this.mapFill.fill()
+        // this.mapFill.fill(true)
         this._buildHotspots()
     }
 
