@@ -2,12 +2,12 @@ import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 
 
 class RealmFloodFill extends GenericFloodFill {
-    isEmpty(regionId) {
-        return ! this.model.regionToRealm.has(regionId)
+    setValue(realmId, regionId, level) {
+        this.model.regionToRealm.set(regionId, realmId)
     }
 
-    setValue(realmId, regionId) {
-        this.model.regionToRealm.set(regionId, realmId)
+    isEmpty(regionId) {
+        return ! this.model.regionToRealm.has(regionId)
     }
 
     getArea(regionId) {
@@ -36,11 +36,11 @@ export class RealmMultiFill extends GenericMultiFill {
         this.params = params
     }
 
-    getChance(origin) {
+    getChance(id, origin) {
         return this.params.get('chance')
     }
 
-    getGrowth(origin) {
+    getGrowth(id, origin) {
         return this.params.get('growth')
     }
 }

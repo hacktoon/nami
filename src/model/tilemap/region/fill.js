@@ -6,8 +6,7 @@ const NO_REGION = null
 
 
 class RegionFloodFill extends GenericFloodFill {
-    setValue(id, point) {
-        const level = this.levelTable[id]
+    setValue(id, point, level) {
         this.model.regionMatrix.set(point, id)
         this.model.levelMatrix.set(point, level)
     }
@@ -37,11 +36,11 @@ export class RegionMultiFill extends GenericMultiFill {
         this.params = params
     }
 
-    getChance(origin) {
+    getChance(id, origin) {
         return this.params.get('chance')
     }
 
-    getGrowth(origin) {
+    getGrowth(id, origin) {
         return this.params.get('growth')
     }
 }

@@ -2,12 +2,9 @@ import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 
 
 class PlateFloodFill extends GenericFloodFill {
-    setValue(id, regionId) {
-        const bId = this.model.origins[id]
-        // if (bId != regionId)
-        //     console.log('----> ', id, bId, regionId)
-        const boundary = this.model.regionBoundaryMap.get(bId)
-        const landform = boundary.getLandform(regionId)
+    setValue(id, regionId, level) {
+        const boundary = this.model.regionBoundaryMap.get(id)
+        const landform = boundary.getLandform(level)
         this.model.deformationMap.set(regionId, boundary)
         this.model.landformMap.set(regionId, landform)
     }
@@ -28,13 +25,13 @@ export class PlateMultiFill extends GenericMultiFill {
         super(regionIds, model, PlateFloodFill)
     }
 
-    getChance(regionId) {
-        const boundary = this.model.regionBoundaryMap.get(regionId)
+    getChance(id, regionId) {
+        const boundary = this.model.regionBoundaryMap.get(id)
         return boundary.chance
     }
 
-    getGrowth(regionId) {
-        const boundary = this.model.regionBoundaryMap.get(regionId)
+    getGrowth(id, regionId) {
+        const boundary = this.model.regionBoundaryMap.get(id)
         return boundary.growth
     }
 }

@@ -1,7 +1,5 @@
 import { Point } from '/lib/point'
 import { Random } from '/lib/random'
-import { MultiFill, FloodFillConfig } from '/lib/floodfill'
-import { OrganicFloodFill } from '/lib/floodfill/organic'
 
 import { Landform } from '../landform'
 import { BoundaryModel } from './boundary'
@@ -18,27 +16,17 @@ export class TectonicsModel {
         this.boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
         this.regionBoundaryMap = new Map()
         this.origins = this.realmTileMap.getBorderRegions()
-        this.origins.forEach(regionId => {
-            const boundary = this._buildBoundary(regionId)
-            this.regionBoundaryMap.set(regionId, boundary)
-        })
-        this._buildLandforms()
-        // this.mapFill = new PlateMultiFill(this); this.mapFill.fill(true)
+        this.mapFill = this._buildMapFill()
         this._buildHotspots()
     }
 
-    _buildLandforms() {
-        const fills = this.origins.map(regionId => {
-            const fillConfig = new RegionFillConfig({
-                realmTileMap: this.realmTileMap,
-                landformMap: this.landformMap,
-                deformationMap: this.deformationMap,
-                regionBoundaryMap: this.regionBoundaryMap,
-                regionId,
-            })
-            return new OrganicFloodFill(regionId, fillConfig)
-        })
-        new MultiFill(fills)
+    _buildMapFill() {
+        for(let id = 0; id < this.origins.length; id ++) {
+            const regionId = this.origins[id]
+            const boundary = this._buildBoundary(regionId)
+            this.regionBoundaryMap.set(id, boundary)
+        }
+        this.mapFill = new PlateMultiFill(this); this.mapFill.fill(true)
     }
 
     _buildBoundary(regionId) {
@@ -115,6 +103,10 @@ export class TectonicsModel {
         return this.deformationMap.get(regionId)
     }
 
+    getBoundary(regionId) {
+        return this.deformationMap.get(regionId)
+    }
+
     getLandformByPoint(point) {
         const regionId = this.realmTileMap.getRegion(point)
         return this.landformMap.get(regionId)
@@ -126,33 +118,5 @@ export class TectonicsModel {
 
     get size() {
         return this.plateMap.size
-    }
-}
-
-
-class RegionFillConfig extends FloodFillConfig {
-    constructor(data) {
-        super()
-        this.landformMap = data.landformMap
-        this.realmTileMap = data.realmTileMap
-        this.deformationMap = data.deformationMap
-        this.regionBoundaryMap = data.regionBoundaryMap
-        this.boundary = this.regionBoundaryMap.get(data.regionId)
-        this.chance = this.boundary.chance
-        this.growth = this.boundary.growth
-    }
-
-    isEmpty(neighborRegionId) {
-        return !this.landformMap.has(neighborRegionId)
-    }
-
-    setValue(regionId, level) {
-        const landform = this.boundary.getLandform(level)
-        this.deformationMap.set(regionId, this.boundary)
-        this.landformMap.set(regionId, landform)
-    }
-
-    getNeighbors(regionId) {
-        return this.realmTileMap.getNeighborRegions(regionId)
     }
 }
