@@ -1,4 +1,3 @@
-import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
 import { Random } from '/lib/random'
 import { MultiFill, FloodFillConfig } from '/lib/floodfill'
@@ -18,18 +17,18 @@ export class TectonicsModel {
         this.deformationMap = new Map()
         this.boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
         this.regionBoundaryMap = new Map()
-        this.realmTileMap.getBorderRegions().forEach(regionId => {
+        this.origins = this.realmTileMap.getBorderRegions()
+        this.origins.forEach(regionId => {
             const boundary = this._buildBoundary(regionId)
             this.regionBoundaryMap.set(regionId, boundary)
         })
         this._buildLandforms()
-        // this.mapFill = new PlateMultiFill(this)
-        // this.mapFill.fill(true)
+        // this.mapFill = new PlateMultiFill(this); this.mapFill.fill(true)
         this._buildHotspots()
     }
 
     _buildLandforms() {
-        const fills = this.realmTileMap.getBorderRegions().map(regionId => {
+        const fills = this.origins.map(regionId => {
             const fillConfig = new RegionFillConfig({
                 realmTileMap: this.realmTileMap,
                 landformMap: this.landformMap,

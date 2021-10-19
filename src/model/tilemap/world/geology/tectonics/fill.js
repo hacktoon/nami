@@ -3,7 +3,10 @@ import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
 
 class PlateFloodFill extends GenericFloodFill {
     setValue(id, regionId) {
-        const boundary = this.model.regionBoundaryMap.get(regionId)
+        const bId = this.model.origins[id]
+        // if (bId != regionId)
+        //     console.log('----> ', id, bId, regionId)
+        const boundary = this.model.regionBoundaryMap.get(bId)
         const landform = boundary.getLandform(regionId)
         this.model.deformationMap.set(regionId, boundary)
         this.model.landformMap.set(regionId, landform)

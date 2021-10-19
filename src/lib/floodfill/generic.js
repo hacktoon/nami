@@ -12,18 +12,13 @@ export class GenericFloodFill {
     }
 
     grow(id) {
-        const seeds = this._growLayer(id, this.seedTable[id])
+        const seeds = this._growSeeds(id, this.seedTable[id])
         this.seedTable[id] = seeds
         this._growRandomLayers(id)
         return seeds
     }
 
-    _fillValue(id, origin) {
-        this.setValue(id, origin)
-        this.areaTable[id] += this.getArea(origin)
-    }
-
-    _growLayer(id, seeds) {
+    _growSeeds(id, seeds) {
         let newSeeds = []
         for(let seed of seeds) {
             const filledNeighbors = this._fillNeighbors(id, seed)
@@ -33,6 +28,11 @@ export class GenericFloodFill {
             this.levelTable[id] += 1
         }
         return newSeeds
+    }
+
+    _fillValue(id, origin) {
+        this.setValue(id, origin)
+        this.areaTable[id] += this.getArea(origin)
     }
 
     _fillNeighbors(id, origin) {
@@ -53,7 +53,7 @@ export class GenericFloodFill {
         const growth = this.growthTable[id]
         for(let i = 0; i < growth; i++) {
             const [extra, other] = this._splitSeeds(id, this.seedTable[id])
-            let extraSeeds = this._growLayer(id, extra)
+            let extraSeeds = this._growSeeds(id, extra)
             this.seedTable[id] = other.concat(extraSeeds)
         }
     }

@@ -207,19 +207,17 @@ export const BOUNDARY_TABLE = [
     {key: 'WWDD', name: 'Oceanic rift',
     data: [
         {landscape: [
-            {level: 0, name: 'SHALLOW_SEA'},
+            {level: 0, name: 'TRENCH'},
             {level: 1, name: 'DEEP_SEA'},
         ]},
-        {landscape: [{level: 0, name: 'SHALLOW_SEA'}]}
+        {chance: .1, growth: 1, landscape: [
+            {level: 0, name: 'DEEP_SEA'}
+        ]}
     ]},
     // ==============================================
     {key: 'WWDT', name: 'Early oceanic rift',
     data: [
-        {landscape: [
-            {level: 0, name: 'SHALLOW_SEA'},
-            {level: 1, name: 'DEEP_SEA'},
-        ]},
-        {landscape: [{level: 0, name: 'SHALLOW_SEA'}]}
+        {landscape: [{level: 0, name: 'DEEP_SEA'}]},
     ]},
     // ==============================================
     {key: 'WWTT', name: 'Oceanic fault',
