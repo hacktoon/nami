@@ -1,4 +1,4 @@
-import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
+import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
 
 
 class RealmFloodFill extends GenericFloodFill {

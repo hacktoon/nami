@@ -7,7 +7,6 @@
 
 ## ROADMAP
 #### GeologyTileMap
-- Convert FloodFill to table-based
 - Add islets again
 - Fix depression/water border
 - Add features to border/color properties of landforms

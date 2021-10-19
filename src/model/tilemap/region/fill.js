@@ -1,5 +1,5 @@
 import { Point } from '/lib/point'
-import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill/generic'
+import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
 
 
 const NO_REGION = null
