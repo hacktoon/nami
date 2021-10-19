@@ -37,7 +37,7 @@ export class GeologyTileMap extends TileMap {
         this.realmTileMap = this._buildRealmTileMap(params)
         this.tectonicsModel = new TectonicsModel(this.realmTileMap, params)
         this.erosionModel = new ErosionModel(this)
-        console.log(performance.now() - t0);
+        console.log(`Geology Model: ${Math.round(performance.now() - t0)}ms`);
     }
 
     _buildRealmTileMap(params) {
