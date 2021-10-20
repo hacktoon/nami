@@ -102,6 +102,10 @@ export class TectonicsModel {
         return this.deformationMap.get(regionId)
     }
 
+    getWeight(realmId) {
+        return this.plateMap.getWeight(realmId)
+    }
+
     getBoundary(regionId) {
         return this.deformationMap.get(regionId)
     }

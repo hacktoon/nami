@@ -9,27 +9,28 @@ const HOTSPOT_CHANCE = .4
 
 export class PlateMap {
     constructor(realmTileMap) {
-        const realms = realmTileMap.getRealmsDescOrder()
-        this.plates = new Map()
-        this.realmTileMap = realmTileMap
-        this.types = this._buildTypes(realms)
-
         this.directions = []
-        this.weights = []
+        this._weightTable = []
         this._hasHotspot = []
-
-        realms.forEach(realmId => {
-            const isLandlocked = realmTileMap.getNeighborRealms(realmId)
-                .concat(realmId)
+        this._plateTableMap = new Map()
+        this.realmTileMap = realmTileMap
+        this.plates = realmTileMap.getRealmsDescOrder()
+        this.types = this._buildTypes(this.plates)
+        this.plates.forEach((plateId, id) => {
+            const isLandlocked = realmTileMap.getNeighborRealms(plateId)
+                .concat(plateId)
                 .every(neighborId => {
                     return this.types[neighborId] === TYPE_CONTINENTAL
                 })
-            const type = isLandlocked ? TYPE_OCEANIC : this.types[realmId]
-            const baseWeight = (type === TYPE_OCEANIC ? realms.length * 10 : 0)
+            const type = isLandlocked ? TYPE_OCEANIC : this.types[plateId]
+            const weight = id+(type === TYPE_OCEANIC ? this.plates.length * 10 : 0)
+            console.log(id, weight, this.types[id]);
+            this._plateTableMap.set(plateId, id)
             this._hasHotspot.push(Random.chance(HOTSPOT_CHANCE))
             this.directions.push(Direction.random())
-            this.weights.push(realmId + baseWeight)
+            this._weightTable.push(id + weight)
         })
+        console.log(this._weightTable);
     }
 
     _buildTypes(realms) {
@@ -50,19 +51,23 @@ export class PlateMap {
     }
 
     getDirection(plateId) {
-        return this.directions[plateId]
+        const id = this._plateTableMap.get(plateId)
+        return this.directions[id]
     }
 
     getWeight(plateId) {
-        return this.weights[plateId]
+        const id = this._plateTableMap.get(plateId)
+        return this._weightTable[id]
     }
 
     isOceanic(plateId) {
-        return this.types[plateId] === TYPE_OCEANIC
+        const id = this._plateTableMap.get(plateId)
+        return this.types[id] === TYPE_OCEANIC
     }
 
     hasHotspot(plateId) {
-        return this._hasHotspot[plateId]
+        const id = this._plateTableMap.get(plateId)
+        return this._hasHotspot[id]
     }
 
     forEach(callback) {

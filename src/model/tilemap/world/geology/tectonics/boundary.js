@@ -84,6 +84,7 @@ class BoundaryTable {
         const realmWeight = this.plateMap.getWeight(realmId)
         const neighborRealmWeight = this.plateMap.getWeight(neighborRealmId)
         const data = realmWeight > neighborRealmWeight ? first : second
+        // if(realmId == 1 && neighborRealmId==16) debugger;
         return new Boundary(spec, data)
     }
 }
