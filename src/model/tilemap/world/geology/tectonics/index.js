@@ -8,13 +8,13 @@ import { PlateMap } from './plate'
 
 
 export class TectonicsModel {
-    constructor(realmTileMap, params) {
+    constructor(realmTileMap) {
         this.realmTileMap = realmTileMap
         this.plateMap = new PlateMap(realmTileMap)
         this.landformMap = new Map()
         this.deformationMap = new Map()
-        this.boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
         this.regionBoundaryMap = new Map()
+        this.boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
         this.origins = this.realmTileMap.getBorderRegions()
         this.mapFill = this._buildMapFill()
         this._buildHotspots()

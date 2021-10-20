@@ -82,10 +82,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    // getMark(point) {
-    //     const plate = this.tileMap.getPlate(point)
-    //     if (this.tileMap.isRegionOrigin(point)) {
-    //         return Color.fromHex(plate.color).brighten(50).toHex()
-    //     }
-    // }
+    getMark(point) {
+        if (this.tileMap.isRegionOrigin(point)) {
+            const plateId = this.tileMap.getPlate(point)
+            return this.colorMap.getByPlate(plateId).darken(50).toHex()
+        }
+    }
 }

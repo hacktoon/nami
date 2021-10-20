@@ -35,7 +35,7 @@ export class GeologyTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         this.realmTileMap = this._buildRealmTileMap(params)
-        this.tectonicsModel = new TectonicsModel(this.realmTileMap, params)
+        this.tectonicsModel = new TectonicsModel(this.realmTileMap)
         this.erosionModel = new ErosionModel(this)
         console.log(`Geology Model: ${Math.round(performance.now() - t0)}ms`);
     }
@@ -90,6 +90,11 @@ export class GeologyTileMap extends TileMap {
         const matrix = this.realmTileMap.regionTileMap.regionMatrix
         const origin = this.realmTileMap.getRealmOriginById(plateId)
         return Point.equals(origin, matrix.wrap(point))
+    }
+
+    isRegionOrigin(point) {
+        const regionOrigin = this.realmTileMap.getRegionOrigin(point)
+        return Point.equals(regionOrigin, point)
     }
 
     isPlateBorder(point) {
