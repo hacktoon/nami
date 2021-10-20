@@ -15,16 +15,18 @@ export class PlateMap {
         this._plateTableMap = new Map()
         this.realmTileMap = realmTileMap
         this.plates = realmTileMap.getRealmsDescOrder()
-        this.types = this._buildTypes(this.plates)
+        this.halfArea = Math.floor(this.realmTileMap.area / 2)
+        this.types = new Map()
+        this._buildTypes(this.plates)
         this.plates.forEach((plateId, id) => {
             const isLandlocked = realmTileMap.getNeighborRealms(plateId)
                 .concat(plateId)
                 .every(neighborId => {
-                    return this.types[neighborId] === TYPE_CONTINENTAL
+                    return this.types.get(neighborId) === TYPE_CONTINENTAL
                 })
-            const type = isLandlocked ? TYPE_OCEANIC : this.types[plateId]
+            const type = isLandlocked ? TYPE_OCEANIC : this.types.get(plateId)
             const weight = id+(type === TYPE_OCEANIC ? this.plates.length * 10 : 0)
-            console.log(id, weight, this.types[id]);
+            console.log(id, weight, this.types.get(id));
             this._plateTableMap.set(plateId, id)
             this._hasHotspot.push(Random.chance(HOTSPOT_CHANCE))
             this.directions.push(Direction.random())
@@ -34,16 +36,13 @@ export class PlateMap {
     }
 
     _buildTypes(realms) {
-        const types = []
-        const halfWorldArea = Math.floor(this.realmTileMap.area / 2)
         let totalOceanicArea = 0
-        realms.forEach(realmId => {
+        realms.forEach((realmId, id) => {
             totalOceanicArea += this.realmTileMap.getRealmAreaById(realmId)
-            const isOceanic = totalOceanicArea < halfWorldArea
+            const isOceanic = totalOceanicArea < this.halfArea
             const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
-            types.push(type)
+            this.types.set(id, type)
         })
-        return types
     }
 
     get size() {
@@ -62,7 +61,7 @@ export class PlateMap {
 
     isOceanic(plateId) {
         const id = this._plateTableMap.get(plateId)
-        return this.types[id] === TYPE_OCEANIC
+        return this.types.get(id) === TYPE_OCEANIC
     }
 
     hasHotspot(plateId) {
