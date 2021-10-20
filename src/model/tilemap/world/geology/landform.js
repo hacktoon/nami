@@ -31,7 +31,7 @@ const LANDFORMS = {
         erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .4
     },
     HOTSPOT_ISLAND: {
-        name: 'HOTSPOT_ISLAND', water: false, height: 3, color: '#574',
+        name: 'HOTSPOT_ISLAND', water: false, height: 3, color: '#463',
         erodesTo: 'SHALLOW_SEA', risesTo: 'HILL', riseChance: .4
     },
     DEPRESSION: {
