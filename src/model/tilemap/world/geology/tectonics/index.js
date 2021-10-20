@@ -25,7 +25,9 @@ export class TectonicsModel {
             const boundary = this._buildBoundary(this.origins[id])
             this.regionBoundaryMap.set(id, boundary)
         }
-        this.mapFill = new PlateMultiFill(this); this.mapFill.fill(true)
+        const mapFill = new PlateMultiFill(this)
+        mapFill.fill(true)
+        return mapFill
     }
 
     _buildBoundary(regionId) {
@@ -41,11 +43,11 @@ export class TectonicsModel {
 
     _buildHotspots() {
         // TODO: this method shoud return a new landform array
-        this.plateMap.forEach(plate => {
-            if (! this.plateMap.hasHotspot(plate.id))
+        this.plateMap.forEach(plateId => {
+            if (! this.plateMap.hasHotspot(plateId))
                 return
-            const plateOrigin = this.plateMap.getOrigin(plate.id)
-            if (this.plateMap.isOceanic(plate.id)) {
+            const plateOrigin = this.realmTileMap.getRealmOriginById(plateId)
+            if (this.plateMap.isOceanic(plateId)) {
                 const points = this._buildHotspotPoints(plateOrigin)
                 for (let point of points) {
                     const regionId = this.realmTileMap.getRegion(point)
