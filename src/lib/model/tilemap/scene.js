@@ -10,6 +10,7 @@ export class TileMapScene {
         'TileMapScene',
         Type.point('focus', "Focus", {default: '77,50'}),
         Type.boolean('wrap', "Wrap", {default: false}),
+        Type.boolean('showMarks', "Show marks", {default: false}),
         Type.number('zoom', "Zoom", {default: 6, step: 1, min: 1, max: 100}),
     )
 
@@ -26,6 +27,7 @@ export class TileMapScene {
         this.focus = focus
         this.wrap = wrap
         this.zoom = zoom
+        this.showMarks = params.get('showMarks')
         this.viewport = viewport  // TODO: needed only in UITileMapMouse, delete
 
         // TODO: send params to render method, avoid buildind an
@@ -46,7 +48,7 @@ export class TileMapScene {
                 if (text) {
                     this.textQueue.push([canvasPoint, text])
                 }
-                if (mark) {
+                if (mark && this.showMarks) {
                     this.markQueue.push([canvasPoint, mark])
                 }
 
