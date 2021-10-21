@@ -46,4 +46,22 @@ export class Rect {
         if (y < 0) { y = this.height - 1 - Math.abs(y + 1) % this.height }
         return [x, y]
     }
+
+    wrapVector(sourcePoint, targetPoint) {
+        // return wrapped targetPoint in relation to sourcePoint
+        const [sX, sY] = sourcePoint
+        const [tX, tY] = targetPoint
+        let [x, y] = targetPoint
+        const deltaX = Math.abs(sX - tX)
+        const deltaY = Math.abs(sY - tY)
+        if (deltaX > this.width / 2) {
+            if (sX < tX) x = x - this.width
+            if (sX > tX) x = x + this.width
+        }
+        if (deltaY > this.height / 2) {
+            if (sY < tY) y = y - this.height
+            if (sY > tY) y = y + this.height
+        }
+        return [x, y]
+    }
 }

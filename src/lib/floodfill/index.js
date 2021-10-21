@@ -101,7 +101,7 @@ export class GenericMultiFill {
         this.filler = new FillClass(this)
     }
 
-    fill(x) {
+    fill() {
         for(let id = 0; id < this.origins.length; id ++) {
             const origin = this.origins[id]
             this.areaTable.push(0)

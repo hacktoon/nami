@@ -24,7 +24,7 @@ export class TectonicsModel {
             this.regionBoundaryMap.set(id, boundary)
         }
         const mapFill = new PlateMultiFill(this)
-        mapFill.fill(true)
+        mapFill.fill()
         return mapFill
     }
 

@@ -27,9 +27,9 @@ export class ErosionModel {
 
 class ErosionMatrix {
     constructor(landformMatrix) {
+        this.visited = null
         this.erosionQueue = []
         this.matrix = this._buildMatrix(landformMatrix)
-        this.visited = null
     }
 
     _buildMatrix(landformMatrix) {

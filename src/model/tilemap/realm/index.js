@@ -79,14 +79,12 @@ export class RealmTileMap extends TileMap {
 
     _buildDirections() {
         const directions = new PairMap()
-        // TODO: remove this dependency
-        const matrix = this.regionTileMap.regionMatrix
         for(let id=0; id<this.origins.length; id++) {
             const origin = this.origins[id]
             const neighbors = this.graph.getEdges(id)
             for(let neighborId of neighbors) {
                 const neighborOrigin = this.origins[neighborId]
-                const sideOrigin = matrix.wrapVector(origin, neighborOrigin)
+                const sideOrigin = this.rect.wrapVector(origin, neighborOrigin)
                 const angle = Point.angle(origin, sideOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(id, neighborId, direction)

@@ -86,10 +86,8 @@ export class GeologyTileMap extends TileMap {
     }
 
     isPlateOrigin(plateId, point) {
-        // TODO: eliminate this dependency
-        const matrix = this.realmTileMap.regionTileMap.regionMatrix
         const origin = this.realmTileMap.getRealmOriginById(plateId)
-        return Point.equals(origin, matrix.wrap(point))
+        return Point.equals(origin, this.realmTileMap.rect.wrap(point))
     }
 
     isRegionOrigin(point) {
