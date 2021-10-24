@@ -7,7 +7,6 @@ import { PlateMap } from './plate'
 export class TectonicsModel {
     constructor(realmTileMap) {
         this.realmTileMap = realmTileMap
-        this.plateMap = new PlateMap(realmTileMap)
         this.landformMap = new Map()
         this.deformationMap = new Map()
         this.regionBoundaryMap = new Map()

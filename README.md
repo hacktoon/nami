@@ -7,13 +7,14 @@
 
 ## ROADMAP
 #### GeologyTileMap
+- Refactor boundary algorithm
+  - Remove Boundary class
+- Restart erosion algorithm using regions
 - Add islets again
 - Fix depression/water border
 - Add features to border/color properties of landforms
   - i.e. volcanoes to peaks, with chance
   - hydrothermal vents on border of rifts
-- Erosion
-  - Start from higher points borders
 
 #### ClimateTileMap
 - Start with each row in righ colum of regions of regionTileMap
