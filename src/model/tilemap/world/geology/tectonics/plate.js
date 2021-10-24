@@ -13,14 +13,13 @@ export class PlateMap {
         this._weightTable = []
         this._hasHotspot = []
         this._plateTableMap = new Map()
-        this.realmTileMap = realmTileMap
-        this.plates = realmTileMap.getRealmsDescOrder()
-        this.halfArea = Math.floor(this.realmTileMap.area / 2)
-        this.typeMap = this._buildTypes(this.plates)
-        this.plates.forEach((plateId, id) => {
+        this._realmTileMap = realmTileMap
+        this._plates = realmTileMap.getRealmsDescOrder()
+        this.typeMap = this._buildTypes(this._plates)
+        this._plates.forEach((plateId, id) => {
             const isLandlocked = this._isLandLocked(plateId)
             const type = isLandlocked ? TYPE_OCEANIC : this.typeMap.get(plateId)
-            const weight = id+(type === TYPE_OCEANIC ? this.plates.length * 10 : 0)
+            const weight = id+(type === TYPE_OCEANIC ? this._plates.length * 10 : 0)
             this._plateTableMap.set(plateId, id)
             this._hasHotspot.push(Random.chance(HOTSPOT_CHANCE))
             this._directionTable.push(Direction.random())
@@ -29,7 +28,7 @@ export class PlateMap {
     }
 
     _isLandLocked(plateId) {
-        return this.realmTileMap.getNeighborRealms(plateId)
+        return this._realmTileMap.getNeighborRealms(plateId)
             .concat(plateId)
             .every(neighborId => {
                 return this.typeMap.get(neighborId) === TYPE_CONTINENTAL
@@ -38,10 +37,11 @@ export class PlateMap {
 
     _buildTypes(realms) {
         let totalOceanicArea = 0
+        const halfArea = Math.floor(this._realmTileMap.area / 2)
         const types = new Map()
         realms.forEach(realmId=> {
-            totalOceanicArea += this.realmTileMap.getRealmAreaById(realmId)
-            const isOceanic = totalOceanicArea < this.halfArea
+            totalOceanicArea += this._realmTileMap.getRealmAreaById(realmId)
+            const isOceanic = totalOceanicArea < halfArea
             const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
             types.set(realmId, type)
         })
@@ -49,7 +49,7 @@ export class PlateMap {
     }
 
     get size() {
-        return this.realmTileMap.size
+        return this._plates.size
     }
 
     getDirection(plateId) {
@@ -72,10 +72,10 @@ export class PlateMap {
     }
 
     forEach(callback) {
-        this.plates.forEach(callback)
+        this._plates.forEach(callback)
     }
 
     map(callback) {
-        this.plates.map(callback)
+        this._plates.map(callback)
     }
 }

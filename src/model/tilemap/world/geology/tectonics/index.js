@@ -11,7 +11,7 @@ export class TectonicsModel {
         this.landformMap = new Map()
         this.deformationMap = new Map()
         this.regionBoundaryMap = new Map()
-        this.boundaryModel = new BoundaryModel(this.plateMap, this.realmTileMap)
+        this.boundaryModel = new BoundaryModel(this.plateMap, realmTileMap)
         this.origins = this.realmTileMap.getBorderRegions()
         this.mapFill = this._buildMapFill()
         this.hotspotModel = new HotspotModel(
