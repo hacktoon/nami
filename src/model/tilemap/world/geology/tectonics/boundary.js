@@ -21,32 +21,42 @@ const IDMAP = {
 
 export class BoundaryModel {
     constructor(plateMap, realmTileMap) {
-        this.plateMap = plateMap
+        this._plateMap = plateMap
         this.realmTileMap = realmTileMap
+        this.regionBoundaryMap = new Map()
         this._boundaryMap = new PairMap()
-        this._boundaryTable = new BoundaryTable(this.plateMap, BOUNDARY_TABLE)
+        this._origins = this.realmTileMap.getBorderRegions()
+        this._boundaryTable = new BoundaryTable(this._plateMap, BOUNDARY_TABLE)
 
         realmTileMap.forEach(realmId => {
-            const neighbors = realmTileMap.getNeighborRealms(realmId)
-            neighbors.forEach(neighborRealmId => {
-                const boundary = this._buildRealmsBoundary(realmId, neighborRealmId)
-                this._boundaryMap.set(realmId, neighborRealmId, boundary)
+            const sideRealms = realmTileMap.getNeighborRealms(realmId)
+            sideRealms.forEach(sideRealmId => {
+                const boundary = this._buildRealmsBoundary(realmId, sideRealmId)
+                this._boundaryMap.set(realmId, sideRealmId, boundary)
             })
         })
     }
 
-    _buildRealmsBoundary(realmId, neighborRealmId) {
-        const dirToNeighbor = this.realmTileMap.getRealmDirection(realmId, neighborRealmId)
-        const dirFromNeighbor = this.realmTileMap.getRealmDirection(neighborRealmId, realmId)
-        const plateDir = this.plateMap.getDirection(realmId)
-        const neighborPlateDir = this.plateMap.getDirection(neighborRealmId)
+    _buildRealmsBoundary(realmId, sideRealmId) {
+        const dirToNeighbor = this.realmTileMap.getRealmDirection(realmId, sideRealmId)
+        const dirFromNeighbor = this.realmTileMap.getRealmDirection(sideRealmId, realmId)
+        const plateDir = this._plateMap.getDirection(realmId)
+        const neighborPlateDir = this._plateMap.getDirection(sideRealmId)
         const dotTo = Direction.dotProduct(plateDir, dirToNeighbor)
         const dotFrom = Direction.dotProduct(neighborPlateDir, dirFromNeighbor)
-        return this._boundaryTable.build(realmId, neighborRealmId, dotTo, dotFrom)
+        return this._boundaryTable.build(realmId, sideRealmId, dotTo, dotFrom)
     }
 
-    get(realmId, neighborRealmId) {
-        return this._boundaryMap.get(realmId, neighborRealmId)
+    set(id, boundary) {
+        this.regionBoundaryMap.set(id, boundary)
+    }
+
+    getByRegion(regionId) {
+        return this.regionBoundaryMap.get(regionId)
+    }
+
+    get(realmId, sideRealmId) {
+        return this._boundaryMap.get(realmId, sideRealmId)
     }
 }
 

@@ -10,32 +10,29 @@ export class TectonicsModel {
         this.landformMap = new Map()
         this.deformationMap = new Map()
         this.regionBoundaryMap = new Map()
-        this.boundaryModel = new BoundaryModel(this.plateMap, realmTileMap)
         this.origins = this.realmTileMap.getBorderRegions()
-        this.mapFill = this._buildMapFill()
-        this.hotspotModel = new HotspotModel(
-            realmTileMap, this.plateMap, this.landformMap)
-    }
+        this.boundaryModel = new BoundaryModel(this.plateMap, realmTileMap)
 
-    _buildMapFill() {
         for(let id = 0; id < this.origins.length; id ++) {
-            const boundary = this._buildBoundary(this.origins[id])
+            let boundary
+            const regionId = this.origins[id]
+
+            const realmId = this.realmTileMap.getRealmByRegion(regionId)
+            const neighborRegionIds = this.realmTileMap.getNeighborRegions(regionId)
+            for(let neighborId of neighborRegionIds) {
+                const neighborRealmId = this.realmTileMap.getRealmByRegion(neighborId)
+                if (neighborRealmId !== realmId) {
+                    boundary =  this.boundaryModel.get(realmId, neighborRealmId)
+                }
+            }
+            this.boundaryModel.set(id, boundary)
             this.regionBoundaryMap.set(id, boundary)
         }
-        const mapFill = new PlateMultiFill(this)
-        mapFill.fill()
-        return mapFill
-    }
 
-    _buildBoundary(regionId) {
-        const realmId = this.realmTileMap.getRealmByRegion(regionId)
-        const neighborRegionIds = this.realmTileMap.getNeighborRegions(regionId)
-        for(let neighborId of neighborRegionIds) {
-            const neighborRealmId = this.realmTileMap.getRealmByRegion(neighborId)
-            if (neighborRealmId !== realmId) {
-                return this.boundaryModel.get(realmId, neighborRealmId)
-            }
-        }
+        new PlateMultiFill(this).fill()
+
+        this.hotspotModel = new HotspotModel(
+            realmTileMap, this.plateMap, this.landformMap)
     }
 
     getPlates() {
