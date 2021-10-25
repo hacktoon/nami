@@ -52,6 +52,10 @@ export class PlateModel {
         return this._plates.length
     }
 
+    getPlates() {
+        return this._realmTileMap.getRealms()
+    }
+
     getDirection(plateId) {
         const id = this._plateTableMap.get(plateId)
         return this._directionTable[id]

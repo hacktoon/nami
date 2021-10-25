@@ -89,7 +89,7 @@ export class GeologyTileMap extends TileMap {
 
     getPlateDirection(point) {
         const realmId = this.realmTileMap.getRealm(point)
-        return this.tectonicsModel.getPlateDirection(realmId)
+        return this.plateModel.getDirection(realmId)
     }
 
     getPlateOrigin(point) {
@@ -112,11 +112,11 @@ export class GeologyTileMap extends TileMap {
     }
 
     getWeight(realmId) {
-        return this.tectonicsModel.getWeight(realmId)
+        return this.plateModel.getWeight(realmId)
     }
 
     isOceanic(plateId) {
-        return this.tectonicsModel.isOceanic(plateId)
+        return this.plateModel.isOceanic(plateId)
     }
 
     getLandform(point) {
@@ -128,11 +128,11 @@ export class GeologyTileMap extends TileMap {
     }
 
     getDescription() {
-        return `${this.tectonicsModel.size} plates`
+        return `${this.plateModel.size} plates`
     }
 
     map(callback) {
-        const plates = this.tectonicsModel.getPlates()
+        const plates = this.plateModel.getPlates()
         return plates.map(callback)
     }
 }
