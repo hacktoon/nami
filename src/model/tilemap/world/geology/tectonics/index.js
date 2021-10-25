@@ -14,7 +14,6 @@ export class TectonicsModel {
         this.boundaryModel = new BoundaryModel(this.plateMap, realmTileMap)
 
         for(let id = 0; id < this.origins.length; id ++) {
-            let boundary
             const regionId = this.origins[id]
 
             const realmId = this.realmTileMap.getRealmByRegion(regionId)
@@ -22,11 +21,11 @@ export class TectonicsModel {
             for(let neighborId of neighborRegionIds) {
                 const neighborRealmId = this.realmTileMap.getRealmByRegion(neighborId)
                 if (neighborRealmId !== realmId) {
-                    boundary =  this.boundaryModel.get(realmId, neighborRealmId)
+                    const boundary =  this.boundaryModel.get(realmId, neighborRealmId)
+                    this.boundaryModel.set(id, boundary)
+                    this.regionBoundaryMap.set(id, boundary)
                 }
             }
-            this.boundaryModel.set(id, boundary)
-            this.regionBoundaryMap.set(id, boundary)
         }
 
         new PlateMultiFill(this).fill()
