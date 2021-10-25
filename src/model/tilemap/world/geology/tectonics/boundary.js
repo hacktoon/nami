@@ -6,9 +6,9 @@ import { BOUNDARY_TABLE } from './table'
 
 const PLATE_CONTINENTAL = 0
 const PLATE_OCEANIC = 100
-const DIR_CONVERGE = 16
+const DIR_CONVERGE = 1
 const DIR_TRANSFORM = 4
-const DIR_DIVERGE = 1
+const DIR_DIVERGE = 16
 const IDMAP = {
     L: PLATE_CONTINENTAL,
     W: PLATE_OCEANIC,
@@ -24,11 +24,14 @@ export class BoundaryModel {
     constructor(plateModel, origins, realmTileMap) {
         this._plateMap = plateModel
         this._realmTileMap = realmTileMap
-        this._origins = origins
         this._boundaryTable = new BoundaryTable(this._plateMap)
 
-        for(let id = 0; id < this._origins.length; id ++) {
-            const regionId = this._origins[id]
+        this._buildBoundaries(origins)
+    }
+
+    _buildBoundaries(origins) {
+        for(let id = 0; id < origins.length; id ++) {
+            const regionId = origins[id]
             const realmId = this._realmTileMap.getRealmByRegion(regionId)
             const sideRegionIds = this._realmTileMap.getNeighborRegions(regionId)
             for(let sideRegionId of sideRegionIds) {

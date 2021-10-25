@@ -1,16 +1,16 @@
 import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
 
 
-class PlateFloodFill extends GenericFloodFill {
+class BoundaryFloodFill extends GenericFloodFill {
     setValue(id, regionId, level) {
         const boundary = this.model.boundaryModel.get(id)
         const landform = boundary.getLandform(level)
         this.model.regionBoundaryMap.set(regionId, boundary)
-        this.model.landformMap.set(regionId, landform)
+        this.model.setLandform(regionId, landform)
     }
 
     isEmpty(neighborRegionId) {
-        return !this.model.landformMap.has(neighborRegionId)
+        return !this.model.hasLandform(neighborRegionId)
     }
 
     getNeighbors(regionId) {
@@ -19,9 +19,9 @@ class PlateFloodFill extends GenericFloodFill {
 }
 
 
-export class PlateMultiFill extends GenericMultiFill {
+export class BoundaryMultiFill extends GenericMultiFill {
     constructor(model) {
-        super(model.origins, model, PlateFloodFill)
+        super(model.origins, model, BoundaryFloodFill)
     }
 
     getChance(id, regionId) {
