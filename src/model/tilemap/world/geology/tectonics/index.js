@@ -17,12 +17,11 @@ export class TectonicsModel {
             const regionId = this.origins[id]
 
             const realmId = this.realmTileMap.getRealmByRegion(regionId)
-            const neighborRegionIds = this.realmTileMap.getNeighborRegions(regionId)
-            for(let neighborId of neighborRegionIds) {
-                const neighborRealmId = this.realmTileMap.getRealmByRegion(neighborId)
-                if (neighborRealmId !== realmId) {
-                    const boundary =  this.boundaryModel.get(realmId, neighborRealmId)
-                    this.boundaryModel.set(id, boundary)
+            const sideRegionIds = this.realmTileMap.getNeighborRegions(regionId)
+            for(let sideRegionId of sideRegionIds) {
+                const sideRealmId = this.realmTileMap.getRealmByRegion(sideRegionId)
+                if (sideRealmId !== realmId) {
+                    const boundary =  this.boundaryModel.get(realmId, sideRealmId)
                     this.regionBoundaryMap.set(id, boundary)
                 }
             }

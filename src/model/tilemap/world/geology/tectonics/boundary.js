@@ -23,7 +23,6 @@ export class BoundaryModel {
     constructor(plateMap, realmTileMap) {
         this._plateMap = plateMap
         this.realmTileMap = realmTileMap
-        this.regionBoundaryMap = new Map()
         this._boundaryMap = new PairMap()
         this._origins = this.realmTileMap.getBorderRegions()
         this._boundaryTable = new BoundaryTable(this._plateMap, BOUNDARY_TABLE)
@@ -45,14 +44,6 @@ export class BoundaryModel {
         const dotTo = Direction.dotProduct(plateDir, dirToNeighbor)
         const dotFrom = Direction.dotProduct(neighborPlateDir, dirFromNeighbor)
         return this._boundaryTable.build(realmId, sideRealmId, dotTo, dotFrom)
-    }
-
-    set(id, boundary) {
-        this.regionBoundaryMap.set(id, boundary)
-    }
-
-    getByRegion(regionId) {
-        return this.regionBoundaryMap.get(regionId)
     }
 
     get(realmId, sideRealmId) {
