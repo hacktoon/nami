@@ -5,7 +5,7 @@ class PlateFloodFill extends GenericFloodFill {
     setValue(id, regionId, level) {
         const boundary = this.model.boundaryModel.get(id)
         const landform = boundary.getLandform(level)
-        this.model.deformationMap.set(regionId, boundary)
+        this.model.regionBoundaryMap.set(regionId, boundary)
         this.model.landformMap.set(regionId, landform)
     }
 

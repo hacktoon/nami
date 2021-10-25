@@ -1,4 +1,3 @@
-import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 
 import { Landform } from '../landform'
@@ -20,49 +19,40 @@ const IDMAP = {
 
 
 export class BoundaryModel {
-    constructor(plateMap, origins, realmTileMap) {
-        this._plateMap = plateMap
-        this.realmTileMap = realmTileMap
-        this._boundaryMap = new PairMap()
-        this.regionBoundaryMap = new Map()
-        this._origins = origins
-        this._boundaryTable = new BoundaryTable(this._plateMap, BOUNDARY_TABLE)
+    #boundaryMap = new Map()
 
-        realmTileMap.forEach(realmId => {
-            const sideRealms = realmTileMap.getNeighborRealms(realmId)
-            sideRealms.forEach(sideRealmId => {
-                const boundary = this._buildRealmsBoundary(realmId, sideRealmId)
-                this._boundaryMap.set(realmId, sideRealmId, boundary)
-            })
-        })
+    constructor(plateModel, origins, realmTileMap) {
+        this._plateMap = plateModel
+        this._realmTileMap = realmTileMap
+        this._origins = origins
+        this._boundaryTable = new BoundaryTable(this._plateMap)
 
         for(let id = 0; id < this._origins.length; id ++) {
             const regionId = this._origins[id]
-
-            const realmId = this.realmTileMap.getRealmByRegion(regionId)
-            const sideRegionIds = this.realmTileMap.getNeighborRegions(regionId)
+            const realmId = this._realmTileMap.getRealmByRegion(regionId)
+            const sideRegionIds = this._realmTileMap.getNeighborRegions(regionId)
             for(let sideRegionId of sideRegionIds) {
-                const sideRealmId = this.realmTileMap.getRealmByRegion(sideRegionId)
+                const sideRealmId = this._realmTileMap.getRealmByRegion(sideRegionId)
                 if (sideRealmId !== realmId) {
-                    const boundary =  this._boundaryMap.get(realmId, sideRealmId)
-                    this.regionBoundaryMap.set(id, boundary)
+                    const boundary =  this._buildBoundary(realmId, sideRealmId)
+                    this.#boundaryMap.set(id, boundary)
                 }
             }
         }
     }
 
-    _buildRealmsBoundary(realmId, sideRealmId) {
-        const dirToNeighbor = this.realmTileMap.getRealmDirection(realmId, sideRealmId)
-        const dirFromNeighbor = this.realmTileMap.getRealmDirection(sideRealmId, realmId)
+    _buildBoundary(realmId, sideRealmId) {
+        const dirToSide = this._realmTileMap.getRealmDirection(realmId, sideRealmId)
+        const dirFromSide = this._realmTileMap.getRealmDirection(sideRealmId, realmId)
         const plateDir = this._plateMap.getDirection(realmId)
         const neighborPlateDir = this._plateMap.getDirection(sideRealmId)
-        const dotTo = Direction.dotProduct(plateDir, dirToNeighbor)
-        const dotFrom = Direction.dotProduct(neighborPlateDir, dirFromNeighbor)
-        return this._boundaryTable.build(realmId, sideRealmId, dotTo, dotFrom)
+        const dotTo = Direction.dotProduct(plateDir, dirToSide)
+        const dotFrom = Direction.dotProduct(neighborPlateDir, dirFromSide)
+        return this._boundaryTable.get(realmId, sideRealmId, dotTo, dotFrom)
     }
 
     get(id) {
-        return this.regionBoundaryMap.get(id)
+        return this.#boundaryMap.get(id)
     }
 }
 
@@ -70,21 +60,22 @@ export class BoundaryModel {
 class BoundaryTable {
     #codeTable = new Map() // map numeric id to boundary config
 
-    constructor(plateMap, table) {
-        this.plateMap = plateMap
-        table.map(row => {
+    constructor(plateModel) {
+        this.plateModel = plateModel
+        BOUNDARY_TABLE.map(row => {
             const key = Array.from(row.key)
             const id = key.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
             this.#codeTable.set(id, {...row, id})
         })
     }
 
-    build(realmId, neighborRealmId, dotTo, dotFrom) {
-        const type1 = this.plateMap.isOceanic(realmId) ? PLATE_OCEANIC : PLATE_CONTINENTAL
-        const type2 = this.plateMap.isOceanic(neighborRealmId) ? PLATE_OCEANIC : PLATE_CONTINENTAL
-        const dir1 = this._parseDir(dotTo)
-        const dir2 = this._parseDir(dotFrom)
-        const id = type1 + type2 + dir1 + dir2
+    get(realmId, neighborRealmId, dotTo, dotFrom) {
+        const type1 = this.plateModel.isOceanic(realmId)
+                      ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const type2 = this.plateModel.isOceanic(neighborRealmId)
+                      ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const dir = this._parseDir(dotTo) + this._parseDir(dotFrom)
+        const id = type1 + type2 + dir
         const spec = this.#codeTable.get(id)
         return this._buildBoundary(spec, realmId, neighborRealmId)
     }
@@ -97,10 +88,9 @@ class BoundaryTable {
     _buildBoundary(spec, realmId, neighborRealmId) {
         const first = spec.data[0]
         const second = spec.data.length === 1 ? first : spec.data[1]
-        const realmWeight = this.plateMap.getWeight(realmId)
-        const neighborRealmWeight = this.plateMap.getWeight(neighborRealmId)
+        const realmWeight = this.plateModel.getWeight(realmId)
+        const neighborRealmWeight = this.plateModel.getWeight(neighborRealmId)
         const data = realmWeight > neighborRealmWeight ? first : second
-        // if(realmId == 1 && neighborRealmId==16) debugger;
         return new Boundary(spec, data)
     }
 }

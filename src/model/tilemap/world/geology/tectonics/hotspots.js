@@ -5,9 +5,9 @@ import { Landform } from '../landform'
 
 
 export class HotspotModel {
-    constructor(realmTileMap, plateMap, landformMap) {
+    constructor(realmTileMap, plateModel, landformMap) {
         this.realmTileMap = realmTileMap
-        this.plateMap = plateMap
+        this.plateModel = plateModel
         this.landformMap = landformMap
         this._build()
 
@@ -15,11 +15,11 @@ export class HotspotModel {
 
     _build() {
         // TODO: this method shoud return a new landform array
-        this.plateMap.forEach(plateId => {
-            if (! this.plateMap.hasHotspot(plateId))
+        this.plateModel.forEach(plateId => {
+            if (! this.plateModel.hasHotspot(plateId))
                 return
             const plateOrigin = this.realmTileMap.getRealmOriginById(plateId)
-            if (this.plateMap.isOceanic(plateId)) {
+            if (this.plateModel.isOceanic(plateId)) {
                 const points = this._buildHotspotPoints(plateOrigin)
                 for (let point of points) {
                     const regionId = this.realmTileMap.getRegion(point)

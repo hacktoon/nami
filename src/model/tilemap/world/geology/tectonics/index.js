@@ -1,7 +1,7 @@
 import { BoundaryModel } from './boundary'
 import { HotspotModel } from './hotspots'
 import { PlateMultiFill } from './fill'
-import { PlateMap } from './plate'
+import { PlateModel } from './plate'
 
 
 export class TectonicsModel {
@@ -11,12 +11,14 @@ export class TectonicsModel {
         this.deformationMap = new Map()
         this.regionBoundaryMap = new Map()
         this.origins = this.realmTileMap.getBorderRegions()
-        this.boundaryModel = new BoundaryModel(this.plateMap, this.origins, realmTileMap)
+        this.plateModel = new PlateModel(realmTileMap)
+        this.boundaryModel = new BoundaryModel(
+            this.plateModel, this.origins, realmTileMap)
 
         new PlateMultiFill(this).fill()
 
         this.hotspotModel = new HotspotModel(
-            realmTileMap, this.plateMap, this.landformMap)
+            realmTileMap, this.plateModel, this.landformMap)
     }
 
     getPlates() {
@@ -24,23 +26,23 @@ export class TectonicsModel {
     }
 
     getPlateDirection(realmId) {
-        return this.plateMap.getDirection(realmId)
+        return this.plateModel.getDirection(realmId)
     }
 
     getLandform(regionId) {
         return this.landformMap.get(regionId)
     }
 
-    getDeformation(regionId) {
-        return this.deformationMap.get(regionId)
+    getBoundary(regionId) {
+        return this.regionBoundaryMap.get(regionId)
     }
 
     getWeight(realmId) {
-        return this.plateMap.getWeight(realmId)
+        return this.plateModel.getWeight(realmId)
     }
 
     getBoundary(regionId) {
-        return this.deformationMap.get(regionId)
+        return this.regionBoundaryMap.get(regionId)
     }
 
     getLandformByPoint(point) {
@@ -49,10 +51,10 @@ export class TectonicsModel {
     }
 
     isOceanic(plateId) {
-        return this.plateMap.isOceanic(plateId)
+        return this.plateModel.isOceanic(plateId)
     }
 
     get size() {
-        return this.plateMap.size
+        return this.plateModel.size
     }
 }
