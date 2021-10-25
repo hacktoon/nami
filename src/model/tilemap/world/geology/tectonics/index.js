@@ -11,21 +11,7 @@ export class TectonicsModel {
         this.deformationMap = new Map()
         this.regionBoundaryMap = new Map()
         this.origins = this.realmTileMap.getBorderRegions()
-        this.boundaryModel = new BoundaryModel(this.plateMap, realmTileMap)
-
-        for(let id = 0; id < this.origins.length; id ++) {
-            const regionId = this.origins[id]
-
-            const realmId = this.realmTileMap.getRealmByRegion(regionId)
-            const sideRegionIds = this.realmTileMap.getNeighborRegions(regionId)
-            for(let sideRegionId of sideRegionIds) {
-                const sideRealmId = this.realmTileMap.getRealmByRegion(sideRegionId)
-                if (sideRealmId !== realmId) {
-                    const boundary =  this.boundaryModel.get(realmId, sideRealmId)
-                    this.regionBoundaryMap.set(id, boundary)
-                }
-            }
-        }
+        this.boundaryModel = new BoundaryModel(this.plateMap, this.origins, realmTileMap)
 
         new PlateMultiFill(this).fill()
 
