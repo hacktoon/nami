@@ -1,16 +1,16 @@
 import { Point } from '/lib/point'
 import { Random } from '/lib/random'
 
-import { Landform } from '../landform'
+import { Landform } from './landform'
 
 
 export class HotspotModel {
-    constructor(realmTileMap, plateModel, landformMap) {
+    constructor(realmTileMap, plateModel, tectonicsModel) {
         this.realmTileMap = realmTileMap
         this.plateModel = plateModel
-        this.landformMap = landformMap
-        this._build()
+        this.tectonicsModel = tectonicsModel
 
+        this._build()
     }
 
     _build() {
@@ -23,20 +23,20 @@ export class HotspotModel {
                 const points = this._buildHotspotPoints(plateOrigin)
                 for (let point of points) {
                     const regionId = this.realmTileMap.getRegion(point)
-                    const current = this.landformMap.get(regionId)
+                    const current = this.tectonicsModel.getLandform(regionId)
                     if (current.water) {
                         const landform = Landform.getOceanicHotspot()
                         // TODO: remove this set
-                        this.landformMap.set(regionId, landform)
+                        this.tectonicsModel.setLandform(regionId, landform)
                     }
                 }
             } else {
                 const regionId = this.realmTileMap.getRegion(plateOrigin)
-                const current = this.landformMap.get(regionId)
+                const current = this.tectonicsModel.getLandform(regionId)
                 if (! current.water) {
                     const landform = Landform.getContinentalHotspot()
                     // TODO: remove this set
-                    this.landformMap.set(regionId, landform)
+                    this.tectonicsModel.setLandform(regionId, landform)
                 }
             }
         })

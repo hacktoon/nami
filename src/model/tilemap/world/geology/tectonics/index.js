@@ -1,27 +1,23 @@
 import { BoundaryModel } from './boundary'
-import { HotspotModel } from './hotspots'
 import { BoundaryMultiFill } from './fill'
-import { PlateModel } from './plate'
 
 
 export class TectonicsModel {
     #landformMap = new Map()
 
-    constructor(realmTileMap) {
+    constructor(realmTileMap, plateModel) {
         this.realmTileMap = realmTileMap
         this.landformMap = new Map()
         this.deformationMap = new Map()
         this.regionBoundaryMap = new Map()
         this.origins = this.realmTileMap.getBorderRegions()
-        this.plateModel = new PlateModel(realmTileMap)
+        this.plateModel = plateModel
         this.boundaryModel = new BoundaryModel(
             this.plateModel,
             this.origins,
             realmTileMap
         )
         new BoundaryMultiFill(this).fill()
-        this.hotspotModel = new HotspotModel(
-            realmTileMap, this.plateModel, this.#landformMap)
     }
 
     getPlates() {

@@ -6,7 +6,9 @@ import { UITileMap } from '/ui/tilemap'
 import { RealmTileMap } from '/model/tilemap/realm'
 
 import { GeologyTileMapDiagram } from './diagram'
+import { PlateModel } from './plate'
 import { TectonicsModel } from './tectonics'
+import { HotspotModel } from './hotspots'
 import { ErosionModel } from './erosion'
 
 
@@ -35,7 +37,12 @@ export class GeologyTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         this.realmTileMap = this._buildRealmTileMap(params)
-        this.tectonicsModel = new TectonicsModel(this.realmTileMap)
+        this.plateModel = new PlateModel(this.realmTileMap)
+        this.tectonicsModel = new TectonicsModel(this.realmTileMap, this.plateModel)
+        this.hotspotModel = new HotspotModel(
+            this.realmTileMap,
+            this.plateModel,
+            this.tectonicsModel)
         this.erosionModel = new ErosionModel(this)
         console.log(`Geology Model: ${Math.round(performance.now() - t0)}ms`);
     }
