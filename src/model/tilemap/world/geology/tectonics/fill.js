@@ -25,12 +25,10 @@ export class BoundaryMultiFill extends GenericMultiFill {
     }
 
     getChance(id, regionId) {
-        const boundary = this.model.boundaryModel.get(id)
-        return boundary.chance
+        return .5
     }
 
     getGrowth(id, regionId) {
-        const boundary = this.model.boundaryModel.get(id)
-        return boundary.growth
+        return 5
     }
 }
