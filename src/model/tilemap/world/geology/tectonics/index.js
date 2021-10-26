@@ -21,15 +21,12 @@ const IDMAP = {
 
 
 export class TectonicsModel {
-    #landformMap = new Map()
     #regionBoundaryMap = new Map()
+    #landformMap = new Map()
     #stressMap = new Map()
 
     constructor(realmTileMap, plateModel) {
         this.realmTileMap = realmTileMap
-        this.landformMap = new Map()
-        this.deformationMap = new Map()
-        this.regionBoundaryMap = new Map()
         this.origins = this.realmTileMap.getBorderRegions()
         this.plateModel = plateModel
         this.boundaryModel = new BoundaryModel(
