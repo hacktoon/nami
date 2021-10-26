@@ -5,13 +5,13 @@ export const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LLCC', name: 'Continental collision',
     data: [
-        {chance: .4, growth: 6, landscape: [
+        {landscape: [
             {level: 0, name: 'PEAK'},
             {level: 1, name: 'MOUNTAIN'},
             {level: 3, name: 'HILL'},
             {level: 5, name: 'PLAIN'},
         ]},
-        {chance: .4, growth: 4, landscape: [
+        {landscape: [
             {level: 0, name: 'MOUNTAIN'},
             {level: 2, name: 'HILL'},
             {level: 4, name: 'PLAIN'},
@@ -48,11 +48,11 @@ export const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LLDT', name: 'Early rift sea',
     data: [
-        {chance: .1, growth: 1, landscape: [
+        {landscape: [
             {level: 0, name: 'SHALLOW_SEA'},
             {level: 1, name: 'PLAIN'},
         ]},
-        {chance: .1, growth: 2, landscape: [
+        {landscape: [
             {level: 0, name: 'SHALLOW_SEA'},
             {level: 2, name: 'PLAIN'},
             {level: 5, name: 'HILL'},
@@ -77,7 +77,7 @@ export const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LLTT', name: 'Transform Fault',
     data: [
-        {chance: .1, growth: 6, landscape: [
+        {landscape: [
             {level: 0, name: 'PLAIN'},
             {level: 1, name: 'HILL'},
             {level: 2, name: 'PLAIN'},
@@ -90,7 +90,7 @@ export const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LWCC', name: 'Cordillera',
     data: [
-        {chance: .5, growth: 3, landscape: [
+        {landscape: [
             {level: 0, name: 'TRENCH'},
             {level: 1, name: 'DEEP_SEA'},
         ]},
@@ -104,11 +104,11 @@ export const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LWCT', name: 'Early cordillera',
     data: [
-        {chance: .2, growth: 1, landscape: [
+        {landscape: [
             {level: 0, name: 'TRENCH'},
             {level: 1, name: 'DEEP_SEA'},
         ]},
-        {chance: .8, growth: 3, landscape: [
+        {landscape: [
             {level: 0, name: 'PLAIN'},
             {level: 1, name: 'MOUNTAIN'},
             {level: 3, name: 'HILL'},
@@ -178,11 +178,11 @@ export const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'WWCC', name: 'Island arc',
     data: [
-        {chance: .5, growth: 1, landscape: [
+        {landscape: [
             {level: 0, name: 'TRENCH'},
             {level: 1, name: 'DEEP_SEA'}
         ]},
-        {chance: .5, growth: 2, landscape: [
+        {landscape: [
             {level: 0, name: 'SHALLOW_SEA'},
             {level: 1, name: 'ISLAND'},
             {level: 2, name: 'DEEP_SEA'},
@@ -192,7 +192,7 @@ export const BOUNDARY_TABLE = [
     {key: 'WWCT', name: 'Early island arc',
     data: [
         {landscape: [{level: 0, name: 'DEEP_SEA'}]},
-        {chance: .3, growth: 1, landscape: [
+        {landscape: [
             {level: 0, name: 'SHALLOW_SEA'},
             {level: 1, name: 'ISLAND'},
             {level: 2, name: 'DEEP_SEA'},
@@ -210,7 +210,7 @@ export const BOUNDARY_TABLE = [
             {level: 0, name: 'TRENCH'},
             {level: 1, name: 'DEEP_SEA'},
         ]},
-        {chance: .1, growth: 1, landscape: [
+        {landscape: [
             {level: 0, name: 'DEEP_SEA'}
         ]}
     ]},

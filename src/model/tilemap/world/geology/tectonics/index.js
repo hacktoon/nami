@@ -162,8 +162,8 @@ class Boundary {
     constructor(id, spec, data) {
         this.id = id
         this.name = spec.name
-        this.chance = data.chance ?? .5
-        this.growth = data.growth ?? 6
+        this.chance = .5
+        this.growth = 6
         this.landscape = data.landscape
     }
 
