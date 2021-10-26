@@ -8,7 +8,7 @@
 ## ROADMAP
 #### GeologyTileMap
 - Refactor boundary algorithm
-  [] Set boundary level on flood fill
+  [] Use boundary stress to build landforms after
   [] Remove Landform class, use ids
   [] Remove Boundary class, use ids
   [] Boundary table must define its own data instead of using landform

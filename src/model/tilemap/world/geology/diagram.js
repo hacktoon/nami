@@ -78,7 +78,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             return this.colorMap.getByOutline(erodedlandform)
         }
         if (this.showBoundary) {
-            color = this.colorMap.getByBoundary(boundary.id)
+            const stress = this.tileMap.getStress(point)
+            color = this.colorMap.getByBoundary(boundary.id).darken(stress * 10)
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#000'))
