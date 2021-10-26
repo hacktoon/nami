@@ -1,16 +1,17 @@
 import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
 
 
-class PlateFloodFill extends GenericFloodFill {
+class BoundaryFloodFill extends GenericFloodFill {
     setValue(id, regionId, level) {
-        const boundary = this.model.regionBoundaryMap.get(id)
+        const boundary = this.model.boundaryModel.get(id)
         const landform = boundary.getLandform(level)
-        this.model.deformationMap.set(regionId, boundary)
-        this.model.landformMap.set(regionId, landform)
+        this.model.setRegionBoundary(regionId, boundary)
+        this.model.setLandform(regionId, landform)
+        this.model.setStress(regionId, level)
     }
 
     isEmpty(neighborRegionId) {
-        return !this.model.landformMap.has(neighborRegionId)
+        return !this.model.hasLandform(neighborRegionId)
     }
 
     getNeighbors(regionId) {
@@ -19,19 +20,16 @@ class PlateFloodFill extends GenericFloodFill {
 }
 
 
-export class PlateMultiFill extends GenericMultiFill {
+export class BoundaryMultiFill extends GenericMultiFill {
     constructor(model) {
-        const regionIds = model.realmTileMap.getBorderRegions()
-        super(regionIds, model, PlateFloodFill)
+        super(model.origins, model, BoundaryFloodFill)
     }
 
     getChance(id, regionId) {
-        const boundary = this.model.regionBoundaryMap.get(id)
-        return boundary.chance
+        return .5
     }
 
     getGrowth(id, regionId) {
-        const boundary = this.model.regionBoundaryMap.get(id)
-        return boundary.growth
+        return 5
     }
 }

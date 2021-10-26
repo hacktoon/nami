@@ -6,7 +6,9 @@ import { UITileMap } from '/ui/tilemap'
 import { RealmTileMap } from '/model/tilemap/realm'
 
 import { GeologyTileMapDiagram } from './diagram'
+import { PlateModel } from './plate'
 import { TectonicsModel } from './tectonics'
+import { HotspotModel } from './hotspots'
 import { ErosionModel } from './erosion'
 
 
@@ -35,7 +37,12 @@ export class GeologyTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         this.realmTileMap = this._buildRealmTileMap(params)
-        this.tectonicsModel = new TectonicsModel(this.realmTileMap)
+        this.plateModel = new PlateModel(this.realmTileMap)
+        this.tectonicsModel = new TectonicsModel(this.realmTileMap, this.plateModel)
+        this.hotspotModel = new HotspotModel(
+            this.realmTileMap,
+            this.plateModel,
+            this.tectonicsModel)
         this.erosionModel = new ErosionModel(this)
         console.log(`Geology Model: ${Math.round(performance.now() - t0)}ms`);
     }
@@ -59,7 +66,8 @@ export class GeologyTileMap extends TileMap {
         const regionId = this.realmTileMap.getRegion(point)
         const regionOrigin = this.realmTileMap.getRegionOrigin(point)
         const landform = this.getLandform(point)
-        const boundary = this.tectonicsModel.getDeformation(regionId)
+        const boundary = this.tectonicsModel.getRegionBoundary(regionId)
+        const stress = this.getStress(point)
         const eroded = this.getErodedLandform(point)
         return [
             `point: ${Point.hash(point)}, plate: ${plateId}`,
@@ -67,6 +75,7 @@ export class GeologyTileMap extends TileMap {
             `, weight: ${this.getWeight(plateId)}`,
             `, region: ${regionId}@${Point.hash(regionOrigin)}`,
             `, boundary: ${boundary.name}`,
+            `, stress: ${stress}`,
             `, landform: ${eroded.name} (was ${landform.name})`
         ].join('')
     }
@@ -75,9 +84,23 @@ export class GeologyTileMap extends TileMap {
         return this.realmTileMap.getRealm(point)
     }
 
+    getBoundary(point) {
+        const regionId = this.realmTileMap.getRegion(point)
+        return this.tectonicsModel.getRegionBoundary(regionId)
+    }
+
+    getStress(point) {
+        const regionId = this.realmTileMap.getRegion(point)
+        return this.tectonicsModel.getStress(regionId)
+    }
+
+    getBoundaries() {
+        return this.tectonicsModel.getBoundaries()
+    }
+
     getPlateDirection(point) {
         const realmId = this.realmTileMap.getRealm(point)
-        return this.tectonicsModel.getPlateDirection(realmId)
+        return this.plateModel.getDirection(realmId)
     }
 
     getPlateOrigin(point) {
@@ -100,11 +123,11 @@ export class GeologyTileMap extends TileMap {
     }
 
     getWeight(realmId) {
-        return this.tectonicsModel.getWeight(realmId)
+        return this.plateModel.getWeight(realmId)
     }
 
     isOceanic(plateId) {
-        return this.tectonicsModel.isOceanic(plateId)
+        return this.plateModel.isOceanic(plateId)
     }
 
     getLandform(point) {
@@ -116,11 +139,11 @@ export class GeologyTileMap extends TileMap {
     }
 
     getDescription() {
-        return `${this.tectonicsModel.size} plates`
+        return `${this.plateModel.size} plates`
     }
 
     map(callback) {
-        const plates = this.tectonicsModel.getPlates()
+        const plates = this.plateModel.getPlates()
         return plates.map(callback)
     }
 }

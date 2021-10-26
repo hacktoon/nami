@@ -7,7 +7,7 @@ const TYPE_OCEANIC = 'W'
 const HOTSPOT_CHANCE = .4
 
 
-export class PlateMap {
+export class PlateModel {
     constructor(realmTileMap) {
         this._directionTable = []
         this._weightTable = []
@@ -15,10 +15,10 @@ export class PlateMap {
         this._plateTableMap = new Map()
         this._realmTileMap = realmTileMap
         this._plates = realmTileMap.getRealmsDescOrder()
-        this.typeMap = this._buildTypes(this._plates)
+        this._typeMap = this._buildTypes(this._plates)
         this._plates.forEach((plateId, id) => {
             const isLandlocked = this._isLandLocked(plateId)
-            const type = isLandlocked ? TYPE_OCEANIC : this.typeMap.get(plateId)
+            const type = isLandlocked ? TYPE_OCEANIC : this._typeMap.get(plateId)
             const weight = id+(type === TYPE_OCEANIC ? this._plates.length * 10 : 0)
             this._plateTableMap.set(plateId, id)
             this._hasHotspot.push(Random.chance(HOTSPOT_CHANCE))
@@ -31,7 +31,7 @@ export class PlateMap {
         return this._realmTileMap.getNeighborRealms(plateId)
             .concat(plateId)
             .every(neighborId => {
-                return this.typeMap.get(neighborId) === TYPE_CONTINENTAL
+                return this._typeMap.get(neighborId) === TYPE_CONTINENTAL
             })
     }
 
@@ -49,7 +49,11 @@ export class PlateMap {
     }
 
     get size() {
-        return this._plates.size
+        return this._plates.length
+    }
+
+    getPlates() {
+        return this._realmTileMap.getRealms()
     }
 
     getDirection(plateId) {
@@ -63,7 +67,7 @@ export class PlateMap {
     }
 
     isOceanic(plateId) {
-        return this.typeMap.get(plateId) === TYPE_OCEANIC
+        return this._typeMap.get(plateId) === TYPE_OCEANIC
     }
 
     hasHotspot(plateId) {
