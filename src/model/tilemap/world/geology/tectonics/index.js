@@ -39,6 +39,10 @@ export class TectonicsModel {
         new BoundaryMultiFill(this).fill()
     }
 
+    getBoundaries() {
+        return this.boundaryModel.getBoundaries()
+    }
+
     setRegionBoundary(regionId, boundary) {
         return this.#regionBoundaryMap.set(regionId, boundary)
     }
@@ -63,6 +67,7 @@ export class TectonicsModel {
 
 export class BoundaryModel {
     #boundaryMap = new Map()
+    #boundaries = []
 
     constructor(plateModel, origins, realmTileMap) {
         this._plateModel = plateModel
@@ -77,11 +82,14 @@ export class BoundaryModel {
             const regionId = origins[id]
             const realmId = this._realmTileMap.getRealmByRegion(regionId)
             const sideRegionIds = this._realmTileMap.getNeighborRegions(regionId)
+
             for(let sideRegionId of sideRegionIds) {
                 const sideRealmId = this._realmTileMap.getRealmByRegion(sideRegionId)
-                if (sideRealmId !== realmId) {
-                    const boundary =  this._buildBoundary(realmId, sideRealmId)
+                if (realmId !== sideRealmId) {
+                    const boundary = this._buildBoundary(realmId, sideRealmId)
                     this.#boundaryMap.set(id, boundary)
+                    this.#boundaries.push(boundary)
+                    break
                 }
             }
         }
@@ -99,6 +107,10 @@ export class BoundaryModel {
 
     get(id) {
         return this.#boundaryMap.get(id)
+    }
+
+    getBoundaries() {
+        return this.#boundaries
     }
 }
 
