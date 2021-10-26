@@ -10,7 +10,8 @@ export class ErosionModel {
     constructor(model) {
         const {width, height} = model
         this.landformMatrix = new Matrix(width, height, point => {
-            return model.tectonicsModel.getLandformByPoint(point)
+            const regionId = model.realmTileMap.getRegion(point)
+            return model.tectonicsModel.getLandform(regionId)
         })
         this.erosionMatrix = new ErosionMatrix(this.landformMatrix)
     }

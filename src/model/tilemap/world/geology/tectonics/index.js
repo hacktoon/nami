@@ -22,6 +22,7 @@ const IDMAP = {
 
 export class TectonicsModel {
     #landformMap = new Map()
+    #regionBoundaryMap = new Map()
 
     constructor(realmTileMap, plateModel) {
         this.realmTileMap = realmTileMap
@@ -38,8 +39,12 @@ export class TectonicsModel {
         new BoundaryMultiFill(this).fill()
     }
 
-    getBoundary(regionId) {
-        return this.regionBoundaryMap.get(regionId)
+    setRegionBoundary(regionId, boundary) {
+        return this.#regionBoundaryMap.set(regionId, boundary)
+    }
+
+    getRegionBoundary(regionId) {
+        return this.#regionBoundaryMap.get(regionId)
     }
 
     hasLandform(regionId) {
@@ -51,11 +56,6 @@ export class TectonicsModel {
     }
 
     getLandform(regionId) {
-        return this.#landformMap.get(regionId)
-    }
-
-    getLandformByPoint(point) {
-        const regionId = this.realmTileMap.getRegion(point)
         return this.#landformMap.get(regionId)
     }
 }
