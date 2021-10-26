@@ -8,15 +8,23 @@ import { TileMapDiagram } from '/lib/model/tilemap'
 
 class GeologyColorMap {
     constructor(tileMap) {
-        const entries = tileMap.map(plateId => {
+        const plateColors = tileMap.map(plateId => {
             const hex = tileMap.isOceanic(plateId) ? '#058' : '#574'
             return [plateId, Color.fromHex(hex)]
         })
-        this.map = new Map(entries)
+        this.map = new Map(plateColors)
+        const boundaryColors = tileMap.getBoundaries().map(boundary => {
+            return [boundary.id, new Color()]
+        })
+        this.boundaryMap = new Map(boundaryColors)
     }
 
     getByPlate(plateId) {
         return this.map.get(plateId)
+    }
+
+    getByBoundary(id) {
+        return this.boundaryMap.get(id)
     }
 
     getByOutline(landform) {
@@ -28,9 +36,10 @@ class GeologyColorMap {
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
-        Type.boolean('showLandform', 'Show landforms', {default: true}),
-        Type.boolean('showPlateBorder', 'Show borders', {default: false}),
         Type.boolean('showDirection', 'Show directions', {default: false}),
+        Type.boolean('showBoundary', 'Show boundary', {default: true}),
+        Type.boolean('showPlateBorder', 'Show borders', {default: false}),
+        Type.boolean('showLandform', 'Show landforms', {default: true}),
         Type.boolean('showErosion', 'Show erosion', {default: true}),
         Type.boolean('showOutline', 'Show outline', {default: true}),
     )
@@ -48,12 +57,14 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showDirection = params.get('showDirection')
         this.showErosion = params.get('showErosion')
         this.showOutline = params.get('showOutline')
+        this.showBoundary = params.get('showBoundary')
     }
 
     get(point) {
         const plateId = this.tileMap.getPlate(point)
         const erodedlandform = this.tileMap.getErodedLandform(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
+        const boundary = this.tileMap.getBoundary(point)
         let color = this.colorMap.getByPlate(plateId)
 
         if (this.showLandform) {
@@ -66,9 +77,13 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (this.showOutline) {
             return this.colorMap.getByOutline(erodedlandform)
         }
-        if (this.showPlateBorder && isBorderPoint) {
-            color = color.average(Color.fromHex('#F00'))
+        if (this.showBoundary) {
+            color = this.colorMap.getByBoundary(boundary.id)
         }
+        if (this.showPlateBorder && isBorderPoint) {
+            color = color.average(Color.fromHex('#000'))
+        }
+
         return color.toHex()
     }
 

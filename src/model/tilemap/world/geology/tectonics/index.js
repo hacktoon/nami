@@ -78,6 +78,7 @@ export class BoundaryModel {
     }
 
     _buildBoundaries(origins) {
+        const boundarySet = new Set()
         for(let id = 0; id < origins.length; id ++) {
             const regionId = origins[id]
             const realmId = this._realmTileMap.getRealmByRegion(regionId)
@@ -88,7 +89,10 @@ export class BoundaryModel {
                 if (realmId !== sideRealmId) {
                     const boundary = this._buildBoundary(realmId, sideRealmId)
                     this.#boundaryMap.set(id, boundary)
-                    this.#boundaries.push(boundary)
+                    if (! boundarySet.has(boundary.id)) {
+                        boundarySet.add(boundary.id)
+                        this.#boundaries.push(boundary)
+                    }
                     break
                 }
             }
@@ -99,9 +103,9 @@ export class BoundaryModel {
         const dirToSide = this._realmTileMap.getRealmDirection(realmId, sideRealmId)
         const dirFromSide = this._realmTileMap.getRealmDirection(sideRealmId, realmId)
         const plateDir = this._plateModel.getDirection(realmId)
-        const neighborPlateDir = this._plateModel.getDirection(sideRealmId)
+        const sidePlateDir = this._plateModel.getDirection(sideRealmId)
         const dotTo = Direction.dotProduct(plateDir, dirToSide)
-        const dotFrom = Direction.dotProduct(neighborPlateDir, dirFromSide)
+        const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
         return this._boundaryTable.get(realmId, sideRealmId, dotTo, dotFrom)
     }
 
@@ -127,15 +131,15 @@ class BoundaryTable {
         })
     }
 
-    get(realmId, neighborRealmId, dotTo, dotFrom) {
+    get(realmId, sideRealmId, dotTo, dotFrom) {
         const type1 = this._plateModel.isOceanic(realmId)
                       ? PLATE_OCEANIC : PLATE_CONTINENTAL
-        const type2 = this._plateModel.isOceanic(neighborRealmId)
+        const type2 = this._plateModel.isOceanic(sideRealmId)
                       ? PLATE_OCEANIC : PLATE_CONTINENTAL
         const dir = this._parseDir(dotTo) + this._parseDir(dotFrom)
         const id = type1 + type2 + dir
         const spec = this.#codeTable.get(id)
-        return this._buildBoundary(spec, realmId, neighborRealmId)
+        return this._buildBoundary(id, spec, realmId, sideRealmId)
     }
 
     _parseDir(dir) {
@@ -143,19 +147,20 @@ class BoundaryTable {
         return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
     }
 
-    _buildBoundary(spec, realmId, neighborRealmId) {
+    _buildBoundary(id, spec, realmId, sideRealmId) {
         const first = spec.data[0]
         const second = spec.data.length === 1 ? first : spec.data[1]
         const realmWeight = this._plateModel.getWeight(realmId)
-        const neighborRealmWeight = this._plateModel.getWeight(neighborRealmId)
+        const neighborRealmWeight = this._plateModel.getWeight(sideRealmId)
         const data = realmWeight > neighborRealmWeight ? first : second
-        return new Boundary(spec, data)
+        return new Boundary(id, spec, data)
     }
 }
 
 
 class Boundary {
-    constructor(spec, data) {
+    constructor(id, spec, data) {
+        this.id = id
         this.name = spec.name
         this.chance = data.chance ?? .5
         this.growth = data.growth ?? 6

@@ -8,9 +8,9 @@
 ## ROADMAP
 #### GeologyTileMap
 - Refactor boundary algorithm
-  [] Remove Boundary class, use ids
   [] Set boundary level on flood fill
-  [] Show boundary by region on view
+  [] Remove Landform class, use ids
+  [] Remove Boundary class, use ids
   [] Boundary table must define its own data instead of using landform
 - Restart erosion algorithm using regions
 - Add islets again
