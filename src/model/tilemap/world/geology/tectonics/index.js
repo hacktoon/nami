@@ -75,18 +75,18 @@ export class BoundaryModel {
     #boundaryMap = new Map()
     #boundaries = []
 
-    constructor(plateModel, origins, realmTileMap) {
+    constructor(plateModel, borderRegionIds, realmTileMap) {
         this._plateModel = plateModel
         this._realmTileMap = realmTileMap
-        this._boundaryTable = new BoundaryTable(this._plateModel)
+        this._boundaryTable = new BoundaryTable(plateModel)
 
-        this._buildBoundaries(origins)
+        this._buildBoundaries(borderRegionIds)
     }
 
-    _buildBoundaries(origins) {
+    _buildBoundaries(borderRegionIds) {
         const boundarySet = new Set()
-        for(let id = 0; id < origins.length; id ++) {
-            const regionId = origins[id]
+        for(let id = 0; id < borderRegionIds.length; id ++) {
+            const regionId = borderRegionIds[id]
             const realmId = this._realmTileMap.getRealmByRegion(regionId)
             const sideRegionIds = this._realmTileMap.getNeighborRegions(regionId)
 
@@ -159,18 +159,19 @@ class BoundaryTable {
         const realmWeight = this._plateModel.getWeight(realmId)
         const neighborRealmWeight = this._plateModel.getWeight(sideRealmId)
         const data = realmWeight > neighborRealmWeight ? first : second
-        return new Boundary(id, spec, data)
+        return new Boundary(id, spec.name, data.landscape)
     }
 }
 
 
 class Boundary {
-    constructor(id, spec, data) {
+    constructor(id, name, landscape) {
         this.id = id
-        this.name = spec.name
-        this.landscape = data.landscape
+        this.name = name
+        this.landscape = landscape
     }
 
+    // TODO: remove this method
     getLandform(level) {
         let name = this.landscape[0].name
         for(let step of this.landscape) {
