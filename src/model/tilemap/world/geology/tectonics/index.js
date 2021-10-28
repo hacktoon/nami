@@ -85,22 +85,26 @@ export class BoundaryModel {
 
     _buildBoundaries(borderRegionIds) {
         const boundarySet = new Set()
+
+        const getBoundary = (realmId, sideRegionIds) => {
+            for(let sideRegionId of sideRegionIds) {
+                const sideRealmId = this._realmTileMap.getRealmByRegion(sideRegionId)
+                if (realmId !== sideRealmId) {
+                    return this._buildBoundary(realmId, sideRealmId)
+                }
+            }
+        }
+
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
             const realmId = this._realmTileMap.getRealmByRegion(regionId)
             const sideRegionIds = this._realmTileMap.getSideRegions(regionId)
+            const boundary = getBoundary(realmId, sideRegionIds)
 
-            for(let sideRegionId of sideRegionIds) {
-                const sideRealmId = this._realmTileMap.getRealmByRegion(sideRegionId)
-                if (realmId !== sideRealmId) {
-                    const boundary = this._buildBoundary(realmId, sideRealmId)
-                    this.#boundaryMap.set(id, boundary)
-                    if (! boundarySet.has(boundary.id)) {
-                        boundarySet.add(boundary.id)
-                        this.#boundaries.push(boundary)
-                    }
-                    break
-                }
+            this.#boundaryMap.set(id, boundary)
+            if (! boundarySet.has(boundary.id)) {
+                boundarySet.add(boundary.id)
+                this.#boundaries.push(boundary)
             }
         }
     }
