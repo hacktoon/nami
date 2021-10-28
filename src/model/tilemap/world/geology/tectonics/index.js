@@ -45,11 +45,16 @@ export class TectonicsModel {
         return this.#stressMap.get(regionId)
     }
 
+    getBoundary(id) {
+        return this.boundaryModel.get(id)
+    }
+
     getBoundaries() {
         return this.boundaryModel.getBoundaries()
     }
 
-    setRegionBoundary(regionId, boundary) {
+    setRegionBoundary(regionId, id) {
+        const boundary = this.boundaryModel.get(id)
         return this.#regionBoundaryMap.set(regionId, boundary)
     }
 
@@ -68,13 +73,17 @@ export class TectonicsModel {
     getLandform(regionId) {
         return this.#landformMap.get(regionId)
     }
+
+    getLandformByLevel(id, level) {
+        return this.boundaryModel.getLandformByLevel(id, level)
+    }
 }
 
 
 export class BoundaryModel {
     #boundaryMap = new Map()
-    #boundaryName = []
     #boundaryLandscape = []
+    #boundaryName = []
     #boundaries = []
 
     constructor(plateModel, borderRegionIds, realmTileMap) {
@@ -106,6 +115,7 @@ export class BoundaryModel {
             this.#boundaryMap.set(id, boundary)
             this.#boundaryName.push(boundary.name)
             this.#boundaryLandscape.push(boundary.landscape)
+            // TODO: use the set for unique ids and add to array
             if (! boundarySet.has(boundary.id)) {
                 boundarySet.add(boundary.id)
                 this.#boundaries.push(boundary)

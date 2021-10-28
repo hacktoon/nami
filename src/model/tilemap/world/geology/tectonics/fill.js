@@ -3,9 +3,8 @@ import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
 
 class BoundaryFloodFill extends GenericFloodFill {
     setValue(id, regionId, level) {
-        const boundary = this.model.boundaryModel.get(id)
-        const landform = this.model.boundaryModel.getLandformByLevel(id, level)
-        this.model.setRegionBoundary(regionId, boundary)
+        const landform = this.model.getLandformByLevel(id, level)
+        this.model.setRegionBoundary(regionId, id)
         this.model.setLandform(regionId, landform)
         this.model.setStress(regionId, level)
     }
