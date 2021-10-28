@@ -45,10 +45,6 @@ export class TectonicsModel {
         return this.#stressMap.get(regionId)
     }
 
-    getBoundary(id) {
-        return this.boundaryModel.get(id)
-    }
-
     getBoundaries() {
         return this.boundaryModel.getBoundaries()
     }
