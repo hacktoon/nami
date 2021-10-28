@@ -119,6 +119,16 @@ export class BoundaryModel {
         return this.#boundaryMap.get(id)
     }
 
+    getLandformByLevel(id, level) {
+        const boundary = this.get(id)
+        let name = boundary.landscape[0].name
+        for(let step of boundary.landscape) {
+            if (level <= step.level) break
+            name = step.name
+        }
+        return Landform.get(name)
+    }
+
     getBoundaries() {
         return this.#boundaries
     }
@@ -169,15 +179,5 @@ class Boundary {
         this.id = id
         this.name = name
         this.landscape = landscape
-    }
-
-    // TODO: remove this method
-    getLandform(level) {
-        let name = this.landscape[0].name
-        for(let step of this.landscape) {
-            if (level <= step.level) break
-            name = step.name
-        }
-        return Landform.get(name)
     }
 }
