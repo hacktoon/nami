@@ -15,7 +15,7 @@ class BoundaryFloodFill extends GenericFloodFill {
     }
 
     getNeighbors(regionId) {
-        return this.model.realmTileMap.getNeighborRegions(regionId)
+        return this.model.realmTileMap.getSideRegions(regionId)
     }
 }
 

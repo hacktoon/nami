@@ -23,7 +23,7 @@ class RealmFloodFill extends GenericFloodFill {
     }
 
     getNeighbors(regionId) {
-        return this.model.regionTileMap.getNeighborRegions(regionId)
+        return this.model.regionTileMap.getSideRegions(regionId)
     }
 }
 

@@ -88,7 +88,7 @@ export class BoundaryModel {
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
             const realmId = this._realmTileMap.getRealmByRegion(regionId)
-            const sideRegionIds = this._realmTileMap.getNeighborRegions(regionId)
+            const sideRegionIds = this._realmTileMap.getSideRegions(regionId)
 
             for(let sideRegionId of sideRegionIds) {
                 const sideRealmId = this._realmTileMap.getRealmByRegion(sideRegionId)

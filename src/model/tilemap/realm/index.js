@@ -181,8 +181,8 @@ export class RealmTileMap extends TileMap {
         return this._borderRegions
     }
 
-    getNeighborRegions(regionId) {
-        return this.regionTileMap.getNeighborRegions(regionId)
+    getSideRegions(regionId) {
+        return this.regionTileMap.getSideRegions(regionId)
     }
 
     isBorderRegion(regionId) {

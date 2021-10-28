@@ -100,7 +100,7 @@ export class RegionTileMap extends TileMap {
         return Array.from(this.borderMatrix.get(point))
     }
 
-    getNeighborRegions(regionId) {
+    getSideRegions(regionId) {
         return this.graph.getEdges(regionId)
     }
 
