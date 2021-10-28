@@ -73,6 +73,8 @@ export class TectonicsModel {
 
 export class BoundaryModel {
     #boundaryMap = new Map()
+    #boundaryName = []
+    #boundaryLandscape = []
     #boundaries = []
 
     constructor(plateModel, borderRegionIds, realmTileMap) {
@@ -102,6 +104,8 @@ export class BoundaryModel {
             const boundary = getBoundary(realmId, sideRegionIds)
 
             this.#boundaryMap.set(id, boundary)
+            this.#boundaryName.push(boundary.name)
+            this.#boundaryLandscape.push(boundary.landscape)
             if (! boundarySet.has(boundary.id)) {
                 boundarySet.add(boundary.id)
                 this.#boundaries.push(boundary)
@@ -121,6 +125,14 @@ export class BoundaryModel {
 
     get(id) {
         return this.#boundaryMap.get(id)
+    }
+
+    getName(id) {
+        return this.#boundaryName[id]
+    }
+
+    getLandscape(id) {
+        return this.#boundaryLandscape[id]
     }
 
     getLandformByLevel(id, level) {
