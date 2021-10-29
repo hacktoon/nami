@@ -51,11 +51,16 @@ export class TectonicsModel {
 
     setRegionBoundary(regionId, id) {
         const boundary = this.boundaryModel.get(id)
-        return this.#regionBoundaryMap.set(regionId, boundary)
+        return this.#regionBoundaryMap.set(regionId, boundary.id)
     }
 
     getRegionBoundary(regionId) {
         return this.#regionBoundaryMap.get(regionId)
+    }
+
+    getBoundaryName(regionId) {
+        const boundaryId = this.#regionBoundaryMap.get(regionId)
+        return this.boundaryModel.getName(boundaryId)
     }
 
     hasLandform(regionId) {
