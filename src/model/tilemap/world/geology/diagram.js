@@ -13,8 +13,8 @@ class GeologyColorMap {
             return [plateId, Color.fromHex(hex)]
         })
         this.map = new Map(plateColors)
-        const boundaryColors = tileMap.getBoundaries().map(boundary => {
-            return [boundary.id, new Color()]
+        const boundaryColors = tileMap.getBoundaries().map(boundaryId => {
+            return [boundaryId, new Color()]
         })
         this.boundaryMap = new Map(boundaryColors)
     }

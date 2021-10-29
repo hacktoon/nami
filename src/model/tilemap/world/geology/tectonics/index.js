@@ -114,7 +114,7 @@ export class BoundaryModel {
             // TODO: use the set for unique ids and add to array
             if (! boundarySet.has(boundary.id)) {
                 boundarySet.add(boundary.id)
-                this.#boundaries.push(boundary)
+                this.#boundaries.push(boundary.id)
             }
         }
     }
