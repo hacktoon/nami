@@ -114,6 +114,7 @@ export class BoundaryModel {
             const boundary = getBoundary(realmId, sideRegionIds)
 
             this.#boundaryMap.set(id, boundary)
+            console.log(id, boundary);
             this.#boundaryName.push(boundary.name)
             this.#boundaryLandscape.push(boundary.landscape)
             // TODO: use the set for unique ids and add to array
@@ -147,9 +148,9 @@ export class BoundaryModel {
     }
 
     getLandformByLevel(id, level) {
-        const boundary = this.get(id)
-        let name = boundary.landscape[0].name
-        for(let step of boundary.landscape) {
+        const landscape = this.#boundaryLandscape[id]
+        let name = landscape[0].name
+        for(let step of landscape) {
             if (level <= step.level) break
             name = step.name
         }
@@ -182,7 +183,8 @@ class BoundaryTable {
         const dir = this._parseDir(dotTo) + this._parseDir(dotFrom)
         const id = type1 + type2 + dir
         const spec = this.#codeTable.get(id)
-        return this._buildBoundary(id, spec, realmId, sideRealmId)
+        const landscape = this._getLandscape(spec, realmId, sideRealmId)
+        return {id, name: spec.name, landscape}
     }
 
     _parseDir(dir) {
@@ -190,21 +192,12 @@ class BoundaryTable {
         return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
     }
 
-    _buildBoundary(id, spec, realmId, sideRealmId) {
+    _getLandscape(spec, realmId, sideRealmId) {
         const first = spec.data[0]
         const second = spec.data.length === 1 ? first : spec.data[1]
         const realmWeight = this._plateModel.getWeight(realmId)
         const neighborRealmWeight = this._plateModel.getWeight(sideRealmId)
         const data = realmWeight > neighborRealmWeight ? first : second
-        return new Boundary(id, spec.name, data.landscape)
-    }
-}
-
-
-class Boundary {
-    constructor(id, name, landscape) {
-        this.id = id
-        this.name = name
-        this.landscape = landscape
+        return data.landscape
     }
 }
