@@ -35,20 +35,9 @@ export class BoundaryModel {
     _buildBoundaries(borderRegionIds) {
         const boundarySet = new Set()
 
-        const getBoundary = (realmId, sideRegionIds) => {
-            for(let sideRegionId of sideRegionIds) {
-                const sideRealmId = this._realmTileMap.getRealmByRegion(sideRegionId)
-                if (realmId !== sideRealmId) {
-                    return this._buildBoundary(realmId, sideRealmId)
-                }
-            }
-        }
-
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
-            const realmId = this._realmTileMap.getRealmByRegion(regionId)
-            const sideRegionIds = this._realmTileMap.getSideRegions(regionId)
-            const boundary = getBoundary(realmId, sideRegionIds)
+            const boundary = this._getBoundary(regionId)
 
             this.#boundaryId.set(id, boundary.id)
             this.#boundaryName.push(boundary.name)
@@ -57,6 +46,17 @@ export class BoundaryModel {
             if (! boundarySet.has(boundary.id)) {
                 boundarySet.add(boundary.id)
                 this.#boundaries.push(boundary.id)
+            }
+        }
+    }
+
+    _getBoundary(regionId){
+        const realmId = this._realmTileMap.getRealmByRegion(regionId)
+        const sideRegionIds = this._realmTileMap.getSideRegions(regionId)
+        for(let sideRegionId of sideRegionIds) {
+            const sideRealmId = this._realmTileMap.getRealmByRegion(sideRegionId)
+            if (realmId !== sideRealmId) {
+                return this._buildBoundary(realmId, sideRealmId)
             }
         }
     }
@@ -77,10 +77,6 @@ export class BoundaryModel {
 
     getName(id) {
         return this.#boundaryName[id]
-    }
-
-    getLandscape(id) {
-        return this.#boundaryLandscape[id]
     }
 
     getLandformByLevel(id, level) {

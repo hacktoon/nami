@@ -43,7 +43,7 @@ export class GeologyTileMap extends TileMap {
             this.realmTileMap,
             this.plateModel,
             this.tectonicsModel)
-        this.erosionModel = new ErosionModel(this)
+        this.erosionModel = new ErosionModel(this.realmTileMap, this.tectonicsModel)
         console.log(`Geology Model: ${Math.round(performance.now() - t0)}ms`);
     }
 
@@ -67,21 +67,16 @@ export class GeologyTileMap extends TileMap {
         const regionOrigin = this.realmTileMap.getRegionOrigin(point)
         const landform = this.getLandform(point)
         const boundaryName = this.tectonicsModel.getBoundaryName(regionId)
-        const stress = this.getStress(point)
         const eroded = this.getErodedLandform(point)
         return [
             `point: ${Point.hash(point)}, plate: ${plateId}`,
-            `, type: ${this.isOceanic(plateId)?'Oceanic':'Continental'}`,
-            `, weight: ${this.getWeight(plateId)}`,
+            `, type: ${this.isPlateOceanic(plateId) ? 'Oceanic' : 'Continental'}`,
+            `, weight: ${this.plateModel.getWeight(plateId)}`,
             `, region: ${regionId}@${Point.hash(regionOrigin)}`,
             `, boundary: ${boundaryName}`,
-            `, stress: ${stress}`,
+            `, stress: ${this.getStress(point)}`,
             `, landform: ${eroded.name} (was ${landform.name})`
         ].join('')
-    }
-
-    getPlate(point) {
-        return this.realmTileMap.getRealm(point)
     }
 
     getBoundary(point) {
@@ -89,13 +84,17 @@ export class GeologyTileMap extends TileMap {
         return this.tectonicsModel.getRegionBoundary(regionId)
     }
 
+    getBoundaries() {
+        return this.tectonicsModel.getBoundaries()
+    }
+
     getStress(point) {
         const regionId = this.realmTileMap.getRegion(point)
         return this.tectonicsModel.getStress(regionId)
     }
 
-    getBoundaries() {
-        return this.tectonicsModel.getBoundaries()
+    getPlate(point) {
+        return this.realmTileMap.getRealm(point)
     }
 
     getPlateDirection(point) {
@@ -113,21 +112,17 @@ export class GeologyTileMap extends TileMap {
         return Point.equals(origin, this.realmTileMap.rect.wrap(point))
     }
 
-    isRegionOrigin(point) {
-        const regionOrigin = this.realmTileMap.getRegionOrigin(point)
-        return Point.equals(regionOrigin, point)
-    }
-
     isPlateBorder(point) {
         return this.realmTileMap.isRealmBorder(point)
     }
 
-    getWeight(realmId) {
-        return this.plateModel.getWeight(realmId)
+    isPlateOceanic(plateId) {
+        return this.plateModel.isOceanic(plateId)
     }
 
-    isOceanic(plateId) {
-        return this.plateModel.isOceanic(plateId)
+    isRegionOrigin(point) {
+        const regionOrigin = this.realmTileMap.getRegionOrigin(point)
+        return Point.equals(regionOrigin, point)
     }
 
     getLandform(point) {

@@ -9,13 +9,13 @@ import { TileMapDiagram } from '/lib/model/tilemap'
 class GeologyColorMap {
     constructor(tileMap) {
         const plateColors = tileMap.map(plateId => {
-            const hex = tileMap.isOceanic(plateId) ? '#058' : '#574'
+            const hex = tileMap.isPlateOceanic(plateId) ? '#058' : '#574'
             return [plateId, Color.fromHex(hex)]
         })
-        this.map = new Map(plateColors)
         const boundaryColors = tileMap.getBoundaries().map(boundaryId => {
             return [boundaryId, new Color()]
         })
+        this.map = new Map(plateColors)
         this.boundaryMap = new Map(boundaryColors)
     }
 
@@ -84,7 +84,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#000'))
         }
-
         return color.toHex()
     }
 

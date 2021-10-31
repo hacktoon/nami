@@ -7,11 +7,11 @@ const EMPTY = null
 
 
 export class ErosionModel {
-    constructor(model) {
-        const {width, height} = model
+    constructor(realmTileMap, tectonicsModel) {
+        const {width, height} = realmTileMap
         this.landformMatrix = new Matrix(width, height, point => {
-            const regionId = model.realmTileMap.getRegion(point)
-            return model.tectonicsModel.getLandform(regionId)
+            const regionId = realmTileMap.getRegion(point)
+            return tectonicsModel.getLandform(regionId)
         })
         this.erosionMatrix = new ErosionMatrix(this.landformMatrix)
     }
