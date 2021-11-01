@@ -6,7 +6,6 @@ class BoundaryFloodFill extends GenericFloodFill {
         const landform = this.model.getLandformByLevel(id, level)
         this.model.setRegionBoundary(regionId, id)
         this.model.setLandform(regionId, landform)
-        this.model.setStress(regionId, level)
     }
 
     isEmpty(neighborRegionId) {

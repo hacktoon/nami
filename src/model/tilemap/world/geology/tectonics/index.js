@@ -5,7 +5,6 @@ import { BoundaryModel } from './boundary'
 export class TectonicsModel {
     #regionBoundaryMap = new Map()
     #landformMap = new Map()
-    #stressMap = new Map()
 
     constructor(realmTileMap, plateModel) {
         this.realmTileMap = realmTileMap
@@ -17,14 +16,6 @@ export class TectonicsModel {
             realmTileMap
         )
         new BoundaryMultiFill(this).fill()
-    }
-
-    setStress(regionId, stress) {
-        return this.#stressMap.set(regionId, stress)
-    }
-
-    getStress(regionId) {
-        return this.#stressMap.get(regionId)
     }
 
     getBoundaries() {
