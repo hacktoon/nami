@@ -80,7 +80,7 @@ export class GeologyTileMap extends TileMap {
 
     getBoundary(point) {
         const regionId = this.realmTileMap.getRegion(point)
-        return this.tectonicsModel.getRegionBoundary(regionId)
+        return this.tectonicsModel.getBoundaryByRegion(regionId)
     }
 
     getBoundaries() {

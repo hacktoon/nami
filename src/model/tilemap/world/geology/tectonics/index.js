@@ -1,4 +1,4 @@
-import { BoundaryMultiFill } from './fill'
+import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
 import { BoundaryModel } from './boundary'
 
 
@@ -27,7 +27,7 @@ export class TectonicsModel {
         return this.#regionBoundaryMap.set(regionId, boundaryId)
     }
 
-    getRegionBoundary(regionId) {
+    getBoundaryByRegion(regionId) {
         return this.#regionBoundaryMap.get(regionId)
     }
 
@@ -53,3 +53,34 @@ export class TectonicsModel {
     }
 }
 
+
+class BoundaryFloodFill extends GenericFloodFill {
+    setValue(id, regionId, level) {
+        const landform = this.model.getLandformByLevel(id, level)
+        this.model.setRegionBoundary(regionId, id)
+        this.model.setLandform(regionId, landform)
+    }
+
+    isEmpty(neighborRegionId) {
+        return !this.model.hasLandform(neighborRegionId)
+    }
+
+    getNeighbors(regionId) {
+        return this.model.realmTileMap.getSideRegions(regionId)
+    }
+}
+
+
+class BoundaryMultiFill extends GenericMultiFill {
+    constructor(model) {
+        super(model.origins, model, BoundaryFloodFill)
+    }
+
+    getChance(id, regionId) {
+        return .5
+    }
+
+    getGrowth(id, regionId) {
+        return 5
+    }
+}

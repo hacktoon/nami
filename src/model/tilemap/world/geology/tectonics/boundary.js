@@ -108,10 +108,10 @@ class BoundaryTable {
     }
 
     get(realmId, sideRealmId, dotTo, dotFrom) {
-        const type1 = this._plateModel.isOceanic(realmId)
-                      ? PLATE_OCEANIC : PLATE_CONTINENTAL
-        const type2 = this._plateModel.isOceanic(sideRealmId)
-                      ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const isPlateOceanic = this._plateModel.isOceanic(realmId)
+        const isSidePlateOceanic = this._plateModel.isOceanic(sideRealmId)
+        const type1 = isPlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const type2 = isSidePlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
         const dir = this._parseDir(dotTo) + this._parseDir(dotFrom)
         const id = type1 + type2 + dir
         const spec = this.#codeTable.get(id)
