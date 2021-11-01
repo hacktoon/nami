@@ -1,4 +1,5 @@
 import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
+
 import { BoundaryModel } from './boundary'
 
 
@@ -7,14 +8,11 @@ export class TectonicsModel {
     #landformMap = new Map()
 
     constructor(realmTileMap, plateModel) {
+        const borderRegions = realmTileMap.getBorderRegions()
+        this.boundaryModel = new BoundaryModel(borderRegions, plateModel, realmTileMap)
+        this.borderRegions = borderRegions
         this.realmTileMap = realmTileMap
-        this.origins = this.realmTileMap.getBorderRegions()
         this.plateModel = plateModel
-        this.boundaryModel = new BoundaryModel(
-            this.plateModel,
-            this.origins,
-            realmTileMap
-        )
         new BoundaryMultiFill(this).fill()
     }
 
@@ -22,7 +20,7 @@ export class TectonicsModel {
         return this.boundaryModel.getBoundaries()
     }
 
-    setRegionBoundary(regionId, id) {
+    setBoundaryByRegion(regionId, id) {
         const boundaryId = this.boundaryModel.getId(id)
         return this.#regionBoundaryMap.set(regionId, boundaryId)
     }
@@ -47,22 +45,18 @@ export class TectonicsModel {
     getLandform(regionId) {
         return this.#landformMap.get(regionId)
     }
-
-    getLandformByLevel(id, level) {
-        return this.boundaryModel.getLandformByLevel(id, level)
-    }
 }
 
 
 class BoundaryFloodFill extends GenericFloodFill {
-    setValue(id, regionId, level) {
-        const landform = this.model.getLandformByLevel(id, level)
-        this.model.setRegionBoundary(regionId, id)
+    setValue(fillId, regionId, level) {
+        const landform = this.model.boundaryModel.getLandformByLevel(fillId, level)
         this.model.setLandform(regionId, landform)
+        this.model.setBoundaryByRegion(regionId, fillId)
     }
 
-    isEmpty(neighborRegionId) {
-        return !this.model.hasLandform(neighborRegionId)
+    isEmpty(sideRegionId) {
+        return !this.model.hasLandform(sideRegionId)
     }
 
     getNeighbors(regionId) {
@@ -73,14 +67,14 @@ class BoundaryFloodFill extends GenericFloodFill {
 
 class BoundaryMultiFill extends GenericMultiFill {
     constructor(model) {
-        super(model.origins, model, BoundaryFloodFill)
+        super(model.borderRegions, model, BoundaryFloodFill)
     }
 
-    getChance(id, regionId) {
+    getChance(fillId, regionId) {
         return .5
     }
 
-    getGrowth(id, regionId) {
+    getGrowth(fillId, regionId) {
         return 5
     }
 }

@@ -70,7 +70,7 @@ export class GenericFloodFill {
 
     // EXTENSIBLE METHODS ==========================
 
-    setValue(id, value) { }
+    setValue(fillId, value, level) { }
 
     isEmpty(origin) {
         return []
@@ -80,9 +80,9 @@ export class GenericFloodFill {
         return []
     }
 
-    checkNeighbor(origin) { }
+    checkNeighbor(fillId, neighbor, origin) { }
 
-    getArea(value) {
+    getArea(fillId) {
         return 1
     }
 }
@@ -102,22 +102,22 @@ export class GenericMultiFill {
     }
 
     fill() {
-        for(let id = 0; id < this.origins.length; id ++) {
-            const origin = this.origins[id]
+        for(let fillId = 0; fillId < this.origins.length; fillId ++) {
+            const origin = this.origins[fillId]
             this.areaTable.push(0)
             this.levelTable.push(0)
             this.seedTable.push([origin])
-            this.growthTable.push(this.getGrowth(id, origin))
-            this.chanceTable.push(this.getChance(id, origin))
-            this.filler._fillValue(id, origin, 0)
+            this.growthTable.push(this.getGrowth(fillId, origin))
+            this.chanceTable.push(this.getChance(fillId, origin))
+            this.filler._fillValue(fillId, origin, 0)
         }
         while(this.canGrow) {
             this._growFills()
         }
     }
 
-    getArea(id) {
-        return this.areaTable[id]
+    getArea(fillId) {
+        return this.areaTable[fillId]
     }
 
     getChance(origin) {
@@ -131,8 +131,8 @@ export class GenericMultiFill {
     _growFills() {
         let completedFills = 0
 
-        for(let id = 0; id < this.origins.length; id ++) {
-            const filledPoints = this.filler.grow(id)
+        for(let fillId = 0; fillId < this.origins.length; fillId ++) {
+            const filledPoints = this.filler.grow(fillId)
             if (filledPoints.length === 0) {
                 completedFills++
             }

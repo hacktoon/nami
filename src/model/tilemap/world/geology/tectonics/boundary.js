@@ -24,7 +24,7 @@ export class BoundaryModel {
     #boundaryName = []
     #boundaries = []
 
-    constructor(plateModel, borderRegionIds, realmTileMap) {
+    constructor(borderRegionIds, plateModel, realmTileMap) {
         this._plateModel = plateModel
         this._realmTileMap = realmTileMap
         this._boundaryTable = new BoundaryTable(plateModel)
