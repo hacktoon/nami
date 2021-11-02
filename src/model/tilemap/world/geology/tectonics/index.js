@@ -20,8 +20,7 @@ export class TectonicsModel {
         return this.boundaryModel.getBoundaries()
     }
 
-    setBoundaryByRegion(regionId, id) {
-        const boundaryId = this.boundaryModel.getId(id)
+    setBoundaryByRegion(regionId, boundaryId) {
         return this.#regionBoundaryMap.set(regionId, boundaryId)
     }
 
@@ -50,7 +49,7 @@ export class TectonicsModel {
 
 class BoundaryFloodFill extends GenericFloodFill {
     setValue(fillId, regionId, level) {
-        const landform = this.model.boundaryModel.getLandformByLevel(fillId, level)
+        const landform = this.model.boundaryModel.getLandform(fillId, level)
         this.model.setLandform(regionId, landform)
         this.model.setBoundaryByRegion(regionId, fillId)
     }

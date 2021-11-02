@@ -19,10 +19,9 @@ const IDMAP = {
 
 
 export class BoundaryModel {
-    #boundaryId = new Map()
-    #boundaryLandscape = []
-    #boundaryName = []
     #boundaries = []
+    #boundaryName = []
+    #boundaryLandscape = []
 
     constructor(borderRegionIds, plateModel, realmTileMap) {
         this._plateModel = plateModel
@@ -33,20 +32,13 @@ export class BoundaryModel {
     }
 
     _buildBoundaries(borderRegionIds) {
-        const boundarySet = new Set()
-
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
             const boundary = this._getBoundary(regionId)
 
-            this.#boundaryId.set(id, boundary.id)
+            this.#boundaries.push(id)
             this.#boundaryName.push(boundary.name)
             this.#boundaryLandscape.push(boundary.landscape)
-            // TODO: use the set for unique ids and add to array
-            if (! boundarySet.has(boundary.id)) {
-                boundarySet.add(boundary.id)
-                this.#boundaries.push(boundary.id)
-            }
         }
     }
 
@@ -71,15 +63,15 @@ export class BoundaryModel {
         return this._boundaryTable.get(realmId, sideRealmId, dotTo, dotFrom)
     }
 
-    getId(id) {
-        return this.#boundaryId.get(id)
+    getBoundaries() {
+        return this.#boundaries
     }
 
     getName(id) {
         return this.#boundaryName[id]
     }
 
-    getLandformByLevel(id, level) {
+    getLandform(id, level) {
         const landscape = this.#boundaryLandscape[id]
         let name = landscape[0].name
         for(let step of landscape) {
@@ -87,10 +79,6 @@ export class BoundaryModel {
             name = step.name
         }
         return Landform.get(name)
-    }
-
-    getBoundaries() {
-        return this.#boundaries
     }
 }
 
