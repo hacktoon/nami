@@ -27,18 +27,16 @@ export class BoundaryModel {
         this._plateModel = plateModel
         this._realmTileMap = realmTileMap
         this._boundaryTable = new BoundaryTable(plateModel)
-
         this._buildBoundaries(borderRegionIds)
     }
 
     _buildBoundaries(borderRegionIds) {
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
-            const boundary = this._getBoundary(regionId)
-
+            const [boundaryName, landscape] = this._getBoundary(regionId)
             this.#boundaries.push(id)
-            this.#boundaryName.push(boundary.name)
-            this.#boundaryLandscape.push(boundary.landscape)
+            this.#boundaryName.push(boundaryName)
+            this.#boundaryLandscape.push(landscape)
         }
     }
 
@@ -101,10 +99,9 @@ class BoundaryTable {
         const type1 = isPlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
         const type2 = isSidePlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
         const dir = this._parseDir(dotTo) + this._parseDir(dotFrom)
-        const id = type1 + type2 + dir
-        const spec = this.#codeTable.get(id)
+        const spec = this.#codeTable.get(type1 + type2 + dir)
         const landscape = this._getLandscape(spec, realmId, sideRealmId)
-        return {id, name: spec.name, landscape}
+        return [spec.name, landscape]
     }
 
     _parseDir(dir) {
