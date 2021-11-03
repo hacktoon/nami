@@ -40,7 +40,7 @@ export class BoundaryModel {
         }
     }
 
-    _getRegionBoundary(regionId){
+    _getRegionBoundary(regionId) {
         const realmId = this._realmTileMap.getRealmByRegion(regionId)
         const sideRegionIds = this._realmTileMap.getSideRegions(regionId)
         for(let sideRegionId of sideRegionIds) {
@@ -70,8 +70,8 @@ export class BoundaryModel {
     }
 
     getLandform(id, level) {
+        let name
         const landscape = this.#boundaryLandscape[id]
-        let name = landscape[0]
         for(let i=0; i<landscape.length; i++) {
             name = landscape[i]
             if (level <= i)
