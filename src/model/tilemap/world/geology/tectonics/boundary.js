@@ -33,14 +33,14 @@ export class BoundaryModel {
     _buildBoundaries(borderRegionIds) {
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
-            const [boundaryName, landscape] = this._getBoundary(regionId)
+            const [boundaryName, landscape] = this._getRegionBoundary(regionId)
             this.#boundaries.push(id)
             this.#boundaryName.push(boundaryName)
             this.#boundaryLandscape.push(landscape)
         }
     }
 
-    _getBoundary(regionId){
+    _getRegionBoundary(regionId){
         const realmId = this._realmTileMap.getRealmByRegion(regionId)
         const sideRegionIds = this._realmTileMap.getSideRegions(regionId)
         for(let sideRegionId of sideRegionIds) {
