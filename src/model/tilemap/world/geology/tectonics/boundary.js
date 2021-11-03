@@ -71,10 +71,11 @@ export class BoundaryModel {
 
     getLandform(id, level) {
         const landscape = this.#boundaryLandscape[id]
-        let name = landscape[0].name
-        for(let step of landscape) {
-            if (level <= step.level) break
-            name = step.name
+        let name = landscape[0]
+        for(let i=0; i<landscape.length; i++) {
+            name = landscape[i]
+            if (level <= i)
+                break
         }
         return Landform.get(name)
     }
