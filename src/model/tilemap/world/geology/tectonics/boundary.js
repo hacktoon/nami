@@ -82,7 +82,13 @@ export class BoundaryModel {
 
 
 class BoundaryTable {
-    #codeTable = new Map() // map numeric id to boundary config
+    /*
+        Reads the boundary table and translates to manageable data.
+        Converts boundary code like 'LLCT' to its numeric id, summing
+        each character value.
+    */
+
+    #codeTable = new Map() // maps numeric id to boundary config
 
     constructor(plateModel) {
         this._plateModel = plateModel
