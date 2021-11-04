@@ -77,7 +77,7 @@ export class TectonicsTileMap extends TileMap {
 
     getBoundary(point) {
         const regionId = this.realmTileMap.getRegion(point)
-        return this.provinceModel.getBoundaryByRegion(regionId)
+        return this.provinceModel.getProvinceByRegion(regionId)
     }
 
     getBoundaries() {

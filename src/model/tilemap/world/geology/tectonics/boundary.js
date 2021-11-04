@@ -12,14 +12,14 @@ const IDMAP = {
 }
 
 
-export class ProvinceTable {
+export class BoundaryTable {
     /*
-        Reads the province table and translates to manageable data.
-        Converts province code like 'LLCT' to its numeric id, summing
+        Reads the boundary table and translates to manageable data.
+        Converts boundary code like 'LLCT' to its numeric id, summing
         each character value.
     */
 
-    #codeTable = new Map() // maps numeric id to province config
+    #codeTable = new Map() // maps numeric id to boundary config
 
     constructor(plateModel) {
         this._plateModel = plateModel

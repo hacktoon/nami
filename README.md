@@ -7,9 +7,7 @@
 
 ## ROADMAP
 #### TerrainTileMap
-- Make geology a package, split tectonics to own tilemap
-  - Define provinces data
-
+- Define province data
 - Refactor boundary algorithm
   - Use boundary stress matrix to build landforms after
   - Boundary table must define its own data instead of using landform

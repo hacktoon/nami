@@ -1,12 +1,15 @@
 import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
 import { Direction } from '/lib/direction'
 
-import { Landform } from '../landform'
-import { ProvinceTable } from './table'
+import { Landform } from './landform'
+import { BoundaryTable } from './boundary'
 
 
 export class ProvinceModel {
-    #regionBoundaryMap = new Map()
+    /**
+     * Provinces are the major regions inside a plate.
+     */
+    #regionProvinceMap = new Map()
     #landformMap = new Map()
     #boundaries = []
     #boundaryName = []
@@ -16,12 +19,12 @@ export class ProvinceModel {
         const borderRegions = realmTileMap.getBorderRegions()
         this.realmTileMap = realmTileMap
         this.plateModel = plateModel
-        this.provinceTable = new ProvinceTable(plateModel)
+        this.boundaryTable = new BoundaryTable(plateModel)
         this._buildBoundaries(borderRegions)
     }
 
     _buildBoundaries(borderRegionIds) {
-        const mapFill = new TectonicsMultiFill(this, borderRegionIds)
+        const mapFill = new ProvinceMultiFill(this, borderRegionIds)
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
             const [boundaryName, landscape] = this._getRegionBoundary(regionId)
@@ -50,23 +53,23 @@ export class ProvinceModel {
         const sidePlateDir = this.plateModel.getDirection(sideRealmId)
         const dotTo = Direction.dotProduct(plateDir, dirToSide)
         const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
-        return this.provinceTable.get(realmId, sideRealmId, dotTo, dotFrom)
+        return this.boundaryTable.get(realmId, sideRealmId, dotTo, dotFrom)
     }
 
     getBoundaries() {
         return this.#boundaries
     }
 
-    setBoundaryByRegion(regionId, boundaryId) {
-        return this.#regionBoundaryMap.set(regionId, boundaryId)
+    setProvinceByRegion(regionId, boundaryId) {
+        return this.#regionProvinceMap.set(regionId, boundaryId)
     }
 
-    getBoundaryByRegion(regionId) {
-        return this.#regionBoundaryMap.get(regionId)
+    getProvinceByRegion(regionId) {
+        return this.#regionProvinceMap.get(regionId)
     }
 
     getBoundaryName(regionId) {
-        const boundaryId = this.#regionBoundaryMap.get(regionId)
+        const boundaryId = this.#regionProvinceMap.get(regionId)
         return this.#boundaryName[boundaryId]
     }
 
@@ -95,11 +98,11 @@ export class ProvinceModel {
 }
 
 
-class TectonicsFloodFill extends GenericFloodFill {
+class ProvinceFloodFill extends GenericFloodFill {
     setValue(fillId, regionId, level) {
         const landform = this.model.getLandformByLevel(fillId, level)
         this.model.setLandform(regionId, landform)
-        this.model.setBoundaryByRegion(regionId, fillId)
+        this.model.setProvinceByRegion(regionId, fillId)
     }
 
     isEmpty(sideRegionId) {
@@ -112,9 +115,9 @@ class TectonicsFloodFill extends GenericFloodFill {
 }
 
 
-class TectonicsMultiFill extends GenericMultiFill {
+class ProvinceMultiFill extends GenericMultiFill {
     constructor(model, borderRegions) {
-        super(borderRegions, model, TectonicsFloodFill)
+        super(borderRegions, model, ProvinceFloodFill)
     }
 
     getChance(fillId, regionId) {
