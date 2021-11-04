@@ -9,24 +9,22 @@ import { Title } from '/ui'
 import { NoiseTileMap } from '/model/tilemap/noise'
 import { RegionTileMap } from '/model/tilemap/region'
 import { RealmTileMap } from '/model/tilemap/realm'
-import { GeologyTileMap } from '/model/tilemap/world/geology'
-import { TectonicsTileMap } from '/model/tilemap/world/tectonics'
+import { TerrainTileMap } from '/model/tilemap/world/geology/terrain'
+import { TectonicsTileMap } from '/model/tilemap/world/geology/tectonics'
 import { TemperatureTileMap } from '/model/tilemap/world/temperature'
 
 import "/ui/css/base.css"
-import "/ui/css/map.css"
+import "/ui/css/tilemap.css"
 
 
 const APPS = [
     NoiseTileMap,
     RegionTileMap,
     RealmTileMap,
-    GeologyTileMap,
+    TerrainTileMap,
     TemperatureTileMap,
     TectonicsTileMap,
 ]
-
-
 const appMap = new Map(APPS.map(TileMap => {
     const UITileMap = TileMap.ui
     return [TileMap.id, () => <UITileMap TileMap={TileMap} />]

@@ -33,9 +33,9 @@ class GeologyColorMap {
 }
 
 
-export class GeologyTileMapDiagram extends TileMapDiagram {
+export class TerrainTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
-        'GeologyTileMapDiagram',
+        'TerrainTileMapDiagram',
         Type.boolean('showDirection', 'Show directions', {default: false}),
         Type.boolean('showBoundary', 'Show boundary', {default: true}),
         Type.boolean('showPlateBorder', 'Show borders', {default: false}),
@@ -46,7 +46,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     static colorMap = GeologyColorMap
 
     static create(tileMap, colorMap, params) {
-        return new GeologyTileMapDiagram(tileMap, colorMap, params)
+        return new TerrainTileMapDiagram(tileMap, colorMap, params)
     }
 
     constructor(tileMap, colorMap, params) {

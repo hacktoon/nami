@@ -6,7 +6,7 @@
 
 
 ## ROADMAP
-#### GeologyTileMap
+#### TerrainTileMap
 - Make geology a package, split tectonics to own tilemap
   - Define provinces data
 

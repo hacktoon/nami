@@ -1,127 +1,132 @@
-import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
-import { Direction } from '/lib/direction'
+import { Schema } from '/lib/schema'
+import { Type } from '/lib/type'
+import { Point } from '/lib/point'
+import { TileMap } from '/lib/model/tilemap'
+import { UITileMap } from '/ui/tilemap'
+import { RealmTileMap } from '/model/tilemap/realm'
 
-import { Landform } from '../landform'
-import { BoundaryTable } from './table'
+import { TectonicsTileMapDiagram } from './diagram'
+import { PlateModel } from './plate'
+import { ProvinceModel } from './province'
+import { HotspotModel } from './hotspots'
 
 
-export class TectonicsModel {
-    #regionBoundaryMap = new Map()
-    #landformMap = new Map()
-    #boundaries = []
-    #boundaryName = []
-    #boundaryLandscape = []
+const ID = 'TectonicsTileMap'
+const SCHEMA = new Schema(
+    ID,
+    Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
+    Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
+    Type.number('scale', 'Scale', {default: 20, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 40, step: 1, min: 1, max: 100}),
+    Type.text('seed', 'Seed', {default: ''})
+)
 
-    constructor(realmTileMap, plateModel) {
-        const borderRegions = realmTileMap.getBorderRegions()
-        this.realmTileMap = realmTileMap
-        this.plateModel = plateModel
-        this.boundaryTable = new BoundaryTable(plateModel)
-        this._buildBoundaries(borderRegions)
+
+export class TectonicsTileMap extends TileMap {
+    static id = ID
+    static diagram = TectonicsTileMapDiagram
+    static schema = SCHEMA
+    static ui = UITileMap
+
+    static create(params) {
+        return new TectonicsTileMap(params)
     }
 
-    _buildBoundaries(borderRegionIds) {
-        const mapFill = new TectonicsMultiFill(this, borderRegionIds)
-        for(let id = 0; id < borderRegionIds.length; id ++) {
-            const regionId = borderRegionIds[id]
-            const [boundaryName, landscape] = this._getRegionBoundary(regionId)
-            this.#boundaries.push(id)
-            this.#boundaryName.push(boundaryName)
-            this.#boundaryLandscape.push(landscape)
-        }
-        mapFill.fill()
+    constructor(params) {
+        super(params)
+        let t0 = performance.now()
+        this.realmTileMap = this._buildRealmTileMap(params)
+        this.plateModel = new PlateModel(this.realmTileMap)
+        this.provinceModel = new ProvinceModel(this.realmTileMap, this.plateModel)
+        this.hotspotModel = new HotspotModel(
+            this.realmTileMap,
+            this.plateModel,
+            this.provinceModel)
+        console.log(`TectonicsModel: ${Math.round(performance.now() - t0)}ms`);
     }
 
-    _getRegionBoundary(regionId) {
-        const realmId = this.realmTileMap.getRealmByRegion(regionId)
-        const sideRegionIds = this.realmTileMap.getSideRegions(regionId)
-        for(let sideRegionId of sideRegionIds) {
-            const sideRealmId = this.realmTileMap.getRealmByRegion(sideRegionId)
-            if (realmId !== sideRealmId) {
-                return this._buildBoundary(realmId, sideRealmId)
-            }
-        }
+    _buildRealmTileMap(params) {
+        return RealmTileMap.fromData({
+            seed: this.seed,
+            width: params.get('width'),
+            height: params.get('height'),
+            scale: params.get('scale'),
+            growth: params.get('growth'),
+            chance: .1,
+            rgChance: .1,
+            rgGrowth: 0,
+            rgScale: 1,
+        })
     }
 
-    _buildBoundary(realmId, sideRealmId) {
-        const dirToSide = this.realmTileMap.getRealmDirection(realmId, sideRealmId)
-        const dirFromSide = this.realmTileMap.getRealmDirection(sideRealmId, realmId)
-        const plateDir = this.plateModel.getDirection(realmId)
-        const sidePlateDir = this.plateModel.getDirection(sideRealmId)
-        const dotTo = Direction.dotProduct(plateDir, dirToSide)
-        const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
-        return this.boundaryTable.get(realmId, sideRealmId, dotTo, dotFrom)
+    get(point) {
+        const plateId = this.getPlate(point)
+        const regionId = this.realmTileMap.getRegion(point)
+        const regionOrigin = this.realmTileMap.getRegionOrigin(point)
+        const landform = this.getLandform(point)
+        const boundaryName = this.provinceModel.getBoundaryName(regionId)
+        return [
+            `point: ${Point.hash(point)}, plate: ${plateId}`,
+            `, type: ${this.isPlateOceanic(plateId) ? 'Oceanic' : 'Continental'}`,
+            `, weight: ${this.plateModel.getWeight(plateId)}`,
+            `, region: ${regionId}@${Point.hash(regionOrigin)}`,
+            `, boundary: ${boundaryName}`,
+            `, landform: ${landform.name}`
+        ].join('')
+    }
+
+    getBoundary(point) {
+        const regionId = this.realmTileMap.getRegion(point)
+        return this.provinceModel.getBoundaryByRegion(regionId)
     }
 
     getBoundaries() {
-        return this.#boundaries
+        return this.provinceModel.getBoundaries()
     }
 
-    setBoundaryByRegion(regionId, boundaryId) {
-        return this.#regionBoundaryMap.set(regionId, boundaryId)
+    getPlate(point) {
+        return this.realmTileMap.getRealm(point)
     }
 
-    getBoundaryByRegion(regionId) {
-        return this.#regionBoundaryMap.get(regionId)
+    getPlateDirection(point) {
+        const realmId = this.realmTileMap.getRealm(point)
+        return this.plateModel.getDirection(realmId)
     }
 
-    getBoundaryName(regionId) {
-        const boundaryId = this.#regionBoundaryMap.get(regionId)
-        return this.#boundaryName[boundaryId]
+    getPlateOrigin(point) {
+        const realmId = this.realmTileMap.getRealm(point)
+        return this.realmTileMap.getRealmOriginById(realmId)
     }
 
-    getLandformByLevel(id, level) {
-        let name
-        const landscape = this.#boundaryLandscape[id]
-        for(let i=0; i<landscape.length; i++) {
-            name = landscape[i]
-            if (level <= i)
-                break
-        }
-        return Landform.get(name)
+    isPlateOrigin(plateId, point) {
+        const origin = this.realmTileMap.getRealmOriginById(plateId)
+        return Point.equals(origin, this.realmTileMap.rect.wrap(point))
     }
 
-    hasLandform(regionId) {
-        return this.#landformMap.has(regionId)
+    isPlateBorder(point) {
+        return this.realmTileMap.isRealmBorder(point)
     }
 
-    setLandform(regionId, landform) {
-        return this.#landformMap.set(regionId, landform)
+    isPlateOceanic(plateId) {
+        return this.plateModel.isOceanic(plateId)
     }
 
-    getLandform(regionId) {
-        return this.#landformMap.get(regionId)
-    }
-}
-
-
-class TectonicsFloodFill extends GenericFloodFill {
-    setValue(fillId, regionId, level) {
-        const landform = this.model.getLandformByLevel(fillId, level)
-        this.model.setLandform(regionId, landform)
-        this.model.setBoundaryByRegion(regionId, fillId)
+    isRegionOrigin(point) {
+        const regionOrigin = this.realmTileMap.getRegionOrigin(point)
+        return Point.equals(regionOrigin, point)
     }
 
-    isEmpty(sideRegionId) {
-        return !this.model.hasLandform(sideRegionId)
+    getLandform(point) {
+        const regionId = this.realmTileMap.getRegion(point)
+        return this.provinceModel.getLandform(regionId)
     }
 
-    getNeighbors(regionId) {
-        return this.model.realmTileMap.getSideRegions(regionId)
-    }
-}
-
-
-class TectonicsMultiFill extends GenericMultiFill {
-    constructor(model, borderRegions) {
-        super(borderRegions, model, TectonicsFloodFill)
+    getDescription() {
+        return `${this.plateModel.size} plates`
     }
 
-    getChance(fillId, regionId) {
-        return .5
-    }
-
-    getGrowth(fillId, regionId) {
-        return 5
+    map(callback) {
+        const plates = this.plateModel.getPlates()
+        return plates.map(callback)
     }
 }
