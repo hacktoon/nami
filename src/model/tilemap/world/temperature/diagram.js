@@ -28,10 +28,6 @@ export class TemperatureTileMapDiagram extends TileMapDiagram {
     )
     static colorMap = TemperatureColorMap
 
-    static create(tileMap, colorMap, params) {
-        return new GeologyTileMapDiagram(tileMap, colorMap, params)
-    }
-
     static create(tileMap, params) {
         return new TemperatureTileMapDiagram(tileMap, params)
     }
