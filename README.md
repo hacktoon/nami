@@ -7,8 +7,10 @@
 
 ## ROADMAP
 #### GeologyTileMap
+- Make geology a package, split tectonics to own tilemap
+  - Define provinces data
+
 - Refactor boundary algorithm
-  - Remove Landform class, use ids
   - Use boundary stress matrix to build landforms after
   - Boundary table must define its own data instead of using landform
   - Add hotspots step to tectonics model
