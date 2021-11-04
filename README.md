@@ -8,11 +8,13 @@
 ## ROADMAP
 #### GeologyTileMap
 - Refactor boundary algorithm
-  [] Remove Landform class, use ids
-  [] Use boundary stress to build landforms after
-  [] Boundary table must define its own data instead of using landform
+  - Remove Landform class, use ids
+  - Use boundary stress matrix to build landforms after
+  - Boundary table must define its own data instead of using landform
+  - Add hotspots step to tectonics model
+  - Create struct to get landforms by elevation
 - Restart erosion algorithm using regions
-- Add islets again
+- Add islets again (same neighbors)
 - Fix depression/water border
 - Add features to border/color properties of landforms
   - i.e. volcanoes to peaks, with chance
