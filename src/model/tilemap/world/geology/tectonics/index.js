@@ -21,6 +21,7 @@ export class TectonicsModel {
     }
 
     _buildBoundaries(borderRegionIds) {
+        const mapFill = new TectonicsMultiFill(this, borderRegionIds)
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
             const [boundaryName, landscape] = this._getRegionBoundary(regionId)
@@ -28,7 +29,7 @@ export class TectonicsModel {
             this.#boundaryName.push(boundaryName)
             this.#boundaryLandscape.push(landscape)
         }
-        new TectonicsMultiFill(this, borderRegionIds).fill()
+        mapFill.fill()
     }
 
     _getRegionBoundary(regionId) {
