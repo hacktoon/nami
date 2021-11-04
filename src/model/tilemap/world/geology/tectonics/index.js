@@ -63,15 +63,16 @@ export class TectonicsTileMap extends TileMap {
         const plateId = this.getPlate(point)
         const regionId = this.realmTileMap.getRegion(point)
         const regionOrigin = this.realmTileMap.getRegionOrigin(point)
-        const landform = this.getLandform(point)
-        const boundaryName = this.provinceModel.getBoundaryName(regionId)
+        const deformation = this.getDeformation(point)
+        const provinceName = this.provinceModel.getName(regionId)
+        const plateType = this.isPlateOceanic(plateId) ? 'Oceanic' : 'Continental'
         return [
-            `point: ${Point.hash(point)}, plate: ${plateId}`,
-            `, type: ${this.isPlateOceanic(plateId) ? 'Oceanic' : 'Continental'}`,
-            `, weight: ${this.plateModel.getWeight(plateId)}`,
-            `, region: ${regionId}@${Point.hash(regionOrigin)}`,
-            `, boundary: ${boundaryName}`,
-            `, landform: ${landform.name}`
+            `point: ${Point.hash(point)}, `,
+            `region: ${regionId}(${Point.hash(regionOrigin)}), `,
+            `${plateType} plate: ${plateId}, `,
+            `weight: ${this.plateModel.getWeight(plateId)}, `,
+            `province: ${provinceName}, `,
+            `deformation: ${deformation.name}`
         ].join('')
     }
 
@@ -80,8 +81,8 @@ export class TectonicsTileMap extends TileMap {
         return this.provinceModel.getProvinceByRegion(regionId)
     }
 
-    getBoundaries() {
-        return this.provinceModel.getBoundaries()
+    getProvinces() {
+        return this.provinceModel.getProvinces()
     }
 
     getPlate(point) {
@@ -116,9 +117,9 @@ export class TectonicsTileMap extends TileMap {
         return Point.equals(regionOrigin, point)
     }
 
-    getLandform(point) {
+    getDeformation(point) {
         const regionId = this.realmTileMap.getRegion(point)
-        return this.provinceModel.getLandform(regionId)
+        return this.provinceModel.getDeformation(regionId)
     }
 
     getDescription() {

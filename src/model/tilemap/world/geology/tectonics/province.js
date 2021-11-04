@@ -1,7 +1,7 @@
 import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
 import { Direction } from '/lib/direction'
 
-import { Landform } from './landform'
+import { Deformation } from './deformation'
 import { BoundaryTable } from './boundary'
 
 
@@ -10,7 +10,7 @@ export class ProvinceModel {
      * Provinces are the major regions inside a plate.
      */
     #regionProvinceMap = new Map()
-    #landformMap = new Map()
+    #deformationMap = new Map()
     #boundaries = []
     #boundaryName = []
     #boundaryLandscape = []
@@ -56,7 +56,7 @@ export class ProvinceModel {
         return this.boundaryTable.get(realmId, sideRealmId, dotTo, dotFrom)
     }
 
-    getBoundaries() {
+    getProvinces() {
         return this.#boundaries
     }
 
@@ -68,12 +68,12 @@ export class ProvinceModel {
         return this.#regionProvinceMap.get(regionId)
     }
 
-    getBoundaryName(regionId) {
+    getName(regionId) {
         const boundaryId = this.#regionProvinceMap.get(regionId)
         return this.#boundaryName[boundaryId]
     }
 
-    getLandformByLevel(id, level) {
+    getDeformationByLevel(id, level) {
         let name
         const landscape = this.#boundaryLandscape[id]
         for(let i=0; i<landscape.length; i++) {
@@ -81,32 +81,32 @@ export class ProvinceModel {
             if (level <= i)
                 break
         }
-        return Landform.get(name)
+        return Deformation.get(name)
     }
 
-    hasLandform(regionId) {
-        return this.#landformMap.has(regionId)
+    hasDeformation(regionId) {
+        return this.#deformationMap.has(regionId)
     }
 
-    setLandform(regionId, landform) {
-        return this.#landformMap.set(regionId, landform)
+    setDeformation(regionId, deformation) {
+        return this.#deformationMap.set(regionId, deformation)
     }
 
-    getLandform(regionId) {
-        return this.#landformMap.get(regionId)
+    getDeformation(regionId) {
+        return this.#deformationMap.get(regionId)
     }
 }
 
 
 class ProvinceFloodFill extends GenericFloodFill {
     setValue(fillId, regionId, level) {
-        const landform = this.model.getLandformByLevel(fillId, level)
-        this.model.setLandform(regionId, landform)
+        const deformation = this.model.getDeformationByLevel(fillId, level)
+        this.model.setDeformation(regionId, deformation)
         this.model.setProvinceByRegion(regionId, fillId)
     }
 
     isEmpty(sideRegionId) {
-        return !this.model.hasLandform(sideRegionId)
+        return !this.model.hasDeformation(sideRegionId)
     }
 
     getNeighbors(regionId) {

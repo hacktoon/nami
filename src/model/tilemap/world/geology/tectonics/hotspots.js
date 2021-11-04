@@ -1,7 +1,7 @@
 import { Point } from '/lib/point'
 import { Random } from '/lib/random'
 
-import { Landform } from './landform'
+import { Deformation } from './deformation'
 
 
 export class HotspotModel {
@@ -14,7 +14,7 @@ export class HotspotModel {
     }
 
     _build() {
-        // TODO: this method shoud return a new landform array
+        // TODO: this method shoud return a new deformation array
         this.plateModel.forEach(plateId => {
             if (! this.plateModel.hasHotspot(plateId))
                 return
@@ -23,20 +23,20 @@ export class HotspotModel {
                 const points = this._buildHotspotPoints(plateOrigin)
                 for (let point of points) {
                     const regionId = this.realmTileMap.getRegion(point)
-                    const current = this.tectonicsModel.getLandform(regionId)
+                    const current = this.tectonicsModel.getDeformation(regionId)
                     if (current.water) {
-                        const landform = Landform.getOceanicHotspot()
+                        const deformation = Deformation.getOceanicHotspot()
                         // TODO: remove this set
-                        this.tectonicsModel.setLandform(regionId, landform)
+                        this.tectonicsModel.setDeformation(regionId, deformation)
                     }
                 }
             } else {
                 const regionId = this.realmTileMap.getRegion(plateOrigin)
-                const current = this.tectonicsModel.getLandform(regionId)
+                const current = this.tectonicsModel.getDeformation(regionId)
                 if (! current.water) {
-                    const landform = Landform.getContinentalHotspot()
+                    const deformation = Deformation.getContinentalHotspot()
                     // TODO: remove this set
-                    this.tectonicsModel.setLandform(regionId, landform)
+                    this.tectonicsModel.setDeformation(regionId, deformation)
                 }
             }
         })

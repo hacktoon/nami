@@ -7,8 +7,8 @@
 
 ## ROADMAP
 #### TerrainTileMap
-- Define province data
-- Refactor boundary algorithm
+- Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
+- Refactor province algorithm
   - Use boundary stress matrix to build landforms after
   - Boundary table must define its own data instead of using landform
   - Add hotspots step to tectonics model
