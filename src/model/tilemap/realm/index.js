@@ -48,6 +48,7 @@ export class RealmTileMap extends TileMap {
 
     constructor(params) {
         super(params)
+        let t0 = performance.now()
         this.regionTileMap = this._buildRegionTileMap(params)
         this.origins = RealmPointSampling.create(
             this.regionTileMap,
@@ -61,6 +62,7 @@ export class RealmTileMap extends TileMap {
         this.mapFill.fill()
         this.directions = this._buildDirections()
         this._borderRegions = this._buildBorderRegions()
+        console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
     _buildRegionTileMap(params) {

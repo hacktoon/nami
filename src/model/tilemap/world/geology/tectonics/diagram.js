@@ -26,10 +26,6 @@ class TectonicsColorMap {
     getByProvince(id) {
         return this.provinceMap.get(id)
     }
-
-    getByOutline(deformation) {
-        return deformation.water ? '#069' : '#141'
-    }
 }
 
 
@@ -40,7 +36,6 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         Type.boolean('showProvince', 'Show province', {default: true}),
         Type.boolean('showPlateBorder', 'Show borders', {default: false}),
         Type.boolean('showDeformation', 'Show deformations', {default: true}),
-        Type.boolean('showOutline', 'Show outline', {default: true}),
     )
     static colorMap = TectonicsColorMap
 
@@ -54,22 +49,18 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         this.showPlateBorder = params.get('showPlateBorder')
         this.showDeformation = params.get('showDeformation')
         this.showDirection = params.get('showDirection')
-        this.showOutline = params.get('showOutline')
         this.showProvince = params.get('showProvince')
     }
 
     get(point) {
         const plateId = this.tileMap.getPlate(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
-        const boundaryId = this.tileMap.getBoundary(point)
+        const boundaryId = this.tileMap.getProvince(point)
         let color = this.colorMap.getByPlate(plateId)
         const deformation = this.tileMap.getDeformation(point)
 
         if (this.showDeformation) {
             color = Color.fromHex(deformation.color)
-        }
-        if (this.showOutline) {
-            return this.colorMap.getByOutline(deformation)
         }
         if (this.showProvince) {
             color = this.colorMap.getByProvince(boundaryId)

@@ -5,15 +5,15 @@ import { Deformation } from './deformation'
 
 
 export class HotspotModel {
-    constructor(realmTileMap, plateModel, tectonicsModel) {
+    constructor(realmTileMap, plateModel) {
         this.realmTileMap = realmTileMap
         this.plateModel = plateModel
-        this.tectonicsModel = tectonicsModel
 
-        this._build()
+        this._regionDeformations = this._buildRegionDeformations()
     }
 
-    _build() {
+    _buildRegionDeformations() {
+        const regions = new Map()
         // TODO: this method shoud return a new deformation array
         this.plateModel.forEach(plateId => {
             if (! this.plateModel.hasHotspot(plateId))
@@ -23,23 +23,14 @@ export class HotspotModel {
                 const points = this._buildHotspotPoints(plateOrigin)
                 for (let point of points) {
                     const regionId = this.realmTileMap.getRegion(point)
-                    const current = this.tectonicsModel.getDeformation(regionId)
-                    if (current.water) {
-                        const deformation = Deformation.getOceanicHotspot()
-                        // TODO: remove this set
-                        this.tectonicsModel.setDeformation(regionId, deformation)
-                    }
+                    regions.set(regionId, Deformation.getOceanicHotspot())
                 }
             } else {
                 const regionId = this.realmTileMap.getRegion(plateOrigin)
-                const current = this.tectonicsModel.getDeformation(regionId)
-                if (! current.water) {
-                    const deformation = Deformation.getContinentalHotspot()
-                    // TODO: remove this set
-                    this.tectonicsModel.setDeformation(regionId, deformation)
-                }
+                regions.set(regionId, Deformation.getContinentalHotspot())
             }
         })
+        return regions
     }
 
     _buildHotspotPoints(plateOrigin) {

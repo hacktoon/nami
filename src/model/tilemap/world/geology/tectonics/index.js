@@ -37,12 +37,9 @@ export class TectonicsTileMap extends TileMap {
         let t0 = performance.now()
         this.realmTileMap = this._buildRealmTileMap(params)
         this.plateModel = new PlateModel(this.realmTileMap)
+        this.hotspotModel = new HotspotModel(this.realmTileMap, this.plateModel)
         this.provinceModel = new ProvinceModel(this.realmTileMap, this.plateModel)
-        this.hotspotModel = new HotspotModel(
-            this.realmTileMap,
-            this.plateModel,
-            this.provinceModel)
-        console.log(`TectonicsModel: ${Math.round(performance.now() - t0)}ms`);
+        console.log(`TectonicsTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
     _buildRealmTileMap(params) {
@@ -76,7 +73,7 @@ export class TectonicsTileMap extends TileMap {
         ].join('')
     }
 
-    getBoundary(point) {
+    getProvince(point) {
         const regionId = this.realmTileMap.getRegion(point)
         return this.provinceModel.getProvinceByRegion(regionId)
     }

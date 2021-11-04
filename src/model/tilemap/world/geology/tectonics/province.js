@@ -9,7 +9,7 @@ export class ProvinceModel {
     /**
      * Provinces are the major regions inside a plate.
      */
-    #regionProvinceMap = new Map()
+    #regionToProvinceMap = new Map()
     #deformationMap = new Map()
     #boundaries = []
     #boundaryName = []
@@ -61,15 +61,15 @@ export class ProvinceModel {
     }
 
     setProvinceByRegion(regionId, boundaryId) {
-        return this.#regionProvinceMap.set(regionId, boundaryId)
+        return this.#regionToProvinceMap.set(regionId, boundaryId)
     }
 
     getProvinceByRegion(regionId) {
-        return this.#regionProvinceMap.get(regionId)
+        return this.#regionToProvinceMap.get(regionId)
     }
 
     getName(regionId) {
-        const boundaryId = this.#regionProvinceMap.get(regionId)
+        const boundaryId = this.#regionToProvinceMap.get(regionId)
         return this.#boundaryName[boundaryId]
     }
 

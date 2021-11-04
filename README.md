@@ -7,13 +7,14 @@
 
 ## ROADMAP
 #### TerrainTileMap
-- Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
 - Refactor province algorithm
-  - Use boundary stress matrix to build landforms after
-  - Boundary table must define its own data instead of using landform
-  - Add hotspots step to tectonics model
-  - Create struct to get landforms by elevation
-- Restart erosion algorithm using regions
+  - Define province id by regionId and boundaryId
+    - filter fragmented boundaries on edges
+  - deformationMap depends on provinceMap and it levels
+  - Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
+  - Redefine HotspotsModel as VolcanismModel
+    - Hotspots step should build map of region => hasHotspot or vulcanism map
+- Recreate erosion algorithm using regions
 - Add islets again (same neighbors)
 - Fix depression/water border
 - Add features to border/color properties of landforms
