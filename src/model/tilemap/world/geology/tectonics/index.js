@@ -18,7 +18,6 @@ export class TectonicsModel {
         this.plateModel = plateModel
         this.boundaryTable = new BoundaryTable(plateModel)
         this._buildBoundaries(borderRegions)
-        new BoundaryMultiFill(this, borderRegions).fill()
     }
 
     _buildBoundaries(borderRegionIds) {
@@ -29,6 +28,7 @@ export class TectonicsModel {
             this.#boundaryName.push(boundaryName)
             this.#boundaryLandscape.push(landscape)
         }
+        new TectonicsMultiFill(this, borderRegionIds).fill()
     }
 
     _getRegionBoundary(regionId) {
@@ -94,7 +94,7 @@ export class TectonicsModel {
 }
 
 
-class BoundaryFloodFill extends GenericFloodFill {
+class TectonicsFloodFill extends GenericFloodFill {
     setValue(fillId, regionId, level) {
         const landform = this.model.getLandformByLevel(fillId, level)
         this.model.setLandform(regionId, landform)
@@ -111,9 +111,9 @@ class BoundaryFloodFill extends GenericFloodFill {
 }
 
 
-class BoundaryMultiFill extends GenericMultiFill {
+class TectonicsMultiFill extends GenericMultiFill {
     constructor(model, borderRegions) {
-        super(borderRegions, model, BoundaryFloodFill)
+        super(borderRegions, model, TectonicsFloodFill)
     }
 
     getChance(fillId, regionId) {
