@@ -83,6 +83,11 @@ export class TectonicsTileMap extends TileMap {
         return this.provinceModel.getProvinces()
     }
 
+    getDeformation(point) {
+        const regionId = this.realmTileMap.getRegion(point)
+        return this.provinceModel.getDeformation(regionId)
+    }
+
     getPlate(point) {
         return this.realmTileMap.getRealm(point)
     }
@@ -113,11 +118,6 @@ export class TectonicsTileMap extends TileMap {
     isRegionOrigin(point) {
         const regionOrigin = this.realmTileMap.getRegionOrigin(point)
         return Point.equals(regionOrigin, point)
-    }
-
-    getDeformation(point) {
-        const regionId = this.realmTileMap.getRegion(point)
-        return this.provinceModel.getDeformation(regionId)
     }
 
     getDescription() {
