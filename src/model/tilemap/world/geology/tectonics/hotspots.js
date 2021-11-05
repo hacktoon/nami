@@ -23,11 +23,11 @@ export class HotspotModel {
                 const points = this._buildHotspotPoints(plateOrigin)
                 for (let point of points) {
                     const regionId = this.realmTileMap.getRegion(point)
-                    regions.set(regionId, Deformation.getOceanicHotspot())
+                    regions.set(regionId, 1) // OCEANIC HOTSPOT
                 }
             } else {
                 const regionId = this.realmTileMap.getRegion(plateOrigin)
-                regions.set(regionId, Deformation.getContinentalHotspot())
+                regions.set(regionId, 2) // CONTINENTAL HOTSPOT
             }
         })
         return regions

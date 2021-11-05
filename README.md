@@ -8,6 +8,8 @@
 ## ROADMAP
 #### TerrainTileMap
 - Refactor province algorithm
+  - set higher regions fills to continue even if map is occupied on `isEmpty`
+    - helps on erosion step
   - Define province id by regionId and boundaryId
     - filter fragmented boundaries on edges
   - deformationMap depends on provinceMap and it levels

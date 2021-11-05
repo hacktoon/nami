@@ -42,12 +42,4 @@ export class Deformation {
     static get(name) {
         return DEFORMATIONS[name]
     }
-
-    static getOceanicHotspot() {
-        return DEFORMATIONS['HOTSPOT_ISLAND']
-    }
-
-    static getContinentalHotspot() {
-        return DEFORMATIONS['HOTSPOT_GEYSER']
-    }
 }
