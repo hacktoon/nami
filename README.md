@@ -8,8 +8,8 @@
 ## ROADMAP
 #### TectonicsTileMap
 - Refactor province algorithm
-  - Separate boundaryModel from province, use it as a graph to get province key
-  - Define province id by regionId => boundary key
+  - Use Realm level and province type to define deformations
+  - Store province distance on fill
   - Cordilleras start at plain and grow outwards to other plates
       - the trench side will grow to deep ocean
   - Continental collision start as peak and grow downwards

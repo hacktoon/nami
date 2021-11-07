@@ -1,8 +1,6 @@
 import { Point } from '/lib/point'
 import { Random } from '/lib/random'
 
-import { Deformation } from './deformation'
-
 
 export class HotspotModel {
     constructor(realmTileMap, plateModel) {

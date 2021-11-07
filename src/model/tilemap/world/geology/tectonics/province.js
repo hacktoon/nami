@@ -12,8 +12,8 @@ export class ProvinceModel {
     #regionToProvinceMap = new Map()
     #provinceToBoundaryMap = new Map()
     #deformationMap = new Map()
-    #provinceLandscape = []  // TODO: remove
-    #provinceKeys = new Set()  // use ids instead
+    #boundaryIds = new Set()
+    #provinceLandscape = []
 
     constructor(realmTileMap, plateModel) {
         const borderRegions = realmTileMap.getBorderRegions()
@@ -29,7 +29,7 @@ export class ProvinceModel {
             const regionId = borderRegionIds[id]
             const boundary = this._getRegionBoundary(regionId)
             this.#provinceToBoundaryMap.set(id, boundary.id)
-            this.#provinceKeys.add(boundary.key)
+            this.#boundaryIds.add(boundary.id)
             this.#provinceLandscape.push(boundary.landscape)
         }
         mapFill.fill()
@@ -56,14 +56,12 @@ export class ProvinceModel {
         return this.boundaryTable.build(realmId, sideRealmId, dotTo, dotFrom)
     }
 
-    getProvinceKeys() {
-        return Array.from(this.#provinceKeys)
+    getBoundaryIds() {
+        return Array.from(this.#boundaryIds)
     }
 
-    getProvinceKey(provinceId) {
-        const boundaryId = this.#provinceToBoundaryMap.get(provinceId)
-        const boundary = this.boundaryTable.get(boundaryId)
-        return boundary.key
+    getBoundary(provinceId) {
+        return this.#provinceToBoundaryMap.get(provinceId)
     }
 
     setProvinceByRegion(regionId, boundaryId) {
@@ -74,7 +72,7 @@ export class ProvinceModel {
         return this.#regionToProvinceMap.get(regionId)
     }
 
-    getName(regionId) {
+    getBoundaryName(regionId) {
         const provinceId = this.#regionToProvinceMap.get(regionId)
         const boundaryId = this.#provinceToBoundaryMap.get(provinceId)
         const boundary = this.boundaryTable.get(boundaryId)

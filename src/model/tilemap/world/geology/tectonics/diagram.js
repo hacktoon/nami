@@ -12,21 +12,21 @@ class TectonicsColorMap {
             const hex = tileMap.isPlateOceanic(plateId) ? '#058' : '#574'
             return [plateId, Color.fromHex(hex)]
         })
-        const provinceColors = tileMap.getProvinceKeys().map(key => {
-            return [key, new Color()]
+        const provinceColors = tileMap.getBoundaryIds().map(boundaryId => {
+            return [boundaryId, new Color()]
         })
         this.tileMap = tileMap
-        this.map = new Map(plateColors)
+        this.plateColorMap = new Map(plateColors)
         this.provinceColorMap = new Map(provinceColors)
     }
 
     getByPlate(plateId) {
-        return this.map.get(plateId)
+        return this.plateColorMap.get(plateId)
     }
 
     getByProvince(provinceId) {
-        const key = this.tileMap.getProvinceKey(provinceId)
-        return this.provinceColorMap.get(key)
+        const boundaryId = this.tileMap.getBoundary(provinceId)
+        return this.provinceColorMap.get(boundaryId)
     }
 }
 
@@ -34,10 +34,10 @@ class TectonicsColorMap {
 export class TectonicsTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'TectonicsTileMapDiagram',
-        Type.boolean('showDirection', 'Show directions', {default: false}),
-        Type.boolean('showProvince', 'Show province', {default: true}),
-        Type.boolean('showPlateBorder', 'Show borders', {default: false}),
+        Type.boolean('showProvince', 'Show province', {default: false}),
         Type.boolean('showDeformation', 'Show deformations', {default: true}),
+        Type.boolean('showPlateBorder', 'Show borders', {default: false}),
+        Type.boolean('showDirection', 'Show directions', {default: false}),
     )
     static colorMap = TectonicsColorMap
 
@@ -65,7 +65,12 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
             color = Color.fromHex(deformation.color)
         }
         if (this.showProvince) {
-            color = this.colorMap.getByProvince(provinceId)
+            const provinceColor = this.colorMap.getByProvince(provinceId)
+            if (this.showDeformation) {
+                color = provinceColor.average(color)
+            } else {
+                color = provinceColor
+            }
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#000'))
