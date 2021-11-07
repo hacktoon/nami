@@ -30,15 +30,25 @@ export class BoundaryTable {
         })
     }
 
-    get(realmId, sideRealmId, dotTo, dotFrom) {
+    build(realmId, sideRealmId, dotTo, dotFrom) {
         const isPlateOceanic = this._plateModel.isOceanic(realmId)
         const isSidePlateOceanic = this._plateModel.isOceanic(sideRealmId)
         const type1 = isPlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
         const type2 = isSidePlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
         const dir = this._parseDir(dotTo) + this._parseDir(dotFrom)
-        const spec = this.#codeTable.get(type1 + type2 + dir)
-        const landscape = this._getLandscape(spec, realmId, sideRealmId)
-        return [spec, landscape]
+        const id = type1 + type2 + dir
+        const boundary = this.#codeTable.get(id)
+        const landscape = this._getLandscape(boundary, realmId, sideRealmId)
+        return {
+            id,
+            landscape,
+            name: boundary.name,
+            key: boundary.key,
+        }
+    }
+
+    get(boundaryId) {
+        return this.#codeTable.get(boundaryId)
     }
 
     _parseDir(dir) {
