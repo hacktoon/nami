@@ -10,27 +10,31 @@ export class ProvinceModel {
      * Provinces are the major regions inside a plate.
      */
     #regionToProvinceMap = new Map()
+    #provinceKey = new Map()
     #deformationMap = new Map()
-    #boundaries = []
-    #boundaryName = []
-    #boundaryLandscape = []
+    #provinces = []
+    #provinceName = []
+    #provinceLandscape = []
+    #provinceKeys = new Set()
 
     constructor(realmTileMap, plateModel) {
         const borderRegions = realmTileMap.getBorderRegions()
         this.realmTileMap = realmTileMap
         this.plateModel = plateModel
         this.boundaryTable = new BoundaryTable(plateModel)
-        this._buildBoundaries(borderRegions)
+        this._buildProvinces(borderRegions)
     }
 
-    _buildBoundaries(borderRegionIds) {
+    _buildProvinces(borderRegionIds) {
         const mapFill = new ProvinceMultiFill(this, borderRegionIds)
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
-            const [boundaryName, landscape] = this._getRegionBoundary(regionId)
-            this.#boundaries.push(id)
-            this.#boundaryName.push(boundaryName)
-            this.#boundaryLandscape.push(landscape)
+            const [boundary, landscape] = this._getRegionBoundary(regionId)
+            this.#provinces.push(id)
+            this.#provinceKey.set(id, boundary.key)
+            this.#provinceKeys.add(boundary.key)
+            this.#provinceName.push(boundary.name)
+            this.#provinceLandscape.push(landscape)
         }
         mapFill.fill()
     }
@@ -57,7 +61,15 @@ export class ProvinceModel {
     }
 
     getProvinces() {
-        return this.#boundaries
+        return this.#provinces
+    }
+
+    getProvinceKeys() {
+        return Array.from(this.#provinceKeys)
+    }
+
+    getProvinceKey(provinceId) {
+        return this.#provinceKey.get(provinceId)
     }
 
     setProvinceByRegion(regionId, boundaryId) {
@@ -70,12 +82,12 @@ export class ProvinceModel {
 
     getName(regionId) {
         const boundaryId = this.#regionToProvinceMap.get(regionId)
-        return this.#boundaryName[boundaryId]
+        return this.#provinceName[boundaryId]
     }
 
     getDeformationByLevel(id, level) {
         let name
-        const landscape = this.#boundaryLandscape[id]
+        const landscape = this.#provinceLandscape[id]
         for(let i=0; i<landscape.length; i++) {
             name = landscape[i]
             if (level <= i)

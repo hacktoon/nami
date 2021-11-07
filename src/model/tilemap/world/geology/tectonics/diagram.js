@@ -12,19 +12,21 @@ class TectonicsColorMap {
             const hex = tileMap.isPlateOceanic(plateId) ? '#058' : '#574'
             return [plateId, Color.fromHex(hex)]
         })
-        const provinceColors = tileMap.getProvinces().map(boundaryId => {
-            return [boundaryId, new Color()]
+        const provinceColors = tileMap.getProvinceKeys().map(key => {
+            return [key, new Color()]
         })
+        this.tileMap = tileMap
         this.map = new Map(plateColors)
-        this.provinceMap = new Map(provinceColors)
+        this.provinceColorMap = new Map(provinceColors)
     }
 
     getByPlate(plateId) {
         return this.map.get(plateId)
     }
 
-    getByProvince(id) {
-        return this.provinceMap.get(id)
+    getByProvince(provinceId) {
+        const key = this.tileMap.getProvinceKey(provinceId)
+        return this.provinceColorMap.get(key)
     }
 }
 
@@ -55,7 +57,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
     get(point) {
         const plateId = this.tileMap.getPlate(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
-        const boundaryId = this.tileMap.getProvince(point)
+        const provinceId = this.tileMap.getProvince(point)
         let color = this.colorMap.getByPlate(plateId)
         const deformation = this.tileMap.getDeformation(point)
 
@@ -63,7 +65,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
             color = Color.fromHex(deformation.color)
         }
         if (this.showProvince) {
-            color = this.colorMap.getByProvince(boundaryId)
+            color = this.colorMap.getByProvince(provinceId)
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#000'))

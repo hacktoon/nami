@@ -79,6 +79,14 @@ export class TectonicsTileMap extends TileMap {
         return this.provinceModel.getProvinceByRegion(regionId)
     }
 
+    getProvinceKey(provinceId) {
+        return this.provinceModel.getProvinceKey(provinceId)
+    }
+
+    getProvinceKeys() {
+        return this.provinceModel.getProvinceKeys()
+    }
+
     getProvinces() {
         return this.provinceModel.getProvinces()
     }

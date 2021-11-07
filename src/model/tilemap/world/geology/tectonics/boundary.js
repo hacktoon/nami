@@ -38,7 +38,7 @@ export class BoundaryTable {
         const dir = this._parseDir(dotTo) + this._parseDir(dotFrom)
         const spec = this.#codeTable.get(type1 + type2 + dir)
         const landscape = this._getLandscape(spec, realmId, sideRealmId)
-        return [spec.name, landscape]
+        return [spec, landscape]
     }
 
     _parseDir(dir) {
