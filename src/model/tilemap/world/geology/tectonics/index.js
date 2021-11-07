@@ -87,10 +87,6 @@ export class TectonicsTileMap extends TileMap {
         return this.provinceModel.getProvinceKeys()
     }
 
-    getProvinces() {
-        return this.provinceModel.getProvinces()
-    }
-
     getDeformation(point) {
         const regionId = this.realmTileMap.getRegion(point)
         return this.provinceModel.getDeformation(regionId)

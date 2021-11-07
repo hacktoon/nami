@@ -12,7 +12,6 @@ export class ProvinceModel {
     #regionToProvinceMap = new Map()
     #provinceKey = new Map()
     #deformationMap = new Map()
-    #provinces = []
     #provinceName = []
     #provinceLandscape = []
     #provinceKeys = new Set()
@@ -30,7 +29,6 @@ export class ProvinceModel {
         for(let id = 0; id < borderRegionIds.length; id ++) {
             const regionId = borderRegionIds[id]
             const [boundary, landscape] = this._getRegionBoundary(regionId)
-            this.#provinces.push(id)
             this.#provinceKey.set(id, boundary.key)
             this.#provinceKeys.add(boundary.key)
             this.#provinceName.push(boundary.name)
@@ -58,10 +56,6 @@ export class ProvinceModel {
         const dotTo = Direction.dotProduct(plateDir, dirToSide)
         const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
         return this.boundaryTable.get(realmId, sideRealmId, dotTo, dotFrom)
-    }
-
-    getProvinces() {
-        return this.#provinces
     }
 
     getProvinceKeys() {
