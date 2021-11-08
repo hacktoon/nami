@@ -12,7 +12,6 @@ export class VolcanismModel {
 
     _buildRegionDeformations() {
         const regions = new Map()
-        // TODO: this method shoud return a new deformation array
         this.plateModel.forEach(plateId => {
             if (! this.plateModel.hasHotspot(plateId))
                 return

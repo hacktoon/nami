@@ -63,12 +63,14 @@ export class TectonicsTileMap extends TileMap {
         const deformation = this.getDeformation(point)
         const provinceName = this.provinceModel.getBoundaryName(regionId)
         const type = this.isPlateOceanic(plateId) ? 'Oceanic' : 'Continental'
+        const stress = this.getStress(point)
         return [
             `point: ${Point.hash(point)}, `,
             `region: ${regionId}(${Point.hash(regionOrigin)}), `,
             `${type} plate: ${plateId}, `,
             `weight: ${this.plateModel.getWeight(plateId)}, `,
             `province: ${provinceName}, `,
+            `stress: ${stress}, `,
             `deformation: ${deformation.name}`
         ].join('')
     }
@@ -89,6 +91,11 @@ export class TectonicsTileMap extends TileMap {
     getDeformation(point) {
         const regionId = this.realmTileMap.getRegion(point)
         return this.provinceModel.getDeformation(regionId)
+    }
+
+    getStress(point) {
+        const regionId = this.realmTileMap.getRegion(point)
+        return this.provinceModel.getStress(regionId)
     }
 
     getPlate(point) {

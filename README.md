@@ -16,7 +16,7 @@
   - deformationMap depends on provinceMap and it levels
   - Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
   - Redefine HotspotsModel as VolcanismModel
-    - Hotspots step should build map of region => hasHotspot or vulcanism map
+    - Hotspots step should build map of region => hasHotspot or volcanism map
     - Hydrothermal vents on border of rifts
     - Transform peaks to volcanoes, with chance
 - Fix depression/water border

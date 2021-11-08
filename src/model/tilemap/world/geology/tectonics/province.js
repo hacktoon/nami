@@ -12,6 +12,7 @@ export class ProvinceModel {
     #regionToProvinceMap = new Map()
     #provinceToBoundaryMap = new Map()
     #deformationMap = new Map()
+    #stressMap = new Map()
     #boundaryIds = new Set()
     #provinceLandscape = []
 
@@ -101,6 +102,14 @@ export class ProvinceModel {
     getDeformation(regionId) {
         return this.#deformationMap.get(regionId)
     }
+
+    setStress(regionId, stress) {
+        return this.#stressMap.set(regionId, stress)
+    }
+
+    getStress(regionId) {
+        return this.#stressMap.get(regionId)
+    }
 }
 
 
@@ -109,6 +118,7 @@ class ProvinceFloodFill extends GenericFloodFill {
         const deformation = this.model.getDeformationByLevel(fillId, level)
         this.model.setDeformation(regionId, deformation)
         this.model.setProvinceByRegion(regionId, fillId)
+        this.model.setStress(regionId, level)
     }
 
     isEmpty(sideRegionId) {
