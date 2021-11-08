@@ -8,7 +8,7 @@ import { RealmTileMap } from '/model/tilemap/realm'
 import { TectonicsTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
 import { ProvinceModel } from './province'
-import { HotspotModel } from './hotspots'
+import { VolcanismModel } from './volcanism'
 
 
 const ID = 'TectonicsTileMap'
@@ -37,8 +37,7 @@ export class TectonicsTileMap extends TileMap {
         let t0 = performance.now()
         this.realmTileMap = this._buildRealmTileMap(params)
         this.plateModel = new PlateModel(this.realmTileMap)
-        // TODO: rename to VolcanismModel
-        this.hotspotModel = new HotspotModel(this.realmTileMap, this.plateModel)
+        this.volcanismModel = new VolcanismModel(this.realmTileMap, this.plateModel)
         this.provinceModel = new ProvinceModel(this.realmTileMap, this.plateModel)
         console.log(`TectonicsTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
