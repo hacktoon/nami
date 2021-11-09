@@ -101,7 +101,7 @@ const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LLCD', name: 'Rift valley',
     data: [
-        {landscape: ['DEPRESSION', 'PLAIN', 'HILL', 'PLAIN']},
+        {landscape: ['DEPRESSION', 'PLAIN']},
         {landscape: ['PLAIN', 'HILL', 'PLAIN']},
     ]},
     // ==============================================
@@ -119,6 +119,7 @@ const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LLTT', name: 'Transform Fault',
     data: [
+        {landscape: ['PLAIN']},
         {landscape: ['PLAIN', 'HILL', 'PLAIN']}
     ]},
 
@@ -141,7 +142,7 @@ const BOUNDARY_TABLE = [
     {key: 'LWCD', name: 'Early passive margin',
     data: [
         {landscape: ['SHALLOW_SEA', 'DEEP_SEA']},
-        {landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL', 'PLAIN']},
+        {landscape: ['SHALLOW_SEA', 'PLAIN']},
     ]},
     // ==============================================
     {key: 'LWDD', name: 'Passive margin',
@@ -152,7 +153,7 @@ const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LWDT', name: 'Island arc basin',
     data: [
-        {landscape: ['SHALLOW_SEA', 'ISLAND', 'DEEP_SEA']},
+        {landscape: ['SHALLOW_SEA', 'ISLAND', 'DEEP_SEA', 'TRENCH', 'DEEP_SEA']},
         {landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL', 'PLAIN']},
     ]},
     // ==============================================
