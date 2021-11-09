@@ -46,8 +46,8 @@ export class BoundaryModel {
         return {id, landscape, name: boundary.name}
     }
 
-    get(boundaryId) {
-        return this.#codeTable.get(boundaryId)
+    getName(boundaryId) {
+        return this.#codeTable.get(boundaryId).name
     }
 
     getRegionBoundary(regionId) {

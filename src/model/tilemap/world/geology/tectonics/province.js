@@ -53,8 +53,7 @@ export class ProvinceModel {
     getBoundaryName(regionId) {
         const provinceId = this.#regionToProvinceMap.get(regionId)
         const boundaryId = this.getBoundary(provinceId)
-        const boundary = this.boundaryModel.get(boundaryId)
-        return boundary.name
+        return this.boundaryModel.getName(boundaryId)
     }
 
     getDeformationByLevel(id, level) {
