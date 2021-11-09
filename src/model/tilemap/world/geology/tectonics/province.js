@@ -7,12 +7,12 @@ export class ProvinceModel {
     /**
      * Provinces are the major regions inside a plate.
      */
-    #regionToProvinceMap = new Map()
-    #provinceToBoundaryMap = new Map()
-    #deformationMap = new Map()
-    #stressMap = new Map()
-    #boundaryIds = new Set()
     #provinceLandscape = []
+    #provinceToBoundaryMap = []
+    #regionToProvinceMap = new Map()
+    #deformationMap = new Map()
+    #boundaryIds = new Set()
+    #stressMap = new Map()
 
     constructor(realmTileMap, plateModel, boundaryModel) {
         this.realmTileMap = realmTileMap
@@ -26,21 +26,20 @@ export class ProvinceModel {
         const mapFill = new ProvinceMultiFill(this, borderRegions)
         for(let id = 0; id < borderRegions.length; id ++) {
             const regionId = borderRegions[id]
-            const boundary = this.boundaryModel._getRegionBoundary(regionId)
-            this.#provinceToBoundaryMap.set(id, boundary.id)
-            this.#boundaryIds.add(boundary.id)
+            const boundary = this.boundaryModel.getRegionBoundary(regionId)
             this.#provinceLandscape.push(boundary.landscape)
+            this.#provinceToBoundaryMap.push(boundary.id)
+            this.#boundaryIds.add(boundary.id)
         }
         mapFill.fill()
     }
-
 
     getBoundaryIds() {
         return Array.from(this.#boundaryIds)
     }
 
     getBoundary(provinceId) {
-        return this.#provinceToBoundaryMap.get(provinceId)
+        return this.#provinceToBoundaryMap[provinceId]
     }
 
     setProvinceByRegion(regionId, boundaryId) {
@@ -53,7 +52,7 @@ export class ProvinceModel {
 
     getBoundaryName(regionId) {
         const provinceId = this.#regionToProvinceMap.get(regionId)
-        const boundaryId = this.#provinceToBoundaryMap.get(provinceId)
+        const boundaryId = this.getBoundary(provinceId)
         const boundary = this.boundaryModel.get(boundaryId)
         return boundary.name
     }
@@ -119,6 +118,6 @@ class ProvinceMultiFill extends GenericMultiFill {
     }
 
     getGrowth(fillId, regionId) {
-        return 5
+        return 4
     }
 }

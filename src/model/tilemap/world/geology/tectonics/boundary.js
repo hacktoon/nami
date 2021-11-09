@@ -50,7 +50,7 @@ export class BoundaryModel {
         return this.#codeTable.get(boundaryId)
     }
 
-    _getRegionBoundary(regionId) {
+    getRegionBoundary(regionId) {
         const realmId = this.realmTileMap.getRealmByRegion(regionId)
         const sideRegionIds = this.realmTileMap.getSideRegions(regionId)
         for(let sideRegionId of sideRegionIds) {
