@@ -1,8 +1,6 @@
 import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
-import { Direction } from '/lib/direction'
 
 import { Deformation } from './deformation'
-import { BoundaryTable } from './boundary'
 
 
 export class ProvinceModel {
@@ -16,19 +14,19 @@ export class ProvinceModel {
     #boundaryIds = new Set()
     #provinceLandscape = []
 
-    constructor(realmTileMap, plateModel) {
-        const borderRegions = realmTileMap.getBorderRegions()
+    constructor(realmTileMap, plateModel, boundaryModel) {
         this.realmTileMap = realmTileMap
         this.plateModel = plateModel
-        this.boundaryTable = new BoundaryTable(plateModel)
-        this._buildProvinces(borderRegions)
+        this.boundaryModel = boundaryModel
+        this._buildProvinces()
     }
 
-    _buildProvinces(borderRegionIds) {
-        const mapFill = new ProvinceMultiFill(this, borderRegionIds)
-        for(let id = 0; id < borderRegionIds.length; id ++) {
-            const regionId = borderRegionIds[id]
-            const boundary = this._getRegionBoundary(regionId)
+    _buildProvinces() {
+        const borderRegions = this.realmTileMap.getBorderRegions()
+        const mapFill = new ProvinceMultiFill(this, borderRegions)
+        for(let id = 0; id < borderRegions.length; id ++) {
+            const regionId = borderRegions[id]
+            const boundary = this.boundaryModel._getRegionBoundary(regionId)
             this.#provinceToBoundaryMap.set(id, boundary.id)
             this.#boundaryIds.add(boundary.id)
             this.#provinceLandscape.push(boundary.landscape)
@@ -36,26 +34,6 @@ export class ProvinceModel {
         mapFill.fill()
     }
 
-    _getRegionBoundary(regionId) {
-        const realmId = this.realmTileMap.getRealmByRegion(regionId)
-        const sideRegionIds = this.realmTileMap.getSideRegions(regionId)
-        for(let sideRegionId of sideRegionIds) {
-            const sideRealmId = this.realmTileMap.getRealmByRegion(sideRegionId)
-            if (realmId !== sideRealmId) {
-                return this._buildBoundary(realmId, sideRealmId)
-            }
-        }
-    }
-
-    _buildBoundary(realmId, sideRealmId) {
-        const dirToSide = this.realmTileMap.getRealmDirection(realmId, sideRealmId)
-        const dirFromSide = this.realmTileMap.getRealmDirection(sideRealmId, realmId)
-        const plateDir = this.plateModel.getDirection(realmId)
-        const sidePlateDir = this.plateModel.getDirection(sideRealmId)
-        const dotTo = Direction.dotProduct(plateDir, dirToSide)
-        const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
-        return this.boundaryTable.build(realmId, sideRealmId, dotTo, dotFrom)
-    }
 
     getBoundaryIds() {
         return Array.from(this.#boundaryIds)
@@ -76,7 +54,7 @@ export class ProvinceModel {
     getBoundaryName(regionId) {
         const provinceId = this.#regionToProvinceMap.get(regionId)
         const boundaryId = this.#provinceToBoundaryMap.get(provinceId)
-        const boundary = this.boundaryTable.get(boundaryId)
+        const boundary = this.boundaryModel.get(boundaryId)
         return boundary.name
     }
 
