@@ -22,7 +22,7 @@ export class BoundaryModel {
         each character value.
     */
 
-    #codeTable = new Map() // maps numeric id to boundary config
+    #specTable = new Map() // maps numeric id to boundary config
 
     constructor(realmTileMap, plateModel) {
         this.plateModel = plateModel
@@ -30,24 +30,12 @@ export class BoundaryModel {
         BOUNDARY_TABLE.map(row => {
             const key = Array.from(row.key)
             const id = key.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
-            this.#codeTable.set(id, {...row, id})
+            this.#specTable.set(id, {...row, id})
         })
     }
 
-    build(realmId, sideRealmId, dotTo, dotFrom) {
-        const isPlateOceanic = this.plateModel.isOceanic(realmId)
-        const isSidePlateOceanic = this.plateModel.isOceanic(sideRealmId)
-        const type1 = isPlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
-        const type2 = isSidePlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
-        const dir = this._parseDir(dotTo) + this._parseDir(dotFrom)
-        const id = type1 + type2 + dir
-        const boundary = this.#codeTable.get(id)
-        const landscape = this._getLandscape(boundary, realmId, sideRealmId)
-        return {id, landscape, name: boundary.name}
-    }
-
     getName(boundaryId) {
-        return this.#codeTable.get(boundaryId).name
+        return this.#specTable.get(boundaryId).name
     }
 
     getRegionBoundary(regionId) {
@@ -68,7 +56,15 @@ export class BoundaryModel {
         const sidePlateDir = this.plateModel.getDirection(sideRealmId)
         const dotTo = Direction.dotProduct(plateDir, dirToSide)
         const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
-        return this.build(realmId, sideRealmId, dotTo, dotFrom)
+        const isPlateOceanic = this.plateModel.isOceanic(realmId)
+        const isSidePlateOceanic = this.plateModel.isOceanic(sideRealmId)
+        const type1 = isPlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const type2 = isSidePlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const dir = this._parseDir(dotTo) + this._parseDir(dotFrom)
+        const id = type1 + type2 + dir
+        const spec = this.#specTable.get(id)
+        const landscape = this._getLandscape(spec, realmId, sideRealmId)
+        return {id, landscape, name: spec.name}
     }
 
     _parseDir(dir) {
