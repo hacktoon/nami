@@ -7,14 +7,19 @@
 
 ## ROADMAP
 #### TectonicsTileMap
+- Redefine continental collision as in
+  https://www.researchgate.net/profile/Muhammad-Qasim-47/publication/308953182/figure/fig4/AS:613876156600323@1523370889068/Tectonic-evolution-model-of-India-Asia-collision-A-The-formation-of-Kohistan-Island-arc.png
+
 - Refactor province algorithm
   - Use Realm level and province type to define deformations
   - Store province distance on fill
+  - Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
+    - Set "sea type" to water regions on passive margins and rift seas
+    - Define continents on this step
   - Cordilleras start at plain and grow outwards to other plates
       - the trench side will grow to deep ocean
   - Continental collision start as peak and grow downwards
   - deformationMap depends on provinceMap and it levels
-  - Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
   - Redefine HotspotsModel as VolcanismModel
     - Hotspots step should build map of region => hasHotspot or volcanism map
     - Hydrothermal vents on border of rifts
