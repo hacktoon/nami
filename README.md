@@ -6,6 +6,10 @@
 
 
 ## ROADMAP
+#### RealmTileMap
+- Solve inner realm bug
+- Optimize growth using regions
+
 #### TectonicsTileMap
 - Redefine continental collision as in
   https://www.researchgate.net/profile/Muhammad-Qasim-47/publication/308953182/figure/fig4/AS:613876156600323@1523370889068/Tectonic-evolution-model-of-India-Asia-collision-A-The-formation-of-Kohistan-Island-arc.png
