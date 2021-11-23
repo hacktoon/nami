@@ -47,14 +47,14 @@ export class RealmTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         this.regionTileMap = this._buildRegionTileMap(params)
-        this.origins = RealmPointSampling.create(
+        this._origins = RealmPointSampling.create(
             this.regionTileMap,
             params.get('scale')
         )
+        this._graph = new Graph()
         this.borderRegions = new Set()
         this.regionToRealm = new Map()
-        this.graph = new Graph()
-        this.realms = this.origins.map((_, id) => id)
+        this.realms = this._origins.map((_, id) => id)
         this.mapFill = new RealmMultiFill(this, params)
         this.mapFill.fill()
         this._borderRegions = this._buildBorderRegions()
@@ -90,7 +90,15 @@ export class RealmTileMap extends TileMap {
     }
 
     get size() {
-        return this.origins.length
+        return this._origins.length
+    }
+
+    get origins() {
+        return this._origins
+    }
+
+    get graph() {
+        return this._graph
     }
 
     getRealm(point) {
@@ -104,11 +112,11 @@ export class RealmTileMap extends TileMap {
 
     getRealmOrigin(point) {
         const id = this.getRealm(point)
-        return this.origins[id]
+        return this._origins[id]
     }
 
     getRealmOriginById(id) {
-        return this.origins[id]
+        return this._origins[id]
     }
 
     getRealmAreaById(id) {
@@ -125,7 +133,7 @@ export class RealmTileMap extends TileMap {
     }
 
     getNeighborRealms(realmId) {
-        return this.graph.getEdges(realmId)
+        return this._graph.getEdges(realmId)
     }
 
     getRealmByRegion(regionId) {
