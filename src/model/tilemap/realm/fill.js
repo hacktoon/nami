@@ -18,7 +18,10 @@ class RealmFloodFill extends GenericFloodFill {
         if (this.isEmpty(neighborRegionId)) return
         const neighborRealmId = this.model.regionToRealm.get(neighborRegionId)
         if (neighborRealmId === realmId) return
-        this.model.borderRegions.add(centerRegionId)
+        if (! this.model.borderRegionSet.has(centerRegionId)) {
+            this.model.borderRegions.push(centerRegionId)
+            this.model.borderRegionSet.add(centerRegionId)
+        }
         this.model.graph.setEdge(realmId, neighborRealmId)
     }
 

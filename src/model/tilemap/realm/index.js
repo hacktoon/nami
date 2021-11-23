@@ -52,12 +52,12 @@ export class RealmTileMap extends TileMap {
             params.get('scale')
         )
         this._graph = new Graph()
-        this.borderRegions = new Set()
+        this.borderRegionSet = new Set()
+        this.borderRegions = []
         this.regionToRealm = new Map()
         this.realms = this._origins.map((_, id) => id)
         this.mapFill = new RealmMultiFill(this, params)
         this.mapFill.fill()
-        this._borderRegions = this._buildBorderRegions()
         console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
@@ -69,19 +69,10 @@ export class RealmTileMap extends TileMap {
         return RegionTileMap.fromData(data)
     }
 
-    _buildBorderRegions() {
-        return this.regionTileMap.regions.filter(regionId => {
-            return this.isBorderRegion(regionId)
-        })
-    }
-
     get(point) {
         const regionId = this.getRegion(point)
         const realmId = this.getRealm(point)
-        return {
-            realm: realmId,
-            region: regionId
-        }
+        return {realm: realmId, region: regionId}
     }
 
     get size() {
@@ -159,7 +150,7 @@ export class RealmTileMap extends TileMap {
     }
 
     getBorderRegions() {
-        return this._borderRegions
+        return this.borderRegions
     }
 
     getSideRegions(regionId) {
@@ -167,7 +158,7 @@ export class RealmTileMap extends TileMap {
     }
 
     isBorderRegion(regionId) {
-        return this.borderRegions.has(regionId)
+        return this.borderRegionSet.has(regionId)
     }
 
     isRegionBorder(point) {
