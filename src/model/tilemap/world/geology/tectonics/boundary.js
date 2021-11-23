@@ -1,4 +1,6 @@
+import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
+import { Point } from '/lib/point'
 
 
 const PLATE_CONTINENTAL = 0
@@ -27,6 +29,7 @@ export class BoundaryModel {
     constructor(realmTileMap, plateModel) {
         this.plateModel = plateModel
         this.realmTileMap = realmTileMap
+        this.directions = this._buildDirections(realmTileMap)
         BOUNDARY_TABLE.map(row => {
             const key = Array.from(row.key)
             const id = key.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
@@ -50,8 +53,8 @@ export class BoundaryModel {
     }
 
     _buildBoundary(realmId, sideRealmId) {
-        const dirToSide = this.realmTileMap.getRealmDirection(realmId, sideRealmId)
-        const dirFromSide = this.realmTileMap.getRealmDirection(sideRealmId, realmId)
+        const dirToSide = this.directions.get(realmId, sideRealmId)
+        const dirFromSide = this.directions.get(sideRealmId, realmId)
         const plateDir = this.plateModel.getDirection(realmId)
         const sidePlateDir = this.plateModel.getDirection(sideRealmId)
         const dotTo = Direction.dotProduct(plateDir, dirToSide)
@@ -65,6 +68,23 @@ export class BoundaryModel {
         const spec = this.#specTable.get(id)
         const landscape = this._getLandscape(spec, realmId, sideRealmId)
         return {id, landscape, name: spec.name}
+    }
+
+    _buildDirections(realmTileMap) {
+        const origins = realmTileMap.origins
+        const directions = new PairMap()
+        for(let id=0; id<origins.length; id++) {
+            const origin = origins[id]
+            const neighbors = realmTileMap.graph.getEdges(id)
+            for(let neighborId of neighbors) {
+                const neighborOrigin = origins[neighborId]
+                const sideOrigin = realmTileMap.rect.wrapVector(origin, neighborOrigin)
+                const angle = Point.angle(origin, sideOrigin)
+                const direction = Direction.fromAngle(angle)
+                directions.set(id, neighborId, direction)
+            }
+        }
+        return directions
     }
 
     _parseDir(dir) {

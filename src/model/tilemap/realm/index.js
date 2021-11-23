@@ -1,6 +1,3 @@
-import { PairMap } from '/lib/map'
-import { Direction } from '/lib/direction'
-import { Point } from '/lib/point'
 import { Graph } from '/lib/graph'
 
 import { Schema } from '/lib/schema'
@@ -60,7 +57,6 @@ export class RealmTileMap extends TileMap {
         this.realms = this.origins.map((_, id) => id)
         this.mapFill = new RealmMultiFill(this, params)
         this.mapFill.fill()
-        this.directions = this._buildDirections()
         this._borderRegions = this._buildBorderRegions()
         console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
@@ -77,22 +73,6 @@ export class RealmTileMap extends TileMap {
         return this.regionTileMap.regions.filter(regionId => {
             return this.isBorderRegion(regionId)
         })
-    }
-
-    _buildDirections() {
-        const directions = new PairMap()
-        for(let id=0; id<this.origins.length; id++) {
-            const origin = this.origins[id]
-            const neighbors = this.graph.getEdges(id)
-            for(let neighborId of neighbors) {
-                const neighborOrigin = this.origins[neighborId]
-                const sideOrigin = this.rect.wrapVector(origin, neighborOrigin)
-                const angle = Point.angle(origin, sideOrigin)
-                const direction = Direction.fromAngle(angle)
-                directions.set(id, neighborId, direction)
-            }
-        }
-        return directions
     }
 
     get(point) {
@@ -146,10 +126,6 @@ export class RealmTileMap extends TileMap {
 
     getNeighborRealms(realmId) {
         return this.graph.getEdges(realmId)
-    }
-
-    getRealmDirection(sourceRealmId, targetRealmId) {
-        return this.directions.get(sourceRealmId, targetRealmId)
     }
 
     getRealmByRegion(regionId) {

@@ -1,5 +1,8 @@
 import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
+import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
+import { Point } from '/lib/point'
+
 
 import { Landform } from '../landform'
 import { BoundaryTable } from './table'
@@ -16,6 +19,7 @@ export class TectonicsModel {
         const borderRegions = realmTileMap.getBorderRegions()
         this.realmTileMap = realmTileMap
         this.plateModel = plateModel
+        this.directions = this._buildDirections(realmTileMap)
         this.boundaryTable = new BoundaryTable(plateModel)
         this._buildBoundaries(borderRegions)
     }
@@ -44,13 +48,30 @@ export class TectonicsModel {
     }
 
     _buildBoundary(realmId, sideRealmId) {
-        const dirToSide = this.realmTileMap.getRealmDirection(realmId, sideRealmId)
-        const dirFromSide = this.realmTileMap.getRealmDirection(sideRealmId, realmId)
+        const dirToSide = this.directions.get(realmId, sideRealmId)
+        const dirFromSide = this.directions.get(sideRealmId, realmId)
         const plateDir = this.plateModel.getDirection(realmId)
         const sidePlateDir = this.plateModel.getDirection(sideRealmId)
         const dotTo = Direction.dotProduct(plateDir, dirToSide)
         const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
         return this.boundaryTable.get(realmId, sideRealmId, dotTo, dotFrom)
+    }
+
+    _buildDirections(realmTileMap) {
+        const origins = realmTileMap.origins
+        const directions = new PairMap()
+        for(let id=0; id<origins.length; id++) {
+            const origin = origins[id]
+            const neighbors = realmTileMap.graph.getEdges(id)
+            for(let neighborId of neighbors) {
+                const neighborOrigin = origins[neighborId]
+                const sideOrigin = realmTileMap.rect.wrapVector(origin, neighborOrigin)
+                const angle = Point.angle(origin, sideOrigin)
+                const direction = Direction.fromAngle(angle)
+                directions.set(id, neighborId, direction)
+            }
+        }
+        return directions
     }
 
     getBoundaries() {
