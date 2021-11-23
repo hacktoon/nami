@@ -78,14 +78,9 @@ export class RealmTileMap extends TileMap {
     get(point) {
         const regionId = this.getRegion(point)
         const realmId = this.getRealm(point)
-        const neighbors = this.getNeighborRealms(realmId)
         return {
             realm: realmId,
-            region: regionId,
-            neighbors: neighbors.map(neighborId => {
-                const dir = this.getRealmDirection(realmId, neighborId)
-                return `${dir.name}(${neighborId})`
-            }).join(', ')
+            region: regionId
         }
     }
 
