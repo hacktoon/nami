@@ -4,8 +4,8 @@ export class Graph {
         this.table = new Map()
     }
 
-    forEachNode(callback) {
-        return this.table.forEach((_, source) => callback(source))
+    forEach(callback) {
+        return this.table.forEach((targets, source) => callback(source, targets))
     }
 
     getEdges(source) {

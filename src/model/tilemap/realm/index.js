@@ -53,12 +53,22 @@ export class RealmTileMap extends TileMap {
         )
         this._graph = new Graph()
         this.borderRegionSet = new Set()
-        this.borderRegions = []
         this.regionToRealm = new Map()
         this.realms = this._origins.map((_, id) => id)
         this.mapFill = new RealmMultiFill(this, params)
         this.mapFill.fill()
+        this.borderRegions = Array.from(this.borderRegionSet)
+        this._mergeInnerRealms()
         console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
+    }
+
+    _mergeInnerRealms() {
+        const innerRealms = []
+        this._graph.forEach((source, targets) => {
+            if (targets.size > 1) return
+            this.borderRegionSet
+
+        })
     }
 
     _buildRegionTileMap(params) {
