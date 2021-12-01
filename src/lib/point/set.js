@@ -43,6 +43,7 @@ export class PointSet {
             this.map.delete(x)
         }
         this.size--
+        return true
     }
 
     random() {
