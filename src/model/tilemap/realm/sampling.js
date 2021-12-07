@@ -1,32 +1,34 @@
 import { Rect } from '/lib/number'
-import { PointSet } from '/lib/point/set'
+import { RandomQueue } from '/lib/queue'
 
 
 export class RealmPointSampling {
     static create(regionTileMap, radius) {
-        const {width, height, origins} = regionTileMap
-        const pointSet = new PointSet(width, height, origins)
+        const {width, height} = regionTileMap
+        const regionQueue = new RandomQueue(regionTileMap.getRegions())
         const rect = new Rect(regionTileMap.width, regionTileMap.height)
-        const samples = []
+        const sampleRegions = []
 
-        while(pointSet.size > 0) {
-            const center = pointSet.random()
-            RealmPointSampling.fillPointCircle(center, radius, point => {
-                pointSet.delete(rect.wrap(point))
-            })
-            samples.push(center)
+        while(regionQueue.size > 0) {
+            const centerRegion = regionQueue.pop()
+            sampleRegions.push(centerRegion)
+            RealmPointSampling.fillRegionCircle(
+                centerRegion,
+                radius,
+                region => pointSet.delete(region)
+            )
         }
-        if (samples.length === 1) {
-            const point = samples[0]
+        if (sampleRegions.length === 1) {
+            const point = sampleRegions[0]
             const x = point[0] + Math.round(width / 2)
             const y = point[1] + Math.round(height / 2)
-            samples.push(rect.wrap([x, y]))
+            sampleRegions.push(rect.wrap([x, y]))
         }
-        return samples
+        return sampleRegions
     }
 
     // TODO: optimize this code to realms
-    static fillPointCircle(center, radius, callback) {
+    static fillRegionCircle(center, radius, callback) {
         const top    = center[1] - radius
         const bottom = center[1] + radius
         const radpow = radius * radius

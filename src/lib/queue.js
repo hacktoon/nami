@@ -1,32 +1,28 @@
 import { Random } from "/lib/random"
 
+
 export class RandomQueue {
-	constructor(array) {
-		this.array = array ?? []
+	constructor(items) {
+		this._queue = Array.from(items)
     }
 
-	empty(self) {
-		return self.array.length <= 0
-    }
-
-	push(item) {
-        this.array.push(item)
-    }
+	get size() {
+		return this._queue.length
+	}
 
 	pop() {
-        const length = this.array.length
-
+        const length = this._queue.length
 		if (length <= 0) {
-			throw new Error('Cannot pop from empty array!')
+			return null
         } else if (length == 1) {
-			return this.array.pop()
+			return this._queue.pop()
         } else {
 			const i = Random.int(0, length - 1)
 			const j = length - 1
-            const swap = this.array[i]
-			this.array[i] = this.array[j]
-            this.array[j] = swap
+            const swap = this._queue[i]
+			this._queue[i] = this._queue[j]
+            this._queue[j] = swap
         }
-		return this.array.pop()
+		return this._queue.pop()
     }
 }
