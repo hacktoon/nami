@@ -149,8 +149,8 @@ const BOUNDARY_TABLE = [
     // ==============================================
     {key: 'LWCC', name: 'Cordillera',
     data: [
-        {landscape: ['TRENCH', 'DEEP_SEA']},
-        {landscape: ['PLAIN', 'HILL', 'MOUNTAIN', 'PEAK', 'MOUNTAIN', 'HILL']},
+        {name: 'Subduction', landscape: ['TRENCH', 'DEEP_SEA']},
+        {name: 'Cordillera', landscape: ['PLAIN', 'HILL', 'MOUNTAIN', 'PEAK', 'MOUNTAIN', 'HILL']},
     ]},
     // ==============================================
     {key: 'LWCT', name: 'Early cordillera',
