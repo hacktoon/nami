@@ -10,7 +10,12 @@
 - Optimize growth using regions
 
 #### TectonicsTileMap
+- Convert province by plate type
+  - one side is trench, other is uplift
 - Define continent model
+  - get neighbors (all land, mostly land, mostly water, all water)
+  - choose equidistant points using realms/sampling algorithm
+  - each province uses noise to set land dependent on type of province, only on borders and inner regions (not bordered by other provinces)
 - Redefine continental collision as in
   https://www.researchgate.net/profile/Muhammad-Qasim-47/publication/308953182/figure/fig4/AS:613876156600323@1523370889068/Tectonic-evolution-model-of-India-Asia-collision-A-The-formation-of-Kohistan-Island-arc.png
 
