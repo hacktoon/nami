@@ -36,7 +36,6 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         'TectonicsTileMapDiagram',
         Type.boolean('showProvince', 'Show province', {default: false}),
         Type.boolean('showDeformation', 'Show deformations', {default: true}),
-        Type.boolean('showStress', 'Show stress', {default: true}),
         Type.boolean('showPlateBorder', 'Show borders', {default: false}),
         Type.boolean('showDirection', 'Show directions', {default: false}),
     )
@@ -53,28 +52,22 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         this.showDeformation = params.get('showDeformation')
         this.showDirection = params.get('showDirection')
         this.showProvince = params.get('showProvince')
-        this.showStress = params.get('showStress')
     }
 
     get(point) {
         const plateId = this.tileMap.getPlate(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         const provinceId = this.tileMap.getProvince(point)
-        let color = this.colorMap.getByPlate(plateId)
         const deformation = this.tileMap.getDeformation(point)
         const stress = this.tileMap.getStress(point)
+        let color = this.colorMap.getByPlate(plateId)
 
         if (this.showDeformation) {
             color = Color.fromHex(deformation.color)
         }
         if (this.showProvince) {
-            const provinceColor = this.colorMap.getByProvince(provinceId)
+            color = this.colorMap.getByProvince(provinceId)
             if (this.showDeformation) {
-                color = provinceColor.average(color)
-            } else {
-                color = provinceColor
-            }
-            if (this.showStress) {
                 color = color.darken(stress * 5)
             }
         }
