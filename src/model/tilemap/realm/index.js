@@ -7,7 +7,10 @@ import { UITileMap } from '/ui/tilemap'
 
 import { RegionTileMap } from '/model/tilemap/region'
 
-import { RealmPointSampling } from './sampling'
+import {
+    RealmOrigins,
+    OldRealmPointSampling
+} from './sampling'
 import { RealmTileMapDiagram } from './diagram'
 import { RealmMultiFill } from './fill'
 
@@ -47,7 +50,7 @@ export class RealmTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         this.regionTileMap = this._buildRegionTileMap(params)
-        this._origins = RealmPointSampling.create(
+        this._origins = OldRealmPointSampling.create(
             this.regionTileMap,
             params.get('scale')
         )
@@ -76,7 +79,7 @@ export class RealmTileMap extends TileMap {
     }
 
     get size() {
-        return this._origins.length
+        return this.realms.length
     }
 
     get origins() {
@@ -98,7 +101,7 @@ export class RealmTileMap extends TileMap {
 
     getRealmOrigin(point) {
         const id = this.getRealm(point)
-        return this._origins[id]
+        return this.getRealmOriginById(id)
     }
 
     getRealmOriginById(id) {
