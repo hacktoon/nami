@@ -17,11 +17,11 @@ export class RandomQueue {
         } else if (length == 1) {
 			return this._queue.pop()
         } else {
-			const i = Random.int(0, length - 1)
-			const j = length - 1
-            const swap = this._queue[i]
-			this._queue[i] = this._queue[j]
-            this._queue[j] = swap
+			const lastIndex = length - 1
+			const randomIndex = Random.int(0, lastIndex)
+            const swap = this._queue[randomIndex]
+			this._queue[randomIndex] = this._queue[lastIndex]
+            this._queue[lastIndex] = swap
         }
 		return this._queue.pop()
     }

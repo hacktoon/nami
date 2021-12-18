@@ -1,5 +1,3 @@
-import { Point } from '/lib/point'
-
 
 export const interpolateNumbers = (from, to, totalItems) => {
     var totalNumbers = to - from + 1,
