@@ -1,29 +1,30 @@
 import { Rect } from '/lib/number'
-import { RandomQueue } from '/lib/queue'
 import { PointSet } from '/lib/point/set'
+import { IndexSet } from '/lib/set'
 import { Point } from '/lib/point'
 
 
 export class RealmOrigins {
     static create(regionTileMap, radius) {
         const regions = regionTileMap.getRegions()
-        const regionQueue = new RandomQueue(regions)
-        const regionSet = new Set(regions)
+        const regionSet = new IndexSet(regions)
+        const rect = new Rect(regionTileMap.width, regionTileMap.height)
         const sampleRegions = []
 
-        while(regionQueue.size > 0) {
-            const region = regionQueue.pop()
+        while(regionSet.size > 0) {
+            const region = regionSet.getRandom()
             const origin = regionTileMap.getOriginById(region)
 
             const sideRegions = regionTileMap.getSideRegions(region)
             for (let sideRegion of sideRegions) {
                 const sideOrigin = regionTileMap.getOriginById(sideRegion)
+                // need to check wrapped distance
                 const distance = Point.distance(origin, sideOrigin)
                 if (distance <= radius) {
                     regionSet.delete(sideRegion)
                 }
             }
-
+            regionSet.delete(region)
             sampleRegions.push(region)
         }
         if (sampleRegions.length === 1) {
