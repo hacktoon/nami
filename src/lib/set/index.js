@@ -4,7 +4,6 @@ import { Random } from "/lib/random"
 export class IndexSet {
     constructor(items) {
         this.indexMap = new Map(items.map((item, idx) => [item, idx]))
-        this.set = new Set(items)
         this.items = Array.from(items)
     }
 
@@ -13,7 +12,7 @@ export class IndexSet {
     }
 
     has(item) {
-        return this.set.has(item)
+        return this.indexMap.has(item)
     }
 
     getIndex(item) {
@@ -26,7 +25,6 @@ export class IndexSet {
         const lastItem = this.items[this.size - 1]
         this.indexMap.set(lastItem, index)
         this.items[index] = lastItem
-        this.set.delete(item)
         this.indexMap.delete(item)
         return this.items.pop()
     }

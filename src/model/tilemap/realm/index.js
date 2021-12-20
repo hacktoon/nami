@@ -9,7 +9,7 @@ import { RegionTileMap } from '/model/tilemap/region'
 
 import {
     RealmOrigins,
-    OldRealmPointSampling
+    RealmPointSampling
 } from './sampling'
 import { RealmTileMapDiagram } from './diagram'
 import { RealmMultiFill } from './fill'
@@ -50,7 +50,7 @@ export class RealmTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         this.regionTileMap = this._buildRegionTileMap(params)
-        this._origins = OldRealmPointSampling.create(
+        this._origins = RealmPointSampling.create(
             this.regionTileMap,
             params.get('scale')
         )

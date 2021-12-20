@@ -4,44 +4,7 @@ import { IndexSet } from '/lib/set'
 import { Point } from '/lib/point'
 
 
-export class RealmOrigins {
-    static create(regionTileMap, radius) {
-        const regions = regionTileMap.getRegions()
-        const regionSet = new IndexSet(regions)
-        const rect = new Rect(regionTileMap.width, regionTileMap.height)
-        const sampleRegions = []
-
-        while(regionSet.size > 0) {
-            const region = regionSet.getRandom()
-            const origin = regionTileMap.getOriginById(region)
-            let next = [region]
-            regionSet.delete(region)
-            fillRealmCircle(regionTileMap, radius, origin)
-            sampleRegions.push(region)
-        }
-        if (sampleRegions.length === 1) {
-            // choose another random region in array
-        }
-        return sampleRegions.map(region => regionTileMap.getOriginById(region))
-    }
-
-    static fillRealmCircle(regionTileMap, radius, origin) {
-        while(next.length > 0) {
-            const sideRegions = regionTileMap.getSideRegions(region)
-            for (let sideRegion of sideRegions) {
-                const rectSideOrigin = regionTileMap.getOriginById(sideRegion)
-                const sideOrigin = rect.unwrapNearest(origin, rectSideOrigin)
-                const distance = Point.distance(origin, sideOrigin)
-                if (distance <= radius) {
-                    regionSet.delete(sideRegion)
-                }
-            }
-        }
-    }
-}
-
-
-export class OldRealmPointSampling {
+export class RealmPointSampling {
     static create(regionTileMap, radius) {
         const {width, height, origins} = regionTileMap
         const pointSet = new PointSet(width, height, origins)
@@ -50,7 +13,7 @@ export class OldRealmPointSampling {
 
         while(pointSet.size > 0) {
             const center = pointSet.random()
-            OldRealmPointSampling.fillPointCircle(center, radius, point => {
+            RealmPointSampling.fillPointCircle(center, radius, point => {
                 pointSet.delete(rect.wrap(point))
             })
             samples.push(center)
@@ -80,3 +43,42 @@ export class OldRealmPointSampling {
         }
     }
 }
+
+
+export class RealmOrigins {
+    static create(regionTileMap, radius) {
+        const regions = regionTileMap.getRegions()
+        const regionSet = new IndexSet(regions)
+        const sampleRegions = []
+
+        while(regionSet.size > 0) {
+            const region = regionSet.getRandom()
+            fillRealmCircle(regionSet, regionTileMap, radius, region)
+            sampleRegions.push(region)
+        }
+        if (sampleRegions.length === 1) {
+            // choose another random region in array
+        }
+        return sampleRegions.map(region => regionTileMap.getOriginById(region))
+    }
+
+    static fillRealmCircle(regionSet, regionTileMap, radius, centerRegion) {
+        const rect = new Rect(regionTileMap.width, regionTileMap.height)
+        const origin = regionTileMap.getOriginById(centerRegion)
+        const seeds = [centerRegion]
+        regionSet.delete(centerRegion)
+        while(seeds.length > 0) {
+            const sideRegions = regionTileMap.getSideRegions(centerRegion)
+            for (let sideRegion of sideRegions) {
+                const rectSideOrigin = regionTileMap.getOriginById(sideRegion)
+                const sideOrigin = rect.unwrapNearest(origin, rectSideOrigin)
+                const distance = Point.distance(origin, sideOrigin)
+                if (distance <= radius && regionSet.has(sideRegion)) {
+                    regionSet.delete(sideRegion)
+                    seeds.push(sideRegion)
+                }
+            }
+        }
+    }
+}
+
