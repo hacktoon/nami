@@ -1,5 +1,4 @@
 import { interpolateNumbers, clamp, sum, Rect } from '.'
-import { Point } from '/lib/point'
 
 
 test('int array sum', () => {
@@ -48,4 +47,20 @@ test('point inside rect', () => {
 test('point outside rect', () => {
     const rect = new Rect(10, 10)
     expect(rect.isInside([15, 3])).toBe(false)
+})
+
+
+test('rect wrapping', () => {
+    const rect = new Rect(10, 10)
+    expect(rect.wrap([15, 11])).toStrictEqual([5, 1])
+    expect(rect.wrap([10, -3])).toStrictEqual([0, 7])
+    expect(rect.wrap([-2, 3])).toStrictEqual([8, 3])
+})
+
+
+test('rect nearest unwrapping', () => {
+    const rect = new Rect(10, 10)
+    expect(rect.unwrapNearest([9, 9], [1, 1])).toStrictEqual([11, 11])
+    expect(rect.unwrapNearest([2, 4], [9, 1])).toStrictEqual([-1, 1])
+    expect(rect.unwrapNearest([5, 1], [9, 8])).toStrictEqual([9, -2])
 })

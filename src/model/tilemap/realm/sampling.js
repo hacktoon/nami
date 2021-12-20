@@ -14,23 +14,29 @@ export class RealmOrigins {
         while(regionSet.size > 0) {
             const region = regionSet.getRandom()
             const origin = regionTileMap.getOriginById(region)
-
-            const sideRegions = regionTileMap.getSideRegions(region)
-            for (let sideRegion of sideRegions) {
-                const sideOrigin = regionTileMap.getOriginById(sideRegion)
-                // need to check wrapped distance
-                const distance = Point.distance(origin, sideOrigin)
-                if (distance <= radius) {
-                    regionSet.delete(sideRegion)
-                }
-            }
+            let next = [region]
             regionSet.delete(region)
+            fillRealmCircle(regionTileMap, radius, origin)
             sampleRegions.push(region)
         }
         if (sampleRegions.length === 1) {
             // choose another random region in array
         }
         return sampleRegions.map(region => regionTileMap.getOriginById(region))
+    }
+
+    static fillRealmCircle(regionTileMap, radius, origin) {
+        while(next.length > 0) {
+            const sideRegions = regionTileMap.getSideRegions(region)
+            for (let sideRegion of sideRegions) {
+                const rectSideOrigin = regionTileMap.getOriginById(sideRegion)
+                const sideOrigin = rect.unwrapNearest(origin, rectSideOrigin)
+                const distance = Point.distance(origin, sideOrigin)
+                if (distance <= radius) {
+                    regionSet.delete(sideRegion)
+                }
+            }
+        }
     }
 }
 

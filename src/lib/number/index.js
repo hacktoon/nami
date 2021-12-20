@@ -45,7 +45,7 @@ export class Rect {
         return [x, y]
     }
 
-    wrapVector(sourcePoint, targetPoint) {
+    unwrapNearest(sourcePoint, targetPoint) {
         // return wrapped targetPoint in relation to sourcePoint
         const [sX, sY] = sourcePoint
         const [tX, tY] = targetPoint

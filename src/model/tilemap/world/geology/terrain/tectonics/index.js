@@ -59,13 +59,14 @@ export class TectonicsModel {
 
     _buildDirections(realmTileMap) {
         const origins = realmTileMap.origins
+        const rect = realmTileMap.rect
         const directions = new PairMap()
         for(let id=0; id<origins.length; id++) {
             const origin = origins[id]
             const neighbors = realmTileMap.graph.getEdges(id)
             for(let neighborId of neighbors) {
                 const neighborOrigin = origins[neighborId]
-                const sideOrigin = realmTileMap.rect.wrapVector(origin, neighborOrigin)
+                const sideOrigin = rect.unwrapNearest(origin, neighborOrigin)
                 const angle = Point.angle(origin, sideOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(id, neighborId, direction)
