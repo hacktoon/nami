@@ -16,7 +16,7 @@ export class SingleFillUnit {
     grow() {
         const seeds = this._growSeeds()
         this.seeds = seeds
-        this._growRandomLayers(id)
+        this._growRandomLayers()
         return seeds
     }
 
@@ -46,7 +46,7 @@ export class SingleFillUnit {
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
-            this._fillValue(neighbor, this.levelTable[id])
+            this._fillValue(neighbor, this.level)
         })
         return filledNeighbors
     }
@@ -68,9 +68,13 @@ export class SingleFillUnit {
         return [first, second]
     }
 
+    getArea(cell) {
+        return this.area
+    }
+
     // EXTENSIBLE METHODS ==========================
 
-    setValue(value, level) { }
+    setValue(cell, level) { }
 
     isEmpty(cell) {
         return []
@@ -81,8 +85,4 @@ export class SingleFillUnit {
     }
 
     checkNeighbor(neighbor, origin) { }
-
-    getArea(cell) {
-        return 1
-    }
 }
