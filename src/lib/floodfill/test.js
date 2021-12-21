@@ -1,4 +1,4 @@
-import { SingleFillUnit } from './base'
+import { SingleFillUnit } from './single'
 
 
 class TestFloodFill extends SingleFillUnit {

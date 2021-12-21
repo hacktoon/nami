@@ -50,7 +50,8 @@ export class RealmTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         this.regionTileMap = this._buildRegionTileMap(params)
-        this._origins = RealmPointSampling.create(
+        // this._origins = RealmPointSampling.create(
+        this._origins = RealmOrigins.create(
             this.regionTileMap,
             params.get('scale')
         )

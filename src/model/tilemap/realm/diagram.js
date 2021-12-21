@@ -68,7 +68,9 @@ export class RealmTileMapDiagram extends TileMapDiagram {
 
         const origin = this.tileMap.regionTileMap.regionMatrix.wrap(point)
         if (this.showOrigins && Point.equals(realmOrigin, origin)) {
-            return realmColor.invert().toHex()
+            if (this.showRealms)
+                return realmColor.invert().toHex()
+            return '#000'
         }
         if (this.showRealmBorder && this.tileMap.isRealmBorder(point)) {
             return realmColor.darken(50).toHex()
@@ -90,7 +92,7 @@ export class RealmTileMapDiagram extends TileMapDiagram {
             color = isBorderRegion ? regionColor.brighten(50) : regionColor
             return color.toHex()
         }
-        return regionColor.grayscale().toHex()
+        return '#FFF'
     }
 
     // getText(point) {

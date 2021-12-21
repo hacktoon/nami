@@ -2,7 +2,7 @@ import { Rect } from '/lib/number'
 import { PointSet } from '/lib/point/set'
 import { IndexSet } from '/lib/set'
 import { Point } from '/lib/point'
-import { ConcurrentFillUnit } from '/lib/floodfill/concurrent'
+import { SingleFillUnit } from '/lib/floodfill/single'
 
 
 export class RealmPointSampling {
@@ -54,7 +54,7 @@ export class RealmOrigins {
 
         while(regionSet.size > 0) {
             const region = regionSet.getRandom()
-            fillRealmCircle(regionSet, regionTileMap, radius, region)
+            RealmOrigins.fillRealmCircle(regionSet, regionTileMap, radius, region)
             sampleRegions.push(region)
         }
         if (sampleRegions.length === 1) {
@@ -64,22 +64,30 @@ export class RealmOrigins {
     }
 
     static fillRealmCircle(regionSet, regionTileMap, radius, centerRegion) {
-        const fill = new SamplingFloodFill()
-        const rect = new Rect(regionTileMap.width, regionTileMap.height)
+        const model = {
+            rect: new Rect(regionTileMap.width, regionTileMap.height),
+            regionTileMap,
+            regionSet,
+            radius,
+        }
+        const fill = new SamplingFloodFill(centerRegion, model)
+        while(fill.seeds.length > 0) {
+            fill.grow()
+        }
     }
 }
 
 
-class SamplingFloodFill extends ConcurrentFillUnit {
-    setValue(id, regionId, level) {
+class SamplingFloodFill extends SingleFillUnit {
+    setValue(regionId, level) {
         this.model.regionSet.delete(regionId)
     }
 
     isEmpty(regionId) {
-        const origin = this.model.regionTileMap.getOriginById(centerRegion)
-        const rectSideOrigin = this.model.regionTileMap.getOriginById(regionId)
-        const sideOrigin = this.model.rect.unwrapNearest(origin, rectSideOrigin)
-        const distance = Point.distance(origin, sideOrigin)
+        const centerRegion = this.model.regionTileMap.getOriginById(this.origin)
+        const wrappedSideRegion = this.model.regionTileMap.getOriginById(regionId)
+        const sideRegion = this.model.rect.unwrapNearest(centerRegion, wrappedSideRegion)
+        const distance = Point.distance(centerRegion, sideRegion)
         return distance <= this.model.radius && this.model.regionSet.has(regionId)
     }
 
