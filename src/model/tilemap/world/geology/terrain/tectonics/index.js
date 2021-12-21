@@ -1,4 +1,4 @@
-import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
+import { ConcurrentFill, ConcurrentFillUnit } from '/lib/floodfill/concurrent'
 import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
@@ -117,7 +117,7 @@ export class TectonicsModel {
 }
 
 
-class TectonicsFloodFill extends GenericFloodFill {
+class TectonicsFloodFill extends ConcurrentFillUnit {
     setValue(fillId, regionId, level) {
         const landform = this.model.getLandformByLevel(fillId, level)
         this.model.setLandform(regionId, landform)
@@ -134,7 +134,7 @@ class TectonicsFloodFill extends GenericFloodFill {
 }
 
 
-class TectonicsMultiFill extends GenericMultiFill {
+class TectonicsMultiFill extends ConcurrentFill {
     constructor(model, borderRegions) {
         super(borderRegions, model, TectonicsFloodFill)
     }

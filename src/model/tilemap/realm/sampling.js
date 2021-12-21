@@ -2,6 +2,7 @@ import { Rect } from '/lib/number'
 import { PointSet } from '/lib/point/set'
 import { IndexSet } from '/lib/set'
 import { Point } from '/lib/point'
+import { ConcurrentFillUnit } from '/lib/floodfill/concurrent'
 
 
 export class RealmPointSampling {
@@ -63,22 +64,26 @@ export class RealmOrigins {
     }
 
     static fillRealmCircle(regionSet, regionTileMap, radius, centerRegion) {
+        const fill = new SamplingFloodFill()
         const rect = new Rect(regionTileMap.width, regionTileMap.height)
-        const origin = regionTileMap.getOriginById(centerRegion)
-        const seeds = [centerRegion]
-        regionSet.delete(centerRegion)
-        while(seeds.length > 0) {
-            const sideRegions = regionTileMap.getSideRegions(centerRegion)
-            for (let sideRegion of sideRegions) {
-                const rectSideOrigin = regionTileMap.getOriginById(sideRegion)
-                const sideOrigin = rect.unwrapNearest(origin, rectSideOrigin)
-                const distance = Point.distance(origin, sideOrigin)
-                if (distance <= radius && regionSet.has(sideRegion)) {
-                    regionSet.delete(sideRegion)
-                    seeds.push(sideRegion)
-                }
-            }
-        }
     }
 }
 
+
+class SamplingFloodFill extends ConcurrentFillUnit {
+    setValue(id, regionId, level) {
+        this.model.regionSet.delete(regionId)
+    }
+
+    isEmpty(regionId) {
+        const origin = this.model.regionTileMap.getOriginById(centerRegion)
+        const rectSideOrigin = this.model.regionTileMap.getOriginById(regionId)
+        const sideOrigin = this.model.rect.unwrapNearest(origin, rectSideOrigin)
+        const distance = Point.distance(origin, sideOrigin)
+        return distance <= this.model.radius && this.model.regionSet.has(regionId)
+    }
+
+    getNeighbors(regionId) {
+        return this.model.regionTileMap.getSideRegions(regionId)
+    }
+}

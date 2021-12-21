@@ -1,4 +1,4 @@
-import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
+import { ConcurrentFill, ConcurrentFillUnit } from '/lib/floodfill/concurrent'
 
 import { Deformation } from './deformation'
 
@@ -89,7 +89,7 @@ export class ProvinceModel {
 }
 
 
-class ProvinceFloodFill extends GenericFloodFill {
+class ProvinceFloodFill extends ConcurrentFillUnit {
     setValue(fillId, regionId, level) {
         const deformation = this.model.getDeformationByLevel(fillId, level)
         this.model.setDeformation(regionId, deformation)
@@ -107,7 +107,7 @@ class ProvinceFloodFill extends GenericFloodFill {
 }
 
 
-class ProvinceMultiFill extends GenericMultiFill {
+class ProvinceMultiFill extends ConcurrentFill {
     constructor(model, borderRegions) {
         super(borderRegions, model, ProvinceFloodFill)
     }

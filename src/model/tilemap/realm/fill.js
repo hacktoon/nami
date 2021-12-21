@@ -1,7 +1,7 @@
-import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
+import { ConcurrentFill, ConcurrentFillUnit } from '/lib/floodfill/concurrent'
 
 
-class RealmFloodFill extends GenericFloodFill {
+class RealmFloodFill extends ConcurrentFillUnit {
     /*
     the fill id is realmId
     fill regions
@@ -32,7 +32,7 @@ class RealmFloodFill extends GenericFloodFill {
 }
 
 
-export class RealmMultiFill extends GenericMultiFill {
+export class RealmMultiFill extends ConcurrentFill {
     constructor(model, params) {
         const origins = model.origins
         const regionIds = origins.map(origin => model.getRegion(origin))

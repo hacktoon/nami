@@ -1,11 +1,11 @@
 import { Point } from '/lib/point'
-import { GenericMultiFill, GenericFloodFill } from '/lib/floodfill'
+import { ConcurrentFill, ConcurrentFillUnit } from '/lib/floodfill/concurrent'
 
 
 const NO_REGION = null
 
 
-class RegionFloodFill extends GenericFloodFill {
+class RegionFloodFill extends ConcurrentFillUnit {
     setValue(id, point, level) {
         this.model.regionMatrix.set(point, id)
         this.model.levelMatrix.set(point, level)
@@ -30,7 +30,7 @@ class RegionFloodFill extends GenericFloodFill {
 }
 
 
-export class RegionMultiFill extends GenericMultiFill {
+export class RegionMultiFill extends ConcurrentFill {
     constructor(model, params) {
         super(model.origins, model, RegionFloodFill)
         this.params = params

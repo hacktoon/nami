@@ -1,7 +1,7 @@
 import { Random } from '/lib/random'
 
 
-export class GenericFloodFill {
+export class ConcurrentFillUnit {
     constructor(multiFill) {
         this.model = multiFill.model
         this.seedTable = multiFill.seedTable
@@ -88,7 +88,7 @@ export class GenericFloodFill {
 }
 
 
-export class GenericMultiFill {
+export class ConcurrentFill {
     constructor(origins, model, FillClass) {
         this.origins = origins
         this.model = model
