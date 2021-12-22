@@ -66,7 +66,7 @@ export class TectonicsModel {
             const neighbors = realmTileMap.graph.getEdges(id)
             for(let neighborId of neighbors) {
                 const neighborOrigin = origins[neighborId]
-                const sideOrigin = rect.unwrapNearest(origin, neighborOrigin)
+                const sideOrigin = rect.unwrapFrom(origin, neighborOrigin)
                 const angle = Point.angle(origin, sideOrigin)
                 const direction = Direction.fromAngle(angle)
                 directions.set(id, neighborId, direction)

@@ -1,7 +1,6 @@
 import { Rect } from '/lib/number'
 import { PointSet } from '/lib/point/set'
 import { IndexSet } from '/lib/set'
-import { Point } from '/lib/point'
 import { SingleFillUnit } from '/lib/floodfill/single'
 
 
@@ -65,7 +64,6 @@ export class RealmOrigins {
 
     static fillRealmCircle(regionSet, regionTileMap, radius, centerRegion) {
         const model = {
-            rect: new Rect(regionTileMap.width, regionTileMap.height),
             regionTileMap,
             regionSet,
             radius,
@@ -84,11 +82,12 @@ class SamplingFloodFill extends SingleFillUnit {
     }
 
     isEmpty(regionId) {
-        const centerRegion = this.model.regionTileMap.getOriginById(this.origin)
-        const wrappedSideRegion = this.model.regionTileMap.getOriginById(regionId)
-        const sideRegion = this.model.rect.unwrapNearest(centerRegion, wrappedSideRegion)
-        const distance = Point.distance(centerRegion, sideRegion)
-        return distance <= this.model.radius && this.model.regionSet.has(regionId)
+        const distance = this.model.regionTileMap.distanceBetween(
+            this.origin,
+            regionId
+        )
+        const insideCircle = distance <= this.model.radius
+        return insideCircle && this.model.regionSet.has(regionId)
     }
 
     getNeighbors(regionId) {

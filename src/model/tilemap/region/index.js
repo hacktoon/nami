@@ -108,6 +108,13 @@ export class RegionTileMap extends TileMap {
         return this.graph.getEdges(regionId)
     }
 
+    distanceBetween(region0, region1) {
+        const point0 = this.getOriginById(region0)
+        const point1 = this.getOriginById(region1)
+        const unwrappedPoint1 = this.regionMatrix.rect.unwrapFrom(point0, point1)
+        return Point.distance(point0, unwrappedPoint1)
+    }
+
     isNeighbor(regionId, neighborId) {
         return this.graph.hasEdge(regionId, neighborId)
     }
