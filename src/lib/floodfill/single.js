@@ -20,6 +20,12 @@ export class SingleFillUnit {
         return seeds
     }
 
+    growFull() {
+        while(this.seeds.length > 0) {
+            this.grow()
+        }
+    }
+
     _growSeeds() {
         const newSeeds = []
         for(let seed of this.seeds) {

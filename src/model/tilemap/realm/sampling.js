@@ -45,33 +45,53 @@ export class RealmPointSampling {
 }
 
 
-export class RealmOrigins {
-    static create(regionTileMap, radius) {
-        const regions = regionTileMap.getRegions()
-        const regionSet = new IndexSet(regions)
-        const sampleRegions = []
+export class RealmSampling {
+    #points = []
+    #regions = []
+    #sampleMap = new Map()
 
-        while(regionSet.size > 0) {
-            const region = regionSet.getRandom()
-            RealmOrigins.fillRealmCircle(regionSet, regionTileMap, radius, region)
-            sampleRegions.push(region)
-        }
-        if (sampleRegions.length === 1) {
-            // choose another random region in array
-        }
-        return sampleRegions.map(region => regionTileMap.getOriginById(region))
+    constructor(regionTileMap, radius) {
+        const regions = regionTileMap.getRegions()
+        this.regionTileMap = regionTileMap
+        this.regionSet = new IndexSet(regions)
+        this.radius = radius
+        this._buildPoints()
     }
 
-    static fillRealmCircle(regionSet, regionTileMap, radius, centerRegion) {
-        const model = {
-            regionTileMap,
-            regionSet,
-            radius,
+    _buildPoints() {
+        const fillProps = {
+            regionTileMap: this.regionTileMap,
+            regionSet: this.regionSet,
+            radius: this.radius,
+            sampleMap: this.#sampleMap,
         }
-        const fill = new SamplingFloodFill(centerRegion, model)
-        while(fill.seeds.length > 0) {
-            fill.grow()
+        while(this.regionSet.size > 0) {
+            const originRegion = this.regionSet.getRandom()
+            const fill = new SamplingFloodFill(originRegion, fillProps)
+            const originPoint = this.regionTileMap.getOriginById(originRegion)
+            fill.growFull()
+            this.#regions.push(originRegion)
+            this.#points.push(originPoint)
         }
+        if (this.#regions.length === 1) {
+            // choose another random region in array
+        }
+    }
+
+    getCenter(region) {
+        return this.#sampleMap.get(region)
+    }
+
+    get points() {
+        return this.#points
+    }
+
+    get regions() {
+        return this.#regions
+    }
+
+    map(callback) {
+        return this.#regions.map(callback)
     }
 }
 
@@ -79,6 +99,7 @@ export class RealmOrigins {
 class SamplingFloodFill extends SingleFillUnit {
     setValue(regionId, level) {
         this.model.regionSet.delete(regionId)
+        this.model.sampleMap.set(regionId, this.origin)
     }
 
     isEmpty(regionId) {

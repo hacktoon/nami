@@ -8,7 +8,7 @@ import { UITileMap } from '/ui/tilemap'
 import { RegionTileMap } from '/model/tilemap/region'
 
 import {
-    RealmOrigins,
+    RealmSampling,
     RealmPointSampling
 } from './sampling'
 import { RealmTileMapDiagram } from './diagram'
@@ -50,15 +50,13 @@ export class RealmTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         this.regionTileMap = this._buildRegionTileMap(params)
-        // this._origins = RealmPointSampling.create(
-        this._origins = RealmOrigins.create(
+        this.realmSamples = new RealmSampling(
             this.regionTileMap,
-            params.get('scale')
-        )
+            params.get('scale'))
+        this.realms = this.realmSamples.map((_, id) => id)
         this._graph = new Graph()
         this.borderRegionSet = new Set()
         this.regionToRealm = new Map()
-        this.realms = this._origins.map((_, id) => id)
         this.mapFill = new RealmMultiFill(this, params)
         this.mapFill.fill()
         this.borderRegions = Array.from(this.borderRegionSet)
@@ -84,7 +82,7 @@ export class RealmTileMap extends TileMap {
     }
 
     get origins() {
-        return this._origins
+        return this.realmSamples.points
     }
 
     get graph() {
@@ -106,10 +104,11 @@ export class RealmTileMap extends TileMap {
     }
 
     getRealmOriginById(id) {
-        return this._origins[id]
+        return this.realmSamples.points[id]
     }
 
     getRealmAreaById(id) {
+        // TODO: remove this reference, store areas in constructor
         return this.mapFill.getArea(id)
     }
 
