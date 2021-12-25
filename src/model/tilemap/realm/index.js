@@ -172,6 +172,14 @@ export class RealmTileMap extends TileMap {
         return Math.round(this.area / this.regionTileMap.size)
     }
 
+    isRealmSample(regionId, showFillLevel) {
+        const centerRegion = this.realmSamples.getCenter(regionId)
+        const realm = this.getRealmByRegion(centerRegion)
+        if (showFillLevel < 0 || showFillLevel >= this.realms.length)
+            return false
+        return this.realms[showFillLevel] == realm
+    }
+
     map(callback) {
         return this.realms.map(callback)
     }
