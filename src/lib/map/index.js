@@ -20,6 +20,11 @@ export class IndexMap {
         return this.#indexMap.has(item)
     }
 
+    add(item) {
+        this.#items.push(item)
+        return this.#indexMap.set(item, this.size - 1)
+    }
+
     getIndex(item) {
         return this.#indexMap.get(item)
     }

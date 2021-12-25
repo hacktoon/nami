@@ -33,3 +33,19 @@ test("indexMap index changes after delete", () => {
     indexMap.delete('b')
     expect(indexMap.getIndex('c')).toBe(1)
 })
+
+
+test("indexMap add item", () => {
+    const indexMap = new IndexMap(['a', 'b'])
+    indexMap.add('c')
+    expect(indexMap.getIndex('c')).toBe(2)
+    expect(indexMap.size).toBe(3)
+})
+
+test("indexMap add item and delete another", () => {
+    const indexMap = new IndexMap(['a', 'b'])
+    indexMap.add('c')
+    indexMap.delete('b')
+    expect(indexMap.getIndex('c')).toBe(1)
+    expect(indexMap.size).toBe(2)
+})
