@@ -7,10 +7,7 @@ import { UITileMap } from '/ui/tilemap'
 
 import { RegionTileMap } from '/model/tilemap/region'
 
-import {
-    RealmSampling,
-    RealmPointSampling
-} from './sampling'
+import { RealmSampling } from './sampling'
 import { RealmTileMapDiagram } from './diagram'
 import { RealmMultiFill } from './fill'
 

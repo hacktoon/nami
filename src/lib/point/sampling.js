@@ -1,8 +1,5 @@
 import { Rect } from '/lib/number'
-import { Random } from '/lib/random'
-import { Matrix } from '/lib/matrix'
 import { PointSet } from './set'
-import { Point } from '.'
 
 
 export class EvenPointSampling {

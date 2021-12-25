@@ -2,18 +2,12 @@ import { Random } from '/lib/random'
 
 
 export class PointSet {
-    constructor(width, height, points=null) {
+    constructor(width, height) {
         this.size = 0
         this.map = new Map()
-        if (points === null) {
-            for(let x=0; x<width; x++) {
-                for(let y=0; y<height; y++) {
-                    this.add([x, y])
-                }
-            }
-        } else {
-            for(let point of points) {
-                this.add(point)
+        for(let x=0; x<width; x++) {
+            for(let y=0; y<height; y++) {
+                this.add([x, y])
             }
         }
     }
