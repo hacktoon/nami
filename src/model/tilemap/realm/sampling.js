@@ -1,4 +1,4 @@
-import { IndexSet } from '/lib/set'
+import { IndexMap } from '/lib/map'
 import { SingleFillUnit } from '/lib/floodfill/single'
 
 
@@ -10,7 +10,7 @@ export class RealmSampling {
     constructor(regionTileMap, radius) {
         const regions = regionTileMap.getRegions()
         this.regionTileMap = regionTileMap
-        this.regionSet = new IndexSet(regions)
+        this.regionSet = new IndexMap(regions)
         this.radius = radius
         this._buildPoints()
     }
