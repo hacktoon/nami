@@ -17,13 +17,13 @@ export class PointIndexMap {
     }
 
     static fromRect(rect) {
-        const map = new PointIndexMap()
+        const pointMap = new PointIndexMap()
         for(let x = 0; x < rect.width; x++) {
             for(let y = 0; y < rect.height; y++) {
-                this.add([x, y])
+                pointMap.add([x, y])
             }
         }
-        return map
+        return pointMap
     }
 
     get size() {
@@ -52,6 +52,7 @@ export class PointIndexMap {
     delete([x, y]) {
         if (! this.#xValueMap.has(x)) return false
         const yIndexMap = this.#xValueMap.get(x)
+        if (! yIndexMap.has(y)) return false
         yIndexMap.delete(y)
         if (yIndexMap.size === 0) {
             this.#xIndexMap.delete(x)

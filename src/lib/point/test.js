@@ -1,4 +1,5 @@
 import { Point } from '/lib/point'
+import { Rect } from '/lib/number'
 import { PointIndexMap } from '/lib/point/map'
 
 
@@ -39,6 +40,15 @@ test("PointIndexMap with points has size x", () => {
 })
 
 
+test("PointIndexMap add same item", () => {
+    const ptIndexMap = new PointIndexMap()
+    ptIndexMap.add([0, 0])
+    ptIndexMap.add([0, 0])
+    expect(ptIndexMap.has([0, 0])).toBe(true)
+    expect(ptIndexMap.size).toBe(1)
+})
+
+
 test("PointIndexMap has a point", () => {
     const ptIndexMap = new PointIndexMap(POINT_SET)
     expect(ptIndexMap.has([0, 0])).toBe(true)
@@ -54,6 +64,13 @@ test("PointIndexMap delete", () => {
     expect(ptIndexMap.has([0, 0])).toBe(false)
 })
 
+test("PointIndexMap delete same item", () => {
+    const ptIndexMap = new PointIndexMap(POINT_SET)
+    ptIndexMap.delete([0, 0])
+    ptIndexMap.delete([0, 0])
+    expect(ptIndexMap.size).toBe(POINT_SET.length - 1)
+})
+
 
 test("PointIndexMap random", () => {
     const ptIndexMap = new PointIndexMap(POINT_SET)
@@ -61,4 +78,15 @@ test("PointIndexMap random", () => {
     expect(ptIndexMap.has(rndPoint)).toBe(true)
     ptIndexMap.delete(rndPoint)
     expect(ptIndexMap.has(rndPoint)).toBe(false)
+})
+
+
+test("PointIndexMap build from Rect", () => {
+    const rect = new Rect(2, 2)
+    const ptIndexMap = PointIndexMap.fromRect(rect)
+    expect(ptIndexMap.has([0, 0])).toBe(true)
+    expect(ptIndexMap.has([0, 1])).toBe(true)
+    expect(ptIndexMap.has([1, 0])).toBe(true)
+    expect(ptIndexMap.has([1, 1])).toBe(true)
+    expect(ptIndexMap.has([1, 2])).toBe(false)
 })

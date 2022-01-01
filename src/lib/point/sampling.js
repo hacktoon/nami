@@ -1,17 +1,17 @@
 import { Rect } from '/lib/number'
-import { PointSet } from './set'
+import { PointIndexMap } from './map'
 
 
 export class EvenPointSampling {
     static create(width, height, radius) {
         const samples = []
         const rect = new Rect(width, height)
-        const pointSet = new PointSet(width, height)
+        const ptIndexMap = PointIndexMap.fromRect(rect)
 
-        while(pointSet.size > 0) {
-            const center = pointSet.random()
+        while(ptIndexMap.size > 0) {
+            const center = ptIndexMap.random()
             EvenPointSampling.fillPointCircle(center, radius, point => {
-                pointSet.delete(rect.wrap(point))
+                ptIndexMap.delete(rect.wrap(point))
             })
             samples.push(center)
         }
@@ -21,6 +21,7 @@ export class EvenPointSampling {
             const y = point[1] + Math.round(height / 2)
             samples.push(rect.wrap([x, y]))
         }
+        console.log(`samples: ${samples.length}`);
         return samples
     }
 

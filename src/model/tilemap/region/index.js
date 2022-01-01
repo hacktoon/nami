@@ -42,6 +42,7 @@ export class RegionTileMap extends TileMap {
 
     constructor(params) {
         super(params)
+        let t0 = performance.now()
         const [width, height, scale] = params.get('width', 'height', 'scale')
         this.origins = EvenPointSampling.create(width, height, scale)
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
@@ -51,6 +52,7 @@ export class RegionTileMap extends TileMap {
         this.regions = this.origins.map((_, id) => id)
         this.mapFill = new RegionMultiFill(this, params)
         this.mapFill.fill()
+        console.log(`RegionTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
     get size() {
