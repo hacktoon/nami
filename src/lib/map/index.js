@@ -39,7 +39,7 @@ export class IndexMap {
         return this.#items.pop()
     }
 
-    getRandom() {
+    random() {
         const index = Random.int(0, this.size - 1)
         return this.#items[index]
     }

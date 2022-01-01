@@ -1,6 +1,9 @@
 import { IndexMap } from '/lib/map'
 
 
+//////////////////////////////////////////////////////
+// IndexMap
+//////////////////////////////////////////////////////
 test("indexMap initialization", () => {
     const indexMap = new IndexMap(['a', 'b', 'c'])
     expect(indexMap.getIndex('a')).toBe(0)
@@ -41,6 +44,7 @@ test("indexMap add item", () => {
     expect(indexMap.getIndex('c')).toBe(2)
     expect(indexMap.size).toBe(3)
 })
+
 
 test("indexMap add item and delete another", () => {
     const indexMap = new IndexMap(['a', 'b'])

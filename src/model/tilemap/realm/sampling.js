@@ -10,7 +10,7 @@ export class RealmSampling {
     constructor(regionTileMap, radius) {
         const regions = regionTileMap.getRegions()
         this.regionTileMap = regionTileMap
-        this.regionSet = new IndexMap(regions)
+        this.regionIndexMap = new IndexMap(regions)
         this.radius = radius
         this._buildPoints()
     }
@@ -18,14 +18,14 @@ export class RealmSampling {
     _buildPoints() {
         const baseFillProps = {
             regionTileMap: this.regionTileMap,
-            regionSet: this.regionSet,
+            regionIndexMap: this.regionIndexMap,
             radius: this.radius,
             sampleMap: this.#sampleMap,
         }
-        while(this.regionSet.size > 0) {
+        while(this.regionIndexMap.size > 0) {
             // a set to check own filled regions for each instance
             const fillProps = {filledRegions: new Set(), ...baseFillProps}
-            const originRegion = this.regionSet.getRandom()
+            const originRegion = this.regionIndexMap.random()
             const fill = new SamplingFloodFill(originRegion, fillProps)
             const originPoint = this.regionTileMap.getOriginById(originRegion)
             fill.growFull()
@@ -57,7 +57,7 @@ export class RealmSampling {
 
 class SamplingFloodFill extends SingleFillUnit {
     setValue(regionId, level) {
-        this.model.regionSet.delete(regionId)
+        this.model.regionIndexMap.delete(regionId)
         this.model.filledRegions.add(regionId)
         this.model.sampleMap.set(regionId, this.origin)
     }

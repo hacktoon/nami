@@ -6,12 +6,9 @@
 
 
 ## ROADMAP
-#### RealmTileMap
-- Optimize growth using regions
-
 #### TectonicsTileMap
 - Convert province by plate type
-  - one side is trench, other is uplift
+  - Ex: one side is trench, other is uplift
 - Define continent model
   - get neighbors (all land, mostly land, mostly water, all water)
   - choose equidistant points using realms/sampling algorithm
