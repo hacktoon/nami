@@ -31,8 +31,8 @@ export class BoundaryModel {
         this.realmTileMap = realmTileMap
         this.directions = this._buildDirections(realmTileMap)
         BOUNDARY_TABLE.map(row => {
-            const key = Array.from(row.key)
-            const id = key.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
+            const chars = Array.from(row.key)
+            const id = chars.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
             this.#specTable.set(id, {...row, id})
         })
     }
