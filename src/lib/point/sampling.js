@@ -21,7 +21,6 @@ export class EvenPointSampling {
             const y = point[1] + Math.round(height / 2)
             samples.push(rect.wrap([x, y]))
         }
-        console.log(`samples: ${samples.length}`);
         return samples
     }
 

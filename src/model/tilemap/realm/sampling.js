@@ -63,10 +63,8 @@ class SamplingFloodFill extends SingleFillUnit {
     }
 
     isEmpty(regionId) {
-        const distance = this.model.regionTileMap.distanceBetween(
-            this.origin,
-            regionId
-        )
+        const regionTileMap = this.model.regionTileMap
+        const distance = regionTileMap.distanceBetween(this.origin, regionId)
         const insideCircle = distance <= this.model.radius
         return insideCircle && !this.model.filledRegions.has(regionId)
     }
