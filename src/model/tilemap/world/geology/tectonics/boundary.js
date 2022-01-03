@@ -215,7 +215,8 @@ const BOUNDARY_TABLE = [
     ]},
 
     {key: 'WWCD', name: 'Abyssal plains', data: [
-        {name: 'Oceanic basin', landscape: ['DEEP_SEA']},
+        {name: 'Oceanic basin',
+            landscape: ['DEEP_SEA']},
     ]},
 
     {key: 'WWDD', name: 'Oceanic rift', data: [
@@ -226,7 +227,8 @@ const BOUNDARY_TABLE = [
     ]},
 
     {key: 'WWDT', name: 'Early oceanic rift', data: [
-        {name: 'Oceanic rift', landscape: ['DEEP_SEA']},
+        {name: 'Oceanic rift',
+            landscape: ['DEEP_SEA']},
     ]},
 
     {key: 'WWTT', name: 'Oceanic fault', data: [
