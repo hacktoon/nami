@@ -44,7 +44,7 @@ export class TectonicsTileMap extends TileMap {
             this.plateModel,
             this.boundaryModel
         )
-        this.volcanismModel = new VolcanismModel(this.realmTileMap, this.plateModel)
+        // this.volcanismModel = new VolcanismModel(this.realmTileMap, this.plateModel)
         console.log(`TectonicsTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
