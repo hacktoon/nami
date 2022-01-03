@@ -52,12 +52,11 @@ export class TectonicsNoRealmTileMap extends TileMap {
 
     get(point) {
         const plateId = this.getPlate(point)
-        const regionId = this.regionTileMap.getRegion(point)
         const regionOrigin = this.regionTileMap.getRegionOrigin(point)
 
         return [
             `point: ${Point.hash(point)}, `,
-            `region: ${regionId}(${Point.hash(regionOrigin)}), `
+            `plate ${plateId} at (${Point.hash(regionOrigin)}), `
         ].join('')
     }
 
