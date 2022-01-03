@@ -105,120 +105,134 @@ export class BoundaryModel {
 
 
 const BOUNDARY_TABLE = [
-    // ==============================================
+    ////////////////////////////////////////////////////////
     // CONTINENTAL-CONTINENTAL
-    // ==============================================
-    {key: 'LLCC', name: 'Continental collision',
-    data: [
-        {landscape: ['PEAK', 'MOUNTAIN', 'HILL', 'PLAIN']},
-        {landscape: ['MOUNTAIN', 'HILL', 'PLAIN']},
+    ////////////////////////////////////////////////////////
+    {key: 'LLCC', name: 'Continental collision', data: [
+        {name: 'Orogeny',
+            landscape: ['PEAK', 'MOUNTAIN', 'HILL', 'PLAIN']},
+        {name: 'Orogeny',
+            landscape: ['MOUNTAIN', 'HILL', 'PLAIN']},
     ]},
-    // ==============================================
-    {key: 'LLCT', name: 'Old mountains',
-    data: [
-        {landscape: ['MOUNTAIN', 'HILL', 'PLAIN']},
-        {landscape: ['HILL', 'PLAIN']},
+
+    {key: 'LLCT', name: 'Old mountains', data: [
+        {name: 'Orogeny',
+            landscape: ['MOUNTAIN', 'HILL', 'PLAIN']},
+        {name: 'Platform',
+            landscape: ['HILL', 'PLAIN']},
     ]},
-    // ==============================================
-    {key: 'LLCD', name: 'Rift valley',
-    data: [
-        {landscape: ['DEPRESSION', 'PLAIN']},
-        {landscape: ['PLAIN', 'HILL', 'PLAIN']},
+
+    {key: 'LLCD', name: 'Rift valley', data: [
+        {name: 'Rift',
+            landscape: ['DEPRESSION', 'PLAIN']},
+        {name: 'Rift',
+            landscape: ['PLAIN', 'HILL', 'PLAIN']},
     ]},
-    // ==============================================
-    {key: 'LLDT', name: 'Early rift sea',
-    data: [
-        {landscape: ['SHALLOW_SEA', 'PLAIN']},
-        {landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL', 'PLAIN']}
+
+    {key: 'LLDT', name: 'Early rift sea', data: [
+        {name: 'Rift',
+            landscape: ['SHALLOW_SEA', 'PLAIN']},
+        {name: 'Rift',
+            landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL', 'PLAIN']}
     ]},
-    // ==============================================
-    {key: 'LLDD', name: 'Rift sea',
-    data: [
-        {landscape: ['DEEP_SEA', 'SHALLOW_SEA', 'PLAIN']},
-        {landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL', 'PLAIN']}
+
+    {key: 'LLDD', name: 'Rift sea', data: [
+        {name: 'Rift',
+            landscape: ['DEEP_SEA', 'SHALLOW_SEA', 'PLAIN']},
+        {name: 'Rift',
+            landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL', 'PLAIN']}
     ]},
-    // ==============================================
-    {key: 'LLTT', name: 'Transform Fault',
-    data: [
-        {landscape: ['PLAIN']},
-        {landscape: ['PLAIN', 'HILL', 'PLAIN']}
+
+    {key: 'LLTT', name: 'Transform Fault', data: [
+        {name: 'Basin',
+            landscape: ['PLAIN']},
+        {name: 'Basin',
+            landscape: ['PLAIN', 'HILL', 'PLAIN']}
     ]},
 
 
-    // ==============================================
+    ////////////////////////////////////////////////////////
     // CONTINENTAL-OCEANIC
-    // ==============================================
-    {key: 'LWCC', name: 'Cordillera',
-    data: [
-        {name: 'Subduction', landscape: ['TRENCH', 'DEEP_SEA']},
-        {name: 'Cordillera', landscape: ['PLAIN', 'HILL', 'MOUNTAIN', 'PEAK', 'MOUNTAIN', 'HILL']},
+    ////////////////////////////////////////////////////////
+    {key: 'LWCC', name: 'Cordillera', data: [
+        {name: 'Oceanic trench',
+            landscape: ['TRENCH', 'DEEP_SEA']},
+        {name: 'Orogeny',
+            landscape: ['HILL', 'MOUNTAIN', 'PEAK', 'MOUNTAIN', 'HILL']},
     ]},
-    // ==============================================
-    {key: 'LWCT', name: 'Early cordillera',
-    data: [
-        {landscape: ['TRENCH', 'DEEP_SEA']},
-        {landscape: ['PLAIN', 'MOUNTAIN', 'HILL', 'PLAIN']},
+
+    {key: 'LWCT', name: 'Early cordillera', data: [
+        {name: 'Oceanic trench',
+            landscape: ['TRENCH', 'DEEP_SEA']},
+        {name: 'Orogeny',
+            landscape: ['PLAIN', 'MOUNTAIN', 'HILL', 'PLAIN']},
     ]},
-    // ==============================================
-    {key: 'LWCD', name: 'Early passive margin',
-    data: [
-        {landscape: ['SHALLOW_SEA', 'DEEP_SEA']},
-        {landscape: ['SHALLOW_SEA', 'PLAIN']},
+
+    {key: 'LWCD', name: 'Early passive margin', data: [
+        {name: 'Passive margin',
+            landscape: ['SHALLOW_SEA', 'DEEP_SEA']},
+        {name: 'Passive margin',
+            landscape: ['SHALLOW_SEA', 'PLAIN']},
     ]},
-    // ==============================================
-    {key: 'LWDD', name: 'Passive margin',
-    data: [
-        {landscape: ['SHALLOW_SEA', 'DEEP_SEA',]},
-        {landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL', 'PLAIN',]},
+
+    {key: 'LWDD', name: 'Passive margin', data: [
+        {name: 'Passive margin',
+            landscape: ['SHALLOW_SEA', 'DEEP_SEA',]},
+        {name: 'Passive margin',
+            landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL', 'PLAIN',]},
     ]},
-    // ==============================================
-    {key: 'LWDT', name: 'Island arc basin',
-    data: [
-        {landscape: ['SHALLOW_SEA', 'ISLAND', 'DEEP_SEA', 'TRENCH', 'DEEP_SEA']},
-        {landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL', 'PLAIN']},
+
+    {key: 'LWDT', name: 'Island arc basin', data: [
+        {name: 'Island arc',
+            landscape: ['SHALLOW_SEA', 'ISLAND', 'DEEP_SEA', 'TRENCH', 'DEEP_SEA']},
+        {name: 'Passive margin',
+            landscape: ['SHALLOW_SEA', 'PLAIN', 'HILL']},
     ]},
-    // ==============================================
-    {key: 'LWTT', name: 'Coastal fault',
-    data: [
-        {landscape: ['TRENCH', 'DEEP_SEA']},
-        {landscape: ['DEEP_SEA', 'PLAIN', 'HILL']},
+
+    {key: 'LWTT', name: 'Coastal fault', data: [
+        {name: 'Oceanic basin',
+            landscape: ['TRENCH', 'DEEP_SEA']},
+        {name: 'Oceanic basin',
+            landscape: ['DEEP_SEA', 'PLAIN', 'HILL']},
     ]},
 
 
-    // ==============================================
+    ////////////////////////////////////////////////////////
     // OCEANIC-OCEANIC
-    // ==============================================
-    {key: 'WWCC', name: 'Island arc',
-    data: [
-        {landscape: ['TRENCH', 'DEEP_SEA']},
-        {landscape: ['SHALLOW_SEA', 'ISLAND', 'DEEP_SEA']},
+    ////////////////////////////////////////////////////////
+    {key: 'WWCC', name: 'Island arc', data: [
+        {name: 'Oceanic trench',
+            landscape: ['TRENCH', 'DEEP_SEA']},
+        {name: 'Island arc',
+            landscape: ['SHALLOW_SEA', 'ISLAND', 'DEEP_SEA']},
     ]},
-    // ==============================================
-    {key: 'WWCT', name: 'Early island arc',
-    data: [
-        {landscape: ['DEEP_SEA']},
-        {landscape: ['SHALLOW_SEA', 'ISLAND', 'DEEP_SEA',]},
+
+    {key: 'WWCT', name: 'Early island arc', data: [
+        {name: 'Island arc',
+            landscape: ['DEEP_SEA']},
+        {name: 'Island arc',
+            landscape: ['SHALLOW_SEA', 'ISLAND', 'DEEP_SEA',]},
     ]},
-    // ==============================================
-    {key: 'WWCD', name: 'Abyssal plains',
-    data: [
-        {landscape: ['DEEP_SEA']},
+
+    {key: 'WWCD', name: 'Abyssal plains', data: [
+        {name: 'Oceanic basin', landscape: ['DEEP_SEA']},
     ]},
-    // ==============================================
-    {key: 'WWDD', name: 'Oceanic rift',
-    data: [
-        {landscape: ['TRENCH', 'DEEP_SEA',]},
-        {landscape: ['DEEP_SEA']}
+
+    {key: 'WWDD', name: 'Oceanic rift', data: [
+        {name: 'Oceanic rift',
+            landscape: ['TRENCH', 'DEEP_SEA',]},
+        {name: 'Oceanic basin',
+            landscape: ['DEEP_SEA']}
     ]},
-    // ==============================================
-    {key: 'WWDT', name: 'Early oceanic rift',
-    data: [
-        {landscape: ['DEEP_SEA']},
+
+    {key: 'WWDT', name: 'Early oceanic rift', data: [
+        {name: 'Oceanic rift', landscape: ['DEEP_SEA']},
     ]},
-    // ==============================================
-    {key: 'WWTT', name: 'Oceanic fault',
-    data: [
-        {landscape: ['SHALLOW_SEA', 'DEEP_SEA']},
-        {landscape: ['DEEP_SEA']}
+
+    {key: 'WWTT', name: 'Oceanic fault', data: [
+        {name: 'Oceanic basin',
+            landscape: ['SHALLOW_SEA', 'DEEP_SEA']},
+        {name: 'Oceanic basin',
+            landscape: ['DEEP_SEA']}
     ]},
 ]
