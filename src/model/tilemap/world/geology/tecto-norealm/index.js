@@ -6,6 +6,7 @@ import { UITileMap } from '/ui/tilemap'
 import { RegionTileMap } from '/model/tilemap/region'
 
 import { TectonicsNoRealmTileMapDiagram } from './diagram'
+import { PlateModel } from './plate'
 
 
 const ID = 'TectonicsNoRealmTileMap'
@@ -53,65 +54,34 @@ export class TectonicsNoRealmTileMap extends TileMap {
         const plateId = this.getPlate(point)
         const regionId = this.regionTileMap.getRegion(point)
         const regionOrigin = this.regionTileMap.getRegionOrigin(point)
-        const deformation = this.getDeformation(point)
-        const provinceName = this.provinceModel.getBoundaryName(regionId)
-        const type = this.isPlateOceanic(plateId) ? 'Oceanic' : 'Continental'
-        const stress = this.getStress(point)
+
         return [
             `point: ${Point.hash(point)}, `,
-            `region: ${regionId}(${Point.hash(regionOrigin)}), `,
-            `${type} plate: ${plateId}, `,
-            `weight: ${this.plateModel.getWeight(plateId)}, `,
-            `province: ${provinceName}, `,
-            `stress: ${stress}, `,
-            `deformation: ${deformation.name}`
+            `region: ${regionId}(${Point.hash(regionOrigin)}), `
         ].join('')
     }
 
-    getProvince(point) {
-        const regionId = this.regionTileMap.getRegion(point)
-        return this.provinceModel.getProvinceByRegion(regionId)
-    }
-
-    getBoundary(provinceId) {
-        return this.provinceModel.getBoundary(provinceId)
-    }
-
-    getBoundaryIds() {
-        return this.provinceModel.getBoundaryIds()
-    }
-
-    getDeformation(point) {
-        const regionId = this.regionTileMap.getRegion(point)
-        return this.provinceModel.getDeformation(regionId)
-    }
-
-    getStress(point) {
-        const regionId = this.regionTileMap.getRegion(point)
-        return this.provinceModel.getStress(regionId)
-    }
-
     getPlate(point) {
-        return this.regionTileMap.getRealm(point)
+        return this.regionTileMap.getRegion(point)
     }
 
     getPlateDirection(point) {
-        const realmId = this.regionTileMap.getRealm(point)
-        return this.plateModel.getDirection(realmId)
+        const plateId = this.regionTileMap.getRegion(point)
+        return this.plateModel.getDirection(plateId)
     }
 
     getPlateOrigin(point) {
-        const realmId = this.regionTileMap.getRealm(point)
-        return this.regionTileMap.getRealmOriginById(realmId)
+        const plateId = this.regionTileMap.getRegion(point)
+        return this.regionTileMap.getOriginById(plateId)
     }
 
     isPlateOrigin(plateId, point) {
-        const origin = this.regionTileMap.getRealmOriginById(plateId)
+        const origin = this.regionTileMap.getOriginById(plateId)
         return Point.equals(origin, this.regionTileMap.rect.wrap(point))
     }
 
     isPlateBorder(point) {
-        return this.regionTileMap.isRealmBorder(point)
+        return this.regionTileMap.isBorder(point)
     }
 
     isPlateOceanic(plateId) {
