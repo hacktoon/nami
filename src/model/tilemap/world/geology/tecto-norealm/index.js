@@ -8,6 +8,7 @@ import { RegionTileMap } from '/model/tilemap/region'
 import { TectonicsNoRealmTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
 import { BoundaryModel } from './boundary'
+import { ContinentModel } from './continent'
 
 
 const ID = 'TectonicsNoRealmTileMap'
@@ -15,8 +16,8 @@ const SCHEMA = new Schema(
     ID,
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('scale', 'Scale', {default: 20, step: 1, min: 1, max: 50}),
-    Type.number('growth', 'Growth', {default: 40, step: 1, min: 0, max: 50}),
+    Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 50}),
+    Type.number('growth', 'Growth', {default: 50, step: 1, min: 0, max: 50}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -36,7 +37,11 @@ export class TectonicsNoRealmTileMap extends TileMap {
         let t0 = performance.now()
         this.regionTileMap = this._buildRegioTileMap(params)
         this.plateModel = new PlateModel(this.regionTileMap)
-        this.boundaryModel = new BoundaryModel(this.regionTileMap, this.plateModel)
+        // this.boundaryModel = new BoundaryModel(this.regionTileMap, this.plateModel)
+        this.continentModel = new ContinentModel(
+            this.regionTileMap,
+            this.plateModel
+        )
 
         console.log(`TectonicsNoRealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }

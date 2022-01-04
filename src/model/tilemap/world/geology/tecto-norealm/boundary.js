@@ -33,7 +33,6 @@ export class BoundaryModel {
         this.#plateModel = plateModel
         this.#regionTileMap = regionTileMap
         this.#directionMap = this._buildDirectionMap(regionTileMap)
-
     }
 
     _buildDirectionMap(regionTileMap) {
