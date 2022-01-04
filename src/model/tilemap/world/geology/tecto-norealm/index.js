@@ -7,6 +7,7 @@ import { RegionTileMap } from '/model/tilemap/region'
 
 import { TectonicsNoRealmTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
+import { BoundaryModel } from './boundary'
 
 
 const ID = 'TectonicsNoRealmTileMap'
@@ -35,6 +36,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
         let t0 = performance.now()
         this.regionTileMap = this._buildRegioTileMap(params)
         this.plateModel = new PlateModel(this.regionTileMap)
+        this.boundaryModel = new BoundaryModel(this.regionTileMap, this.plateModel)
 
         console.log(`TectonicsNoRealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
