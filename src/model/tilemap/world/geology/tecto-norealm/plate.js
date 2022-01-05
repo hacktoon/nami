@@ -8,26 +8,26 @@ const HOTSPOT_CHANCE = .4
 
 
 export class PlateModel {
+    #directionMap = new Map()
+    #hotspotMap = new Map()
+    #weightMap = new Map()
+    #regionTileMap
+    #typeMap
+    #plates
+
     constructor(regionTileMap) {
-        this._directionTable = []
-        this._weightTable = []
-        this._hasHotspot = []
-        this._plateTableMap = new Map()
-        this._regionTileMap = regionTileMap
-        this._plates = this._getRegionsDescOrder(regionTileMap)
-        this._typeMap = this._buildTypes(this._plates)
-        this._plates.forEach((plateId, id) => {
-            const isLandlocked = this._isLandLocked(plateId)
-            const type = isLandlocked ? TYPE_OCEANIC : this._typeMap.get(plateId)
-            const weight = id+(type === TYPE_OCEANIC ? this._plates.length * 10 : 0)
-            this._plateTableMap.set(plateId, id)
-            this._hasHotspot.push(Random.chance(HOTSPOT_CHANCE))
-            this._directionTable.push(Direction.random())
-            this._weightTable.push(id + weight)
+        this.#regionTileMap = regionTileMap
+        this.#plates = this._buildPlates(regionTileMap)
+        this.#typeMap = this._buildTypeMap(this.#plates)
+        this.#plates.forEach(plateId => {
+            this.#weightMap.set(plateId, this._getWeight(plateId))
+            this.#hotspotMap.set(plateId, Random.chance(HOTSPOT_CHANCE))
+            this.#directionMap.set(plateId, Direction.random())
         })
     }
 
-    _getRegionsDescOrder(regionTileMap) {
+    _buildPlates(regionTileMap) {
+        // sort by bigger to smaller plates
         const cmpDescendingArea = (id0, id1) => {
             const area0 = regionTileMap.getRegionAreaById(id0)
             const area1 = regionTileMap.getRegionAreaById(id1)
@@ -36,20 +36,12 @@ export class PlateModel {
         return regionTileMap.getRegions().sort(cmpDescendingArea)
     }
 
-    _isLandLocked(plateId) {
-        return this._regionTileMap.getSideRegions(plateId)
-            .concat(plateId)
-            .every(neighborId => {
-                return this._typeMap.get(neighborId) === TYPE_CONTINENTAL
-            })
-    }
-
-    _buildTypes(plates) {
+    _buildTypeMap(plates) {
         let totalOceanicArea = 0
-        const halfArea = Math.floor(this._regionTileMap.area / 2)
+        const halfArea = Math.floor(this.#regionTileMap.area / 2)
         const types = new Map()
-        plates.forEach(plateId=> {
-            totalOceanicArea += this._regionTileMap.getRegionAreaById(plateId)
+        plates.forEach(plateId => {
+            totalOceanicArea += this.#regionTileMap.getRegionAreaById(plateId)
             const isOceanic = totalOceanicArea < halfArea
             const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
             types.set(plateId, type)
@@ -57,38 +49,46 @@ export class PlateModel {
         return types
     }
 
+    _getWeight(plateId) {
+        const type = this.#typeMap.get(plateId)
+        const multiplier = this.#plates.length * 100
+        const weight = type === TYPE_OCEANIC ? multiplier : 0
+        return plateId + weight
+    }
+
     get size() {
-        return this._plates.length
+        return this.#plates.length
     }
 
     getPlates() {
-        return this._regionTileMap.getRegions()
+        return this.#plates
     }
 
     getDirection(plateId) {
-        const id = this._plateTableMap.get(plateId)
-        return this._directionTable[id]
+        return this.#directionMap.get(plateId)
     }
 
     getWeight(plateId) {
-        const id = this._plateTableMap.get(plateId)
-        return this._weightTable[id]
+        return this.#weightMap.get(plateId)
+    }
+
+    getArea(plateId) {
+        return this.#regionTileMap.getRegionAreaById(plateId)
     }
 
     isOceanic(plateId) {
-        return this._typeMap.get(plateId) === TYPE_OCEANIC
+        return this.#typeMap.get(plateId) === TYPE_OCEANIC
     }
 
     hasHotspot(plateId) {
-        const id = this._plateTableMap.get(plateId)
-        return this._hasHotspot[id]
+        return this.#hotspotMap.get(plateId)
     }
 
     forEach(callback) {
-        this._plates.forEach(callback)
+        this.#plates.forEach(callback)
     }
 
     map(callback) {
-        this._plates.map(callback)
+        this.#plates.map(callback)
     }
 }
