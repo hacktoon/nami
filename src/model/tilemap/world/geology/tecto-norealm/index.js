@@ -31,14 +31,22 @@ export class TectonicsNoRealmTileMap extends TileMap {
         return new TectonicsNoRealmTileMap(params)
     }
 
+    #regionTileMap
+    #plateModel
+    #boundaryModel
+
     constructor(params) {
+
         super(params)
         let t0 = performance.now()
-        this.regionTileMap = this._buildRegioTileMap(params)
-        this.plateModel = new PlateModel(this.regionTileMap)
-        // this.boundaryModel = new BoundaryModel(this.regionTileMap, this.plateModel)
+        this.#regionTileMap = this._buildRegioTileMap(params)
+        this.#plateModel = new PlateModel(this.#regionTileMap)
+        this.#boundaryModel = new BoundaryModel(
+            this.#regionTileMap,
+            this.#plateModel
+        )
 
-        console.log(`TectonicsNoRealmTileMap: ${Math.round(performance.now() - t0)}ms`);
+        console.log(`TectonicsTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
     _buildRegioTileMap(params) {
@@ -54,7 +62,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
 
     get(point) {
         const plateId = this.getPlate(point)
-        const regionOrigin = this.regionTileMap.getRegionOrigin(point)
+        const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
 
         return [
             `point: ${Point.hash(point)}`,
@@ -63,43 +71,43 @@ export class TectonicsNoRealmTileMap extends TileMap {
     }
 
     getPlate(point) {
-        return this.regionTileMap.getRegion(point)
+        return this.#regionTileMap.getRegion(point)
     }
 
     getPlateDirection(point) {
-        const plateId = this.regionTileMap.getRegion(point)
-        return this.plateModel.getDirection(plateId)
+        const plateId = this.#regionTileMap.getRegion(point)
+        return this.#plateModel.getDirection(plateId)
     }
 
     getPlateOrigin(point) {
-        const plateId = this.regionTileMap.getRegion(point)
-        return this.regionTileMap.getOriginById(plateId)
+        const plateId = this.#regionTileMap.getRegion(point)
+        return this.#regionTileMap.getOriginById(plateId)
     }
 
     isPlateOrigin(plateId, point) {
-        const origin = this.regionTileMap.getOriginById(plateId)
-        return Point.equals(origin, this.regionTileMap.rect.wrap(point))
+        const origin = this.#regionTileMap.getOriginById(plateId)
+        return Point.equals(origin, this.#regionTileMap.rect.wrap(point))
     }
 
     isPlateBorder(point) {
-        return this.regionTileMap.isBorder(point)
+        return this.#regionTileMap.isBorder(point)
     }
 
     isPlateOceanic(plateId) {
-        return this.plateModel.isOceanic(plateId)
+        return this.#plateModel.isOceanic(plateId)
     }
 
     isRegionOrigin(point) {
-        const regionOrigin = this.regionTileMap.getRegionOrigin(point)
+        const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
         return Point.equals(regionOrigin, point)
     }
 
     getDescription() {
-        return `${this.plateModel.size} plates`
+        return `${this.#plateModel.size} plates`
     }
 
     map(callback) {
-        const plates = this.plateModel.getPlates()
+        const plates = this.#plateModel.getPlates()
         return plates.map(callback)
     }
 }

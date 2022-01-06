@@ -36,19 +36,20 @@ export class BoundaryModel {
     }
 
     _buildDirectionMap(regionTileMap) {
-        // A direction map maps a region X and a region Y to a direction.
-        const origins = regionTileMap.origins
-        const rect = regionTileMap.rect
+        // DirectionMap
+        // Maps a region X and a region Y to a direction between them
+        const {rect} = regionTileMap
         const directionMap = new PairMap()
 
-        for(let id = 0; id < origins.length; id++) {
-            const origin = origins[id]
-            const sideRegionIds = regionTileMap.getSideRegions(id)
+        for(let regionId of regionTileMap.getRegions()) {
+            const origin = regionTileMap.getOriginById(regionId)
+            const sideRegionIds = regionTileMap.getSideRegions(regionId)
             for(let sideRegionId of sideRegionIds) {
-                const sideOrigin = rect.unwrapFrom(origin, origins[sideRegionId])
+                const _sideOrigin = regionTileMap.getOriginById(sideRegionId)
+                const sideOrigin = rect.unwrapFrom(origin, _sideOrigin)
                 const angle = Point.angle(origin, sideOrigin)
                 const direction = Direction.fromAngle(angle)
-                directionMap.set(id, sideRegionId, direction)
+                directionMap.set(regionId, sideRegionId, direction)
             }
         }
         return directionMap
