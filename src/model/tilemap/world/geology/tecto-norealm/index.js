@@ -8,6 +8,7 @@ import { RegionTileMap } from '/model/tilemap/region'
 import { TectonicsNoRealmTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
 import { BoundaryModel } from './boundary'
+import { DeformationModel } from './deformation'
 
 
 const ID = 'TectonicsNoRealmTileMap'
@@ -35,6 +36,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
     #regionTileMap
     #plateModel
     #boundaryModel
+    #deformationModel
 
     constructor(params) {
         super(params)
@@ -44,6 +46,11 @@ export class TectonicsNoRealmTileMap extends TileMap {
         this.#boundaryModel = new BoundaryModel(
             this.#regionTileMap,
             this.#plateModel
+        )
+        this.#deformationModel = new DeformationModel(
+            this.#regionTileMap,
+            this.#plateModel,
+            this.#boundaryModel
         )
         window.boundaryModel = this.#boundaryModel
 
