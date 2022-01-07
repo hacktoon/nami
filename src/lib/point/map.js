@@ -5,7 +5,7 @@ import { IndexMap } from '/lib/map'
  *
  *
  */
-export class PointIndexMap {
+export class PointMap {
     #size = 0
     #xIndexMap = new IndexMap()
     #xValueMap = new Map()
@@ -17,7 +17,7 @@ export class PointIndexMap {
     }
 
     static fromRect(rect) {
-        const pointMap = new PointIndexMap()
+        const pointMap = new PointMap()
         for(let x = 0; x < rect.width; x++) {
             for(let y = 0; y < rect.height; y++) {
                 pointMap.add([x, y])
@@ -67,5 +67,13 @@ export class PointIndexMap {
         // get yIndexMap in x axis
         const y = this.#xValueMap.get(x).random()
         return [Number(x), Number(y)]
+    }
+
+    forEach(callback) {
+        this.#xValueMap.forEach((yIndexMap, x) => {
+            yIndexMap.forEach(y => {
+                callback([x, y])
+            })
+        })
     }
 }

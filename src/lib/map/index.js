@@ -43,6 +43,12 @@ export class IndexMap {
         const index = Random.int(0, this.size - 1)
         return this.#items[index]
     }
+
+    forEach(callback) {
+        this.#items.forEach(value => {
+            callback(value)
+        })
+    }
 }
 
 
