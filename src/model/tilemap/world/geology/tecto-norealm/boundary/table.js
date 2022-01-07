@@ -18,17 +18,17 @@ export const BOUNDARY_TABLE = [
         {name: 'Rift'},
     ]},
 
-    {key: 'LLDT', name: 'Early rift sea', data: [
+    {key: 'LLDT', data: [
         {name: 'Rift'},
         {name: 'Rift'}
     ]},
 
-    {key: 'LLDD', name: 'Rift sea', data: [
-        {name: 'Rift'},
-        {name: 'Rift'}
+    {key: 'LLDD', data: [
+        {name: 'Rift Sea'},
+        {name: 'Rift Sea'}
     ]},
 
-    {key: 'LLTT', name: 'Transform Fault', data: [
+    {key: 'LLTT', data: [
         {name: 'Basin'},
         {name: 'Basin'}
     ]},
@@ -37,32 +37,32 @@ export const BOUNDARY_TABLE = [
     ////////////////////////////////////////////////////////
     // CONTINENTAL-OCEANIC
     ////////////////////////////////////////////////////////
-    {key: 'LWCC', name: 'Cordillera', data: [
+    {key: 'LWCC', data: [
         {name: 'Oceanic trench'},
         {name: 'Orogeny'},
     ]},
 
-    {key: 'LWCT', name: 'Early cordillera', data: [
+    {key: 'LWCT', data: [
         {name: 'Oceanic trench'},
         {name: 'Orogeny'},
     ]},
 
-    {key: 'LWCD', name: 'Early passive margin', data: [
+    {key: 'LWCD', data: [
         {name: 'Oceanic mountains'},
         {name: 'Passive margin'},
     ]},
 
-    {key: 'LWDD', name: 'Passive margin', data: [
+    {key: 'LWDD', data: [
         {name: 'Oceanic Rift'},
         {name: 'Passive margin'},
     ]},
 
-    {key: 'LWDT', name: 'Island arc basin', data: [
+    {key: 'LWDT', data: [
         {name: 'Oceanic Rift'},
         {name: 'Passive margin'},
     ]},
 
-    {key: 'LWTT', name: 'Coastal fault', data: [
+    {key: 'LWTT', data: [
         {name: 'Oceanic basin'},
         {name: 'Oceanic basin'},
     ]},
@@ -71,30 +71,30 @@ export const BOUNDARY_TABLE = [
     ////////////////////////////////////////////////////////
     // OCEANIC-OCEANIC
     ////////////////////////////////////////////////////////
-    {key: 'WWCC', name: 'Island arc', data: [
+    {key: 'WWCC', data: [
         {name: 'Oceanic trench'},
         {name: 'Island arc'},
     ]},
 
-    {key: 'WWCT', name: 'Early island arc', data: [
-        {name: 'Island arc'},
+    {key: 'WWCT', data: [
+        {name: 'Oceanic trench'},
         {name: 'Island arc'},
     ]},
 
-    {key: 'WWCD', name: 'Abyssal plains', data: [
+    {key: 'WWCD', data: [
         {name: 'Oceanic basin'},
     ]},
 
-    {key: 'WWDD', name: 'Oceanic rift', data: [
+    {key: 'WWDD', data: [
         {name: 'Oceanic rift'},
         {name: 'Oceanic basin'}
     ]},
 
-    {key: 'WWDT', name: 'Early oceanic rift', data: [
+    {key: 'WWDT', data: [
         {name: 'Oceanic rift'},
     ]},
 
-    {key: 'WWTT', name: 'Oceanic fault', data: [
+    {key: 'WWTT', data: [
         {name: 'Oceanic basin'},
         {name: 'Oceanic basin'}
     ]},

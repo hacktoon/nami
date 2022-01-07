@@ -34,7 +34,10 @@ export class BoundaryModel {
         this.#plateModel = plateModel
         this.#specMap = this._buildSpecMap()
         this.#boundaryMap = this._buildBoundaryMap(regionTileMap)
-        window.boundaryMap = this.#boundaryMap
+    }
+
+    get(region, sideRegion) {
+        return this.#boundaryMap.get(region, sideRegion)
     }
 
     _buildSpecMap() {
@@ -58,12 +61,11 @@ export class BoundaryModel {
         for(let region of regionTileMap.getRegions()) {
             const origin = regionTileMap.getOriginById(region)
             for(let sideRegion of regionTileMap.getSideRegions(region)) {
-                const sideOrigin = rect.unwrapFrom(
-                    origin, regionTileMap.getOriginById(sideRegion)
-                )
+                const sideOrigin = regionTileMap.getOriginById(sideRegion)
+                const unwrpdSideOrigin = rect.unwrapFrom(origin, sideOrigin)
                 const boundary = this._buildBoundary(
                     region, sideRegion,
-                    origin, sideOrigin
+                    origin, unwrpdSideOrigin
                 )
                 pairMap.set(region, sideRegion, boundary)
             }
