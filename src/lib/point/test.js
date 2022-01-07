@@ -90,3 +90,14 @@ test("PointMap build from Rect", () => {
     expect(ptIndexMap.has([1, 1])).toBe(true)
     expect(ptIndexMap.has([1, 2])).toBe(false)
 })
+
+
+test("PointMap forEach", () => {
+    const ptIndexMap = new PointMap(POINT_SET)
+    let index = 0
+    ptIndexMap.forEach(point => {
+        expect(point).toStrictEqual(POINT_SET[index])
+        index++
+    })
+    expect(index).toBe(POINT_SET.length)
+})

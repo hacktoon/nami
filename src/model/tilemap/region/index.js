@@ -55,9 +55,6 @@ export class RegionTileMap extends TileMap {
         this.regions = this.origins.map((_, id) => id)
         this.mapFill = new RegionMultiFill(this, params)
         this.mapFill.fill()
-        // this.borderPoints.forEach(point => {
-
-        // })
         console.log(`RegionTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 

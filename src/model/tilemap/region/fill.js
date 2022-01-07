@@ -22,7 +22,8 @@ class RegionFloodFill extends ConcurrentFillUnit {
         // mark region when neighbor point belongs to another region
         this.model.borderMatrix.get(centerPoint).add(neighborId)
         this.model.graph.setEdge(id, neighborId)
-        this.model.borderPoints.add(centerPoint)
+        const borderPoint = this.model.regionMatrix.rect.wrap(centerPoint)
+        this.model.borderPoints.add(borderPoint)
     }
 
     getNeighbors(originPoint) {

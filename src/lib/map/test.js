@@ -53,3 +53,15 @@ test("indexMap add item and delete another", () => {
     expect(indexMap.getIndex('c')).toBe(1)
     expect(indexMap.size).toBe(2)
 })
+
+
+test("IndexMap forEach", () => {
+    const values = ['a', 'b', 'c']
+    const indexMap = new IndexMap(values)
+    let index = 0
+    indexMap.forEach(item => {
+        expect(item).toBe(values[index])
+        index++
+    })
+    expect(index).toBe(values.length)
+})
