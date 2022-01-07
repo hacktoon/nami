@@ -58,7 +58,7 @@ export const BOUNDARY_TABLE = [
     ]},
 
     {key: 'LWDT', name: 'Island arc basin', data: [
-        {name: 'Island arc'},
+        {name: 'Oceanic Rift'},
         {name: 'Passive margin'},
     ]},
 

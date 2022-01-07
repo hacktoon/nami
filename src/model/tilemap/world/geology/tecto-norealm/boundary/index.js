@@ -10,7 +10,7 @@ const PLATE_OCEANIC = 100
 const DIR_CONVERGE = 1
 const DIR_TRANSFORM = 4
 const DIR_DIVERGE = 16
-const IDMAP = {
+const INT_MAP = {
     L: PLATE_CONTINENTAL,
     W: PLATE_OCEANIC,
     C: DIR_CONVERGE,
@@ -34,6 +34,7 @@ export class BoundaryModel {
         this.#plateModel = plateModel
         this.#specMap = this._buildSpecMap()
         this.#boundaryMap = this._buildBoundaryMap(regionTileMap)
+        window.boundaryMap = this.#boundaryMap
     }
 
     _buildSpecMap() {
@@ -41,8 +42,8 @@ export class BoundaryModel {
         // convert the boundary key to a sum of its char int codes
         // Ex: LLCC = 0011 = 0 + 0 + 1 + 1 = 2
         BOUNDARY_TABLE.map(row => {
-            const chars = Array.from(row.key)
-            const id = chars.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
+            const ints = Array.from(row.key).map(ch => INT_MAP[ch])
+            const id = ints.reduce((a, b) => a + b, 0)
             map.set(id, {...row, id})
         })
         return map
