@@ -17,6 +17,7 @@ const SCHEMA = new Schema(
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 50}),
     Type.number('growth', 'Growth', {default: 50, step: 1, min: 0, max: 100}),
+    Type.number('chance', 'Chance', {default: .1, step: .1, min: 0, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -36,7 +37,6 @@ export class TectonicsNoRealmTileMap extends TileMap {
     #boundaryModel
 
     constructor(params) {
-
         super(params)
         let t0 = performance.now()
         this.#regionTileMap = this._buildRegioTileMap(params)
@@ -57,7 +57,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
             height: params.get('height'),
             scale: params.get('scale'),
             growth: params.get('growth'),
-            chance: .1,
+            chance: params.get('chance'),
         })
     }
 
