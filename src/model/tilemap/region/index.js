@@ -40,6 +40,8 @@ export class RegionTileMap extends TileMap {
         return new RegionTileMap(params)
     }
 
+    #graph = new Graph()
+
     constructor(params) {
         super(params)
         let t0 = performance.now()
@@ -48,7 +50,7 @@ export class RegionTileMap extends TileMap {
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.levelMatrix = new Matrix(width, height, () => 0)
         this.borderMatrix = new Matrix(width, height, () => new Set())
-        this.graph = new Graph()
+        this.borderPoints = new Set()
         this.regions = this.origins.map((_, id) => id)
         this.mapFill = new RegionMultiFill(this, params)
         this.mapFill.fill()
@@ -57,6 +59,10 @@ export class RegionTileMap extends TileMap {
 
     get size() {
         return this.origins.length
+    }
+
+    get graph() {
+        return this.#graph
     }
 
     get(point) {
@@ -107,7 +113,7 @@ export class RegionTileMap extends TileMap {
     }
 
     getSideRegions(regionId) {
-        return this.graph.getEdges(regionId)
+        return this.#graph.getEdges(regionId)
     }
 
     distanceBetween(region0, region1) {
@@ -118,7 +124,7 @@ export class RegionTileMap extends TileMap {
     }
 
     isNeighbor(regionId, neighborId) {
-        return this.graph.hasEdge(regionId, neighborId)
+        return this.#graph.hasEdge(regionId, neighborId)
     }
 
     isBorder(point) {
