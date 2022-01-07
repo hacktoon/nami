@@ -26,35 +26,87 @@ export class BoundaryModel {
 
     #plateModel
     #regionTileMap
-    #directionMap
-    #specTable = new Map() // maps numeric id to boundary config
+    #specMap
+    #boundaryMap  // maps numeric id to boundary config
 
     constructor(regionTileMap, plateModel) {
         this.#plateModel = plateModel
         this.#regionTileMap = regionTileMap
-        this.#directionMap = this._buildDirectionMap(regionTileMap)
+        this.#specMap = this._buildBoundarySpecMap()
+        // this.#boundaryMap = this._buildBoundaryMap(regionTileMap)
     }
 
-    _buildDirectionMap(regionTileMap) {
+    _buildBoundarySpecMap() {
+        const map = new Map()
+        // convert the boundary key
+        // to a sum of its char int codes
+        // Ex: LLCC = 0011 = 0 + 0 + 1 + 1 = 2
+        BOUNDARY_TABLE.map(row => {
+            const chars = Array.from(row.key)
+            const id = chars.map(ch => IDMAP[ch]).reduce((a, b) => a + b, 0)
+            map.set(id, {...row, id})
+        })
+        return map
+    }
+
+    _buildBoundaryMap(regionTileMap) {
         // DirectionMap
         // Maps a region X and a region Y to a direction between them
-        const {rect} = regionTileMap
-        const directionMap = new PairMap()
+        const pairMap = new PairMap()
 
-        for(let regionId of regionTileMap.getRegions()) {
-            const origin = regionTileMap.getOriginById(regionId)
-            const sideRegionIds = regionTileMap.getSideRegions(regionId)
-            for(let sideRegionId of sideRegionIds) {
-                const _sideOrigin = regionTileMap.getOriginById(sideRegionId)
-                const sideOrigin = rect.unwrapFrom(origin, _sideOrigin)
-                const angle = Point.angle(origin, sideOrigin)
-                const direction = Direction.fromAngle(angle)
-                directionMap.set(regionId, sideRegionId, direction)
+        for(let region of regionTileMap.getRegions()) {
+            const origin = regionTileMap.getOriginById(region)
+            for(let sideRegion of regionTileMap.getSideRegions(region)) {
+                const sideOrigin = regionTileMap.getOriginById(sideRegion)
+                const bdry = this._buildBoundary(
+                    region, sideRegion, origin, sideOrigin
+                )
+                pairMap.set(region, sideRegion, bdry)
             }
         }
-        return directionMap
+        return pairMap
     }
 
+    _buildBoundary(region, sideRegion, origin, sideOrigin) {
+        const _sideOrigin = this.#regionTileMap.rect.unwrapFrom(origin, sideOrigin)
+        const boundaryId = this._buildBoundaryId(
+            region, sideRegion,
+            origin, _sideOrigin
+        )
+        const spec = this.#specMap.get(boundaryId)
+        const heavier = spec.data[0]
+        const lighter = spec.data.length === 1 ? heavier : spec.data[1]
+        const realmWeight = this.#plateModel.getWeight(region)
+        const neighborRealmWeight = this.#plateModel.getWeight(sideRegion)
+        const data = realmWeight > neighborRealmWeight ? heavier : lighter
+        return data.landscape
+    }
+
+    _buildBoundaryId(region, sideRegion, origin, sideOrigin) {
+        const dirToSide = this._getDirection(origin, sideOrigin)
+        const dirFromSide = this._getDirection(sideOrigin, origin)
+        const plateDir = this.#plateModel.getDirection(region)
+        const sidePlateDir = this.#plateModel.getDirection(sideRegion)
+        const dotTo = Direction.dotProduct(plateDir, dirToSide)
+        const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
+        const directionTo = this._parseDir(dotTo)
+        const directionFrom = this._parseDir(dotFrom)
+        const isPlateOceanic = this.#plateModel.isOceanic(region)
+        const isSidePlateOceanic = this.#plateModel.isOceanic(sideRegion)
+        const type1 = isPlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const type2 = isSidePlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        return type1 + type2 + directionTo + directionFrom
+    }
+
+    _getDirection(origin, sideOrigin) {
+        const angle = Point.angle(origin, sideOrigin)
+        return Direction.fromAngle(angle)
+    }
+
+    _parseDir(dir) {
+        if (dir === 0) return DIR_TRANSFORM
+        return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
+    }
 }
 
 
