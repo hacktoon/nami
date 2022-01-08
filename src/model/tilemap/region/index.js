@@ -3,8 +3,8 @@ import { Type } from '/lib/type'
 import { Point } from '/lib/point'
 import { Matrix } from '/lib/matrix'
 import { Graph } from '/lib/graph'
-import { PointMap } from '/lib/point/map'
 import { EvenPointSampling } from '/lib/point/sampling'
+import { PairMap } from '/lib/map'
 
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
@@ -42,6 +42,7 @@ export class RegionTileMap extends TileMap {
     }
 
     #graph = new Graph()
+    #regions
 
     constructor(params) {
         super(params)
@@ -51,8 +52,7 @@ export class RegionTileMap extends TileMap {
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.levelMatrix = new Matrix(width, height, () => 0)
         this.borderMatrix = new Matrix(width, height, () => new Set())
-        this.borderPoints = new PointMap()
-        this.regions = this.origins.map((_, id) => id)
+        this.#regions = this.origins.map((_, id) => id)
         this.mapFill = new RegionMultiFill(this, params)
         this.mapFill.fill()
         console.log(`RegionTileMap: ${Math.round(performance.now() - t0)}ms`);
@@ -83,7 +83,7 @@ export class RegionTileMap extends TileMap {
     }
 
     getRegions() {
-        return this.regions
+        return this.#regions
     }
 
     getRegionOrigin(point) {
@@ -133,10 +133,10 @@ export class RegionTileMap extends TileMap {
     }
 
     map(callback) {
-        return this.regions.map(callback)
+        return this.#regions.map(callback)
     }
 
     forEach(callback) {
-        this.regions.forEach(callback)
+        this.#regions.forEach(callback)
     }
 }

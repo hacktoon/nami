@@ -51,10 +51,17 @@ export class IndexMap {
     }
 }
 
-
+/*
+ * Maps a pair of values to any value
+ */
 export class PairMap {
     constructor() {
+        this.size = 0
         this._sources = new Map()
+    }
+
+    get(source, target) {
+        return this._sources.get(source).get(target)
     }
 
     set(source, target, value) {
@@ -64,6 +71,7 @@ export class PairMap {
         const targets = this._sources.get(source)
         if (! targets.has(target)) {
             targets.set(target, value)
+            this.size++
         }
     }
 
@@ -72,7 +80,14 @@ export class PairMap {
         return this._sources.get(source).has(target)
     }
 
-    get(source, target) {
-        return this._sources.get(source).get(target)
+    delete([x, y]) {
+        if (! this.has()) return false
+        const yMap = this.map.get(x)
+        yMap.delete(y)
+        if (yMap.size === 0) {
+            this.map.delete(x)
+        }
+        this.size--
+        return true
     }
 }

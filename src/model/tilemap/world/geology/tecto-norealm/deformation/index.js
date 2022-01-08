@@ -3,44 +3,57 @@ import { Point } from '/lib/point'
 import { Matrix } from '/lib/matrix'
 
 
+const EMPTY = 0
+
+
 export class DeformationModel {
     #regionTileMap
     #boundaryMap
-    #deformMatrix
 
     constructor(regionTileMap, boundaryModel) {
+        const {width, height} = regionTileMap
+        const origins = []
         this.#regionTileMap = regionTileMap
         this.#boundaryMap = boundaryModel
-        this.#deformMatrix = new Matrix(regionTileMap.width, regionTileMap.height)
-        // const mapFill = new DeformationMultiFill(this, borderPoints)
+        this.deformMatrix = new Matrix(width, height, point => {
+            const regionBorders = regionTileMap.getBorderRegions(point)
+            // is a border point?
+            if (regionBorders.length > 0) {
+                const region = regionTileMap.getRegion(point)
+                const sideRegion = regionBorders[0]
+                const boundary = boundaryModel.get(region, sideRegion)
+                origins.push(point)
+                return boundary.id
+            }
+            return EMPTY
+        })
+        const mapFill = new DeformationMultiFill(origins, this)
+    }
+
+    _buildDeformationMatrix(regionTileMap) {
+
+        return
     }
 
 }
 
 
-export class DeformationMultiFill extends ConcurrentFill {
-    constructor(model, params) {
-        super(model.origins, model, DeformationFloodFill)
-        this.params = params
+class DeformationMultiFill extends ConcurrentFill {
+    constructor(origins, model) {
+        super(origins, model, DeformationFloodFill)
     }
-
-    getChance(id, origin) {
-        return .5
-    }
-
-    getGrowth(id, origin) {
-        return 4
-    }
+    getChance(id, origin) { return .5 }
+    getGrowth(id, origin) { return 4 }
 }
 
 
 class DeformationFloodFill extends ConcurrentFillUnit {
     setValue(id, point, level) {
-        this.model.regionMatrix.set(point, id)
+        this.model.deformMatrix.set(point, id)
     }
 
     isEmpty(point) {
-        return this.model.regionMatrix.get(point) === NO_REGION
+        return this.model.deformMatrix.get(point) === EMPTY
     }
 
     checkNeighbor(id, neighborPoint, centerPoint) {

@@ -23,7 +23,6 @@ class RegionFloodFill extends ConcurrentFillUnit {
         this.model.borderMatrix.get(centerPoint).add(neighborId)
         this.model.graph.setEdge(id, neighborId)
         const borderPoint = this.model.regionMatrix.rect.wrap(centerPoint)
-        this.model.borderPoints.add(borderPoint)
     }
 
     getNeighbors(originPoint) {

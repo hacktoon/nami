@@ -1,4 +1,4 @@
-import { IndexMap } from '/lib/map'
+import { IndexMap, PairMap } from '/lib/map'
 
 
 //////////////////////////////////////////////////////
@@ -65,3 +65,31 @@ test("IndexMap forEach", () => {
     })
     expect(index).toBe(values.length)
 })
+
+
+//////////////////////////////////////////////////////
+// PairMap
+//////////////////////////////////////////////////////
+
+const POINT_MAP = [
+    [0, 0], [0, 1], [0, 2]
+]
+
+
+test("Empty PairMap has size zero", () => {
+    const pairMap = new PairMap()
+    expect(pairMap.size).toBe(0)
+})
+
+
+test("PairMap can set values", () => {
+    const pairMap = new PairMap()
+    pairMap.set(0, 0, 'first')
+    pairMap.set(1, 1, 'second')
+    pairMap.set(2, 2, 'third')
+    expect(pairMap.size).toBe(3)
+    expect(pairMap.get(0, 0)).toBe('first')
+    expect(pairMap.get(1, 1)).toBe('second')
+    expect(pairMap.get(2, 2)).toBe('third')
+})
+
