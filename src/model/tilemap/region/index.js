@@ -51,7 +51,7 @@ export class RegionTileMap extends TileMap {
         this.origins = EvenPointSampling.create(width, height, scale)
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.levelMatrix = new Matrix(width, height, () => 0)
-        this.borderMatrix = new Matrix(width, height, () => new Set())
+        this.borderMap = new PairMap()
         this.#regions = this.origins.map((_, id) => id)
         this.mapFill = new RegionMultiFill(this, params)
         this.mapFill.fill()
@@ -110,7 +110,7 @@ export class RegionTileMap extends TileMap {
 
     getBorderRegions(point) {
         // a single tile can have two different region neighbors
-        return Array.from(this.borderMatrix.get(point))
+        return Array.from(this.borderMap.get(...point) || [])
     }
 
     getSideRegions(regionId) {
@@ -129,7 +129,7 @@ export class RegionTileMap extends TileMap {
     }
 
     isBorder(point) {
-        return this.borderMatrix.get(point).size > 0
+        return this.borderMap.has(...point)
     }
 
     map(callback) {
