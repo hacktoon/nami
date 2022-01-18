@@ -21,7 +21,7 @@ const INT_MAP = {
 
 export class BoundaryModel {
     /*
-        Reads the boundary table and translates to province.
+        Reads the boundary table and build boundary data relative to plates.
         Converts boundary code like 'LLCT' to its numeric id, summing
         each character value.
     */
