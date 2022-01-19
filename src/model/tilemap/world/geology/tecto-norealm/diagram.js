@@ -12,7 +12,7 @@ class TectonicsColorMap {
             const hex = tileMap.isPlateOceanic(plateId) ? '#058' : '#574'
             return [plateId, Color.fromHex(hex)]
         })
-        const provinceColors = tileMap.getProvinces().map((province, id) => {
+        const provinceColors = tileMap.getProvinces().map(id => {
             return [id, new Color()]
         })
         this.tileMap = tileMap
@@ -53,12 +53,13 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const plateId = this.tileMap.getPlate(point)
-        const provinceId = this.tileMap.getProvince(point)
+        const province = this.tileMap.getProvince(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         let color = this.colorMap.getByPlate(plateId)
 
         if (this.showProvince) {
-            color = color.average(this.colorMap.getByProvince(provinceId))
+            const provinceColor = this.colorMap.getByProvince(province.id)
+            color = color.average(provinceColor)
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#000'))

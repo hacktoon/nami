@@ -6,6 +6,8 @@
 
 
 ## ROADMAP
+- Rename Diagram to PixelMap
+
 #### TectonicsTileMap
 - Convert province by plate type
   - Ex: one side is trench, other is uplift

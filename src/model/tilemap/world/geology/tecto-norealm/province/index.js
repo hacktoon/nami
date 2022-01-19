@@ -1,50 +1,62 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/lib/floodfill/concurrent'
 import { Point } from '/lib/point'
-import { PairMap } from '/lib/map'
 import { Matrix } from '/lib/matrix'
 
 
-const EMPTY = 0
+const EMPTY = null
 
 
+// TODO: rename to TileMapLayer, extract builder (model) from layer
+// layer has getters only
 export class ProvinceModel {
     #provinceMatrix
+    #provincesByIndex = []
+    #provinceMap = new Map()
 
     constructor(regionTileMap, boundaryModel) {
         const {width, height} = regionTileMap
-        const origins = []
-        this.boundaries = []
-        // build the province matrix while reading the region border points
+        const originPoints = []
+        // builds the province matrix while reading the region border points
         // used as fill origins, mapping the array index to its boundary types
         this.#provinceMatrix = new Matrix(width, height, point => {
             const regionBorders = regionTileMap.getBorderRegions(point)
             if (regionBorders.length > 0) {  // is a border point?
                 const region = regionTileMap.getRegion(point)
-                const boundary = boundaryModel.get(region, regionBorders[0])
-                this.boundaries.push(boundary)
-                origins.push(point)
+                const province = boundaryModel.get(region, regionBorders[0])
+                this.#provinceMap.set(province.id, province)
+                // these are like maps and use the index as key
+                this.#provincesByIndex.push(province.id)
+                originPoints.push(point)
             }
             return EMPTY
         })
-        const mapFill = new ProvinceConcurrentFill(origins, this)
+        const mapFill = new ProvinceConcurrentFill(originPoints, this)
         mapFill.fill()
     }
 
-    setProvince(point, id) {
-        this.#provinceMatrix.set(point, id)
-    }
-
     getProvinces() {
-        return this.boundaries
+        return Array.from(this.#provinceMap.keys())
     }
 
     getProvince(point) {
-        return this.#provinceMatrix.get(point)
+        const id = this.#provinceMatrix.get(point)
+        return this.#provinceMap.get(id)
     }
 
     getProvinceName(point) {
         const id = this.#provinceMatrix.get(point)
-        return this.boundaries[id].name
+        return this.#provinceMap.get(id).name
+    }
+
+    // TODO: remove this method, move to builder
+    _setFillValue(point, index) {
+        const id = this.#provincesByIndex[index]
+        const province = this.#provinceMap.get(id)
+        this.#provinceMatrix.set(point, province.id)
+    }
+
+    _isFillEmpty(point) {
+        return this.#provinceMatrix.get(point) === EMPTY
     }
 }
 
@@ -59,15 +71,15 @@ class ProvinceConcurrentFill extends ConcurrentFill {
 
 
 class ProvinceFloodFill extends ConcurrentFillUnit {
-    setValue(id, point, level) {
-        this.model.setProvince(point, id)
+    setValue(index, point, level) {
+        this.model._setFillValue(point, index)
     }
 
     isEmpty(point) {
-        return this.model.getProvince(point) === EMPTY
+        return this.model._isFillEmpty(point)
     }
 
-    checkNeighbor(id, sidePoint, centerPoint) {
+    checkNeighbor(index, sidePoint, centerPoint) {
     }
 
     getNeighbors(originPoint) {
