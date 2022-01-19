@@ -49,9 +49,6 @@ export class TectonicsNoRealmTileMap extends TileMap {
         this.#provinceModel = new ProvinceModel(
             this.#regionTileMap, this.#boundaryModel
         )
-        window.boundaryModel = this.#boundaryModel
-        window.provinceModel = this.#provinceModel
-
         console.log(`TectonicsTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
@@ -69,11 +66,18 @@ export class TectonicsNoRealmTileMap extends TileMap {
     get(point) {
         const plateId = this.getPlate(point)
         const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
+        const boundary = this.#provinceModel.getBoundary(point)
 
         return [
             `point: ${Point.hash(point)}`,
-            `plate ${plateId} at (${Point.hash(regionOrigin)})`
+            `plate ${plateId} at (${Point.hash(regionOrigin)}) `,
+            `boundary: ${boundary.name}`,
         ].join(', ')
+    }
+
+    getBoundary(point) {
+        const id = 1
+        return this.#boundaryModel.getBoundary(id) || 'none'
     }
 
     getPlate(point) {

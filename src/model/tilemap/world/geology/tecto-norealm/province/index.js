@@ -11,20 +11,21 @@ export class ProvinceModel {
     #regionTileMap
     #boundaryModel
     #origins
-    #pointMap
+    #pointBoundaryMap
     #provinceMatrix
 
     constructor(regionTileMap, boundaryModel) {
         this.#origins = []
-        this.#pointMap = new PairMap()
+        this.#pointBoundaryMap = new PairMap()
         this.#regionTileMap = regionTileMap
         this.#boundaryModel = boundaryModel
-        this.#provinceMatrix = this._buildDeformationMatrix()
-        const mapFill = new ProvinceConcurrentFill(this)
+        this.#provinceMatrix = this._buildProvinceMatrix()
+        const mapFill = new ProvinceConcurrentFill(this.#origins, this)
     }
 
-    _buildDeformationMatrix() {
-        const _buildTile = point => {
+    _buildProvinceMatrix() {
+        const {width, height} = this.#regionTileMap
+        return new Matrix(width, height, point => {
             const regionBorders = this.#regionTileMap.getBorderRegions(point)
             // is a border point?
             if (regionBorders.length > 0) {
@@ -32,41 +33,31 @@ export class ProvinceModel {
                 const sideRegion = regionBorders[0]
                 const boundary = this.#boundaryModel.get(region, sideRegion)
                 this.#origins.push(point)
-                this.#pointMap.set(...point, boundary.id)
+                this.#pointBoundaryMap.set(...point, boundary)
             }
             // all tiles initialize empty
             return EMPTY
-        }
-        const {width, height} = this.#regionTileMap
-        return new Matrix(width, height, _buildTile)
-    }
-
-    get origins() {
-        return this.#origins
-    }
-
-    get pointMap() {
-        return this.#pointMap
+        })
     }
 
     getBoundary(point) {
-        return this.#pointMap.get(...point)
+        return this.#pointBoundaryMap.get(...point)
     }
-
 }
 
 
 class ProvinceConcurrentFill extends ConcurrentFill {
-    constructor(model) {
-        super(model.origins, model, DeformationFloodFill)
+    constructor(origins, model) {
+        super(origins, model, ProvinceFloodFill)
     }
     getChance(id, origin) { return .5 }
     getGrowth(id, origin) { return 4 }
 }
 
 
-class DeformationFloodFill extends ConcurrentFillUnit {
+class ProvinceFloodFill extends ConcurrentFillUnit {
     setValue(id, point, level) {
+        const boundaryId = this.model.getBoundary(point)
         this.model.provinceMatrix.set(point, id)
     }
 

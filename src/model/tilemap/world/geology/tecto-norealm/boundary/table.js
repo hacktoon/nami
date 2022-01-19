@@ -49,7 +49,7 @@ export const BOUNDARY_TABLE = [
 
     {key: 'LWCD', data: [
         {name: 'Oceanic mountains'},
-        {name: 'Passive margin'},
+        {name: 'Passive margin2'},
     ]},
 
     {key: 'LWDD', data: [
