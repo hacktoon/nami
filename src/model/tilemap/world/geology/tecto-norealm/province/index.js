@@ -10,6 +10,7 @@ const EMPTY = null
 // layer has getters only
 export class ProvinceModel {
     #provinceMatrix
+    #levelMatrix
     #provincesByIndex = []
     #provinceMap = new Map()
 
@@ -18,6 +19,7 @@ export class ProvinceModel {
         const originPoints = []
         // builds the province matrix while reading the region border points
         // used as fill origins, mapping the array index to its boundary types
+        this.#levelMatrix = new Matrix(width, height)
         this.#provinceMatrix = new Matrix(width, height, point => {
             const regionBorders = regionTileMap.getBorderRegions(point)
             if (regionBorders.length > 0) {  // is a border point?
@@ -48,11 +50,19 @@ export class ProvinceModel {
         return this.#provinceMap.get(id).name
     }
 
+    getProvinceLevel(point) {
+        return this.#levelMatrix.get(point)
+    }
+
     // TODO: remove this method, move to builder
     _setFillValue(point, index) {
         const id = this.#provincesByIndex[index]
         const province = this.#provinceMap.get(id)
         this.#provinceMatrix.set(point, province.id)
+    }
+
+    _setFillLevel(point, level) {
+        this.#levelMatrix.set(point, level)
     }
 
     _isFillEmpty(point) {
@@ -73,6 +83,7 @@ class ProvinceConcurrentFill extends ConcurrentFill {
 class ProvinceFloodFill extends ConcurrentFillUnit {
     setValue(index, point, level) {
         this.model._setFillValue(point, index)
+        this.model._setFillLevel(point, level)
     }
 
     isEmpty(point) {

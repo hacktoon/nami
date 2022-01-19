@@ -36,6 +36,8 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         Type.boolean('showPlateBorder', 'Show borders', {default: false}),
         Type.boolean('showDirection', 'Show directions', {default: false}),
         Type.boolean('showProvince', 'Show province', {default: false}),
+        Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
+        Type.number('provinceLevel', 'Province level', {default: -1}),
     )
     static colorMap = TectonicsColorMap
 
@@ -49,17 +51,26 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         this.showPlateBorder = params.get('showPlateBorder')
         this.showDirection = params.get('showDirection')
         this.showProvince = params.get('showProvince')
+        this.showProvinceLevel = params.get('showProvinceLevel')
+        this.provinceLevel = params.get('provinceLevel')
     }
 
     get(point) {
         const plateId = this.tileMap.getPlate(point)
         const province = this.tileMap.getProvince(point)
+        const provinceLevel = this.tileMap.getProvinceLevel(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         let color = this.colorMap.getByPlate(plateId)
 
         if (this.showProvince) {
             const provinceColor = this.colorMap.getByProvince(province.id)
             color = color.average(provinceColor)
+            if (this.provinceLevel === provinceLevel) {
+                color = color.average(Color.fromHex('#000'))
+            }
+            if (this.showProvinceLevel) {
+                color = color.darken(provinceLevel * 5)
+            }
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.fromHex('#000'))
