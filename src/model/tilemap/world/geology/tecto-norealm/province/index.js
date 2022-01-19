@@ -8,40 +8,43 @@ const EMPTY = 0
 
 
 export class ProvinceModel {
-    #regionTileMap
-    #boundaryModel
-    #origins
-    #pointBoundaryMap
     #provinceMatrix
 
     constructor(regionTileMap, boundaryModel) {
-        this.#origins = []
-        this.#pointBoundaryMap = new PairMap()
-        this.#regionTileMap = regionTileMap
-        this.#boundaryModel = boundaryModel
-        this.#provinceMatrix = this._buildProvinceMatrix()
-        const mapFill = new ProvinceConcurrentFill(this.#origins, this)
-    }
-
-    _buildProvinceMatrix() {
-        const {width, height} = this.#regionTileMap
-        return new Matrix(width, height, point => {
-            const regionBorders = this.#regionTileMap.getBorderRegions(point)
-            // is a border point?
-            if (regionBorders.length > 0) {
-                const region = this.#regionTileMap.getRegion(point)
-                const sideRegion = regionBorders[0]
-                const boundary = this.#boundaryModel.get(region, sideRegion)
-                this.#origins.push(point)
-                this.#pointBoundaryMap.set(...point, boundary)
+        const {width, height} = regionTileMap
+        const origins = []
+        this.boundaries = []
+        // build the province matrix while reading the region border points
+        // used as fill origins, mapping the array index to its boundary types
+        this.#provinceMatrix = new Matrix(width, height, point => {
+            const regionBorders = regionTileMap.getBorderRegions(point)
+            if (regionBorders.length > 0) {  // is a border point?
+                const region = regionTileMap.getRegion(point)
+                const boundary = boundaryModel.get(region, regionBorders[0])
+                this.boundaries.push(boundary)
+                origins.push(point)
             }
-            // all tiles initialize empty
             return EMPTY
         })
+        const mapFill = new ProvinceConcurrentFill(origins, this)
+        mapFill.fill()
     }
 
-    getBoundary(point) {
-        return this.#pointBoundaryMap.get(...point)
+    setProvince(point, id) {
+        this.#provinceMatrix.set(point, id)
+    }
+
+    getProvinces() {
+        return this.boundaries
+    }
+
+    getProvince(point) {
+        return this.#provinceMatrix.get(point)
+    }
+
+    getProvinceName(point) {
+        const id = this.#provinceMatrix.get(point)
+        return this.boundaries[id].name
     }
 }
 
@@ -57,21 +60,14 @@ class ProvinceConcurrentFill extends ConcurrentFill {
 
 class ProvinceFloodFill extends ConcurrentFillUnit {
     setValue(id, point, level) {
-        const boundaryId = this.model.getBoundary(point)
-        this.model.provinceMatrix.set(point, id)
+        this.model.setProvince(point, id)
     }
 
     isEmpty(point) {
-        return this.model.provinceMatrix.get(point) === EMPTY
+        return this.model.getProvince(point) === EMPTY
     }
 
-    checkNeighbor(id, neighborPoint, centerPoint) {
-        if (this.isEmpty(neighborPoint)) return
-        const neighborId = this.model.regionMatrix.get(neighborPoint)
-        if (id === neighborId) return
-        // mark region when neighbor point is filled by other region
-        this.model.graph.setEdge(id, neighborId)
-        this.model.borderMatrix.get(centerPoint).add(neighborId)
+    checkNeighbor(id, sidePoint, centerPoint) {
     }
 
     getNeighbors(originPoint) {

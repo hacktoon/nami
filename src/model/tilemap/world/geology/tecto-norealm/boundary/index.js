@@ -47,7 +47,7 @@ export class BoundaryModel {
         BOUNDARY_TABLE.map(row => {
             const ints = Array.from(row.key).map(ch => INT_MAP[ch])
             const id = ints.reduce((a, b) => a + b, 0)
-            map.set(id, {...row, id})
+            map.set(id, row)
         })
         return map
     }
@@ -61,7 +61,7 @@ export class BoundaryModel {
             for(let sideRegion of regionTileMap.getSideRegions(region)) {
                 const sideOrigin = regionTileMap.getOriginById(sideRegion)
                 const unwrappedSideOrigin = rect.unwrapFrom(origin, sideOrigin)
-                const boundary = this._getBoundary(
+                const boundary = this._getRegionBoundary(
                     region, sideRegion, origin, unwrappedSideOrigin
                 )
                 boundaryMap.set(region, sideRegion, boundary)
@@ -70,16 +70,22 @@ export class BoundaryModel {
         return boundaryMap
     }
 
-    _getBoundary(region, sideRegion, origin, sideOrigin) {
+    _getRegionBoundary(region, sideRegion, origin, sideOrigin) {
+        const plateWeight = this.#plateModel.getWeight(region)
+        const sidePlateWeight = this.#plateModel.getWeight(sideRegion)
         const boundaryId = this._buildBoundaryId(
             region, sideRegion, origin, sideOrigin
         )
         const spec = this.#boundaryTable.get(boundaryId)
         const heavier = spec.data[0]
         const lighter = spec.data.length === 1 ? heavier : spec.data[1]
-        const plateWeight = this.#plateModel.getWeight(region)
-        const sidePlateWeight = this.#plateModel.getWeight(sideRegion)
-        return plateWeight > sidePlateWeight ? heavier : lighter
+        let modifier = 'L'
+        let data = lighter
+        if (plateWeight > sidePlateWeight) {
+            modifier = 'H'
+            data = heavier
+        }
+        return {id: `${boundaryId}${modifier}`, ...data}
     }
 
     _buildBoundaryId(region, sideRegion, origin, sideOrigin) {
