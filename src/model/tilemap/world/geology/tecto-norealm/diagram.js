@@ -33,11 +33,12 @@ class TectonicsColorMap {
 export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'TectonicsNoRealmTileMapDiagram',
-        Type.boolean('showPlateBorder', 'Show borders', {default: false}),
         Type.boolean('showDirection', 'Show directions', {default: false}),
+        Type.boolean('showPlateBorder', 'Show borders', {default: true}),
         Type.boolean('showProvince', 'Show province', {default: false}),
         Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
-        Type.number('provinceLevel', 'Province level', {default: -1}),
+        Type.boolean('showProvinceBorder', 'Show province border', {default: false}),
+        Type.number('provinceLevel', 'Province level', {min: -1, default: -1}),
     )
     static colorMap = TectonicsColorMap
 
@@ -52,6 +53,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         this.showDirection = params.get('showDirection')
         this.showProvince = params.get('showProvince')
         this.showProvinceLevel = params.get('showProvinceLevel')
+        this.showProvinceBorder = params.get('showProvinceBorder')
         this.provinceLevel = params.get('provinceLevel')
     }
 
@@ -64,16 +66,19 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
 
         if (this.showProvince) {
             const provinceColor = this.colorMap.getByProvince(province.id)
-            color = color.average(provinceColor)
-            if (this.provinceLevel === provinceLevel) {
-                color = color.average(Color.fromHex('#000'))
-            }
+            color = provinceColor.average(color)
             if (this.showProvinceLevel) {
-                color = color.darken(provinceLevel * 5)
+                color = provinceColor.darken(provinceLevel * 5)
+            }
+            if (this.provinceLevel === provinceLevel) {
+                color = provinceColor.average(Color.BLACK)
             }
         }
+        if (this.showProvinceBorder && this.tileMap.isProvinceBorder(point)) {
+            color = color.brighten(50)
+        }
         if (this.showPlateBorder && isBorderPoint) {
-            color = color.average(Color.fromHex('#000'))
+            color = color.average(Color.BLACK)
         }
         return color.toHex()
     }

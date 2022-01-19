@@ -11,6 +11,7 @@ const EMPTY = null
 export class ProvinceModel {
     #provinceMatrix
     #levelMatrix
+    #borderMatrix
     #provincesByIndex = []
     #provinceMap = new Map()
 
@@ -20,6 +21,7 @@ export class ProvinceModel {
         // builds the province matrix while reading the region border points
         // used as fill origins, mapping the array index to its boundary types
         this.#levelMatrix = new Matrix(width, height)
+        this.#borderMatrix = new Matrix(width, height)
         this.#provinceMatrix = new Matrix(width, height, point => {
             const regionBorders = regionTileMap.getBorderRegions(point)
             if (regionBorders.length > 0) {  // is a border point?
@@ -54,7 +56,11 @@ export class ProvinceModel {
         return this.#levelMatrix.get(point)
     }
 
-    // TODO: remove this method, move to builder
+    isProvinceBorder(point) {
+        return this.#borderMatrix.get(point)
+    }
+
+    // TODO: remove these methods, move to builder
     _setFillValue(point, index) {
         const id = this.#provincesByIndex[index]
         const province = this.#provinceMap.get(id)
@@ -63,6 +69,10 @@ export class ProvinceModel {
 
     _setFillLevel(point, level) {
         this.#levelMatrix.set(point, level)
+    }
+
+    _setProvinceBorder(point) {
+        this.#borderMatrix.set(point, 1)
     }
 
     _isFillEmpty(point) {
@@ -91,6 +101,12 @@ class ProvinceFloodFill extends ConcurrentFillUnit {
     }
 
     checkNeighbor(index, sidePoint, centerPoint) {
+        if (this.isEmpty(sidePoint)) return
+        const province = this.model.getProvince(centerPoint)
+        const sideProvince = this.model.getProvince(sidePoint)
+        if (province.id !== sideProvince.id) {
+            this.model._setProvinceBorder(centerPoint)
+        }
     }
 
     getNeighbors(originPoint) {

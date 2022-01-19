@@ -38,6 +38,7 @@ export class Color {
     static RED = Color.fromHex('F00')
     static GREEN = Color.fromHex('0F0')
     static BLUE = Color.fromHex('00F')
+    static BLACK = Color.fromHex('000')
 
     static fromHex(value) {
         let hex = String(value).trim().replace('#', '')
