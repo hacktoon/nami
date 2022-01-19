@@ -26,21 +26,27 @@ export class BoundaryModel {
         each character value.
     */
 
-    #specMap
+    #boundaryTable
     #plateModel
+    #regionsBoundaryMap
     #boundaryMap
 
     constructor(regionTileMap, plateModel) {
         this.#plateModel = plateModel
-        this.#specMap = this._buildSpecMap()
-        this.#boundaryMap = this._buildBoundaryMap(regionTileMap)
+        this.#boundaryMap = new Map()
+        this.#boundaryTable = this._buildBoundaryTable()
+        this.#regionsBoundaryMap = this._buildRegionsBoundaryMap(regionTileMap)
     }
 
     get(region, sideRegion) {
-        return this.#boundaryMap.get(region, sideRegion)
+        return this.#regionsBoundaryMap.get(region, sideRegion)
     }
 
-    _buildSpecMap() {
+    getBoundary(id) {
+        return this.#boundaryMap.get(id)
+    }
+
+    _buildBoundaryTable() {
         const map = new Map()
         // convert the boundary key to a sum of its char int codes
         // Ex: LLCC = 0011 = 0 + 0 + 1 + 1 = 2
@@ -52,7 +58,7 @@ export class BoundaryModel {
         return map
     }
 
-    _buildBoundaryMap(regionTileMap) {
+    _buildRegionsBoundaryMap(regionTileMap) {
         // DirectionMap
         // Maps a region X and a region Y to a direction between them
         const pairMap = new PairMap()
@@ -62,28 +68,16 @@ export class BoundaryModel {
             const origin = regionTileMap.getOriginById(region)
             for(let sideRegion of regionTileMap.getSideRegions(region)) {
                 const sideOrigin = regionTileMap.getOriginById(sideRegion)
-                const unwrpdSideOrigin = rect.unwrapFrom(origin, sideOrigin)
-                const boundary = this._buildBoundary(
-                    region, sideRegion,
-                    origin, unwrpdSideOrigin
+                const unwrappedSideOrigin = rect.unwrapFrom(origin, sideOrigin)
+                const boundaryId = this._buildBoundaryId(
+                    region, sideRegion, sideOrigin, unwrappedSideOrigin
                 )
-                pairMap.set(region, sideRegion, boundary)
+                const data = this._getBoundary(region, sideRegion, boundaryId)
+                this.#boundaryMap.set(boundaryId, data)
+                pairMap.set(region, sideRegion, boundaryId)
             }
         }
         return pairMap
-    }
-
-    _buildBoundary(region, sideRegion, origin, sideOrigin) {
-        const boundaryId = this._buildBoundaryId(
-            region, sideRegion,
-            origin, sideOrigin
-        )
-        const spec = this.#specMap.get(boundaryId)
-        const heavier = spec.data[0]
-        const lighter = spec.data.length === 1 ? heavier : spec.data[1]
-        const realmWeight = this.#plateModel.getWeight(region)
-        const neighborRealmWeight = this.#plateModel.getWeight(sideRegion)
-        return realmWeight > neighborRealmWeight ? heavier : lighter
     }
 
     _buildBoundaryId(region, sideRegion, origin, sideOrigin) {
@@ -91,12 +85,12 @@ export class BoundaryModel {
         const dirFromSide = this._getDirection(sideOrigin, origin)
         const plateDir = this.#plateModel.getDirection(region)
         const sidePlateDir = this.#plateModel.getDirection(sideRegion)
+        const isPlateOceanic = this.#plateModel.isOceanic(region)
+        const isSidePlateOceanic = this.#plateModel.isOceanic(sideRegion)
         const dotTo = Direction.dotProduct(plateDir, dirToSide)
         const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
         const directionTo = this._parseDir(dotTo)
         const directionFrom = this._parseDir(dotFrom)
-        const isPlateOceanic = this.#plateModel.isOceanic(region)
-        const isSidePlateOceanic = this.#plateModel.isOceanic(sideRegion)
         const type1 = isPlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
         const type2 = isSidePlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
         return type1 + type2 + directionTo + directionFrom
@@ -110,5 +104,15 @@ export class BoundaryModel {
     _parseDir(dir) {
         if (dir === 0) return DIR_TRANSFORM
         return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
+    }
+
+    _getBoundary(region, sideRegion, boundaryId) {
+        // boundaryId is a numeric code
+        const spec = this.#boundaryTable.get(boundaryId)
+        const heavier = spec.data[0]
+        const lighter = spec.data.length === 1 ? heavier : spec.data[1]
+        const plateWeight = this.#plateModel.getWeight(region)
+        const sidePlateWeight = this.#plateModel.getWeight(sideRegion)
+        return plateWeight > sidePlateWeight ? heavier : lighter
     }
 }

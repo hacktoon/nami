@@ -49,6 +49,10 @@ export class ProvinceModel {
         return this.#pointMap
     }
 
+    getBoundary(point) {
+        return this.#pointMap.get(...point)
+    }
+
 }
 
 

@@ -44,12 +44,10 @@ export class TectonicsNoRealmTileMap extends TileMap {
         this.#regionTileMap = this._buildRegioTileMap(params)
         this.#plateModel = new PlateModel(this.#regionTileMap)
         this.#boundaryModel = new BoundaryModel(
-            this.#regionTileMap,
-            this.#plateModel
+            this.#regionTileMap, this.#plateModel
         )
         this.#provinceModel = new ProvinceModel(
-            this.#regionTileMap,
-            this.#boundaryModel
+            this.#regionTileMap, this.#boundaryModel
         )
         window.boundaryModel = this.#boundaryModel
         window.provinceModel = this.#provinceModel
