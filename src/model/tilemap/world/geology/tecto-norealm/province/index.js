@@ -14,7 +14,8 @@ export class ProvinceModel {
     #provinceMatrix
     #levelMatrix
     #borderPointSet = new PointSet()
-    #provincesByIndex = []
+    #provinceIdList = []
+    #provinceMaxLevelMap = new Map()
     #provinceMap = new Map()
 
     constructor(regionTileMap, plateModel) {
@@ -31,7 +32,8 @@ export class ProvinceModel {
                 const province = boundaryModel.get(region, borderRegions[0])
                 this.#provinceMap.set(province.id, province)
                 // these are like maps and use the index as key
-                this.#provincesByIndex.push(province.id)
+                this.#provinceIdList.push(province.id)
+                this.#provinceMaxLevelMap.set(province.id, 0)
                 originPoints.push(point)
             }
             return EMPTY
@@ -58,19 +60,29 @@ export class ProvinceModel {
         return this.#levelMatrix.get(point)
     }
 
+    getMaxProvinceLevel(point) {
+        const province = this.getProvince(point)
+        return this.#provinceMaxLevelMap.get(province.id)
+    }
+
     isProvinceBorder(point) {
         return this.#borderPointSet.has(point)
     }
 
     // TODO: remove these fill methods, move to builder
     _setFillValue(point, index) {
-        const id = this.#provincesByIndex[index]
+        const id = this.#provinceIdList[index]
         const province = this.#provinceMap.get(id)
         this.#provinceMatrix.set(point, province.id)
     }
 
-    _setFillLevel(point, level) {
+    _setFillLevel(index, point, level) {
+        const id = this.#provinceIdList[index]
         this.#levelMatrix.set(point, level)
+        // update max level to use on % of deformation calc
+        if (level >= this.#provinceMaxLevelMap.get(id)) {
+            this.#provinceMaxLevelMap.set(id, level)
+        }
     }
 
     _setProvinceBorder(point) {
@@ -88,14 +100,14 @@ class ProvinceConcurrentFill extends ConcurrentFill {
         super(origins, model, ProvinceFloodFill)
     }
     getChance(id, origin) { return .5 }
-    getGrowth(id, origin) { return 4 }
+    getGrowth(id, origin) { return 2 }
 }
 
 
 class ProvinceFloodFill extends ConcurrentFillUnit {
     setValue(index, point, level) {
         this.model._setFillValue(point, index)
-        this.model._setFillLevel(point, level)
+        this.model._setFillLevel(index, point, level)
     }
 
     isEmpty(point) {
