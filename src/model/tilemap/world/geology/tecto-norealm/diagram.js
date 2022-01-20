@@ -39,6 +39,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
         Type.boolean('showProvinceBorder', 'Show province border', {default: false}),
         Type.number('provinceLevel', 'Province level', {min: -1, default: -1}),
+        Type.number('levelReach', 'Level reach', {min: 0, default: 0}),
     )
     static colorMap = TectonicsColorMap
 
@@ -55,6 +56,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         this.showProvinceLevel = params.get('showProvinceLevel')
         this.showProvinceBorder = params.get('showProvinceBorder')
         this.provinceLevel = params.get('provinceLevel')
+        this.levelReach = params.get('levelReach')
     }
 
     get(point) {
@@ -62,20 +64,22 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         const province = this.tileMap.getProvince(point)
         const provinceLevel = this.tileMap.getProvinceLevel(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
+        const isProvinceBorder = this.tileMap.isProvinceBorder(point)
         let color = this.colorMap.getByPlate(plateId)
 
         if (this.showProvince) {
             const provinceColor = this.colorMap.getByProvince(province.id)
             color = provinceColor.average(color).average(color)
             if (this.showProvinceLevel) {
-                color = provinceColor.darken(provinceLevel * 5)
+                color = color.darken(provinceLevel * 4)
             }
-            if (this.provinceLevel === provinceLevel) {
-                color = provinceColor.average(Color.BLACK)
+            const maxLevel = this.levelReach + this.provinceLevel
+            if (this.provinceLevel <= provinceLevel && provinceLevel <= maxLevel) {
+                color = color.darken(80)
             }
         }
-        if (this.showProvinceBorder && this.tileMap.isProvinceBorder(point)) {
-            color = color.brighten(50)
+        if (this.showProvinceBorder && isProvinceBorder && ! isBorderPoint) {
+            color = color.brighten(20)
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.BLACK)
