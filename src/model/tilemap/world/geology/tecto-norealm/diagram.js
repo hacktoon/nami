@@ -66,7 +66,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
 
         if (this.showProvince) {
             const provinceColor = this.colorMap.getByProvince(province.id)
-            color = provinceColor.average(color)
+            color = provinceColor.average(color).average(color)
             if (this.showProvinceLevel) {
                 color = provinceColor.darken(provinceLevel * 5)
             }
