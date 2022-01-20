@@ -61,16 +61,16 @@ export class BoundaryModel {
             for(let sideRegion of regionTileMap.getSideRegions(region)) {
                 const sideOrigin = regionTileMap.getOriginById(sideRegion)
                 const unwrappedSideOrigin = rect.unwrapFrom(origin, sideOrigin)
-                const boundary = this._getRegionBoundary(
+                const province = this._buildProvince(
                     region, sideRegion, origin, unwrappedSideOrigin
                 )
-                boundaryMap.set(region, sideRegion, boundary)
+                boundaryMap.set(region, sideRegion, province)
             }
         }
         return boundaryMap
     }
 
-    _getRegionBoundary(region, sideRegion, origin, sideOrigin) {
+    _buildProvince(region, sideRegion, origin, sideOrigin) {
         const plateWeight = this.#plateModel.getWeight(region)
         const sidePlateWeight = this.#plateModel.getWeight(sideRegion)
         const boundaryId = this._buildBoundaryId(
@@ -79,13 +79,10 @@ export class BoundaryModel {
         const spec = this.#boundaryTable.get(boundaryId)
         const heavier = spec.data[0]
         const lighter = spec.data.length === 1 ? heavier : spec.data[1]
-        let modifier = 'L'
-        let data = lighter
-        if (plateWeight > sidePlateWeight) {
-            modifier = 'H'
-            data = heavier
-        }
-        return {id: `${boundaryId}${modifier}`, ...data}
+        const isHeavier = plateWeight > sidePlateWeight
+        let modifier = isHeavier ? 1 : -1
+        let data = isHeavier ? heavier : lighter
+        return {id: boundaryId * modifier, ...data}
     }
 
     _buildBoundaryId(region, sideRegion, origin, sideOrigin) {
