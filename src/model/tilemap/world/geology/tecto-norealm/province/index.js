@@ -3,6 +3,7 @@ import { Point } from '/lib/point'
 import { PointSet } from '/lib/point/set'
 import { Matrix } from '/lib/matrix'
 
+import { BoundaryModel } from './boundary'
 
 const EMPTY = null
 
@@ -16,17 +17,18 @@ export class ProvinceModel {
     #provincesByIndex = []
     #provinceMap = new Map()
 
-    constructor(regionTileMap, boundaryModel) {
+    constructor(regionTileMap, plateModel) {
         const {width, height} = regionTileMap
         const originPoints = []
         // builds the province matrix while reading the region border points
         // used as fill origins, mapping the array index to its boundary types
+        const boundaryModel = new BoundaryModel(regionTileMap, plateModel)
         this.#levelMatrix = new Matrix(width, height)
         this.#provinceMatrix = new Matrix(width, height, point => {
-            const regionBorders = regionTileMap.getBorderRegions(point)
-            if (regionBorders.length > 0) {  // is a border point?
+            const borderRegions = regionTileMap.getBorderRegions(point)
+            if (borderRegions.length > 0) {  // is a border point?
                 const region = regionTileMap.getRegion(point)
-                const province = boundaryModel.get(region, regionBorders[0])
+                const province = boundaryModel.get(region, borderRegions[0])
                 this.#provinceMap.set(province.id, province)
                 // these are like maps and use the index as key
                 this.#provincesByIndex.push(province.id)

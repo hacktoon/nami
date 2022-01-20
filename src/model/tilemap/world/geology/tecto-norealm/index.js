@@ -7,7 +7,6 @@ import { RegionTileMap } from '/model/tilemap/region'
 
 import { TectonicsNoRealmTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
-import { BoundaryModel } from './boundary'
 import { ProvinceModel } from './province'
 
 
@@ -35,7 +34,6 @@ export class TectonicsNoRealmTileMap extends TileMap {
 
     #regionTileMap
     #plateModel
-    #boundaryModel
     #provinceModel
 
     constructor(params) {
@@ -43,12 +41,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
         let t0 = performance.now()
         this.#regionTileMap = this._buildRegioTileMap(params)
         this.#plateModel = new PlateModel(this.#regionTileMap)
-        this.#boundaryModel = new BoundaryModel(
-            this.#regionTileMap, this.#plateModel
-        )
-        this.#provinceModel = new ProvinceModel(
-            this.#regionTileMap, this.#boundaryModel
-        )
+        this.#provinceModel = new ProvinceModel(this.#regionTileMap, this.#plateModel)
         console.log(`TectonicsTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
