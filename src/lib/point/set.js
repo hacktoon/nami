@@ -3,7 +3,7 @@ import { IndexMap } from '/lib/map'
 /**
  * This class represents zero ou many points [x, y] in an infinite space.
  */
-export class PointIndexSet {
+export class IndexedPointSet {
     #size = 0
     #xIndexMap = new IndexMap()
     #xValueMap = new Map()
@@ -15,7 +15,7 @@ export class PointIndexSet {
     }
 
     static fromRect(rect) {
-        const pointSet = new PointIndexSet()
+        const pointSet = new IndexedPointSet()
         for(let x = 0; x < rect.width; x++) {
             for(let y = 0; y < rect.height; y++) {
                 pointSet.add([x, y])
@@ -70,6 +70,46 @@ export class PointIndexSet {
     forEach(callback) {
         this.#xValueMap.forEach((yIndexMap, x) => {
             yIndexMap.forEach(y => {
+                callback([x, y])
+            })
+        })
+    }
+}
+
+
+export class PointSet {
+    #size = 0
+    #xMap = new Map()
+
+    constructor(points=[]) {
+        for(let point of points) {
+            this.add(point)
+        }
+    }
+
+    get size() {
+        return this.#size
+    }
+
+    add([x, y]) {
+        if (! this.#xMap.has(x)) {
+            this.#xMap.set(x, new Set())
+        }
+        const yMap = this.#xMap.get(x)
+        if (! yMap.has(y)) {
+            yMap.add(y)
+            this.#size++
+        }
+    }
+
+    has([x, y]) {
+        if (! this.#xMap.has(x)) return false
+        return this.#xMap.get(x).has(y)
+    }
+
+    forEach(callback) {
+        this.#xMap.forEach((yMap, x) => {
+            yMap.forEach(y => {
                 callback([x, y])
             })
         })

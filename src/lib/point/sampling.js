@@ -1,12 +1,12 @@
 import { Rect } from '/lib/number'
-import { PointIndexSet } from './set'
+import { IndexedPointSet } from './set'
 
 
 export class EvenPointSampling {
     static create(width, height, radius) {
         const samples = []
         const rect = new Rect(width, height)
-        const ptIndexMap = PointIndexSet.fromRect(rect)
+        const ptIndexMap = IndexedPointSet.fromRect(rect)
 
         while(ptIndexMap.size > 0) {
             const center = ptIndexMap.random()

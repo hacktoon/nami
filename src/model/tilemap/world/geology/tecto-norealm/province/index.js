@@ -1,5 +1,6 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/lib/floodfill/concurrent'
 import { Point } from '/lib/point'
+import { PointSet } from '/lib/point/set'
 import { Matrix } from '/lib/matrix'
 
 
@@ -11,7 +12,7 @@ const EMPTY = null
 export class ProvinceModel {
     #provinceMatrix
     #levelMatrix
-    #borderMatrix
+    #borderPointSet = new PointSet()
     #provincesByIndex = []
     #provinceMap = new Map()
 
@@ -21,7 +22,6 @@ export class ProvinceModel {
         // builds the province matrix while reading the region border points
         // used as fill origins, mapping the array index to its boundary types
         this.#levelMatrix = new Matrix(width, height)
-        this.#borderMatrix = new Matrix(width, height)
         this.#provinceMatrix = new Matrix(width, height, point => {
             const regionBorders = regionTileMap.getBorderRegions(point)
             if (regionBorders.length > 0) {  // is a border point?
@@ -57,10 +57,10 @@ export class ProvinceModel {
     }
 
     isProvinceBorder(point) {
-        return this.#borderMatrix.get(point)
+        return this.#borderPointSet.has(point)
     }
 
-    // TODO: remove these methods, move to builder
+    // TODO: remove these fill methods, move to builder
     _setFillValue(point, index) {
         const id = this.#provincesByIndex[index]
         const province = this.#provinceMap.get(id)
@@ -72,7 +72,7 @@ export class ProvinceModel {
     }
 
     _setProvinceBorder(point) {
-        this.#borderMatrix.set(point, 1)
+        this.#borderPointSet.add(point)
     }
 
     _isFillEmpty(point) {
