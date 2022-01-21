@@ -13,10 +13,11 @@ const EMPTY = null
 export class ProvinceModel {
     #provinceMatrix
     #levelMatrix
-    #borderPointSet = new PointSet()
+    #deformationMatrix
     #provinceIdList = []
-    #provinceMaxLevelMap = new Map()
+    #borderPointSet = new PointSet()
     #provinceMap = new Map()
+    #provinceMaxLevelMap = new Map()
 
     constructor(regionTileMap, plateModel) {
         const {width, height} = regionTileMap
@@ -29,7 +30,8 @@ export class ProvinceModel {
             const borderRegions = regionTileMap.getBorderRegions(point)
             if (borderRegions.length > 0) {  // is a border point?
                 const region = regionTileMap.getRegion(point)
-                const province = boundaryModel.get(region, borderRegions[0])
+                const sideRegion = borderRegions[0]
+                const province = boundaryModel.getProvince(region, sideRegion)
                 this.#provinceMap.set(province.id, province)
                 // these are like maps and use the index as key
                 this.#provinceIdList.push(province.id)
@@ -38,6 +40,7 @@ export class ProvinceModel {
             }
             return EMPTY
         })
+        this.#deformationMatrix = new Matrix(width, height)
         const mapFill = new ProvinceConcurrentFill(originPoints, this)
         mapFill.fill()
     }

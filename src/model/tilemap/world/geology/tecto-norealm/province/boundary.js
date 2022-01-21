@@ -2,7 +2,7 @@ import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
 
-import { BOUNDARY_TABLE } from './table'
+import { PROVINCE_TABLE } from './table'
 
 
 const PLATE_CONTINENTAL = 0
@@ -36,7 +36,7 @@ export class BoundaryModel {
         this.#boundaryMap = this._buildBoundaryMap(regionTileMap)
     }
 
-    get(region, sideRegion) {
+    getProvince(region, sideRegion) {
         return this.#boundaryMap.get(region, sideRegion)
     }
 
@@ -44,7 +44,7 @@ export class BoundaryModel {
         const map = new Map()
         // convert the boundary key to a sum of its char int codes
         // Ex: LLCC = 0011 = 0 + 0 + 1 + 1 = 2
-        BOUNDARY_TABLE.map(row => {
+        PROVINCE_TABLE.map(row => {
             const ints = Array.from(row.key).map(ch => INT_MAP[ch])
             const id = ints.reduce((a, b) => a + b, 0)
             map.set(id, row)
@@ -80,9 +80,10 @@ export class BoundaryModel {
         const heavier = spec.data[0]
         const lighter = spec.data.length === 1 ? heavier : spec.data[1]
         const isHeavier = plateWeight > sidePlateWeight
-        let modifier = isHeavier ? 1 : -1
-        let data = isHeavier ? heavier : lighter
-        return {id: boundaryId * modifier, ...data}
+        const modifier = isHeavier ? 1 : -1
+        const data = isHeavier ? heavier : lighter
+        const provinceId = boundaryId * modifier
+        return {id: provinceId, ...data}
     }
 
     _buildBoundaryId(region, sideRegion, origin, sideOrigin) {

@@ -75,7 +75,9 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
             }
             const maxLevel = this.levelReach + this.provinceLevel
             if (this.provinceLevel <= provinceLevel && provinceLevel <= maxLevel) {
-                color = color.darken(80)
+                if (! isProvinceBorder) {
+                    color = color.darken(80)
+                }
             }
         }
         if (this.showProvinceBorder && isProvinceBorder && ! isBorderPoint) {

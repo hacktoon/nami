@@ -90,10 +90,6 @@ export class TectonicsNoRealmTileMap extends TileMap {
         return Point.equals(origin, this.#regionTileMap.rect.wrap(point))
     }
 
-    isProvinceBorder(point) {
-        return this.#provinceModel.isProvinceBorder(point)
-    }
-
     isPlateBorder(point) {
         return this.#regionTileMap.isBorder(point)
     }
@@ -112,6 +108,10 @@ export class TectonicsNoRealmTileMap extends TileMap {
 
     getProvinces() {
         return this.#provinceModel.getProvinces()
+    }
+
+    isProvinceBorder(point) {
+        return this.#provinceModel.isProvinceBorder(point)
     }
 
     isRegionOrigin(point) {

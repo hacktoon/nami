@@ -1,16 +1,16 @@
 
-export const BOUNDARY_TABLE = [
+export const PROVINCE_TABLE = [
     ////////////////////////////////////////////////////////
     // CONTINENTAL-CONTINENTAL
     ////////////////////////////////////////////////////////
     {key: 'LLCC', data: [
-        {name: 'High mountains'},
+        {name: 'Orogeny', landscape: [[.1, .7]]},
         {name: 'Low mountains'},
     ]},
 
     {key: 'LLCT', data: [
-        {name: 'Low mountains'},
-        {name: 'Platform'},
+        {name: 'Low mountains', border: true},
+        {name: 'Platform', border: true},
     ]},
 
     {key: 'LLCD', data: [
