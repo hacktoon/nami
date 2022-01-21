@@ -119,24 +119,27 @@ export class TectonicsModel {
 
 class TectonicsFloodFill extends ConcurrentFillUnit {
     setValue(fillId, regionId, level) {
-        const landform = this.model.getLandformByLevel(fillId, level)
-        this.model.setLandform(regionId, landform)
-        this.model.setBoundaryByRegion(regionId, fillId)
+        const model = this._getContext('model')
+        const landform = model.getLandformByLevel(fillId, level)
+        model.setLandform(regionId, landform)
+        model.setBoundaryByRegion(regionId, fillId)
     }
 
     isEmpty(sideRegionId) {
-        return !this.model.hasLandform(sideRegionId)
+        const model = this._getContext('model')
+        return !model.hasLandform(sideRegionId)
     }
 
     getNeighbors(regionId) {
-        return this.model.realmTileMap.getSideRegions(regionId)
+        const model = this._getContext('model')
+        return model.realmTileMap.getSideRegions(regionId)
     }
 }
 
 
 class TectonicsMultiFill extends ConcurrentFill {
     constructor(model, borderRegions) {
-        super(borderRegions, model, TectonicsFloodFill)
+        super(borderRegions, TectonicsFloodFill, {model})
     }
 
     getChance(fillId, regionId) {

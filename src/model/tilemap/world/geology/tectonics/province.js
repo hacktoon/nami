@@ -91,7 +91,7 @@ export class ProvinceModel {
 
 class ProvinceMultiFill extends ConcurrentFill {
     constructor(model, borderRegions) {
-        super(borderRegions, model, ProvinceFloodFill)
+        super(borderRegions, ProvinceFloodFill, {model})
     }
 
     getChance(fillId, regionId) {
@@ -106,17 +106,20 @@ class ProvinceMultiFill extends ConcurrentFill {
 
 class ProvinceFloodFill extends ConcurrentFillUnit {
     setValue(fillId, regionId, level) {
-        const deformation = this.model.getDeformationByLevel(fillId, level)
-        this.model.setDeformation(regionId, deformation)
-        this.model.setProvinceByRegion(regionId, fillId)
-        this.model.setStress(regionId, level)
+        const model = this._getContext('model')
+        const deformation = model.getDeformationByLevel(fillId, level)
+        model.setDeformation(regionId, deformation)
+        model.setProvinceByRegion(regionId, fillId)
+        model.setStress(regionId, level)
     }
 
     isEmpty(sideRegionId) {
-        return !this.model.hasDeformation(sideRegionId)
+        const model = this._getContext('model')
+        return !model.hasDeformation(sideRegionId)
     }
 
     getNeighbors(regionId) {
-        return this.model.realmTileMap.getSideRegions(regionId)
+        const model = this._getContext('model')
+        return model.realmTileMap.getSideRegions(regionId)
     }
 }

@@ -7,27 +7,32 @@ class RealmFloodFill extends ConcurrentFillUnit {
     fill regions
     */
     setValue(realmId, regionId, level) {
-        this.model.regionToRealm.set(regionId, realmId)
+        const model = this._getContext('model')
+        model.regionToRealm.set(regionId, realmId)
     }
 
     isEmpty(regionId) {
-        return ! this.model.regionToRealm.has(regionId)
+        const model = this._getContext('model')
+        return ! model.regionToRealm.has(regionId)
     }
 
     getArea(regionId) {
-        return this.model.regionTileMap.getRegionAreaById(regionId)
+        const model = this._getContext('model')
+        return model.regionTileMap.getRegionAreaById(regionId)
     }
 
     checkNeighbor(realmId, neighborRegionId, centerRegionId) {
         if (this.isEmpty(neighborRegionId)) return
-        const neighborRealmId = this.model.regionToRealm.get(neighborRegionId)
+        const model = this._getContext('model')
+        const neighborRealmId = model.regionToRealm.get(neighborRegionId)
         if (realmId === neighborRealmId) return
-        this.model.borderRegionSet.add(centerRegionId)
-        this.model.graph.setEdge(realmId, neighborRealmId)
+        model.borderRegionSet.add(centerRegionId)
+        model.graph.setEdge(realmId, neighborRealmId)
     }
 
     getNeighbors(regionId) {
-        return this.model.regionTileMap.getSideRegions(regionId)
+        const model = this._getContext('model')
+        return model.regionTileMap.getSideRegions(regionId)
     }
 }
 
@@ -36,7 +41,7 @@ export class RealmMultiFill extends ConcurrentFill {
     constructor(model, params) {
         const origins = model.origins
         const regionIds = origins.map(origin => model.getRegion(origin))
-        super(regionIds, model, RealmFloodFill)
+        super(regionIds, RealmFloodFill, {model})
         this.params = params
     }
 

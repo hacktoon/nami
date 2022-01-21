@@ -21,12 +21,24 @@ export class ProvinceModel {
 
     constructor(regionTileMap, plateModel) {
         const {width, height} = regionTileMap
+        const boundaryModel = new BoundaryModel(regionTileMap, plateModel)
+
+        this.#levelMatrix = new Matrix(width, height)
+        this.#provinceMatrix = this._buildProvinceMatrix(
+            regionTileMap, boundaryModel,
+        )
+        this.#deformationMatrix = this._buildDeformationMatrix(
+            regionTileMap, boundaryModel,
+        )
+    }
+
+    _buildProvinceMatrix(regionTileMap, boundaryModel) {
+        const {width, height} = regionTileMap
         const originPoints = []
         // builds the province matrix while reading the region border points
         // used as fill origins, mapping the array index to its boundary types
-        const boundaryModel = new BoundaryModel(regionTileMap, plateModel)
-        this.#levelMatrix = new Matrix(width, height)
-        this.#provinceMatrix = new Matrix(width, height, point => {
+
+        const matrix = new Matrix(width, height, point => {
             const borderRegions = regionTileMap.getBorderRegions(point)
             if (borderRegions.length > 0) {  // is a border point?
                 const region = regionTileMap.getRegion(point)
@@ -40,9 +52,14 @@ export class ProvinceModel {
             }
             return EMPTY
         })
-        this.#deformationMatrix = new Matrix(width, height)
-        const mapFill = new ProvinceConcurrentFill(originPoints, this)
+        const mapFill = new ProvinceConcurrentFill(originPoints, matrix, this)
         mapFill.fill()
+        return matrix
+    }
+
+    _buildDeformationMatrix(regionTileMap, boundaryModel) {
+        const {width, height} = regionTileMap
+        return new Matrix(width, height)
     }
 
     getProvinces() {
@@ -73,9 +90,9 @@ export class ProvinceModel {
     }
 
     // TODO: remove these fill methods, move to builder
-    _setFillValue(index, point, level) {
+    _setFillValue(matrix, index, point, level) {
         const id = this.#provinceIdList[index]
-        this.#provinceMatrix.set(point, id)
+        matrix.set(point, id)
         this.#levelMatrix.set(point, level)
         // updates max level to use on % of deformation calc
         if (level > this.#provinceMaxLevelMap.get(id)) {
@@ -87,15 +104,15 @@ export class ProvinceModel {
         this.#borderPointSet.add(point)
     }
 
-    _isFillEmpty(point) {
-        return this.#provinceMatrix.get(point) === EMPTY
+    _isFillEmpty(matrix, point) {
+        return matrix.get(point) === EMPTY
     }
 }
 
 
 class ProvinceConcurrentFill extends ConcurrentFill {
-    constructor(origins, model) {
-        super(origins, model, ProvinceFloodFill)
+    constructor(origins, matrix, model) {
+        super(origins, ProvinceFloodFill, {matrix, model})
     }
     getChance(id, origin) { return .5 }
     getGrowth(id, origin) { return 2 }
@@ -104,19 +121,25 @@ class ProvinceConcurrentFill extends ConcurrentFill {
 
 class ProvinceFloodFill extends ConcurrentFillUnit {
     setValue(index, point, level) {
-        this.model._setFillValue(index, point, level)
+        const matrix = this._getContext('matrix')
+        const model = this._getContext('model')
+        model._setFillValue(matrix, index, point, level)
     }
 
     isEmpty(point) {
-        return this.model._isFillEmpty(point)
+        const matrix = this._getContext('matrix')
+        const model = this._getContext('model')
+        return model._isFillEmpty(matrix, point)
     }
 
     checkNeighbor(index, sidePoint, centerPoint) {
         if (this.isEmpty(sidePoint)) return
-        const province = this.model.getProvince(centerPoint)
-        const sideProvince = this.model.getProvince(sidePoint)
-        if (province.id !== sideProvince.id) {
-            this.model._setProvinceBorder(centerPoint)
+        const matrix = this._getContext('matrix')
+        const model = this._getContext('model')
+        const provinceId = matrix.get(centerPoint)
+        const sideProvinceId = matrix.get(sidePoint)
+        if (provinceId !== sideProvinceId) {
+            model._setProvinceBorder(centerPoint)
         }
     }
 

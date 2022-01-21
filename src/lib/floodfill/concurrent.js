@@ -2,13 +2,18 @@ import { Random } from '/lib/random'
 
 
 export class ConcurrentFillUnit {
-    constructor(multiFill) {
+    constructor(multiFill, context) {
+        this.context = context
         this.model = multiFill.model
         this.seedTable = multiFill.seedTable
         this.areaTable = multiFill.areaTable
         this.levelTable = multiFill.levelTable
         this.growthTable = multiFill.growthTable
         this.chanceTable = multiFill.chanceTable
+    }
+
+    _getContext(name) {
+        return this.context[name]
     }
 
     grow(id) {
@@ -89,16 +94,16 @@ export class ConcurrentFillUnit {
 
 
 export class ConcurrentFill {
-    constructor(origins, model, FillClass) {
+    constructor(origins, FillUnit, context={}) {
         this.origins = origins
-        this.model = model
+        this.context = context
         this.seedTable = []
         this.levelTable = []
         this.areaTable = []
         this.growthTable = []
         this.chanceTable = []
         this.canGrow = true
-        this.filler = new FillClass(this)
+        this.filler = new FillUnit(this, context)
     }
 
     fill() {
