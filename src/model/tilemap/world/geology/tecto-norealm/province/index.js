@@ -5,7 +5,7 @@ import { Matrix } from '/lib/matrix'
 
 import { BoundaryModel } from './boundary'
 
-const EMPTY = null
+const NULL_PROVINCE = null
 
 
 // TODO: rename to TileMapLayer, extract builder (model) from layer
@@ -13,25 +13,28 @@ const EMPTY = null
 export class ProvinceModel {
     #provinceMatrix
     #levelMatrix
+    #deformationMatrix
     #borderPoints
-    #provinceMaxLevelMap
+    #maxLevelMap
     #provinceMap = new Map()
 
     constructor(regionTileMap, plateModel) {
         const boundaryModel = new BoundaryModel(regionTileMap, plateModel)
-        const data = this._buildData(regionTileMap, boundaryModel)
-        this.#provinceMatrix = data.provinceMatrix
-        this.#levelMatrix = data.levelMatrix
-        this.#borderPoints = data.borderPoints
-        this.#provinceMaxLevelMap = data.provinceMaxLevelMap
+        const provinces = this._buildProvinces(regionTileMap, boundaryModel)
+        const deformations = this._buildDeformations(provinces)
+        this.#provinceMatrix = provinces.provinceMatrix
+        this.#levelMatrix = provinces.levelMatrix
+        this.#borderPoints = provinces.borderPoints
+        this.#maxLevelMap = provinces.maxLevelMap
+        this.#deformationMatrix = deformations
     }
 
-    _buildData(regionTileMap, boundaryModel) {
+    _buildProvinces(regionTileMap, boundaryModel) {
         const {width, height} = regionTileMap
-        const originPoints = []
+        const origins = []
         const provinceIdList = []
         const borderPoints = new PointSet()
-        const provinceMaxLevelMap = new Map()
+        const maxLevelMap = new Map()
         const levelMatrix = new Matrix(width, height, point => 0)
         const provinceMatrix = new Matrix(width, height, point => {
             const borderRegions = regionTileMap.getBorderRegions(point)
@@ -40,20 +43,33 @@ export class ProvinceModel {
                 const sideRegion = borderRegions[0]
                 const province = boundaryModel.getProvince(region, sideRegion)
                 this.#provinceMap.set(province.id, province)
-                provinceMaxLevelMap.set(province.id, 0)
+                maxLevelMap.set(province.id, 0)
                 // these are like maps and use the index as key
                 provinceIdList.push(province.id)
-                originPoints.push(point)
+                origins.push(point)
             }
-            return EMPTY
+            return NULL_PROVINCE
         })
         const context = {
-            provinceIdList, borderPoints, provinceMaxLevelMap,
+            provinceIdList, borderPoints, maxLevelMap,
             provinceMatrix, levelMatrix
         }
-        const mapFill = new ProvinceConcurrentFill(originPoints, context)
-        mapFill.fill()
+        new ProvinceConcurrentFill(origins, context).fill()
         return context
+    }
+
+    _buildDeformations(provinces) {
+        const provinceMatrix = provinces.provinceMatrix
+        const {width, height} = provinceMatrix
+        const levelMatrix = provinces.levelMatrix
+        const maxLevelMap = provinces.maxLevelMap
+        const matrix = new Matrix(width, height, point => {
+            const id = provinceMatrix.get(point)
+            const province = this.#provinceMap.get(id)
+            const level = levelMatrix.get(point)
+            const maxLevel = maxLevelMap.get(id)
+        })
+        return matrix
     }
 
     getProvinces() {
@@ -74,9 +90,8 @@ export class ProvinceModel {
         return this.#levelMatrix.get(point)
     }
 
-    getMaxProvinceLevel(point) {
-        const province = this.getProvince(point)
-        return this.#provinceMaxLevelMap.get(province.id)
+    getMaxLevel(provinceId) {
+        return this.#maxLevelMap.get(provinceId)
     }
 
     isProvinceBorder(point) {
@@ -95,32 +110,32 @@ class ProvinceConcurrentFill extends ConcurrentFill {
 
 
 class ProvinceFloodFill extends ConcurrentFillUnit {
-    setValue(index, point, level) {
-        const provinceMaxLevelMap = this._getContext('provinceMaxLevelMap')
-        const id = this._getContext('provinceIdList')[index]
-        this._getContext('provinceMatrix').set(point, id)
-        this._getContext('levelMatrix').set(point, level)
+    setValue(fill, point, level) {
+        const maxLevelMap = fill.context.maxLevelMap
+        const id = fill.context.provinceIdList[fill.id]
+        fill.context.provinceMatrix.set(point, id)
+        fill.context.levelMatrix.set(point, level)
         // updates max level to use on % of deformation calc
-        if (level > provinceMaxLevelMap.get(id)) {
-            provinceMaxLevelMap.set(id, level)
+        if (level > maxLevelMap.get(id)) {
+            maxLevelMap.set(id, level)
         }
     }
 
-    isEmpty(point) {
-        return this._getContext('provinceMatrix').get(point) === EMPTY
+    isEmpty(fill, point) {
+        return fill.context.provinceMatrix.get(point) === NULL_PROVINCE
     }
 
-    checkNeighbor(index, sidePoint, centerPoint) {
-        if (this.isEmpty(sidePoint)) return
-        const provinceMatrix = this._getContext('provinceMatrix')
+    checkNeighbor(fill, sidePoint, centerPoint) {
+        if (this.isEmpty(fill, sidePoint)) return
+        const provinceMatrix = fill.context.provinceMatrix
         const provinceId = provinceMatrix.get(centerPoint)
         const sideProvinceId = provinceMatrix.get(sidePoint)
         if (provinceId !== sideProvinceId) {
-            this._getContext('borderPoints').add(centerPoint)
+            fill.context.borderPoints.add(centerPoint)
         }
     }
 
-    getNeighbors(originPoint) {
+    getNeighbors(fill, originPoint) {
         return Point.adjacents(originPoint)
     }
 }

@@ -105,21 +105,21 @@ class ProvinceMultiFill extends ConcurrentFill {
 
 
 class ProvinceFloodFill extends ConcurrentFillUnit {
-    setValue(fillId, regionId, level) {
-        const model = this._getContext('model')
-        const deformation = model.getDeformationByLevel(fillId, level)
+    setValue(fill, regionId, level) {
+        const model = fill.context.model
+        const deformation = model.getDeformationByLevel(fill.id, level)
         model.setDeformation(regionId, deformation)
-        model.setProvinceByRegion(regionId, fillId)
+        model.setProvinceByRegion(regionId, fill.id)
         model.setStress(regionId, level)
     }
 
-    isEmpty(sideRegionId) {
-        const model = this._getContext('model')
+    isEmpty(fill, sideRegionId) {
+        const model = fill.context.model
         return !model.hasDeformation(sideRegionId)
     }
 
-    getNeighbors(regionId) {
-        const model = this._getContext('model')
+    getNeighbors(fill, regionId) {
+        const model = fill.context.model
         return model.realmTileMap.getSideRegions(regionId)
     }
 }

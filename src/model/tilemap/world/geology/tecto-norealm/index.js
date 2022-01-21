@@ -60,14 +60,14 @@ export class TectonicsNoRealmTileMap extends TileMap {
         const plateId = this.getPlate(point)
         const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
         const province = this.#provinceModel.getProvince(point)
-        const maxProvinceLevel = this.#provinceModel.getMaxProvinceLevel(point)
+        const maxLevel = this.#provinceModel.getMaxLevel(province.id)
         const provinceLevel = this.getProvinceLevel(point)
 
         return [
             `point: ${Point.hash(point)}`,
             `plate ${plateId} at (${Point.hash(regionOrigin)})`,
             `province: ${province.name}, id: ${province.id}, level ${provinceLevel}`,
-            `max: ${maxProvinceLevel}`,
+            `max: ${maxLevel}`,
         ].join(', ')
     }
 

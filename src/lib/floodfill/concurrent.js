@@ -4,16 +4,11 @@ import { Random } from '/lib/random'
 export class ConcurrentFillUnit {
     constructor(multiFill, context) {
         this.context = context
-        this.model = multiFill.model
         this.seedTable = multiFill.seedTable
         this.areaTable = multiFill.areaTable
         this.levelTable = multiFill.levelTable
         this.growthTable = multiFill.growthTable
         this.chanceTable = multiFill.chanceTable
-    }
-
-    _getContext(name) {
-        return this.context[name]
     }
 
     grow(id) {
@@ -36,16 +31,18 @@ export class ConcurrentFillUnit {
     }
 
     _fillValue(id, origin, level) {
-        this.setValue(id, origin, level)
-        this.areaTable[id] += this.getArea(origin)
+        const fill = {id, context: this.context}
+        this.setValue(fill, origin, level)
+        this.areaTable[id] += this.getArea(fill, origin)
     }
 
     _fillNeighbors(id, origin) {
+        const fill = {id, context: this.context}
         const filledNeighbors = []
-        const allNeighbors = this.getNeighbors(origin)
+        const allNeighbors = this.getNeighbors(fill, origin)
         const emptyNeighbors = allNeighbors.filter(neighbor => {
-            this.checkNeighbor(id, neighbor, origin)
-            return this.isEmpty(neighbor)
+            this.checkNeighbor(fill, neighbor, origin)
+            return this.isEmpty(fill, neighbor)
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
@@ -75,19 +72,19 @@ export class ConcurrentFillUnit {
 
     // EXTENSIBLE METHODS ==========================
 
-    setValue(fillId, value, level) { }
+    setValue(fill, origin, level) { }
 
-    isEmpty(origin) {
+    isEmpty(fill, origin) {
         return []
     }
 
-    getNeighbors(origin) {
+    getNeighbors(fill, origin) {
         return []
     }
 
-    checkNeighbor(fillId, neighbor, origin) { }
+    checkNeighbor(fill, neighbor, origin) { }
 
-    getArea(fillId) {
+    getArea(fill, origin) {
         return 1
     }
 }

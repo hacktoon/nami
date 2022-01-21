@@ -6,32 +6,32 @@ const NO_REGION = null
 
 
 class RegionFloodFill extends ConcurrentFillUnit {
-    setValue(id, point, level) {
-        const model = this._getContext('model')
-        model.regionMatrix.set(point, id)
+    setValue(fill, point, level) {
+        const model = fill.context.model
+        model.regionMatrix.set(point, fill.id)
         model.levelMatrix.set(point, level)
     }
 
-    isEmpty(point) {
-        const model = this._getContext('model')
+    isEmpty(fill, point) {
+        const model = fill.context.model
         return model.regionMatrix.get(point) === NO_REGION
     }
 
-    checkNeighbor(id, neighborPoint, centerPoint) {
-        if (this.isEmpty(neighborPoint)) return
-        const model = this._getContext('model')
+    checkNeighbor(fill, neighborPoint, centerPoint) {
+        if (this.isEmpty(fill, neighborPoint)) return
+        const model = fill.context.model
         const neighborId = model.regionMatrix.get(neighborPoint)
-        if (id === neighborId) return
+        if (fill.id === neighborId) return
         const [x, y] = model.regionMatrix.rect.wrap(centerPoint)
         if (! model.borderMap.has(x, y)) {
             model.borderMap.set(x, y, new Set())
         }
         // mark region when neighbor point belongs to another region
         model.borderMap.get(x, y).add(neighborId)
-        model.graph.setEdge(id, neighborId)
+        model.graph.setEdge(fill.id, neighborId)
     }
 
-    getNeighbors(originPoint) {
+    getNeighbors(fill, originPoint) {
         return Point.adjacents(originPoint)
     }
 }

@@ -6,32 +6,32 @@ class RealmFloodFill extends ConcurrentFillUnit {
     the fill id is realmId
     fill regions
     */
-    setValue(realmId, regionId, level) {
-        const model = this._getContext('model')
-        model.regionToRealm.set(regionId, realmId)
+    setValue(fill, regionId, level) {
+        const model = fill.context.model
+        model.regionToRealm.set(regionId, fill.id)
     }
 
-    isEmpty(regionId) {
-        const model = this._getContext('model')
+    isEmpty(fill, regionId) {
+        const model = fill.context.model
         return ! model.regionToRealm.has(regionId)
     }
 
-    getArea(regionId) {
-        const model = this._getContext('model')
+    getArea(fill, regionId) {
+        const model = fill.context.model
         return model.regionTileMap.getRegionAreaById(regionId)
     }
 
-    checkNeighbor(realmId, neighborRegionId, centerRegionId) {
-        if (this.isEmpty(neighborRegionId)) return
-        const model = this._getContext('model')
+    checkNeighbor(fill, neighborRegionId, centerRegionId) {
+        if (this.isEmpty(fill, neighborRegionId)) return
+        const model = fill.context.model
         const neighborRealmId = model.regionToRealm.get(neighborRegionId)
-        if (realmId === neighborRealmId) return
+        if (fill.id === neighborRealmId) return
         model.borderRegionSet.add(centerRegionId)
-        model.graph.setEdge(realmId, neighborRealmId)
+        model.graph.setEdge(fill.id, neighborRealmId)
     }
 
-    getNeighbors(regionId) {
-        const model = this._getContext('model')
+    getNeighbors(fill, regionId) {
+        const model = fill.context.model
         return model.regionTileMap.getSideRegions(regionId)
     }
 }
