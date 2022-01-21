@@ -73,17 +73,12 @@ export class ProvinceModel {
     }
 
     // TODO: remove these fill methods, move to builder
-    _setFillValue(point, index) {
+    _setFillValue(index, point, level) {
         const id = this.#provinceIdList[index]
-        const province = this.#provinceMap.get(id)
-        this.#provinceMatrix.set(point, province.id)
-    }
-
-    _setFillLevel(index, point, level) {
-        const id = this.#provinceIdList[index]
+        this.#provinceMatrix.set(point, id)
         this.#levelMatrix.set(point, level)
-        // update max level to use on % of deformation calc
-        if (level >= this.#provinceMaxLevelMap.get(id)) {
+        // updates max level to use on % of deformation calc
+        if (level > this.#provinceMaxLevelMap.get(id)) {
             this.#provinceMaxLevelMap.set(id, level)
         }
     }
@@ -109,8 +104,7 @@ class ProvinceConcurrentFill extends ConcurrentFill {
 
 class ProvinceFloodFill extends ConcurrentFillUnit {
     setValue(index, point, level) {
-        this.model._setFillValue(point, index)
-        this.model._setFillLevel(index, point, level)
+        this.model._setFillValue(index, point, level)
     }
 
     isEmpty(point) {
