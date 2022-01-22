@@ -131,7 +131,7 @@ class ProvinceFloodFill extends ConcurrentFillUnit {
         const provinceId = provinceMatrix.get(centerPoint)
         const sideProvinceId = provinceMatrix.get(sidePoint)
         if (provinceId !== sideProvinceId) {
-            fill.context.borderPoints.add(centerPoint)
+            fill.context.borderPoints.add(provinceMatrix.wrap(centerPoint))
         }
     }
 
