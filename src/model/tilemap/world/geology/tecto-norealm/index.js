@@ -10,7 +10,7 @@ import { PlateModel } from './plate'
 import { BoundaryModel } from './boundary'
 import { ProvinceModel } from './province'
 import { DeformationModel } from './deformation'
-
+import { TectonicsTable } from './table'
 
 const ID = 'TectonicsNoRealmTileMap'
 const SCHEMA = new Schema(
@@ -35,6 +35,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
     }
 
     #regionTileMap
+    #tectonicsTable
     #plateModel
     #boundaryModel
     #provinceModel
@@ -44,9 +45,11 @@ export class TectonicsNoRealmTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         this.#regionTileMap = this._buildRegioTileMap(params)
+        this.#tectonicsTable = new TectonicsTable()
         this.#plateModel = new PlateModel(this.#regionTileMap)
         this.#boundaryModel = new BoundaryModel(
             this.#regionTileMap,
+            this.#tectonicsTable,
             this.#plateModel
         )
         this.#provinceModel = new ProvinceModel(

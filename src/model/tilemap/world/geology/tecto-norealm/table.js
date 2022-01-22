@@ -1,4 +1,37 @@
 
+export class TectonicsTable {
+    static PLATE_CONTINENTAL = 0
+    static PLATE_OCEANIC = 100
+    static DIR_CONVERGE = 1
+    static DIR_TRANSFORM = 4
+    static DIR_DIVERGE = 16
+    static INT_MAP = {
+        L: TectonicsTable.PLATE_CONTINENTAL,
+        W: TectonicsTable.PLATE_OCEANIC,
+        C: TectonicsTable.DIR_CONVERGE,
+        D: TectonicsTable.DIR_DIVERGE,
+        T: TectonicsTable.DIR_TRANSFORM,
+    }
+
+    #map = new Map()
+
+    constructor() {
+        // convert the boundary to a sum of its char int codes
+        // Ex: LLCC = 0011 = 0 + 0 + 1 + 1 = 2
+        const intMap = TectonicsTable.INT_MAP
+        TECTONICS_TABLE.map(row => {
+            const ints = Array.from(row.boundary).map(ch => intMap[ch])
+            const id = ints.reduce((a, b) => a + b, 0)
+            this.#map.set(id, row)
+        })
+    }
+
+    get(boundaryId) {
+        return this.#map.get(boundaryId)
+    }
+}
+
+
 export const TECTONICS_TABLE = [
     ////////////////////////////////////////////////////////
     // CONTINENTAL-CONTINENTAL

@@ -2,21 +2,7 @@ import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
 
-import { TECTONICS_TABLE } from './table'
-
-
-const PLATE_CONTINENTAL = 0
-const PLATE_OCEANIC = 100
-const DIR_CONVERGE = 1
-const DIR_TRANSFORM = 4
-const DIR_DIVERGE = 16
-const INT_MAP = {
-    L: PLATE_CONTINENTAL,
-    W: PLATE_OCEANIC,
-    C: DIR_CONVERGE,
-    D: DIR_DIVERGE,
-    T: DIR_TRANSFORM,
-}
+import { TectonicsTable } from './table'
 
 
 export class BoundaryModel {
@@ -26,30 +12,18 @@ export class BoundaryModel {
         each character value.
     */
 
-    #boundaryTable
+    #tectonicsTable
     #plateModel
     #boundaryMap
 
-    constructor(regionTileMap, plateModel) {
+    constructor(regionTileMap, tectonicsTable, plateModel) {
         this.#plateModel = plateModel
-        this.#boundaryTable = this._buildBoundaryTable()
+        this.#tectonicsTable = tectonicsTable
         this.#boundaryMap = this._buildBoundaryMap(regionTileMap)
     }
 
     getProvince(region, sideRegion) {
         return this.#boundaryMap.get(region, sideRegion)
-    }
-
-    _buildBoundaryTable() {
-        const map = new Map()
-        // convert the boundary to a sum of its char int codes
-        // Ex: LLCC = 0011 = 0 + 0 + 1 + 1 = 2
-        TECTONICS_TABLE.map(row => {
-            const ints = Array.from(row.boundary).map(ch => INT_MAP[ch])
-            const id = ints.reduce((a, b) => a + b, 0)
-            map.set(id, row)
-        })
-        return map
     }
 
     _buildBoundaryMap(regionTileMap) {
@@ -60,10 +34,10 @@ export class BoundaryModel {
         for(let region of regionTileMap.getRegions()) {
             const origin = regionTileMap.getOriginById(region)
             for(let sideRegion of regionTileMap.getSideRegions(region)) {
-                const sideOrigin = regionTileMap.getOriginById(sideRegion)
-                const unwrappedSideOrigin = rect.unwrapFrom(origin, sideOrigin)
+                let sideOrigin = regionTileMap.getOriginById(sideRegion)
+                sideOrigin = rect.unwrapFrom(origin, sideOrigin)
                 const provinceData = this._getProvinceData(
-                    region, sideRegion, origin, unwrappedSideOrigin
+                    region, sideRegion, origin, sideOrigin
                 )
                 const province = {id: provinceId++, ...provinceData}
                 boundaryMap.set(region, sideRegion, province)
@@ -78,7 +52,7 @@ export class BoundaryModel {
         const boundaryId = this._buildBoundaryId(
             region, sideRegion, origin, sideOrigin
         )
-        const spec = this.#boundaryTable.get(boundaryId)
+        const spec = this.#tectonicsTable.get(boundaryId)
         const heavier = spec.provinces[0]
         const lighter = spec.provinces.length > 1 ? spec.provinces[1] : heavier
         return plateWeight > sidePlateWeight ? heavier : lighter
@@ -95,8 +69,12 @@ export class BoundaryModel {
         const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
         const directionTo = this._parseDir(dotTo)
         const directionFrom = this._parseDir(dotFrom)
-        const type1 = isPlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
-        const type2 = isSidePlateOceanic ? PLATE_OCEANIC : PLATE_CONTINENTAL
+        const type1 = isPlateOceanic
+            ? TectonicsTable.PLATE_OCEANIC
+            : TectonicsTable.PLATE_CONTINENTAL
+        const type2 = isSidePlateOceanic
+            ? TectonicsTable.PLATE_OCEANIC
+            : TectonicsTable.PLATE_CONTINENTAL
         return type1 + type2 + directionTo + directionFrom
     }
 
@@ -106,7 +84,7 @@ export class BoundaryModel {
     }
 
     _parseDir(dir) {
-        if (dir === 0) return DIR_TRANSFORM
-        return dir > 0 ? DIR_CONVERGE : DIR_DIVERGE
+        if (dir === 0) return TectonicsTable.DIR_TRANSFORM
+        return dir > 0 ? TectonicsTable.DIR_CONVERGE : TectonicsTable.DIR_DIVERGE
     }
 }
