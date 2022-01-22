@@ -23,12 +23,13 @@ export class ProvinceModel {
     constructor(regionTileMap, plateModel) {
         const boundaryModel = new BoundaryModel(regionTileMap, plateModel)
         const data = this._buildProvinces(regionTileMap, boundaryModel)
+        const rect = regionTileMap.rect
         this.#provinceMatrix = data.provinceMatrix
         this.#levelMatrix = data.levelMatrix
         this.#borderPoints = data.borderPoints
         this.#maxLevelMap = data.maxLevelMap
         this.#regionTileMap = regionTileMap
-        this.#deformationMatrix = this._buildDeformationMatrix(regionTileMap, data)
+        this.#deformationMatrix = this._buildDeformationMatrix(rect)
     }
 
     _buildProvinces(regionTileMap, boundaryModel) {
@@ -60,9 +61,8 @@ export class ProvinceModel {
         return context
     }
 
-    _buildDeformationMatrix(regionTileMap, data) {
-        const {width, height} = regionTileMap
-        return new Matrix(width, height, point => {
+    _buildDeformationMatrix(rect) {
+        return Matrix.fromRect(rect, point => {
             if (this.isDeformed(point)) {
                 return 1
             }

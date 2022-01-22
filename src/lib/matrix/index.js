@@ -18,6 +18,11 @@ export class Matrix {
         }
     }
 
+    static fromRect(rect, buildValue) {
+        const {width, height} = rect
+        return new Matrix(width, height, buildValue)
+    }
+
     get(point) {
         let [x, y] = this.wrap(point)
         return this.matrix[y][x]
