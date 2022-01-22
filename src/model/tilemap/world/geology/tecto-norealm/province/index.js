@@ -20,13 +20,13 @@ export class ProvinceModel {
 
     constructor(regionTileMap, plateModel) {
         const boundaryModel = new BoundaryModel(regionTileMap, plateModel)
-        const provinces = this._buildProvinces(regionTileMap, boundaryModel)
-        const deformations = this._buildDeformations(provinces)
-        this.#provinceMatrix = provinces.provinceMatrix
-        this.#levelMatrix = provinces.levelMatrix
-        this.#borderPoints = provinces.borderPoints
-        this.#maxLevelMap = provinces.maxLevelMap
-        this.#deformationMatrix = deformations
+        const data = this._buildProvinces(regionTileMap, boundaryModel)
+        const deformationMatrix = this._buildDeformationMatrix(data)
+        this.#provinceMatrix = data.provinceMatrix
+        this.#levelMatrix = data.levelMatrix
+        this.#borderPoints = data.borderPoints
+        this.#maxLevelMap = data.maxLevelMap
+        this.#deformationMatrix = deformationMatrix
     }
 
     _buildProvinces(regionTileMap, boundaryModel) {
@@ -58,18 +58,18 @@ export class ProvinceModel {
         return context
     }
 
-    _buildDeformations(provinces) {
-        const provinceMatrix = provinces.provinceMatrix
+    _buildDeformationMatrix(data) {
+        const provinceMatrix = data.provinceMatrix
         const {width, height} = provinceMatrix
-        const levelMatrix = provinces.levelMatrix
-        const maxLevelMap = provinces.maxLevelMap
-        const matrix = new Matrix(width, height, point => {
+        const levelMatrix = data.levelMatrix
+        const maxLevelMap = data.maxLevelMap
+        return new Matrix(width, height, point => {
             const id = provinceMatrix.get(point)
             const province = this.#provinceMap.get(id)
             const level = levelMatrix.get(point)
             const maxLevel = maxLevelMap.get(id)
+
         })
-        return matrix
     }
 
     getProvinces() {
