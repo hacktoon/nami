@@ -39,7 +39,7 @@ export class ProvinceModel {
             if (borderRegions.length > 0) {  // is a border point?
                 const region = regionTileMap.getRegion(point)
                 const sideRegion = borderRegions[0]
-                const province = boundaryModel.getProvince(region, sideRegion)
+                const province = boundaryModel.get(region, sideRegion)
                 this.#provinceMap.set(province.id, province)
                 maxLevelMap.set(province.id, 0)
                 // these are like maps and use the index as key
@@ -54,15 +54,6 @@ export class ProvinceModel {
         }
         new ProvinceConcurrentFill(origins, context).fill()
         return context
-    }
-
-    _buildDeformationMatrix(rect) {
-        return Matrix.fromRect(rect, point => {
-            if (this.isDeformed(point)) {
-                return 1
-            }
-            return NO_DEFORMATION
-        })
     }
 
     isDeformed(point) {

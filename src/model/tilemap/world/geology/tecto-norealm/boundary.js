@@ -22,7 +22,7 @@ export class BoundaryModel {
         this.#boundaryMap = this._buildBoundaryMap(regionTileMap)
     }
 
-    getProvince(region, sideRegion) {
+    get(region, sideRegion) {
         return this.#boundaryMap.get(region, sideRegion)
     }
 
