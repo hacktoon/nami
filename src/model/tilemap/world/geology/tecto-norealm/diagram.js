@@ -34,13 +34,11 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'TectonicsNoRealmTileMapDiagram',
         Type.boolean('showDirection', 'Show directions', {default: false}),
-        Type.boolean('showPlateBorder', 'Show borders', {default: true}),
+        Type.boolean('showPlateBorder', 'Show plate borders', {default: true}),
         Type.boolean('showProvince', 'Show province', {default: false}),
         Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
         Type.boolean('showProvinceBorder', 'Show province border', {default: false}),
         Type.boolean('showDeformation', 'Show deformation', {default: false}),
-        Type.number('provinceLevel', 'Province level', {min: -1, default: -1}),
-        Type.number('maxLevel', 'Max level', {min: 0, default: 0}),
     )
     static colorMap = TectonicsColorMap
 
@@ -57,11 +55,10 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         this.showProvinceLevel = params.get('showProvinceLevel')
         this.showProvinceBorder = params.get('showProvinceBorder')
         this.showDeformation = params.get('showDeformation')
-        this.provinceLevel = params.get('provinceLevel')
-        this.maxLevel = params.get('maxLevel')
     }
 
-    get(point) {
+    get(_point) {
+        const point = this.tileMap.rect.wrap(_point)
         const plateId = this.tileMap.getPlate(point)
         const province = this.tileMap.getProvince(point)
         const provinceLevel = this.tileMap.getProvinceLevel(point)
@@ -73,15 +70,9 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         if (this.showProvince) {
             const provinceColor = this.colorMap.getByProvince(province.id)
             color = provinceColor.average(color).average(color)
-            if (this.showProvinceLevel) {
-                color = color.darken(provinceLevel * 4)
-            }
-            const maxLevel = this.maxLevel + this.provinceLevel
-            if (this.provinceLevel <= provinceLevel && provinceLevel <= maxLevel) {
-                if (! isProvinceBorder) {
-                    color = color.darken(80)
-                }
-            }
+        }
+        if (this.showProvinceLevel) {
+            color = color.darken(provinceLevel * 4)
         }
         if (this.showProvinceBorder && isProvinceBorder && ! isBorderPoint) {
             color = color.brighten(20)
@@ -90,7 +81,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
             color = color.average(Color.BLACK)
         }
         if (this.showDeformation && hasDeformation) {
-            color = color.darken(80)
+            color = color.darken(40)
         }
         return color.toHex()
     }

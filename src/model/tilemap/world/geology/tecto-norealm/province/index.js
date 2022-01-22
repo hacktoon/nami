@@ -72,7 +72,7 @@ export class ProvinceModel {
             const level = levelMatrix.get(point)
             // const maxLevel = maxLevelMap.get(provinceId)
             const inRange = minSpecLevel <= level && level <= maxSpecLevel
-            const isBorder = regionTileMap.isRegionBorder(point)
+            const isBorder = regionTileMap.isBorder(point)
             if (inRange && (! borderPoints.has(point) || isBorder)) {
                 return provinceId
             }
