@@ -117,7 +117,7 @@ class ProvinceConcurrentFill extends ConcurrentFill {
         super(origins, ProvinceFloodFill, context)
     }
     getChance(id, origin) { return .5 }
-    getGrowth(id, origin) { return 1 }
+    getGrowth(id, origin) { return 4 }
 }
 
 

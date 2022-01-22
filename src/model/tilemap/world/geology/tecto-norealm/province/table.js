@@ -23,11 +23,12 @@ export const PROVINCE_TABLE = [
     ]},
 
     {boundary: 'LLDD', provinces: [
-        {name: 'Rift Sea', deformation: [0, 5]},
+        {name: 'Rift Sea', deformation: [0, 10]},
     ]},
 
     {boundary: 'LLTT', provinces: [
-        {name: 'Basin', deformation: [1, 8]},
+        {name: 'Low mountains', deformation: [0, 2]},
+        {name: 'Low mountains', deformation: [1, 2]},
     ]},
 
 
