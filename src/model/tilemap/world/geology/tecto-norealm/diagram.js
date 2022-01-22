@@ -82,15 +82,15 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
                     color = color.darken(80)
                 }
             }
-            if (this.showDeformation && hasDeformation) {
-                color = color.darken(80)
-            }
         }
         if (this.showProvinceBorder && isProvinceBorder && ! isBorderPoint) {
             color = color.brighten(20)
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.BLACK)
+        }
+        if (this.showDeformation && hasDeformation) {
+            color = color.darken(80)
         }
         return color.toHex()
     }

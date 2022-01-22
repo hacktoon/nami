@@ -42,10 +42,10 @@ export class BoundaryModel {
 
     _buildBoundaryTable() {
         const map = new Map()
-        // convert the boundary key to a sum of its char int codes
+        // convert the boundary to a sum of its char int codes
         // Ex: LLCC = 0011 = 0 + 0 + 1 + 1 = 2
         PROVINCE_TABLE.map(row => {
-            const ints = Array.from(row.key).map(ch => INT_MAP[ch])
+            const ints = Array.from(row.boundary).map(ch => INT_MAP[ch])
             const id = ints.reduce((a, b) => a + b, 0)
             map.set(id, row)
         })
@@ -82,7 +82,7 @@ export class BoundaryModel {
         const heavier = spec.provinces[0]
         const lighter = spec.provinces.length > 1 ? spec.provinces[1] : heavier
         const data = plateWeight > sidePlateWeight ? heavier : lighter
-        return {deformation: [5, 8], ...data}
+        return {deformation: [3, 7], ...data}
     }
 
     _buildBoundaryId(region, sideRegion, origin, sideOrigin) {
