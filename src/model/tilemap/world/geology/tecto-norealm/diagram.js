@@ -38,8 +38,9 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         Type.boolean('showProvince', 'Show province', {default: false}),
         Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
         Type.boolean('showProvinceBorder', 'Show province border', {default: false}),
+        Type.boolean('showDeformation', 'Show deformation', {default: false}),
         Type.number('provinceLevel', 'Province level', {min: -1, default: -1}),
-        Type.number('levelReach', 'Level reach', {min: 0, default: 0}),
+        Type.number('maxLevel', 'Max level', {min: 0, default: 0}),
     )
     static colorMap = TectonicsColorMap
 
@@ -55,8 +56,9 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         this.showProvince = params.get('showProvince')
         this.showProvinceLevel = params.get('showProvinceLevel')
         this.showProvinceBorder = params.get('showProvinceBorder')
+        this.showDeformation = params.get('showDeformation')
         this.provinceLevel = params.get('provinceLevel')
-        this.levelReach = params.get('levelReach')
+        this.maxLevel = params.get('maxLevel')
     }
 
     get(point) {
@@ -65,6 +67,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         const provinceLevel = this.tileMap.getProvinceLevel(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         const isProvinceBorder = this.tileMap.isProvinceBorder(point)
+        const hasDeformation = this.tileMap.hasDeformation(point)
         let color = this.colorMap.getByPlate(plateId)
 
         if (this.showProvince) {
@@ -73,11 +76,14 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
             if (this.showProvinceLevel) {
                 color = color.darken(provinceLevel * 4)
             }
-            const maxLevel = this.levelReach + this.provinceLevel
+            const maxLevel = this.maxLevel + this.provinceLevel
             if (this.provinceLevel <= provinceLevel && provinceLevel <= maxLevel) {
                 if (! isProvinceBorder) {
                     color = color.darken(80)
                 }
+            }
+            if (this.showDeformation && hasDeformation) {
+                color = color.darken(80)
             }
         }
         if (this.showProvinceBorder && isProvinceBorder && ! isBorderPoint) {

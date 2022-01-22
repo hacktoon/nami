@@ -6,6 +6,7 @@ import { Matrix } from '/lib/matrix'
 import { BoundaryModel } from './boundary'
 
 const NULL_PROVINCE = null
+const NO_DEFORMATION = null
 
 
 // TODO: rename to TileMapLayer, extract builder (model) from layer
@@ -66,9 +67,13 @@ export class ProvinceModel {
         return new Matrix(width, height, point => {
             const id = provinceMatrix.get(point)
             const province = this.#provinceMap.get(id)
-            const level = levelMatrix.get(point)
-            const maxLevel = maxLevelMap.get(id)
-
+            const [minSpecLevel, maxSpecLevel] = province.deformation
+            const currentLevel = levelMatrix.get(point)
+            // const maxLevel = maxLevelMap.get(id)
+            if (minSpecLevel <= currentLevel && currentLevel <= maxSpecLevel) {
+                return id
+            }
+            return NO_DEFORMATION
         })
     }
 
@@ -96,6 +101,10 @@ export class ProvinceModel {
 
     isProvinceBorder(point) {
         return this.#borderPoints.has(point)
+    }
+
+    hasDeformation(point) {
+        return this.#deformationMatrix.get(point) !== NO_DEFORMATION
     }
 }
 

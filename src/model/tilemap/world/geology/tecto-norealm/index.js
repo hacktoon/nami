@@ -119,6 +119,10 @@ export class TectonicsNoRealmTileMap extends TileMap {
         return Point.equals(regionOrigin, point)
     }
 
+    hasDeformation(point) {
+        return this.#provinceModel.hasDeformation(point)
+    }
+
     getDescription() {
         return `${this.#plateModel.size} plates`
     }

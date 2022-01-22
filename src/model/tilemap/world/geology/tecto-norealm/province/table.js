@@ -4,13 +4,13 @@ export const PROVINCE_TABLE = [
     // CONTINENTAL-CONTINENTAL
     ////////////////////////////////////////////////////////
     {key: 'LLCC', provinces: [
-        {name: 'Orogeny', deformation: [[0, .7]]},
-        {name: 'Low mountains', deformation: [[0, .7]]},
+        {name: 'Orogeny', deformation: [0, 8]},
+        {name: 'Low mountains', deformation: [0, 2]},
     ]},
 
     {key: 'LLCT', provinces: [
-        {name: 'Low mountains', deformation: [[0, .7]]},
-        {name: 'Platform', deformation: [[0, .7]]},
+        {name: 'Low mountains', deformation: [0, 3]},
+        {name: 'Platform', deformation: [0, 2]},
     ]},
 
     {key: 'LLCD', provinces: [
@@ -39,12 +39,12 @@ export const PROVINCE_TABLE = [
     ////////////////////////////////////////////////////////
     {key: 'LWCC', provinces: [
         {name: 'Oceanic trench'},
-        {name: 'Orogeny', deformation: [[.1, .7]]},
+        {name: 'Orogeny', deformation: [1, 4]},
     ]},
 
     {key: 'LWCT', provinces: [
         {name: 'Oceanic trench'},
-        {name: 'Orogeny', deformation: [[.1, .7]]},
+        {name: 'Orogeny', deformation: [1, 4]},
     ]},
 
     {key: 'LWCD', provinces: [

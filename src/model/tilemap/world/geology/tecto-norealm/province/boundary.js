@@ -82,7 +82,7 @@ export class BoundaryModel {
         const heavier = spec.provinces[0]
         const lighter = spec.provinces.length > 1 ? spec.provinces[1] : heavier
         const data = plateWeight > sidePlateWeight ? heavier : lighter
-        return {deformation: [[0, .7]], ...data}
+        return {deformation: [5, 8], ...data}
     }
 
     _buildBoundaryId(region, sideRegion, origin, sideOrigin) {
