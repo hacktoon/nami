@@ -3,8 +3,6 @@ import { Point } from '/lib/point'
 import { PointSet } from '/lib/point/set'
 import { Matrix } from '/lib/matrix'
 
-import { BoundaryModel } from './boundary'
-
 const NO_PROVINCE = null
 const NO_DEFORMATION = null
 
@@ -20,8 +18,7 @@ export class ProvinceModel {
     #maxLevelMap
     #provinceMap = new Map()
 
-    constructor(regionTileMap, plateModel) {
-        const boundaryModel = new BoundaryModel(regionTileMap, plateModel)
+    constructor(regionTileMap, boundaryModel) {
         const data = this._buildProvinces(regionTileMap, boundaryModel)
         const rect = regionTileMap.rect
         this.#provinceMatrix = data.provinceMatrix
