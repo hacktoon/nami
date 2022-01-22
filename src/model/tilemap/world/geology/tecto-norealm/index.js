@@ -58,6 +58,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
         )
         this.#deformationModel = new DeformationModel(
             this.#regionTileMap,
+            this.#plateModel,
             this.#provinceModel
         )
         console.log(`TectonicsTileMap: ${Math.round(performance.now() - t0)}ms`);

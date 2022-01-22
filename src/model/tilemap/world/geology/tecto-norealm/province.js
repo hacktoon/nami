@@ -19,12 +19,11 @@ export class ProvinceModel {
 
     constructor(regionTileMap, boundaryModel) {
         const data = this._buildProvinces(regionTileMap, boundaryModel)
-        const rect = regionTileMap.rect
+        this.#regionTileMap = regionTileMap
         this.#provinceMatrix = data.provinceMatrix
         this.#levelMatrix = data.levelMatrix
         this.#borderPoints = data.borderPoints
         this.#maxLevelMap = data.maxLevelMap
-        this.#regionTileMap = regionTileMap
     }
 
     _buildProvinces(regionTileMap, boundaryModel) {
@@ -38,8 +37,7 @@ export class ProvinceModel {
             const borderRegions = regionTileMap.getBorderRegions(point)
             if (borderRegions.length > 0) {  // is a border point?
                 const region = regionTileMap.getRegion(point)
-                const sideRegion = borderRegions[0]
-                const province = boundaryModel.get(region, sideRegion)
+                const province = boundaryModel.get(region, borderRegions[0])
                 this.#provinceMap.set(province.id, province)
                 maxLevelMap.set(province.id, 0)
                 // these are like maps and use the index as key

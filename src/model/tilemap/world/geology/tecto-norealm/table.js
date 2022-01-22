@@ -26,7 +26,7 @@ export class TectonicsTable {
         })
     }
 
-    get(boundaryId) {
+    getBoundary(boundaryId) {
         return this.#map.get(boundaryId)
     }
 }

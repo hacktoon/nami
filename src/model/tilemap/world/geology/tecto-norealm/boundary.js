@@ -34,28 +34,29 @@ export class BoundaryModel {
         for(let region of regionTileMap.getRegions()) {
             const origin = regionTileMap.getOriginById(region)
             for(let sideRegion of regionTileMap.getSideRegions(region)) {
+                const plateWeight = this.#plateModel.getWeight(region)
+                const sidePlateWeight = this.#plateModel.getWeight(sideRegion)
                 let sideOrigin = regionTileMap.getOriginById(sideRegion)
                 sideOrigin = rect.unwrapFrom(origin, sideOrigin)
-                const provinceData = this._getProvinceData(
+                const boundary = this._getBoundary(
                     region, sideRegion, origin, sideOrigin
                 )
-                const province = {id: provinceId++, ...provinceData}
+                const provinces = boundary.provinces
+                const heavier = provinces[0]
+                const lighter = provinces.length > 1 ? provinces[1] : heavier
+                const data = plateWeight > sidePlateWeight ? heavier : lighter
+                const province = {id: provinceId++, ...data}
                 boundaryMap.set(region, sideRegion, province)
             }
         }
         return boundaryMap
     }
 
-    _getProvinceData(region, sideRegion, origin, sideOrigin) {
-        const plateWeight = this.#plateModel.getWeight(region)
-        const sidePlateWeight = this.#plateModel.getWeight(sideRegion)
+    _getBoundary(region, sideRegion, origin, sideOrigin) {
         const boundaryId = this._buildBoundaryId(
             region, sideRegion, origin, sideOrigin
         )
-        const spec = this.#tectonicsTable.get(boundaryId)
-        const heavier = spec.provinces[0]
-        const lighter = spec.provinces.length > 1 ? spec.provinces[1] : heavier
-        return plateWeight > sidePlateWeight ? heavier : lighter
+        return this.#tectonicsTable.getBoundary(boundaryId)
     }
 
     _buildBoundaryId(region, sideRegion, origin, sideOrigin) {

@@ -6,7 +6,7 @@ const NO_DEFORMATION = null
 export class DeformationModel {
     #matrix
 
-    constructor(regionTileMap, provinceModel) {
+    constructor(regionTileMap, plateModel, provinceModel) {
         this.#matrix = Matrix.fromRect(regionTileMap.rect, point => {
             if (provinceModel.isDeformed(point)) {
                 return 1
