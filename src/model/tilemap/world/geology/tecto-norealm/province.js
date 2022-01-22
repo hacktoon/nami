@@ -13,7 +13,6 @@ export class ProvinceModel {
     #regionTileMap
     #provinceMatrix
     #levelMatrix
-    #deformationMatrix
     #borderPoints
     #maxLevelMap
     #provinceMap = new Map()
@@ -26,7 +25,6 @@ export class ProvinceModel {
         this.#borderPoints = data.borderPoints
         this.#maxLevelMap = data.maxLevelMap
         this.#regionTileMap = regionTileMap
-        this.#deformationMatrix = this._buildDeformationMatrix(rect)
     }
 
     _buildProvinces(regionTileMap, boundaryModel) {
@@ -101,10 +99,6 @@ export class ProvinceModel {
 
     isProvinceBorder(point) {
         return this.#borderPoints.has(point)
-    }
-
-    hasDeformation(point) {
-        return this.#deformationMatrix.get(point) !== NO_DEFORMATION
     }
 }
 
