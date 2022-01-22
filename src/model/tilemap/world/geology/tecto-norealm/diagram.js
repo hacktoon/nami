@@ -89,7 +89,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
     getText(point) {
         const plateId = this.tileMap.getPlate(point)
         const plateDirection = this.tileMap.getPlateDirection(point)
-        if (this.showDirection && this.tileMap.isPlateOrigin(plateId, point)) {
+        if (this.showDirection && this.tileMap.isPlateOrigin(point)) {
             const dir = Direction.getSymbol(plateDirection)
             const dirName = Direction.getName(plateDirection)
             return `${plateId}:${dir}${dirName}`
@@ -97,7 +97,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
     }
 
     getMark(point) {
-        if (this.tileMap.isRegionOrigin(point)) {
+        if (this.tileMap.isPlateOrigin(point)) {
             const plateId = this.tileMap.getPlate(point)
             return this.colorMap.getByPlate(plateId).darken(50).toHex()
         }

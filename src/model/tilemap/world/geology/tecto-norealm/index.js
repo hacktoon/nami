@@ -100,11 +100,6 @@ export class TectonicsNoRealmTileMap extends TileMap {
         return this.#regionTileMap.getOriginById(plateId)
     }
 
-    isPlateOrigin(plateId, point) {
-        const origin = this.#regionTileMap.getOriginById(plateId)
-        return Point.equals(origin, this.#regionTileMap.rect.wrap(point))
-    }
-
     isPlateBorder(point) {
         return this.#regionTileMap.isBorder(point)
     }
@@ -129,7 +124,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
         return this.#provinceModel.isProvinceBorder(point)
     }
 
-    isRegionOrigin(point) {
+    isPlateOrigin(point) {
         const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
         return Point.equals(regionOrigin, point)
     }
