@@ -1,5 +1,5 @@
 
-export const PROVINCE_TABLE = [
+export const TECTONICS_TABLE = [
     ////////////////////////////////////////////////////////
     // CONTINENTAL-CONTINENTAL
     ////////////////////////////////////////////////////////
@@ -9,8 +9,8 @@ export const PROVINCE_TABLE = [
     ]},
 
     {boundary: 'LLCT', provinces: [
-        {name: 'Low mountains', deformation: [0, 3]},
-        {name: 'Platform', deformation: [0, 2]},
+        {name: 'Low mountains', deformation: [1, 3]},
+        {name: 'Low mountains', deformation: [0, 1]},
     ]},
 
     {boundary: 'LLCD', provinces: [

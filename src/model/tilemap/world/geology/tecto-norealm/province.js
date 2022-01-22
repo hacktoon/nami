@@ -97,6 +97,11 @@ export class ProvinceModel {
         return this.#maxLevelMap.get(provinceId)
     }
 
+    getDeformationType(point) {
+        const province = this.getProvince(point)
+        return province.type
+    }
+
     isProvinceBorder(point) {
         return this.#borderPoints.has(point)
     }

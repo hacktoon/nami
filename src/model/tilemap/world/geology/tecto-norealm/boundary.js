@@ -2,7 +2,7 @@ import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
 
-import { PROVINCE_TABLE } from './table'
+import { TECTONICS_TABLE } from './table'
 
 
 const PLATE_CONTINENTAL = 0
@@ -44,7 +44,7 @@ export class BoundaryModel {
         const map = new Map()
         // convert the boundary to a sum of its char int codes
         // Ex: LLCC = 0011 = 0 + 0 + 1 + 1 = 2
-        PROVINCE_TABLE.map(row => {
+        TECTONICS_TABLE.map(row => {
             const ints = Array.from(row.boundary).map(ch => INT_MAP[ch])
             const id = ints.reduce((a, b) => a + b, 0)
             map.set(id, row)
@@ -81,8 +81,7 @@ export class BoundaryModel {
         const spec = this.#boundaryTable.get(boundaryId)
         const heavier = spec.provinces[0]
         const lighter = spec.provinces.length > 1 ? spec.provinces[1] : heavier
-        const data = plateWeight > sidePlateWeight ? heavier : lighter
-        return {deformation: [3, 7], ...data}
+        return plateWeight > sidePlateWeight ? heavier : lighter
     }
 
     _buildBoundaryId(region, sideRegion, origin, sideOrigin) {
