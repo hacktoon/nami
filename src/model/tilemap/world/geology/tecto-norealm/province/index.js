@@ -22,7 +22,7 @@ export class ProvinceModel {
     constructor(regionTileMap, plateModel) {
         const boundaryModel = new BoundaryModel(regionTileMap, plateModel)
         const data = this._buildProvinces(regionTileMap, boundaryModel)
-        const deformationMatrix = this._buildDeformationMatrix(data)
+        const deformationMatrix = this._buildDeformationMatrix(regionTileMap, data)
         this.#provinceMatrix = data.provinceMatrix
         this.#levelMatrix = data.levelMatrix
         this.#borderPoints = data.borderPoints
@@ -59,19 +59,22 @@ export class ProvinceModel {
         return context
     }
 
-    _buildDeformationMatrix(data) {
+    _buildDeformationMatrix(regionTileMap, data) {
         const provinceMatrix = data.provinceMatrix
         const {width, height} = provinceMatrix
         const levelMatrix = data.levelMatrix
+        const borderPoints = data.borderPoints
         const maxLevelMap = data.maxLevelMap
         return new Matrix(width, height, point => {
-            const id = provinceMatrix.get(point)
-            const province = this.#provinceMap.get(id)
+            const provinceId = provinceMatrix.get(point)
+            const province = this.#provinceMap.get(provinceId)
             const [minSpecLevel, maxSpecLevel] = province.deformation
-            const currentLevel = levelMatrix.get(point)
-            // const maxLevel = maxLevelMap.get(id)
-            if (minSpecLevel <= currentLevel && currentLevel <= maxSpecLevel) {
-                return id
+            const level = levelMatrix.get(point)
+            // const maxLevel = maxLevelMap.get(provinceId)
+            const inRange = minSpecLevel <= level && level <= maxSpecLevel
+            const isBorder = regionTileMap.isRegionBorder(point)
+            if (inRange && (! borderPoints.has(point) || isBorder)) {
+                return provinceId
             }
             return NO_DEFORMATION
         })
