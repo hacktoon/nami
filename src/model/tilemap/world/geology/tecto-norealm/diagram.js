@@ -86,7 +86,8 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
         return color.toHex()
     }
 
-    getText(point) {
+    getText(_point) {
+        const point = this.tileMap.rect.wrap(_point)
         const plateId = this.tileMap.getPlate(point)
         const plateDirection = this.tileMap.getPlateDirection(point)
         if (this.showDirection && this.tileMap.isPlateOrigin(point)) {

@@ -69,13 +69,13 @@ export const TECTONICS_TABLE = [
     // CONTINENTAL-OCEANIC
     ////////////////////////////////////////////////////////
     {boundary: 'LWCC', provinces: [
-        {name: 'Oceanic trench', deformation: [1, 2]},
+        {name: 'Oceanic trench', deformation: [1, 3]},
         {name: 'Orogeny', deformation: [1, 5]},
     ]},
 
     {boundary: 'LWCT', provinces: [
-        {name: 'Oceanic trench', deformation: [1, 2]},
-        {name: 'Orogeny', deformation: [1, 3]},
+        {name: 'Oceanic trench', deformation: [1, 3]},
+        {name: 'Orogeny', deformation: [1, 6]},
     ]},
 
     {boundary: 'LWCD', provinces: [
