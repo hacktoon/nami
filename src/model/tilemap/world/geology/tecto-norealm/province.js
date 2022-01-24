@@ -13,6 +13,7 @@ export class ProvinceModel {
     #borderPoints
     #maxLevelMap
     #provinceMap = new Map()
+    #boundaryIdMap = new Map()
 
     constructor(regionTileMap, plateModel, boundaryModel) {
         const data = this._buildProvinces(regionTileMap, plateModel, boundaryModel)
@@ -30,6 +31,7 @@ export class ProvinceModel {
         const maxLevelMap = new Map()
         const levelMatrix = Matrix.fromRect(regionTileMap.rect, point => 0)
         // use matrix init to setup fill origin points
+        // and discover the provinces used
         const provinceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
             const borderRegions = regionTileMap.getBorderRegions(point)
             if (borderRegions.length > 0) {  // is a border point?

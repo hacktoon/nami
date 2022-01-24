@@ -26,12 +26,11 @@ export class TectonicsTable {
             const provinces = row.provinces
             const heavier = provinces[0]
             const lighter = provinces.length > 1 ? provinces[1] : heavier
-            this.#map.set(id, {
-                ...row, provinces: [
-                    {...heavier, id: provinceId++},
-                    {...lighter, id: provinceId++},
-                ]
-            })
+            const provincesList = [
+                {...heavier, id: provinceId++},
+                {...lighter, id: provinceId++},
+            ]
+            this.#map.set(id, {...row, provinces: provincesList})
         })
     }
 
