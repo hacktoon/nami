@@ -9,6 +9,7 @@
 - Rename Diagram to PixelMap
 
 #### TectonicsTileMap
+- passive margins features only at ends  [80 -> 100%: SHALLOW_WATERS ]
 - each province uses noise to set land dependent on type of province,
     only on borders and inner regions (not bordered by other provinces)
     - reset boundary name to each plate side on BOUNDARY_TABLE
