@@ -4,11 +4,8 @@ import { PointSet } from '/lib/point/set'
 import { Matrix } from '/lib/matrix'
 
 const NO_PROVINCE = null
-const NO_DEFORMATION = null
 
 
-// TODO: rename to TileMapLayer, extract builder (model) from layer
-// layer has getters only
 export class ProvinceModel {
     #regionTileMap
     #provinceMatrix
@@ -27,13 +24,12 @@ export class ProvinceModel {
     }
 
     _buildProvinces(regionTileMap, plateModel, boundaryModel) {
-        const {width, height} = regionTileMap
         const origins = []
         const provinceIdList = []
         const borderPoints = new PointSet()
         const maxLevelMap = new Map()
-        const levelMatrix = new Matrix(width, height, point => 0)
-        const provinceMatrix = new Matrix(width, height, point => {
+        const levelMatrix = Matrix.fromRect(regionTileMap.rect, point => 0)
+        const provinceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
             const borderRegions = regionTileMap.getBorderRegions(point)
             if (borderRegions.length > 0) {  // is a border point?
                 const region = regionTileMap.getRegion(point)
@@ -89,11 +85,6 @@ export class ProvinceModel {
 
     getMaxLevel(provinceId) {
         return this.#maxLevelMap.get(provinceId)
-    }
-
-    getDeformationType(point) {
-        const province = this.getProvince(point)
-        return province.type
     }
 
     isProvinceBorder(point) {
