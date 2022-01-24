@@ -29,6 +29,7 @@ export class ProvinceModel {
         const borderPoints = new PointSet()
         const maxLevelMap = new Map()
         const levelMatrix = Matrix.fromRect(regionTileMap.rect, point => 0)
+        // use matrix init to setup fill origin points
         const provinceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
             const borderRegions = regionTileMap.getBorderRegions(point)
             if (borderRegions.length > 0) {  // is a border point?

@@ -34,28 +34,26 @@ export class BoundaryModel {
                 let sideOrigin = regionTileMap.getOriginById(sideRegion)
                 sideOrigin = regionTileMap.rect.unwrapFrom(origin, sideOrigin)
                 const params = {region, sideRegion, origin, sideOrigin}
-                const boundary = this._buildBoundary(params)
+                const boundary = this._getBoundary(params)
                 boundaryMap.set(region, sideRegion, boundary)
             }
         }
         return boundaryMap
     }
 
-    _buildBoundary({region, sideRegion, origin, sideOrigin}) {
+    _getBoundary({region, sideRegion, origin, sideOrigin}) {
         const dirToSide = this._getDirection(origin, sideOrigin)
         const dirFromSide = this._getDirection(sideOrigin, origin)
         const plateDir = this.#plateModel.getDirection(region)
         const sidePlateDir = this.#plateModel.getDirection(sideRegion)
-        const isPlateOceanic = this.#plateModel.isOceanic(region)
-        const isSidePlateOceanic = this.#plateModel.isOceanic(sideRegion)
         const dotTo = Direction.dotProduct(plateDir, dirToSide)
         const dotFrom = Direction.dotProduct(sidePlateDir, dirFromSide)
         const directionTo = this._parseDir(dotTo)
         const directionFrom = this._parseDir(dotFrom)
-        const type1 = isPlateOceanic
+        const type1 = this.#plateModel.isOceanic(region)
             ? TectonicsTable.PLATE_OCEANIC
             : TectonicsTable.PLATE_CONTINENTAL
-        const type2 = isSidePlateOceanic
+        const type2 = this.#plateModel.isOceanic(sideRegion)
             ? TectonicsTable.PLATE_OCEANIC
             : TectonicsTable.PLATE_CONTINENTAL
         const id = type1 + type2 + directionTo + directionFrom
