@@ -54,6 +54,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
         )
         this.#provinceModel = new ProvinceModel(
             this.#regionTileMap,
+            this.#plateModel,
             this.#boundaryModel
         )
         this.#deformationModel = new DeformationModel(

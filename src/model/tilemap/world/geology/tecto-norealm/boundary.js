@@ -31,15 +31,11 @@ export class BoundaryModel {
         for(let region of regionTileMap.getRegions()) {
             const origin = regionTileMap.getOriginById(region)
             for(let sideRegion of regionTileMap.getSideRegions(region)) {
-                const plateWeight = this.#plateModel.getWeight(region)
-                const sidePlateWeight = this.#plateModel.getWeight(sideRegion)
                 let sideOrigin = regionTileMap.getOriginById(sideRegion)
                 sideOrigin = regionTileMap.rect.unwrapFrom(origin, sideOrigin)
                 const params = {region, sideRegion, origin, sideOrigin}
                 const boundary = this._buildBoundary(params)
-                const [heavier, lighter] = boundary.provinces
-                const province = plateWeight > sidePlateWeight ? heavier : lighter
-                boundaryMap.set(region, sideRegion, province)
+                boundaryMap.set(region, sideRegion, boundary)
             }
         }
         return boundaryMap

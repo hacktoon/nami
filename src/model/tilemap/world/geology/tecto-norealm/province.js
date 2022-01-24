@@ -17,8 +17,8 @@ export class ProvinceModel {
     #maxLevelMap
     #provinceMap = new Map()
 
-    constructor(regionTileMap, boundaryModel) {
-        const data = this._buildProvinces(regionTileMap, boundaryModel)
+    constructor(regionTileMap, plateModel, boundaryModel) {
+        const data = this._buildProvinces(regionTileMap, plateModel, boundaryModel)
         this.#regionTileMap = regionTileMap
         this.#provinceMatrix = data.provinceMatrix
         this.#levelMatrix = data.levelMatrix
@@ -26,7 +26,7 @@ export class ProvinceModel {
         this.#maxLevelMap = data.maxLevelMap
     }
 
-    _buildProvinces(regionTileMap, boundaryModel) {
+    _buildProvinces(regionTileMap, plateModel, boundaryModel) {
         const {width, height} = regionTileMap
         const origins = []
         const provinceIdList = []
@@ -37,7 +37,12 @@ export class ProvinceModel {
             const borderRegions = regionTileMap.getBorderRegions(point)
             if (borderRegions.length > 0) {  // is a border point?
                 const region = regionTileMap.getRegion(point)
-                const province = boundaryModel.get(region, borderRegions[0])
+                const sideRegion = borderRegions[0]
+                const plateWeight = plateModel.getWeight(region)
+                const sidePlateWeight = plateModel.getWeight(sideRegion)
+                const boundary = boundaryModel.get(region, sideRegion)
+                const [heavier, lighter] = boundary.provinces
+                const province = plateWeight > sidePlateWeight ? heavier : lighter
                 this.#provinceMap.set(province.id, province)
                 maxLevelMap.set(province.id, 0)
                 // these are like maps and use the index as key
