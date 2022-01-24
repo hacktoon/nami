@@ -1,10 +1,10 @@
 import { Matrix } from '/lib/matrix'
 import { SimplexNoise } from '/lib/fractal/noise'
 
-const NO_DEFORMATION = null
+const NO_FEATURE = null
 
 
-export class DeformationModel {
+export class FeatureModel {
     #matrix
 
     constructor(regionTileMap, plateModel, provinceModel) {
@@ -16,8 +16,8 @@ export class DeformationModel {
             if (provinceModel.isDeformed(point)) {
                 return 1
             }
-            return NO_DEFORMATION
-            // return noise.get(point) > 150 ? 1 : NO_DEFORMATION
+            return NO_FEATURE
+            // return noise.get(point) > 150 ? 1 : NO_FEATURE
         })
     }
 
@@ -25,7 +25,7 @@ export class DeformationModel {
         return this.#matrix.get(point)
     }
 
-    hasDeformation(point) {
-        return this.#matrix.get(point) !== NO_DEFORMATION
+    hasFeature(point) {
+        return this.#matrix.get(point) !== NO_FEATURE
     }
 }

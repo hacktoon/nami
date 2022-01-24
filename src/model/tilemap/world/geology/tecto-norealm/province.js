@@ -64,7 +64,7 @@ export class ProvinceModel {
     isDeformed(point) {
         const province = this.getProvince(point)
         const level = this.getProvinceLevel(point)
-        const [minSpecLevel, maxSpecLevel] = province.deformation
+        const [minSpecLevel, maxSpecLevel] = province.features
         // const maxLevel = maxLevelMap.get(provinceId)
         const inRange = minSpecLevel <= level && level <= maxSpecLevel
         const isBorder = this.#regionTileMap.isBorder(point)
@@ -114,7 +114,7 @@ class ProvinceFloodFill extends ConcurrentFillUnit {
         const id = fill.context.provinceIdList[fill.id]
         fill.context.provinceMatrix.set(point, id)
         fill.context.levelMatrix.set(point, level)
-        // updates max level to use on % of deformation calc
+        // updates max level to use on % of feature calc
         if (level > maxLevelMap.get(id)) {
             maxLevelMap.set(id, level)
         }

@@ -67,7 +67,7 @@ export class ProvinceModel {
         return Deformation.get(name)
     }
 
-    hasDeformation(regionId) {
+    hasFeature(regionId) {
         return this.#deformationMap.has(regionId)
     }
 
@@ -115,7 +115,7 @@ class ProvinceFloodFill extends ConcurrentFillUnit {
 
     isEmpty(fill, sideRegionId) {
         const model = fill.context.model
-        return !model.hasDeformation(sideRegionId)
+        return !model.hasFeature(sideRegionId)
     }
 
     getNeighbors(fill, regionId) {

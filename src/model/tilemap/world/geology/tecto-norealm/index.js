@@ -7,10 +7,10 @@ import { RegionTileMap } from '/model/tilemap/region'
 
 import { TectonicsNoRealmTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
+import { TectonicsTable } from './table'
 import { BoundaryModel } from './boundary'
 import { ProvinceModel } from './province'
-import { DeformationModel } from './deformation'
-import { TectonicsTable } from './table'
+import { FeatureModel } from './feature'
 
 const ID = 'TectonicsNoRealmTileMap'
 const SCHEMA = new Schema(
@@ -39,7 +39,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
     #plateModel
     #boundaryModel
     #provinceModel
-    #deformationModel
+    #featureModel
 
     constructor(params) {
         super(params)
@@ -57,7 +57,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
             this.#plateModel,
             this.#boundaryModel
         )
-        this.#deformationModel = new DeformationModel(
+        this.#featureModel = new FeatureModel(
             this.#regionTileMap,
             this.#plateModel,
             this.#provinceModel
@@ -134,8 +134,8 @@ export class TectonicsNoRealmTileMap extends TileMap {
         return Point.equals(regionOrigin, point)
     }
 
-    hasDeformation(point) {
-        return this.#deformationModel.hasDeformation(point)
+    hasFeature(point) {
+        return this.#featureModel.hasFeature(point)
     }
 
     getDescription() {
