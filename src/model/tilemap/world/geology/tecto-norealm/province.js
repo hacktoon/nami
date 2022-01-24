@@ -15,8 +15,8 @@ export class ProvinceModel {
     #provinceMap = new Map()
     #boundaryIdMap = new Map()
 
-    constructor(regionTileMap, plateModel, boundaryModel) {
-        const data = this._buildProvinces(regionTileMap, plateModel, boundaryModel)
+    constructor(regionTileMap, boundaryModel) {
+        const data = this._buildProvinces(regionTileMap, boundaryModel)
         this.#regionTileMap = regionTileMap
         this.#provinceMatrix = data.provinceMatrix
         this.#levelMatrix = data.levelMatrix
@@ -24,7 +24,7 @@ export class ProvinceModel {
         this.#maxLevelMap = data.maxLevelMap
     }
 
-    _buildProvinces(regionTileMap, plateModel, boundaryModel) {
+    _buildProvinces(regionTileMap, boundaryModel) {
         const origins = []
         const provinceIdList = []
         const borderPoints = new PointSet()
@@ -37,8 +37,7 @@ export class ProvinceModel {
             if (borderRegions.length > 0) {  // is a border point?
                 const region = regionTileMap.getRegion(point)
                 const sideRegion = borderRegions[0]
-                const params = {boundaryModel, plateModel, region, sideRegion}
-                const province = this._buildProvince(params)
+                const province = boundaryModel.getProvince(region, sideRegion)
                 this.#provinceMap.set(province.id, province)
                 maxLevelMap.set(province.id, 0)
                 // these are like maps and use the index as key
@@ -53,14 +52,6 @@ export class ProvinceModel {
         }
         new ProvinceConcurrentFill(origins, context).fill()
         return context
-    }
-
-    _buildProvince({boundaryModel, plateModel, region, sideRegion}) {
-        const plateWeight = plateModel.getWeight(region)
-        const sidePlateWeight = plateModel.getWeight(sideRegion)
-        const boundary = boundaryModel.get(region, sideRegion)
-        const [heavier, lighter] = boundary.provinces
-        return plateWeight > sidePlateWeight ? heavier : lighter
     }
 
     isDeformed(point) {

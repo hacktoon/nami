@@ -110,7 +110,7 @@ export class RegionTileMap extends TileMap {
 
     getBorderRegions(point) {
         // a single tile can have two different region neighbors
-        return Array.from(this.borderMap.get(...point) || [])
+        return Array.from(this.borderMap.get(...point) ?? [])
     }
 
     getSideRegions(regionId) {

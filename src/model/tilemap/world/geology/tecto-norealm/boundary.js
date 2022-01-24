@@ -14,20 +14,21 @@ export class BoundaryModel {
 
     #tectonicsTable
     #plateModel
-    #boundaryMap
+    #provinceMap
 
     constructor(regionTileMap, tectonicsTable, plateModel) {
         this.#plateModel = plateModel
         this.#tectonicsTable = tectonicsTable
-        this.#boundaryMap = this._buildBoundaryMap(regionTileMap)
+        this.#provinceMap = this._buildBoundaryMap(regionTileMap)
     }
 
-    get(region, sideRegion) {
-        return this.#boundaryMap.get(region, sideRegion)
+    getProvince(region, sideRegion) {
+        return this.#provinceMap.get(region, sideRegion)
     }
 
     _buildBoundaryMap(regionTileMap) {
-        const boundaryMap = new PairMap()
+        let provinceId = 0
+        const provinceMap = new PairMap()
         for(let region of regionTileMap.getRegions()) {
             const origin = regionTileMap.getOriginById(region)
             for(let sideRegion of regionTileMap.getSideRegions(region)) {
@@ -35,10 +36,12 @@ export class BoundaryModel {
                 sideOrigin = regionTileMap.rect.unwrapFrom(origin, sideOrigin)
                 const params = {region, sideRegion, origin, sideOrigin}
                 const boundary = this._getBoundary(params)
-                boundaryMap.set(region, sideRegion, boundary)
+                const province = this._buildProvince(region, sideRegion, boundary)
+                const provinceData = {...province, id: provinceId++}
+                provinceMap.set(region, sideRegion, provinceData)
             }
         }
-        return boundaryMap
+        return provinceMap
     }
 
     _getBoundary({region, sideRegion, origin, sideOrigin}) {
@@ -69,5 +72,12 @@ export class BoundaryModel {
         if (dir === 0)
             return TectonicsTable.DIR_TRANSFORM
         return dir > 0 ? TectonicsTable.DIR_CONVERGE : TectonicsTable.DIR_DIVERGE
+    }
+
+    _buildProvince(region, sideRegion, boundary) {
+        const plateWeight = this.#plateModel.getWeight(region)
+        const sidePlateWeight = this.#plateModel.getWeight(sideRegion)
+        const [heavier, lighter] = boundary.provinces
+        return plateWeight > sidePlateWeight ? heavier : lighter
     }
 }
