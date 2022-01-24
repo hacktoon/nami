@@ -57,8 +57,9 @@ export class ProvinceModel {
         const province = this.getProvince(point)
         const level = this.getProvinceLevel(point)
         const [minSpecLevel, maxSpecLevel] = province.features
-        // const maxLevel = maxLevelMap.get(provinceId)
-        const inRange = minSpecLevel <= level && level <= maxSpecLevel
+        const maxLevel = this.#maxLevelMap.get(province.id)
+        const percent = level / maxLevel
+        const inRange = minSpecLevel <= percent && percent <= maxSpecLevel
         const isBorder = this.#regionTileMap.isBorder(point)
         return inRange && (! this.isProvinceBorder(point) || isBorder)
     }
