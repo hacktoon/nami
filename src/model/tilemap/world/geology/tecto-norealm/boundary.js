@@ -28,38 +28,24 @@ export class BoundaryModel {
 
     _buildBoundaryMap(regionTileMap) {
         const boundaryMap = new PairMap()
-        const {rect} = regionTileMap
-        let provinceId = 0
-
         for(let region of regionTileMap.getRegions()) {
             const origin = regionTileMap.getOriginById(region)
             for(let sideRegion of regionTileMap.getSideRegions(region)) {
                 const plateWeight = this.#plateModel.getWeight(region)
                 const sidePlateWeight = this.#plateModel.getWeight(sideRegion)
                 let sideOrigin = regionTileMap.getOriginById(sideRegion)
-                sideOrigin = rect.unwrapFrom(origin, sideOrigin)
-                const boundary = this._getBoundary(
-                    region, sideRegion, origin, sideOrigin
-                )
-                const provinces = boundary.provinces
-                const heavier = provinces[0]
-                const lighter = provinces.length > 1 ? provinces[1] : heavier
-                const data = plateWeight > sidePlateWeight ? heavier : lighter
-                const province = {id: provinceId++, ...data}
+                sideOrigin = regionTileMap.rect.unwrapFrom(origin, sideOrigin)
+                const params = {region, sideRegion, origin, sideOrigin}
+                const boundary = this._buildBoundary(params)
+                const [heavier, lighter] = boundary.provinces
+                const province = plateWeight > sidePlateWeight ? heavier : lighter
                 boundaryMap.set(region, sideRegion, province)
             }
         }
         return boundaryMap
     }
 
-    _getBoundary(region, sideRegion, origin, sideOrigin) {
-        const boundaryId = this._buildBoundaryId(
-            region, sideRegion, origin, sideOrigin
-        )
-        return this.#tectonicsTable.getBoundary(boundaryId)
-    }
-
-    _buildBoundaryId(region, sideRegion, origin, sideOrigin) {
+    _buildBoundary({region, sideRegion, origin, sideOrigin}) {
         const dirToSide = this._getDirection(origin, sideOrigin)
         const dirFromSide = this._getDirection(sideOrigin, origin)
         const plateDir = this.#plateModel.getDirection(region)
@@ -76,7 +62,8 @@ export class BoundaryModel {
         const type2 = isSidePlateOceanic
             ? TectonicsTable.PLATE_OCEANIC
             : TectonicsTable.PLATE_CONTINENTAL
-        return type1 + type2 + directionTo + directionFrom
+        const id = type1 + type2 + directionTo + directionFrom
+        return this.#tectonicsTable.getBoundary(id)
     }
 
     _getDirection(origin, sideOrigin) {
@@ -85,7 +72,8 @@ export class BoundaryModel {
     }
 
     _parseDir(dir) {
-        if (dir === 0) return TectonicsTable.DIR_TRANSFORM
+        if (dir === 0)
+            return TectonicsTable.DIR_TRANSFORM
         return dir > 0 ? TectonicsTable.DIR_CONVERGE : TectonicsTable.DIR_DIVERGE
     }
 }

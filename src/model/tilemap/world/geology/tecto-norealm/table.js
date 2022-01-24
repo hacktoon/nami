@@ -19,10 +19,19 @@ export class TectonicsTable {
         // convert the boundary to a sum of its char int codes
         // Ex: LLCC = 0011 = 0 + 0 + 1 + 1 = 2
         const intMap = TectonicsTable.INT_MAP
+        let provinceId = 0
         TECTONICS_TABLE.map(row => {
             const ints = Array.from(row.boundary).map(ch => intMap[ch])
             const id = ints.reduce((a, b) => a + b, 0)
-            this.#map.set(id, row)
+            const provinces = row.provinces
+            const heavier = provinces[0]
+            const lighter = provinces.length > 1 ? provinces[1] : heavier
+            this.#map.set(id, {
+                ...row, provinces: [
+                    {...heavier, id: provinceId++},
+                    {...lighter, id: provinceId++},
+                ]
+            })
         })
     }
 
