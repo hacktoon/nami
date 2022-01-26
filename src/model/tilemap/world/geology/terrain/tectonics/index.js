@@ -142,11 +142,11 @@ class TectonicsMultiFill extends ConcurrentFill {
         super(borderRegions, TectonicsFloodFill, {model})
     }
 
-    getChance(fillId, regionId) {
+    getChance(fill, regionId) {
         return .5
     }
 
-    getGrowth(fillId, regionId) {
+    getGrowth(fill, regionId) {
         return 5
     }
 }

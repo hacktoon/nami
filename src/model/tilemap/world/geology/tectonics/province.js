@@ -94,11 +94,11 @@ class ProvinceMultiFill extends ConcurrentFill {
         super(borderRegions, ProvinceFloodFill, {model})
     }
 
-    getChance(fillId, regionId) {
+    getChance(fill, regionId) {
         return .5
     }
 
-    getGrowth(fillId, regionId) {
+    getGrowth(fill, regionId) {
         return 4
     }
 }

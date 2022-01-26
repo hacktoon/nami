@@ -13,6 +13,26 @@ export class TectonicsTable {
         T: TectonicsTable.DIR_TRANSFORM,
     }
 
+    static FEAT_PEAK = 0
+    static FEAT_MOUNTAIN = 1
+    static FEAT_HILL = 2
+    static FEAT_PLAIN = 3
+    static FEAT_DEPRESSION = 4
+    static FEAT_ARCHIPELAGO = 5
+    static FEAT_SHALLOW_WATER = 6
+    static FEAT_DEEP_WATER = 7
+    static FEAT_TRENCH = 8
+    static FEATS = [
+        TectonicsTable.FEAT_PEAK,
+        TectonicsTable.FEAT_MOUNTAIN,
+        TectonicsTable.FEAT_HILL,
+        TectonicsTable.FEAT_PLAIN,
+        TectonicsTable.FEAT_DEPRESSION,
+        TectonicsTable.FEAT_SHALLOW_WATER,
+        TectonicsTable.FEAT_DEEP_WATER,
+        TectonicsTable.FEAT_TRENCH,
+    ]
+
     #map = new Map()
 
     constructor() {
@@ -40,31 +60,61 @@ const TECTONICS_TABLE = [
     // CONTINENTAL-CONTINENTAL
     ////////////////////////////////////////////////////////
     {boundary: 'LLCC', provinces: [
-        {name: 'Orogeny', features: [0, .6]},
-        {name: 'Low mountains', features: [0, .5]},
+        {name: 'Orogeny',
+            granularity: 0,
+            features: [[0, .5], TectonicsTable.FEAT_PEAK]
+        },
+        {name: 'Orogeny',
+            granularity: 1,
+            features: [[0, .4], TectonicsTable.FEAT_HILL]
+        },
     ]},
 
     {boundary: 'LLCT', provinces: [
-        {name: 'Low mountains', features: [.1, .3]},
-        {name: 'Low mountains', features: [0, .1]},
+        {name: 'Low mountains',
+            granularity: 1,
+            features: [[.1, .3], TectonicsTable.FEAT_PEAK]
+        },
+        {name: 'Low mountains',
+            granularity: 0,
+            features: [[0, .1], TectonicsTable.FEAT_PEAK]
+        },
     ]},
 
     {boundary: 'LLCD', provinces: [
-        {name: 'Low mountains', features: [.1, .3]},
-        {name: 'Rift', features: [0, .2]},
+        {name: 'Low mountains',
+            granularity: 2,
+            features: [[.1, .3], TectonicsTable.FEAT_PEAK]
+        },
+        {name: 'Rift',
+            granularity: 0,
+            features: [[0, .2], TectonicsTable.FEAT_PEAK]
+        },
     ]},
 
     {boundary: 'LLDT', provinces: [
-        {name: 'Rift', features: [0, .2]},
+        {name: 'Rift',
+            granularity: 0,
+            features: [[0, .2], TectonicsTable.FEAT_PEAK]
+        },
     ]},
 
     {boundary: 'LLDD', provinces: [
-        {name: 'Rift Sea', features: [0, .5]},
+        {name: 'Rift Sea',
+            granularity: 0,
+            features: [[0, .5], TectonicsTable.FEAT_PEAK]
+        },
     ]},
 
     {boundary: 'LLTT', provinces: [
-        {name: 'Low mountains', features: [0, .2]},
-        {name: 'Low mountains', features: [.1, .2]},
+        {name: 'Low mountains',
+            granularity: 0,
+            features: [[0, .2], TectonicsTable.FEAT_PEAK]
+        },
+        {name: 'Low mountains',
+            granularity: 0,
+            features: [[.1, .2], TectonicsTable.FEAT_PEAK]
+        },
     ]},
 
 
@@ -74,66 +124,66 @@ const TECTONICS_TABLE = [
     {boundary: 'LWCC', provinces: [
         {name: 'Oceanic trench',
             granularity: 0,
-            features: [.1, .2]
+            features: [[.1, .4], TectonicsTable.FEAT_PEAK]
         },
         {name: 'Orogeny',
             granularity: 0,
-            features: [.1, .5]
+            features: [[.1, .5], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'LWCT', provinces: [
         {name: 'Oceanic trench',
             granularity: 0,
-            features: [.1, .3]
+            features: [[.1, .3], TectonicsTable.FEAT_PEAK]
         },
-        {name: 'Orogeny',
+        {name: ' Small orogeny',
             granularity: 0,
-            features: [.1, .6]
+            features: [[.1, .6], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'LWCD', provinces: [
         {name: 'Oceanic rift',
             granularity: 0,
-            features: [0, .2]
+            features: [[0, .2], TectonicsTable.FEAT_PEAK]
         },
         {name: 'Passive margin',
             granularity: 0,
-            features: [.2, 1]
+            features: [[0, .2], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'LWDD', provinces: [
         {name: 'Oceanic Rift',
             granularity: 0,
-            features: [0, .5]
+            features: [[0, .5], TectonicsTable.FEAT_PEAK]
         },
         {name: 'Passive margin',
             granularity: 0,
-            features: [.4, 1]
+            features: [[0, .3], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'LWDT', provinces: [
         {name: 'Oceanic Rift',
             granularity: 0,
-            features: [0, .4]
+            features: [[0, .4], TectonicsTable.FEAT_PEAK]
         },
         {name: 'Passive margin',
-            granularity: 0,
-            features: [.3, 1]
+            granularity: 2,
+            features: [[0, .4], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'LWTT', provinces: [
         {name: 'Oceanic mountains',
             granularity: 0,
-            features: [.1, .3]
+            features: [[.1, .3], TectonicsTable.FEAT_PEAK]
         },
         {name: 'Island arc basin',
             granularity: 0,
-            features: [.1, .3]
+            features: [[.1, .3], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
@@ -144,54 +194,54 @@ const TECTONICS_TABLE = [
     {boundary: 'WWCC', provinces: [
         {name: 'Oceanic trench',
             granularity: 0,
-            features: [.1, .3]
+            features: [[.1, .3], TectonicsTable.FEAT_TRENCH]
         },
         {name: 'Island arc',
             granularity: 0,
-            features: [.2, .5]
+            features: [[.2, .5], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'WWCT', provinces: [
-        {name: 'Oceanic trench',
+        {name: 'Shallow oceanic trench',
             granularity: 0,
-            features: [.1, .2]
+            features: [[0, .1], TectonicsTable.FEAT_PEAK]
         },
-        {name: 'Island arc',
-            granularity: 0,
-            features: [.2, .3]
+        {name: 'Early island arc',
+            granularity: 1,
+            features: [[.06, .15], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'WWCD', provinces: [
         {name: 'Oceanic basin',
             granularity: 0,
-            features: [.1, .6]
+            features: [[.1, .6], TectonicsTable.FEAT_PEAK]
         },
         {name: 'Oceanic mountains',
             granularity: 0,
-            features: [.1, .3]
+            features: [[.1, .3], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'WWDD', provinces: [
         {name: 'Oceanic rift',
             granularity: 0,
-            features: [0, .3]
+            features: [[0, .3], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'WWDT', provinces: [
         {name: 'Oceanic rift',
             granularity: 0,
-            features: [0, .2]
+            features: [[0, .2], TectonicsTable.FEAT_PEAK]
         },
     ]},
 
     {boundary: 'WWTT', provinces: [
         {name: 'Oceanic mountains',
             granularity: 0,
-            features: [.1, .4]
+            features: [[.1, .4], TectonicsTable.FEAT_PEAK]
         },
     ]},
 ]

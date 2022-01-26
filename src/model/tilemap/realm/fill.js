@@ -45,11 +45,11 @@ export class RealmMultiFill extends ConcurrentFill {
         this.params = params
     }
 
-    getChance(id, origin) {
+    getChance(fill, origin) {
         return this.params.get('chance')
     }
 
-    getGrowth(id, origin) {
+    getGrowth(fill, origin) {
         return this.params.get('growth')
     }
 }

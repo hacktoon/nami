@@ -47,7 +47,7 @@ export class ProvinceModel {
         })
         const context = {
             provinceIdList, borderPoints, maxLevelMap,
-            provinceMatrix, levelMatrix
+            provinceMatrix, levelMatrix, provinceMap: this.#provinceMap
         }
         new ProvinceConcurrentFill(origins, context).fill()
         return context
@@ -56,7 +56,7 @@ export class ProvinceModel {
     isDeformed(point) {
         const province = this.getProvince(point)
         const level = this.getProvinceLevel(point)
-        const [minSpecLevel, maxSpecLevel] = province.features
+        const [minSpecLevel, maxSpecLevel] = province.features[0]
         const maxLevel = this.#maxLevelMap.get(province.id)
         const percent = level / maxLevel
         const inRange = minSpecLevel <= percent && percent <= maxSpecLevel
@@ -96,8 +96,26 @@ class ProvinceConcurrentFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, ProvinceFloodFill, context)
     }
-    getChance(id, origin) { return .4 }
-    getGrowth(id, origin) { return 5 }
+
+    getChance(fill, origin) {
+        const provinceId = fill.context.provinceIdList[fill.id]
+        const province = fill.context.provinceMap.get(provinceId)
+        return {
+            0: .1,
+            1: .4,
+            2: .8
+        }[province.granularity]
+    }
+
+    getGrowth(fill, origin) {
+        const provinceId = fill.context.provinceIdList[fill.id]
+        const province = fill.context.provinceMap.get(provinceId)
+        return {
+            0: 6,
+            1: 3,
+            2: 1
+        }[province.granularity]
+    }
 }
 
 

@@ -105,12 +105,13 @@ export class ConcurrentFill {
 
     fill() {
         for(let fillId = 0; fillId < this.origins.length; fillId ++) {
+            const fill = {id: fillId, context: this.context}
             const origin = this.origins[fillId]
             this.areaTable.push(0)
             this.levelTable.push(0)
             this.seedTable.push([origin])
-            this.growthTable.push(this.getGrowth(fillId, origin))
-            this.chanceTable.push(this.getChance(fillId, origin))
+            this.growthTable.push(this.getGrowth(fill, origin))
+            this.chanceTable.push(this.getChance(fill, origin))
             this.filler._fillValue(fillId, origin, 0)
         }
         while(this.canGrow) {
@@ -122,12 +123,12 @@ export class ConcurrentFill {
         return this.areaTable[fillId]
     }
 
-    getChance(origin) {
-        return .1
+    getChance(fill, origin) {
+        return .1  // default value
     }
 
-    getGrowth(origin) {
-        return 0
+    getGrowth(fill, origin) {
+        return 0  // default value
     }
 
     _growFills() {
