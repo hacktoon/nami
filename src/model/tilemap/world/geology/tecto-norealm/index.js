@@ -85,7 +85,7 @@ export class TectonicsNoRealmTileMap extends TileMap {
         return [
             `point: ${Point.hash(point)}`,
             `plate ${plateId} at (${Point.hash(regionOrigin)})`,
-            `province: ${province.name}, id: ${province.id}, level ${provinceLevel}`,
+            `province id: ${province.id}, level ${provinceLevel}`,
             `max: ${maxLevel}`,
         ].join(', ')
     }

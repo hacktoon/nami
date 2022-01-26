@@ -73,11 +73,6 @@ export class ProvinceModel {
         return this.#provinceMap.get(id)
     }
 
-    getProvinceName(point) {
-        const province = this.getProvince(point)
-        return province.name
-    }
-
     getProvinceLevel(point) {
         return this.#levelMatrix.get(point)
     }
@@ -96,26 +91,8 @@ class ProvinceConcurrentFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, ProvinceFloodFill, context)
     }
-
-    getChance(fill, origin) {
-        const provinceId = fill.context.provinceIdList[fill.id]
-        const province = fill.context.provinceMap.get(provinceId)
-        return {
-            0: .1,
-            1: .4,
-            2: .8
-        }[province.granularity]
-    }
-
-    getGrowth(fill, origin) {
-        const provinceId = fill.context.provinceIdList[fill.id]
-        const province = fill.context.provinceMap.get(provinceId)
-        return {
-            0: 6,
-            1: 3,
-            2: 1
-        }[province.granularity]
-    }
+    getChance(fill, origin) { return .5 }
+    getGrowth(fill, origin) { return 4 }
 }
 
 
