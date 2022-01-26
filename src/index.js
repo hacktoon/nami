@@ -8,9 +8,6 @@ import { Title } from '/ui'
 
 import { NoiseTileMap } from '/model/tilemap/noise'
 import { RegionTileMap } from '/model/tilemap/region'
-import { RealmTileMap } from '/model/tilemap/realm'
-import { TerrainTileMap } from '/model/tilemap/world/geology/terrain'
-import { TectonicsTileMap } from '/model/tilemap/world/geology/tectonics'
 import { TectonicsNoRealmTileMap } from '/model/tilemap/world/geology/tecto-norealm'
 import { TemperatureTileMap } from '/model/tilemap/world/temperature'
 
@@ -21,10 +18,7 @@ import "/ui/css/tilemap.css"
 const APPS = [
     NoiseTileMap,
     RegionTileMap,
-    RealmTileMap,
-    TerrainTileMap,
     TemperatureTileMap,
-    TectonicsTileMap,
     TectonicsNoRealmTileMap,
 ]
 const appMap = new Map(APPS.map(TileMap => {
