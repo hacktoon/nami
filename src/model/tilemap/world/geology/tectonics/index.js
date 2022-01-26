@@ -12,7 +12,8 @@ import { BoundaryModel } from './boundary'
 import { ProvinceModel } from './province'
 import { FeatureModel } from './feature'
 
-const ID = 'TectonicsNoRealmTileMap'
+
+const ID = 'TectonicsTileMap'
 const SCHEMA = new Schema(
     ID,
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
@@ -24,14 +25,14 @@ const SCHEMA = new Schema(
 )
 
 
-export class TectonicsNoRealmTileMap extends TileMap {
+export class TectonicsTileMap extends TileMap {
     static id = ID
     static diagram = TectonicsTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
 
     static create(params) {
-        return new TectonicsNoRealmTileMap(params)
+        return new TectonicsTileMap(params)
     }
 
     #regionTileMap
