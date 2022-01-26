@@ -12,11 +12,12 @@ export class ProvinceModel {
     #levelMatrix
     #borderPoints
     #maxLevelMap
-    #provinceMap = new Map()
+    #provinceMap
 
     constructor(regionTileMap, boundaryModel) {
         const data = this._buildProvinces(regionTileMap, boundaryModel)
         this.#regionTileMap = regionTileMap
+        this.#provinceMap = data.provinceMap
         this.#provinceMatrix = data.provinceMatrix
         this.#levelMatrix = data.levelMatrix
         this.#borderPoints = data.borderPoints
@@ -28,6 +29,7 @@ export class ProvinceModel {
         const provinceIdList = []
         const borderPoints = new PointSet()
         const maxLevelMap = new Map()
+        const provinceMap = new Map()
         const levelMatrix = Matrix.fromRect(regionTileMap.rect, point => 0)
         // use matrix init to setup fill origin points
         // and discover the provinces used
@@ -37,7 +39,7 @@ export class ProvinceModel {
                 const region = regionTileMap.getRegion(point)
                 const sideRegion = borderRegions[0]
                 const province = boundaryModel.getProvince(region, sideRegion)
-                this.#provinceMap.set(province.id, province)
+                provinceMap.set(province.id, province)
                 maxLevelMap.set(province.id, 0)
                 // these are like maps and use the index as key
                 provinceIdList.push(province.id)
@@ -47,7 +49,7 @@ export class ProvinceModel {
         })
         const context = {
             provinceIdList, borderPoints, maxLevelMap,
-            provinceMatrix, levelMatrix, provinceMap: this.#provinceMap
+            provinceMatrix, levelMatrix, provinceMap
         }
         new ProvinceConcurrentFill(origins, context).fill()
         return context
@@ -59,9 +61,7 @@ export class ProvinceModel {
         const [minSpecLevel, maxSpecLevel] = province.features[0]
         const maxLevel = this.#maxLevelMap.get(province.id)
         const percent = level / maxLevel
-        const inRange = minSpecLevel <= percent && percent <= maxSpecLevel
-        const isBorder = this.#regionTileMap.isBorder(point)
-        return inRange && (! this.isProvinceBorder(point) || isBorder)
+        return minSpecLevel <= percent && percent <= maxSpecLevel
     }
 
     getProvinces() {

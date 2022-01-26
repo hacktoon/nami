@@ -72,7 +72,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
             color = provinceColor.average(color).average(color)
         }
         if (this.showProvinceLevel) {
-            color = color.darken(provinceLevel * 4)
+            color = color.darken(provinceLevel * 3)
         }
         if (this.showProvinceBorder && isProvinceBorder && ! isBorderPoint) {
             color = color.brighten(20)
