@@ -5,7 +5,7 @@ import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 import { RegionTileMap } from '/model/tilemap/region'
 
-import { TectonicsNoRealmTileMapDiagram } from './diagram'
+import { TectonicsTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
 import { TectonicsTable } from './table'
 import { BoundaryModel } from './boundary'
@@ -26,7 +26,7 @@ const SCHEMA = new Schema(
 
 export class TectonicsNoRealmTileMap extends TileMap {
     static id = ID
-    static diagram = TectonicsNoRealmTileMapDiagram
+    static diagram = TectonicsTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
 

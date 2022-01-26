@@ -30,9 +30,9 @@ class TectonicsColorMap {
 }
 
 
-export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
+export class TectonicsTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
-        'TectonicsNoRealmTileMapDiagram',
+        'TectonicsTileMapDiagram',
         Type.boolean('showDirection', 'Show directions', {default: false}),
         Type.boolean('showPlateBorder', 'Show plate borders', {default: true}),
         Type.boolean('showProvince', 'Show province', {default: false}),
@@ -43,7 +43,7 @@ export class TectonicsNoRealmTileMapDiagram extends TileMapDiagram {
     static colorMap = TectonicsColorMap
 
     static create(tileMap, colorMap, params) {
-        return new TectonicsNoRealmTileMapDiagram(tileMap, colorMap, params)
+        return new TectonicsTileMapDiagram(tileMap, colorMap, params)
     }
 
     constructor(tileMap, colorMap, params) {
