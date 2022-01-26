@@ -10,9 +10,12 @@
 
 #### TectonicsTileMap
 - continents map => 3 major landmasses
-- each province uses noise to set land dependent on type of province,
-    only on borders and inner regions (not bordered by other provinces)
-    - reset boundary name to each plate side on BOUNDARY_TABLE
+- each province may be a basin, uplift?
+  - provinces' borders may be the basin ridges, where start rivers
+  - decides where to start rivers
+- start concurrent fill for each border point inside and outside of features
+  - set feature's noise for each fill level from center
+  - for plate interiors, use random noise
 - Refactor province algorithm
   - Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
     - Set "sea type" to water regions on passive margins and rift seas

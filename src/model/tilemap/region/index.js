@@ -1,6 +1,7 @@
 import { Schema } from '/lib/schema'
 import { Type } from '/lib/type'
 import { Point } from '/lib/point'
+import { PointSet } from '/lib/point/set'
 import { Matrix } from '/lib/matrix'
 import { Graph } from '/lib/graph'
 import { EvenPointSampling } from '/lib/point/sampling'
@@ -52,6 +53,7 @@ export class RegionTileMap extends TileMap {
         this.regionMatrix = new Matrix(width, height, () => NO_REGION)
         this.levelMatrix = new Matrix(width, height, () => 0)
         this.borderMap = new PairMap()
+        this.centerPoints = new PointSet(this.origins)
         this.#regions = this.origins.map((_, id) => id)
         this.mapFill = new RegionMultiFill(this, params)
         this.mapFill.fill()
@@ -122,6 +124,10 @@ export class RegionTileMap extends TileMap {
         const point1 = this.getOriginById(region1)
         const unwrappedPoint1 = this.regionMatrix.rect.unwrapFrom(point0, point1)
         return Point.distance(point0, unwrappedPoint1)
+    }
+
+    isOrigin(point) {
+        return this.centerPoints.has(point)
     }
 
     isNeighbor(regionId, neighborId) {

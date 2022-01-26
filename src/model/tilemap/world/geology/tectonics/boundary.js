@@ -15,6 +15,7 @@ export class BoundaryModel {
     #tectonicsTable
     #plateModel
     #provinceMap
+    #centralProvinceMap = new Map()
 
     constructor(regionTileMap, tectonicsTable, plateModel) {
         this.#plateModel = plateModel
@@ -24,6 +25,15 @@ export class BoundaryModel {
 
     getProvince(region, sideRegion) {
         return this.#provinceMap.get(region, sideRegion)
+    }
+
+    getCentralProvince(region) {
+        const provinceId = this.#centralProvinceMap.get(region)
+        return {
+                id: provinceId,
+                name: 'Central province',
+                features: [[.5, 1], null]
+        }
     }
 
     _buildBoundaryMap(regionTileMap) {
@@ -40,6 +50,8 @@ export class BoundaryModel {
                 const provinceData = {...province, id: provinceId++}
                 provinceMap.set(region, sideRegion, provinceData)
             }
+            // for each region's central province, set its id
+            this.#centralProvinceMap.set(region, provinceId++)
         }
         return provinceMap
     }
