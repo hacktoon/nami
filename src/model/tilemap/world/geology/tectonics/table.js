@@ -1,14 +1,18 @@
 export class Feature {
-    static PEAK = 0
-    static MOUNTAIN = 1
+    // land features
+    static MOUNTAIN = 0
+    static PLATFORM = 1 // plateaus and hills
     static HILL = 2
     static PLAIN = 3
-    static DEPRESSION = 4
-    static ARCHIPELAGO = 5
-    static RIDGE = 6
-    static SHALLOW_WATER = 7
-    static DEEP_WATER = 8
-    static TRENCH = 9
+    static DEPRESSION = 4 // must have province border
+    static PASSIVE_MARGIN = 5
+    // water features
+    static RIFT_SEA = 5
+    static ISLAND_ARC = 5
+    static OCEANIC_HILL = 5
+    static OCEANIC_RIDGE = 5
+    static OCEANIC_PLAIN = 5
+    static OCEANIC_TRENCH = 5
 }
 
 
@@ -55,51 +59,50 @@ const TECTONICS_TABLE = [
     // CONTINENTAL-CONTINENTAL
     ////////////////////////////////////////////////////////
     {boundary: 'LLCC', provinces: [
-        {name: 'Orogeny',
-            border: false, // avoid putting features on border
-            features: [[0, .5], Feature.UPLIFT]
+        {feature: Feature.MOUNTAIN,
+            features: [[0, .5]]
         },
-        {name: 'Orogeny',
-            features: [[0, .4], Feature.MOUNTAIN]
+        {feature: Feature.MOUNTAIN,
+            features: [[0, .4]]
         },
     ]},
 
     {boundary: 'LLCT', provinces: [
-        {name: 'Low mountains',
-            features: [[.1, .3], Feature.MOUNTAIN]
+        {feature: Feature.MOUNTAIN,
+            features: [[.1, .3]]
         },
-        {name: 'Low mountains',
-            features: [[0, .1], Feature.MOUNTAIN]
+        {feature: Feature.MOUNTAIN,
+            features: [[0, .1]]
         },
     ]},
 
     {boundary: 'LLCD', provinces: [
-        {name: 'Low mountains',
-            features: [[.1, .3], Feature.MOUNTAIN]
+        {feature: Feature.MOUNTAIN,
+            features: [[.1, .3]]
         },
-        {name: 'Rift',
-            features: [[0, .2], Feature.DEPRESSION]
+        {feature: Feature.DEPRESSION,
+            features: [[0, .2]]
         },
     ]},
 
     {boundary: 'LLDT', provinces: [
-        {name: 'Rift',
-            features: [[0, .2], Feature.DEPRESSION]
+        {feature: Feature.DEPRESSION,
+            features: [[0, .2]]
         },
     ]},
 
     {boundary: 'LLDD', provinces: [
-        {name: 'Rift Sea',
-            features: [[0, .5], Feature.SHALLOW_WATER]
+        {feature: Feature.SHALLOW_WATER,
+            features: [[0, .5]]
         },
     ]},
 
     {boundary: 'LLTT', provinces: [
-        {name: 'Low mountains',
-            features: [[0, .2], Feature.MOUNTAIN]
+        {feature: Feature.MOUNTAIN,
+            features: [[0, .2]]
         },
-        {name: 'Low mountains',
-            features: [[.1, .2], Feature.MOUNTAIN]
+        {feature: Feature.MOUNTAIN,
+            features: [[.1, .2]]
         },
     ]},
 
@@ -108,56 +111,56 @@ const TECTONICS_TABLE = [
     // CONTINENTAL-OCEANIC
     ////////////////////////////////////////////////////////
     {boundary: 'LWCC', provinces: [
-        {name: 'Oceanic trench',
-            features: [[.1, .2], Feature.TRENCH]
+        {feature: Feature.TRENCH,
+            features: [[.1, .2]]
         },
-        {name: 'Orogeny',
-            features: [[.1, .5], Feature.UPLIFT]
+        {feature: Feature.UPLIFT,
+            features: [[.1, .5]]
         },
     ]},
 
     {boundary: 'LWCT', provinces: [
-        {name: 'Early oceanic trench',
-            features: [[.1, .2], Feature.TRENCH]
+        {feature: Feature.TRENCH,
+            features: [[.1, .2]]
         },
-        {name: 'Early orogeny',
-            features: [[.1, .4], Feature.UPLIFT]
+        {feature: Feature.UPLIFT,
+            features: [[.1, .4]]
         },
     ]},
 
     {boundary: 'LWCD', provinces: [
-        {name: 'Early oceanic ridge',
-            features: [[0, .2], Feature.RIDGE]
+        {feature: Feature.RIDGE,
+            features: [[0, .2]]
         },
-        {name: 'Passive margin',
-            features: [[0, .3], Feature.SHALLOW_WATER]
+        {feature: Feature.SHALLOW_WATER,
+            features: [[0, .3]]
         },
     ]},
 
     {boundary: 'LWDD', provinces: [
-        {name: 'Oceanic ridge',
-            features: [[0, .5], Feature.RIDGE]
+        {feature: Feature.RIDGE,
+            features: [[0, .5]]
         },
-        {name: 'Passive margin',
-            features: [[0, .4], Feature.SHALLOW_WATER]
+        {feature: Feature.SHALLOW_WATER,
+            features: [[0, .4]]
         },
     ]},
 
     {boundary: 'LWDT', provinces: [
-        {name: 'Oceanic Ridge',
-            features: [[0, .4], Feature.RIDGE]
+        {feature: Feature.RIDGE,
+            features: [[0, .4]]
         },
-        {name: 'Passive margin',
-            features: [[0, .5], Feature.SHALLOW_WATER]
+        {feature: Feature.SHALLOW_WATER,
+            features: [[0, .5]]
         },
     ]},
 
     {boundary: 'LWTT', provinces: [
-        {name: 'Oceanic mountains',
-            features: [[.1, .3], Feature.UPLIFT]
+        {feature: Feature.UPLIFT,
+            features: [[.1, .3]]
         },
-        {name: 'Island arc basin',
-            features: [[.1, .4], Feature.ARCHIPELAGO]
+        {feature: Feature.ARCHIPELAGO,
+            features: [[.1, .4]]
         },
     ]},
 
@@ -166,47 +169,47 @@ const TECTONICS_TABLE = [
     // OCEANIC-OCEANIC
     ////////////////////////////////////////////////////////
     {boundary: 'WWCC', provinces: [
-        {name: 'Oceanic trench',
-            features: [[.1, .3], Feature.TRENCH]
+        {feature: Feature.TRENCH,
+            features: [[.1, .3]]
         },
-        {name: 'Island arc',
-            features: [[.1, .5], Feature.ARCHIPELAGO]
+        {feature: Feature.ARCHIPELAGO,
+            features: [[.1, .5]]
         },
     ]},
 
     {boundary: 'WWCT', provinces: [
-        {name: 'Early oceanic trench',
-            features: [[0, .1], Feature.TRENCH]
+        {feature: Feature.TRENCH,
+            features: [[0, .1]]
         },
-        {name: 'Early island arc',
-            features: [[.1, .3], Feature.ARCHIPELAGO]
+        {feature: Feature.ARCHIPELAGO,
+            features: [[.1, .3]]
         },
     ]},
 
     {boundary: 'WWCD', provinces: [
-        {name: 'Oceanic basin',
-            features: [[.1, .6], Feature.UPLIFT]
+        {feature: Feature.UPLIFT,
+            features: [[.1, .6]]
         },
-        {name: 'Oceanic mountains',
-            features: [[.1, .3], Feature.UPLIFT]
+        {feature: Feature.UPLIFT,
+            features: [[.1, .3]]
         },
     ]},
 
     {boundary: 'WWDD', provinces: [
-        {name: 'Oceanic rift',
-            features: [[0, .3], Feature.UPLIFT]
+        {feature: Feature.UPLIFT,
+            features: [[0, .3]]
         },
     ]},
 
     {boundary: 'WWDT', provinces: [
-        {name: 'Oceanic rift',
-            features: [[0, .2], Feature.UPLIFT]
+        {feature: Feature.UPLIFT,
+            features: [[0, .2]]
         },
     ]},
 
     {boundary: 'WWTT', provinces: [
-        {name: 'Oceanic mountains',
-            features: [[.1, .4], Feature.UPLIFT]
+        {feature: Feature.UPLIFT,
+            features: [[.1, .4]]
         },
     ]},
 ]
