@@ -64,7 +64,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const provinceLevel = this.tileMap.getProvinceLevel(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         const isProvinceBorder = this.tileMap.isProvinceBorder(point)
-        const hasFeature = this.tileMap.hasFeature(point)
+        const feature = this.tileMap.getFeature(point)
         let color = this.colorMap.getByPlate(plateId)
 
         if (this.showProvince) {
@@ -80,8 +80,8 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.BLACK)
         }
-        if (this.showFeatures && hasFeature) {
-            color = color.darken(40)
+        if (this.showFeatures) {
+            color = Color.fromHex(feature.color)
         }
         return color.toHex()
     }

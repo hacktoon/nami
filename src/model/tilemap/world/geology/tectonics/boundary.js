@@ -3,7 +3,7 @@ import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
 import { Random } from '/lib/random'
 
-import { TectonicsTable } from './table'
+import { Feature, TectonicsTable } from './table'
 
 
 export class BoundaryModel {
@@ -29,12 +29,11 @@ export class BoundaryModel {
     }
 
     getCentralProvince(region) {
-        const provinceId = this.#centralProvinceMap.get(region)
-        return {
-                id: provinceId,
-                feature: 'Central province',
-                range: [Random.chance(.5) ? [.8, 1] : [.5, .8], null]
-        }
+        const id = this.#centralProvinceMap.get(region)
+        const feature = this.#plateModel.isOceanic(region)
+            ? Feature.OCEANIC_PLAIN
+            : Feature.PLAIN
+        return {id, feature, range: [0, 1]}
     }
 
     _buildProvinceMap(regionTileMap) {

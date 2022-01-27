@@ -60,7 +60,7 @@ export class ProvinceModel {
         return context
     }
 
-    isDeformed(point) {
+    hasFeature(point) {
         const province = this.getProvince(point)
         const level = this.getProvinceLevel(point)
         const [minSpecLevel, maxSpecLevel] = province.range

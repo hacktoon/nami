@@ -59,6 +59,7 @@ export class TectonicsTileMap extends TileMap {
         )
         this.#featureModel = new FeatureModel(
             this.#regionTileMap,
+            this.#tectonicsTable,
             this.#plateModel,
             this.#provinceModel
         )
@@ -82,12 +83,14 @@ export class TectonicsTileMap extends TileMap {
         const province = this.#provinceModel.getProvince(point)
         const maxLevel = this.#provinceModel.getMaxLevel(province.id)
         const provinceLevel = this.getProvinceLevel(point)
+        const feature = this.getFeature(point)
 
         return [
             `point: ${Point.hash(point)}`,
             `plate ${plateId} at (${Point.hash(regionOrigin)})`,
             `province: ${province.id}, level ${provinceLevel}`,
             `max: ${maxLevel}`,
+            `feature: ${feature.name}`,
         ].join(', ')
     }
 
@@ -134,8 +137,8 @@ export class TectonicsTileMap extends TileMap {
         return Point.equals(regionOrigin, point)
     }
 
-    hasFeature(point) {
-        return this.#featureModel.hasFeature(point)
+    getFeature(point) {
+        return this.#featureModel.get(point)
     }
 
     getDescription() {
