@@ -1,6 +1,7 @@
 import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
+import { Random } from '/lib/random'
 
 import { TectonicsTable } from './table'
 
@@ -20,7 +21,7 @@ export class BoundaryModel {
     constructor(regionTileMap, tectonicsTable, plateModel) {
         this.#plateModel = plateModel
         this.#tectonicsTable = tectonicsTable
-        this.#provinceMap = this._buildBoundaryMap(regionTileMap)
+        this.#provinceMap = this._buildProvinceMap(regionTileMap)
     }
 
     getProvince(region, sideRegion) {
@@ -32,11 +33,11 @@ export class BoundaryModel {
         return {
                 id: provinceId,
                 name: 'Central province',
-                features: [[.5, 1], null]
+                features: [Random.chance(.5) ? [.8, 1] : [.5, .8], null]
         }
     }
 
-    _buildBoundaryMap(regionTileMap) {
+    _buildProvinceMap(regionTileMap) {
         let provinceId = 0
         const provinceMap = new PairMap()
         for(let region of regionTileMap.getRegions()) {
