@@ -35,17 +35,15 @@ export class ProvinceModel {
         // and discover the provinces used
         const provinceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
             const region = regionTileMap.getRegion(point)
+            let province = NO_PROVINCE
             if (regionTileMap.isOrigin(point)) {
-                const province = boundaryModel.getCentralProvince(region)
-                provinceMap.set(province.id, province)
-                maxLevelMap.set(province.id, 0)
-                // these are like maps and use the index as key
-                provinceIdList.push(province.id)
-                origins.push(point)
+                province = boundaryModel.getCentralProvince(region)
             } else if (regionTileMap.isBorder(point)) {
                 const borderRegions = regionTileMap.getBorderRegions(point)
                 const sideRegion = borderRegions[0]
-                const province = boundaryModel.getProvince(region, sideRegion)
+                province = boundaryModel.getProvince(region, sideRegion)
+            }
+            if (province !== NO_PROVINCE) {
                 provinceMap.set(province.id, province)
                 maxLevelMap.set(province.id, 0)
                 // these are like maps and use the index as key
