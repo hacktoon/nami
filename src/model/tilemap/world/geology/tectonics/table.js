@@ -5,14 +5,13 @@ export class Feature {
     static HILL = 2
     static PLAIN = 3
     static DEPRESSION = 4 // must have province border
-    static PASSIVE_MARGIN = 5
-    // water features
     static RIFT_SEA = 5
-    static ISLAND_ARC = 5
-    static OCEANIC_HILL = 5
-    static OCEANIC_RIDGE = 5
-    static OCEANIC_PLAIN = 5
-    static OCEANIC_TRENCH = 5
+    // water features
+    static ISLAND_ARC = 6
+    static SEAMOUNT = 7
+    static OCEANIC_RIDGE = 8
+    static OCEANIC_PLAIN = 9
+    static TRENCH = 10
 }
 
 
@@ -60,49 +59,55 @@ const TECTONICS_TABLE = [
     ////////////////////////////////////////////////////////
     {boundary: 'LLCC', provinces: [
         {feature: Feature.MOUNTAIN,
-            features: [[0, .5]]
+            range: [0, .5]
         },
         {feature: Feature.MOUNTAIN,
-            features: [[0, .4]]
+            range: [0, .4]
         },
     ]},
 
     {boundary: 'LLCT', provinces: [
-        {feature: Feature.MOUNTAIN,
-            features: [[.1, .3]]
+        {feature: Feature.PLATFORM,
+            range: [.1, .3]
         },
-        {feature: Feature.MOUNTAIN,
-            features: [[0, .1]]
+        {feature: Feature.HILL,
+            range: [0, .1]
         },
     ]},
 
     {boundary: 'LLCD', provinces: [
-        {feature: Feature.MOUNTAIN,
-            features: [[.1, .3]]
+        {feature: Feature.HILL,
+            range: [.1, .3]
         },
         {feature: Feature.DEPRESSION,
-            features: [[0, .2]]
+            range: [0, .2]
         },
     ]},
 
     {boundary: 'LLDT', provinces: [
-        {feature: Feature.DEPRESSION,
-            features: [[0, .2]]
+        {feature: Feature.RIFT_SEA,
+            range: [0, .5]
+        },
+        {feature: Feature.HILL,
+            range: [0, .3]
         },
     ]},
 
     {boundary: 'LLDD', provinces: [
-        {feature: Feature.SHALLOW_WATER,
-            features: [[0, .5]]
+        {feature: Feature.RIFT_SEA,
+            range: [0, .5]
+        },
+        {feature: Feature.RIFT_SEA,
+            range: [0, .6]
         },
     ]},
 
     {boundary: 'LLTT', provinces: [
-        {feature: Feature.MOUNTAIN,
-            features: [[0, .2]]
+        {feature: Feature.HILL,
+            range: [0, .2]
         },
-        {feature: Feature.MOUNTAIN,
-            features: [[.1, .2]]
+        {feature: Feature.HILL,
+            range: [.1, .2]
         },
     ]},
 
@@ -112,55 +117,55 @@ const TECTONICS_TABLE = [
     ////////////////////////////////////////////////////////
     {boundary: 'LWCC', provinces: [
         {feature: Feature.TRENCH,
-            features: [[.1, .2]]
+            range: [.1, .2]
         },
-        {feature: Feature.UPLIFT,
-            features: [[.1, .5]]
+        {feature: Feature.MOUNTAIN,
+            range: [.1, .5]
         },
     ]},
 
     {boundary: 'LWCT', provinces: [
         {feature: Feature.TRENCH,
-            features: [[.1, .2]]
+            range: [.1, .2]
         },
-        {feature: Feature.UPLIFT,
-            features: [[.1, .4]]
+        {feature: Feature.HILL,
+            range: [.1, .4]
         },
     ]},
 
     {boundary: 'LWCD', provinces: [
-        {feature: Feature.RIDGE,
-            features: [[0, .2]]
+        {feature: Feature.OCEANIC_RIDGE,
+            range: [0, .2]
         },
-        {feature: Feature.SHALLOW_WATER,
-            features: [[0, .3]]
+        {feature: Feature.RIFT_SEA,
+            range: [0, .5]
         },
     ]},
 
     {boundary: 'LWDD', provinces: [
-        {feature: Feature.RIDGE,
-            features: [[0, .5]]
+        {feature: Feature.ISLAND_ARC,
+            range: [.1, .2]
         },
-        {feature: Feature.SHALLOW_WATER,
-            features: [[0, .4]]
+        {feature: Feature.HILL,
+            range: [.1, .4]
         },
     ]},
 
     {boundary: 'LWDT', provinces: [
-        {feature: Feature.RIDGE,
-            features: [[0, .4]]
+        {feature: Feature.OCEANIC_RIDGE,
+            range: [0, .4]
         },
-        {feature: Feature.SHALLOW_WATER,
-            features: [[0, .5]]
+        {feature: Feature.HILL,
+            range: [0, .5]
         },
     ]},
 
     {boundary: 'LWTT', provinces: [
-        {feature: Feature.UPLIFT,
-            features: [[.1, .3]]
+        {feature: Feature.ISLAND_ARC,
+            range: [.2, .3]
         },
-        {feature: Feature.ARCHIPELAGO,
-            features: [[.1, .4]]
+        {feature: Feature.RIFT_SEA,
+            range: [.2, .5]
         },
     ]},
 
@@ -170,46 +175,49 @@ const TECTONICS_TABLE = [
     ////////////////////////////////////////////////////////
     {boundary: 'WWCC', provinces: [
         {feature: Feature.TRENCH,
-            features: [[.1, .3]]
+            range: [.1, .3]
         },
-        {feature: Feature.ARCHIPELAGO,
-            features: [[.1, .5]]
+        {feature: Feature.ISLAND_ARC,
+            range: [.1, .5]
         },
     ]},
 
     {boundary: 'WWCT', provinces: [
-        {feature: Feature.TRENCH,
-            features: [[0, .1]]
+        {feature: Feature.ISLAND_ARC,
+            range: [0, .1]
         },
-        {feature: Feature.ARCHIPELAGO,
-            features: [[.1, .3]]
+        {feature: Feature.SEAMOUNT,
+            range: [.1, .3]
         },
     ]},
 
     {boundary: 'WWCD', provinces: [
-        {feature: Feature.UPLIFT,
-            features: [[.1, .6]]
+        {feature: Feature.ISLAND_ARC,
+            range: [.1, .5]
         },
-        {feature: Feature.UPLIFT,
-            features: [[.1, .3]]
+        {feature: Feature.OCEANIC_PLAIN,
+            range: [.1, .3]
         },
     ]},
 
     {boundary: 'WWDD', provinces: [
-        {feature: Feature.UPLIFT,
-            features: [[0, .3]]
+        {feature: Feature.OCEANIC_RIDGE,
+            range: [0, .3]
         },
     ]},
 
     {boundary: 'WWDT', provinces: [
-        {feature: Feature.UPLIFT,
-            features: [[0, .2]]
+        {feature: Feature.TRENCH,
+            range: [0, .2]
+        },
+        {feature: Feature.SEAMOUNT,
+            range: [0, .2]
         },
     ]},
 
     {boundary: 'WWTT', provinces: [
-        {feature: Feature.UPLIFT,
-            features: [[.1, .4]]
+        {feature: Feature.SEAMOUNT,
+            range: [.1, .4]
         },
     ]},
 ]

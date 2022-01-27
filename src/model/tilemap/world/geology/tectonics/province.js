@@ -65,7 +65,7 @@ export class ProvinceModel {
     isDeformed(point) {
         const province = this.getProvince(point)
         const level = this.getProvinceLevel(point)
-        const [minSpecLevel, maxSpecLevel] = province.features[0]
+        const [minSpecLevel, maxSpecLevel] = province.range
         const maxLevel = this.#maxLevelMap.get(province.id)
         const percent = level / maxLevel
         return minSpecLevel <= percent && percent <= maxSpecLevel

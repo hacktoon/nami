@@ -32,8 +32,8 @@ export class BoundaryModel {
         const provinceId = this.#centralProvinceMap.get(region)
         return {
                 id: provinceId,
-                name: 'Central province',
-                features: [Random.chance(.5) ? [.8, 1] : [.5, .8], null]
+                feature: 'Central province',
+                range: [Random.chance(.5) ? [.8, 1] : [.5, .8], null]
         }
     }
 
