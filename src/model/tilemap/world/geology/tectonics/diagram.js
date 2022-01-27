@@ -74,14 +74,14 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         if (this.showProvinceLevel) {
             color = color.darken(provinceLevel * 3)
         }
+        if (this.showFeatures) {
+            color = Color.fromHex(feature.color)
+        }
         if (this.showProvinceBorder && isProvinceBorder && ! isBorderPoint) {
             color = color.brighten(20)
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.BLACK)
-        }
-        if (this.showFeatures) {
-            color = Color.fromHex(feature.color)
         }
         return color.toHex()
     }
