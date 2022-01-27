@@ -1,7 +1,6 @@
 import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
-import { Random } from '/lib/random'
 
 import { Feature, TectonicsTable } from './table'
 
@@ -33,7 +32,7 @@ export class BoundaryModel {
         const feature = this.#plateModel.isOceanic(region)
             ? Feature.OCEANIC_PLAIN
             : Feature.PLAIN
-        return {id, feature, range: [0, 1]}
+        return {id, feature, border: false, range: [0, 1]}
     }
 
     _buildProvinceMap(regionTileMap) {

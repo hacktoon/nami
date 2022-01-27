@@ -18,8 +18,9 @@ export class FeatureModel {
         const scale = 0.05
         const noise = new SimplexNoise(detail, resolution, scale)
         this.#matrix = Matrix.fromRect(regionTileMap.rect, point => {
+            const province = provinceModel.getProvince(point)
+            const isBorder = provinceModel.isProvinceBorder(point)
             if (provinceModel.hasFeature(point)) {
-                const province = provinceModel.getProvince(point)
                 return province.feature
             }
             const region = regionTileMap.getRegion(point)
