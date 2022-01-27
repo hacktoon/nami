@@ -32,7 +32,7 @@ export class BoundaryModel {
         const feature = this.#plateModel.isOceanic(region)
             ? Feature.OCEANIC_PLAIN
             : Feature.PLAIN
-        return {id, feature, border: false, range: [0, 1]}
+        return this.#tectonicsTable.getCentralProvince(id, feature)
     }
 
     _buildProvinceMap(regionTileMap) {

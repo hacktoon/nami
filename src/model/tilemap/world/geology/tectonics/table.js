@@ -27,10 +27,12 @@ export class TectonicsTable {
             const provinces = boundary.provinces
             const heavier = provinces[0]
             const lighter = provinces.length > 1 ? provinces[1] : heavier
-            this.#map.set(id, {...boundary, provinces: [
-                heavier, lighter
-            ]})
+            this.#map.set(id, {...boundary, provinces: [heavier, lighter]})
         })
+    }
+
+    getCentralProvince(id, feature) {
+        return {id, feature, border: false, range: [0, 1]}
     }
 
     getBoundary(boundaryId) {
@@ -64,7 +66,7 @@ const FEATURE_TABLE = {
     [Feature.HILL]: {name: 'Hill', color: '#585'},
     [Feature.PLAIN]: {name: 'Plain', color: '#574'},
     [Feature.DEPRESSION]: {name: 'Depression', color: '#4f664c'},
-    [Feature.RIFT_SEA]: {name: 'Rift sea', color: '#07A'},
+    [Feature.RIFT_SEA]: {name: 'Rift sea', color: '#069'},
     [Feature.ISLAND_ARC]: {name: 'Island arc', color: '#574'},
     [Feature.SEAMOUNT]: {name: 'Seamount', color: '#069'},
     [Feature.OCEANIC_RIDGE]: {name: 'Oceanic ridge', color: '#07A'},
@@ -78,8 +80,8 @@ const BOUNDARY_TABLE = [
     // CONTINENTAL-CONTINENTAL
     ////////////////////////////////////////////////////////
     {code: 'LLCC', border: true, provinces: [
-        {feature: Feature.MOUNTAIN, border: true, range: [0, .5]},
-        {feature: Feature.MOUNTAIN, border: true, range: [0, .4]},
+        {feature: Feature.MOUNTAIN, border: true, range: [0, 1]},
+        {feature: Feature.HILL, border: true, range: [0, .5]},
     ]},
 
     {code: 'LLCT', provinces: [
@@ -122,7 +124,7 @@ const BOUNDARY_TABLE = [
     ]},
 
     {code: 'LWCD', provinces: [
-        {feature: Feature.OCEANIC_RIDGE, range: [0, .2]},
+        {feature: Feature.OCEANIC_RIDGE, range: [.1, .2]},
         {feature: Feature.RIFT_SEA, range: [0, .5]},
     ]},
 
@@ -166,7 +168,7 @@ const BOUNDARY_TABLE = [
 
     {code: 'WWDT', provinces: [
         {feature: Feature.TRENCH, range: [0, .2]},
-        {feature: Feature.SEAMOUNT, range: [0, .2]},
+        {feature: Feature.SEAMOUNT, range: [.05, .2]},
     ]},
 
     {code: 'WWTT', provinces: [

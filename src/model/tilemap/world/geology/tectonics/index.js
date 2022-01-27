@@ -18,9 +18,9 @@ const SCHEMA = new Schema(
     ID,
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('scale', 'Scale', {default: 30, step: 1, min: 1, max: 50}),
+    Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 50}),
     Type.number('growth', 'Growth', {default: 60, step: 1, min: 0, max: 100}),
-    Type.number('chance', 'Chance', {default: .2, step: .1, min: 0, max: 1}),
+    Type.number('chance', 'Chance', {default: .1, step: .1, min: 0, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
