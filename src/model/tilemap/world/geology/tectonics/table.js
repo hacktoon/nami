@@ -57,17 +57,17 @@ export class Feature {
 
 
 const FEATURE_TABLE = {
-    [Feature.MOUNTAIN]: {name: 'Mountain', color: '#DDD'},
-    [Feature.PLATFORM]: {name: 'Platform', color: '#806a47'},
-    [Feature.HILL]: {name: 'Hill', color: '#b7c8c4'},
-    [Feature.PLAIN]: {name: 'Plain', color: '#abc837'},
-    [Feature.DEPRESSION]: {name: 'Depression', color: '#165016'},
-    [Feature.RIFT_SEA]: {name: 'Rift sea', color: '#5cfdff'},
-    [Feature.ISLAND_ARC]: {name: 'Island arc', color: '#cdde87'},
-    [Feature.SEAMOUNT]: {name: 'Seamount', color: '#035'},
-    [Feature.OCEANIC_RIDGE]: {name: 'Oceanic ridge', color: '#235'},
-    [Feature.OCEANIC_PLAIN]: {name: 'Oceanic plain', color: '#035'},
-    [Feature.TRENCH]: {name: 'Trench', color: '#024'},
+    [Feature.MOUNTAIN]: {name: 'Mountain', color: '#AAA'},
+    [Feature.PLATFORM]: {name: 'Platform', color: '#8b8372'},
+    [Feature.HILL]: {name: 'Hill', color: '#585'},
+    [Feature.PLAIN]: {name: 'Plain', color: '#574'},
+    [Feature.DEPRESSION]: {name: 'Depression', color: '#4f664c'},
+    [Feature.RIFT_SEA]: {name: 'Rift sea', color: '#07A'},
+    [Feature.ISLAND_ARC]: {name: 'Island arc', color: '#574'},
+    [Feature.SEAMOUNT]: {name: 'Seamount', color: '#069'},
+    [Feature.OCEANIC_RIDGE]: {name: 'Oceanic ridge', color: '#07A'},
+    [Feature.OCEANIC_PLAIN]: {name: 'Oceanic plain', color: '#058'},
+    [Feature.TRENCH]: {name: 'Trench', color: '#147'},
 }
 
 
