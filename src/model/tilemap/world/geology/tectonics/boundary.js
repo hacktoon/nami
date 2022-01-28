@@ -29,9 +29,12 @@ export class BoundaryModel {
 
     getCentralProvince(region) {
         const id = this.#centralProvinceMap.get(region)
-        const feature = this.#plateModel.isOceanic(region)
-            ? Feature.OCEANIC_PLAIN
+        const landFeature = this.#plateModel.hasCraton(region)
+            ? Feature.PLATFORM
             : Feature.PLAIN
+        const feature = this.#plateModel.isOceanic(region)
+            ? Feature.TRENCH
+            : landFeature
         return this.#tectonicsTable.getCentralProvince(id, feature)
     }
 

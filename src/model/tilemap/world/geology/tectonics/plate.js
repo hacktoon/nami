@@ -5,11 +5,13 @@ import { Random } from '/lib/random'
 const TYPE_CONTINENTAL = 'L'
 const TYPE_OCEANIC = 'W'
 const HOTSPOT_CHANCE = .4
+const CRATON_CHANCE = .5
 
 
 export class PlateModel {
     #directionMap = new Map()
     #hotspotMap = new Map()
+    #cratonMap = new Map()
     #weightMap = new Map()
     #regionTileMap
     #typeMap
@@ -22,6 +24,7 @@ export class PlateModel {
         this.#plates.forEach(plateId => {
             this.#weightMap.set(plateId, this._getWeight(plateId))
             this.#hotspotMap.set(plateId, Random.chance(HOTSPOT_CHANCE))
+            this.#cratonMap.set(plateId, Random.chance(CRATON_CHANCE))
             this.#directionMap.set(plateId, Direction.random())
         })
     }
@@ -82,6 +85,10 @@ export class PlateModel {
 
     hasHotspot(plateId) {
         return this.#hotspotMap.get(plateId)
+    }
+
+    hasCraton(plateId) {
+        return this.#cratonMap.get(plateId)
     }
 
     forEach(callback) {
