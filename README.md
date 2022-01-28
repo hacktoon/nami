@@ -9,6 +9,7 @@
 - Rename Diagram to PixelMap
 
 #### TectonicsTileMap
+- central province may be a plateau, sea or hills
 - continents map => 3 major landmasses
 - each province may be a basin, uplift?
   - provinces' borders may be the basin ridges, where start rivers
@@ -16,15 +17,14 @@
 - start concurrent fill for each border point inside and outside of features
   - set feature's noise for each fill level from center
   - for plate interiors, use random noise
-- Refactor province algorithm
-  - Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
-    - Set "sea type" to water regions on passive margins and rift seas
-    - Define continents on this step
-  - deformationMap depends on provinceMap and it levels
-  - Redefine HotspotsModel as VolcanismModel
-    - Hotspots step should build map of region => hasHotspot or volcanism map
-    - Hydrothermal vents on border of rifts
-    - Transform peaks to volcanoes, with chance
+
+- Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
+  - Define continents on this step
+
+- Redefine HotspotsModel as VolcanismModel
+  - Hotspots step should build map of region => hasHotspot or volcanism map
+  - Hydrothermal vents on border of rifts
+  - Transform peaks to volcanoes, with chance
 
 #### TerrainTileMap
 - Recreate erosion algorithm using regions

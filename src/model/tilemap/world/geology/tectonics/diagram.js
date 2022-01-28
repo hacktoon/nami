@@ -81,7 +81,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
             color = color.brighten(20)
         }
         if (this.showPlateBorder && isBorderPoint) {
-            color = color.average(Color.BLACK)
+            color = color.average(Color.BLACK).brighten(10)
         }
         return color.toHex()
     }

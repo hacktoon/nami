@@ -73,7 +73,7 @@ const FEATURE_TABLE = {
     [Feature.RIFT_SEA]: {name: 'Rift sea', water: true, color: '#069'},
     [Feature.ISLAND_ARC]: {name: 'Island arc', water: true, color: '#574'},
     [Feature.SEAMOUNT]: {name: 'Seamount', water: true, color: '#069'},
-    [Feature.OCEANIC_RIDGE]: {name: 'Oceanic ridge', water: true, color: '#058'},
+    [Feature.OCEANIC_RIDGE]: {name: 'Oceanic ridge', water: true, color: '#147'},
     [Feature.OCEANIC_PLAIN]: {name: 'Oceanic plain', water: true, color: '#058'},
     [Feature.TRENCH]: {name: 'Trench', water: true, color: '#147'},
 }
@@ -128,7 +128,7 @@ const BOUNDARY_TABLE = [
     ]},
 
     {code: 'LWCD', provinces: [
-        {feature: Feature.OCEANIC_RIDGE, range: [.1, .2]},
+        {feature: Feature.OCEANIC_RIDGE, range: [.3, .9]},
         {feature: Feature.RIFT_SEA, range: [0, .7]},
     ]},
 
@@ -138,7 +138,7 @@ const BOUNDARY_TABLE = [
     ]},
 
     {code: 'LWDT', provinces: [
-        {feature: Feature.OCEANIC_RIDGE, range: [.1, .4]},
+        {feature: Feature.OCEANIC_RIDGE, range: [.4, .9]},
         {feature: Feature.HILL, range: [.1, .2]},
     ]},
 
@@ -167,7 +167,7 @@ const BOUNDARY_TABLE = [
     ]},
 
     {code: 'WWDD', provinces: [
-        {feature: Feature.OCEANIC_RIDGE, range: [0, .3]},
+        {feature: Feature.OCEANIC_RIDGE, range: [.5, .8]},
     ]},
 
     {code: 'WWDT', provinces: [
