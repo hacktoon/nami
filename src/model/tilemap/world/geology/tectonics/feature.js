@@ -20,10 +20,13 @@ export class FeatureModel {
         this.#matrix = Matrix.fromRect(regionTileMap.rect, point => {
             const province = provinceModel.getProvince(point)
             const isBorder = provinceModel.isProvinceBorder(point)
-            if (provinceModel.hasFeature(point) && noise.get(point) > 100) {
-                return province.feature
+            const feature = province.feature
+            if (provinceModel.hasFeature(point)) {
+                //&& noise.get(point) > 100
+                return feature
             }
             const region = regionTileMap.getRegion(point)
+            const isSubmerged = this.#tectonicsTable.isWaterFeature(feature)
             if (plateModel.isOceanic(region)) {
                 return Feature.OCEANIC_PLAIN
             }

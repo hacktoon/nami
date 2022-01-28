@@ -89,6 +89,11 @@ export class ProvinceModel {
     isProvinceBorder(point) {
         return this.#borderPoints.has(point)
     }
+
+    isSubmerged(point) {
+        const province = this.getProvince(point)
+        return province.water
+    }
 }
 
 

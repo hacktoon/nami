@@ -32,7 +32,7 @@ export class TectonicsTable {
     }
 
     getCentralProvince(id, feature) {
-        return {id, feature, border: false, range: [0, 1]}
+        return {id, feature, border: false, range: [0, .5]}
     }
 
     getBoundary(boundaryId) {
@@ -41,6 +41,10 @@ export class TectonicsTable {
 
     getFeature(featureId) {
         return FEATURE_TABLE[featureId]
+    }
+
+    isWaterFeature(featureId) {
+        return FEATURE_TABLE[featureId].water
     }
 }
 
@@ -61,17 +65,17 @@ export class Feature {
 
 
 const FEATURE_TABLE = {
-    [Feature.MOUNTAIN]: {name: 'Mountain', color: '#AAA'},
-    [Feature.PLATFORM]: {name: 'Platform', color: '#8b8372'},
-    [Feature.HILL]: {name: 'Hill', color: '#585'},
-    [Feature.PLAIN]: {name: 'Plain', color: '#574'},
-    [Feature.DEPRESSION]: {name: 'Depression', color: '#4f664c'},
-    [Feature.RIFT_SEA]: {name: 'Rift sea', color: '#069'},
-    [Feature.ISLAND_ARC]: {name: 'Island arc', color: '#574'},
-    [Feature.SEAMOUNT]: {name: 'Seamount', color: '#069'},
-    [Feature.OCEANIC_RIDGE]: {name: 'Oceanic ridge', color: '#058'},
-    [Feature.OCEANIC_PLAIN]: {name: 'Oceanic plain', color: '#058'},
-    [Feature.TRENCH]: {name: 'Trench', color: '#147'},
+    [Feature.MOUNTAIN]: {name: 'Mountain', water: false, color: '#AAA'},
+    [Feature.PLATFORM]: {name: 'Platform', water: false, color: '#8b8372'},
+    [Feature.HILL]: {name: 'Hill', water: false, color: '#585'},
+    [Feature.PLAIN]: {name: 'Plain', water: false, color: '#574'},
+    [Feature.DEPRESSION]: {name: 'Depression', water: false, color: '#4f664c'},
+    [Feature.RIFT_SEA]: {name: 'Rift sea', water: true, color: '#069'},
+    [Feature.ISLAND_ARC]: {name: 'Island arc', water: true, color: '#574'},
+    [Feature.SEAMOUNT]: {name: 'Seamount', water: true, color: '#069'},
+    [Feature.OCEANIC_RIDGE]: {name: 'Oceanic ridge', water: true, color: '#058'},
+    [Feature.OCEANIC_PLAIN]: {name: 'Oceanic plain', water: true, color: '#058'},
+    [Feature.TRENCH]: {name: 'Trench', water: true, color: '#147'},
 }
 
 
@@ -80,8 +84,8 @@ const BOUNDARY_TABLE = [
     // CONTINENTAL-CONTINENTAL
     ////////////////////////////////////////////////////////
     {code: 'LLCC', border: true, provinces: [
-        {feature: Feature.MOUNTAIN, border: true, range: [0, 1]},
-        {feature: Feature.HILL, border: true, range: [0, .5]},
+        {feature: Feature.MOUNTAIN, range: [0, 1]},
+        {feature: Feature.HILL, range: [0, .5]},
     ]},
 
     {code: 'LLCT', provinces: [
