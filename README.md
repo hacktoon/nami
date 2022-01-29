@@ -9,17 +9,18 @@
 - Rename Diagram to PixelMap
 
 #### TectonicsTileMap
-- central province may be a plateau, sea or hills
-- continents map => 3 major landmasses
-- each province may be a basin, uplift?
-  - provinces' borders may be the basin ridges, where start rivers
-  - decides where to start rivers
-- start concurrent fill for each border point inside and outside of features
-  - set feature's noise for each fill level from center
-  - for plate interiors, use random noise
+- CONTINENTS
+  -
 
-- Set provinces as in https://en.wikipedia.org/wiki/Geologic_province
-  - Define continents on this step
+- PROVINCES
+  - make type: continental shelf for submerged provinces
+  - each province may be a basin, uplift?
+  - central province may be a plateau, sea or hills
+  - Use as inspiration: https://en.wikipedia.org/wiki/Geologic_province
+
+- FEATURES
+  - start concurrent fill for each border point inside and outside of features
+  - set feature's noise for each fill level from center
 
 - Redefine HotspotsModel as VolcanismModel
   - Hotspots step should build map of region => hasHotspot or volcanism map

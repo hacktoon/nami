@@ -32,7 +32,7 @@ export class TectonicsTable {
     }
 
     getCentralProvince(id, feature) {
-        return {id, feature, border: false, range: [0, .5]}
+        return {id, feature, range: [0, .5]}
     }
 
     getBoundary(boundaryId) {
@@ -83,7 +83,7 @@ const BOUNDARY_TABLE = [
     ////////////////////////////////////////////////////////
     // CONTINENTAL-CONTINENTAL
     ////////////////////////////////////////////////////////
-    {code: 'LLCC', border: true, provinces: [
+    {code: 'LLCC', provinces: [
         {feature: Feature.MOUNTAIN, range: [0, 1]},
         {feature: Feature.HILL, range: [0, .5]},
     ]},
@@ -95,7 +95,7 @@ const BOUNDARY_TABLE = [
 
     {code: 'LLCD', provinces: [
         {feature: Feature.PLAIN, range: [0, 0]},
-        {feature: Feature.DEPRESSION, range: [.2, .6]},
+        {feature: Feature.DEPRESSION, range: [.5, 1]},
     ]},
 
     {code: 'LLDT', provinces: [
