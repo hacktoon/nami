@@ -18,9 +18,7 @@ const SCHEMA = new Schema(
     ID,
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 50}),
-    Type.number('growth', 'Growth', {default: 60, step: 1, min: 0, max: 100}),
-    Type.number('chance', 'Chance', {default: .1, step: .1, min: 0, max: 1}),
+    Type.number('continentArea', 'Continent area', {default: .25, step: .1, min: .1, max: .9}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -45,6 +43,7 @@ export class TectonicsTileMap extends TileMap {
     constructor(params) {
         super(params)
         let t0 = performance.now()
+        const continentArea = params.get('continentArea')
         this.#regionTileMap = this._buildRegioTileMap(params)
         this.#tectonicsTable = new TectonicsTable()
         this.#plateModel = new PlateModel(this.#regionTileMap)
@@ -71,9 +70,9 @@ export class TectonicsTileMap extends TileMap {
             seed: this.seed,
             width: params.get('width'),
             height: params.get('height'),
-            scale: params.get('scale'),
-            growth: params.get('growth'),
-            chance: params.get('chance'),
+            scale: 25,
+            growth: 60,
+            chance: .1,
         })
     }
 
