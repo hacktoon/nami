@@ -95,7 +95,7 @@ const BOUNDARY_TABLE = [
 
     {code: 'LLCD', provinces: [
         {feature: Feature.PLAIN, range: [0, 0]},
-        {feature: Feature.DEPRESSION, range: [0, .4]},
+        {feature: Feature.DEPRESSION, range: [.2, .6]},
     ]},
 
     {code: 'LLDT', provinces: [
@@ -138,7 +138,7 @@ const BOUNDARY_TABLE = [
     ]},
 
     {code: 'LWDT', provinces: [
-        {feature: Feature.OCEANIC_RIDGE, range: [.4, .9]},
+        {feature: Feature.OCEANIC_RIDGE, range: [.2, .9]},
         {feature: Feature.HILL, range: [.1, .2]},
     ]},
 
