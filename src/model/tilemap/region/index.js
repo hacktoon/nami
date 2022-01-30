@@ -145,4 +145,8 @@ export class RegionTileMap extends TileMap {
     forEach(callback) {
         this.#regions.forEach(callback)
     }
+
+    getDescription() {
+        return `Regions: ${this.#regions.length}, Area: ${this.area}`
+    }
 }

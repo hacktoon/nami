@@ -11,6 +11,7 @@ const SCHEMA = new Schema(
     Type.boolean('showOrigins', 'Show origins', {default: true}),
     Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
     Type.boolean('showSelectedRegion', 'Show selected region', {default: false}),
+    Type.boolean('showLevel', 'Show level', {default: false}),
     Type.number('selectedRegionId', 'Select region', {default: 0, min: 0, step: 1}),
     Type.number('level', 'Level', {default: 0, min: 0, step: 1}),
 )
@@ -51,13 +52,15 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         this.colorMap = colorMap
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
+        this.showLevel = params.get('showLevel')
         this.showNeighborBorder = params.get('showNeighborBorder')
         this.showSelectedRegion = params.get('showSelectedRegion')
         this.selectedRegionId = params.get('selectedRegionId')
         this.level = params.get('level')
     }
 
-    get(point) {
+    get(_point) {
+        const point = this.tileMap.rect.wrap(_point)
         const regionId = this.tileMap.getRegion(point)
         const regionOrigin = this.tileMap.getRegionOrigin(point)
         const level = this.tileMap.getLevel(point)
@@ -82,10 +85,10 @@ export class RegionTileMapDiagram extends TileMapDiagram {
                 return toggle ? color.darken(40).toHex() : color.toHex()
             }
         }
-        if (level <= this.level) {
-            return color.toHex()
+        if (this.showLevel && level > this.level) {
+            return '#fff'
         }
-        return '#fff'
+        return color.toHex()
     }
 
     // getText(point) {
