@@ -3,17 +3,15 @@ import { SingleFillUnit } from '/lib/floodfill/single'
 
 
 export class ContinentModel {
-    #plateModel
     #continents = []
     #continentMap = new Map()
 
-    constructor(continentArea, plateModel) {
-        this.#plateModel = plateModel
+    constructor(continentSize, plateModel) {
         const plates = plateModel.getPlates().filter(plate => {
             return plateModel.isContinental(plate)
         })
         const plateQueue = new IndexMap(plates)
-        const maxPlateCount = Math.floor(plates.length * continentArea)
+        const maxPlateCount = Math.floor(plates.length * continentSize)
         const plateCountMap = new Map()
         let continentId = 0
 

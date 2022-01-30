@@ -19,7 +19,7 @@ const SCHEMA = new Schema(
     ID,
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('continentArea', 'Continent area', {default: .25, step: .01, min: .1, max: .9}),
+    Type.number('continentSize', 'Continent size', {default: .25, step: .01, min: .1, max: .9}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -45,12 +45,12 @@ export class TectonicsTileMap extends TileMap {
     constructor(params) {
         super(params)
         let t0 = performance.now()
-        const continentArea = params.get('continentArea')
+        const continentSize = params.get('continentSize')
         this.#regionTileMap = this._buildRegioTileMap(params)
         this.#tectonicsTable = new TectonicsTable()
         this.#plateModel = new PlateModel(this.#regionTileMap)
         this.#continentModel = new ContinentModel(
-            continentArea,
+            continentSize,
             this.#plateModel
         )
         this.#boundaryModel = new BoundaryModel(
