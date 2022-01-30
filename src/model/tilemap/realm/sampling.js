@@ -57,19 +57,19 @@ export class RealmSampling {
 
 class SamplingFloodFill extends SingleFillUnit {
     setValue(regionId, level) {
-        this.model.regionIndexMap.delete(regionId)
-        this.model.filledRegions.add(regionId)
-        this.model.sampleMap.set(regionId, this.origin)
+        this.context.regionIndexMap.delete(regionId)
+        this.context.filledRegions.add(regionId)
+        this.context.sampleMap.set(regionId, this.origin)
     }
 
     isEmpty(regionId) {
-        const regionTileMap = this.model.regionTileMap
+        const regionTileMap = this.context.regionTileMap
         const distance = regionTileMap.distanceBetween(this.origin, regionId)
-        const insideCircle = distance <= this.model.radius
-        return insideCircle && !this.model.filledRegions.has(regionId)
+        const insideCircle = distance <= this.context.radius
+        return insideCircle && !this.context.filledRegions.has(regionId)
     }
 
     getNeighbors(regionId) {
-        return this.model.regionTileMap.getSideRegions(regionId)
+        return this.context.regionTileMap.getSideRegions(regionId)
     }
 }

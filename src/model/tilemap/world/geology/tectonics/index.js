@@ -7,6 +7,7 @@ import { RegionTileMap } from '/model/tilemap/region'
 
 import { TectonicsTileMapDiagram } from './diagram'
 import { PlateModel } from './plate'
+import { ContinentModel } from './continent'
 import { TectonicsTable } from './table'
 import { BoundaryModel } from './boundary'
 import { ProvinceModel } from './province'
@@ -18,7 +19,7 @@ const SCHEMA = new Schema(
     ID,
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('continentArea', 'Continent area', {default: .25, step: .1, min: .1, max: .9}),
+    Type.number('continentArea', 'Continent area', {default: .25, step: .01, min: .1, max: .9}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -36,6 +37,7 @@ export class TectonicsTileMap extends TileMap {
     #regionTileMap
     #tectonicsTable
     #plateModel
+    #continentModel
     #boundaryModel
     #provinceModel
     #featureModel
@@ -47,6 +49,10 @@ export class TectonicsTileMap extends TileMap {
         this.#regionTileMap = this._buildRegioTileMap(params)
         this.#tectonicsTable = new TectonicsTable()
         this.#plateModel = new PlateModel(this.#regionTileMap)
+        this.#continentModel = new ContinentModel(
+            continentArea,
+            this.#plateModel
+        )
         this.#boundaryModel = new BoundaryModel(
             this.#regionTileMap,
             this.#tectonicsTable,
@@ -78,6 +84,7 @@ export class TectonicsTileMap extends TileMap {
 
     get(point) {
         const plateId = this.getPlate(point)
+        const continent = this.getContinent(point)
         const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
         const province = this.#provinceModel.getProvince(point)
         const maxLevel = this.#provinceModel.getMaxLevel(province.id)
@@ -86,6 +93,7 @@ export class TectonicsTileMap extends TileMap {
 
         return [
             `point: ${Point.hash(point)}`,
+            `continent: ${continent}`,
             `plate ${plateId} at (${Point.hash(regionOrigin)})`,
             `province: ${province.id}, level ${provinceLevel}`,
             `max: ${maxLevel}`,
@@ -115,6 +123,15 @@ export class TectonicsTileMap extends TileMap {
         return this.#plateModel.isOceanic(plateId)
     }
 
+    getContinent(point) {
+        const plateId = this.getPlate(point)
+        return this.#continentModel.get(plateId)
+    }
+
+    getContinents() {
+        return this.#continentModel.getContinents()
+    }
+
     getProvince(point) {
         return this.#provinceModel.getProvince(point)
     }
@@ -141,7 +158,8 @@ export class TectonicsTileMap extends TileMap {
     }
 
     getDescription() {
-        return `${this.#plateModel.size} plates`
+        const continents = this.getContinents().length
+        return `${this.#plateModel.size} plates, ${continents} continents`
     }
 
     map(callback) {

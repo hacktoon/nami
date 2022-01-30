@@ -67,6 +67,10 @@ export class PlateModel {
         return this.#plates
     }
 
+    getSidePlates(plateId) {
+        return this.#regionTileMap.getSideRegions(plateId)
+    }
+
     getDirection(plateId) {
         return this.#directionMap.get(plateId)
     }
@@ -81,6 +85,10 @@ export class PlateModel {
 
     isOceanic(plateId) {
         return this.#typeMap.get(plateId) === TYPE_OCEANIC
+    }
+
+    isContinental(plateId) {
+        return this.#typeMap.get(plateId) === TYPE_CONTINENTAL
     }
 
     hasHotspot(plateId) {

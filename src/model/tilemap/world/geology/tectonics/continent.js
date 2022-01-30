@@ -3,53 +3,65 @@ import { SingleFillUnit } from '/lib/floodfill/single'
 
 
 export class ContinentModel {
-    #continentArea
-    #regionTileMap
+    #plateModel
+    #continents = []
     #continentMap = new Map()
 
-    constructor(continentArea, regionTileMap, plateModel) {
-        this.#regionTileMap = regionTileMap
+    constructor(continentArea, plateModel) {
         this.#plateModel = plateModel
-        this.#continentArea = continentArea
-
         const plates = plateModel.getPlates().filter(plate => {
             return plateModel.isContinental(plate)
         })
         const plateQueue = new IndexMap(plates)
-
-        const platesPerContinent = Math.floor(plates.length * continentArea)
+        const maxPlateCount = Math.floor(plates.length * continentArea)
+        const plateCountMap = new Map()
+        let continentId = 0
 
         while(plateQueue.size > 0) {
             const plate = plateQueue.random()
-            plateQueue.delete(plate)
-            // const plateId = regionTileMap.getRegion()
-            // const context = {
-            //     continentMap: this.#continentMap,
-            //     plateSet,
-            // }
-            // new ContinentFloodFill(origins, context).fill()
+            plateCountMap.set(continentId, 0)
+            this.#continents.push(continentId)
+            new ContinentFloodFill(plate, {
+                continentMap: this.#continentMap,
+                continents: this.#continents,
+                continentId: continentId++,
+                maxPlateCount,
+                plateQueue,
+                plateModel,
+                plateCountMap,
+            }).growFull()
         }
     }
 
     get(plate) {
+        return this.#continentMap.get(plate)
+    }
 
+    getContinents() {
+        return this.#continents
     }
 }
 
 
 class ContinentFloodFill extends SingleFillUnit {
-    setValue(regionId, level) {
-
+    setValue(plate, level) {
+        const {continentId, continentMap, plateCountMap} = this.context
+        const plateCount = plateCountMap.get(continentId)
+        continentMap.set(plate, continentId)
+        plateCountMap.set(continentId, plateCount + 1)
+        this.context.plateQueue.delete(plate)
     }
 
-    isEmpty(regionId) {
-        const regionTileMap = this.model.regionTileMap
-        const distance = regionTileMap.distanceBetween(this.origin, regionId)
-        const insideCircle = distance <= this.model.radius
-        return insideCircle && !this.model.filledRegions.has(regionId)
+    isEmpty(plate) {
+        const {plateModel, continentId, plateCountMap} = this.context
+        const plateCount = plateCountMap.get(continentId)
+        const isContinental = plateModel.isContinental(plate)
+        const notMapped = ! this.context.continentMap.has(plate)
+        const underCount = plateCount < this.context.maxPlateCount
+        return isContinental && notMapped && underCount
     }
 
-    getNeighbors(regionId) {
-        return this.model.regionTileMap.getSideRegions(regionId)
+    getNeighbors(plate) {
+        return this.context.plateModel.getSidePlates(plate)
     }
 }

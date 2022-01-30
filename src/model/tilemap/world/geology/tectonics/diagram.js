@@ -15,9 +15,13 @@ class TectonicsColorMap {
         const provinceColors = tileMap.getProvinces().map(id => {
             return [id, new Color()]
         })
+        const continentColors = tileMap.getContinents().map(id => {
+            return [id, new Color()]
+        })
         this.tileMap = tileMap
         this.plateColorMap = new Map(plateColors)
         this.provinceColorMap = new Map(provinceColors)
+        this.continentColorMap = new Map(continentColors)
     }
 
     getByPlate(plateId) {
@@ -27,6 +31,10 @@ class TectonicsColorMap {
     getByProvince(provinceId) {
         return this.provinceColorMap.get(provinceId)
     }
+
+    getByContinent(continentId) {
+        return this.continentColorMap.get(continentId)
+    }
 }
 
 
@@ -34,6 +42,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'TectonicsTileMapDiagram',
         Type.boolean('showDirection', 'Show directions', {default: false}),
+        Type.boolean('showContinents', 'Show continents', {default: false}),
         Type.boolean('showPlateBorder', 'Show plate borders', {default: true}),
         Type.boolean('showProvince', 'Show province', {default: false}),
         Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
@@ -49,6 +58,7 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
+        this.showContinents = params.get('showContinents')
         this.showPlateBorder = params.get('showPlateBorder')
         this.showDirection = params.get('showDirection')
         this.showProvince = params.get('showProvince')
@@ -61,8 +71,10 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         const point = this.tileMap.rect.wrap(_point)
         const plateId = this.tileMap.getPlate(point)
         const province = this.tileMap.getProvince(point)
+        const continent = this.tileMap.getContinent(point)
         const provinceLevel = this.tileMap.getProvinceLevel(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
+        const isOceanic = this.tileMap.isPlateOceanic(plateId)
         const isProvinceBorder = this.tileMap.isProvinceBorder(point)
         const feature = this.tileMap.getFeature(point)
         let color = this.colorMap.getByPlate(plateId)
@@ -74,7 +86,11 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         if (this.showProvinceLevel) {
             color = color.darken(provinceLevel * 3)
         }
-        if (this.showFeatures) {
+        if (this.showContinents && !isOceanic) {
+            const continentColor = this.colorMap.getByContinent(continent)
+            color = continentColor
+        }
+        if (this.showFeatures && ! this.showContinents) {
             color = Color.fromHex(feature.color)
         }
         if (this.showProvinceBorder && isProvinceBorder && ! isBorderPoint) {

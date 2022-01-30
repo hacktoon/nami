@@ -2,14 +2,15 @@ import { Random } from '/lib/random'
 
 
 export class SingleFillUnit {
-    constructor(origin, model, growth=0, chance=1) {
+    #area = 0
+
+    constructor(origin, context, growth=0, chance=1) {
         this.origin = origin
-        this.model = model
+        this.context = context
         this.growth = growth
         this.chance = chance
         this.seeds = [origin]
         this.level = 0
-        this.area = 0
         this._fillValue(origin, 0)
     }
 
@@ -40,19 +41,18 @@ export class SingleFillUnit {
 
     _fillValue(cell, level) {
         this.setValue(cell, level)
-        this.area += this.getArea(cell)
+        this.#area += this.getArea(cell)
     }
 
     _fillNeighbors(origin) {
         const filledNeighbors = []
         const allNeighbors = this.getNeighbors(origin)
-        const emptyNeighbors = allNeighbors.filter(neighbor => {
+        allNeighbors.filter(neighbor => {
             this.checkNeighbor(neighbor, origin)
-            return this.isEmpty(neighbor)
-        })
-        emptyNeighbors.forEach(neighbor => {
-            filledNeighbors.push(neighbor)
-            this._fillValue(neighbor, this.level)
+            if (this.isEmpty(neighbor)) {
+                filledNeighbors.push(neighbor)
+                this._fillValue(neighbor, this.level)
+            }
         })
         return filledNeighbors
     }
@@ -75,7 +75,7 @@ export class SingleFillUnit {
     }
 
     getArea(cell) {
-        return this.area
+        return this.#area
     }
 
     // EXTENSIBLE METHODS ==========================
