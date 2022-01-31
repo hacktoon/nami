@@ -43,11 +43,11 @@ export class TectonicsTileMapDiagram extends TileMapDiagram {
         'TectonicsTileMapDiagram',
         Type.boolean('showDirection', 'Show directions', {default: false}),
         Type.boolean('showContinents', 'Show continents', {default: false}),
-        Type.boolean('showPlateBorder', 'Show plate borders', {default: true}),
         Type.boolean('showProvince', 'Show province', {default: false}),
-        Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
-        Type.boolean('showProvinceBorder', 'Show province border', {default: false}),
         Type.boolean('showFeatures', 'Show features', {default: false}),
+        Type.boolean('showPlateBorder', 'Show plate borders', {default: true}),
+        Type.boolean('showProvinceBorder', 'Show province border', {default: false}),
+        Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
     )
     static colorMap = TectonicsColorMap
 

@@ -30,21 +30,23 @@ export class BoundaryModel {
 
     getCentralProvince(region) {
         const id = this.#centralProvinceMap.get(region)
-        let feature
+        let options
         if (this.#plateModel.isOceanic(region)) {
-            feature = Random.choice(
+            options = [
                 Feature.TRENCH,
                 Feature.OCEANIC_PLAIN,
-            )
+            ]
         } else {
-            feature = Random.choice(
+            options = [
+                Feature.MOUNTAIN,
                 Feature.PLATFORM,
                 Feature.PLAIN,
                 Feature.DEPRESSION,
                 Feature.RIFT_SEA,
                 Feature.HILL,
-            )
+            ]
         }
+        const feature = Random.choiceFrom(options)
         return this.#tectonicsTable.getCentralProvince(id, feature)
     }
 

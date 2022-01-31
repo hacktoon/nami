@@ -70,7 +70,7 @@ const FEATURE_TABLE = {
     [Feature.HILL]: {name: 'Hill', water: false, color: '#585'},
     [Feature.PLAIN]: {name: 'Plain', water: false, color: '#574'},
     [Feature.DEPRESSION]: {name: 'Depression', water: false, color: '#4f664c'},
-    [Feature.RIFT_SEA]: {name: 'Rift sea', water: true, color: '#069'},
+    [Feature.RIFT_SEA]: {name: 'Rift sea', water: true, color: '#058'},
     [Feature.ISLAND_ARC]: {name: 'Island arc', water: true, color: '#574'},
     [Feature.SEAMOUNT]: {name: 'Seamount', water: true, color: '#069'},
     [Feature.OCEANIC_RIDGE]: {name: 'Oceanic ridge', water: true, color: '#147'},

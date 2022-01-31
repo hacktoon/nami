@@ -1,5 +1,5 @@
-import { IndexMap } from '/lib/map'
 import { SingleFillUnit } from '/lib/floodfill/single'
+import { IndexMap } from '/lib/map'
 
 
 export class ContinentModel {
@@ -11,7 +11,7 @@ export class ContinentModel {
             return plateModel.isContinental(plate)
         })
         const plateQueue = new IndexMap(plates)
-        const maxPlateCount = Math.floor(plates.length * continentSize)
+        const maxPlateCount = Math.round(plates.length * continentSize)
         const plateCountMap = new Map()
         let continentId = 0
 
