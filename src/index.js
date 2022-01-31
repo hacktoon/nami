@@ -18,8 +18,8 @@ import "/ui/css/tilemap.css"
 const APPS = [
     NoiseTileMap,
     RegionTileMap,
-    TemperatureTileMap,
     TectonicsTileMap,
+    TemperatureTileMap,
 ]
 const appMap = new Map(APPS.map(TileMap => {
     const UITileMap = TileMap.ui
