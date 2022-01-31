@@ -24,9 +24,9 @@ export class ContinentModel {
                 continents: this.#continents,
                 continentId: continentId++,
                 maxPlateCount,
+                plateCountMap,
                 plateQueue,
                 plateModel,
-                plateCountMap,
             }).growFull()
         }
     }
