@@ -102,8 +102,8 @@ export class GeologyTileMap extends TileMap {
             `point(${Point.hash(point)})`,
             `surface(${surface}, ${surfaceType})`,
             `plate ${plateId} at (${Point.hash(regionOrigin)})`,
-            `province: ${province.id}, level ${provinceLevel}`,
-            `max: ${maxLevel}`,
+            `province: ${province.id}`,
+            `level: ${provinceLevel}/${maxLevel}`,
             `feature: ${feature.name}`,
         ].join(', ')
     }
@@ -170,8 +170,9 @@ export class GeologyTileMap extends TileMap {
     }
 
     getDescription() {
-        const continents = this.getSurfaces().length
-        return `${this.#plateModel.size} plates, ${continents} continents`
+        const continentCount = this.#surfaceModel.getContinents().length
+        const oceanCount = this.#surfaceModel.getOceans().length
+        return `${this.#plateModel.size} plates, ${continentCount} continents, ${oceanCount} oceans`
     }
 
     map(callback) {

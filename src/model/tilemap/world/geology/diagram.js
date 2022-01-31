@@ -75,7 +75,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const surface = this.tileMap.getSurface(point)
         const provinceLevel = this.tileMap.getProvinceLevel(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
-        const isOceanic = this.tileMap.isPlateOceanic(plateId)
         const isProvinceBorder = this.tileMap.isProvinceBorder(point)
         const feature = this.tileMap.getFeature(point)
         let color = this.colorMap.getByPlate(plateId)
@@ -84,16 +83,16 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             const provinceColor = this.colorMap.getByProvince(province.id)
             color = provinceColor.average(color).average(color)
         }
+        if (this.showContinents) {
+            color = this.colorMap.getBySurface(surface)
+        }
+        if (this.showFeatures) {
+            color = Color.fromHex(feature.color)
+        }
         if (this.showProvinceLevel) {
             color = color.darken(provinceLevel * 3)
         }
-        if (this.showContinents && !isOceanic) {
-            color = this.colorMap.getBySurface(surface)
-        }
-        if (this.showFeatures && ! this.showContinents) {
-            color = Color.fromHex(feature.color)
-        }
-        if (this.showProvinceBorder && isProvinceBorder && ! isBorderPoint) {
+        if (this.showProvinceBorder && isProvinceBorder) {
             color = color.brighten(20)
         }
         if (this.showPlateBorder && isBorderPoint) {

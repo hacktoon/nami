@@ -7,7 +7,8 @@ const TYPE_OCEAN = 1
 
 
 export class SurfaceModel {
-    #surfaces = []
+    #continents = []
+    #oceans = []
     #plateSurfaceMap = new Map()
     #surfaceTypeMap = new Map()
 
@@ -19,12 +20,11 @@ export class SurfaceModel {
         let surfaceId = 0
         while(plateQueue.size > 0) {
             const plate = plateQueue.random()
+            const surfaceType = this._buildType(plateModel, surfaceId, plate)
             plateCountMap.set(surfaceId, 0)
-            this.#surfaces.push(surfaceId)
+            this.#surfaceTypeMap.set(surfaceId, surfaceType)
             new SurfaceFloodFill(plate, {
                 plateSurfaceMap: this.#plateSurfaceMap,
-                surfaceTypeMap: this.#surfaceTypeMap,
-                surfaces: this.#surfaces,
                 surfaceId: surfaceId++,
                 maxPlateCount,
                 plateCountMap,
@@ -32,6 +32,15 @@ export class SurfaceModel {
                 plateModel,
             }).growFull()
         }
+    }
+
+    _buildType(plateModel, surfaceId, plate) {
+        if (plateModel.isContinental(plate)) {
+            this.#continents.push(surfaceId)
+            return TYPE_CONTINENT
+        }
+        this.#oceans.push(surfaceId)
+        return TYPE_OCEAN
     }
 
     get(plate) {
@@ -44,21 +53,25 @@ export class SurfaceModel {
     }
 
     getSurfaces() {
-        return this.#surfaces
+        return this.#continents.concat(this.#oceans)
+    }
+
+    getContinents() {
+        return this.#continents
+    }
+
+    getOceans() {
+        return this.#oceans
     }
 }
 
 
 class SurfaceFloodFill extends SingleFillUnit {
     setValue(plate, level) {
-        const {plateModel, surfaceId, plateCountMap} = this.context
+        const {surfaceId, plateCountMap} = this.context
         const plateCount = plateCountMap.get(surfaceId)
-        const surfaceType = plateModel.isContinental(this.origin)
-            ? TYPE_CONTINENT
-            : TYPE_OCEAN
         this.context.plateSurfaceMap.set(plate, surfaceId)
         this.context.plateQueue.delete(plate)
-        this.context.surfaceTypeMap.set(surfaceId, surfaceType)
         plateCountMap.set(surfaceId, plateCount + 1)
     }
 
