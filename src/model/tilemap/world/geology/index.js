@@ -3,18 +3,18 @@ import { Type } from '/lib/type'
 import { Point } from '/lib/point'
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
-import { RegionTileMap } from '/model/tilemap/region'
 
-import { TectonicsTileMapDiagram } from './diagram'
+import { RegionTileMap } from '/model/tilemap/region'
 import { PlateModel } from './plate'
-import { ContinentModel } from './continent'
+import { SurfaceModel } from './surface'
 import { TectonicsTable } from './table'
 import { BoundaryModel } from './boundary'
 import { ProvinceModel } from './province'
 import { FeatureModel } from './feature'
+import { GeologyTileMapDiagram } from './diagram'
 
 
-const ID = 'TectonicsTileMap'
+const ID = 'GeologyTileMap'
 const SCHEMA = new Schema(
     ID,
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
@@ -27,20 +27,20 @@ const SCHEMA = new Schema(
 )
 
 
-export class TectonicsTileMap extends TileMap {
+export class GeologyTileMap extends TileMap {
     static id = ID
-    static diagram = TectonicsTileMapDiagram
+    static diagram = GeologyTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
 
     static create(params) {
-        return new TectonicsTileMap(params)
+        return new GeologyTileMap(params)
     }
 
     #regionTileMap
     #tectonicsTable
     #plateModel
-    #continentModel
+    #surfaceModel
     #boundaryModel
     #provinceModel
     #featureModel
@@ -52,18 +52,20 @@ export class TectonicsTileMap extends TileMap {
         this.#regionTileMap = this._buildRegioTileMap(params)
         this.#tectonicsTable = new TectonicsTable()
         this.#plateModel = new PlateModel(this.#regionTileMap)
-        this.#continentModel = new ContinentModel(
+        this.#surfaceModel = new SurfaceModel(
             continentSize,
             this.#plateModel
         )
         this.#boundaryModel = new BoundaryModel(
             this.#regionTileMap,
             this.#tectonicsTable,
-            this.#plateModel
+            this.#plateModel,
+            this.#surfaceModel
         )
         this.#provinceModel = new ProvinceModel(
             this.#regionTileMap,
-            this.#boundaryModel
+            this.#boundaryModel,
+            this.#surfaceModel
         )
         this.#featureModel = new FeatureModel(
             this.#regionTileMap,
@@ -71,7 +73,7 @@ export class TectonicsTileMap extends TileMap {
             this.#plateModel,
             this.#provinceModel
         )
-        console.log(`TectonicsTileMap: ${Math.round(performance.now() - t0)}ms`);
+        console.log(`GeologyTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
     _buildRegioTileMap(params) {
@@ -89,7 +91,7 @@ export class TectonicsTileMap extends TileMap {
         const plateId = this.getPlate(point)
         const continent = this.getContinent(point)
         const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
-        const province = this.#provinceModel.getProvince(point)
+        const province = this.getProvince(point)
         const maxLevel = this.#provinceModel.getMaxLevel(province.id)
         const provinceLevel = this.getProvinceLevel(point)
         const feature = this.getFeature(point)
@@ -128,11 +130,11 @@ export class TectonicsTileMap extends TileMap {
 
     getContinent(point) {
         const plateId = this.getPlate(point)
-        return this.#continentModel.get(plateId)
+        return this.#surfaceModel.get(plateId)
     }
 
     getContinents() {
-        return this.#continentModel.getContinents()
+        return this.#surfaceModel.getContinents()
     }
 
     getProvince(point) {

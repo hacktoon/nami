@@ -8,7 +8,7 @@ import { Title } from '/ui'
 
 import { NoiseTileMap } from '/model/tilemap/noise'
 import { RegionTileMap } from '/model/tilemap/region'
-import { TectonicsTileMap } from '/model/tilemap/world/geology'
+import { GeologyTileMap } from '/model/tilemap/world/geology'
 import { TemperatureTileMap } from '/model/tilemap/world/temperature'
 
 import "/ui/css/base.css"
@@ -18,7 +18,7 @@ import "/ui/css/tilemap.css"
 const APPS = [
     NoiseTileMap,
     RegionTileMap,
-    TectonicsTileMap,
+    GeologyTileMap,
     TemperatureTileMap,
 ]
 const appMap = new Map(APPS.map(TileMap => {
@@ -30,7 +30,7 @@ const appMap = new Map(APPS.map(TileMap => {
 class App {
     static schema = new Schema(
         'App',
-        Type.selection('app', 'App', {default: TectonicsTileMap.id, options: APPS})
+        Type.selection('app', 'App', {default: GeologyTileMap.id, options: APPS})
     )
 }
 

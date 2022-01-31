@@ -8,7 +8,7 @@
 ## ROADMAP
 - Rename Diagram to PixelMap
 
-#### TectonicsTileMap
+#### GeologyTileMap
 - CONTINENTS
   - put islands on ocean-ocean borders
   - isolated continent: surrounded by water on all provinces

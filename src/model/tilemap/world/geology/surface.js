@@ -2,9 +2,9 @@ import { SingleFillUnit } from '/lib/floodfill/single'
 import { IndexMap } from '/lib/map'
 
 
-export class ContinentModel {
-    #continents = []
-    #continentMap = new Map()
+export class SurfaceModel {
+    #surfaces = []
+    #plateSurfaceMap = new Map()
 
     constructor(continentSize, plateModel) {
         const plates = plateModel.getPlates().filter(plate => {
@@ -13,48 +13,49 @@ export class ContinentModel {
         const plateQueue = new IndexMap(plates)
         const maxPlateCount = Math.round(plates.length * continentSize)
         const plateCountMap = new Map()
-        let continentId = 0
+        let surfaceId = 0
 
         while(plateQueue.size > 0) {
             const plate = plateQueue.random()
-            plateCountMap.set(continentId, 0)
-            this.#continents.push(continentId)
-            new ContinentFloodFill(plate, {
-                continentMap: this.#continentMap,
-                continents: this.#continents,
-                continentId: continentId++,
+            plateCountMap.set(surfaceId, 0)
+            this.#surfaces.push(surfaceId)
+            new SurfaceFloodFill(plate, {
+                plateSurfaceMap: this.#plateSurfaceMap,
+                surfaces: this.#surfaces,
+                surfaceId: surfaceId++,
                 maxPlateCount,
                 plateCountMap,
                 plateQueue,
                 plateModel,
             }).growFull()
         }
+        console.log(maxPlateCount, this.#plateSurfaceMap);
     }
 
     get(plate) {
-        return this.#continentMap.get(plate)
+        return this.#plateSurfaceMap.get(plate)
     }
 
     getContinents() {
-        return this.#continents
+        return this.#surfaces
     }
 }
 
 
-class ContinentFloodFill extends SingleFillUnit {
+class SurfaceFloodFill extends SingleFillUnit {
     setValue(plate, level) {
-        const {continentId, continentMap, plateCountMap} = this.context
-        const plateCount = plateCountMap.get(continentId)
-        continentMap.set(plate, continentId)
-        plateCountMap.set(continentId, plateCount + 1)
+        const {surfaceId, plateSurfaceMap, plateCountMap} = this.context
+        const plateCount = plateCountMap.get(surfaceId)
+        plateSurfaceMap.set(plate, surfaceId)
+        plateCountMap.set(surfaceId, plateCount + 1)
         this.context.plateQueue.delete(plate)
     }
 
     isEmpty(plate) {
-        const {plateModel, continentId, plateCountMap} = this.context
-        const plateCount = plateCountMap.get(continentId)
+        const {plateModel, surfaceId, plateCountMap} = this.context
+        const plateCount = plateCountMap.get(surfaceId)
         const isContinental = plateModel.isContinental(plate)
-        const notMapped = ! this.context.continentMap.has(plate)
+        const notMapped = ! this.context.plateSurfaceMap.has(plate)
         const underCount = plateCount < this.context.maxPlateCount
         return isContinental && notMapped && underCount
     }
