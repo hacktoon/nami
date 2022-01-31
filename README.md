@@ -10,7 +10,8 @@
 
 #### TectonicsTileMap
 - CONTINENTS
-  -
+  - put islands on ocean-ocean borders
+  - isolated continent: surrounded by water on all provinces
 
 - PROVINCES
   - make type: continental shelf for submerged provinces
