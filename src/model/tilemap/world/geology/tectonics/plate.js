@@ -96,7 +96,7 @@ export class PlateModel {
     }
 
     hasCraton(plateId) {
-        return this.#cratonMap.get(plateId)
+        return this.#cratonMap.has(plateId)
     }
 
     forEach(callback) {
