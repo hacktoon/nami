@@ -91,6 +91,10 @@ export class PlateModel {
         return this.#typeMap.get(plateId) === TYPE_CONTINENTAL
     }
 
+    isSameType(plate0, plate1) {
+        return this.#typeMap.get(plate0) === this.#typeMap.get(plate1)
+    }
+
     hasHotspot(plateId) {
         return this.#hotspotMap.get(plateId)
     }

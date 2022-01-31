@@ -15,13 +15,14 @@ class TectonicsColorMap {
         const provinceColors = tileMap.getProvinces().map(id => {
             return [id, new Color()]
         })
-        const continentColors = tileMap.getContinents().map(id => {
+        const surfaceColors = tileMap.getSurfaces().map(id => {
             return [id, new Color()]
         })
         this.tileMap = tileMap
         this.plateColorMap = new Map(plateColors)
         this.provinceColorMap = new Map(provinceColors)
-        this.continentColorMap = new Map(continentColors)
+        this.surfaceColorMap = new Map(surfaceColors)
+        console.log(this.surfaceColorMap);
     }
 
     getByPlate(plateId) {
@@ -32,8 +33,8 @@ class TectonicsColorMap {
         return this.provinceColorMap.get(provinceId)
     }
 
-    getByContinent(continentId) {
-        return this.continentColorMap.get(continentId)
+    getBySurface(continentId) {
+        return this.surfaceColorMap.get(continentId)
     }
 }
 
@@ -71,7 +72,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const point = this.tileMap.rect.wrap(_point)
         const plateId = this.tileMap.getPlate(point)
         const province = this.tileMap.getProvince(point)
-        const continent = this.tileMap.getContinent(point)
+        const surface = this.tileMap.getSurface(point)
         const provinceLevel = this.tileMap.getProvinceLevel(point)
         const isBorderPoint = this.tileMap.isPlateBorder(point)
         const isOceanic = this.tileMap.isPlateOceanic(plateId)
@@ -87,8 +88,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             color = color.darken(provinceLevel * 3)
         }
         if (this.showContinents && !isOceanic) {
-            const continentColor = this.colorMap.getByContinent(continent)
-            color = continentColor
+            color = this.colorMap.getBySurface(surface)
         }
         if (this.showFeatures && ! this.showContinents) {
             color = Color.fromHex(feature.color)
