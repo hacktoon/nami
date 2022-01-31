@@ -1,3 +1,4 @@
+import { Random } from '/lib/random'
 import { PairMap } from '/lib/map'
 import { Direction } from '/lib/direction'
 import { Point } from '/lib/point'
@@ -31,11 +32,18 @@ export class BoundaryModel {
         const id = this.#centralProvinceMap.get(region)
         let feature
         if (this.#plateModel.isOceanic(region)) {
-            feature = Feature.TRENCH
+            feature = Random.choice(
+                Feature.TRENCH,
+                Feature.OCEANIC_PLAIN,
+            )
         } else {
-            feature = this.#plateModel.hasCraton(region)
-                ? Feature.PLATFORM
-                : Feature.PLAIN
+            feature = Random.choice(
+                Feature.PLATFORM,
+                Feature.PLAIN,
+                Feature.DEPRESSION,
+                Feature.RIFT_SEA,
+                Feature.HILL,
+            )
         }
         return this.#tectonicsTable.getCentralProvince(id, feature)
     }
