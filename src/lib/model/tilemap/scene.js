@@ -10,7 +10,6 @@ export class TileMapScene {
         'TileMapScene',
         Type.point('focus', "Focus", {default: '77,50'}),
         Type.boolean('wrap', "Wrap", {default: false}),
-        Type.boolean('showMarks', "Show marks", {default: false}),
         Type.number('zoom', "Zoom", {default: 6, step: 1, min: 1, max: 100}),
     )
 
@@ -23,11 +22,9 @@ export class TileMapScene {
         this.frame = new Frame(viewport, zoom)
         this.diagram = diagram
         this.textQueue = []
-        this.markQueue = []
         this.focus = focus
         this.wrap = wrap
         this.zoom = zoom
-        this.showMarks = params.get('showMarks')
         this.viewport = viewport  // TODO: needed only in UITileMapMouse, delete
 
         // TODO: send params to render method, avoid buildind an
@@ -35,32 +32,20 @@ export class TileMapScene {
     }
 
     render(canvas) {
-        const offscreenCanvas = createCanvas(this.width, this.height)
-        const markSize = Math.round(this.zoom / 4)
-        const markCenter = Math.floor(this.zoom / 2)
-
+        // const offscreenCanvas = createCanvas(this.width, this.height)
         this.#renderFrame((tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
                 const color = this.diagram.get(tilePoint)
                 const text = this.diagram.getText(tilePoint)
-                const mark = this.diagram.getMark(tilePoint)
                 canvas.rect(canvasPoint, this.zoom, color)
                 if (text) {
                     this.textQueue.push([canvasPoint, text])
-                }
-                if (mark && this.showMarks) {
-                    this.markQueue.push([canvasPoint, mark])
                 }
 
             } else {
                 canvas.clear(this.zoom, canvasPoint)
             }
         })
-        for(let [canvasPoint, mark] of this.markQueue) {
-            const offset = markCenter - markSize / 2
-            const markPoint = Point.plus(canvasPoint, [offset, offset])
-            canvas.mark(markPoint, markSize, mark)
-        }
         for(let [canvasPoint, text] of this.textQueue) {
             canvas.text(canvasPoint, text, '#FFF')
         }
