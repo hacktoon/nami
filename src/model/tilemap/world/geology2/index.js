@@ -39,12 +39,10 @@ export class GeologyTileMap2 extends TileMap {
 
     constructor(params) {
         super(params)
-        let t0 = performance.now()
         const surfaceSize = params.get('surfaceSize')
         this.#regionTileMap = this._buildRegioTileMap(params)
         this.#plateModel = new PlateModel(this.#regionTileMap)
         this.#surfaceModel = new SurfaceModel(surfaceSize, this.#plateModel)
-        console.log(`GeologyTileMap2: ${Math.round(performance.now() - t0)}ms`);
     }
 
     _buildRegioTileMap(params) {
