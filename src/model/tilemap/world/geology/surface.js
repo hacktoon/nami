@@ -21,8 +21,8 @@ export class SurfaceModel {
         while(plateQueue.size > 0) {
             const plate = plateQueue.random()
             const surfaceType = this._buildType(plateModel, surfaceId, plate)
-            plateCountMap.set(surfaceId, 0)
             this.#surfaceTypeMap.set(surfaceId, surfaceType)
+            plateCountMap.set(surfaceId, 0)
             new SurfaceFloodFill(plate, {
                 plateSurfaceMap: this.#plateSurfaceMap,
                 surfaceId: surfaceId++,
@@ -47,8 +47,7 @@ export class SurfaceModel {
         return this.#plateSurfaceMap.get(plate)
     }
 
-    isContinent(plate) {
-        const surface = this.get(plate)
+    isContinent(surface) {
         return this.#surfaceTypeMap.get(surface) === TYPE_CONTINENT
     }
 

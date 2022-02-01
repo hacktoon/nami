@@ -5,24 +5,30 @@ import { Color } from '/lib/color'
 
 import { TileMapDiagram } from '/lib/model/tilemap'
 
+const PL_LAND = '#574'
+const PL_OCEAN = '#058'
 
-class TectonicsColorMap {
+
+class GeologyColorMap {
     constructor(tileMap) {
         const plateColors = tileMap.map(plateId => {
-            const hex = tileMap.isPlateOceanic(plateId) ? '#058' : '#574'
+            const isOceanic = tileMap.isPlateOceanic(plateId)
+            const hex = isOceanic ? PL_OCEAN: PL_LAND
             return [plateId, Color.fromHex(hex)]
         })
         const provinceColors = tileMap.getProvinces().map(id => {
             return [id, new Color()]
         })
         const surfaceColors = tileMap.getSurfaces().map(id => {
-            return [id, new Color()]
+            const modifier = tileMap.isContinent(id)
+                ? Color.GREEN
+                : Color.BLUE
+            return [id, new Color().average(modifier)]
         })
         this.tileMap = tileMap
         this.plateColorMap = new Map(plateColors)
         this.provinceColorMap = new Map(provinceColors)
         this.surfaceColorMap = new Map(surfaceColors)
-        console.log(this.surfaceColorMap);
     }
 
     getByPlate(plateId) {
@@ -43,14 +49,14 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
         Type.boolean('showPlateBorder', 'Show plate borders', {default: true}),
-        Type.boolean('showContinents', 'Show continents', {default: false}),
+        Type.boolean('showSurface', 'Show surface', {default: false}),
         Type.boolean('showProvince', 'Show province', {default: false}),
         Type.boolean('showProvinceBorder', 'Show province border', {default: false}),
         Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
         Type.boolean('showFeatures', 'Show features', {default: false}),
         Type.boolean('showDirection', 'Show directions', {default: false}),
     )
-    static colorMap = TectonicsColorMap
+    static colorMap = GeologyColorMap
 
     static create(tileMap, colorMap, params) {
         return new GeologyTileMapDiagram(tileMap, colorMap, params)
@@ -59,7 +65,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.showContinents = params.get('showContinents')
+        this.showSurface = params.get('showSurface')
         this.showPlateBorder = params.get('showPlateBorder')
         this.showDirection = params.get('showDirection')
         this.showProvince = params.get('showProvince')
@@ -83,7 +89,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             const provinceColor = this.colorMap.getByProvince(province.id)
             color = provinceColor.average(color).average(color)
         }
-        if (this.showContinents) {
+        if (this.showSurface) {
             color = this.colorMap.getBySurface(surface)
         }
         if (this.showFeatures) {
@@ -109,13 +115,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             const dir = Direction.getSymbol(plateDirection)
             const dirName = Direction.getName(plateDirection)
             return `${plateId}:${dir}${dirName}`
-        }
-    }
-
-    getMark(point) {
-        if (this.tileMap.isPlateOrigin(point)) {
-            const plateId = this.tileMap.getPlate(point)
-            return this.colorMap.getByPlate(plateId).darken(50).toHex()
         }
     }
 }

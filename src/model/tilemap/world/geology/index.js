@@ -90,9 +90,8 @@ export class GeologyTileMap extends TileMap {
     get(point) {
         const plateId = this.getPlate(point)
         const surface = this.getSurface(point)
-        const isContinent = this.#surfaceModel.isContinent(plateId)
+        const isContinent = this.#surfaceModel.isContinent(surface)
         const surfaceType = isContinent ? 'continent' : 'ocean'
-        const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
         const province = this.getProvince(point)
         const maxLevel = this.#provinceModel.getMaxLevel(province.id)
         const provinceLevel = this.getProvinceLevel(point)
@@ -101,10 +100,10 @@ export class GeologyTileMap extends TileMap {
         return [
             `point(${Point.hash(point)})`,
             `surface(${surface}, ${surfaceType})`,
-            `plate ${plateId} at (${Point.hash(regionOrigin)})`,
-            `province: ${province.id}`,
-            `level: ${provinceLevel}/${maxLevel}`,
-            `feature: ${feature.name}`,
+            `plate(${plateId})`,
+            `province(${province.id})`,
+            `level(${provinceLevel}/${maxLevel})`,
+            `feature(${feature.name})`,
         ].join(', ')
     }
 
@@ -135,9 +134,8 @@ export class GeologyTileMap extends TileMap {
         return this.#surfaceModel.get(plateId)
     }
 
-    getSurfaceType(point) {
-        const plateId = this.getPlate(point)
-        return this.#surfaceModel.get(plateId)
+    isContinent(surfaceId) {
+        return this.#surfaceModel.isContinent(surfaceId)
     }
 
     getSurfaces() {
