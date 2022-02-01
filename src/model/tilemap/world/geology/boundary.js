@@ -53,8 +53,8 @@ export class BoundaryModel {
     }
 
     _buildProvinceMap(regionTileMap) {
-        let provinceId = 0
         const provinceMap = new PairMap()
+        let provinceId = 0
         for(let region of regionTileMap.getRegions()) {
             const origin = regionTileMap.getOriginById(region)
             for(let sideRegion of regionTileMap.getSideRegions(region)) {

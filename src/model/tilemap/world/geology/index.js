@@ -22,7 +22,7 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 60, step: 1, min: 1, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),
-    Type.number('surfaceSize', 'Surface size', {default: .25, step: .01, min: .1, max: .9}),
+    Type.number('surfaceSize', 'Surface size', {default: .2, step: .05, min: .1, max: .8}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
