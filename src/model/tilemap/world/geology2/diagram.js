@@ -5,16 +5,16 @@ import { Color } from '/lib/color'
 
 import { TileMapDiagram } from '/lib/model/tilemap'
 
-const PL_LAND = '#574'
-const PL_OCEAN = '#058'
+const LAND_COLOR = Color.fromHex('#574')
+const OCEAN_COLOR = Color.fromHex('#047')
 
 
 class GeologyColorMap {
     constructor(tileMap) {
         const plateColors = tileMap.map(plateId => {
             const isOceanic = tileMap.isPlateOceanic(plateId)
-            const hex = isOceanic ? PL_OCEAN: PL_LAND
-            return [plateId, Color.fromHex(hex)]
+            const color = isOceanic ? OCEAN_COLOR : LAND_COLOR.average(new Color())
+            return [plateId, color]
         })
         const surfaceColors = tileMap.getSurfaces().map(id => {
             const modifier = tileMap.isContinent(id)
@@ -64,11 +64,18 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         let color = this.colorMap.getByPlate(plateId)
 
         if (this.showSurface) {
-            color = color.average(this.colorMap.getBySurface(surface))
+            color = this.colorMap.getBySurface(surface)
         }
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.BLACK).brighten(10)
         }
         return color.toHex()
+    }
+
+    getText(_point) {
+        const point = this.tileMap.rect.wrap(_point)
+        const surface = this.tileMap.getSurface(point)
+        const isPlateOrigin = this.tileMap.isPlateOrigin(point)
+        return `${this.showSurface && isPlateOrigin ? surface : ''}`
     }
 }
