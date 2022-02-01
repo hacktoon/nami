@@ -15,11 +15,13 @@ export class BoundaryModel {
 
     #tectonicsTable
     #plateModel
+    #surfaceModel
     #provinceMap
     #centralProvinceMap = new Map()
 
-    constructor(regionTileMap, tectonicsTable, plateModel) {
+    constructor(regionTileMap, tectonicsTable, plateModel, surfaceModel) {
         this.#plateModel = plateModel
+        this.#surfaceModel = surfaceModel
         this.#tectonicsTable = tectonicsTable
         this.#provinceMap = this._buildProvinceMap(regionTileMap)
     }
