@@ -65,9 +65,9 @@ export class Feature {
 
 
 const FEATURE_TABLE = {
-    [Feature.MOUNTAIN]: {name: 'Mountain', water: false, color: '#AAA'},
-    [Feature.PLATFORM]: {name: 'Platform', water: false, color: '#8b8372'},
-    [Feature.HILL]: {name: 'Hill', water: false, color: '#585'},
+    [Feature.MOUNTAIN]: {name: 'Mountain', water: false, color: '#9A9'},
+    [Feature.PLATFORM]: {name: 'Platform', water: false, color: '#949472'},
+    [Feature.HILL]: {name: 'Hill', water: false, color: '#685'},
     [Feature.PLAIN]: {name: 'Plain', water: false, color: '#574'},
     [Feature.DEPRESSION]: {name: 'Depression', water: false, color: '#4f664c'},
     [Feature.RIFT_SEA]: {name: 'Rift sea', water: true, color: '#058'},

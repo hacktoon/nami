@@ -89,11 +89,11 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             const provinceColor = this.colorMap.getByProvince(province.id)
             color = provinceColor.average(color).average(color)
         }
-        if (this.showSurface) {
-            color = this.colorMap.getBySurface(surface)
-        }
         if (this.showFeatures) {
             color = Color.fromHex(feature.color)
+        }
+        if (this.showSurface) {
+            color = color.average(this.colorMap.getBySurface(surface))
         }
         if (this.showProvinceLevel) {
             color = color.darken(provinceLevel * 3)

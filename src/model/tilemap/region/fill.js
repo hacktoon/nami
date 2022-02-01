@@ -44,6 +44,7 @@ export class RegionMultiFill extends ConcurrentFill {
     }
 
     getChance(fill, origin) {
+        console.log(this.params.get('chance'));
         return this.params.get('chance')
     }
 
