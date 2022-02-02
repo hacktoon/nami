@@ -1,8 +1,5 @@
-import { Direction } from '/lib/direction'
-
-
-const TYPE_CONTINENTAL = 'L'
-const TYPE_OCEANIC = 'W'
+const TYPE_CONTINENTAL = 0
+const TYPE_OCEANIC = 1
 
 
 export class PlateModel {

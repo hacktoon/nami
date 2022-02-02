@@ -54,4 +54,12 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
         return color.toHex()
     }
+
+    getText(_point) {
+        const point = this.tileMap.rect.wrap(_point)
+        const plateId = this.tileMap.getPlate(point)
+        if (this.tileMap.isPlateOrigin(point)) {
+            return `${plateId}`
+        }
+    }
 }

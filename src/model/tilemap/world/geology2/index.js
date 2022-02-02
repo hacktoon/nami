@@ -92,7 +92,6 @@ export class GeologyTileMap2 extends TileMap {
     }
 
     map(callback) {
-        const plates = this.#plateModel.getPlates()
-        return plates.map(callback)
+        return this.#plateModel.getPlates().map(callback)
     }
 }
