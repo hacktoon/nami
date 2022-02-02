@@ -113,6 +113,10 @@ export class RegionTileMap extends TileMap {
         return Array.from(this.borderMap.get(...point) ?? [])
     }
 
+    getBorders() {
+        return this.borderMap.getPairs()
+    }
+
     getSideRegions(regionId) {
         return this.#graph.getEdges(regionId)
     }

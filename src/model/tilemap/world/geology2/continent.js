@@ -1,20 +1,22 @@
-const TYPE_CONTINENTAL = 0
-const TYPE_OCEANIC = 1
+const TYPE_LAND = 0
+const TYPE_OCEAN = 1
 
 
 export class ContinentModel {
     #regionTileMap
     #typeMap
-    #plates
+    #continents
+    #borders
 
     constructor(regionTileMap) {
         this.#regionTileMap = regionTileMap
-        this.#plates = this._buildPlates(regionTileMap)
-        this.#typeMap = this._buildTypeMap(this.#plates)
+        this.#continents = this._buildContinents(regionTileMap)
+        this.#borders = this._buildBorders(regionTileMap)
+        this.#typeMap = this._buildTypeMap(this.#continents)
     }
 
-    _buildPlates(regionTileMap) {
-        // sort by bigger to smaller plates
+    _buildContinents(regionTileMap) {
+        // sort by bigger to smaller continents
         const cmpDescendingArea = (id0, id1) => {
             const area0 = regionTileMap.getRegionAreaById(id0)
             const area1 = regionTileMap.getRegionAreaById(id1)
@@ -23,25 +25,36 @@ export class ContinentModel {
         return regionTileMap.getRegions().sort(cmpDescendingArea)
     }
 
-    _buildTypeMap(plates) {
+    _buildBorders(regionTileMap) {
+        for(let [point, neighbors] of regionTileMap.getBorders()) {
+            const continent = this.getContinent(point)
+
+        }
+    }
+
+    // TODO: move this step further
+    _buildTypeMap(continents) {
         let totalOceanicArea = 0
         const halfArea = Math.floor(this.#regionTileMap.area / 2)
         const types = new Map()
-        plates.forEach(plateId => {
-            totalOceanicArea += this.#regionTileMap.getRegionAreaById(plateId)
+        for (let continent of continents) {
+            totalOceanicArea += this.getArea(continent)
             const isOceanic = totalOceanicArea < halfArea
-            const type = isOceanic ? TYPE_OCEANIC : TYPE_CONTINENTAL
-            types.set(plateId, type)
-        })
+            types.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
+        }
         return types
     }
 
     get size() {
-        return this.#plates.length
+        return this.#continents.length
+    }
+
+    getContinent(point) {
+        return this.#regionTileMap.getRegion(point)
     }
 
     getPlates() {
-        return this.#plates
+        return this.#continents
     }
 
     getSidePlates(plateId) {
@@ -53,11 +66,11 @@ export class ContinentModel {
     }
 
     isOceanic(plateId) {
-        return this.#typeMap.get(plateId) === TYPE_OCEANIC
+        return this.#typeMap.get(plateId) === TYPE_OCEAN
     }
 
     isContinental(plateId) {
-        return this.#typeMap.get(plateId) === TYPE_CONTINENTAL
+        return this.#typeMap.get(plateId) === TYPE_LAND
     }
 
     isSameType(plate0, plate1) {
@@ -65,10 +78,10 @@ export class ContinentModel {
     }
 
     forEach(callback) {
-        this.#plates.forEach(callback)
+        this.#continents.forEach(callback)
     }
 
     map(callback) {
-        this.#plates.map(callback)
+        this.#continents.map(callback)
     }
 }

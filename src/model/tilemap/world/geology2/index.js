@@ -17,7 +17,6 @@ const SCHEMA = new Schema(
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 60, step: 1, min: 1, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),
-    Type.number('surfaceSize', 'Surface size', {default: .2, step: .05, min: .1, max: .8}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -32,16 +31,16 @@ export class GeologyTileMap2 extends TileMap {
         return new GeologyTileMap2(params)
     }
 
-    #plateRegionTileMap
+    #continentRegionTileMap
     #continentModel
 
     constructor(params) {
         super(params)
-        this.#plateRegionTileMap = this._buildPlateRegionTileMap(params)
-        this.#continentModel = new ContinentModel(this.#plateRegionTileMap)
+        this.#continentRegionTileMap = this._buildContinentRegionTileMap(params)
+        this.#continentModel = new ContinentModel(this.#continentRegionTileMap)
     }
 
-    _buildPlateRegionTileMap(params) {
+    _buildContinentRegionTileMap(params) {
         return RegionTileMap.fromData({
             width: params.get('width'),
             height: params.get('height'),
@@ -56,26 +55,26 @@ export class GeologyTileMap2 extends TileMap {
         const plateId = this.getPlate(point)
         return [
             `point(${Point.hash(point)})`,
-            `plate(${plateId})`,
+            `continent(${plateId})`,
         ].join(', ')
     }
 
     getPlate(point) {
-        return this.#plateRegionTileMap.getRegion(point)
+        return this.#continentRegionTileMap.getRegion(point)
     }
 
     getPlateDirection(point) {
-        const plateId = this.#plateRegionTileMap.getRegion(point)
+        const plateId = this.#continentRegionTileMap.getRegion(point)
         return this.#continentModel.getDirection(plateId)
     }
 
     getPlateOrigin(point) {
-        const plateId = this.#plateRegionTileMap.getRegion(point)
-        return this.#plateRegionTileMap.getOriginById(plateId)
+        const plateId = this.#continentRegionTileMap.getRegion(point)
+        return this.#continentRegionTileMap.getOriginById(plateId)
     }
 
     isPlateBorder(point) {
-        return this.#plateRegionTileMap.isBorder(point)
+        return this.#continentRegionTileMap.isBorder(point)
     }
 
     isPlateOceanic(plateId) {
@@ -83,7 +82,7 @@ export class GeologyTileMap2 extends TileMap {
     }
 
     isPlateOrigin(point) {
-        const regionOrigin = this.#plateRegionTileMap.getRegionOrigin(point)
+        const regionOrigin = this.#continentRegionTileMap.getRegionOrigin(point)
         return Point.equals(regionOrigin, point)
     }
 

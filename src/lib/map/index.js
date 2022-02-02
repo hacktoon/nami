@@ -55,29 +55,47 @@ export class IndexMap {
  * Maps a pair of values to any value
  */
 export class PairMap {
+    #sources
+    #size
+
     constructor() {
-        this.size = 0
-        this._sources = new Map()
+        this.#size = 0
+        this.#sources = new Map()
+    }
+
+    get size() {
+        return this.#size
     }
 
     get(source, target) {
-        return this._sources.get(source).get(target)
+        return this.#sources.get(source).get(target)
+    }
+
+    getPairs() {
+        const items = []
+        this.#sources.forEach((yMap, x) => {
+            yMap.forEach((value, y) => {
+                const point = [x, y]
+                items.push([point, value])
+            })
+        })
+        return items
     }
 
     set(source, target, value) {
-        if (! this._sources.has(source)) {
-            this._sources.set(source, new Map())
+        if (! this.#sources.has(source)) {
+            this.#sources.set(source, new Map())
         }
-        const targets = this._sources.get(source)
+        const targets = this.#sources.get(source)
         if (! targets.has(target)) {
             targets.set(target, value)
-            this.size++
+            this.#size++
         }
     }
 
     has(source, target) {
-        if (! this._sources.has(source)) return false
-        return this._sources.get(source).has(target)
+        if (! this.#sources.has(source)) return false
+        return this.#sources.get(source).has(target)
     }
 
     delete([x, y]) {
@@ -87,7 +105,15 @@ export class PairMap {
         if (yMap.size === 0) {
             this.map.delete(x)
         }
-        this.size--
+        this.#size--
         return true
+    }
+
+    forEach(callback) {
+        this.#sources.forEach((yMap, x) => {
+            yMap.forEach((value, y) => {
+                callback([x, y], value)
+            })
+        })
     }
 }

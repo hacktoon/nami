@@ -93,3 +93,27 @@ test("PairMap can set values", () => {
     expect(pairMap.get(2, 2)).toBe('third')
 })
 
+
+test("PairMap forEach", () => {
+    const pairMap = new PairMap()
+    pairMap.set(0, 0, 'first')
+    pairMap.set(1, 1, 'second')
+    pairMap.set(2, 2, 'third')
+    const points = []
+    const values = []
+    pairMap.forEach((point, value) => {
+        points.push(point)
+        values.push(value)
+    })
+    expect(points).toStrictEqual([
+        [0, 0],
+        [1, 1],
+        [2, 2],
+    ])
+    expect(values).toStrictEqual([
+        'first',
+        'second',
+        'third',
+    ])
+})
+
