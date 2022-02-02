@@ -6,7 +6,6 @@ import { UITileMap } from '/ui/tilemap'
 
 import { RegionTileMap } from '/model/tilemap/region'
 import { PlateModel } from './plate'
-import { SurfaceModel } from './surface'
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -33,86 +32,63 @@ export class GeologyTileMap2 extends TileMap {
         return new GeologyTileMap2(params)
     }
 
-    #regionTileMap
+    #plateRegionTileMap
     #plateModel
-    #surfaceModel
 
     constructor(params) {
         super(params)
-        const surfaceSize = params.get('surfaceSize')
-        this.#regionTileMap = this._buildRegioTileMap(params)
-        this.#plateModel = new PlateModel(this.#regionTileMap)
-        this.#surfaceModel = new SurfaceModel(surfaceSize, this.#plateModel)
+        this.#plateRegionTileMap = this._buildPlateRegionTileMap(params)
+        this.#plateModel = new PlateModel(this.#plateRegionTileMap)
     }
 
-    _buildRegioTileMap(params) {
+    _buildPlateRegionTileMap(params) {
         return RegionTileMap.fromData({
-            seed: this.seed,
             width: params.get('width'),
             height: params.get('height'),
             scale: params.get('scale'),
             growth: params.get('growth'),
             chance: params.get('chance'),
+            seed: this.seed,
         })
     }
 
     get(point) {
         const plateId = this.getPlate(point)
-        const surface = this.getSurface(point)
-        const isContinent = this.#surfaceModel.isContinent(surface)
-        const surfaceType = isContinent ? 'continent' : 'ocean'
-
         return [
             `point(${Point.hash(point)})`,
-            `surface(${surface}, ${surfaceType})`,
             `plate(${plateId})`,
         ].join(', ')
     }
 
     getPlate(point) {
-        return this.#regionTileMap.getRegion(point)
+        return this.#plateRegionTileMap.getRegion(point)
     }
 
     getPlateDirection(point) {
-        const plateId = this.#regionTileMap.getRegion(point)
+        const plateId = this.#plateRegionTileMap.getRegion(point)
         return this.#plateModel.getDirection(plateId)
     }
 
     getPlateOrigin(point) {
-        const plateId = this.#regionTileMap.getRegion(point)
-        return this.#regionTileMap.getOriginById(plateId)
+        const plateId = this.#plateRegionTileMap.getRegion(point)
+        return this.#plateRegionTileMap.getOriginById(plateId)
     }
 
     isPlateBorder(point) {
-        return this.#regionTileMap.isBorder(point)
+        return this.#plateRegionTileMap.isBorder(point)
     }
 
     isPlateOceanic(plateId) {
         return this.#plateModel.isOceanic(plateId)
     }
 
-    getSurface(point) {
-        const plateId = this.getPlate(point)
-        return this.#surfaceModel.get(plateId)
-    }
-
-    isContinent(surfaceId) {
-        return this.#surfaceModel.isContinent(surfaceId)
-    }
-
-    getSurfaces() {
-        return this.#surfaceModel.getSurfaces()
-    }
-
     isPlateOrigin(point) {
-        const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
+        const regionOrigin = this.#plateRegionTileMap.getRegionOrigin(point)
         return Point.equals(regionOrigin, point)
     }
 
     getDescription() {
-        const continentCount = this.#surfaceModel.getContinents().length
-        const oceanCount = this.#surfaceModel.getOceans().length
-        return `${this.#plateModel.size} plates, ${continentCount} continents, ${oceanCount} oceans`
+        return `${this.#plateModel.size} plates`
     }
 
     map(callback) {
