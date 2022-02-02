@@ -9,6 +9,8 @@
 - Rename Diagram to PixelMap
 
 #### GeologyTileMap
+- water relief
+- land relief
 - CONTINENTS
   - put islands on ocean-ocean borders
   - isolated continent: surrounded by water on all provinces

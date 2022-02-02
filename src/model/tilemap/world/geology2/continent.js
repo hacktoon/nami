@@ -2,7 +2,7 @@ const TYPE_CONTINENTAL = 0
 const TYPE_OCEANIC = 1
 
 
-export class PlateModel {
+export class ContinentModel {
     #regionTileMap
     #typeMap
     #plates

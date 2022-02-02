@@ -5,7 +5,7 @@ import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
 import { RegionTileMap } from '/model/tilemap/region'
-import { PlateModel } from './plate'
+import { ContinentModel } from './continent'
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -33,12 +33,12 @@ export class GeologyTileMap2 extends TileMap {
     }
 
     #plateRegionTileMap
-    #plateModel
+    #continentModel
 
     constructor(params) {
         super(params)
         this.#plateRegionTileMap = this._buildPlateRegionTileMap(params)
-        this.#plateModel = new PlateModel(this.#plateRegionTileMap)
+        this.#continentModel = new ContinentModel(this.#plateRegionTileMap)
     }
 
     _buildPlateRegionTileMap(params) {
@@ -66,7 +66,7 @@ export class GeologyTileMap2 extends TileMap {
 
     getPlateDirection(point) {
         const plateId = this.#plateRegionTileMap.getRegion(point)
-        return this.#plateModel.getDirection(plateId)
+        return this.#continentModel.getDirection(plateId)
     }
 
     getPlateOrigin(point) {
@@ -79,7 +79,7 @@ export class GeologyTileMap2 extends TileMap {
     }
 
     isPlateOceanic(plateId) {
-        return this.#plateModel.isOceanic(plateId)
+        return this.#continentModel.isOceanic(plateId)
     }
 
     isPlateOrigin(point) {
@@ -88,10 +88,10 @@ export class GeologyTileMap2 extends TileMap {
     }
 
     getDescription() {
-        return `${this.#plateModel.size} plates`
+        return `${this.#continentModel.size} plates`
     }
 
     map(callback) {
-        return this.#plateModel.getPlates().map(callback)
+        return this.#continentModel.getPlates().map(callback)
     }
 }
