@@ -71,7 +71,7 @@ export class RealmTileMapDiagram extends TileMapDiagram {
             return '#000'
         }
         if (this.showRealmBorder && this.tileMap.isRealmBorder(point)) {
-            return realmColor.darken(50).toHex()
+            return Color.BLACK.average(realmColor).toHex()
         }
         if (this.showRealms) {
             if (this.showRegions)
