@@ -17,11 +17,11 @@ const SCHEMA = new Schema(
     ID,
     Type.number('width', 'W', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'H', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('scale', 'Scale', {default: 34, step: 1, min: 1, max: 100}),
+    Type.number('scale', 'Scale', {default: 33, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 1, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .1, min: .1, max: 1}),
-    Type.number('growth', 'Growth', {default: 25, step: 1, min: 0, max: 100}),
-    Type.number('rgScale', 'RgScale', {default: 2, step: 1, min: 1, max: 100}),
-    Type.number('rgGrowth', 'RgGrowth', {default: 0, step: 1, min: 0, max: 100}),
+    Type.number('rgScale', 'RgScale', {default: 5, step: 1, min: 1, max: 100}),
+    Type.number('rgGrowth', 'RgGrowth', {default: 10, step: 1, min: 0, max: 100}),
     Type.number('rgChance', 'RgChance', {default: .1, step: .1, min: .1, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )
@@ -43,18 +43,28 @@ export class RealmTileMap extends TileMap {
         return new RealmTileMap(params)
     }
 
+    #realms
+    #graph
+    #regionTileMap
+
     constructor(params) {
         super(params)
         let t0 = performance.now()
-        this.regionTileMap = this._buildRegionTileMap(params)
+        this.#regionTileMap = this._buildRegionTileMap(params)
         this.realmSamples = new RealmSampling(
-            this.regionTileMap,
+            this.#regionTileMap,
             params.get('scale'))
-        this.realms = this.realmSamples.map((_, id) => id)
-        this._graph = new Graph()
+        this.#realms = this.realmSamples.map((_, id) => id)
+        this.#graph = new Graph()
         this.borderRegionSet = new Set()
         this.regionToRealm = new Map()
-        this.mapFill = new RealmMultiFill(this, params)
+        this.mapFill = new RealmMultiFill(this.realmSamples.points, {
+            regionTileMap: this.#regionTileMap,
+            regionToRealm: this.regionToRealm,
+            borderRegionSet: this.borderRegionSet,
+            graph: this.#graph,
+            params,
+        })
         this.mapFill.fill()
         this.borderRegions = Array.from(this.borderRegionSet)
         console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
@@ -75,15 +85,11 @@ export class RealmTileMap extends TileMap {
     }
 
     get size() {
-        return this.realms.length
-    }
-
-    get origins() {
-        return this.realmSamples.points
+        return this.#realms.length
     }
 
     get graph() {
-        return this._graph
+        return this.#graph
     }
 
     getRealm(point) {
@@ -92,7 +98,7 @@ export class RealmTileMap extends TileMap {
     }
 
     getRealms() {
-        return this.realms
+        return this.#realms
     }
 
     getRealmOrigin(point) {
@@ -104,22 +110,17 @@ export class RealmTileMap extends TileMap {
         return this.realmSamples.points[id]
     }
 
-    getRealmAreaById(id) {
-        // TODO: remove this reference, store areas in constructor
-        return this.mapFill.getArea(id)
-    }
-
     getRealmsDescOrder() {
         const cmpDescendingArea = (id0, id1) => {
             const area0 = this.mapFill.getArea(id0)
             const area1 = this.mapFill.getArea(id1)
             return area1 - area0
         }
-        return this.realms.sort(cmpDescendingArea)
+        return this.#realms.sort(cmpDescendingArea)
     }
 
     getNeighborRealms(realmId) {
-        return this._graph.getEdges(realmId)
+        return this.#graph.getEdges(realmId)
     }
 
     getRealmByRegion(regionId) {
@@ -127,7 +128,7 @@ export class RealmTileMap extends TileMap {
     }
 
     isRealmBorder(point) {
-        const neighborRegionIds = this.regionTileMap.getBorderRegions(point)
+        const neighborRegionIds = this.#regionTileMap.getBorderRegions(point)
         if (neighborRegionIds.length === 0) return false
         const realmId = this.getRealm(point)
         for (let regionId of neighborRegionIds) {
@@ -138,15 +139,15 @@ export class RealmTileMap extends TileMap {
     }
 
     getRegion(point) {
-        return this.regionTileMap.getRegion(point)
+        return this.#regionTileMap.getRegion(point)
     }
 
     getRegions() {
-        return this.regionTileMap.getRegions()
+        return this.#regionTileMap.getRegions()
     }
 
     getRegionOrigin(point) {
-        return this.regionTileMap.getRegionOrigin(point)
+        return this.#regionTileMap.getRegionOrigin(point)
     }
 
     getBorderRegions() {
@@ -154,7 +155,7 @@ export class RealmTileMap extends TileMap {
     }
 
     getSideRegions(regionId) {
-        return this.regionTileMap.getSideRegions(regionId)
+        return this.#regionTileMap.getSideRegions(regionId)
     }
 
     isBorderRegion(regionId) {
@@ -162,26 +163,26 @@ export class RealmTileMap extends TileMap {
     }
 
     isRegionBorder(point) {
-        return this.regionTileMap.isBorder(point)
+        return this.#regionTileMap.isBorder(point)
     }
 
-    getAverageRegionArea() {
-        return Math.round(this.area / this.regionTileMap.size)
-    }
-
-    isRealmSample(regionId, showFillLevel) {
-        const centerRegion = this.realmSamples.getCenter(regionId)
-        const realm = this.getRealmByRegion(centerRegion)
-        if (showFillLevel < 0 || showFillLevel >= this.realms.length)
-            return false
-        return this.realms[showFillLevel] == realm
+    wrap(point) {
+        return this.#regionTileMap.regionMatrix.wrap(point)
     }
 
     map(callback) {
-        return this.realms.map(callback)
+        return this.#realms.map(callback)
+    }
+
+    mapRegions(callback) {
+        return this.#regionTileMap.map(callback)
     }
 
     forEach(callback) {
-        this.realms.forEach(callback)
+        this.#realms.forEach(callback)
+    }
+
+    getDescription() {
+        return `Realms: ${this.#realms.length}, Area: ${this.area}`
     }
 }

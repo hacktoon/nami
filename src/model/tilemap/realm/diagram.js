@@ -22,7 +22,7 @@ class RealmColorMap {
     constructor(realmTileMap) {
         const randColor = _ => [_, new Color()]
         const realmEntries = realmTileMap.map(randColor)
-        const regionEntries = realmTileMap.regionTileMap.map(randColor)
+        const regionEntries = realmTileMap.mapRegions(randColor)
         this.#regionMap = new Map(regionEntries)
         this.#realmMap = new Map(realmEntries)
     }
@@ -62,7 +62,7 @@ export class RealmTileMapDiagram extends TileMapDiagram {
         const isBorderRegion = this.tileMap.isBorderRegion(regionId)
         const realmColor = this.colorMap.getByRealm(realmId)
         const regionColor = this.colorMap.getByRegion(regionId)
-        const origin = this.tileMap.regionTileMap.regionMatrix.wrap(point)
+        const origin = this.tileMap.wrap(point)
         let color = realmColor
 
         if (this.showCenters && Point.equals(realmOrigin, origin)) {
