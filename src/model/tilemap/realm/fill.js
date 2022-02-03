@@ -19,10 +19,6 @@ export class RealmMultiFill extends ConcurrentFill {
 
 
 class RealmFloodFill extends ConcurrentFillUnit {
-    /*
-    the fill id is realmId
-    fill regions
-    */
     setValue(fill, regionId, level) {
         fill.context.regionToRealm.set(regionId, fill.id)
     }
