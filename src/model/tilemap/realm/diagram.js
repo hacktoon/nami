@@ -12,7 +12,6 @@ const SCHEMA = new Schema(
     Type.boolean('showRealmBorder', 'Show realm border', {default: true}),
     Type.boolean('showRegions', 'Show regions', {default: false}),
     Type.boolean('showBorderRegion', 'Show border region', {default: false}),
-    Type.number('showFillLevel', 'Show fill level', {default: 0}),
 )
 
 
@@ -54,7 +53,6 @@ export class RealmTileMapDiagram extends TileMapDiagram {
         this.showRegions = params.get('showRegions')
         this.showRealmBorder = params.get('showRealmBorder')
         this.showBorderRegion = params.get('showBorderRegion')
-        this.showFillLevel = params.get('showFillLevel')
     }
 
     get(point) {
@@ -71,9 +69,6 @@ export class RealmTileMapDiagram extends TileMapDiagram {
             if (this.showRealms)
                 return realmColor.invert().toHex()
             return '#000'
-        }
-        if (this.tileMap.isRealmSample(regionId, this.showFillLevel)) {
-            return '#C40'
         }
         if (this.showRealmBorder && this.tileMap.isRealmBorder(point)) {
             return realmColor.darken(50).toHex()

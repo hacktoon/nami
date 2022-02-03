@@ -26,7 +26,7 @@ export class RealmSampling {
             // a set to check own filled regions for each instance
             const fillProps = {filledRegions: new Set(), ...baseFillProps}
             const originRegion = this.regionIndexMap.random()
-            const fill = new SamplingFloodFill(originRegion, fillProps)
+            const fill = new RealmFloodFill(originRegion, fillProps)
             const originPoint = this.regionTileMap.getOriginById(originRegion)
             fill.growFull()
             this.#regions.push(originRegion)
@@ -55,7 +55,7 @@ export class RealmSampling {
 }
 
 
-class SamplingFloodFill extends SingleFillUnit {
+class RealmFloodFill extends SingleFillUnit {
     setValue(regionId, level) {
         this.context.regionIndexMap.delete(regionId)
         this.context.filledRegions.add(regionId)

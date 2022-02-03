@@ -11,7 +11,7 @@ export class ContinentModel {
     constructor(regionTileMap) {
         this.#regionTileMap = regionTileMap
         this.#continents = this._buildContinents(regionTileMap)
-        this.#borders = this._buildBorders(regionTileMap)
+        this.#borders = regionTileMap.getBorders()
         this.#typeMap = this._buildTypeMap(this.#continents)
     }
 
@@ -23,13 +23,6 @@ export class ContinentModel {
             return area1 - area0
         }
         return regionTileMap.getRegions().sort(cmpDescendingArea)
-    }
-
-    _buildBorders(regionTileMap) {
-        for(let [point, neighbors] of regionTileMap.getBorders()) {
-            const continent = this.getContinent(point)
-
-        }
     }
 
     // TODO: move this step further
@@ -55,6 +48,10 @@ export class ContinentModel {
 
     getPlates() {
         return this.#continents
+    }
+
+    getBorders() {
+        return this.#borders
     }
 
     getSidePlates(plateId) {
