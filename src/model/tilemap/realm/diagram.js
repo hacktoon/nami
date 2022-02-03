@@ -86,12 +86,4 @@ export class RealmTileMapDiagram extends TileMapDiagram {
         }
         return '#FFF'
     }
-
-    // getText(point) {
-    //     const realm = this.tileMap.getRealm(point)
-    //     if (Point.equals(realm.origin, point)) {
-    //         return String(realm.id)
-    //     }
-    //     return ''
-    // }
 }
