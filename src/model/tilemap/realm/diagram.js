@@ -55,17 +55,17 @@ export class RealmTileMapDiagram extends TileMapDiagram {
         this.showBorderRegion = params.get('showBorderRegion')
     }
 
-    get(point) {
+    get(_point) {
+        const point = this.tileMap.rect.wrap(_point)
         const realmId = this.tileMap.getRealm(point)
         const realmOrigin = this.tileMap.getRealmOrigin(point)
         const regionId = this.tileMap.getRegion(point)
         const isBorderRegion = this.tileMap.isBorderRegion(regionId)
         const realmColor = this.colorMap.getByRealm(realmId)
         const regionColor = this.colorMap.getByRegion(regionId)
-        const origin = this.tileMap.wrap(point)
         let color = realmColor
 
-        if (this.showCenters && Point.equals(realmOrigin, origin)) {
+        if (this.showCenters && Point.equals(realmOrigin, point)) {
             if (this.showRealms)
                 return realmColor.invert().toHex()
             return '#000'

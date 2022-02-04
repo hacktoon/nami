@@ -110,10 +110,10 @@ export class RealmTileMap extends TileMap {
     }
 
     isRealmBorder(point) {
-        const neighborRegionIds = this.#regionTileMap.getBorderRegions(point)
-        if (neighborRegionIds.length === 0) return false
+        const sideRegions = this.#regionTileMap.getBorderRegions(point)
+        if (sideRegions.length === 0) return false
         const realmId = this.getRealm(point)
-        for (let regionId of neighborRegionIds) {
+        for (let regionId of sideRegions) {
             const id = this.#regionToRealm.get(regionId)
             if (id !== realmId) return true
         }
