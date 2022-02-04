@@ -4,7 +4,7 @@ import { Point } from '/lib/point'
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
-import { RegionTileMap } from '/model/tilemap/region'
+import { RealmTileMap } from '/model/tilemap/realm'
 import { ContinentModel } from './continent'
 import { GeologyTileMapDiagram } from './diagram'
 
@@ -14,9 +14,12 @@ const SCHEMA = new Schema(
     ID,
     Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
     Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
-    Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 60, step: 1, min: 1, max: 100}),
-    Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),
+    Type.number('continentScale', 'Continent scale', {
+        default: 33, step: 1, min: 1, max: 100
+    }),
+    Type.number('provinceScale', 'Province scale', {
+        default: 5, step: 1, min: 1, max: 40
+    }),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -31,66 +34,63 @@ export class GeologyTileMap2 extends TileMap {
         return new GeologyTileMap2(params)
     }
 
-    #continentRegionTileMap
+    #realmTileMap
     #continentModel
 
     constructor(params) {
         super(params)
-        this.#continentRegionTileMap = this._buildContinentRegionTileMap(params)
-        this.#continentModel = new ContinentModel(this.#continentRegionTileMap)
+        this.#realmTileMap = this._buildRealmTileMap(params)
+        // this.#continentModel = new ContinentModel(this.#realmTileMap)
     }
 
-    _buildContinentRegionTileMap(params) {
-        return RegionTileMap.fromData({
+    _buildRealmTileMap(params) {
+        return RealmTileMap.fromData({
             width: params.get('width'),
             height: params.get('height'),
-            scale: params.get('scale'),
-            growth: params.get('growth'),
-            chance: params.get('chance'),
+            scale: params.get('continentScale'),
+            growth: 1,
+            chance: .1,
+            rgScale: params.get('provinceScale'),
+            rgGrowth: 10,
+            rgChance: .1,
             seed: this.seed,
         })
     }
 
     get(point) {
-        const plateId = this.getPlate(point)
-        return [
-            `point(${Point.hash(point)})`,
-            `continent(${plateId})`,
-        ].join(', ')
+        const plateId = this.getContinent(point)
+        return {
+            point: Point.hash(point),
+            continent: plateId,
+        }
     }
 
-    getPlate(point) {
-        return this.#continentRegionTileMap.getRegion(point)
+    getContinent(point) {
+        return this.#realmTileMap.getRealm(point)
     }
 
-    getPlateDirection(point) {
-        const plateId = this.#continentRegionTileMap.getRegion(point)
-        return this.#continentModel.getDirection(plateId)
+    getContinents() {
+        return this.#realmTileMap.getRealms()
     }
 
-    getPlateOrigin(point) {
-        const plateId = this.#continentRegionTileMap.getRegion(point)
-        return this.#continentRegionTileMap.getOriginById(plateId)
+    getContinentOrigin(point) {
+        return this.#realmTileMap.getRealmOrigin(point)
     }
 
-    isPlateBorder(point) {
-        return this.#continentRegionTileMap.isBorder(point)
+    isContinentBorder(point) {
+        return this.#realmTileMap.isRealmBorder(point)
     }
 
-    isPlateOceanic(plateId) {
-        return this.#continentModel.isOceanic(plateId)
-    }
-
-    isPlateOrigin(point) {
-        const regionOrigin = this.#continentRegionTileMap.getRegionOrigin(point)
-        return Point.equals(regionOrigin, point)
+    isContinentOrigin(point) {
+        const origin = this.getContinentOrigin(point)
+        return Point.equals(origin, point)
     }
 
     getDescription() {
-        return `${this.#continentModel.size} plates`
+        return `${this.#realmTileMap.size} continents`
     }
 
     map(callback) {
-        return this.#continentModel.getPlates().map(callback)
+        return this.getContinents().map(callback)
     }
 }

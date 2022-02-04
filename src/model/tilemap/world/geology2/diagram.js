@@ -1,6 +1,5 @@
 import { Schema } from '/lib/schema'
 import { Type } from '/lib/type'
-import { Direction } from '/lib/direction'
 import { Color } from '/lib/color'
 
 import { TileMapDiagram } from '/lib/model/tilemap'
@@ -10,18 +9,19 @@ const OCEAN_COLOR = Color.fromHex('#047')
 
 
 class GeologyColorMap {
+    #continentColorMap
+
     constructor(tileMap) {
-        const plateColors = tileMap.map(plateId => {
-            const isOceanic = tileMap.isPlateOceanic(plateId)
-            const color = isOceanic ? OCEAN_COLOR : LAND_COLOR.average(new Color())
-            return [plateId, color]
+        const continentColors = tileMap.map(continent => {
+            const color = continent % 2 ? OCEAN_COLOR : LAND_COLOR.average(new Color())
+            return [continent, color]
         })
         this.tileMap = tileMap
-        this.plateColorMap = new Map(plateColors)
+        this.#continentColorMap = new Map(continentColors)
     }
 
-    getByPlate(plateId) {
-        return this.plateColorMap.get(plateId)
+    getByContinent(continent) {
+        return this.#continentColorMap.get(continent)
     }
 }
 
@@ -29,7 +29,7 @@ class GeologyColorMap {
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
-        Type.boolean('showPlateBorder', 'Show plate borders', {default: true}),
+        Type.boolean('showContinentBorder', 'Continent borders', {default: true}),
     )
     static colorMap = GeologyColorMap
 
@@ -40,16 +40,16 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.showPlateBorder = params.get('showPlateBorder')
+        this.showContinentBorder = params.get('showContinentBorder')
     }
 
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
-        const plateId = this.tileMap.getPlate(point)
-        const isBorderPoint = this.tileMap.isPlateBorder(point)
-        let color = this.colorMap.getByPlate(plateId)
+        const continent = this.tileMap.getContinent(point)
+        const isBorderPoint = this.tileMap.isContinentBorder(point)
+        let color = this.colorMap.getByContinent(continent)
 
-        if (this.showPlateBorder && isBorderPoint) {
+        if (this.showContinentBorder && isBorderPoint) {
             color = color.average(Color.BLACK).brighten(10)
         }
         return color.toHex()
@@ -57,9 +57,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     getText(_point) {
         const point = this.tileMap.rect.wrap(_point)
-        const plateId = this.tileMap.getPlate(point)
-        if (this.tileMap.isPlateOrigin(point)) {
-            return `${plateId}`
+        const continent = this.tileMap.getContinent(point)
+        if (this.tileMap.isContinentOrigin(point)) {
+            return `${continent}`
         }
     }
 }
