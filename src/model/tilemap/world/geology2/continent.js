@@ -1,4 +1,6 @@
 import { Point } from '/lib/point'
+import { Random } from '/lib/random'
+import { PairMap } from '/lib/map'
 
 
 const TYPE_LAND = 0
@@ -9,13 +11,13 @@ export class ContinentModel {
     #realmTileMap
     #typeMap
     #continents
-    #borders
+    #borderMap
 
     constructor(realmTileMap) {
         this.#realmTileMap = realmTileMap
         this.#continents = this._buildContinents()
-        // this.#borders = realmTileMap.getBorders()
         this.#typeMap = this._buildTypeMap(this.#continents)
+        this.#borderMap = this._buildBorderMap(realmTileMap)
     }
 
     _buildContinents() {
@@ -38,6 +40,17 @@ export class ContinentModel {
             types.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
         }
         return types
+    }
+
+    _buildBorderMap(realmTileMap) {
+        const borderMap = new PairMap()
+        for(let continent of realmTileMap.getRealms()) {
+            for(let sideContinent of realmTileMap.getSideRealms(continent)) {
+                const border = Random.chance(.5) ? TYPE_OCEAN : TYPE_LAND
+                borderMap.set(continent, sideContinent, border)
+            }
+        }
+        return borderMap
     }
 
     get size() {
@@ -75,6 +88,14 @@ export class ContinentModel {
     isOrigin(point) {
         const origin = this.getOrigin(point)
         return Point.equals(origin, point)
+    }
+
+    isLandBorder(continent, sideContinent) {
+        return this.#borderMap.get(continent, sideContinent) === TYPE_LAND
+    }
+
+    isOceanicBorder(continent, sideContinent) {
+        return this.#borderMap.get(continent, sideContinent) === TYPE_OCEAN
     }
 
     forEach(callback) {

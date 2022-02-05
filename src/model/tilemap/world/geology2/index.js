@@ -43,7 +43,10 @@ export class GeologyTileMap2 extends TileMap {
         super(params)
         this.#realmTileMap = this._buildRealmTileMap(params)
         this.#continentModel = new ContinentModel(this.#realmTileMap)
-        this.#provinceModel = new ProvinceModel(this.#realmTileMap)
+        this.#provinceModel = new ProvinceModel(
+            this.#realmTileMap,
+            this.#continentModel
+        )
     }
 
     _buildRealmTileMap(params) {
