@@ -1,10 +1,14 @@
 export class ProvinceModel {
     #realmTileMap
     #provinces
+    #cornerMap = new Map()
 
     constructor(realmTileMap) {
         this.#realmTileMap = realmTileMap
-        this.#provinces = []
+        this.#provinces = realmTileMap.getRegions()
+        this.#provinces.forEach(province => {
+
+        })
     }
 
     get size() {
@@ -13,6 +17,10 @@ export class ProvinceModel {
 
     get(point) {
         return this.#realmTileMap.getRegion(point)
+    }
+
+    isCorner(province) {
+        return this.#realmTileMap.isCornerRegion(province)
     }
 
     isBorder(point) {

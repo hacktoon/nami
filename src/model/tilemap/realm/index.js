@@ -48,6 +48,7 @@ export class RealmTileMap extends TileMap {
     #realmSamples
     #borderRegions = []
     #borderRegionSet = new Set()
+    #cornerRegionSet = new Set()
     #regionToRealm = new Map()
     #areaMap = new Map()
     #graph = new Graph()
@@ -56,6 +57,7 @@ export class RealmTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         const scale = params.get('scale')
+        const cornerCount = new Map()
         this.#regionTileMap = this._buildRegionTileMap(params)
         this.#realmSamples = new RealmSampling(this.#regionTileMap, scale)
         this.#realms = this.#realmSamples.map((_, id) => {
@@ -66,11 +68,11 @@ export class RealmTileMap extends TileMap {
             regionTileMap: this.#regionTileMap,
             regionToRealm: this.#regionToRealm,
             borderRegionSet: this.#borderRegionSet,
-            borderRegions: this.#borderRegions,
             areaMap: this.#areaMap,
             graph: this.#graph,
             params,
         }).fill()
+        this.#borderRegions = Array.from(this.#borderRegionSet)
         console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
@@ -152,12 +154,16 @@ export class RealmTileMap extends TileMap {
         return this.#borderRegions
     }
 
-    getSideRegions(regionId) {
-        return this.#regionTileMap.getSideRegions(regionId)
+    getSideRegions(region) {
+        return this.#regionTileMap.getSideRegions(region)
     }
 
-    isBorderRegion(regionId) {
-        return this.#borderRegionSet.has(regionId)
+    isBorderRegion(region) {
+        return this.#borderRegionSet.has(region)
+    }
+
+    isCornerRegion(region) {
+        return this.#cornerRegionSet.has(region)
     }
 
     isRegionBorder(point) {

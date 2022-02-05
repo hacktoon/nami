@@ -49,10 +49,15 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
         const continent = this.tileMap.continent.get(point)
+        const province = this.tileMap.province.get(point)
         const isBorderPoint = this.tileMap.continent.isBorder(point)
         const isProvinceBorder = this.tileMap.province.isBorder(point)
+        const isCornerProvince = this.tileMap.province.isCorner(province)
         let color = this.colorMap.getByContinent(continent)
 
+        if (isCornerProvince) {
+            color = Color.fromHex('#07A')
+        }
         if (this.showProvinceBorder && isProvinceBorder) {
             color = color.brighten(20)
         }

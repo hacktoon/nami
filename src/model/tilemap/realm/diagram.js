@@ -77,7 +77,7 @@ export class RealmTileMapDiagram extends TileMapDiagram {
             if (this.showRegions)
                 color = regionColor.average(realmColor).average(realmColor)
             if (this.showBorderRegion && isBorderRegion)
-                return color.darken(90).toHex()
+                return color.average(Color.BLACK).toHex()
             return color.toHex()
         }
         if (this.showRegions) {

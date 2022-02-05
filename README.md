@@ -9,26 +9,19 @@
 - Rename Diagram to PixelMap
 
 #### GeologyTileMap
-- water relief
-- land relief
-- CONTINENTS
-  - put islands on ocean-ocean borders
-  - isolated continent: surrounded by water on all provinces
+- TECTONICS
+  ```
+    loop region
+      loop sideRegion
 
-- PROVINCES
-  - make type: continental shelf for submerged provinces
+  ```
+- PROVINCE
+  - water
   - each province may be a basin, uplift?
   - central province may be a plateau, sea or hills
-  - Use as inspiration: https://en.wikipedia.org/wiki/Geologic_province
-
-- FEATURES
-  - start concurrent fill for each border point inside and outside of features
-  - set feature's noise for each fill level from center
 
 - Redefine HotspotsModel as VolcanismModel
-  - Hotspots step should build map of region => hasHotspot or volcanism map
-  - Hydrothermal vents on border of rifts
-  - Transform peaks to volcanoes, with chance
+  - hotspot provinces
 
 #### TerrainTileMap
 - Recreate erosion algorithm using regions
