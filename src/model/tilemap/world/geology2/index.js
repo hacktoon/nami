@@ -5,8 +5,9 @@ import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
 import { RealmTileMap } from '/model/tilemap/realm'
-import { ContinentModel } from './continent'
 import { GeologyTileMapDiagram } from './diagram'
+import { ContinentModel } from './continent'
+import { ProvinceModel } from './province'
 
 
 const ID = 'GeologyTileMap2'
@@ -36,11 +37,13 @@ export class GeologyTileMap2 extends TileMap {
 
     #realmTileMap
     #continentModel
+    #provinceModel
 
     constructor(params) {
         super(params)
         this.#realmTileMap = this._buildRealmTileMap(params)
         this.#continentModel = new ContinentModel(this.#realmTileMap)
+        this.#provinceModel = new ProvinceModel(this.#realmTileMap)
     }
 
     _buildRealmTileMap(params) {
@@ -59,8 +62,10 @@ export class GeologyTileMap2 extends TileMap {
 
     get(point) {
         const continent = this.continent.get(point)
+        const province = this.province.get(point)
         return {
-            id: continent,
+            continent,
+            province,
             area: this.continent.getArea(continent),
             isOcean: this.continent.isOceanic(continent),
             point: Point.hash(point),
@@ -69,6 +74,10 @@ export class GeologyTileMap2 extends TileMap {
 
     get continent() {
         return this.#continentModel
+    }
+
+    get province() {
+        return this.#provinceModel
     }
 
     getDescription() {

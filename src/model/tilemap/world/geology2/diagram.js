@@ -31,6 +31,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
         Type.boolean('showContinentBorder', 'Continent borders', {default: true}),
+        Type.boolean('showProvinceBorder', 'Province borders', {default: true}),
     )
     static colorMap = GeologyColorMap
 
@@ -42,14 +43,19 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         super(tileMap)
         this.colorMap = colorMap
         this.showContinentBorder = params.get('showContinentBorder')
+        this.showProvinceBorder = params.get('showProvinceBorder')
     }
 
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
         const continent = this.tileMap.continent.get(point)
         const isBorderPoint = this.tileMap.continent.isBorder(point)
+        const isProvinceBorder = this.tileMap.province.isBorder(point)
         let color = this.colorMap.getByContinent(continent)
 
+        if (this.showProvinceBorder && isProvinceBorder) {
+            color = color.brighten(20)
+        }
         if (this.showContinentBorder && isBorderPoint) {
             color = color.average(Color.BLACK).brighten(10)
         }

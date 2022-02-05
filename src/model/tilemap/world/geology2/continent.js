@@ -82,6 +82,6 @@ export class ContinentModel {
     }
 
     map(callback) {
-        this.#continents.map(callback)
+        return this.#continents.map(callback)
     }
 }
