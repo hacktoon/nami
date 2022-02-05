@@ -46,8 +46,10 @@ export class RealmTileMap extends TileMap {
     #realms
     #regionTileMap
     #realmSamples
+    #borderRegions = []
     #borderRegionSet = new Set()
     #regionToRealm = new Map()
+    #areaMap = new Map()
     #graph = new Graph()
 
     constructor(params) {
@@ -56,16 +58,19 @@ export class RealmTileMap extends TileMap {
         const scale = params.get('scale')
         this.#regionTileMap = this._buildRegionTileMap(params)
         this.#realmSamples = new RealmSampling(this.#regionTileMap, scale)
-        this.#realms = this.#realmSamples.map((_, id) => id)
-        this.mapFill = new RealmMultiFill(this.#realmSamples.points, {
+        this.#realms = this.#realmSamples.map((_, id) => {
+            this.#areaMap.set(id, 0)
+            return id
+        })
+        new RealmMultiFill(this.#realmSamples.points, {
             regionTileMap: this.#regionTileMap,
             regionToRealm: this.#regionToRealm,
             borderRegionSet: this.#borderRegionSet,
+            borderRegions: this.#borderRegions,
+            areaMap: this.#areaMap,
             graph: this.#graph,
             params,
-        })
-        this.mapFill.fill()
-        this.borderRegions = Array.from(this.#borderRegionSet)
+        }).fill()
         console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
@@ -78,9 +83,12 @@ export class RealmTileMap extends TileMap {
     }
 
     get(point) {
-        const regionId = this.getRegion(point)
-        const realmId = this.getRealm(point)
-        return {realm: realmId, region: regionId}
+        const realm = this.getRealm(point)
+        return {
+            realm,
+            region: this.getRegion(point),
+            realmArea: this.getArea(realm),
+        }
     }
 
     get size() {
@@ -105,17 +113,25 @@ export class RealmTileMap extends TileMap {
         return this.#realmSamples.points[id]
     }
 
-    getSideRealms(realmId) {
-        return this.#graph.getEdges(realmId)
+    getSideRealms(id) {
+        return this.#graph.getEdges(id)
+    }
+
+    getArea(id) {
+        return this.#areaMap.get(id)
     }
 
     isRealmBorder(point) {
         const sideRegions = this.#regionTileMap.getBorderRegions(point)
-        if (sideRegions.length === 0) return false
+        if (sideRegions.length === 0) {
+            return false
+        }
         const realmId = this.getRealm(point)
         for (let regionId of sideRegions) {
             const id = this.#regionToRealm.get(regionId)
-            if (id !== realmId) return true
+            if (id !== realmId) {
+                return true
+            }
         }
         return false
     }
@@ -133,7 +149,7 @@ export class RealmTileMap extends TileMap {
     }
 
     getBorderRegions() {
-        return this.borderRegions
+        return this.#borderRegions
     }
 
     getSideRegions(regionId) {

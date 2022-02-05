@@ -1,37 +1,39 @@
+import { Point } from '/lib/point'
+
+
 const TYPE_LAND = 0
 const TYPE_OCEAN = 1
 
 
 export class ContinentModel {
-    #regionTileMap
+    #realmTileMap
     #typeMap
     #continents
     #borders
 
-    constructor(regionTileMap) {
-        this.#regionTileMap = regionTileMap
-        this.#continents = this._buildContinents(regionTileMap)
-        this.#borders = regionTileMap.getBorders()
+    constructor(realmTileMap) {
+        this.#realmTileMap = realmTileMap
+        this.#continents = this._buildContinents()
+        // this.#borders = realmTileMap.getBorders()
         this.#typeMap = this._buildTypeMap(this.#continents)
     }
 
-    _buildContinents(regionTileMap) {
+    _buildContinents() {
         // sort by bigger to smaller continents
         const cmpDescendingArea = (id0, id1) => {
-            const area0 = regionTileMap.getRegionAreaById(id0)
-            const area1 = regionTileMap.getRegionAreaById(id1)
+            const area0 = this.#realmTileMap.getArea(id0)
+            const area1 = this.#realmTileMap.getArea(id1)
             return area1 - area0
         }
-        return regionTileMap.getRegions().sort(cmpDescendingArea)
+        return this.#realmTileMap.getRealms().sort(cmpDescendingArea)
     }
 
-    // TODO: move this step further
     _buildTypeMap(continents) {
         let totalOceanicArea = 0
-        const halfArea = Math.floor(this.#regionTileMap.area / 2)
+        const halfArea = Math.floor(this.#realmTileMap.area / 2)
         const types = new Map()
         for (let continent of continents) {
-            totalOceanicArea += this.getArea(continent)
+            totalOceanicArea += this.#realmTileMap.getArea(continent)
             const isOceanic = totalOceanicArea < halfArea
             types.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
         }
@@ -42,36 +44,37 @@ export class ContinentModel {
         return this.#continents.length
     }
 
-    getContinent(point) {
-        return this.#regionTileMap.getRegion(point)
-    }
-
-    getPlates() {
+    get ids() {
         return this.#continents
     }
 
-    getBorders() {
-        return this.#borders
+    get(point) {
+        return this.#realmTileMap.getRealm(point)
     }
 
-    getSidePlates(plateId) {
-        return this.#regionTileMap.getSideRegions(plateId)
+    getArea(continent) {
+        return this.#realmTileMap.getArea(continent)
     }
 
-    getArea(plateId) {
-        return this.#regionTileMap.getRegionAreaById(plateId)
+    getContinents() {
+        return this.#realmTileMap.getRealms()
     }
 
-    isOceanic(plateId) {
-        return this.#typeMap.get(plateId) === TYPE_OCEAN
+    isOceanic(continent) {
+        return this.#typeMap.get(continent) === TYPE_OCEAN
     }
 
-    isContinental(plateId) {
-        return this.#typeMap.get(plateId) === TYPE_LAND
+    getOrigin(point) {
+        return this.#realmTileMap.getRealmOrigin(point)
     }
 
-    isSameType(plate0, plate1) {
-        return this.#typeMap.get(plate0) === this.#typeMap.get(plate1)
+    isBorder(point) {
+        return this.#realmTileMap.isRealmBorder(point)
+    }
+
+    isOrigin(point) {
+        const origin = this.getOrigin(point)
+        return Point.equals(origin, point)
     }
 
     forEach(callback) {

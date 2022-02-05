@@ -67,12 +67,12 @@ export class RegionTileMap extends TileMap {
     }
 
     get(point) {
-        const regionId = this.getRegion(point)
-        const regionArea = this.getRegionArea(point)
+        const region = this.getRegion(point)
+        const regionArea = this.getArea(region)
         const regionOrigin = this.getRegionOrigin(point)
         return [
             `clicked: ${Point.hash(point)}`,
-            `id: ${regionId}`,
+            `id: ${region}`,
             `area: ${regionArea}`,
             `origin: ${Point.hash(regionOrigin)}`,
         ].join(', ')
@@ -95,8 +95,7 @@ export class RegionTileMap extends TileMap {
         return this.origins[id]
     }
 
-    getRegionArea(point) {
-        const id = this.regionMatrix.get(point)
+    getArea(id) {
         return this.mapFill.getArea(id)
     }
 

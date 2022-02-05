@@ -20,6 +20,9 @@ export class RealmMultiFill extends ConcurrentFill {
 
 class RealmFloodFill extends ConcurrentFillUnit {
     setValue(fill, regionId, level) {
+        const currentArea = fill.context.areaMap.get(fill.id)
+        const regionArea = fill.context.regionTileMap.getArea(regionId)
+        fill.context.areaMap.set(fill.id, currentArea + regionArea)
         fill.context.regionToRealm.set(regionId, fill.id)
     }
 
@@ -33,6 +36,7 @@ class RealmFloodFill extends ConcurrentFillUnit {
         const neighborRealmId = regionToRealm.get(neighborRegionId)
         if (fill.id === neighborRealmId) return
         fill.context.borderRegionSet.add(centerRegionId)
+        fill.context.borderRegions.push(centerRegionId)
         fill.context.graph.setEdge(fill.id, neighborRealmId)
     }
 

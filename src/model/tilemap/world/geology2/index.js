@@ -40,7 +40,7 @@ export class GeologyTileMap2 extends TileMap {
     constructor(params) {
         super(params)
         this.#realmTileMap = this._buildRealmTileMap(params)
-        // this.#continentModel = new ContinentModel(this.#realmTileMap)
+        this.#continentModel = new ContinentModel(this.#realmTileMap)
     }
 
     _buildRealmTileMap(params) {
@@ -58,32 +58,17 @@ export class GeologyTileMap2 extends TileMap {
     }
 
     get(point) {
-        const plateId = this.getContinent(point)
+        const continent = this.continent.get(point)
         return {
+            id: continent,
+            area: this.continent.getArea(continent),
+            isOcean: this.continent.isOceanic(continent),
             point: Point.hash(point),
-            continent: plateId,
         }
     }
 
-    getContinent(point) {
-        return this.#realmTileMap.getRealm(point)
-    }
-
-    getContinents() {
-        return this.#realmTileMap.getRealms()
-    }
-
-    getContinentOrigin(point) {
-        return this.#realmTileMap.getRealmOrigin(point)
-    }
-
-    isContinentBorder(point) {
-        return this.#realmTileMap.isRealmBorder(point)
-    }
-
-    isContinentOrigin(point) {
-        const origin = this.getContinentOrigin(point)
-        return Point.equals(origin, point)
+    get continent() {
+        return this.#continentModel
     }
 
     getDescription() {
@@ -91,6 +76,6 @@ export class GeologyTileMap2 extends TileMap {
     }
 
     map(callback) {
-        return this.getContinents().map(callback)
+        return this.continent.ids.map(callback)
     }
 }

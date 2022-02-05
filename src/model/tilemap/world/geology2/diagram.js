@@ -13,7 +13,8 @@ class GeologyColorMap {
 
     constructor(tileMap) {
         const continentColors = tileMap.map(continent => {
-            const color = continent % 2 ? OCEAN_COLOR : LAND_COLOR.average(new Color())
+            const isOceanic = tileMap.continent.isOceanic(continent)
+            const color = isOceanic ? OCEAN_COLOR : LAND_COLOR.average(new Color())
             return [continent, color]
         })
         this.tileMap = tileMap
@@ -45,8 +46,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
-        const continent = this.tileMap.getContinent(point)
-        const isBorderPoint = this.tileMap.isContinentBorder(point)
+        const continent = this.tileMap.continent.get(point)
+        const isBorderPoint = this.tileMap.continent.isBorder(point)
         let color = this.colorMap.getByContinent(continent)
 
         if (this.showContinentBorder && isBorderPoint) {
@@ -57,8 +58,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     getText(_point) {
         const point = this.tileMap.rect.wrap(_point)
-        const continent = this.tileMap.getContinent(point)
-        if (this.tileMap.isContinentOrigin(point)) {
+        const continent = this.tileMap.continent.get(point)
+        if (this.tileMap.continent.isOrigin(point)) {
             return `${continent}`
         }
     }
