@@ -35,7 +35,9 @@ class RealmFloodFill extends ConcurrentFillUnit {
         const regionToRealm = fill.context.regionToRealm
         const neighborRealmId = regionToRealm.get(neighborRegionId)
         if (fill.id === neighborRealmId) return
-        fill.context.borderRegionSet.add(centerRegionId)
+        const borders = fill.context.borderRegionMap.get(centerRegionId) ?? new Set()
+        borders.add(neighborRealmId)
+        fill.context.borderRegionMap.set(centerRegionId, borders)
         fill.context.graph.setEdge(fill.id, neighborRealmId)
     }
 

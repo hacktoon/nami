@@ -47,7 +47,7 @@ export class RealmTileMap extends TileMap {
     #regionTileMap
     #realmSamples
     #borderRegions = []
-    #borderRegionSet = new Set()
+    #borderRegionMap = new Map()
     #cornerRegionSet = new Set()
     #regionToRealm = new Map()
     #areaMap = new Map()
@@ -57,7 +57,6 @@ export class RealmTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         const scale = params.get('scale')
-        const cornerCount = new Map()
         this.#regionTileMap = this._buildRegionTileMap(params)
         this.#realmSamples = new RealmSampling(this.#regionTileMap, scale)
         this.#realms = this.#realmSamples.map((_, id) => {
@@ -67,12 +66,15 @@ export class RealmTileMap extends TileMap {
         new RealmMultiFill(this.#realmSamples.points, {
             regionTileMap: this.#regionTileMap,
             regionToRealm: this.#regionToRealm,
-            borderRegionSet: this.#borderRegionSet,
+            borderRegionMap: this.#borderRegionMap,
             areaMap: this.#areaMap,
             graph: this.#graph,
             params,
         }).fill()
-        this.#borderRegions = Array.from(this.#borderRegionSet)
+        this.#borderRegionMap.forEach((neighbors, region) => {
+            this.#borderRegions.push(region)
+            if (neighbors.size > 1) this.#cornerRegionSet.add(region)
+        })
         console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
@@ -86,10 +88,12 @@ export class RealmTileMap extends TileMap {
 
     get(point) {
         const realm = this.getRealm(point)
+        const region = this.getRegion(point)
         return {
             realm,
-            region: this.getRegion(point),
+            region,
             realmArea: this.getArea(realm),
+            isCorner: this.isCornerRegion(region),
         }
     }
 
@@ -159,7 +163,7 @@ export class RealmTileMap extends TileMap {
     }
 
     isBorderRegion(region) {
-        return this.#borderRegionSet.has(region)
+        return this.#borderRegionMap.has(region)
     }
 
     isCornerRegion(region) {

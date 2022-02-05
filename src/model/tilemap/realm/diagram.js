@@ -7,11 +7,11 @@ import { TileMapDiagram } from '/lib/model/tilemap'
 
 const SCHEMA = new Schema(
     'RealmTileMapDiagram',
-    Type.boolean('showCenters', 'Show centers', {default: true}),
-    Type.boolean('showRealms', 'Show realms', {default: true}),
-    Type.boolean('showRealmBorder', 'Show realm border', {default: true}),
-    Type.boolean('showRegions', 'Show regions', {default: false}),
-    Type.boolean('showBorderRegion', 'Show border region', {default: false}),
+    Type.boolean('showCenters', 'Realm centers', {default: true}),
+    Type.boolean('showRealmBorder', 'Realm borders', {default: true}),
+    Type.boolean('showRegions', 'Regions', {default: false}),
+    Type.boolean('showBorderRegion', 'Border region', {default: false}),
+    Type.boolean('showCornerRegion', 'Corner region', {default: false}),
 )
 
 
@@ -48,42 +48,37 @@ export class RealmTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.showRealms = params.get('showRealms')
         this.showCenters = params.get('showCenters')
         this.showRegions = params.get('showRegions')
         this.showRealmBorder = params.get('showRealmBorder')
         this.showBorderRegion = params.get('showBorderRegion')
+        this.showCornerRegion = params.get('showCornerRegion')
     }
 
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
-        const realmId = this.tileMap.getRealm(point)
+        const realm = this.tileMap.getRealm(point)
         const realmOrigin = this.tileMap.getRealmOrigin(point)
-        const regionId = this.tileMap.getRegion(point)
-        const isBorderRegion = this.tileMap.isBorderRegion(regionId)
-        const realmColor = this.colorMap.getByRealm(realmId)
-        const regionColor = this.colorMap.getByRegion(regionId)
+        const region = this.tileMap.getRegion(point)
+        const realmColor = this.colorMap.getByRealm(realm)
+        const regionColor = this.colorMap.getByRegion(region)
         let color = realmColor
 
         if (this.showCenters && Point.equals(realmOrigin, point)) {
-            if (this.showRealms)
-                return realmColor.invert().toHex()
-            return '#000'
+            return realmColor.invert().toHex()
         }
         if (this.showRealmBorder && this.tileMap.isRealmBorder(point)) {
             return Color.BLACK.average(realmColor).toHex()
         }
-        if (this.showRealms) {
-            if (this.showRegions)
-                color = regionColor.average(realmColor).average(realmColor)
-            if (this.showBorderRegion && isBorderRegion)
-                return color.average(Color.BLACK).toHex()
-            return color.toHex()
-        }
         if (this.showRegions) {
-            color = isBorderRegion ? regionColor.brighten(50) : regionColor
-            return color.toHex()
+            color = regionColor.average(realmColor).average(realmColor)
         }
-        return '#FFF'
+        if (this.showBorderRegion && this.tileMap.isBorderRegion(region)) {
+            color = color.average(Color.BLACK)
+        }
+        if (this.showCornerRegion && this.tileMap.isCornerRegion(region)) {
+            color = (point[0] + point[1]) % 2 ? color.darken(80) : color
+        }
+        return color.toHex()
     }
 }
