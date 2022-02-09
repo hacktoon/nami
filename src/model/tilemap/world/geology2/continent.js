@@ -45,7 +45,8 @@ export class ContinentModel {
     _buildBorderMap(realmTileMap) {
         const borderMap = new PairMap()
         for(let continent of realmTileMap.getRealms()) {
-            for(let sideContinent of realmTileMap.getSideRealms(continent)) {
+            const sideRealms = realmTileMap.getSideRealms(continent)
+            for(let sideContinent of sideRealms) {
                 const border = Random.chance(.5) ? TYPE_OCEAN : TYPE_LAND
                 borderMap.set(continent, sideContinent, border)
             }

@@ -1,14 +1,12 @@
 export class ProvinceModel {
     #realmTileMap
     #provinces
-    #cornerMap = new Map()
+    #typeMap = new Map()
 
     constructor(realmTileMap, continentModel) {
         this.#realmTileMap = realmTileMap
         this.#provinces = realmTileMap.getRegions()
-        // this.#provinces.forEach(province => {
-
-        // })
+        // this.#typeMap =
     }
 
     get size() {
