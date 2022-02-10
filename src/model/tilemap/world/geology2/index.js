@@ -13,7 +13,7 @@ import { ProvinceModel } from './province'
 const ID = 'GeologyTileMap2'
 const SCHEMA = new Schema(
     ID,
-    Type.rect('rect', 'Rect', {default: '150x100'}),
+    Type.rect('rect', 'Size', {default: '150x100'}),
     Type.number('continentScale', 'Continent scale', {
         default: 33, step: 1, min: 1, max: 100
     }),

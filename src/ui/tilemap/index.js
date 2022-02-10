@@ -15,9 +15,11 @@ export function UITileMap({TileMap}) {
     const colorMap = new TileMap.diagram.colorMap(tileMap)
 
     return <section className='UITileMap'>
-        <Form className="Map" data={data} onSubmit={setData}>
-            <Button label="New" />
-        </Form>
+        <section className="UITileMapForm">
+            <Form data={data} onSubmit={setData}>
+                <Button label="New" />
+            </Form>
+        </section>
         <UITileMapDiagram
             diagram={TileMap.diagram}
             tileMap={tileMap}

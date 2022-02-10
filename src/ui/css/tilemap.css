@@ -3,20 +3,21 @@
 .UITileMap {
     display: grid;
     grid-template-rows: min-content auto;
-    grid-template-columns: 1fr 20%;
+    grid-template-columns: auto 20%;
 }
 
-.UITileMap .Form {
+.UITileMap .UITileMapForm {
+    background: #BBB;
+    grid-auto-flow: column;
+    grid-column: span 2;
     display: grid;
-    gap: 1rem;
     padding: .5rem;
 }
 
-.UITileMap .Form.Map  {
-    background: #CCC;
-    grid-auto-flow: column;
-    grid-row: 1;
-    grid-column: span 2;
+.UITileMap .UITileMapForm .Form {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
 }
 
 
@@ -35,6 +36,9 @@
 }
 
 .UITileMap .UITileMapSidebar .Form {
+    display: grid;
+    gap: 1rem;
+    padding: .5rem;
     border: 1px solid #555;
     margin-bottom: .5rem;
 }

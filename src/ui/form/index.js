@@ -22,7 +22,7 @@ export function Form({data, onSubmit, ...props}) {
         onSubmit(updatedData)
     }
 
-    const className = `Form ${props.className}`
+    const className = `Form ${props.className ?? ''}`
     return data.size > 0 && <form className={className} onSubmit={handleSubmit}>
         <FieldSet types={formData.types} data={formData} onChange={handleChange} />
         {props.children}

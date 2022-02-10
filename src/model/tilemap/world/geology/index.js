@@ -17,7 +17,7 @@ import { GeologyTileMapDiagram } from './diagram'
 const ID = 'GeologyTileMap'
 const SCHEMA = new Schema(
     ID,
-    Type.rect('rect', 'Rect', {default: '150x100'}),
+    Type.rect('rect', 'Size', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 60, step: 1, min: 1, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),

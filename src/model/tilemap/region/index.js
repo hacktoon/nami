@@ -17,7 +17,7 @@ import { RegionTileMapDiagram } from './diagram'
 const NO_REGION = null
 const SCHEMA = new Schema(
     'RegionTileMap',
-    Type.rect('rect', 'Rect', {default: '150x100'}),
+    Type.rect('rect', 'Size', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 10, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),
@@ -37,7 +37,6 @@ export class RegionTileMap extends TileMap {
 
     static fromData(data) {
         const map = new Map(Object.entries(data))
-        console.log(map);
         const params = RegionTileMap.schema.buildFrom(map)
         return new RegionTileMap(params)
     }

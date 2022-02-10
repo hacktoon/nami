@@ -54,6 +54,7 @@ canvas { display: block; }
     gap: .5rem;
     grid-template-columns: auto 1fr;
     justify-content: start;
+    flex: 1;
 }
 
 .Field .FieldLabel {
@@ -117,16 +118,26 @@ canvas { display: block; }
 
 /* RECT FIELD ============================== */
 
+.Field.rect {
+    flex-grow: 0;
+    flex-shrink: 1;
+}
 .Field.rect .FieldValue,
 .Field.rect .FieldValue span,
 .Field.rect .FieldValue input {
     display: flex;
 }
-.Field.rect .FieldValue input { width: 4rem; }
-.Field.rect .FieldValue span {
+.Field.rect .FieldValue {
+    min-width: 8rem;
+    max-width: 10rem;
+}
+.Field.rect .FieldValue .separator {
+    background: #FFF;
     align-items: center;
-    font-weight: bold;
-    padding: 0 .5rem;
+    color: #666;
+}
+.Field.rect .FieldValue input {
+    text-align: right;
 }
 
 

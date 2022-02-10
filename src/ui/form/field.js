@@ -182,7 +182,7 @@ function RectField({name, label, value, onChange, ...props}) {
             value={rect.width}
             onChange={handleWidthChange}
         />
-        <span>x</span>
+        <span className="separator">x</span>
         <input
             type='number'
             value={rect.height}
