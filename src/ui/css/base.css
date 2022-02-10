@@ -93,6 +93,7 @@ canvas { display: block; }
     z-index: 1;
 }
 
+
 /* POINT FIELD ============================== */
 
 .Field.point .FieldValue,
@@ -111,6 +112,21 @@ canvas { display: block; }
 
 .Field.point .FieldValue .coordinate:last-child {
     margin-left: .5rem;
+}
+
+
+/* RECT FIELD ============================== */
+
+.Field.rect .FieldValue,
+.Field.rect .FieldValue span,
+.Field.rect .FieldValue input {
+    display: flex;
+}
+.Field.rect .FieldValue input { width: 4rem; }
+.Field.rect .FieldValue span {
+    align-items: center;
+    font-weight: bold;
+    padding: 0 .5rem;
 }
 
 

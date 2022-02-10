@@ -21,6 +21,11 @@ export const sum = arr => arr.reduce((a,b) => a + b, 0)
 
 
 export class Rect {
+    static fromHash(hash) {
+        const [w, h] = hash.split('x').map(c => parseInt(c, 10))
+        return new Rect(w, h)
+    }
+
     constructor(width, height) {
         this.width = width
         this.height = height ?? width
@@ -61,5 +66,9 @@ export class Rect {
             if (sY > tY) y = y + this.height
         }
         return [x, y]
+    }
+
+    hash() {
+        return `${this.width}x${this.height}`
     }
 }

@@ -10,14 +10,12 @@ export class TileMap {
     }
 
     constructor(params) {
-        this.width = params.get('width')
-        this.height = params.get('height')
-        this.rect = new Rect(this.width, this.height)
+        this.rect = params.get('rect')
         this.seed = this.#buildSeed(params.get('seed'))
     }
 
     get area() {
-        return this.width * this.height
+        return this.rect.area
     }
 
     get(point) {
@@ -33,8 +31,7 @@ export class TileMap {
 export class TileMapDiagram {
     constructor(tileMap) {
         this.tileMap = tileMap
-        this.width = tileMap.width
-        this.height = tileMap.height
+        this.rect = tileMap.rect
     }
 
     get(point) {

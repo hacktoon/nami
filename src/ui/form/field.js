@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 
+import { Rect } from '/lib/number'
 import { Color } from '/lib/color'
 import { Point } from '/lib/point'
 
@@ -164,6 +165,33 @@ function PointField({name, label, value, onChange, ...props}) {
 }
 
 
+function RectField({name, label, value, onChange, ...props}) {
+    const [rect, setRect] = useState(value)
+    const handleWidthChange = e => handleChange(e.target.value, rect.height)
+    const handleHeightChange = e => handleChange(rect.width, e.target.value)
+    const handleChange = (width, height) => {
+        const rect = new Rect(width, height)
+        onChange(name, rect.hash())
+        setRect(rect)
+    }
+
+    useEffect(() => setRect(value), [value])
+    return <Field type='rect' label={label}>
+        <input
+            type='number'
+            value={rect.width}
+            onChange={handleWidthChange}
+        />
+        <span>x</span>
+        <input
+            type='number'
+            value={rect.height}
+            onChange={handleHeightChange}
+        />
+    </Field>
+}
+
+
 function Field({label, type, value, status='', children, ...props}) {
     return <label className={`Field ${type} ${status}`} {...props}>
         <span className='FieldLabel'>{label}</span>
@@ -179,4 +207,5 @@ const TYPE_FIELD_MAP = {
     color: ColorField,
     point: PointField,
     selection: SelectField,
+    rect: RectField,
 }

@@ -17,7 +17,7 @@ export class Temperature {
 
     getTemperature(point) {
         const origin = this.regionTileMap.getRegionOrigin(point)
-        const center = Math.round(this.regionTileMap.height / 2)
+        const center = Math.round(this.regionTileMap.rect.height / 2)
         const offset = this._calcOffset(origin)
         const distanceToCenter = Math.abs(origin[1] - center)
         const temperature = distanceToCenter + offset
@@ -41,8 +41,7 @@ export class Temperature {
 
 function buildRegionMap(seed, params) {
     return RegionTileMap.fromData({
-        width: params.get('width'),
-        height: params.get('height'),
+        rect: params.get('rect').hash(),
         scale: params.get('scale'),
         seed: seed,
         growth: 1,

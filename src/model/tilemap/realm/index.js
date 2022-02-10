@@ -15,8 +15,7 @@ import { RealmMultiFill } from './fill'
 const ID = 'RealmTileMap'
 const SCHEMA = new Schema(
     ID,
-    Type.number('width', 'W', {default: 150, step: 1, min: 1, max: 500}),
-    Type.number('height', 'H', {default: 100, step: 1, min: 1, max: 500}),
+    Type.rect('rect', 'Rect', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 33, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 1, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .1, min: .1, max: 1}),
@@ -79,10 +78,13 @@ export class RealmTileMap extends TileMap {
     }
 
     _buildRegionTileMap(params) {
-        const [width, height, seed] = params.get('width', 'height', 'seed')
-        const [scale, chance, growth] = params.get(
-            'rgScale', 'rgChance', 'rgGrowth')
-        const data = {width, height, scale, seed, chance, growth}
+        const data = {
+            rect: this.rect.hash(),
+            scale: params.get('rgScale'),
+            seed: params.get('seed'),
+            chance: params.get('rgChance'),
+            growth: params.get('rgGrowth')
+        }
         return RegionTileMap.fromData(data)
     }
 

@@ -1,6 +1,7 @@
 import { Point } from '/lib/point'
 import { Color } from '/lib/color'
 import { clamp } from '/lib/number'
+import { Rect } from './number'
 
 
 // let's create our own type system, it's fun
@@ -79,6 +80,19 @@ class PointType extends BaseType {
 }
 
 
+class RectType extends BaseType {
+    static type = 'rect'
+
+    parse(hash) {
+        return Rect.fromHash(hash ?? '150x100')
+    }
+
+    toString(hash) {
+        return hash.hash()
+    }
+}
+
+
 class BooleanType extends BaseType {
     static type = 'boolean'
 
@@ -107,4 +121,5 @@ export class Type {
     static color = BaseType.define(ColorType)
     static point = BaseType.define(PointType)
     static selection = BaseType.define(EnumType)
+    static rect = BaseType.define(RectType)
 }

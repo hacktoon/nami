@@ -13,8 +13,7 @@ import { ProvinceModel } from './province'
 const ID = 'GeologyTileMap2'
 const SCHEMA = new Schema(
     ID,
-    Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
-    Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
+    Type.rect('rect', 'Rect', {default: '150x100'}),
     Type.number('continentScale', 'Continent scale', {
         default: 33, step: 1, min: 1, max: 100
     }),
@@ -51,8 +50,7 @@ export class GeologyTileMap2 extends TileMap {
 
     _buildRealmTileMap(params) {
         return RealmTileMap.fromData({
-            width: params.get('width'),
-            height: params.get('height'),
+            rect: this.rect.hash(),
             scale: params.get('continentScale'),
             growth: 1,
             chance: .1,

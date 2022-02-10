@@ -1,11 +1,9 @@
-import { Rect } from '/lib/number'
 import { IndexedPointSet } from './set'
 
 
 export class EvenPointSampling {
-    static create(width, height, radius) {
+    static create(rect, radius) {
         const samples = []
-        const rect = new Rect(width, height)
         const ptIndexMap = IndexedPointSet.fromRect(rect)
 
         while(ptIndexMap.size > 0) {
@@ -17,8 +15,8 @@ export class EvenPointSampling {
         }
         if (samples.length === 1) {
             const point = samples[0]
-            const x = point[0] + Math.round(width / 2)
-            const y = point[1] + Math.round(height / 2)
+            const x = point[0] + Math.round(rect.width / 2)
+            const y = point[1] + Math.round(rect.height / 2)
             samples.push(rect.wrap([x, y]))
         }
         return samples

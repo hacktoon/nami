@@ -64,8 +64,7 @@ export class TileMapScene {
 
     isWrappable(point) {
         if (this.wrap) return true
-        const rect = new Rect(this.diagram.width, this.diagram.height)
-        return rect.isInside(point)
+        return this.diagram.rect.isInside(point)
     }
 
     renderCursor(canvas, cursor) {

@@ -17,8 +17,7 @@ import { GeologyTileMapDiagram } from './diagram'
 const ID = 'GeologyTileMap'
 const SCHEMA = new Schema(
     ID,
-    Type.number('width', 'Width', {default: 150, step: 1, min: 1, max: 500}),
-    Type.number('height', 'Height', {default: 100, step: 1, min: 1, max: 500}),
+    Type.rect('rect', 'Rect', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 60, step: 1, min: 1, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),
@@ -49,7 +48,7 @@ export class GeologyTileMap extends TileMap {
         super(params)
         let t0 = performance.now()
         const surfaceSize = params.get('surfaceSize')
-        this.#regionTileMap = this._buildRegioTileMap(params)
+        this.#regionTileMap = this._buildRegionTileMap(params)
         this.#tectonicsTable = new TectonicsTable()
         this.#plateModel = new PlateModel(this.#regionTileMap)
         this.#surfaceModel = new SurfaceModel(
@@ -76,11 +75,10 @@ export class GeologyTileMap extends TileMap {
         console.log(`GeologyTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
-    _buildRegioTileMap(params) {
+    _buildRegionTileMap(params) {
         return RegionTileMap.fromData({
             seed: this.seed,
-            width: params.get('width'),
-            height: params.get('height'),
+            rect: this.rect.hash(),
             scale: params.get('scale'),
             growth: params.get('growth'),
             chance: params.get('chance'),
