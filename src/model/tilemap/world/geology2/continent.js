@@ -16,7 +16,7 @@ export class ContinentModel {
     constructor(realmTileMap) {
         this.#realmTileMap = realmTileMap
         this.#continents = this._buildContinents()
-        this.#typeMap = this._buildTypeMap(this.#continents)
+        this.#typeMap = this._buildTypeMap(realmTileMap, this.#continents)
         this.#borderMap = this._buildBorderMap(realmTileMap)
     }
 
@@ -30,12 +30,12 @@ export class ContinentModel {
         return this.#realmTileMap.getRealms().sort(cmpDescendingArea)
     }
 
-    _buildTypeMap(continents) {
+    _buildTypeMap(realmTileMap, continents) {
         let totalOceanicArea = 0
-        const halfArea = Math.floor(this.#realmTileMap.area / 2)
+        const halfArea = Math.floor(realmTileMap.area / 2)
         const types = new Map()
         for (let continent of continents) {
-            totalOceanicArea += this.#realmTileMap.getArea(continent)
+            totalOceanicArea += realmTileMap.getArea(continent)
             const isOceanic = totalOceanicArea < halfArea
             types.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
         }
@@ -45,8 +45,8 @@ export class ContinentModel {
     _buildBorderMap(realmTileMap) {
         const borderMap = new PairMap()
         for(let continent of realmTileMap.getRealms()) {
-            const sideRealms = realmTileMap.getSideRealms(continent)
-            for(let sideContinent of sideRealms) {
+            const sideContinents = realmTileMap.getSideRealms(continent)
+            for(let sideContinent of sideContinents) {
                 const border = Random.chance(.5) ? TYPE_OCEAN : TYPE_LAND
                 borderMap.set(continent, sideContinent, border)
             }

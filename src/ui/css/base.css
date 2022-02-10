@@ -128,16 +128,15 @@ canvas { display: block; }
     display: flex;
 }
 .Field.rect .FieldValue {
-    min-width: 8rem;
+    min-width: 9rem;
     max-width: 10rem;
 }
 .Field.rect .FieldValue .separator {
-    background: #FFF;
+    background: #999;
     align-items: center;
-    color: #666;
-}
-.Field.rect .FieldValue input {
-    text-align: right;
+    padding: 0 .3rem;
+    font-weight: bold;
+    color: #EEE;
 }
 
 
