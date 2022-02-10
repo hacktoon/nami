@@ -112,6 +112,10 @@ export class RealmTileMap extends TileMap {
         return this.#regionToRealm.get(regionId)
     }
 
+    getRealmByRegion(region) {
+        return this.#regionToRealm.get(region)
+    }
+
     getRealms() {
         return this.#realms
     }

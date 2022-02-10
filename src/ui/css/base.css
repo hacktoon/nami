@@ -132,11 +132,11 @@ canvas { display: block; }
     max-width: 10rem;
 }
 .Field.rect .FieldValue .separator {
-    background: #999;
+    background: #DDD;
     align-items: center;
     padding: 0 .3rem;
     font-weight: bold;
-    color: #EEE;
+    color: #666;
 }
 
 

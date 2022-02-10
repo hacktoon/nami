@@ -9,14 +9,9 @@
 - Rename Diagram to PixelMap
 
 #### GeologyTileMap
-- TECTONICS
-  ```
-    loop region
-      loop sideRegion
-
-  ```
+- split conjoined continents by seas
+- set border provinces
 - PROVINCE
-  - water
   - each province may be a basin, uplift?
   - central province may be a plateau, sea or hills
 

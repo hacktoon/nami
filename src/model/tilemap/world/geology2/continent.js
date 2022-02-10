@@ -1,6 +1,5 @@
+import { SingleFillUnit } from '/lib/floodfill/single'
 import { Point } from '/lib/point'
-import { Random } from '/lib/random'
-import { PairMap } from '/lib/map'
 
 
 const TYPE_LAND = 0
@@ -9,49 +8,31 @@ const TYPE_OCEAN = 1
 
 export class ContinentModel {
     #realmTileMap
-    #typeMap
-    #continents
-    #borderMap
+    #continents = []
+    #typeMap = new Map()
 
-    constructor(realmTileMap) {
-        this.#realmTileMap = realmTileMap
-        this.#continents = this._buildContinents()
-        this.#typeMap = this._buildTypeMap(realmTileMap, this.#continents)
-        this.#borderMap = this._buildBorderMap(realmTileMap)
-    }
-
-    _buildContinents() {
-        // sort by bigger to smaller continents
-        const cmpDescendingArea = (id0, id1) => {
-            const area0 = this.#realmTileMap.getArea(id0)
-            const area1 = this.#realmTileMap.getArea(id1)
-            return area1 - area0
-        }
-        return this.#realmTileMap.getRealms().sort(cmpDescendingArea)
-    }
-
-    _buildTypeMap(realmTileMap, continents) {
+    #buildContinents(realmTileMap) {
         let totalOceanicArea = 0
         const halfArea = Math.floor(realmTileMap.area / 2)
-        const types = new Map()
+        // sort by bigger to smaller continents
+        const cmpDescendingArea = (id0, id1) => {
+            const area0 = realmTileMap.getArea(id0)
+            const area1 = realmTileMap.getArea(id1)
+            return area1 - area0
+        }
+        const continents = this.#realmTileMap.getRealms().sort(cmpDescendingArea)
         for (let continent of continents) {
             totalOceanicArea += realmTileMap.getArea(continent)
             const isOceanic = totalOceanicArea < halfArea
-            types.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
+            this.#typeMap.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
+            this.#continents.push(continent)
         }
-        return types
     }
 
-    _buildBorderMap(realmTileMap) {
-        const borderMap = new PairMap()
-        for(let continent of realmTileMap.getRealms()) {
-            const sideContinents = realmTileMap.getSideRealms(continent)
-            for(let sideContinent of sideContinents) {
-                const border = Random.chance(.5) ? TYPE_OCEAN : TYPE_LAND
-                borderMap.set(continent, sideContinent, border)
-            }
-        }
-        return borderMap
+    constructor(realmTileMap) {
+        this.#realmTileMap = realmTileMap
+        this.#buildContinents(realmTileMap)
+
     }
 
     get size() {
@@ -91,19 +72,35 @@ export class ContinentModel {
         return Point.equals(origin, point)
     }
 
-    isLandBorder(continent, sideContinent) {
-        return this.#borderMap.get(continent, sideContinent) === TYPE_LAND
-    }
-
-    isOceanicBorder(continent, sideContinent) {
-        return this.#borderMap.get(continent, sideContinent) === TYPE_OCEAN
-    }
-
     forEach(callback) {
         this.#continents.forEach(callback)
     }
 
     map(callback) {
         return this.#continents.map(callback)
+    }
+}
+
+
+class SurfaceFloodFill extends SingleFillUnit {
+    setValue(plate, level) {
+        const {surfaceId, plateCountMap} = this.context
+        const plateCount = plateCountMap.get(surfaceId)
+        this.context.plateSurfaceMap.set(plate, surfaceId)
+        this.context.plateQueue.delete(plate)
+        plateCountMap.set(surfaceId, plateCount + 1)
+    }
+
+    isEmpty(plate) {
+        const {plateModel, surfaceId, plateCountMap} = this.context
+        const plateCount = plateCountMap.get(surfaceId)
+        const isSameType = plateModel.isSameType(this.origin, plate)
+        const notMapped = ! this.context.plateSurfaceMap.has(plate)
+        const underCount = plateCount < this.context.maxPlateCount
+        return isSameType && notMapped && underCount
+    }
+
+    getNeighbors(plate) {
+        return this.context.plateModel.getSidePlates(plate)
     }
 }
