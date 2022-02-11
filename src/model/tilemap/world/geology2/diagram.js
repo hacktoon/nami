@@ -1,6 +1,7 @@
 import { Schema } from '/lib/schema'
 import { Type } from '/lib/type'
 import { Color } from '/lib/color'
+import { Random } from '/lib/random'
 
 import { TileMapDiagram } from '/lib/model/tilemap'
 
@@ -14,7 +15,9 @@ class GeologyColorMap {
     constructor(tileMap) {
         const continentColors = tileMap.map(continent => {
             const isOceanic = tileMap.continent.isOceanic(continent)
-            const color = isOceanic ? OCEAN_COLOR : LAND_COLOR.average(new Color())
+            const color = isOceanic
+                ? OCEAN_COLOR
+                : LAND_COLOR.darken(Random.choice(0, 20, 40, 60))
             return [continent, color]
         })
         this.tileMap = tileMap
@@ -30,6 +33,7 @@ class GeologyColorMap {
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
+        Type.boolean('showIds', 'Continent ids', {default: true}),
         Type.boolean('showContinentBorder', 'Continent borders', {default: true}),
         Type.boolean('showProvinceBorder', 'Province borders', {default: true}),
     )
@@ -42,6 +46,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
+        this.showIds = params.get('showIds')
         this.showContinentBorder = params.get('showContinentBorder')
         this.showProvinceBorder = params.get('showProvinceBorder')
     }
@@ -52,15 +57,14 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const province = this.tileMap.province.get(point)
         const isContinentBorder = this.tileMap.continent.isBorder(point)
         const isProvinceBorder = this.tileMap.province.isBorder(point)
-        const isBorderProvince = this.tileMap.province.isBorderProvince(province)
         let color = this.colorMap.getByContinent(continent)
 
-        // if (this.tileMap.province.isCorner(province)) {
-        //     color = Color.fromHex('#07A')
-        // }
-        // if (isBorderProvince) {
-        //     color = color.darken(50)
-        // }
+        if (this.tileMap.province.isCorner(province)) {
+            color = Color.fromHex('#047')
+        }
+        if (this.tileMap.province.isBorderProvince(province)) {
+            color = color.darken(10)
+        }
         if (this.showProvinceBorder && isProvinceBorder) {
             color = color.brighten(20)
         }
@@ -71,6 +75,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     getText(_point) {
+        if (! this.showIds)
+            return ''
         const point = this.tileMap.rect.wrap(_point)
         const continent = this.tileMap.continent.get(point)
         if (this.tileMap.continent.isOrigin(point)) {

@@ -1,4 +1,3 @@
-import { SingleFillUnit } from '/lib/floodfill/single'
 import { Point } from '/lib/point'
 
 
@@ -32,7 +31,6 @@ export class ContinentModel {
     constructor(realmTileMap) {
         this.#realmTileMap = realmTileMap
         this.#buildContinents(realmTileMap)
-
     }
 
     get size() {
@@ -78,29 +76,5 @@ export class ContinentModel {
 
     map(callback) {
         return this.#continents.map(callback)
-    }
-}
-
-
-class SurfaceFloodFill extends SingleFillUnit {
-    setValue(plate, level) {
-        const {surfaceId, plateCountMap} = this.context
-        const plateCount = plateCountMap.get(surfaceId)
-        this.context.plateSurfaceMap.set(plate, surfaceId)
-        this.context.plateQueue.delete(plate)
-        plateCountMap.set(surfaceId, plateCount + 1)
-    }
-
-    isEmpty(plate) {
-        const {plateModel, surfaceId, plateCountMap} = this.context
-        const plateCount = plateCountMap.get(surfaceId)
-        const isSameType = plateModel.isSameType(this.origin, plate)
-        const notMapped = ! this.context.plateSurfaceMap.has(plate)
-        const underCount = plateCount < this.context.maxPlateCount
-        return isSameType && notMapped && underCount
-    }
-
-    getNeighbors(plate) {
-        return this.context.plateModel.getSidePlates(plate)
     }
 }
