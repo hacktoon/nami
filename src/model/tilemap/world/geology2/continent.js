@@ -1,4 +1,6 @@
+import { Graph } from '/lib/graph'
 import { Point } from '/lib/point'
+import { Random } from '/lib/random'
 
 
 const TYPE_LAND = 0
@@ -9,6 +11,7 @@ export class ContinentModel {
     #realmTileMap
     #continents = []
     #typeMap = new Map()
+    #links = new Graph()
 
     #buildContinents(realmTileMap) {
         let totalOceanicArea = 0
@@ -28,9 +31,21 @@ export class ContinentModel {
         }
     }
 
+    #buildContinentLinks(realmTileMap) {
+        for(let continent of realmTileMap.getRealms()) {
+            const sideContinents = realmTileMap.getSideRealms(continent)
+            for(let sideContinent of sideContinents) {
+                if (Random.chance(.1)) {
+                    this.#links.setEdge(continent, sideContinent)
+                }
+            }
+        }
+    }
+
     constructor(realmTileMap) {
         this.#realmTileMap = realmTileMap
         this.#buildContinents(realmTileMap)
+        this.#buildContinentLinks(realmTileMap)
     }
 
     get size() {
@@ -55,6 +70,10 @@ export class ContinentModel {
 
     isOceanic(continent) {
         return this.#typeMap.get(continent) === TYPE_OCEAN
+    }
+
+    isLinked(continent, sideContinent) {
+        return this.#links.hasEdge(continent, sideContinent)
     }
 
     getOrigin(point) {

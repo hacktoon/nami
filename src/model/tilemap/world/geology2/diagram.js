@@ -33,9 +33,9 @@ class GeologyColorMap {
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
-        Type.boolean('showIds', 'Continent ids', {default: true}),
-        Type.boolean('showContinentBorder', 'Continent borders', {default: true}),
-        Type.boolean('showProvinceBorder', 'Province borders', {default: true}),
+        Type.boolean('showId', 'Continent id', {default: true}),
+        Type.boolean('showContinentBorder', 'Continent border', {default: true}),
+        Type.boolean('showProvinceBorder', 'Province border', {default: true}),
     )
     static colorMap = GeologyColorMap
 
@@ -46,7 +46,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.showIds = params.get('showIds')
+        this.showId = params.get('showId')
         this.showContinentBorder = params.get('showContinentBorder')
         this.showProvinceBorder = params.get('showProvinceBorder')
     }
@@ -60,10 +60,11 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         let color = this.colorMap.getByContinent(continent)
 
         if (this.tileMap.province.isCorner(province)) {
-            color = Color.fromHex('#047')
-        }
-        if (this.tileMap.province.isBorderProvince(province)) {
-            color = color.darken(10)
+            const isOceanic = this.tileMap.continent.isOceanic(continent)
+            color = isOceanic ? color.brighten(20) : OCEAN_COLOR.brighten(20)
+        } else if (this.tileMap.province.isBorderProvince(province)) {
+            const isOceanic = this.tileMap.continent.isOceanic(continent)
+            color = isOceanic ? color.brighten(20) : color.darken(10)
         }
         if (this.showProvinceBorder && isProvinceBorder) {
             color = color.brighten(20)
@@ -75,7 +76,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     getText(_point) {
-        if (! this.showIds)
+        if (! this.showId)
             return ''
         const point = this.tileMap.rect.wrap(_point)
         const continent = this.tileMap.continent.get(point)
