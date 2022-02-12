@@ -15,7 +15,6 @@ const TYPES = [
 export class ProvinceModel {
     #realmTileMap
     #provinces
-    #borderMap
     #typeMap = new Map()
 
     constructor(realmTileMap, continentModel) {
@@ -33,10 +32,6 @@ export class ProvinceModel {
 
     get(point) {
         return this.#realmTileMap.getRegion(point)
-    }
-
-    getType(province) {
-        return this.#typeMap.get(province)
     }
 
     isCorner(province) {
