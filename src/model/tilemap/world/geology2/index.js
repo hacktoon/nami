@@ -14,6 +14,7 @@ const ID = 'GeologyTileMap2'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
+    Type.number('continentRate', 'Continent rate', {default: .3, step: .05, min: .1, max: .8}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -35,7 +36,7 @@ export class GeologyTileMap2 extends TileMap {
     constructor(params) {
         super(params)
         this.#realmTileMap = this._buildRealmTileMap(params)
-        this.#continentModel = new ContinentModel(this.#realmTileMap)
+        this.#continentModel = new ContinentModel(params, this.#realmTileMap)
         this.#provinceModel = new ProvinceModel(
             this.#realmTileMap,
             this.#continentModel

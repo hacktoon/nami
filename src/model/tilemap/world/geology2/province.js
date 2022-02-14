@@ -21,7 +21,7 @@ export class ProvinceModel {
         this.#realmTileMap = realmTileMap
         this.#provinces = realmTileMap.getRegions()
         realmTileMap.getBorderRegions().map(region => {
-            // continentModel.isLinked
+
             return region
         })
     }

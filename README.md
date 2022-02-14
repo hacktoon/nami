@@ -7,6 +7,7 @@
 
 ## ROADMAP
 - Rename Diagram to PixelMap
+- Rename IndexMap to RandomQueue
 
 #### GeologyTileMap
 - split conjoined continents by seas

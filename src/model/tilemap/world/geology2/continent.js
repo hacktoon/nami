@@ -1,3 +1,5 @@
+import { SingleFillUnit } from '/lib/floodfill/single'
+import { IndexMap } from '/lib/map'
 import { Graph } from '/lib/graph'
 import { Point } from '/lib/point'
 import { Random } from '/lib/random'
@@ -11,6 +13,8 @@ export class ContinentModel {
     #realmTileMap
     #continents = []
     #typeMap = new Map()
+    #continentGroupMap = new Map()
+    #continentGroups = []
     #links = new Graph()
 
     #buildContinents(realmTileMap) {
@@ -31,6 +35,28 @@ export class ContinentModel {
         }
     }
 
+    #buildContinentGroups(params, realmTileMap) {
+        const continentSize = params.get('continentRate')
+        const continentQueue = new IndexMap(this.#continents)
+        const maxGroupSize = Math.round(this.#continents.length * continentSize)
+        const groupSizeMap = new Map()
+        let groupId = 0
+        while(continentQueue.size > 0) {
+            const continent = continentQueue.random()
+            groupSizeMap.set(groupId, 0)
+            this.#continentGroups.push(groupId)
+            new ContinentGroupFloodFill(continent, {
+                continentGroupMap: this.#continentGroupMap,
+                typeMap: this.#typeMap,
+                groupId: groupId++,
+                maxGroupSize,
+                groupSizeMap,
+                realmTileMap,
+            }).growFull()
+            continentQueue.delete(continent)
+        }
+    }
+
     #buildContinentLinks(realmTileMap) {
         for(let continent of realmTileMap.getRealms()) {
             const sideContinents = realmTileMap.getSideRealms(continent)
@@ -42,9 +68,10 @@ export class ContinentModel {
         }
     }
 
-    constructor(realmTileMap) {
+    constructor(params, realmTileMap) {
         this.#realmTileMap = realmTileMap
         this.#buildContinents(realmTileMap)
+        this.#buildContinentGroups(params, realmTileMap)
         this.#buildContinentLinks(realmTileMap)
     }
 
@@ -80,6 +107,10 @@ export class ContinentModel {
         return this.#realmTileMap.getRealmOrigin(point)
     }
 
+    getGroup(continent) {
+        return this.#continentGroupMap.get(continent)
+    }
+
     isBorder(point) {
         return this.#realmTileMap.isRealmBorder(point)
     }
@@ -95,5 +126,29 @@ export class ContinentModel {
 
     map(callback) {
         return this.#continents.map(callback)
+    }
+}
+
+
+
+class ContinentGroupFloodFill extends SingleFillUnit {
+    setValue(continent, level) {
+        const {groupId, groupSizeMap} = this.context
+        const currentGroupSize = groupSizeMap.get(groupId)
+        this.context.continentGroupMap.set(continent, groupId)
+        groupSizeMap.set(groupId, currentGroupSize + 1)
+    }
+
+    isEmpty(continent) {
+        const {typeMap, groupId, groupSizeMap} = this.context
+        const currentGroupSize = groupSizeMap.get(groupId)
+        const sameType = typeMap.get(this.origin) === typeMap.get(continent)
+        const ungrouped = ! this.context.continentGroupMap.has(continent)
+        const validGroupSize = currentGroupSize <= this.context.maxGroupSize
+        return sameType && ungrouped && validGroupSize
+    }
+
+    getNeighbors(continent) {
+        return this.context.realmTileMap.getSideRealms(continent)
     }
 }
