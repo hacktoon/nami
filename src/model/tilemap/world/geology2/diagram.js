@@ -11,6 +11,7 @@ const OCEAN_COLOR = Color.fromHex('#047')
 
 class GeologyColorMap {
     #continentColorMap
+    #groupColorMap
 
     constructor(tileMap) {
         const continentColors = tileMap.map(continent => {
@@ -20,12 +21,20 @@ class GeologyColorMap {
                 : LAND_COLOR.darken(Random.choice(0, 20, 40, 60))
             return [continent, color]
         })
+        const groupColors = tileMap.continent.groups.map(group => {
+            return [group, new Color()]
+        })
         this.tileMap = tileMap
         this.#continentColorMap = new Map(continentColors)
+        this.#groupColorMap = new Map(groupColors)
     }
 
     getByContinent(continent) {
         return this.#continentColorMap.get(continent)
+    }
+
+    getByGroup(group) {
+        return this.#groupColorMap.get(group)
     }
 }
 
@@ -34,6 +43,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
         Type.boolean('showId', 'Continent id', {default: true}),
+        Type.boolean('showContinentGroup', 'Continent groups', {default: true}),
         Type.boolean('showContinentBorder', 'Continent border', {default: true}),
         Type.boolean('showProvinceBorder', 'Province border', {default: true}),
     )
@@ -49,16 +59,21 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showId = params.get('showId')
         this.showContinentBorder = params.get('showContinentBorder')
         this.showProvinceBorder = params.get('showProvinceBorder')
+        this.showContinentGroup = params.get('showContinentGroup')
     }
 
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
         const continent = this.tileMap.continent.get(point)
         const province = this.tileMap.province.get(point)
+        const group = this.tileMap.continent.getGroup(continent)
         const isContinentBorder = this.tileMap.continent.isBorder(point)
         const isProvinceBorder = this.tileMap.province.isBorder(point)
         let color = this.colorMap.getByContinent(continent)
 
+        if (this.showContinentGroup) {
+            return this.colorMap.getByGroup(group).toHex()
+        }
         if (this.tileMap.province.isCorner(province)) {
             const isOceanic = this.tileMap.continent.isOceanic(continent)
             color = isOceanic ? color.brighten(20) : OCEAN_COLOR.brighten(20)

@@ -36,9 +36,9 @@ export class ContinentModel {
     }
 
     #buildContinentGroups(params, realmTileMap) {
-        const continentSize = params.get('continentRate')
+        const continentRate = params.get('continentRate')
         const continentQueue = new IndexMap(this.#continents)
-        const maxGroupSize = Math.round(this.#continents.length * continentSize)
+        const maxGroupSize = Math.round(this.#continents.length * continentRate)
         const groupSizeMap = new Map()
         let groupId = 0
         while(continentQueue.size > 0) {
@@ -49,11 +49,11 @@ export class ContinentModel {
                 continentGroupMap: this.#continentGroupMap,
                 typeMap: this.#typeMap,
                 groupId: groupId++,
+                continentQueue,
                 maxGroupSize,
                 groupSizeMap,
                 realmTileMap,
             }).growFull()
-            continentQueue.delete(continent)
         }
     }
 
@@ -81,6 +81,10 @@ export class ContinentModel {
 
     get ids() {
         return this.#continents
+    }
+
+    get groups() {
+        return this.#continentGroups
     }
 
     get(point) {
@@ -136,6 +140,7 @@ class ContinentGroupFloodFill extends SingleFillUnit {
         const {groupId, groupSizeMap} = this.context
         const currentGroupSize = groupSizeMap.get(groupId)
         this.context.continentGroupMap.set(continent, groupId)
+        this.context.continentQueue.delete(continent)
         groupSizeMap.set(groupId, currentGroupSize + 1)
     }
 

@@ -14,6 +14,7 @@ const ID = 'GeologyTileMap2'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
+    Type.number('scale', 'Scale', {default: 33, step: 1, min: 1, max: 100}),
     Type.number('continentRate', 'Continent rate', {default: .3, step: .05, min: .1, max: .8}),
     Type.text('seed', 'Seed', {default: ''})
 )
@@ -46,7 +47,7 @@ export class GeologyTileMap2 extends TileMap {
     _buildRealmTileMap(params) {
         return RealmTileMap.fromData({
             rect: this.rect.hash(),
-            scale: 33,
+            scale: params.get('scale'),
             growth: 1,
             chance: .1,
             rgScale: 5,
@@ -58,10 +59,12 @@ export class GeologyTileMap2 extends TileMap {
 
     get(point) {
         const continent = this.continent.get(point)
+        const group = this.continent.getGroup(continent)
         const province = this.province.get(point)
         return {
             continent,
             province,
+            group,
             // provinceType: this.province.getType(province),
             area: this.continent.getArea(continent),
             isOcean: this.continent.isOceanic(continent),
@@ -78,7 +81,10 @@ export class GeologyTileMap2 extends TileMap {
     }
 
     getDescription() {
-        return `${this.#realmTileMap.size} continents`
+        return [
+            `${this.#realmTileMap.size} continents`,
+            `${this.continent.groups.length} groups`,
+        ].join(', ')
     }
 
     map(callback) {
