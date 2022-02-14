@@ -60,8 +60,10 @@ export class ContinentModel {
     #buildContinentLinks(realmTileMap) {
         for(let continent of realmTileMap.getRealms()) {
             const sideContinents = realmTileMap.getSideRealms(continent)
+            const group = this.#continentGroupMap.get(continent)
             for(let sideContinent of sideContinents) {
-                if (Random.chance(.1)) {
+                const sideGroup = this.#continentGroupMap.get(sideContinent)
+                if (group === sideGroup) {
                     this.#links.setEdge(continent, sideContinent)
                 }
             }
