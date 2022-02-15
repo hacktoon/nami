@@ -9,7 +9,7 @@ const TYPES = [
     {name: 'Plain', water: false, color: '#574'},
     {name: 'Island', water: true, color: '#574'},
     {name: 'Shallow sea', water: true, color: '#058'},
-    {name: 'Deep sea', water: true, color: '#147'},
+    {name: 'Deep sea', water: true, color: '#047'},
 ]
 
 

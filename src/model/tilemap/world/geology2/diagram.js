@@ -1,12 +1,8 @@
 import { Schema } from '/lib/schema'
 import { Type } from '/lib/type'
 import { Color } from '/lib/color'
-import { Random } from '/lib/random'
 
 import { TileMapDiagram } from '/lib/model/tilemap'
-
-const LAND_COLOR = Color.fromHex('#574')
-const OCEAN_COLOR = Color.fromHex('#047')
 
 
 class GeologyColorMap {
@@ -28,7 +24,7 @@ class GeologyColorMap {
 
     getByContinent(continent) {
         const isOceanic = this.tileMap.continent.isOceanic(continent)
-        return isOceanic ? OCEAN_COLOR : LAND_COLOR
+        return Color.fromHex(isOceanic ? '#047' : '#574')
     }
 
     getByGroup(group) {
@@ -71,24 +67,18 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const continent = this.tileMap.continent.get(point)
         const province = this.tileMap.province.get(point)
         const group = this.tileMap.continent.getGroup(continent)
-        const isContinentBorder = this.tileMap.continent.isBorder(point)
-        const isProvinceBorder = this.tileMap.province.isBorder(point)
         let color = this.colorMap.getByContinent(continent)
-        let provinceColor = this.colorMap.getByProvince(province)
 
-        if (this.showProvinces) {
-            if (this.tileMap.province.isBorderProvince(province)) {
-                const isOceanic = this.tileMap.continent.isOceanic(continent)
-                color = isOceanic ? provinceColor.brighten(5) : provinceColor
-            }
+        if (this.showProvinces && this.tileMap.province.isBorderProvince(province)) {
+            color = this.colorMap.getByProvince(province)
         }
         if (this.showContinentGroup) {
             color = this.colorMap.getByGroup(group)
         }
-        if (this.showProvinceBorder && isProvinceBorder) {
+        if (this.showProvinceBorder && this.tileMap.province.isBorder(point)) {
             color = color.brighten(20)
         }
-        if (this.showContinentBorder && isContinentBorder) {
+        if (this.showContinentBorder && this.tileMap.continent.isBorder(point)) {
             color = color.average(Color.BLACK).brighten(10)
         }
         return color.toHex()

@@ -2,7 +2,6 @@ import { SingleFillUnit } from '/lib/floodfill/single'
 import { IndexMap } from '/lib/map'
 import { Graph } from '/lib/graph'
 import { Point } from '/lib/point'
-import { Random } from '/lib/random'
 
 
 const TYPE_LAND = 0
