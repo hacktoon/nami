@@ -15,7 +15,7 @@ const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
-    Type.number('continentRate', 'Continent rate', {default: .3, step: .05, min: .1, max: .8}),
+    Type.number('continentRate', 'Continent rate', {default: .2, step: .05, min: .1, max: .8}),
     Type.text('seed', 'Seed', {default: ''})
 )
 

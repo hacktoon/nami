@@ -155,6 +155,12 @@ class ContinentGroupFloodFill extends SingleFillUnit {
     }
 
     getNeighbors(continent) {
-        return this.context.realmTileMap.getSideRealms(continent)
+        const realmTileMap = this.context.realmTileMap
+        const cmpDescendingArea = (id0, id1) => {
+            const area0 = realmTileMap.getArea(id0)
+            const area1 = realmTileMap.getArea(id1)
+            return area1 - area0
+        }
+        return realmTileMap.getSideRealms(continent).sort(cmpDescendingArea)
     }
 }
