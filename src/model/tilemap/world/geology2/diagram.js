@@ -39,7 +39,7 @@ class GeologyColorMap {
 
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
-        'GeologyTileMapDiagram',
+        'Geology2TileMapDiagram',
         Type.boolean('showId', 'Continent id', {default: true}),
         Type.boolean('showContinentGroup', 'Continent groups', {default: true}),
         Type.boolean('showContinentBorder', 'Continent border', {default: true}),

@@ -72,7 +72,9 @@ export class RealmTileMap extends TileMap {
         }).fill()
         this.#borderRegionMap.forEach((neighbors, region) => {
             this.#borderRegions.push(region)
-            if (neighbors.size > 1) this.#cornerRegionSet.add(region)
+            if (neighbors.size > 1) {
+                this.#cornerRegionSet.add(region)
+            }
         })
         console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
