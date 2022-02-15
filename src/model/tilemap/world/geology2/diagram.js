@@ -12,6 +12,7 @@ const OCEAN_COLOR = Color.fromHex('#047')
 class GeologyColorMap {
     #continentColorMap
     #groupColorMap
+    #provinceColorMap
 
     constructor(tileMap) {
         const continentColors = tileMap.map(continent => {
@@ -24,9 +25,14 @@ class GeologyColorMap {
         const groupColors = tileMap.continent.groups.map(group => {
             return [group, new Color()]
         })
+        const provinceColors = tileMap.province.map(province => {
+            const color = tileMap.province.getType(province).color
+            return [province, Color.fromHex(color)]
+        })
         this.tileMap = tileMap
         this.#continentColorMap = new Map(continentColors)
         this.#groupColorMap = new Map(groupColors)
+        this.#provinceColorMap = new Map(provinceColors)
     }
 
     getByContinent(continent) {
@@ -35,6 +41,10 @@ class GeologyColorMap {
 
     getByGroup(group) {
         return this.#groupColorMap.get(group)
+    }
+
+    getByProvince(province) {
+        return this.#provinceColorMap.get(province)
     }
 }
 
@@ -45,6 +55,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showId', 'Continent id', {default: true}),
         Type.boolean('showContinentGroup', 'Continent groups', {default: true}),
         Type.boolean('showContinentBorder', 'Continent border', {default: true}),
+        Type.boolean('showProvinces', 'Provinces', {default: true}),
         Type.boolean('showProvinceBorder', 'Province border', {default: true}),
     )
     static colorMap = GeologyColorMap
@@ -58,8 +69,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.colorMap = colorMap
         this.showId = params.get('showId')
         this.showContinentBorder = params.get('showContinentBorder')
-        this.showProvinceBorder = params.get('showProvinceBorder')
         this.showContinentGroup = params.get('showContinentGroup')
+        this.showProvinceBorder = params.get('showProvinceBorder')
+        this.showProvinces = params.get('showProvinces')
     }
 
     get(_point) {
@@ -70,16 +82,19 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const isContinentBorder = this.tileMap.continent.isBorder(point)
         const isProvinceBorder = this.tileMap.province.isBorder(point)
         let color = this.colorMap.getByContinent(continent)
+        let provinceColor = this.colorMap.getByProvince(province)
 
         if (this.showContinentGroup) {
             return this.colorMap.getByGroup(group).toHex()
         }
-        if (this.tileMap.province.isCorner(province)) {
-            const isOceanic = this.tileMap.continent.isOceanic(continent)
-            color = isOceanic ? color.brighten(20) : OCEAN_COLOR.brighten(20)
-        } else if (this.tileMap.province.isBorderProvince(province)) {
-            const isOceanic = this.tileMap.continent.isOceanic(continent)
-            color = isOceanic ? color.brighten(20) : color.darken(10)
+        if (this.showProvinces) {
+            if (this.tileMap.province.isCorner(province)) {
+                const isOceanic = this.tileMap.continent.isOceanic(continent)
+                color = isOceanic ? provinceColor.brighten(20) : OCEAN_COLOR.brighten(20)
+            } else if (this.tileMap.province.isBorderProvince(province)) {
+                const isOceanic = this.tileMap.continent.isOceanic(continent)
+                color = isOceanic ? provinceColor.brighten(20) : provinceColor.darken(10)
+            }
         }
         if (this.showProvinceBorder && isProvinceBorder) {
             color = color.brighten(20)

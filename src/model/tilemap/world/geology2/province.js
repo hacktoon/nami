@@ -17,13 +17,26 @@ export class ProvinceModel {
     #provinces
     #typeMap = new Map()
 
+    #buildTypeMap(realmTileMap, continentModel) {
+        realmTileMap.getRegions().map(province => {
+            const continent = realmTileMap.getRealmByRegion(province)
+            const sideProvinces = realmTileMap.getSideRegions(province)
+            for(let sideProvince of sideProvinces) {
+                const sideContinent = realmTileMap.getRealmByRegion(sideProvince)
+                const sameGroup = continentModel.sameGroup(continent, sideContinent)
+            }
+            if (continentModel.isOceanic(continent)) {
+                this.#typeMap.set(province, TYPES[5])
+            } else {
+                this.#typeMap.set(province, TYPES[3])
+            }
+        })
+    }
+
     constructor(realmTileMap, continentModel) {
         this.#realmTileMap = realmTileMap
         this.#provinces = realmTileMap.getRegions()
-        realmTileMap.getBorderRegions().map(region => {
-
-            return region
-        })
+        this.#buildTypeMap(realmTileMap, continentModel)
     }
 
     get size() {
@@ -32,6 +45,10 @@ export class ProvinceModel {
 
     get(point) {
         return this.#realmTileMap.getRegion(point)
+    }
+
+    getType(province) {
+        return this.#typeMap.get(province)
     }
 
     isCorner(province) {

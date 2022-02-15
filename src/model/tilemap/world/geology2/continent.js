@@ -105,7 +105,7 @@ export class ContinentModel {
         return this.#typeMap.get(continent) === TYPE_OCEAN
     }
 
-    isLinked(continent, sideContinent) {
+    sameGroup(continent, sideContinent) {
         return this.#links.hasEdge(continent, sideContinent)
     }
 
