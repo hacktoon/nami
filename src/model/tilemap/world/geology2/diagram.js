@@ -69,7 +69,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const group = this.tileMap.continent.getGroup(continent)
         let color = this.colorMap.getByContinent(continent)
 
-        if (this.showProvinces && this.tileMap.province.isBorderProvince(province)) {
+        if (this.showProvinces) {
             color = this.colorMap.getByProvince(province)
         }
         if (this.showContinentGroup) {
