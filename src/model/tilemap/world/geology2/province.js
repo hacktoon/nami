@@ -3,11 +3,11 @@ import { Random } from '/lib/random'
 
 
 const TYPES = [
-    {name: 'Mountain', water: false, color: '#9A9'},
+    {name: 'Mountain', water: false, color: '#AAA'},
     {name: 'Platform', water: false, color: '#949472'},
     {name: 'Hill', water: false, color: '#685'},
     {name: 'Plain', water: false, color: '#574'},
-    {name: 'Island', water: true, color: '#574'},
+    {name: 'Island', water: false, color: '#087'},
     {name: 'Shallow sea', water: true, color: '#058'},
     {name: 'Deep sea', water: true, color: '#047'},
 ]
@@ -72,14 +72,6 @@ class ProvinceMultiFill extends ConcurrentFill {
     constructor(regions, context) {
         super(regions, ProvinceFloodFill, context)
     }
-
-    getChance(fill, origin) {
-        return .2
-    }
-
-    getGrowth(fill, origin) {
-        return 2
-    }
 }
 
 
@@ -94,16 +86,13 @@ class ProvinceFloodFill extends ConcurrentFillUnit {
 
     getNeighbors(fill, province) {
         const {realmTileMap, continentModel} = fill.context
-        const continent = realmTileMap.getRealmByRegion(province)
-        const isCorner = realmTileMap.isCornerRegion(province)
-        const isBorder = realmTileMap.isBorderRegion(province)
-        const isOceanic = continentModel.isOceanic(continent)
         const sideProvinces = realmTileMap.getSideRegions(province)
+        const continent = realmTileMap.getRealmByRegion(province)
+        const isOceanic = continentModel.isOceanic(continent)
+        const isCorner = realmTileMap.isCornerRegion(province)
         let type = TYPES[3] // plain
 
-        if (isCorner) {
-            type = TYPES[5]
-        } else if (isBorder) {
+        if (realmTileMap.isBorderRegion(province)) {
             for(let sideProvince of sideProvinces) {
                 const sideContinent = realmTileMap.getRealmByRegion(sideProvince)
                 if (continent === sideContinent) {
@@ -111,16 +100,23 @@ class ProvinceFloodFill extends ConcurrentFillUnit {
                 }
                 const hasLink = continentModel.hasLink(continent, sideContinent)
                 const isSideOceanic = continentModel.isOceanic(sideContinent)
-                if (! hasLink && ! isSideOceanic) {
-                    type = TYPES[5]
-                } else if (hasLink && isOceanic && isSideOceanic) {
-                    type = TYPES[6]
+                const isOceansLinked = isOceanic && isSideOceanic
+                if (isCorner) {
+                    type = isOceansLinked ? TYPES[6] : TYPES[Random.choice(5, 6)]
+                    break
                 }
+                if (hasLink) {
+                    const landIndex = Random.choice(0, 1, 2, 2, 3, 3, 3, 3)
+                    type = isOceansLinked ? TYPES[6] : TYPES[landIndex]
+                    break
+                }
+                type = isSideOceanic ? TYPES[5] : TYPES[6]
             }
         } else {
-            const choices = isOceanic ? [5, 6] : [1, 2, 3]
+            const choices = isOceanic
+                ? [4, 5, 6, 6, 6, 6, 6, 6, 6, 6]
+                : [0, 1, 2, 3, 3, 3]
             type = TYPES[Random.choiceFrom(choices)]
-            // console.log(type);
         }
         fill.context.typeMap.set(province, type)
         return sideProvinces

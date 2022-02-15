@@ -19,29 +19,35 @@ export class RealmMultiFill extends ConcurrentFill {
 
 
 class RealmFloodFill extends ConcurrentFillUnit {
-    setValue(fill, regionId, level) {
+    setValue(fill, region, level) {
         const currentArea = fill.context.areaMap.get(fill.id)
-        const regionArea = fill.context.regionTileMap.getArea(regionId)
+        const regionArea = fill.context.regionTileMap.getArea(region)
         fill.context.areaMap.set(fill.id, currentArea + regionArea)
-        fill.context.regionToRealm.set(regionId, fill.id)
+        fill.context.regionToRealm.set(region, fill.id)
     }
 
-    isEmpty(fill, regionId) {
-        return ! fill.context.regionToRealm.has(regionId)
+    isEmpty(fill, region) {
+        return ! fill.context.regionToRealm.has(region)
     }
 
-    checkNeighbor(fill, neighborRegionId, centerRegionId) {
-        if (this.isEmpty(fill, neighborRegionId)) return
+    checkNeighbor(fill, sideRegion, originRegion) {
+        if (this.isEmpty(fill, sideRegion)) return
+        const realm = fill.id
         const regionToRealm = fill.context.regionToRealm
-        const neighborRealmId = regionToRealm.get(neighborRegionId)
-        if (fill.id === neighborRealmId) return
-        const borders = fill.context.borderRegionMap.get(centerRegionId) ?? new Set()
-        borders.add(neighborRealmId)
-        fill.context.borderRegionMap.set(centerRegionId, borders)
-        fill.context.graph.setEdge(fill.id, neighborRealmId)
+        const sideRealm = regionToRealm.get(sideRegion)
+        if (realm === sideRealm) return
+        const borders = fill.context.borderRegionMap.get(originRegion) ?? new Set()
+        borders.add(sideRealm)
+        const borderSizeMap = fill.context.borderSizeMap
+        const borderSize = borderSizeMap.has(realm, sideRealm)
+            ? borderSizeMap.get(realm, sideRealm)
+            : 0
+        borderSizeMap.set(realm, sideRealm, borderSize + 1)
+        fill.context.borderRegionMap.set(originRegion, borders)
+        fill.context.graph.setEdge(realm, sideRealm)
     }
 
-    getNeighbors(fill, regionId) {
-        return fill.context.regionTileMap.getSideRegions(regionId)
+    getNeighbors(fill, region) {
+        return fill.context.regionTileMap.getSideRegions(region)
     }
 }

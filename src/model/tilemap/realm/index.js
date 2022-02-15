@@ -1,7 +1,8 @@
-import { Graph } from '/lib/graph'
-
 import { Schema } from '/lib/schema'
 import { Type } from '/lib/type'
+import { Graph } from '/lib/graph'
+import { PairMap } from '/lib/map'
+
 import { TileMap } from '/lib/model/tilemap'
 import { UITileMap } from '/ui/tilemap'
 
@@ -42,15 +43,16 @@ export class RealmTileMap extends TileMap {
         return new RealmTileMap(params)
     }
 
-    #realms
-    #regionTileMap
-    #realmSamples
-    #borderRegions = []
+    #borderSizeMap = new PairMap()
     #borderRegionMap = new Map()
     #cornerRegionSet = new Set()
     #regionToRealm = new Map()
     #areaMap = new Map()
     #graph = new Graph()
+    #borderRegions = []
+    #regionTileMap
+    #realmSamples
+    #realms
 
     constructor(params) {
         super(params)
@@ -63,9 +65,10 @@ export class RealmTileMap extends TileMap {
             return id
         })
         new RealmMultiFill(this.#realmSamples.points, {
+            borderRegionMap: this.#borderRegionMap,
+            borderSizeMap: this.#borderSizeMap,
             regionTileMap: this.#regionTileMap,
             regionToRealm: this.#regionToRealm,
-            borderRegionMap: this.#borderRegionMap,
             areaMap: this.#areaMap,
             graph: this.#graph,
             params,
@@ -133,6 +136,10 @@ export class RealmTileMap extends TileMap {
 
     getArea(id) {
         return this.#areaMap.get(id)
+    }
+
+    getBorderSize(realm, sideRealm) {
+        return this.#borderSizeMap.get(realm, sideRealm)
     }
 
     isRealmBorder(point) {

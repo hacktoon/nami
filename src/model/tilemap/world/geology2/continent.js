@@ -135,7 +135,6 @@ export class ContinentModel {
 }
 
 
-
 class ContinentGroupFloodFill extends SingleFillUnit {
     setValue(continent, level) {
         const {groupId, groupSizeMap} = this.context
@@ -155,12 +154,13 @@ class ContinentGroupFloodFill extends SingleFillUnit {
     }
 
     getNeighbors(continent) {
+        // sort by border size
         const realmTileMap = this.context.realmTileMap
-        const cmpDescendingArea = (id0, id1) => {
-            const area0 = realmTileMap.getArea(id0)
-            const area1 = realmTileMap.getArea(id1)
+        const sideContinents = realmTileMap.getSideRealms(continent)
+        const cmpDescendingArea = (realm, sideRealm) => {
+            const area0 = realmTileMap.getBorderSize(realm, sideRealm)
             return area1 - area0
         }
-        return realmTileMap.getSideRealms(continent).sort(cmpDescendingArea)
+        return sideContinents//.sort(cmpDescendingArea)
     }
 }
