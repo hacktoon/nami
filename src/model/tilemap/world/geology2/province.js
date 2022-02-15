@@ -1,3 +1,4 @@
+import { SingleFillUnit } from '/lib/floodfill/single'
 import { Random } from '/lib/random'
 
 
@@ -18,18 +19,34 @@ export class ProvinceModel {
     #typeMap = new Map()
 
     #buildTypeMap(realmTileMap, continentModel) {
-        realmTileMap.getRegions().map(province => {
-            const continent = realmTileMap.getRealmByRegion(province)
-            const sideProvinces = realmTileMap.getSideRegions(province)
-            for(let sideProvince of sideProvinces) {
-                const sideContinent = realmTileMap.getRealmByRegion(sideProvince)
-                const sameGroup = continentModel.sameGroup(continent, sideContinent)
+        realmTileMap.getRegions().map(region => {
+            const continent = realmTileMap.getRealmByRegion(region)
+            const sideRegions = realmTileMap.getSideRegions(region)
+            const isOceanic = continentModel.isOceanic(continent)
+            if (this.#realmTileMap.isCornerRegion(region)) {
+                this.#typeMap.set(region, TYPES[5])
+                return
             }
-            if (continentModel.isOceanic(continent)) {
-                this.#typeMap.set(province, TYPES[5])
+            for(let sideRegion of sideRegions) {
+                const sideContinent = realmTileMap.getRealmByRegion(sideRegion)
+                if (continent === sideContinent) continue
+                const hasLink = continentModel.hasLink(continent, sideContinent)
+                const isSideOceanic = continentModel.isOceanic(sideContinent)
+                if (! hasLink && ! isOceanic && ! isSideOceanic) {
+                    this.#typeMap.set(region, TYPES[5])
+                    return
+                }
+                if (hasLink && isOceanic && isSideOceanic) {
+                    this.#typeMap.set(region, TYPES[6])
+                    return
+                }
+            }
+            if (isOceanic) {
+                this.#typeMap.set(region, TYPES[5])
             } else {
-                this.#typeMap.set(province, TYPES[3])
+                this.#typeMap.set(region, TYPES[3])
             }
+
         })
     }
 

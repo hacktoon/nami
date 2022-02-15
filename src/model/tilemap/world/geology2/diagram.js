@@ -10,18 +10,10 @@ const OCEAN_COLOR = Color.fromHex('#047')
 
 
 class GeologyColorMap {
-    #continentColorMap
     #groupColorMap
     #provinceColorMap
 
     constructor(tileMap) {
-        const continentColors = tileMap.map(continent => {
-            const isOceanic = tileMap.continent.isOceanic(continent)
-            const color = isOceanic
-                ? OCEAN_COLOR
-                : LAND_COLOR.darken(Random.choice(0, 20, 40, 60))
-            return [continent, color]
-        })
         const groupColors = tileMap.continent.groups.map(group => {
             return [group, new Color()]
         })
@@ -30,13 +22,13 @@ class GeologyColorMap {
             return [province, Color.fromHex(color)]
         })
         this.tileMap = tileMap
-        this.#continentColorMap = new Map(continentColors)
         this.#groupColorMap = new Map(groupColors)
         this.#provinceColorMap = new Map(provinceColors)
     }
 
     getByContinent(continent) {
-        return this.#continentColorMap.get(continent)
+        const isOceanic = this.tileMap.continent.isOceanic(continent)
+        return isOceanic ? OCEAN_COLOR : LAND_COLOR
     }
 
     getByGroup(group) {
@@ -84,17 +76,14 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         let color = this.colorMap.getByContinent(continent)
         let provinceColor = this.colorMap.getByProvince(province)
 
-        if (this.showContinentGroup) {
-            return this.colorMap.getByGroup(group).toHex()
-        }
         if (this.showProvinces) {
-            if (this.tileMap.province.isCorner(province)) {
+            if (this.tileMap.province.isBorderProvince(province)) {
                 const isOceanic = this.tileMap.continent.isOceanic(continent)
-                color = isOceanic ? provinceColor.brighten(20) : OCEAN_COLOR.brighten(20)
-            } else if (this.tileMap.province.isBorderProvince(province)) {
-                const isOceanic = this.tileMap.continent.isOceanic(continent)
-                color = isOceanic ? provinceColor.brighten(20) : provinceColor.darken(10)
+                color = isOceanic ? provinceColor.brighten(5) : provinceColor
             }
+        }
+        if (this.showContinentGroup) {
+            color = this.colorMap.getByGroup(group)
         }
         if (this.showProvinceBorder && isProvinceBorder) {
             color = color.brighten(20)

@@ -14,8 +14,8 @@ const ID = 'GeologyTileMap2'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
-    Type.number('scale', 'Scale', {default: 33, step: 1, min: 1, max: 100}),
-    Type.number('continentRate', 'Continent rate', {default: .3, step: .05, min: .1, max: .8}),
+    Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
+    Type.number('continentRate', 'Continent rate', {default: .2, step: .05, min: .1, max: .8}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -48,9 +48,9 @@ export class GeologyTileMap2 extends TileMap {
         return RealmTileMap.fromData({
             rect: this.rect.hash(),
             scale: params.get('scale'),
-            growth: 1,
+            growth: 4,
             chance: .1,
-            rgScale: 5,
+            rgScale: 4,
             rgGrowth: 10,
             rgChance: .1,
             seed: this.seed,
