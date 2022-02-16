@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
-import { Point } from '/lib/point'
-import { MouseTrack } from '/ui/mouse'
-import { Canvas } from '/ui/canvas'
+import { Point } from '/src/lib/point'
+import { MouseTrack } from '/src/ui/mouse'
+import { Canvas } from '/src/ui/canvas'
 
 
 export function UITileMapMouse({scene, ...props}) {

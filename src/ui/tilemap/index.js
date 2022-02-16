@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 
-import { Point } from '/lib/point'
-import { Form } from '/ui/form'
-import { Button } from '/ui/form/button'
-import { Text } from '/ui'
-import { TileMapScene } from '/lib/model/tilemap/scene'
+import { Point } from '/src/lib/point'
+import { Form } from '/src/ui/form'
+import { Button } from '/src/ui/form/button'
+import { Text } from '/src/ui'
+import { TileMapScene } from '/src/lib/model/tilemap/scene'
 
 import { UITileMapScene } from './scene'
 

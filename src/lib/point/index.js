@@ -1,5 +1,5 @@
-import { Direction } from '/lib/direction'
-import { Random } from '/lib/random'
+import { Direction } from '/src/lib/direction'
+import { Random } from '/src/lib/random'
 
 
 const ADJACENT_NEIGHBORHOOD = [

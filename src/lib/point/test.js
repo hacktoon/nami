@@ -1,6 +1,6 @@
-import { Point } from '/lib/point'
-import { Rect } from '/lib/number'
-import { IndexedPointSet } from '/lib/point/set'
+import { Point } from '/src/lib/point'
+import { Rect } from '/src/lib/number'
+import { IndexedPointSet } from '/src/lib/point/set'
 
 
 test("point multiplication", () => {

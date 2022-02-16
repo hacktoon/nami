@@ -1,20 +1,20 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
-import { Schema } from '/lib/schema'
-import { Type } from '/lib/type'
-import { Form } from '/ui/form'
-import { Title } from '/ui'
+import { Schema } from '/src/lib/schema'
+import { Type } from '/src/lib/type'
+import { Form } from '/src/ui/form'
+import { Title } from '/src/ui'
 
-import { NoiseTileMap } from '/model/tilemap/noise'
-import { RegionTileMap } from '/model/tilemap/region'
-import { RealmTileMap } from '/model/tilemap/realm'
-import { GeologyTileMap } from '/model/tilemap/world/geology'
-import { GeologyTileMap2 } from '/model/tilemap/world/geology2'
-import { TemperatureTileMap } from '/model/tilemap/world/temperature'
+import { NoiseTileMap } from '/src/model/tilemap/noise'
+import { RegionTileMap } from '/src/model/tilemap/region'
+import { RealmTileMap } from '/src/model/tilemap/realm'
+import { GeologyTileMap } from '/src/model/tilemap/world/geology'
+import { GeologyTileMap2 } from '/src/model/tilemap/world/geology2'
+import { TemperatureTileMap } from '/src/model/tilemap/world/temperature'
 
-import "/ui/css/base.css"
-import "/ui/css/tilemap.css"
+import "/src/ui/css/base.css"
+import "/src/ui/css/tilemap.css"
 
 
 const APPS = [

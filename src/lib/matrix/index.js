@@ -1,4 +1,4 @@
-import { Rect } from '/lib/number'
+import { Rect } from '/src/lib/number'
 
 
 export class Matrix {

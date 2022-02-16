@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react'
 
-import { Point } from '/lib/point'
-import { Canvas } from '/ui/canvas'
-import { useResize } from '/ui'
+import { Point } from '/src/lib/point'
+import { Canvas } from '/src/ui/canvas'
+import { useResize } from '/src/ui'
 
-import { TileMapScene } from '/lib/model/tilemap/scene'
+import { TileMapScene } from '/src/lib/model/tilemap/scene'
 
 import { UITileMapMouse } from './mouse'
 

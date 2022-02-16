@@ -1,4 +1,4 @@
-import { IndexMap, PairMap } from '/lib/map'
+import { IndexMap, PairMap } from '/src/lib/map'
 
 
 //////////////////////////////////////////////////////

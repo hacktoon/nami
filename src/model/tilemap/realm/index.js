@@ -1,12 +1,12 @@
-import { Schema } from '/lib/schema'
-import { Type } from '/lib/type'
-import { Graph } from '/lib/graph'
-import { PairMap } from '/lib/map'
+import { Schema } from '/src/lib/schema'
+import { Type } from '/src/lib/type'
+import { Graph } from '/src/lib/graph'
+import { PairMap } from '/src/lib/map'
 
-import { TileMap } from '/lib/model/tilemap'
-import { UITileMap } from '/ui/tilemap'
+import { TileMap } from '/src/lib/model/tilemap'
+import { UITileMap } from '/src/ui/tilemap'
 
-import { RegionTileMap } from '/model/tilemap/region'
+import { RegionTileMap } from '/src/model/tilemap/region'
 
 import { RealmSampling } from './sampling'
 import { RealmTileMapDiagram } from './diagram'

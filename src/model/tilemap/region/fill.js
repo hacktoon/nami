@@ -1,5 +1,5 @@
-import { Point } from '/lib/point'
-import { ConcurrentFill, ConcurrentFillUnit } from '/lib/floodfill/concurrent'
+import { Point } from '/src/lib/point'
+import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 
 
 const NO_REGION = null

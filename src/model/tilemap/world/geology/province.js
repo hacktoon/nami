@@ -1,7 +1,7 @@
-import { ConcurrentFill, ConcurrentFillUnit } from '/lib/floodfill/concurrent'
-import { Point } from '/lib/point'
-import { PointSet } from '/lib/point/set'
-import { Matrix } from '/lib/matrix'
+import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { Point } from '/src/lib/point'
+import { PointSet } from '/src/lib/point/set'
+import { Matrix } from '/src/lib/matrix'
 
 const NO_PROVINCE = null
 

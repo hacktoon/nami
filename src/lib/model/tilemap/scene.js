@@ -1,8 +1,8 @@
-import { Point } from '/lib/point'
-import { Rect } from '/lib/number'
-import { Schema } from '/lib/schema'
-import { Type } from '/lib/type'
-import { createCanvas } from '/ui/canvas'
+import { Point } from '/src/lib/point'
+import { Rect } from '/src/lib/number'
+import { Schema } from '/src/lib/schema'
+import { Type } from '/src/lib/type'
+import { createCanvas } from '/src/ui/canvas'
 
 
 export class TileMapScene {

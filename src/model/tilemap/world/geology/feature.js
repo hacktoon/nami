@@ -1,5 +1,5 @@
-import { Matrix } from '/lib/matrix'
-import { SimplexNoise } from '/lib/fractal/noise'
+import { Matrix } from '/src/lib/matrix'
+import { SimplexNoise } from '/src/lib/fractal/noise'
 import { Feature } from './table'
 
 const NO_FEATURE = null

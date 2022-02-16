@@ -1,5 +1,5 @@
-import { ConcurrentFill, ConcurrentFillUnit } from '/lib/floodfill/concurrent'
-import { Random } from '/lib/random'
+import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { Random } from '/src/lib/random'
 
 
 const TYPES = [

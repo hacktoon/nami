@@ -1,7 +1,6 @@
-import { Point } from '/lib/point'
-import { Color } from '/lib/color'
-import { clamp } from '/lib/number'
-import { Rect } from './number'
+import { Point } from './point'
+import { Color } from './color'
+import { Rect, clamp } from './number'
 
 
 // let's create our own type system, it's fun

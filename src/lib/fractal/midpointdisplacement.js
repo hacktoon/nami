@@ -1,5 +1,5 @@
-import { Point } from '/lib/point'
-import { Random } from '/lib/random'
+import { Point } from '/src/lib/point'
+import { Random } from '/src/lib/random'
 
 
 export const MidpointDisplacement = (source, target, roughness, callback=()=>{}) => {

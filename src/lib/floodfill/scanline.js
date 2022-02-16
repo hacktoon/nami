@@ -1,4 +1,4 @@
-import { Point } from '/lib/point'
+import { Point } from '/src/lib/point'
 
 
 export class ScanlineFill {

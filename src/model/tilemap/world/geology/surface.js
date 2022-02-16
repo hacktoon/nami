@@ -1,5 +1,5 @@
-import { SingleFillUnit } from '/lib/floodfill/single'
-import { IndexMap } from '/lib/map'
+import { SingleFillUnit } from '/src/lib/floodfill/single'
+import { IndexMap } from '/src/lib/map'
 
 
 const TYPE_CONTINENT = 0

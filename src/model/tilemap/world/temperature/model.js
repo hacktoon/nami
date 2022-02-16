@@ -1,4 +1,4 @@
-import { RegionTileMap } from '/model/tilemap/region'
+import { RegionTileMap } from '/src/model/tilemap/region'
 
 
 const TROPICAL = 0

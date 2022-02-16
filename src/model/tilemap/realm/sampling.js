@@ -1,5 +1,5 @@
-import { IndexMap } from '/lib/map'
-import { SingleFillUnit } from '/lib/floodfill/single'
+import { IndexMap } from '/src/lib/map'
+import { SingleFillUnit } from '/src/lib/floodfill/single'
 
 
 export class RealmSampling {

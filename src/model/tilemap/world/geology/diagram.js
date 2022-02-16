@@ -1,9 +1,9 @@
-import { Schema } from '/lib/schema'
-import { Type } from '/lib/type'
-import { Direction } from '/lib/direction'
-import { Color } from '/lib/color'
+import { Schema } from '/src/lib/schema'
+import { Type } from '/src/lib/type'
+import { Direction } from '/src/lib/direction'
+import { Color } from '/src/lib/color'
 
-import { TileMapDiagram } from '/lib/model/tilemap'
+import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 const PL_LAND = '#574'
 const PL_OCEAN = '#058'

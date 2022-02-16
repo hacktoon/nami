@@ -1,7 +1,7 @@
-import { Random } from '/lib/random'
-import { PairMap } from '/lib/map'
-import { Direction } from '/lib/direction'
-import { Point } from '/lib/point'
+import { Random } from '/src/lib/random'
+import { PairMap } from '/src/lib/map'
+import { Direction } from '/src/lib/direction'
+import { Point } from '/src/lib/point'
 
 import { Feature, TectonicsTable } from './table'
 

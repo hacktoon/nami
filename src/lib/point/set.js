@@ -1,4 +1,4 @@
-import { IndexMap } from '/lib/map'
+import { IndexMap } from '/src/lib/map'
 
 /**
  * This class represents zero ou many points [x, y] in an infinite space.

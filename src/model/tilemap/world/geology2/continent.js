@@ -1,7 +1,7 @@
-import { SingleFillUnit } from '/lib/floodfill/single'
-import { IndexMap } from '/lib/map'
-import { Graph } from '/lib/graph'
-import { Point } from '/lib/point'
+import { SingleFillUnit } from '/src/lib/floodfill/single'
+import { IndexMap } from '/src/lib/map'
+import { Graph } from '/src/lib/graph'
+import { Point } from '/src/lib/point'
 
 
 const TYPE_LAND = 0

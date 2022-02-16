@@ -1,5 +1,5 @@
-import { Random } from '/lib/random'
-import { Rect } from '/lib/number'
+import { Random } from '/src/lib/random'
+import { Rect } from '/src/lib/number'
 
 
 export class TileMap {
