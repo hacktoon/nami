@@ -18,7 +18,7 @@ deploy: build
 	git checkout --orphan gh-pages
 	git reset --mixed
 	mv build/* .
-	git add index.html src.*.js src.*.css
+	git add index.html *.js *.css
 	git commit -m 'deploy-$(shell date --iso=seconds)'
 	git push -f origin gh-pages
 	git checkout -f main
