@@ -157,10 +157,10 @@ class ContinentGroupFloodFill extends SingleFillUnit {
         // sort by border size
         const realmTileMap = this.context.realmTileMap
         const sideContinents = realmTileMap.getSideRealms(continent)
-        const cmpDescendingArea = (realm, sideRealm) => {
-            const area0 = realmTileMap.getBorderSize(realm, sideRealm)
-            return area1 - area0
-        }
+        // const cmpDescendingArea = (realm, sideRealm) => {
+        //     const area0 = realmTileMap.getBorderSize(realm, sideRealm)
+        //     return area1 - area0
+        // }
         return sideContinents//.sort(cmpDescendingArea)
     }
 }
