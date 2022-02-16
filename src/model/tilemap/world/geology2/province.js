@@ -106,7 +106,7 @@ class ProvinceFloodFill extends ConcurrentFillUnit {
                     break
                 }
                 if (hasLink) {
-                    const landIndex = Random.choice(0, 1, 2, 2, 3, 3, 3, 3)
+                    const landIndex = Random.choice(0, 1, 2, 2, 3, 3, 3)
                     type = isOceansLinked ? TYPES[6] : TYPES[landIndex]
                     break
                 }
