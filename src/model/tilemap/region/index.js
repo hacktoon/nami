@@ -42,23 +42,36 @@ export class RegionTileMap extends TileMap {
     }
 
     #graph = new Graph()
+    #borderMap = new PairMap()
+    #centerPoints
+    #regionMatrix
+    #levelMatrix
     #regions
+    #origins
+    #mapFill
+
 
     constructor(params) {
         super(params)
         const scale = params.get('scale')
-        this.origins = EvenPointSampling.create(this.rect, scale)
-        this.regionMatrix = Matrix.fromRect(this.rect, () => NO_REGION)
-        this.levelMatrix = Matrix.fromRect(this.rect, () => 0)
-        this.borderMap = new PairMap()
-        this.centerPoints = new PointSet(this.origins)
-        this.#regions = this.origins.map((_, id) => id)
-        this.mapFill = new RegionMultiFill(this, params)
-        this.mapFill.fill()
+        this.#origins = EvenPointSampling.create(this.rect, scale)
+        this.#regionMatrix = Matrix.fromRect(this.rect, () => NO_REGION)
+        this.#levelMatrix = Matrix.fromRect(this.rect, () => 0)
+        this.#centerPoints = new PointSet(this.#origins)
+        this.#regions = this.#origins.map((_, id) => id)
+        this.#mapFill = new RegionMultiFill(this.#origins, {
+            regionMatrix: this.#regionMatrix,
+            levelMatrix: this.#levelMatrix,
+            borderMap: this.#borderMap,
+            graph: this.#graph,
+            chance: params.get('chance'),
+            growth: params.get('growth'),
+        })
+        this.#mapFill.fill()
     }
 
     get size() {
-        return this.origins.length
+        return this.#origins.length
     }
 
     get graph() {
@@ -78,7 +91,7 @@ export class RegionTileMap extends TileMap {
     }
 
     getRegion(point) {
-        return this.regionMatrix.get(point)
+        return this.#regionMatrix.get(point)
     }
 
     getRegions() {
@@ -86,33 +99,33 @@ export class RegionTileMap extends TileMap {
     }
 
     getRegionOrigin(point) {
-        const id = this.regionMatrix.get(point)
-        return this.origins[id]
+        const id = this.#regionMatrix.get(point)
+        return this.#origins[id]
     }
 
     getOriginById(id) {
-        return this.origins[id]
+        return this.#origins[id]
     }
 
     getArea(id) {
-        return this.mapFill.getArea(id)
+        return this.#mapFill.getArea(id)
     }
 
     getRegionAreaById(id) {
-        return this.mapFill.getArea(id)
+        return this.#mapFill.getArea(id)
     }
 
     getLevel(point) {
-        return this.levelMatrix.get(point)
+        return this.#levelMatrix.get(point)
     }
 
     getBorderRegions(point) {
         // a single tile can have two different region neighbors
-        return Array.from(this.borderMap.get(...point) ?? [])
+        return Array.from(this.#borderMap.get(...point) ?? [])
     }
 
     getBorders() {
-        return this.borderMap.getPairs()
+        return this.#borderMap.getPairs()
     }
 
     getSideRegions(regionId) {
@@ -122,12 +135,12 @@ export class RegionTileMap extends TileMap {
     distanceBetween(region0, region1) {
         const point0 = this.getOriginById(region0)
         const point1 = this.getOriginById(region1)
-        const unwrappedPoint1 = this.regionMatrix.rect.unwrapFrom(point0, point1)
+        const unwrappedPoint1 = this.#regionMatrix.rect.unwrapFrom(point0, point1)
         return Point.distance(point0, unwrappedPoint1)
     }
 
     isOrigin(point) {
-        return this.centerPoints.has(point)
+        return this.#centerPoints.has(point)
     }
 
     isNeighbor(regionId, neighborId) {
@@ -135,11 +148,15 @@ export class RegionTileMap extends TileMap {
     }
 
     isBorder(point) {
-        return this.borderMap.has(...point)
+        return this.#borderMap.has(...point)
     }
 
     map(callback) {
         return this.#regions.map(callback)
+    }
+
+    forEachBorderPoint(callback) {
+        this.#borderMap.forEach(callback)
     }
 
     forEach(callback) {

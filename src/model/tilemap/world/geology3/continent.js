@@ -117,8 +117,7 @@ export class ContinentModel {
     }
 
     isOrigin(point) {
-        const continent = this.get(point)
-        const origin = this.#regionTileMap.getOriginById(continent)
+        const origin = this.#regionTileMap.getRegionOrigin(point)
         return Point.equals(origin, point)
     }
 

@@ -48,12 +48,12 @@ class GeologyColorMap {
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'GeologyTileMapDiagram',
-        Type.boolean('showPlateBorder', 'Show plate borders', {default: true}),
+        Type.boolean('showPlateBorder', 'Show plate borders', {default: false}),
         Type.boolean('showSurface', 'Show surface', {default: false}),
         Type.boolean('showProvince', 'Show province', {default: false}),
         Type.boolean('showProvinceBorder', 'Show province border', {default: false}),
         Type.boolean('showProvinceLevel', 'Show province level', {default: false}),
-        Type.boolean('showFeatures', 'Show features', {default: false}),
+        Type.boolean('showFeatures', 'Show features', {default: true}),
         Type.boolean('showDirection', 'Show directions', {default: false}),
     )
     static colorMap = GeologyColorMap
