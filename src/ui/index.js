@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react'
+import { React, useLayoutEffect, useState } from 'react'
 
 import { Rect } from '/src/lib/number'
 

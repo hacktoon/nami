@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { React, useState } from 'react'
 
 import { Point } from '/src/lib/point'
 import { Form } from '/src/ui/form'

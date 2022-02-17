@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from 'react'
+import { React, useRef, useLayoutEffect } from 'react'
 
 
 export function Canvas({viewport, onInit, className='Canvas'}) {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import { React, useState, useRef } from 'react'
 
 import { Point } from '/src/lib/point'
 import { Canvas } from '/src/ui/canvas'
