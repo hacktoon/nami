@@ -9,32 +9,32 @@ const TYPE_OCEAN = 1
 
 
 export class ContinentModel {
-    #realmTileMap
+    #regionTileMap
     #continents = []
     #typeMap = new Map()
     #continentGroupMap = new Map()
     #continentGroups = []
     #links = new Graph()
 
-    #buildContinents(realmTileMap) {
+    #buildContinents(regionTileMap) {
         let totalOceanicArea = 0
-        const halfArea = Math.floor(realmTileMap.area / 2)
+        const halfArea = Math.floor(regionTileMap.area / 2)
         // sort by bigger to smaller continents
         const cmpDescendingArea = (id0, id1) => {
-            const area0 = realmTileMap.getArea(id0)
-            const area1 = realmTileMap.getArea(id1)
+            const area0 = regionTileMap.getArea(id0)
+            const area1 = regionTileMap.getArea(id1)
             return area1 - area0
         }
-        const continents = this.#realmTileMap.getRealms().sort(cmpDescendingArea)
+        const continents = this.#regionTileMap.getRegions().sort(cmpDescendingArea)
         for (let continent of continents) {
-            totalOceanicArea += realmTileMap.getArea(continent)
+            totalOceanicArea += regionTileMap.getArea(continent)
             const isOceanic = totalOceanicArea < halfArea
             this.#typeMap.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
             this.#continents.push(continent)
         }
     }
 
-    #buildContinentGroups(params, realmTileMap) {
+    #buildContinentGroups(params, regionTileMap) {
         const continentRate = params.get('continentRate')
         const continentQueue = new IndexMap(this.#continents)
         const maxGroupSize = Math.round(this.#continents.length * continentRate)
@@ -51,14 +51,14 @@ export class ContinentModel {
                 continentQueue,
                 maxGroupSize,
                 groupSizeMap,
-                realmTileMap,
+                regionTileMap,
             }).growFull()
         }
     }
 
-    #buildContinentLinks(realmTileMap) {
-        for(let continent of realmTileMap.getRealms()) {
-            const sideContinents = realmTileMap.getSideRealms(continent)
+    #buildContinentLinks(regionTileMap) {
+        for(let continent of regionTileMap.getRegions()) {
+            const sideContinents = regionTileMap.getSideRegions(continent)
             const group = this.#continentGroupMap.get(continent)
             for(let sideContinent of sideContinents) {
                 const sideGroup = this.#continentGroupMap.get(sideContinent)
@@ -69,11 +69,11 @@ export class ContinentModel {
         }
     }
 
-    constructor(params, realmTileMap) {
-        this.#realmTileMap = realmTileMap
-        this.#buildContinents(realmTileMap)
-        this.#buildContinentGroups(params, realmTileMap)
-        this.#buildContinentLinks(realmTileMap)
+    constructor(params, regionTileMap) {
+        this.#regionTileMap = regionTileMap
+        this.#buildContinents(regionTileMap)
+        this.#buildContinentGroups(params, regionTileMap)
+        this.#buildContinentLinks(regionTileMap)
     }
 
     get size() {
@@ -89,15 +89,19 @@ export class ContinentModel {
     }
 
     get(point) {
-        return this.#realmTileMap.getRealm(point)
+        return this.#regionTileMap.getRegion(point)
     }
 
     getArea(continent) {
-        return this.#realmTileMap.getArea(continent)
+        return this.#regionTileMap.getArea(continent)
     }
 
     getContinents() {
-        return this.#realmTileMap.getRealms()
+        return this.#regionTileMap.getRegions()
+    }
+
+    getGroup(continent) {
+        return this.#continentGroupMap.get(continent)
     }
 
     isOceanic(continent) {
@@ -108,20 +112,13 @@ export class ContinentModel {
         return this.#links.hasEdge(continent, sideContinent)
     }
 
-    getOrigin(point) {
-        return this.#realmTileMap.getRealmOrigin(point)
-    }
-
-    getGroup(continent) {
-        return this.#continentGroupMap.get(continent)
-    }
-
     isBorder(point) {
-        return this.#realmTileMap.isRealmBorder(point)
+        return this.#regionTileMap.isBorder(point)
     }
 
     isOrigin(point) {
-        const origin = this.getOrigin(point)
+        const continent = this.get(point)
+        const origin = this.#regionTileMap.getOriginById(continent)
         return Point.equals(origin, point)
     }
 
@@ -135,6 +132,9 @@ export class ContinentModel {
 }
 
 
+/**
+ * Fills the regions creating groups of continents
+ */
 class ContinentGroupFloodFill extends SingleFillUnit {
     setValue(continent, level) {
         const {groupId, groupSizeMap} = this.context
@@ -154,13 +154,6 @@ class ContinentGroupFloodFill extends SingleFillUnit {
     }
 
     getNeighbors(continent) {
-        // sort by border size
-        const realmTileMap = this.context.realmTileMap
-        const sideContinents = realmTileMap.getSideRealms(continent)
-        // const cmpDescendingArea = (realm, sideRealm) => {
-        //     const area0 = realmTileMap.getBorderSize(realm, sideRealm)
-        //     return area1 - area0
-        // }
-        return sideContinents//.sort(cmpDescendingArea)
+        return this.context.regionTileMap.getSideRegions(continent)
     }
 }
