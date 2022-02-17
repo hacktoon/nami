@@ -61,14 +61,13 @@ export class GeologyTileMap2 extends TileMap {
         const continent = this.continent.get(point)
         const group = this.continent.getGroup(continent)
         const province = this.province.get(point)
+        const provinceType = this.province.getType(province).name
         return {
             continent,
-            province,
+            province: `${province}:${provinceType}`,
             group,
-            provinceType: this.province.getType(province),
-            // area: this.continent.getArea(continent),
             isOcean: this.continent.isOceanic(continent),
-            // point: Point.hash(point),
+            // area: this.continent.getArea(continent),
         }
     }
 
