@@ -54,6 +54,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const group = this.tileMap.continent.getGroup(continent)
         let color = this.colorMap.getByContinent(continent)
 
+        color = color.darken(2 * this.tileMap.surface.get(point))
         if (this.showContinentGroup) {
             color = this.colorMap.getByGroup(group)
         }

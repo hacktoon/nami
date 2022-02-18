@@ -7,7 +7,6 @@ const NO_SURFACE = null
 
 
 export class SurfaceModel {
-    #regionTileMap
     #matrix
 
     #buildOrigins(regionTileMap, continentModel) {
@@ -18,6 +17,7 @@ export class SurfaceModel {
             for(let sideContinent of sideContinents) {
                 const sideGroup = continentModel.getGroup(sideContinent)
                 if (group !== sideGroup) {
+                    // select only group borders
                     origins.push(point)
                     break
                 }
@@ -27,12 +27,11 @@ export class SurfaceModel {
     }
 
     constructor(regionTileMap, continentModel) {
-        this.#regionTileMap = regionTileMap
-        this.#matrix = Matrix.fromRect(regionTileMap.rect, _ => NO_SURFACE)
         const origins = this.#buildOrigins(regionTileMap, continentModel)
+        this.#matrix = Matrix.fromRect(regionTileMap.rect, _ => NO_SURFACE)
         new SurfaceMultiFill(origins, {
-            regionTileMap,
             matrix: this.#matrix,
+            regionTileMap,
         }).fill()
     }
 
@@ -48,11 +47,11 @@ class SurfaceMultiFill extends ConcurrentFill {
     }
 
     getChance(fill, origin) {
-        return this.context.chance
+        return .2
     }
 
     getGrowth(fill, origin) {
-        return this.context.growth
+        return 10
     }
 }
 
