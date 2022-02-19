@@ -26,13 +26,16 @@ export class Rect {
         return new Rect(w, h)
     }
 
+    #area
+
     constructor(width, height) {
         this.width = width
         this.height = height ?? width
+        this.#area = width * height
     }
 
     get area() {
-        return this.width * this.height
+        return this.#area
     }
 
     isInside(point) {

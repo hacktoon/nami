@@ -33,6 +33,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showId', 'Continent id', {default: true}),
         Type.boolean('showContinentGroup', 'Continent groups', {default: true}),
         Type.boolean('showContinentBorder', 'Continent border', {default: true}),
+        Type.boolean('showSurface', 'Surface', {default: true}),
     )
     static colorMap = GeologyColorMap
 
@@ -46,6 +47,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showId = params.get('showId')
         this.showContinentBorder = params.get('showContinentBorder')
         this.showContinentGroup = params.get('showContinentGroup')
+        this.showSurface = params.get('showSurface')
     }
 
     get(_point) {
@@ -55,6 +57,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         let color = this.colorMap.getByContinent(continent)
 
         color = color.darken(2 * this.tileMap.surface.get(point))
+        if (this.showSurface) {
+            const colorId = this.tileMap.surface.getSurface(point)
+            color = new Color(colorId, colorId, colorId)
+        }
         if (this.showContinentGroup) {
             color = this.colorMap.getByGroup(group)
         }

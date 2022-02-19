@@ -1,13 +1,18 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { SimplexNoise } from '/src/lib/fractal/noise'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 
 
 const NO_SURFACE = null
+const NO_LEVEL = null
 
 
 export class SurfaceModel {
-    #matrix
+    #levelMatrix
+    #noiseMatrix
+    #surfaceMatrix
+    #groupMaxLevel = new Map()
 
     #buildOrigins(regionTileMap, continentModel) {
         const origins = []
@@ -27,16 +32,36 @@ export class SurfaceModel {
     }
 
     constructor(regionTileMap, continentModel) {
+        const rect = regionTileMap.rect
         const origins = this.#buildOrigins(regionTileMap, continentModel)
-        this.#matrix = Matrix.fromRect(regionTileMap.rect, _ => NO_SURFACE)
+        const noise = new SimplexNoise(4, .5, .03)
+        this.#noiseMatrix = Matrix.fromRect(rect, _ => NO_SURFACE)
+        this.#levelMatrix = Matrix.fromRect(rect, _ => NO_LEVEL)
         new SurfaceMultiFill(origins, {
-            matrix: this.#matrix,
+            groupMaxLevel: this.#groupMaxLevel,
+            noiseMatrix: this.#noiseMatrix,
+            levelMatrix: this.#levelMatrix,
+            area: regionTileMap.rect.area,
+            continentModel,
             regionTileMap,
+            noise,
         }).fill()
+        this.#surfaceMatrix = Matrix.fromRect(rect, point => {
+
+        })
+        console.log(this.#groupMaxLevel);
     }
 
     get(point) {
-        return this.#matrix.get(point)
+        return this.#levelMatrix.get(point)
+    }
+
+    getSurface(point) {
+        return this.#noiseMatrix.get(point)
+    }
+
+    isWater(point) {
+        return this.get(point) === TYPE_WATER
     }
 }
 
@@ -45,24 +70,29 @@ class SurfaceMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, SurfaceFloodFill, context)
     }
-
-    getChance(fill, origin) {
-        return .2
-    }
-
-    getGrowth(fill, origin) {
-        return 10
-    }
+    getChance(fill, origin) { return .2 }
+    getGrowth(fill, origin) { return 10 }
 }
 
 
 class SurfaceFloodFill extends ConcurrentFillUnit {
-    setValue(fill, point, level) {
-        fill.context.matrix.set(point, level)
+    setValue(fill, _point, level) {
+        const {regionTileMap, continentModel, noise} = fill.context
+        const point = regionTileMap.rect.wrap(_point)
+        const continent = continentModel.get(point)
+        const group = continentModel.getGroup(continent)
+        const ptOffset = (group + 1) * fill.context.area
+        const value = noise.get(Point.plus(point, [ptOffset, ptOffset]))
+        const currentLevel = fill.context.groupMaxLevel.get(group)
+        if (level > currentLevel) {
+            fill.context.groupMaxLevel.set(group, level)
+        }
+        fill.context.noiseMatrix.set(point, value)
+        fill.context.levelMatrix.set(point, level)
     }
 
     isEmpty(fill, point) {
-        return fill.context.matrix.get(point) === NO_SURFACE
+        return fill.context.levelMatrix.get(point) === NO_LEVEL
     }
 
     getNeighbors(fill, point) {

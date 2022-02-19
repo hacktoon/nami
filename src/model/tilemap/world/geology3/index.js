@@ -50,17 +50,16 @@ export class GeologyTileMap3 extends TileMap {
             rect: this.rect.hash(),
             scale: params.get('scale'),
             growth: params.get('growth'),
-            chance: .2,
             seed: this.seed,
+            chance: .2,
         })
     }
 
     get(point) {
         const continent = this.continent.get(point)
-        const surface = this.surface.get(point)
         return {
             continent,
-            surface,
+            surface: this.surface.getSurface(point),
             group: this.continent.getGroup(continent),
             isOcean: this.continent.isOceanic(continent)
         }
