@@ -33,11 +33,10 @@ export class SurfaceModel {
 
     constructor(regionTileMap, continentModel) {
         const rect = regionTileMap.rect
+        const groups = continentModel.groups
         const origins = this.#buildOrigins(regionTileMap, continentModel)
         const noise = new SimplexNoise(4, .5, .03)
-        this.#groupMaxLevel = new Map(continentModel.groups.map(group => {
-            return [group, 0]
-        }))
+        this.#groupMaxLevel = new Map(groups.map(group => [group, 0]))
         this.#noiseMatrix = Matrix.fromRect(rect, _ => NO_SURFACE)
         this.#levelMatrix = Matrix.fromRect(rect, _ => NO_LEVEL)
         new SurfaceMultiFill(origins, {
@@ -50,16 +49,25 @@ export class SurfaceModel {
             noise,
         }).fill()
         this.#surfaceMatrix = Matrix.fromRect(rect, point => {
-
+            const continent = continentModel.get(point)
+            const group = continentModel.getGroup(continent)
+            const maxLevel = this.#groupMaxLevel.get(group)
+            const level = this.#levelMatrix.get(point)
+            const noise = this.#noiseMatrix.get(point)
+            return 1
         })
     }
 
-    get(point) {
+    getLevel(point) {
         return this.#levelMatrix.get(point)
     }
 
-    getSurface(point) {
+    getNoise(point) {
         return this.#noiseMatrix.get(point)
+    }
+
+    getSurface(point) {
+        return this.#surfaceMatrix.get(point)
     }
 
     isWater(point) {
@@ -73,7 +81,7 @@ class SurfaceMultiFill extends ConcurrentFill {
         super(origins, SurfaceFloodFill, context)
     }
     getChance(fill, origin) { return .2 }
-    getGrowth(fill, origin) { return 10 }
+    getGrowth(fill, origin) { return 8 }
 }
 
 

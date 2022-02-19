@@ -58,8 +58,8 @@ export class GeologyTileMap3 extends TileMap {
     get(point) {
         const continent = this.continent.get(point)
         return {
-            surface: this.surface.getSurface(point),
-            surfaceLevel: this.surface.get(point),
+            surface: this.surface.getNoise(point),
+            surfaceLevel: this.surface.getLevel(point),
             isOcean: this.continent.isOceanic(continent)
         }
     }
