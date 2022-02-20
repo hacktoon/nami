@@ -13,6 +13,7 @@ export class ContinentModel {
     #continents = []
     #typeMap = new Map()
     #continentGroupMap = new Map()
+    #groupOrigin = new Map()
     #continentGroups = []
     #links = new Graph()
 
@@ -39,15 +40,16 @@ export class ContinentModel {
         const continentQueue = new IndexMap(this.#continents)
         const maxGroupSize = Math.round(this.#continents.length * continentRate)
         const groupSizeMap = new Map()
-        let groupId = 0
+        let group = 0
         while(continentQueue.size > 0) {
             const continent = continentQueue.random()
-            groupSizeMap.set(groupId, 0)
-            this.#continentGroups.push(groupId)
+            groupSizeMap.set(group, 0)
+            this.#continentGroups.push(group)
             new ContinentGroupFloodFill(continent, {
                 continentGroupMap: this.#continentGroupMap,
                 typeMap: this.#typeMap,
-                groupId: groupId++,
+                groupOrigin: this.#groupOrigin,
+                group: group++,
                 continentQueue,
                 maxGroupSize,
                 groupSizeMap,
@@ -104,6 +106,10 @@ export class ContinentModel {
         return this.#continentGroupMap.get(continent)
     }
 
+    getGroupOrigin(group) {
+        return this.#groupOrigin.get(group)
+    }
+
     isOceanic(continent) {
         return this.#typeMap.get(continent) === TYPE_OCEAN
     }
@@ -136,16 +142,18 @@ export class ContinentModel {
  */
 class ContinentGroupFloodFill extends SingleFillUnit {
     setValue(continent, level) {
-        const {groupId, groupSizeMap} = this.context
-        const currentGroupSize = groupSizeMap.get(groupId)
-        this.context.continentGroupMap.set(continent, groupId)
+        const {regionTileMap, group, groupSizeMap} = this.context
+        const origin = regionTileMap.getOriginById(continent)
+        const currentGroupSize = groupSizeMap.get(group)
+        this.context.continentGroupMap.set(continent, group)
         this.context.continentQueue.delete(continent)
-        groupSizeMap.set(groupId, currentGroupSize + 1)
+        this.context.groupOrigin.set(group, origin)
+        groupSizeMap.set(group, currentGroupSize + 1)
     }
 
     isEmpty(continent) {
-        const {typeMap, groupId, groupSizeMap} = this.context
-        const currentGroupSize = groupSizeMap.get(groupId)
+        const {typeMap, group, groupSizeMap} = this.context
+        const currentGroupSize = groupSizeMap.get(group)
         const sameType = typeMap.get(this.origin) === typeMap.get(continent)
         const ungrouped = ! this.context.continentGroupMap.has(continent)
         const validGroupSize = currentGroupSize <= this.context.maxGroupSize

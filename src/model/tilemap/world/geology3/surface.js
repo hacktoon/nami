@@ -1,4 +1,5 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { ScanlineFill } from '/src/lib/floodfill/scanline'
 import { SimplexNoise } from '/src/lib/fractal/noise'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
@@ -10,7 +11,6 @@ const NO_LEVEL = null
 
 export class SurfaceModel {
     #levelMatrix
-    #noiseMatrix
     #surfaceMatrix
     #groupMaxLevel
 
@@ -31,39 +31,49 @@ export class SurfaceModel {
         return origins
     }
 
+    #buildSurface(regionTileMap, continentModel) {
+        const noise = new SimplexNoise(4, .5, .03)
+        for (let group of continentModel.groups) {
+            const groupOrigin = continentModel.getGroupOrigin(group)
+            const config = new SurfaceFillConfig({
+                surfaceMatrix: this.#surfaceMatrix,
+                groupMaxLevel: this.#groupMaxLevel,
+                levelMatrix: this.#levelMatrix,
+                regionTileMap,
+                noise,
+                group,
+            })
+            new ScanlineFill(groupOrigin, config).fill()
+        }
+    }
+
     constructor(regionTileMap, continentModel) {
         const rect = regionTileMap.rect
         const groups = continentModel.groups
         const origins = this.#buildOrigins(regionTileMap, continentModel)
-        const noise = new SimplexNoise(4, .5, .03)
         this.#groupMaxLevel = new Map(groups.map(group => [group, 0]))
-        this.#noiseMatrix = Matrix.fromRect(rect, _ => NO_SURFACE)
+        this.#surfaceMatrix = Matrix.fromRect(rect, _ => NO_SURFACE)
         this.#levelMatrix = Matrix.fromRect(rect, _ => NO_LEVEL)
-        new SurfaceMultiFill(origins, {
+        new LevelMultiFill(origins, {
             groupMaxLevel: this.#groupMaxLevel,
-            noiseMatrix: this.#noiseMatrix,
             levelMatrix: this.#levelMatrix,
             area: regionTileMap.rect.area,
             continentModel,
             regionTileMap,
-            noise,
         }).fill()
-        this.#surfaceMatrix = Matrix.fromRect(rect, point => {
-            const continent = continentModel.get(point)
-            const group = continentModel.getGroup(continent)
-            const maxLevel = this.#groupMaxLevel.get(group)
-            const level = this.#levelMatrix.get(point)
-            const noise = this.#noiseMatrix.get(point)
-            return 1
-        })
+        this.#buildSurface(regionTileMap, continentModel)
+        // this.#surfaceMatrix = Matrix.fromRect(rect, point => {
+        //     const continent = continentModel.get(point)
+        //     const group = continentModel.getGroup(continent)
+        //     const maxLevel = this.#groupMaxLevel.get(group)
+        //     const level = this.#levelMatrix.get(point)
+        //     const noise = this.#noiseMatrix.get(point)
+        //     return 1
+        // })
     }
 
     getLevel(point) {
         return this.#levelMatrix.get(point)
-    }
-
-    getNoise(point) {
-        return this.#noiseMatrix.get(point)
     }
 
     getSurface(point) {
@@ -76,7 +86,7 @@ export class SurfaceModel {
 }
 
 
-class SurfaceMultiFill extends ConcurrentFill {
+class LevelMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, SurfaceFloodFill, context)
     }
@@ -87,17 +97,14 @@ class SurfaceMultiFill extends ConcurrentFill {
 
 class SurfaceFloodFill extends ConcurrentFillUnit {
     setValue(fill, _point, level) {
-        const {regionTileMap, continentModel, groupMaxLevel,noise} = fill.context
+        const {regionTileMap, continentModel, groupMaxLevel} = fill.context
         const point = regionTileMap.rect.wrap(_point)
         const continent = continentModel.get(point)
         const group = continentModel.getGroup(continent)
-        const ptOffset = (group + 1) * fill.context.area
         const currentLevel = groupMaxLevel.get(group)
-        const value = noise.get(Point.plus(point, [ptOffset, ptOffset]))
         if (level > currentLevel) {
             groupMaxLevel.set(group, level)
         }
-        fill.context.noiseMatrix.set(point, value)
         fill.context.levelMatrix.set(point, level)
     }
 
@@ -107,5 +114,32 @@ class SurfaceFloodFill extends ConcurrentFillUnit {
 
     getNeighbors(fill, point) {
         return Point.adjacents(point)
+    }
+}
+
+
+class SurfaceFillConfig {
+    constructor(config) {
+        this.surfaceMatrix = config.surfaceMatrix
+        this.groupMaxLevel = config.groupMaxLevel
+        this.regionTileMap = config.regionTileMap
+        this.levelMatrix = config.levelMatrix
+        this.group = config.group
+        this.noise = config.noise
+    }
+
+    canFill(point) {
+        return this.surfaceMatrix.get(point) === NO_SURFACE
+    }
+
+    onFill(point) {
+        const offset = (this.group + 1) * 1000
+        const offsetPoint = Point.plus(point, [offset, offset])
+        const value = this.noise.get(offsetPoint)
+        this.surfaceMatrix.set(point, value)
+    }
+
+    filterPoint(point) {
+        return this.regionTileMap.rect.wrap(point)
     }
 }
