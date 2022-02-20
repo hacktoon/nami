@@ -33,6 +33,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showId', 'Continent id', {default: true}),
         Type.boolean('showContinentGroup', 'Continent groups', {default: true}),
         Type.boolean('showContinentBorder', 'Continent border', {default: true}),
+        Type.boolean('showNoise', 'Noise', {default: true}),
+        Type.number('noiseLevel', 'Noise Level', {default: 120}),
         Type.boolean('showSurface', 'Surface', {default: true}),
     )
     static colorMap = GeologyColorMap
@@ -47,7 +49,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showId = params.get('showId')
         this.showContinentBorder = params.get('showContinentBorder')
         this.showContinentGroup = params.get('showContinentGroup')
+        this.showNoise = params.get('showNoise')
         this.showSurface = params.get('showSurface')
+        this.noiseLevel = params.get('noiseLevel')
     }
 
     get(_point) {
@@ -57,8 +61,16 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         let color = this.colorMap.getByContinent(continent)
 
         color = color.darken(2 * this.tileMap.surface.getLevel(point))
+        if (this.showNoise) {
+            const colorId = this.tileMap.surface.getNoise(point)
+            color = new Color(colorId, colorId, colorId)
+            const level = this.tileMap.surface.getNoiseLevel(point)
+            if (level >= this.noiseLevel) {
+                return this.colorMap.getByGroup(group).toHex()
+            }
+        }
         if (this.showSurface) {
-            const colorId = this.tileMap.surface.getSurface(point)
+            const colorId = this.tileMap.surface.get(point)
             color = new Color(colorId, colorId, colorId)
         }
         if (this.showContinentGroup) {

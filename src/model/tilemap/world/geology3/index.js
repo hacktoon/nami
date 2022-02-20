@@ -1,5 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
+import { Point } from '/src/lib/point'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
@@ -59,9 +60,11 @@ export class GeologyTileMap3 extends TileMap {
         const group = this.continent.getGroup(continent)
         return {
             // surface: this.surface.getNoise(point),
-            groupOrigin: this.continent.getGroupOrigin(group),
+            point: Point.hash(point),
+            group,
+            continent,
             surfaceLevel: this.surface.getLevel(point),
-            isOcean: this.continent.isOceanic(continent)
+            // isOcean: this.continent.isOceanic(continent)
         }
     }
 
