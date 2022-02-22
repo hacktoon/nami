@@ -44,12 +44,12 @@ export class NoiseTileMap extends TileMap {
         const simplex = new SimplexNoise(detail, resolution, scale)
         let [min, max] = [Number.MAX_VALUE, Number.MIN_VALUE]
         this.#matrix = Matrix.fromRect(this.rect, point => {
+            //https://gamedev.stackexchange.com/questions/23625/how-do-you-generate-tileable-perlin-noise/23639#23639
+            // Basically, map the X coordinate of your pixel to a 2D circle, and the Y coordinate of your pixel to a second 2D circle, and place those two circles orthogonal to each other in 4D space. The resulting texture is tileable, has no obvious distortion, and doesn't repeat in the way that a mirrored texture would.
             const s = point[0] / this.rect.width
             const t = point[1] / this.rect.height
-            const x1 = 2
-            const y1 = 2
-            const dx = 100 - x1
-            const dy = 100 - y1
+            const [x1, y1] = [0, 0]
+            const [dx, dy] = [100 - x1, 100 - y1]
             const nx = x1 + Math.cos(s * 2 * Math.PI) * dx / (2 * Math.PI)
             const ny = y1 + Math.cos(t * 2 * Math.PI) * dy / (2 * Math.PI)
             const nz = x1 + Math.sin(s * 2 * Math.PI) * dx / (2 * Math.PI)

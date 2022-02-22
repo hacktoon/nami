@@ -14,7 +14,6 @@ export class SurfaceModel {
     #surfaceMatrix
     #noiseMatrix
     #groupMaxLevel
-    #noiseLevel
 
     #buildOrigins(regionTileMap, continentModel) {
         const origins = []
@@ -38,7 +37,7 @@ export class SurfaceModel {
             rect: regionTileMap.rect.hash(),
             seed: this.seed,
             detail: 4,
-            resolution: .5,
+            resolution: .6,
             scale: .03
         })
         for (let group of continentModel.groups) {
@@ -47,7 +46,6 @@ export class SurfaceModel {
                 noiseMatrix: this.#noiseMatrix,
                 groupMaxLevel: this.#groupMaxLevel,
                 levelMatrix: this.#levelMatrix,
-                noiseLevel: this.#noiseLevel,
                 continentModel,
                 noiseTileMap,
                 group,
@@ -62,7 +60,6 @@ export class SurfaceModel {
         this.#groupMaxLevel = new Map(groups.map(group => [group, 0]))
         this.#noiseMatrix = Matrix.fromRect(rect, _ => NO_SURFACE)
         this.#levelMatrix = Matrix.fromRect(rect, _ => NO_LEVEL)
-        this.#noiseLevel = Matrix.fromRect(rect, _ => NO_LEVEL)
         new LevelMultiFill(origins, {
             groupMaxLevel: this.#groupMaxLevel,
             levelMatrix: this.#levelMatrix,
@@ -89,10 +86,6 @@ export class SurfaceModel {
 
     getLevel(point) {
         return this.#levelMatrix.get(point)
-    }
-
-    getNoiseLevel(point) {
-        return this.#noiseLevel.get(point)
     }
 
     getNoise(point) {
@@ -137,19 +130,12 @@ class LevelFloodFill extends ConcurrentFillUnit {
 }
 
 
-/**
- * Fills the groups
- */
  class NoiseFloodFill extends SingleFillUnit {
     setValue(point, level) {
         const {noiseTileMap, group} = this.context
         const offset = Math.pow(group + 1, 2)
         const refPoint = Point.plus(point, [offset, offset])
         const value = noiseTileMap.get(refPoint)
-        // if (refPoint[0]==144 && refPoint[1]==46) {
-        //     console.log('lower', value);
-        // }
-        this.context.noiseLevel.set(point, level)
         this.context.noiseMatrix.set(point, value)
     }
 
