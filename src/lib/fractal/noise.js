@@ -49,7 +49,7 @@ export class SimplexNoise {
         // Noise contributions from the three corners
         let n0, n1, n2
         let s = (xin + yin) * F2 // Hairy factor for 2D
-        let i = Math.floor(xin+s)
+        let i = Math.floor(xin+s)  //x>0 ? (int)x : (int)x-1;  fastfloor?
         let j = Math.floor(yin+s)
         let G2 = (3.0-Math.sqrt(3.0)) / 6.0
         let t = (i + j) * G2

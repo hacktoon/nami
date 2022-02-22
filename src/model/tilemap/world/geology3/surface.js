@@ -2,7 +2,6 @@ import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurren
 import { SingleFillUnit } from '/src/lib/floodfill/single'
 import { SimplexNoise } from '/src/lib/fractal/noise'
 import { Matrix } from '/src/lib/matrix'
-import { Rect } from '/src/lib/number'
 import { Point } from '/src/lib/point'
 
 
@@ -37,8 +36,6 @@ export class SurfaceModel {
     #buildNoise(continentModel) {
         const noise = new SimplexNoise(4, .5, .03)
         const noise2 = new SimplexNoise(3, .6, .04)
-        const rect = this.#noiseMatrix.rect
-        const wrapRect = new Rect(rect.width * 4, rect.height * 4)
         for (let group of continentModel.groups) {
             const groupOrigin = continentModel.getGroupOrigin(group)
             new NoiseFloodFill(groupOrigin, {
@@ -48,7 +45,6 @@ export class SurfaceModel {
                 noiseLevel: this.#noiseLevel,
                 continentModel,
                 noise: group % 2 === 0 ? noise : noise2,
-                wrapRect,
                 group,
             }).growFull()
         }
@@ -141,10 +137,10 @@ class LevelFloodFill extends ConcurrentFillUnit {
  */
  class NoiseFloodFill extends SingleFillUnit {
     setValue(point, level) {
-        const {noise, group, wrapRect} = this.context
+        const {noise, group} = this.context
         const offset = Math.pow(group + 1, 2)
         const refPoint = Point.plus(point, [offset, offset])
-        const value = noise.get(wrapRect.wrap(refPoint))
+        const value = noise.get(refPoint)
         // if (refPoint[0]==144 && refPoint[1]==46) {
         //     console.log('lower', value);
         // }
