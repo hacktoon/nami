@@ -48,7 +48,7 @@ export class NoiseTileMap extends TileMap {
             // Basically, map the X coordinate of your pixel to a 2D circle, and the Y coordinate of your pixel to a second 2D circle, and place those two circles orthogonal to each other in 4D space. The resulting texture is tileable, has no obvious distortion, and doesn't repeat in the way that a mirrored texture would.
             const s = point[0] / this.rect.width
             const t = point[1] / this.rect.height
-            const [x1, y1] = [0, 0]
+            const [x1, y1] = [2, 2]
             const [dx, dy] = [100 - x1, 100 - y1]
             const nx = x1 + Math.cos(s * 2 * Math.PI) * dx / (2 * Math.PI)
             const ny = y1 + Math.cos(t * 2 * Math.PI) * dy / (2 * Math.PI)
