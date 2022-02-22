@@ -1,8 +1,8 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { SingleFillUnit } from '/src/lib/floodfill/single'
-import { SimplexNoise } from '/src/lib/fractal/noise'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
+import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
 const NO_SURFACE = null
@@ -33,9 +33,14 @@ export class SurfaceModel {
         return origins
     }
 
-    #buildNoise(continentModel) {
-        const noise = new SimplexNoise(4, .5, .03)
-        const noise2 = new SimplexNoise(3, .6, .04)
+    #buildNoise(regionTileMap, continentModel) {
+        const noiseTileMap = NoiseTileMap.fromData({
+            rect: regionTileMap.rect.hash(),
+            seed: this.seed,
+            detail: 4,
+            resolution: .5,
+            scale: .03
+        })
         for (let group of continentModel.groups) {
             const groupOrigin = continentModel.getGroupOrigin(group)
             new NoiseFloodFill(groupOrigin, {
@@ -44,7 +49,7 @@ export class SurfaceModel {
                 levelMatrix: this.#levelMatrix,
                 noiseLevel: this.#noiseLevel,
                 continentModel,
-                noise: group % 2 === 0 ? noise : noise2,
+                noiseTileMap,
                 group,
             }).growFull()
         }
@@ -65,7 +70,7 @@ export class SurfaceModel {
             continentModel,
             regionTileMap,
         }).fill()
-        this.#buildNoise(continentModel)
+        this.#buildNoise(regionTileMap, continentModel)
         this.#surfaceMatrix = Matrix.fromRect(rect, point => {
             const continent = continentModel.get(point)
             const group = continentModel.getGroup(continent)
@@ -137,10 +142,10 @@ class LevelFloodFill extends ConcurrentFillUnit {
  */
  class NoiseFloodFill extends SingleFillUnit {
     setValue(point, level) {
-        const {noise, group} = this.context
+        const {noiseTileMap, group} = this.context
         const offset = Math.pow(group + 1, 2)
         const refPoint = Point.plus(point, [offset, offset])
-        const value = noise.get(refPoint)
+        const value = noiseTileMap.get(refPoint)
         // if (refPoint[0]==144 && refPoint[1]==46) {
         //     console.log('lower', value);
         // }

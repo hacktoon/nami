@@ -1,7 +1,6 @@
 import { Matrix } from '/src/lib/matrix'
 import { TileMap } from '/src/lib/model/tilemap'
-import { SimplexNoise } from '/src/lib/fractal/noise'
-import { SimplexNoise2 } from '/src/lib/noise'
+import { SimplexNoise } from '/src/lib/noise'
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { UITileMap } from '/src/ui/tilemap'
@@ -29,14 +28,22 @@ export class NoiseTileMap extends TileMap {
         return new NoiseTileMap(params)
     }
 
+    static fromData(data) {
+        const map = new Map(Object.entries(data))
+        const params = NoiseTileMap.schema.buildFrom(map)
+        return new NoiseTileMap(params)
+    }
+
+    #matrix
+
     constructor(params) {
         super(params)
         const keys = ['detail', 'resolution', 'scale']
         const [detail, resolution, scale] = params.get(...keys)
         // const simplex = new SimplexNoise(detail, resolution, scale)
-        const simplex = new SimplexNoise2(detail, resolution, scale)
+        const simplex = new SimplexNoise(detail, resolution, scale)
         let [min, max] = [Number.MAX_VALUE, Number.MIN_VALUE]
-        this.matrix = Matrix.fromRect(this.rect, point => {
+        this.#matrix = Matrix.fromRect(this.rect, point => {
             const s = point[0] / this.rect.width
             const t = point[1] / this.rect.height
             const x1 = 2
@@ -47,9 +54,7 @@ export class NoiseTileMap extends TileMap {
             const ny = y1 + Math.cos(t * 2 * Math.PI) * dy / (2 * Math.PI)
             const nz = x1 + Math.sin(s * 2 * Math.PI) * dx / (2 * Math.PI)
             const nw = y1 + Math.sin(t * 2 * Math.PI) * dy / (2 * Math.PI)
-
             const noiseValue = simplex.noise4D(nx, ny, nz, nw)
-            // const noiseValue = simplex.get(point)
             if (noiseValue > max) {
                 max = noiseValue
             } else if (noiseValue < min) {
@@ -61,6 +66,6 @@ export class NoiseTileMap extends TileMap {
     }
 
     get(point) {
-        return this.matrix.get(point)
+        return this.#matrix.get(point)
     }
 }

@@ -13,7 +13,7 @@
  *
  */
 
-export class SimplexNoise2 {  // Simplex noise in 2D, 3D and 4D
+export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
     constructor(iterations, persistence, scale) {
         this.iterations = iterations
         this.persistence = persistence
