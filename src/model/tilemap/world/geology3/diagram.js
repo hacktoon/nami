@@ -61,8 +61,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         color = color.darken(2 * this.tileMap.surface.getLevel(point))
         if (this.showNoise) {
             const colorId = this.tileMap.surface.getNoise(point)
-            color = this.colorMap.getByGroup(group)
-                .average(new Color(colorId, colorId, colorId))
+            color = new Color(colorId, colorId, colorId)
         }
         if (this.showSurface) {
             const colorId = this.tileMap.surface.get(point)

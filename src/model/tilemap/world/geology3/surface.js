@@ -1,11 +1,9 @@
+import { SimplexNoise } from '/src/lib/noise'
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
-import { SingleFillUnit } from '/src/lib/floodfill/single'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
-import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
-const NO_SURFACE = null
 const NO_LEVEL = null
 
 
@@ -32,42 +30,37 @@ export class SurfaceModel {
         return origins
     }
 
-    #buildNoise(regionTileMap, continentModel) {
-        const noiseTileMap = NoiseTileMap.fromData({
-            rect: regionTileMap.rect.hash(),
-            seed: this.seed,
-            detail: 4,
-            resolution: .6,
-            scale: .03
+    #buildNoiseMatrix(regionTileMap, continentModel) {
+        const noise = new SimplexNoise(4, .6, .03)
+        const rect = regionTileMap.rect
+        return Matrix.fromRect(rect, point => {
+            const continent = continentModel.get(point)
+            const group = continentModel.getGroup(continent)
+            const offset = Math.pow(group + 1, 2)
+            const refPoint = Point.plus(point, [offset, offset])
+            return noise.wrappedNoise4D(rect, refPoint)
         })
-        for (let group of continentModel.groups) {
-            const groupOrigin = continentModel.getGroupOrigin(group)
-            new NoiseFloodFill(groupOrigin, {
-                noiseMatrix: this.#noiseMatrix,
-                groupMaxLevel: this.#groupMaxLevel,
-                levelMatrix: this.#levelMatrix,
-                continentModel,
-                noiseTileMap,
-                group,
-            }).growFull()
-        }
+    }
+
+    #buildLevelMatrix(regionTileMap, continentModel) {
+        const origins = this.#buildOrigins(regionTileMap, continentModel)
+        const matrix = Matrix.fromRect(regionTileMap.rect, _ => NO_LEVEL)
+        new LevelMultiFill(origins, {
+            groupMaxLevel: this.#groupMaxLevel,
+            area: regionTileMap.rect.area,
+            levelMatrix: matrix,
+            continentModel,
+            regionTileMap,
+        }).fill()
+        return matrix
     }
 
     constructor(regionTileMap, continentModel) {
         const rect = regionTileMap.rect
         const groups = continentModel.groups
-        const origins = this.#buildOrigins(regionTileMap, continentModel)
         this.#groupMaxLevel = new Map(groups.map(group => [group, 0]))
-        this.#noiseMatrix = Matrix.fromRect(rect, _ => NO_SURFACE)
-        this.#levelMatrix = Matrix.fromRect(rect, _ => NO_LEVEL)
-        new LevelMultiFill(origins, {
-            groupMaxLevel: this.#groupMaxLevel,
-            levelMatrix: this.#levelMatrix,
-            area: regionTileMap.rect.area,
-            continentModel,
-            regionTileMap,
-        }).fill()
-        this.#buildNoise(regionTileMap, continentModel)
+        this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
+        this.#noiseMatrix = this.#buildNoiseMatrix(regionTileMap, continentModel)
         this.#surfaceMatrix = Matrix.fromRect(rect, point => {
             const continent = continentModel.get(point)
             const group = continentModel.getGroup(continent)
@@ -125,29 +118,6 @@ class LevelFloodFill extends ConcurrentFillUnit {
     }
 
     getNeighbors(fill, point) {
-        return Point.adjacents(point)
-    }
-}
-
-
- class NoiseFloodFill extends SingleFillUnit {
-    setValue(point, level) {
-        const {noiseTileMap, group} = this.context
-        const offset = Math.pow(group + 1, 2)
-        const refPoint = Point.plus(point, [offset, offset])
-        const value = noiseTileMap.get(refPoint)
-        this.context.noiseMatrix.set(point, value)
-    }
-
-    isEmpty(point) {
-        const {continentModel, noiseMatrix} = this.context
-        const continent = continentModel.get(point)
-        const group = continentModel.getGroup(continent)
-        const surface = noiseMatrix.get(point)
-        return surface === NO_SURFACE && this.context.group === group
-    }
-
-    getNeighbors(point) {
         return Point.adjacents(point)
     }
 }

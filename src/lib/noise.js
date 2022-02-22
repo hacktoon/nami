@@ -78,7 +78,7 @@ export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
         return Math.round(noise * half + half)
     }
 
-    rectNoise4D(rect, [x, y]) {
+    wrappedNoise4D(rect, [x, y]) {
         //https://gamedev.stackexchange.com/questions/23625/how-do-you-generate-tileable-perlin-noise/23639#23639
         // Basically, map the X coordinate of your pixel to a 2D circle, and the Y coordinate of your pixel to a second 2D circle, and place those two circles orthogonal to each other in 4D space. The resulting texture is tileable, has no obvious distortion, and doesn't repeat in the way that a mirrored texture would.
         const s = x / rect.width
