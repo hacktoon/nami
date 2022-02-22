@@ -62,24 +62,6 @@ export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
 
     }
 
-    // This method is a *lot* faster than using Math.floor(x)
-    fastfloor(x) {
-        const xi = parseInt(x, 10)
-        return x < xi ? xi - 1 : xi
-    }
-
-    dot2D(g, x, y) {
-        return g[0] * x + g[1] * y
-    }
-
-    dot3D(g, x, y, z) {
-        return g[0] * x + g[1] * y + g[2] * z
-    }
-
-    dot4D(g, x, y, z, w) {
-        return g[0] * x + g[1] * y + g[2] * z + g[3] * w
-    }
-
     noise2D(point) {
         let amp = 1
         let freq = this.scale
@@ -94,6 +76,20 @@ export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
         //normalize the result
         const half = this.range / 2
         return Math.round(noise * half + half)
+    }
+
+    rectNoise4D(rect, [x, y]) {
+        //https://gamedev.stackexchange.com/questions/23625/how-do-you-generate-tileable-perlin-noise/23639#23639
+        // Basically, map the X coordinate of your pixel to a 2D circle, and the Y coordinate of your pixel to a second 2D circle, and place those two circles orthogonal to each other in 4D space. The resulting texture is tileable, has no obvious distortion, and doesn't repeat in the way that a mirrored texture would.
+        const s = x / rect.width
+        const t = y / rect.height
+        const [x1, y1] = [2, 2]
+        const [dx, dy] = [100 - x1, 100 - y1]
+        const nx = x1 + Math.cos(s * 2 * Math.PI) * dx / (2 * Math.PI)
+        const ny = y1 + Math.cos(t * 2 * Math.PI) * dy / (2 * Math.PI)
+        const nz = x1 + Math.sin(s * 2 * Math.PI) * dx / (2 * Math.PI)
+        const nw = y1 + Math.sin(t * 2 * Math.PI) * dy / (2 * Math.PI)
+        return this.noise4D(nx, ny, nz, nw)
     }
 
     noise4D(nx, ny, nz, nw) {
@@ -113,7 +109,6 @@ export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
         const half = this.range / 2
         return Math.round(noise * half + half)
     }
-
 
     // 2D simplex noise
     _calcNoise2D(xin, yin) {
@@ -387,4 +382,21 @@ export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
       return 27.0 * (n0 + n1 + n2 + n3 + n4);
     }
 
-  }
+    // This method is a *lot* faster than using Math.floor(x)
+    fastfloor(x) {
+        const xi = parseInt(x, 10)
+        return x < xi ? xi - 1 : xi
+    }
+
+    dot2D(g, x, y) {
+        return g[0] * x + g[1] * y
+    }
+
+    dot3D(g, x, y, z) {
+        return g[0] * x + g[1] * y + g[2] * z
+    }
+
+    dot4D(g, x, y, z, w) {
+        return g[0] * x + g[1] * y + g[2] * z + g[3] * w
+    }
+}
