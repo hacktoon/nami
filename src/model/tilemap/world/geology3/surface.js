@@ -31,7 +31,7 @@ export class SurfaceModel {
     }
 
     #buildNoiseMatrix(regionTileMap, continentModel) {
-        const noise = new SimplexNoise(4, .6, .03)
+        const noise = new SimplexNoise(5, .8, .04)
         const rect = regionTileMap.rect
         return Matrix.fromRect(rect, point => {
             const continent = continentModel.get(point)
@@ -64,12 +64,20 @@ export class SurfaceModel {
         this.#surfaceMatrix = Matrix.fromRect(rect, point => {
             const continent = continentModel.get(point)
             const group = continentModel.getGroup(continent)
+            const isOceanic = continentModel.isOceanic(continent)
             const maxLevel = this.#groupMaxLevel.get(group)
             const level = this.#levelMatrix.get(point)
             const noise = this.#noiseMatrix.get(point)
-            if (continentModel.isOceanic(continent))
-                return 1
-                return level > 10 ? noise : 1
+            const percentage = (1 * level) / maxLevel
+            if (percentage < .1)
+                return 20
+            if (isOceanic)
+                return 0
+            else
+                return percentage > .6
+                    ? noise + 60
+                    : noise > 120 ? noise : 40
+
         })
     }
 

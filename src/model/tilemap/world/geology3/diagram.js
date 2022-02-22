@@ -71,7 +71,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             color = this.colorMap.getByGroup(group)
         }
         if (this.showContinentBorder && this.tileMap.continent.isBorder(point)) {
-            color = color.average(Color.BLACK).brighten(10)
+            color = color.invert()
         }
         return color
     }
