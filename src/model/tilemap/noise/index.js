@@ -1,6 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { TileMap } from '/src/lib/model/tilemap'
 import { SimplexNoise } from '/src/lib/fractal/noise'
+import { SimplexNoise2 } from '/src/lib/noise'
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { UITileMap } from '/src/ui/tilemap'
@@ -32,10 +33,12 @@ export class NoiseTileMap extends TileMap {
         super(params)
         const keys = ['detail', 'resolution', 'scale']
         const [detail, resolution, scale] = params.get(...keys)
-        const simplex = new SimplexNoise(detail, resolution, scale)
+        // const simplex = new SimplexNoise(detail, resolution, scale)
+        const simplex = new SimplexNoise2(detail, resolution, scale)
         let [min, max] = [Number.MAX_VALUE, Number.MIN_VALUE]
         this.matrix = Matrix.fromRect(this.rect, point => {
-            const noiseValue = simplex.get(point)
+            const noiseValue = simplex.noise2D(point)
+            // const noiseValue = simplex.get(point)
             if (noiseValue > max) {
                 max = noiseValue
             } else if (noiseValue < min) {
