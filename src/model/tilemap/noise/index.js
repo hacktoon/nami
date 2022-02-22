@@ -37,7 +37,18 @@ export class NoiseTileMap extends TileMap {
         const simplex = new SimplexNoise2(detail, resolution, scale)
         let [min, max] = [Number.MAX_VALUE, Number.MIN_VALUE]
         this.matrix = Matrix.fromRect(this.rect, point => {
-            const noiseValue = simplex.noise2D(point)
+            const s = point[0] / this.rect.width
+            const t = point[1] / this.rect.height
+            const x1 = 2
+            const y1 = 2
+            const dx = 100 - x1
+            const dy = 100 - y1
+            const nx = x1 + Math.cos(s * 2 * Math.PI) * dx / (2 * Math.PI)
+            const ny = y1 + Math.cos(t * 2 * Math.PI) * dy / (2 * Math.PI)
+            const nz = x1 + Math.sin(s * 2 * Math.PI) * dx / (2 * Math.PI)
+            const nw = y1 + Math.sin(t * 2 * Math.PI) * dy / (2 * Math.PI)
+
+            const noiseValue = simplex.noise4D(nx, ny, nz, nw)
             // const noiseValue = simplex.get(point)
             if (noiseValue > max) {
                 max = noiseValue
