@@ -35,13 +35,17 @@ export class TileMapScene {
         // const offscreenCanvas = createCanvas(this.width, this.height)
         this.#renderFrame((tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
-                const color = this.diagram.get(tilePoint)
+                let color = this.diagram.get(tilePoint)
                 const text = this.diagram.getText(tilePoint)
-                canvas.rect(canvasPoint, this.zoom, color)
+                const toggle = (tilePoint[0] + tilePoint[1]) % 2 === 0
+                const inEdge = this.diagram.rect.inEdge(tilePoint)
+                if (this.wrap && toggle && inEdge) {
+                    color = color.darken(20)
+                }
+                canvas.rect(canvasPoint, this.zoom, color.toHex())
                 if (text) {
                     this.textQueue.push([canvasPoint, text])
                 }
-
             } else {
                 canvas.clear(this.zoom, canvasPoint)
             }

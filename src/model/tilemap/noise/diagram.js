@@ -12,7 +12,7 @@ class NoiseColorMap {
     get(point, maxColors) {
         const rawvalue = Number(this.tileMap.get(point))
         const value = this.normalize(rawvalue, maxColors)
-        return new Color(value, value, value).toHex()
+        return new Color(value, value, value)
     }
 
     normalize(value, maxColors) {

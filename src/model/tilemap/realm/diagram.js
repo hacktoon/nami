@@ -65,10 +65,10 @@ export class RealmTileMapDiagram extends TileMapDiagram {
         let color = realmColor
 
         if (this.showCenters && Point.equals(realmOrigin, point)) {
-            return realmColor.invert().toHex()
+            return realmColor.invert()
         }
         if (this.showRealmBorder && this.tileMap.isRealmBorder(point)) {
-            return Color.BLACK.average(realmColor).toHex()
+            return Color.BLACK.average(realmColor)
         }
         if (this.showRegions) {
             color = regionColor.average(realmColor).average(realmColor)
@@ -79,6 +79,6 @@ export class RealmTileMapDiagram extends TileMapDiagram {
         if (this.showCornerRegion && this.tileMap.isCornerRegion(region)) {
             color = (point[0] + point[1]) % 2 ? color.darken(80) : color
         }
-        return color.toHex()
+        return color
     }
 }

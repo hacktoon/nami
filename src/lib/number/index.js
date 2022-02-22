@@ -44,6 +44,12 @@ export class Rect {
         return x && y
     }
 
+    inEdge(point) {
+        const x = point[0] === 0 || point[0] === this.width - 1
+        const y = point[1] === 0 || point[1] === this.height - 1
+        return x || y
+    }
+
     wrap(point) {
         let [x, y] = point
         if (x >= this.width) { x %= this.width }

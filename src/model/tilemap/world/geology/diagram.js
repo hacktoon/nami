@@ -104,7 +104,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (this.showPlateBorder && isBorderPoint) {
             color = color.average(Color.BLACK).brighten(10)
         }
-        return color.toHex()
+        return color
     }
 
     getText(_point) {

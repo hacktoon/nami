@@ -67,27 +67,27 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         const color = this.colorMap.get(regionId)
 
         if (this.showOrigins && Point.equals(regionOrigin, point)) {
-            return color.invert().toHex()
+            return color.invert()
         }
         if (this.showBorders && this.tileMap.isBorder(point)) {
             if (this.showNeighborBorder) {
                 const neighborRegions = this.tileMap.getBorderRegions(point)
                 const borderColor = this.colorMap.getMix(neighborRegions)
-                return borderColor.toHex()
+                return borderColor
             }
-            return color.darken(50).toHex()
+            return color.darken(50)
         }
         if (this.showSelectedRegion) {
             const toggle = (point[0] + point[1]) % 2 === 0
             if (this.selectedRegionId === regionId) {
-                return toggle ? '#000' : '#FFF'
+                return toggle ? Color.BLACK : Color.WHITE
             } else if (this.tileMap.isNeighbor(this.selectedRegionId, regionId)) {
-                return toggle ? color.darken(40).toHex() : color.toHex()
+                return toggle ? color.darken(40) : color
             }
         }
         if (this.showLevel && level > this.level) {
-            return '#fff'
+            return Color.WHITE
         }
-        return color.toHex()
+        return color
     }
 }

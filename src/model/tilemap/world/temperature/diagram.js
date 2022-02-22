@@ -40,6 +40,6 @@ export class TemperatureTileMapDiagram extends TileMapDiagram {
     get(point) {
         const temp = this.tileMap.getTemperature(point)
         const color = this.colorMap.get(temp.zone)
-        return color.darken(temp.temp * 2).toHex()
+        return color.darken(temp.temp * 2)
     }
 }

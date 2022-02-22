@@ -66,7 +66,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             color = new Color(colorId, colorId, colorId)
             const level = this.tileMap.surface.getNoiseLevel(point)
             if (level >= this.noiseLevel) {
-                return this.colorMap.getByGroup(group).toHex()
+                return this.colorMap.getByGroup(group)
             }
         }
         if (this.showSurface) {
@@ -79,7 +79,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (this.showContinentBorder && this.tileMap.continent.isBorder(point)) {
             color = color.average(Color.BLACK).brighten(10)
         }
-        return color.toHex()
+        return color
     }
 
     getText(_point) {
