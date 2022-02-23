@@ -21,7 +21,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'Geology3TileMapDiagram',
         Type.boolean('showContinentBorder', 'Continent border', {default: true}),
-        Type.boolean('showNoise', 'Noise', {default: true}),
         Type.boolean('showSurface', 'Surface', {default: true}),
     )
     static colorMap = GeologyColorMap
@@ -44,13 +43,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         let color = this.colorMap.getByContinent(continent)
 
         color = color.darken(2 * this.tileMap.surface.getLevel(point))
-        if (this.showNoise) {
-            const colorId = this.tileMap.surface.getNoise(point)
-            color = new Color(colorId, colorId, colorId)
-        }
         if (this.showSurface) {
-            const colorId = this.tileMap.surface.get(point)
-            color = new Color(colorId, colorId, colorId)
+            const feature = this.tileMap.surface.getFeature(point)
+            color = Color.fromHex(feature.color)
         }
         if (this.showContinentBorder && this.tileMap.continent.isBorder(point)) {
             color = Color.RED

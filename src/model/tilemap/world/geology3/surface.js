@@ -5,7 +5,21 @@ import { Point } from '/src/lib/point'
 
 
 const NO_LEVEL = null
+const MOUNTAIN = 1
+const HILL = 2
+const PLAIN = 3
+const SHALLOW_SEA = 4
+const DEEP_SEA = 5
+const ABYSS = 6
 
+const FEATURES = {
+    [MOUNTAIN]: {name: 'Mountain', water: false, color: '#AAA'},
+    [HILL]: {name: 'Hill', water: false, color: '#796'},
+    [PLAIN]: {name: 'Plain', water: false, color: '#574'},
+    [SHALLOW_SEA]: {name: 'Island', water: false, color: '#368'},
+    [DEEP_SEA]: {name: 'Deep sea', water: true, color: '#047'},
+    [ABYSS]: {name: 'Abyss', water: true, color: '#036'},
+}
 
 export class SurfaceModel {
     #levelMatrix
@@ -41,7 +55,9 @@ export class SurfaceModel {
 
     constructor(regionTileMap, continentModel) {
         const rect = regionTileMap.rect
-        const contSimplex = new SimplexNoise(4, .8, .06)
+        const landSimplex = new SimplexNoise(6, .8, .05)
+        const featSimplex = new SimplexNoise(5, .9, .07)
+        const oceanSimplex = new SimplexNoise(6, .8, .1)
         this.#maxLevel = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
         this.#surfaceMatrix = Matrix.fromRect(rect, point => {
@@ -49,21 +65,33 @@ export class SurfaceModel {
             const isOceanic = continentModel.isOceanic(continent)
             const maxLevel = this.#maxLevel.get(continent)
             const level = this.#levelMatrix.get(point)
-            const noise = contSimplex.wrappedNoise4D(rect, point)
-            const percentage = (1 * level) / maxLevel
+            const range = (1 * level) / maxLevel
             if (isOceanic) {
-                if (percentage > .4) return noise > 100 ? 0 : 20
-                if (percentage > .3) return noise > 100 ? 0 : 20
-                if (percentage > .2) return noise > 120 ? 20 : 40
-                if (percentage > .1) return noise > 120 ? 40 : 60
-                return 60
+                const noise = oceanSimplex.wrappedNoise4D(rect, point)
+                const featNoise = featSimplex.wrappedNoise4D(rect, point)
+                if (range > .6)
+                    return noise > 250 ? PLAIN : DEEP_SEA // core
+                if (range > .2)
+                    return noise > 220 ? SHALLOW_SEA : DEEP_SEA // outer core
+                if (range > .1)
+                    return featNoise > 170 ? ABYSS : DEEP_SEA
+                return noise > 220 ? PLAIN : DEEP_SEA //border
             } else {
-                if (percentage > .2) return noise > 100 ? 100 : 80
-                if (percentage > .1) return noise > 100 ? 80 : 60
-                return 60
+                const landNoise = landSimplex.wrappedNoise4D(rect, point)
+                const featNoise = featSimplex.wrappedNoise4D(rect, point)
+                if (range > .5) {
+                    if (featNoise > 180)
+                        return MOUNTAIN
+                    if (featNoise > 60)
+                        return HILL
+                }
+                if (range > .4) {
+                    return featNoise > 100 ? HILL : PLAIN
+                }
+                if (range > .2) // [.2, .5)
+                    return landNoise > 127 ? PLAIN : SHALLOW_SEA
+                return landNoise > 200 ? PLAIN : DEEP_SEA
             }
-
-
         })
     }
 
@@ -73,6 +101,11 @@ export class SurfaceModel {
 
     getLevel(point) {
         return this.#levelMatrix.get(point)
+    }
+
+    getFeature(point) {
+        const surface = this.#surfaceMatrix.get(point)
+        return FEATURES[surface]
     }
 
     isWater(point) {
