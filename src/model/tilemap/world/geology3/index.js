@@ -1,6 +1,5 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/point'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
@@ -16,7 +15,6 @@ const SCHEMA = new Schema(
     Type.rect('rect', 'Size', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 30, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 50, step: 1, min: 1, max: 100}),
-    Type.number('continentRate', 'Continent rate', {default: .2, step: .05, min: .1, max: .8}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -57,14 +55,10 @@ export class GeologyTileMap3 extends TileMap {
 
     get(point) {
         const continent = this.continent.get(point)
-        const group = this.continent.getGroup(continent)
         return {
-            // surface: this.surface.getNoise(point),
-            point: Point.hash(point),
-            group,
             continent,
             surfaceLevel: this.surface.getLevel(point),
-            // isOcean: this.continent.isOceanic(continent)
+            isOcean: this.continent.isOceanic(continent)
         }
     }
 
@@ -79,7 +73,6 @@ export class GeologyTileMap3 extends TileMap {
     getDescription() {
         return [
             `${this.#regionTileMap.size} continents`,
-            `${this.continent.groups.length} groups`,
         ].join(', ')
     }
 

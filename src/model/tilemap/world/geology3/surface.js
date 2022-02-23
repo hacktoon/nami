@@ -11,17 +11,14 @@ export class SurfaceModel {
     #levelMatrix
     #surfaceMatrix
     #noiseMatrix
-    #groupMaxLevel
+    #maxLevel
 
     #buildOrigins(regionTileMap, continentModel) {
         const origins = []
         regionTileMap.forEachBorderPoint((point, sideContinents) => {
             const continent = continentModel.get(point)
-            const group = continentModel.getGroup(continent)
             for(let sideContinent of sideContinents) {
-                const sideGroup = continentModel.getGroup(sideContinent)
-                if (group !== sideGroup) {
-                    // select only group borders
+                if (continent !== sideContinent) {
                     origins.push(point)
                     break
                 }
@@ -35,8 +32,7 @@ export class SurfaceModel {
         const rect = regionTileMap.rect
         return Matrix.fromRect(rect, point => {
             const continent = continentModel.get(point)
-            const group = continentModel.getGroup(continent)
-            const offset = Math.pow(group + 1, 2)
+            const offset = Math.pow(continent + 1, 2)
             const refPoint = Point.plus(point, [offset, offset])
             return noise.wrappedNoise4D(rect, refPoint)
         })
@@ -46,7 +42,7 @@ export class SurfaceModel {
         const origins = this.#buildOrigins(regionTileMap, continentModel)
         const matrix = Matrix.fromRect(regionTileMap.rect, _ => NO_LEVEL)
         new LevelMultiFill(origins, {
-            groupMaxLevel: this.#groupMaxLevel,
+            maxLevel: this.#maxLevel,
             area: regionTileMap.rect.area,
             levelMatrix: matrix,
             continentModel,
@@ -56,16 +52,13 @@ export class SurfaceModel {
     }
 
     constructor(regionTileMap, continentModel) {
-        const rect = regionTileMap.rect
-        const groups = continentModel.groups
-        this.#groupMaxLevel = new Map(groups.map(group => [group, 0]))
+        this.#maxLevel = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
         this.#noiseMatrix = this.#buildNoiseMatrix(regionTileMap, continentModel)
-        this.#surfaceMatrix = Matrix.fromRect(rect, point => {
+        this.#surfaceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
             const continent = continentModel.get(point)
-            const group = continentModel.getGroup(continent)
             const isOceanic = continentModel.isOceanic(continent)
-            const maxLevel = this.#groupMaxLevel.get(group)
+            const maxLevel = this.#maxLevel.get(continent)
             const level = this.#levelMatrix.get(point)
             const noise = this.#noiseMatrix.get(point)
             const percentage = (1 * level) / maxLevel
@@ -110,13 +103,12 @@ class LevelMultiFill extends ConcurrentFill {
 
 class LevelFloodFill extends ConcurrentFillUnit {
     setValue(fill, _point, level) {
-        const {regionTileMap, continentModel, groupMaxLevel} = fill.context
+        const {regionTileMap, continentModel, maxLevel} = fill.context
         const point = regionTileMap.rect.wrap(_point)
         const continent = continentModel.get(point)
-        const group = continentModel.getGroup(continent)
-        const currentLevel = groupMaxLevel.get(group)
+        const currentLevel = maxLevel.get(continent)
         if (level > currentLevel) {
-            groupMaxLevel.set(group, level)
+            maxLevel.set(continent, level)
         }
         fill.context.levelMatrix.set(point, level)
     }
