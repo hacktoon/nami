@@ -10,7 +10,6 @@ const NO_LEVEL = null
 export class SurfaceModel {
     #levelMatrix
     #surfaceMatrix
-    #noiseMatrix
     #maxLevel
 
     #buildOrigins(regionTileMap, continentModel) {
@@ -18,6 +17,7 @@ export class SurfaceModel {
         regionTileMap.forEachBorderPoint((point, sideContinents) => {
             const continent = continentModel.get(point)
             for(let sideContinent of sideContinents) {
+                continentModel.isOceanic()
                 if (continent !== sideContinent) {
                     origins.push(point)
                     break
@@ -25,17 +25,6 @@ export class SurfaceModel {
             }
         })
         return origins
-    }
-
-    #buildNoiseMatrix(regionTileMap, continentModel) {
-        const noise = new SimplexNoise(5, .8, .04)
-        const rect = regionTileMap.rect
-        return Matrix.fromRect(rect, point => {
-            const continent = continentModel.get(point)
-            const offset = Math.pow(continent + 1, 2)
-            const refPoint = Point.plus(point, [offset, offset])
-            return noise.wrappedNoise4D(rect, refPoint)
-        })
     }
 
     #buildLevelMatrix(regionTileMap, continentModel) {
@@ -46,30 +35,34 @@ export class SurfaceModel {
             area: regionTileMap.rect.area,
             levelMatrix: matrix,
             continentModel,
-            regionTileMap,
         }).fill()
         return matrix
     }
 
     constructor(regionTileMap, continentModel) {
+        const rect = regionTileMap.rect
+        const contSimplex = new SimplexNoise(4, .8, .06)
         this.#maxLevel = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
-        this.#noiseMatrix = this.#buildNoiseMatrix(regionTileMap, continentModel)
-        this.#surfaceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
+        this.#surfaceMatrix = Matrix.fromRect(rect, point => {
             const continent = continentModel.get(point)
             const isOceanic = continentModel.isOceanic(continent)
             const maxLevel = this.#maxLevel.get(continent)
             const level = this.#levelMatrix.get(point)
-            const noise = this.#noiseMatrix.get(point)
+            const noise = contSimplex.wrappedNoise4D(rect, point)
             const percentage = (1 * level) / maxLevel
-            if (percentage < .1)
-                return 20
-            if (isOceanic)
-                return 0
-            else
-                return percentage > .6
-                    ? noise + 60
-                    : noise > 120 ? noise : 40
+            if (isOceanic) {
+                if (percentage > .4) return noise > 100 ? 0 : 20
+                if (percentage > .3) return noise > 100 ? 0 : 20
+                if (percentage > .2) return noise > 120 ? 20 : 40
+                if (percentage > .1) return noise > 120 ? 40 : 60
+                return 60
+            } else {
+                if (percentage > .2) return noise > 100 ? 100 : 80
+                if (percentage > .1) return noise > 100 ? 80 : 60
+                return 60
+            }
+
 
         })
     }
@@ -82,10 +75,6 @@ export class SurfaceModel {
         return this.#levelMatrix.get(point)
     }
 
-    getNoise(point) {
-        return this.#noiseMatrix.get(point)
-    }
-
     isWater(point) {
         return this.get(point) === TYPE_WATER
     }
@@ -96,21 +85,20 @@ class LevelMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, LevelFloodFill, context)
     }
-    getChance(fill, origin) { return .2 }
-    getGrowth(fill, origin) { return 8 }
+    getChance(fill, origin) { return .1 }
+    getGrowth(fill, origin) { return 10 }
 }
 
 
 class LevelFloodFill extends ConcurrentFillUnit {
-    setValue(fill, _point, level) {
-        const {regionTileMap, continentModel, maxLevel} = fill.context
-        const point = regionTileMap.rect.wrap(_point)
+    setValue(fill, point, level) {
+        const {continentModel, levelMatrix, maxLevel} = fill.context
         const continent = continentModel.get(point)
         const currentLevel = maxLevel.get(continent)
         if (level > currentLevel) {
             maxLevel.set(continent, level)
         }
-        fill.context.levelMatrix.set(point, level)
+        levelMatrix.set(point, level)
     }
 
     isEmpty(fill, point) {
