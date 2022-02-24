@@ -33,9 +33,9 @@ export class ContinentModel {
     }
 
     #buildContinentGroups(params, regionTileMap) {
-        const continentRate = params.get('continentScale')
+        const continentScale = params.get('continentScale')
         const continentQueue = new IndexMap(this.#continents)
-        const maxGroupSize = Math.round(this.#continents.length * continentRate)
+        const maxGroupSize = Math.round(this.#continents.length * continentScale)
         const groupSizeMap = new Map()
         let groupId = 0
         while(continentQueue.size > 0) {
