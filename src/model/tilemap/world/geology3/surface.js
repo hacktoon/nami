@@ -30,9 +30,10 @@ export class SurfaceModel {
         const origins = []
         regionTileMap.forEachBorderPoint((point, sideContinents) => {
             const continent = continentModel.get(point)
+            const group = continentModel.getGroup(continent)
             for(let sideContinent of sideContinents) {
-                continentModel.isOceanic()
-                if (continent !== sideContinent) {
+                const sideGroup = continentModel.getGroup(sideContinent)
+                if (group !== sideGroup) {
                     origins.push(point)
                     break
                 }

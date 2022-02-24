@@ -13,9 +13,10 @@ const ID = 'GeologyTileMap3'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
-    Type.number('scale', 'Scale', {default: 50, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 80, step: 1, min: 1, max: 100}),
+    Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 50, step: 1, min: 1, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: .1, max: 1}),
+    Type.number('continentScale', 'Continent scale', {default: .2, step: .05, min: .1, max: .8}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -58,6 +59,7 @@ export class GeologyTileMap3 extends TileMap {
         const continent = this.continent.get(point)
         return {
             continent,
+            group: this.continent.getGroup(continent),
             surfaceLevel: this.surface.getLevel(point),
             isOcean: this.continent.isOceanic(continent)
         }
@@ -74,6 +76,7 @@ export class GeologyTileMap3 extends TileMap {
     getDescription() {
         return [
             `${this.#regionTileMap.size} continents`,
+            `${this.continent.groups.length} groups`,
         ].join(', ')
     }
 

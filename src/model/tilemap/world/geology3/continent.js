@@ -1,3 +1,5 @@
+import { SingleFillUnit } from '/src/lib/floodfill/single'
+import { IndexMap } from '/src/lib/map'
 import { Point } from '/src/lib/point'
 
 
@@ -8,6 +10,9 @@ const TYPE_OCEAN = 1
 export class ContinentModel {
     #regionTileMap
     #typeMap = new Map()
+    #continents = []
+    #continentGroupMap = new Map()
+    #continentGroups = []
 
     #buildContinents(regionTileMap) {
         let totalOceanicArea = 0
@@ -23,16 +28,48 @@ export class ContinentModel {
             totalOceanicArea += regionTileMap.getArea(continent)
             const isOceanic = totalOceanicArea < halfArea
             this.#typeMap.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
+            this.#continents.push(continent)
+        }
+    }
+
+    #buildContinentGroups(params, regionTileMap) {
+        const continentRate = params.get('continentScale')
+        const continentQueue = new IndexMap(this.#continents)
+        const maxGroupSize = Math.round(this.#continents.length * continentRate)
+        const groupSizeMap = new Map()
+        let groupId = 0
+        while(continentQueue.size > 0) {
+            const continent = continentQueue.random()
+            groupSizeMap.set(groupId, 0)
+            this.#continentGroups.push(groupId)
+            new ContinentGroupFloodFill(continent, {
+                continentGroupMap: this.#continentGroupMap,
+                typeMap: this.#typeMap,
+                groupId: groupId++,
+                continentQueue,
+                maxGroupSize,
+                groupSizeMap,
+                regionTileMap,
+            }).growFull()
         }
     }
 
     constructor(params, regionTileMap) {
         this.#regionTileMap = regionTileMap
         this.#buildContinents(regionTileMap)
+        this.#buildContinentGroups(params, regionTileMap)
     }
 
     get size() {
         return this.#regionTileMap.size
+    }
+
+    get ids() {
+        return this.#continents
+    }
+
+    get groups() {
+        return this.#continentGroups
     }
 
     get ids() {
@@ -49,6 +86,10 @@ export class ContinentModel {
 
     getContinents() {
         return this.#regionTileMap.getRegions()
+    }
+
+    getGroup(continent) {
+        return this.#continentGroupMap.get(continent)
     }
 
     isOceanic(continent) {
@@ -70,5 +111,30 @@ export class ContinentModel {
 
     map(callback) {
         return this.#regionTileMap.map(callback)
+    }
+}
+
+
+class ContinentGroupFloodFill extends SingleFillUnit {
+    setValue(continent, level) {
+        const {groupId, groupSizeMap} = this.context
+        const currentGroupSize = groupSizeMap.get(groupId)
+        this.context.continentGroupMap.set(continent, groupId)
+        this.context.continentQueue.delete(continent)
+        groupSizeMap.set(groupId, currentGroupSize + 1)
+    }
+
+    isEmpty(continent) {
+        const {typeMap, groupId, groupSizeMap} = this.context
+        const currentGroupSize = groupSizeMap.get(groupId)
+        const sameType = typeMap.get(this.origin) === typeMap.get(continent)
+        const ungrouped = ! this.context.continentGroupMap.has(continent)
+        const validGroupSize = currentGroupSize <= this.context.maxGroupSize
+        return sameType && ungrouped && validGroupSize
+    }
+
+    getNeighbors(continent) {
+        const regionTileMap = this.context.regionTileMap
+        return regionTileMap.getSideRegions(continent)
     }
 }
