@@ -13,8 +13,8 @@ const ID = 'GeologyTileMap3'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
-    Type.number('scale', 'Scale', {default: 40, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 60, step: 1, min: 1, max: 100}),
+    Type.number('scale', 'Scale', {default: 50, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 80, step: 1, min: 1, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: .1, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
 )

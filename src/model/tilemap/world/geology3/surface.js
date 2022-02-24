@@ -13,8 +13,8 @@ const DEEP_SEA = 5
 const ABYSS = 6
 
 const FEATURES = {
-    [MOUNTAIN]: {name: 'Mountain', water: false, color: '#AAA'},
-    [HILL]: {name: 'Hill', water: false, color: '#796'},
+    [MOUNTAIN]: {name: 'Mountain', water: false, color: '#999'},
+    [HILL]: {name: 'Hill', water: false, color: '#685'},
     [PLAIN]: {name: 'Plain', water: false, color: '#574'},
     [SHALLOW_SEA]: {name: 'Island', water: false, color: '#368'},
     [DEEP_SEA]: {name: 'Deep sea', water: true, color: '#047'},
@@ -60,21 +60,20 @@ export class SurfaceModel {
         const maxLevel = this.#maxLevel.get(continent)
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
+        const featNoise = noise.feature.wrappedNoise4D(rect, point)
         if (isOceanic) {
-            const rate = noise.ocean.wrappedNoise4D(rect, point)
-            const featNoise = noise.feature.wrappedNoise4D(rect, point)
+            const oceanNoise = noise.ocean.wrappedNoise4D(rect, point)
             if (range > .6)
-                return rate > 250 ? PLAIN : DEEP_SEA // core
+                return oceanNoise > 250 ? PLAIN : DEEP_SEA // core
             if (range > .2)
-                return rate > 220 ? SHALLOW_SEA : DEEP_SEA // outer core
-            if (range > .1)
-                return featNoise > 150 ? ABYSS : DEEP_SEA
-            return rate > 220 ? PLAIN : DEEP_SEA //border
+                return oceanNoise > 220 ? SHALLOW_SEA : DEEP_SEA // outer core
+            if (range > .05)
+                return featNoise > 180 ? ABYSS : DEEP_SEA
+            return oceanNoise > 220 ? PLAIN : DEEP_SEA //border
         } else {
             const landNoise = noise.land.wrappedNoise4D(rect, point)
-            const featNoise = noise.feature.wrappedNoise4D(rect, point)
             if (range > .5) {
-                if (featNoise > 200)
+                if (featNoise > 180)
                     return MOUNTAIN
                 return featNoise > 110 ? HILL : PLAIN
             }
@@ -85,6 +84,7 @@ export class SurfaceModel {
             }
             if (range > .1) // island arc basins
                 return featNoise > 200 ? PLAIN : DEEP_SEA
+            // default land
             return landNoise > 200 ? PLAIN : DEEP_SEA
         }
     }
@@ -94,8 +94,8 @@ export class SurfaceModel {
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
         const noise = {
             land: new SimplexNoise(6, .8, .05),
-            feature: new SimplexNoise(5, .9, .07),
             ocean: new SimplexNoise(6, .8, .1),
+            feature: new SimplexNoise(4, .8, .07),
         }
         this.#surfaceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
             return this.#buildSurface(continentModel, noise, point)
@@ -125,8 +125,8 @@ class LevelMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, LevelFloodFill, context)
     }
-    getChance(fill, origin) { return .1 }
-    getGrowth(fill, origin) { return 10 }
+    getChance(fill, origin) { return .5 }
+    getGrowth(fill, origin) { return 4 }
 }
 
 
