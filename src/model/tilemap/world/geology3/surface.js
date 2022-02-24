@@ -53,45 +53,52 @@ export class SurfaceModel {
         return matrix
     }
 
+    #buildSurface(continentModel, noise, point) {
+        const rect = this.#levelMatrix.rect
+        const continent = continentModel.get(point)
+        const isOceanic = continentModel.isOceanic(continent)
+        const maxLevel = this.#maxLevel.get(continent)
+        const level = this.#levelMatrix.get(point)
+        const range = (1 * level) / maxLevel
+        if (isOceanic) {
+            const rate = noise.ocean.wrappedNoise4D(rect, point)
+            const featNoise = noise.feature.wrappedNoise4D(rect, point)
+            if (range > .6)
+                return rate > 250 ? PLAIN : DEEP_SEA // core
+            if (range > .2)
+                return rate > 220 ? SHALLOW_SEA : DEEP_SEA // outer core
+            if (range > .1)
+                return featNoise > 150 ? ABYSS : DEEP_SEA
+            return rate > 220 ? PLAIN : DEEP_SEA //border
+        } else {
+            const landNoise = noise.land.wrappedNoise4D(rect, point)
+            const featNoise = noise.feature.wrappedNoise4D(rect, point)
+            if (range > .5) {
+                if (featNoise > 200)
+                    return MOUNTAIN
+                return featNoise > 110 ? HILL : PLAIN
+            }
+            if (range > .2) {
+                if (featNoise > 180)
+                    return HILL
+                return landNoise > 127 ? PLAIN : SHALLOW_SEA
+            }
+            if (range > .1) // island arc basins
+                return featNoise > 200 ? PLAIN : DEEP_SEA
+            return landNoise > 200 ? PLAIN : DEEP_SEA
+        }
+    }
+
     constructor(regionTileMap, continentModel) {
-        const rect = regionTileMap.rect
-        const landSimplex = new SimplexNoise(6, .8, .05)
-        const featSimplex = new SimplexNoise(5, .9, .07)
-        const oceanSimplex = new SimplexNoise(6, .8, .1)
         this.#maxLevel = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
-        this.#surfaceMatrix = Matrix.fromRect(rect, point => {
-            const continent = continentModel.get(point)
-            const isOceanic = continentModel.isOceanic(continent)
-            const maxLevel = this.#maxLevel.get(continent)
-            const level = this.#levelMatrix.get(point)
-            const range = (1 * level) / maxLevel
-            if (isOceanic) {
-                const noise = oceanSimplex.wrappedNoise4D(rect, point)
-                const featNoise = featSimplex.wrappedNoise4D(rect, point)
-                if (range > .6)
-                    return noise > 250 ? PLAIN : DEEP_SEA // core
-                if (range > .2)
-                    return noise > 220 ? SHALLOW_SEA : DEEP_SEA // outer core
-                if (range > .1)
-                    return featNoise > 170 ? ABYSS : DEEP_SEA
-                return noise > 220 ? PLAIN : DEEP_SEA //border
-            } else {
-                const landNoise = landSimplex.wrappedNoise4D(rect, point)
-                const featNoise = featSimplex.wrappedNoise4D(rect, point)
-                if (range > .5) {
-                    if (featNoise > 180)
-                        return MOUNTAIN
-                    if (featNoise > 60)
-                        return HILL
-                }
-                if (range > .4) {
-                    return featNoise > 100 ? HILL : PLAIN
-                }
-                if (range > .2) // [.2, .5)
-                    return landNoise > 127 ? PLAIN : SHALLOW_SEA
-                return landNoise > 200 ? PLAIN : DEEP_SEA
-            }
+        const noise = {
+            land: new SimplexNoise(6, .8, .05),
+            feature: new SimplexNoise(5, .9, .07),
+            ocean: new SimplexNoise(6, .8, .1),
+        }
+        this.#surfaceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
+            return this.#buildSurface(continentModel, noise, point)
         })
     }
 
