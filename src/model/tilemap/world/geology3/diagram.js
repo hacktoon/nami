@@ -52,15 +52,15 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const point = this.tileMap.rect.wrap(_point)
         const plate = this.tileMap.continent.getPlate(point)
         const continent = this.tileMap.continent.get(plate)
-        let color = this.colorMap.getByPlate(plate)
+        const level = this.tileMap.surface.getLevel(point)
+        let color = this.colorMap.getByPlate(plate).darken(2 * level)
 
-        color = color.darken(2 * this.tileMap.surface.getLevel(point))
+        if (this.showContinent) {
+            color = this.colorMap.getByContinent(continent)
+        }
         if (this.showSurface) {
             const feature = this.tileMap.surface.getFeature(point)
             color = Color.fromHex(feature.color)
-        }
-        if (this.showContinent) {
-            color = this.colorMap.getByContinent(continent)
         }
         if (this.showContinentBorder && this.tileMap.continent.isBorder(point)) {
             color = color.average(Color.BLACK)
