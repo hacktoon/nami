@@ -6,21 +6,21 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 
 class GeologyColorMap {
-    #groupColorMap
+    #continentColorMap
 
     constructor(tileMap) {
         this.tileMap = tileMap
-        this.#groupColorMap = new Map(tileMap.continent.groups.map(group => {
-            return [group, new Color()]
+        this.#continentColorMap = new Map(tileMap.continent.ids.map(continent => {
+            return [continent, new Color()]
         }))
     }
 
-    getByGroup(group) {
-        return this.#groupColorMap.get(group)
+    getByContinent(continent) {
+        return this.#continentColorMap.get(continent)
     }
 
-    getByContinent(continent) {
-        const isOceanic = this.tileMap.continent.isOceanic(continent)
+    getByPlate(plate) {
+        const isOceanic = this.tileMap.continent.isOceanic(plate)
         return Color.fromHex(isOceanic ? '#047' : '#574')
     }
 }
@@ -30,7 +30,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'Geology3TileMapDiagram',
         Type.boolean('showContinentBorder', 'Continent border', {default: false}),
-        Type.boolean('showContinentGroup', 'Continent groups', {default: false}),
+        Type.boolean('showContinent', 'Continent', {default: false}),
         Type.boolean('showSurface', 'Surface', {default: true}),
     )
     static colorMap = GeologyColorMap
@@ -43,24 +43,24 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         super(tileMap)
         this.colorMap = colorMap
         this.showContinentBorder = params.get('showContinentBorder')
-        this.showContinentGroup = params.get('showContinentGroup')
+        this.showContinent = params.get('showContinent')
         this.showNoise = params.get('showNoise')
         this.showSurface = params.get('showSurface')
     }
 
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
-        const continent = this.tileMap.continent.get(point)
-        const group = this.tileMap.continent.getGroup(continent)
-        let color = this.colorMap.getByContinent(continent)
+        const plate = this.tileMap.continent.getPlate(point)
+        const continent = this.tileMap.continent.get(plate)
+        let color = this.colorMap.getByPlate(plate)
 
         color = color.darken(2 * this.tileMap.surface.getLevel(point))
         if (this.showSurface) {
             const feature = this.tileMap.surface.getFeature(point)
             color = Color.fromHex(feature.color)
         }
-        if (this.showContinentGroup) {
-            color = this.colorMap.getByGroup(group)
+        if (this.showContinent) {
+            color = this.colorMap.getByContinent(continent)
         }
         if (this.showContinentBorder && this.tileMap.continent.isBorder(point)) {
             color = color.average(Color.BLACK)

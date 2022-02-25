@@ -34,12 +34,12 @@ export class SurfaceModel {
 
     #buildOrigins(regionTileMap, continentModel) {
         const origins = []
-        regionTileMap.forEachBorderPoint((point, sideContinents) => {
-            const continent = continentModel.get(point)
-            const group = continentModel.getGroup(continent)
-            for(let sideContinent of sideContinents) {
-                const sideGroup = continentModel.getGroup(sideContinent)
-                if (group !== sideGroup) {
+        regionTileMap.forEachBorderPoint((point, sidePlates) => {
+            const plate = continentModel.getPlate(point)
+            const continent = continentModel.get(plate)
+            for(let sidePlate of sidePlates) {
+                const sideContinent = continentModel.get(sidePlate)
+                if (continent !== sideContinent) {
                     origins.push(point)
                     break
                 }
@@ -62,9 +62,9 @@ export class SurfaceModel {
 
     #buildSurface(continentModel, noise, point) {
         const rect = this.#levelMatrix.rect
-        const continent = continentModel.get(point)
-        const isOceanic = continentModel.isOceanic(continent)
-        const maxLevel = this.#maxLevel.get(continent)
+        const plate = continentModel.getPlate(point)
+        const isOceanic = continentModel.isOceanic(plate)
+        const maxLevel = this.#maxLevel.get(plate)
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
         const featNoise = noise.feature.wrappedNoise4D(rect, point)
@@ -151,10 +151,10 @@ class LevelMultiFill extends ConcurrentFill {
 class LevelFloodFill extends ConcurrentFillUnit {
     setValue(fill, point, level) {
         const {continentModel, levelMatrix, maxLevel} = fill.context
-        const continent = continentModel.get(point)
-        const currentLevel = maxLevel.get(continent)
+        const plate = continentModel.getPlate(point)
+        const currentLevel = maxLevel.get(plate)
         if (level > currentLevel) {
-            maxLevel.set(continent, level)
+            maxLevel.set(plate, level)
         }
         levelMatrix.set(point, level)
     }

@@ -10,14 +10,14 @@ const TYPE_OCEAN = 1
 export class ContinentModel {
     #regionTileMap
     #typeMap = new Map()
+    #plates = []
+    #plateContinentMap = new Map()
     #continents = []
-    #continentGroupMap = new Map()
-    #continentGroups = []
 
-    #buildContinents(regionTileMap) {
+    #buildPlates(regionTileMap) {
         let totalOceanicArea = 0
         const halfArea = Math.floor(regionTileMap.area / 2)
-        // sort by bigger to smaller continents
+        // sort by bigger to smaller plates
         const cmpDescendingArea = (id0, id1) => {
             const area0 = regionTileMap.getArea(id0)
             const area1 = regionTileMap.getArea(id1)
@@ -28,27 +28,27 @@ export class ContinentModel {
             totalOceanicArea += regionTileMap.getArea(continent)
             const isOceanic = totalOceanicArea < halfArea
             this.#typeMap.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
-            this.#continents.push(continent)
+            this.#plates.push(continent)
         }
     }
 
-    #buildContinentGroups(params, regionTileMap) {
+    #buildContinents(params, regionTileMap) {
         const continentScale = params.get('continentScale')
-        const continentQueue = new IndexMap(this.#continents)
-        const maxGroupSize = Math.round(this.#continents.length * continentScale)
-        const groupSizeMap = new Map()
-        let groupId = 0
-        while(continentQueue.size > 0) {
-            const continent = continentQueue.random()
-            groupSizeMap.set(groupId, 0)
-            this.#continentGroups.push(groupId)
-            new ContinentGroupFloodFill(continent, {
-                continentGroupMap: this.#continentGroupMap,
+        const plateQueue = new IndexMap(this.#plates)
+        const maxContinentSize = Math.round(this.#plates.length * continentScale)
+        const continentSizeMap = new Map()
+        let continentId = 0
+        while(plateQueue.size > 0) {
+            const plate = plateQueue.random()
+            continentSizeMap.set(continentId, 0)
+            this.#continents.push(continentId)
+            new ContinentFloodFill(plate, {
+                plateContinentMap: this.#plateContinentMap,
                 typeMap: this.#typeMap,
-                groupId: groupId++,
-                continentQueue,
-                maxGroupSize,
-                groupSizeMap,
+                continentId: continentId++,
+                plateQueue,
+                maxContinentSize,
+                continentSizeMap,
                 regionTileMap,
             }).growFull()
         }
@@ -56,8 +56,8 @@ export class ContinentModel {
 
     constructor(params, regionTileMap) {
         this.#regionTileMap = regionTileMap
-        this.#buildContinents(regionTileMap)
-        this.#buildContinentGroups(params, regionTileMap)
+        this.#buildPlates(regionTileMap)
+        this.#buildContinents(params, regionTileMap)
     }
 
     get size() {
@@ -68,15 +68,11 @@ export class ContinentModel {
         return this.#continents
     }
 
-    get groups() {
-        return this.#continentGroups
+    get plates() {
+        return this.#plates
     }
 
-    get ids() {
-        return this.#regionTileMap.getRegions()
-    }
-
-    get(point) {
+    getPlate(point) {
         return this.#regionTileMap.getRegion(point)
     }
 
@@ -84,16 +80,12 @@ export class ContinentModel {
         return this.#regionTileMap.getArea(continent)
     }
 
-    getContinents() {
-        return this.#regionTileMap.getRegions()
+    get(plate) {
+        return this.#plateContinentMap.get(plate)
     }
 
-    getGroup(continent) {
-        return this.#continentGroupMap.get(continent)
-    }
-
-    isOceanic(continent) {
-        return this.#typeMap.get(continent) === TYPE_OCEAN
+    isOceanic(plate) {
+        return this.#typeMap.get(plate) === TYPE_OCEAN
     }
 
     isBorder(point) {
@@ -115,26 +107,26 @@ export class ContinentModel {
 }
 
 
-class ContinentGroupFloodFill extends SingleFillUnit {
-    setValue(continent, level) {
-        const {groupId, groupSizeMap} = this.context
-        const currentGroupSize = groupSizeMap.get(groupId)
-        this.context.continentGroupMap.set(continent, groupId)
-        this.context.continentQueue.delete(continent)
-        groupSizeMap.set(groupId, currentGroupSize + 1)
+class ContinentFloodFill extends SingleFillUnit {
+    setValue(plate, level) {
+        const {continentId, continentSizeMap} = this.context
+        const currentContinentSize = continentSizeMap.get(continentId)
+        this.context.plateContinentMap.set(plate, continentId)
+        this.context.plateQueue.delete(plate)
+        continentSizeMap.set(continentId, currentContinentSize + 1)
     }
 
-    isEmpty(continent) {
-        const {typeMap, groupId, groupSizeMap} = this.context
-        const currentGroupSize = groupSizeMap.get(groupId)
-        const sameType = typeMap.get(this.origin) === typeMap.get(continent)
-        const ungrouped = ! this.context.continentGroupMap.has(continent)
-        const validGroupSize = currentGroupSize <= this.context.maxGroupSize
-        return sameType && ungrouped && validGroupSize
+    isEmpty(plate) {
+        const {typeMap, continentId, continentSizeMap} = this.context
+        const currentContinentSize = continentSizeMap.get(continentId)
+        const sameType = typeMap.get(this.origin) === typeMap.get(plate)
+        const noContinent = ! this.context.plateContinentMap.has(plate)
+        const validSize = currentContinentSize <= this.context.maxContinentSize
+        return sameType && noContinent && validSize
     }
 
-    getNeighbors(continent) {
+    getNeighbors(plate) {
         const regionTileMap = this.context.regionTileMap
-        return regionTileMap.getSideRegions(continent)
+        return regionTileMap.getSideRegions(plate)
     }
 }
