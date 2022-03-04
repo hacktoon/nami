@@ -16,7 +16,7 @@ const DEEP_SEA = 7
 const ABYSS = 8
 
 const FEATURES = {
-    [PEAK]: {name: 'Peak', water: false, color: '#DDD'},
+    [PEAK]: {name: 'Peak', water: false, color: '#CCC'},
     [MOUNTAIN]: {name: 'Mountain', water: false, color: '#999'},
     [HILL]: {name: 'Hill', water: false, color: '#685'},
     [PLATEAU]: {name: 'Plateau', water: false, color: '#875'},
@@ -77,33 +77,28 @@ export class SurfaceModel {
             if (range > .2)
                 return oceanNoise > 220 ? SHALLOW_SEA : DEEP_SEA // outer core
             if (range > .1)
-                return featNoise > 180 ? ABYSS : DEEP_SEA
+                return oceanNoise > 220 ? ABYSS : DEEP_SEA
             return oceanNoise > 220 ? PLAIN : DEEP_SEA //border
         } else {
-            if (range > .8 && featNoise > 200) {
+            if (range > .5 && featNoise > 220) {
                 return PEAK
             }
-            if (range > .4) {
+            if (range > .3) {
                 if (featNoise > 180)
                     return MOUNTAIN
                 return featNoise > 110 ? HILL : PLAIN
             }
             if (range > .3) {
-                return featNoise > 180 ? PLATEAU : PLAIN
-            }
-            if (range > .2) {
-                if (featNoise > 180)
+                if (featNoise > 160)
                     return HILL
                 return featNoise > 127 ? PLAIN : SHALLOW_SEA
             }
             if (range > .1) { // island arc basins
-                if (featNoise > 200)
+                if (featNoise > 180)
                     return PLAIN
-                return featNoise > 127 ? DEEP_SEA : SHALLOW_SEA
+                return featNoise > 80 ? DEEP_SEA : SHALLOW_SEA
             }
-            // default land
-            const landNoise = noise.land.wrappedNoise4D(rect, point)
-            return landNoise > 180 ? PLAIN : DEEP_SEA
+            return featNoise > 180 ? PLAIN : DEEP_SEA
         }
     }
 
