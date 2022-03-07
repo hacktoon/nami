@@ -22,6 +22,7 @@ const FEATURES = {
     [DEEP_SEA]: {name: 'Deep sea', water: true, color: '#036'},
 }
 
+
 export class SurfaceModel {
     #levelMatrix
     #surfaceMatrix
@@ -55,7 +56,7 @@ export class SurfaceModel {
         return matrix
     }
 
-    #buildSurface(continentModel, noise, point) {
+    #buildOutline(continentModel, noise, point) {
         const plate = continentModel.getPlate(point)
         const isOceanic = continentModel.isOceanic(plate)
         const maxLevel = this.#maxLevel.get(plate)
@@ -76,7 +77,7 @@ export class SurfaceModel {
         const simplex = new SimplexNoise(6, .8, .1)
         this.#surfaceMatrix = Matrix.fromRect(rect, point => {
             const noise = simplex.wrappedNoise4D(rect, point)
-            return this.#buildSurface(continentModel, noise, point)
+            return this.#buildOutline(continentModel, noise, point)
         })
     }
 
