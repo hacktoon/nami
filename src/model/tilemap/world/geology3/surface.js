@@ -5,26 +5,21 @@ import { Point } from '/src/lib/point'
 
 
 const NO_LEVEL = null
-const PEAK = 0
+
+const DEBUG = 0
 const MOUNTAIN = 1
-const HILL = 2
-const PLATEAU = 3
-const PLAIN = 4
-const SHALLOW_SEA = 5
-const SEA_PLATEAU = 6
-const DEEP_SEA = 7
-const ABYSS = 8
+const PLATEAU = 2
+const PLAIN = 3
+const SHALLOW_SEA = 4
+const DEEP_SEA = 5
 
 const FEATURES = {
-    [PEAK]: {name: 'Peak', water: false, color: '#CCC'},
-    [MOUNTAIN]: {name: 'Mountain', water: false, color: '#999'},
-    [HILL]: {name: 'Hill', water: false, color: '#685'},
-    [PLATEAU]: {name: 'Plateau', water: false, color: '#875'},
+    [DEBUG]: {name: 'Plain', water: false, color: '#A74'},
+    [MOUNTAIN]: {name: 'Mountain', water: false, color: '#AAA'},
+    [PLATEAU]: {name: 'Hill', water: false, color: '#796'},
     [PLAIN]: {name: 'Plain', water: false, color: '#574'},
-    [SHALLOW_SEA]: {name: 'Island', water: true, color: '#369'},
-    [SEA_PLATEAU]: {name: 'Sea plain', water: true, color: '#147'},
+    [SHALLOW_SEA]: {name: 'Island', water: true, color: '#058'},
     [DEEP_SEA]: {name: 'Deep sea', water: true, color: '#036'},
-    [ABYSS]: {name: 'Abyss', water: true, color: '#025'},
 }
 
 export class SurfaceModel {
@@ -67,38 +62,17 @@ export class SurfaceModel {
         const maxLevel = this.#maxLevel.get(plate)
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
-        const featNoise = noise.feature.wrappedNoise4D(rect, point)
         if (isOceanic) {
             const oceanNoise = noise.ocean.wrappedNoise4D(rect, point)
-            if (range > .6)
-                return oceanNoise > 250 ? PLAIN : DEEP_SEA // core
-            if (range > .3)
-                return oceanNoise > 150 ? SEA_PLATEAU : DEEP_SEA
-            if (range > .2)
-                return oceanNoise > 220 ? SHALLOW_SEA : DEEP_SEA // outer core
-            if (range > .1)
-                return oceanNoise > 220 ? ABYSS : DEEP_SEA
-            return oceanNoise > 220 ? PLAIN : DEEP_SEA //border
+            return oceanNoise > 240 ? PLAIN : DEEP_SEA
         } else {
-            if (range > .5 && featNoise > 220) {
-                return PEAK
+            const landNoise = noise.land.wrappedNoise4D(rect, point)
+            if (range > .4) {
+                if (landNoise > 180) return MOUNTAIN
+                if (landNoise > 120) return PLATEAU
+                return PLAIN
             }
-            if (range > .3) {
-                if (featNoise > 180)
-                    return MOUNTAIN
-                return featNoise > 110 ? HILL : PLAIN
-            }
-            if (range > .3) {
-                if (featNoise > 160)
-                    return HILL
-                return featNoise > 127 ? PLAIN : SHALLOW_SEA
-            }
-            if (range > .1) { // island arc basins
-                if (featNoise > 180)
-                    return PLAIN
-                return featNoise > 80 ? DEEP_SEA : SHALLOW_SEA
-            }
-            return featNoise > 180 ? PLAIN : DEEP_SEA
+            return landNoise > 170 ? PLAIN : DEEP_SEA
         }
     }
 
@@ -106,9 +80,8 @@ export class SurfaceModel {
         this.#maxLevel = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
         const noise = {
-            land: new SimplexNoise(6, .8, .05),
-            ocean: new SimplexNoise(6, .8, .1),
-            feature: new SimplexNoise(4, .8, .07),
+            land: new SimplexNoise(6, .8, .1),
+            ocean: new SimplexNoise(3, .6, .2),
         }
         this.#surfaceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
             return this.#buildSurface(continentModel, noise, point)
