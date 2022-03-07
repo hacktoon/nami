@@ -56,34 +56,26 @@ export class SurfaceModel {
     }
 
     #buildSurface(continentModel, noise, point) {
-        const rect = this.#levelMatrix.rect
         const plate = continentModel.getPlate(point)
         const isOceanic = continentModel.isOceanic(plate)
         const maxLevel = this.#maxLevel.get(plate)
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
         if (isOceanic) {
-            const oceanNoise = noise.ocean.wrappedNoise4D(rect, point)
-            return oceanNoise > 240 ? PLAIN : DEEP_SEA
+            return noise > 245 ? PLAIN : DEEP_SEA
         } else {
-            const landNoise = noise.land.wrappedNoise4D(rect, point)
-            if (range > .4) {
-                if (landNoise > 180) return MOUNTAIN
-                if (landNoise > 120) return PLATEAU
-                return PLAIN
-            }
-            return landNoise > 170 ? PLAIN : DEEP_SEA
+            if (range > .4) return PLAIN
+            return noise > 170 ? PLAIN : DEEP_SEA
         }
     }
 
     constructor(regionTileMap, continentModel) {
+        const rect = regionTileMap.rect
         this.#maxLevel = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
-        const noise = {
-            land: new SimplexNoise(6, .8, .1),
-            ocean: new SimplexNoise(3, .6, .2),
-        }
-        this.#surfaceMatrix = Matrix.fromRect(regionTileMap.rect, point => {
+        const simplex = new SimplexNoise(6, .8, .1)
+        this.#surfaceMatrix = Matrix.fromRect(rect, point => {
+            const noise = simplex.wrappedNoise4D(rect, point)
             return this.#buildSurface(continentModel, noise, point)
         })
     }
