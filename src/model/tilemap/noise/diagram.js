@@ -17,8 +17,11 @@ class NoiseColorMap {
         if (octet < min) return Color.BLACK
         if (octet > max) return Color.WHITE
         const step = Math.floor(255 / colors)
-        const index = Math.floor(octet / step)
-        const color = clamp(index * step, 0, 255)
+        const index = clamp(Math.floor(octet / step), 0, colors - 1)
+        const color = clamp(index * step, 0, octet)
+        if (point[0] == 1 && point[1] == 63) {
+            console.log(octet, index, color);
+        }
         return new Color(color, color, color)
     }
 }
@@ -28,10 +31,10 @@ export class NoiseTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'NoiseTileMapDiagram',
         Type.number('minLevel', 'Min level', {
-            default: 1, step: 5, min: 0, max: 255
+            default: 145, step: 5, min: 0, max: 255
         }),
         Type.number('maxLevel', 'Max level', {
-            default: 1, step: 5, min: 0, max: 255
+            default: 190, step: 5, min: 0, max: 255
         }),
         Type.number('colors', 'Colors', {
             default: 200, step: 1, min: 1, max: 255
