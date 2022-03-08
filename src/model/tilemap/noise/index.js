@@ -3,6 +3,7 @@ import { TileMap } from '/src/lib/model/tilemap'
 import { SimplexNoise } from '/src/lib/noise'
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
+import { Point } from '/src/lib/point'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { NoiseTileMapDiagram } from './diagram'
@@ -11,7 +12,7 @@ import { NoiseTileMapDiagram } from './diagram'
 const SCHEMA = new Schema(
     'NoiseTileMap',
     Type.rect('rect', 'Size', {default: '150x100'}),
-    Type.number('detail', 'Detail', {default: 4, step: 1, min: 1, max: 20}),
+    Type.number('octaves', 'Octaves', {default: 4, step: 1, min: 1, max: 20}),
     Type.number('resolution', 'Resolution', {default: .4, step: 0.1, min: 0.1, max: 1}),
     Type.number('scale', 'Scale', {default: .02, step: 0.01, min: 0.01, max: 1}),
     Type.text('seed', 'Seed', {default: ''})
@@ -38,24 +39,30 @@ export class NoiseTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const keys = ['detail', 'resolution', 'scale']
-        const [detail, resolution, scale] = params.get(...keys)
-        // const simplex = new SimplexNoise(detail, resolution, scale)
-        const simplex = new SimplexNoise(detail, resolution, scale)
-        let [min, max] = [Number.MAX_VALUE, Number.MIN_VALUE]
+        const keys = ['octaves', 'resolution', 'scale']
+        const [octaves, resolution, scale] = params.get(...keys)
+        const simplex = new SimplexNoise(octaves, resolution, scale)
+        let [min, max] = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]
         this.#matrix = Matrix.fromRect(this.rect, point => {
-            const noiseValue = simplex.wrappedNoise4D(this.rect, point)
-            if (noiseValue > max) {
-                max = noiseValue
-            } else if (noiseValue < min) {
-                min = noiseValue
+            const value = simplex.wrappedNoise4D(this.rect, point)
+            if (value > max) {
+                max = value
+            } else if (value < min) {
+                min = value
             }
-            return noiseValue
+            return value
         })
         this.range = [min, max]
     }
 
     get(point) {
+        return [
+            `point: ${Point.hash(point)}`,
+            `value: ${this.#matrix.get(point)}`
+        ].join(', ')
+    }
+
+    getNoise(point) {
         return this.#matrix.get(point)
     }
 }

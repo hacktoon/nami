@@ -33,12 +33,12 @@ const GRAD4 = [
 ]
 
 
-export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
-    constructor(iterations, persistence, scale) {
-        this.iterations = iterations
+// Simplex noise in 2D, 3D and 4D
+export class SimplexNoise {
+    constructor(octaves, persistence, scale) {
+        this.octaves = octaves
         this.persistence = persistence
         this.scale = scale
-        this.range = 255
 
         this.perm = new Array(512)
         this.permMod12 = new Array(512)
@@ -59,7 +59,6 @@ export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
         this.G3 = 1.0 / 6.0
         this.F4 = (Math.sqrt(5.0) - 1.0) / 4.0
         this.G4 = (5.0-Math.sqrt(5.0)) / 20.0
-
     }
 
     noise2D(point) {
@@ -68,14 +67,12 @@ export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
         let noise = 0
 
         //add successively smaller, higher-frequency terms
-        for(let i = 0; i < this.iterations; ++i) {
+        for(let i = 0; i < this.octaves; ++i) {
             noise += this._calcNoise2D(point[0] * freq, point[1] * freq) * amp
             amp *= this.persistence
             freq *= 2
         }
-        //normalize the result
-        const half = this.range / 2
-        return Math.round(noise * half + half)
+        return noise
     }
 
     wrappedNoise4D(rect, [x, y]) {
@@ -96,18 +93,14 @@ export class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
         let amp = 1
         let freq = this.scale
         let noise = 0
-
         //add successively smaller, higher-frequency terms
-        for(let i = 0; i < this.iterations; ++i) {
+        for(let i = 0; i < this.octaves; ++i) {
             let p = [nx * freq, ny * freq, nz * freq, nw * freq]
             noise += this._calcNoise4D(...p) * amp
             amp *= this.persistence
             freq *= 2
         }
-
-        //normalize the result
-        const half = this.range / 2
-        return Math.round(noise * half + half)
+        return noise
     }
 
     // 2D simplex noise

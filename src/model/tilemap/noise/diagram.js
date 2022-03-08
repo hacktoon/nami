@@ -5,20 +5,25 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 
 class NoiseColorMap {
+    #normalize(value, maxColors) {
+        const [min, max] = this.tileMap.range
+        // normalize to [0, 1]
+        const percent = (value - min) / (max - min)
+        return Math.floor(percent * 256 / maxColors)
+    }
+
     constructor(tileMap) {
         this.tileMap = tileMap
+        console.log(this.tileMap.range);
     }
 
     get(point, maxColors) {
-        const rawvalue = Number(this.tileMap.get(point))
-        const value = this.normalize(rawvalue, maxColors)
-        return new Color(value, value, value)
-    }
-
-    normalize(value, maxColors) {
-        const [min, max] = this.tileMap.range
-        const step = Math.floor(((value - min) * maxColors) / (max - min))
-        return step * Math.floor(256 / maxColors)
+        const rawValue = Number(this.tileMap.getNoise(point))
+        const value = this.#normalize(rawValue, maxColors)
+        if (point[0] == 142 && point[1]== 55) {
+            console.log(rawValue, value);
+        }
+        return new Color(value, value, value).invert()
     }
 }
 
