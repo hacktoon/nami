@@ -5,25 +5,21 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 
 class NoiseColorMap {
-    #normalize(value, maxColors) {
-        const [min, max] = this.tileMap.range
-        // normalize to [0, 1]
-        const percent = (value - min) / (max - min)
-        return Math.floor(percent * 256 / maxColors)
-    }
-
     constructor(tileMap) {
         this.tileMap = tileMap
-        console.log(this.tileMap.range);
     }
 
-    get(point, maxColors) {
-        const rawValue = Number(this.tileMap.getNoise(point))
-        const value = this.#normalize(rawValue, maxColors)
-        if (point[0] == 142 && point[1]== 55) {
-            console.log(rawValue, value);
+    get(point, range) {
+        const [min, max] = range
+        const value = this.tileMap.getNoise(point)
+        const octet = parseInt(value * 255, 10)
+        if (octet < min) {
+            return Color.BLACK
         }
-        return new Color(value, value, value).invert()
+        if (octet > max) {
+            return Color.WHITE
+        }
+        return new Color(octet, octet, octet)
     }
 }
 
@@ -31,8 +27,11 @@ class NoiseColorMap {
 export class NoiseTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'NoiseTileMapDiagram',
-        Type.number('maxColors', 'Max colors', {
-            default: 200, step: 1, min: 1, max: 256
+        Type.number('minLevel', 'Min level', {
+            default: 1, step: 5, min: 0, max: 255
+        }),
+        Type.number('maxLevel', 'Max level', {
+            default: 1, step: 5, min: 0, max: 255
         }),
     )
     static colorMap = NoiseColorMap
@@ -44,10 +43,12 @@ export class NoiseTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.maxColors = params.get('maxColors')
+        this.minLevel = params.get('minLevel')
+        this.maxLevel = params.get('maxLevel')
     }
 
     get(point) {
-        return this.colorMap.get(point, this.maxColors)
+        const range = [this.minLevel, this.maxLevel]
+        return this.colorMap.get(point, range)
     }
 }

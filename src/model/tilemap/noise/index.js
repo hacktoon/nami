@@ -58,11 +58,14 @@ export class NoiseTileMap extends TileMap {
     get(point) {
         return [
             `point: ${Point.hash(point)}`,
-            `value: ${this.#matrix.get(point)}`
+            `value: ${this.getNoise(point)}`
         ].join(', ')
     }
 
     getNoise(point) {
-        return this.#matrix.get(point)
+        const value = this.#matrix.get(point)
+        const [min, max] = this.range
+        // normalize to [0, 1]
+        return (value - min) / (max - min)
     }
 }
