@@ -1,7 +1,7 @@
-import { SimplexNoise } from '/src/lib/noise'
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
+import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
 const NO_LEVEL = null
@@ -27,6 +27,7 @@ export class SurfaceModel {
     #levelMatrix
     #surfaceMatrix
     #maxLevel
+    #noiseMap
 
     #buildOrigins(regionTileMap, continentModel) {
         const origins = []
@@ -63,20 +64,26 @@ export class SurfaceModel {
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
         if (isOceanic) {
-            return noise > 245 ? PLAIN : DEEP_SEA
+            return noise > .8 ? PLAIN : DEEP_SEA
         } else {
             if (range > .4) return PLAIN
-            return noise > 170 ? PLAIN : DEEP_SEA
+            return noise > .6 ? PLAIN : DEEP_SEA
         }
     }
 
-    constructor(regionTileMap, continentModel) {
+    constructor(seed, regionTileMap, continentModel) {
         const rect = regionTileMap.rect
         this.#maxLevel = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
-        const simplex = new SimplexNoise(6, .8, .1)
+        this.#noiseMap = NoiseTileMap.fromData({
+            rect: rect.hash(),
+            octaves:     6,
+            resolution: .8,
+            scale:      .1,
+            seed,
+        })
         this.#surfaceMatrix = Matrix.fromRect(rect, point => {
-            const noise = simplex.wrappedNoise4D(rect, point)
+            const noise = this.#noiseMap.getNoise(point)
             return this.#buildOutline(continentModel, noise, point)
         })
     }

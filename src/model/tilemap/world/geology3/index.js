@@ -40,8 +40,9 @@ export class GeologyTileMap3 extends TileMap {
         this.#regionTileMap = this._buildRegionTileMap(params)
         this.#continentModel = new ContinentModel(params, this.#regionTileMap)
         this.#surfaceModel = new SurfaceModel(
+            this.seed,
             this.#regionTileMap,
-            this.#continentModel
+            this.#continentModel,
         )
     }
 

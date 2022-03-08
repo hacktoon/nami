@@ -31,13 +31,13 @@ export class NoiseTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'NoiseTileMapDiagram',
         Type.number('minLevel', 'Min level', {
-            default: 145, step: 5, min: 0, max: 255
+            default: 0, step: 5, min: 0, max: 254
         }),
         Type.number('maxLevel', 'Max level', {
-            default: 190, step: 5, min: 0, max: 255
+            default: 255, step: 5, min: 0, max: 255
         }),
         Type.number('colors', 'Colors', {
-            default: 200, step: 1, min: 1, max: 255
+            default: 10, step: 1, min: 1, max: 255
         }),
     )
     static colorMap = NoiseColorMap
