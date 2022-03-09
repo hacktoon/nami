@@ -15,7 +15,6 @@ const SCHEMA = new Schema(
     Type.rect('rect', 'Size', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 50, step: 1, min: 1, max: 100}),
-    Type.number('chance', 'Chance', {default: .1, step: .05, min: .1, max: 1}),
     Type.number('continentScale', 'Continent scale', {default: .1, step: .05, min: .1, max: .5}),
     Type.text('seed', 'Seed', {default: ''})
 )
@@ -51,7 +50,7 @@ export class GeologyTileMap3 extends TileMap {
             rect: this.rect.hash(),
             scale: params.get('scale'),
             growth: params.get('growth'),
-            chance: params.get('chance'),
+            chance: .1,
             seed: this.seed,
         })
     }

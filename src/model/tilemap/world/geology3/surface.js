@@ -64,7 +64,7 @@ export class SurfaceModel {
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
         if (isOceanic) {
-            return noise > .8 ? PLAIN : DEEP_SEA
+            return noise > .75 ? PLAIN : DEEP_SEA
         } else {
             if (range > .4) return PLAIN
             return noise > .6 ? PLAIN : DEEP_SEA
@@ -77,7 +77,7 @@ export class SurfaceModel {
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
         this.#noiseMap = NoiseTileMap.fromData({
             rect: rect.hash(),
-            octaves:     6,
+            octaves:     5,
             resolution: .8,
             scale:      .1,
             seed,
