@@ -29,6 +29,7 @@ const APPS = [
 ]
 const appMap = new Map(APPS.map(TileMap => {
     const UITileMap = TileMap.ui
+    console.log('UITileMap: ', UITileMap);
     return [TileMap.id, () => <UITileMap TileMap={TileMap} />]
 }))
 
@@ -44,6 +45,7 @@ class App {
 function RootComponent() {
     const [data, setData] = useState(App.schema.build())
     const Application = appMap.get(data.get('app'))
+    console.log('Render: ', data.get('app'), Application);
 
     return <section className="App">
         <section className="AppHeader">
