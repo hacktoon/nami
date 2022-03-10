@@ -1,16 +1,24 @@
-.PHONY: build
+test:
+	npm run test
 
 dev:
 	npm run dev
 
-build:
-	rm build/*
+.PHONY: build
+build: clean
 	npm run build
 
-deploy:
-	rm build/* docs/*
-	npm run build
-	cp build/* docs/
+clean:
+	rm -rf build/ .parcel-cache
 
-test:
-	npm run test
+deploy: build
+	if git show-ref -q --heads gh-pages; then \
+		git branch -D gh-pages;\
+	fi
+	git checkout --orphan gh-pages
+	git reset --mixed
+	mv build/* .
+	git add index.html *.js *.css
+	git commit -m 'deploy-$(shell date --iso=seconds)'
+	git push -f origin gh-pages
+	git checkout -f main
