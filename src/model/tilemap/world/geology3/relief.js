@@ -5,13 +5,27 @@ import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
 const NO_LEVEL = null
-const WATER = 0
-const LAND = 1
+
+const DEBUG = 0
+const MOUNTAIN = 1
+const PLATEAU = 2
+const PLAIN = 3
+const SHALLOW_SEA = 4
+const DEEP_SEA = 5
+
+const FEATURES = {
+    [DEBUG]: {name: 'Plain', water: false, color: '#A74'},
+    [MOUNTAIN]: {name: 'Mountain', water: false, color: '#AAA'},
+    [PLATEAU]: {name: 'Hill', water: false, color: '#796'},
+    [PLAIN]: {name: 'Plain', water: false, color: '#574'},
+    [SHALLOW_SEA]: {name: 'Island', water: true, color: '#058'},
+    [DEEP_SEA]: {name: 'Deep sea', water: true, color: '#036'},
+}
 
 
-export class OutlineModel {
+export class ReliefModel {
     #levelMatrix
-    #outlineMatrix
+    #surfaceMatrix
     #maxLevel
     #noiseMap
 
@@ -50,10 +64,10 @@ export class OutlineModel {
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
         if (isOceanic) {
-            return noise > .75 ? LAND : WATER
+            return noise > .75 ? PLAIN : DEEP_SEA
         } else {
-            if (range > .4) return LAND
-            return noise > .6 ? LAND : WATER
+            if (range > .4) return PLAIN
+            return noise > .6 ? PLAIN : DEEP_SEA
         }
     }
 
@@ -68,26 +82,27 @@ export class OutlineModel {
             scale:      .1,
             seed,
         })
-        this.#outlineMatrix = Matrix.fromRect(rect, point => {
+        this.#surfaceMatrix = Matrix.fromRect(rect, point => {
             const noise = this.#noiseMap.getNoise(point)
             return this.#buildOutline(continentModel, noise, point)
         })
     }
 
     get(point) {
-        return this.#outlineMatrix.get(point)
+        return this.#surfaceMatrix.get(point)
     }
 
     getLevel(point) {
         return this.#levelMatrix.get(point)
     }
 
-    isLand(point) {
-        return this.#outlineMatrix.get(point) === LAND
+    getFeature(point) {
+        const surface = this.#surfaceMatrix.get(point)
+        return FEATURES[surface]
     }
 
     isWater(point) {
-        return this.#outlineMatrix.get(point) === WATER
+        return this.get(point) === TYPE_WATER
     }
 }
 

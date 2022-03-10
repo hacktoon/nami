@@ -32,13 +32,13 @@ export class GeologyTileMap3 extends TileMap {
 
     #regionTileMap
     #continentModel
-    #surfaceModel
+    #outlineModel
 
     constructor(params) {
         super(params)
         this.#regionTileMap = this._buildRegionTileMap(params)
         this.#continentModel = new ContinentModel(params, this.#regionTileMap)
-        this.#surfaceModel = new OutlineModel(
+        this.#outlineModel = new OutlineModel(
             this.seed,
             this.#regionTileMap,
             this.#continentModel,
@@ -61,7 +61,8 @@ export class GeologyTileMap3 extends TileMap {
             plate,
             continent: this.continent.get(plate),
             surfaceLevel: this.surface.getLevel(point),
-            isOcean: this.continent.isOceanic(plate)
+            type: this.surface.isWater(point) ? 'water' : 'land',
+            plateType: this.continent.isOceanic(plate) ? 'water' : 'land',
         }
     }
 
@@ -70,7 +71,7 @@ export class GeologyTileMap3 extends TileMap {
     }
 
     get surface() {
-        return this.#surfaceModel
+        return this.#outlineModel
     }
 
     getDescription() {

@@ -19,6 +19,11 @@ class GeologyColorMap {
         return this.#continentColorMap.get(continent)
     }
 
+    getByOutline(point) {
+        const isWater = this.tileMap.surface.isWater(point)
+        return isWater ? '#047' : '#574'
+    }
+
     getByPlate(plate) {
         const isOceanic = this.tileMap.continent.isOceanic(plate)
         return Color.fromHex(isOceanic ? '#047' : '#574')
@@ -55,11 +60,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const plate = this.tileMap.continent.getPlate(point)
         const continent = this.tileMap.continent.get(plate)
         const level = this.tileMap.surface.getLevel(point)
-        const feature = this.tileMap.surface.getFeature(point)
         let color = this.colorMap.getByPlate(plate)
 
         if (this.showOutline) {
-            color = Color.fromHex(feature.color)
+            color = Color.fromHex(this.colorMap.getByOutline(point))
         }
         if (this.showContinent) {
             color = this.colorMap.getByContinent(continent).average(color)
