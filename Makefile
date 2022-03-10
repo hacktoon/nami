@@ -12,17 +12,13 @@ clean:
 	rm -rf build/ .parcel-cache
 
 deploy: build
-	if git show-ref -q --heads gh-pages; then \
-		git branch -D gh-pages;\
-	fi
+	git branch -D gh-pages 1> /dev/null 2> /dev/null
 	git stash save
 	git checkout --orphan gh-pages
 	git reset --mixed
 	mv build/* .
 	git add index.html *.js *.css
 	git commit -m 'Deploy-$(shell date --iso=seconds)'
-	git push -f origin gh-pages
+	git push -u -f origin gh-pages 1> /dev/null 2> /dev/null
 	git checkout -f main
-	if git stash list; then \
-		git stash pop;\
-	fi
+	@git stash pop 1> /dev/null 2> /dev/null || true
