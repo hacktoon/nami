@@ -14,7 +14,7 @@ const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 80, step: 1, min: 1, max: 100}),
+    Type.number('growth', 'Growth', {default: 90, step: 1, min: 1, max: 100}),
     Type.number('continentScale', 'Continent scale', {default: .1, step: .05, min: .1, max: .5}),
     Type.text('seed', 'Seed', {default: ''})
 )

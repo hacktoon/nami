@@ -12,8 +12,8 @@ const LAND = 1
 export class OutlineModel {
     #levelMatrix
     #outlineMatrix
-    #maxLevel
-    #noiseMap
+    #maxLevelMap
+    #noiseTileMap
 
     #buildOrigins(regionTileMap, continentModel) {
         const origins = []
@@ -31,11 +31,21 @@ export class OutlineModel {
         return origins
     }
 
+    #buildNoiseMatrix(rect, seed) {
+        return NoiseTileMap.fromData({
+            rect: rect.hash(),
+            octaves:     5,
+            resolution: .8,
+            scale:      .1,
+            seed: seed,
+        })
+    }
+
     #buildLevelMatrix(regionTileMap, continentModel) {
         const origins = this.#buildOrigins(regionTileMap, continentModel)
         const matrix = Matrix.fromRect(regionTileMap.rect, _ => NO_LEVEL)
         new LevelMultiFill(origins, {
-            maxLevel: this.#maxLevel,
+            maxLevelMap: this.#maxLevelMap,
             area: regionTileMap.rect.area,
             levelMatrix: matrix,
             continentModel,
@@ -46,7 +56,7 @@ export class OutlineModel {
     #buildOutline(continentModel, noise, point) {
         const plate = continentModel.getPlate(point)
         const isOceanic = continentModel.isOceanic(plate)
-        const maxLevel = this.#maxLevel.get(plate)
+        const maxLevel = this.#maxLevelMap.get(plate)
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
         if (isOceanic) {
@@ -59,17 +69,11 @@ export class OutlineModel {
 
     constructor(seed, regionTileMap, continentModel) {
         const rect = regionTileMap.rect
-        this.#maxLevel = new Map(regionTileMap.map(region => [region, 0]))
+        this.#maxLevelMap = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
-        this.#noiseMap = NoiseTileMap.fromData({
-            rect: rect.hash(),
-            octaves:     5,
-            resolution: .8,
-            scale:      .1,
-            seed,
-        })
+        this.#noiseTileMap = this.#buildNoiseMatrix(rect, seed)
         this.#outlineMatrix = Matrix.fromRect(rect, point => {
-            const noise = this.#noiseMap.getNoise(point)
+            const noise = this.#noiseTileMap.getNoise(point)
             return this.#buildOutline(continentModel, noise, point)
         })
     }
@@ -103,11 +107,11 @@ class LevelMultiFill extends ConcurrentFill {
 
 class LevelFloodFill extends ConcurrentFillUnit {
     setValue(fill, point, level) {
-        const {continentModel, levelMatrix, maxLevel} = fill.context
+        const {continentModel, levelMatrix, maxLevelMap} = fill.context
         const plate = continentModel.getPlate(point)
-        const currentLevel = maxLevel.get(plate)
+        const currentLevel = maxLevelMap.get(plate)
         if (level > currentLevel) {
-            maxLevel.set(plate, level)
+            maxLevelMap.set(plate, level)
         }
         levelMatrix.set(point, level)
     }
