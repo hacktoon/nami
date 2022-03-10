@@ -6,7 +6,7 @@ import { UITileMap } from '/src/ui/tilemap'
 import { RegionTileMap } from '/src/model/tilemap/region'
 import { GeologyTileMapDiagram } from './diagram'
 import { ContinentModel } from './continent'
-import { SurfaceModel } from './surface'
+import { OutlineModel } from './outline'
 
 
 const ID = 'GeologyTileMap3'
@@ -38,7 +38,7 @@ export class GeologyTileMap3 extends TileMap {
         super(params)
         this.#regionTileMap = this._buildRegionTileMap(params)
         this.#continentModel = new ContinentModel(params, this.#regionTileMap)
-        this.#surfaceModel = new SurfaceModel(
+        this.#surfaceModel = new OutlineModel(
             this.seed,
             this.#regionTileMap,
             this.#continentModel,

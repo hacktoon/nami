@@ -23,7 +23,7 @@ const FEATURES = {
 }
 
 
-export class SurfaceModel {
+export class OutlineModel {
     #levelMatrix
     #surfaceMatrix
     #maxLevel
