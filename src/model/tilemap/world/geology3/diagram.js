@@ -29,9 +29,10 @@ class GeologyColorMap {
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'Geology3TileMapDiagram',
-        Type.boolean('showContinentBorder', 'Continent border', {default: false}),
+        Type.boolean('showPlateBorder', 'Plate border', {default: false}),
         Type.boolean('showContinent', 'Continent', {default: false}),
-        Type.boolean('showSurface', 'Surface', {default: true}),
+        Type.boolean('showLevel', 'Levels', {default: false}),
+        Type.boolean('showOutline', 'Outline', {default: true}),
     )
     static colorMap = GeologyColorMap
 
@@ -42,10 +43,11 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.showContinentBorder = params.get('showContinentBorder')
+        this.showPlateBorder = params.get('showPlateBorder')
         this.showContinent = params.get('showContinent')
         this.showNoise = params.get('showNoise')
-        this.showSurface = params.get('showSurface')
+        this.showLevel = params.get('showLevel')
+        this.showOutline = params.get('showOutline')
     }
 
     get(_point) {
@@ -53,16 +55,19 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const plate = this.tileMap.continent.getPlate(point)
         const continent = this.tileMap.continent.get(plate)
         const level = this.tileMap.surface.getLevel(point)
-        let color = this.colorMap.getByPlate(plate).darken(2 * level)
+        const feature = this.tileMap.surface.getFeature(point)
+        let color = this.colorMap.getByPlate(plate)
 
-        if (this.showContinent) {
-            color = this.colorMap.getByContinent(continent)
-        }
-        if (this.showSurface) {
-            const feature = this.tileMap.surface.getFeature(point)
+        if (this.showOutline) {
             color = Color.fromHex(feature.color)
         }
-        if (this.showContinentBorder && this.tileMap.continent.isBorder(point)) {
+        if (this.showContinent) {
+            color = this.colorMap.getByContinent(continent).average(color)
+        }
+        if (this.showLevel) {
+            color = color.darken(2 * level)
+        }
+        if (this.showPlateBorder && this.tileMap.continent.isBorder(point)) {
             color = color.average(Color.BLACK)
         }
         return color
