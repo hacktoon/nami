@@ -23,4 +23,6 @@ deploy: build
 	git commit -m 'Deploy-$(shell date --iso=seconds)'
 	git push -f origin gh-pages
 	git checkout -f main
-	git stash pop
+	if git stash list; then \
+		git stash pop;\
+	fi
