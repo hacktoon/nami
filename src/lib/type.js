@@ -108,7 +108,8 @@ class EnumType extends BaseType {
     static type = 'selection'
 
     parse(text) {
-        return text ?? this.defaultValue
+        const options = new Set(this.props.options.map(opt => opt.id))
+        return options.has(text) ? text : this.defaultValue
     }
 }
 
