@@ -13,7 +13,6 @@ export class OutlineModel {
     #levelMatrix
     #outlineMatrix
     #maxLevelMap
-    #noiseTileMap
 
     #buildOrigins(regionTileMap, continentModel) {
         const origins = []
@@ -69,11 +68,11 @@ export class OutlineModel {
 
     constructor(seed, regionTileMap, continentModel) {
         const rect = regionTileMap.rect
+        const noiseTileMap = this.#buildNoiseMatrix(rect, seed)
         this.#maxLevelMap = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
-        this.#noiseTileMap = this.#buildNoiseMatrix(rect, seed)
         this.#outlineMatrix = Matrix.fromRect(rect, point => {
-            const noise = this.#noiseTileMap.getNoise(point)
+            const noise = noiseTileMap.getNoise(point)
             return this.#buildOutline(continentModel, noise, point)
         })
     }

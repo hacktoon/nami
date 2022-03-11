@@ -1,17 +1,12 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/point'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { RegionTileMap } from '/src/model/tilemap/region'
-import { PlateModel } from './plate'
-import { SurfaceModel } from './surface'
-import { TectonicsTable } from './table'
-import { BoundaryModel } from './boundary'
-import { ProvinceModel } from './province'
-import { FeatureModel } from './feature'
 import { GeologyTileMapDiagram } from './diagram'
+import { ContinentModel } from './continent'
+import { OutlineModel } from './outline'
 
 
 const ID = 'GeologyTileMap'
@@ -19,9 +14,8 @@ const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 25, step: 1, min: 1, max: 100}),
-    Type.number('growth', 'Growth', {default: 60, step: 1, min: 1, max: 100}),
-    Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),
-    Type.number('surfaceSize', 'Surface size', {default: .2, step: .05, min: .1, max: .8}),
+    Type.number('growth', 'Growth', {default: 90, step: 1, min: 1, max: 100}),
+    Type.number('continentScale', 'Continent scale', {default: .1, step: .05, min: .1, max: .5}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -37,142 +31,57 @@ export class GeologyTileMap extends TileMap {
     }
 
     #regionTileMap
-    #tectonicsTable
-    #plateModel
-    #surfaceModel
-    #boundaryModel
-    #provinceModel
-    #featureModel
+    #continentModel
+    #outlineModel
 
     constructor(params) {
         super(params)
-        let t0 = performance.now()
-        const surfaceSize = params.get('surfaceSize')
         this.#regionTileMap = this._buildRegionTileMap(params)
-        this.#tectonicsTable = new TectonicsTable()
-        this.#plateModel = new PlateModel(this.#regionTileMap)
-        this.#surfaceModel = new SurfaceModel(
-            surfaceSize,
-            this.#plateModel
-        )
-        this.#boundaryModel = new BoundaryModel(
+        this.#continentModel = new ContinentModel(params, this.#regionTileMap)
+        this.#outlineModel = new OutlineModel(
+            this.seed,
             this.#regionTileMap,
-            this.#tectonicsTable,
-            this.#plateModel,
-            this.#surfaceModel
+            this.#continentModel,
         )
-        this.#provinceModel = new ProvinceModel(
-            this.#regionTileMap,
-            this.#boundaryModel,
-            this.#surfaceModel
-        )
-        this.#featureModel = new FeatureModel(
-            this.#regionTileMap,
-            this.#tectonicsTable,
-            this.#plateModel,
-            this.#provinceModel
-        )
-        console.log(`GeologyTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
     _buildRegionTileMap(params) {
         return RegionTileMap.fromData({
-            seed: this.seed,
             rect: this.rect.hash(),
             scale: params.get('scale'),
             growth: params.get('growth'),
-            chance: params.get('chance'),
+            chance: .1,
+            seed: this.seed,
         })
     }
 
     get(point) {
-        const plateId = this.getPlate(point)
-        const surface = this.getSurface(point)
-        const isContinent = this.#surfaceModel.isContinent(surface)
-        const surfaceType = isContinent ? 'continent' : 'ocean'
-        const province = this.getProvince(point)
-        const maxLevel = this.#provinceModel.getMaxLevel(province.id)
-        const provinceLevel = this.getProvinceLevel(point)
-        const feature = this.getFeature(point)
-
-        return [
-            `point(${Point.hash(point)})`,
-            `surface(${surface}, ${surfaceType})`,
-            `plate(${plateId})`,
-            `province(${province.id})`,
-            `level(${provinceLevel}/${maxLevel})`,
-            `feature(${feature.name})`,
-        ].join(', ')
+        const plate = this.continent.getPlate(point)
+        return {
+            plate,
+            continent: this.continent.get(plate),
+            surfaceLevel: this.surface.getLevel(point),
+            type: this.surface.isWater(point) ? 'water' : 'land',
+            plateType: this.continent.isOceanic(plate) ? 'water' : 'land',
+        }
     }
 
-    getPlate(point) {
-        return this.#regionTileMap.getRegion(point)
+    get continent() {
+        return this.#continentModel
     }
 
-    getPlateDirection(point) {
-        const plateId = this.#regionTileMap.getRegion(point)
-        return this.#plateModel.getDirection(plateId)
-    }
-
-    getPlateOrigin(point) {
-        const plateId = this.#regionTileMap.getRegion(point)
-        return this.#regionTileMap.getOriginById(plateId)
-    }
-
-    isPlateBorder(point) {
-        return this.#regionTileMap.isBorder(point)
-    }
-
-    isPlateOceanic(plateId) {
-        return this.#plateModel.isOceanic(plateId)
-    }
-
-    getSurface(point) {
-        const plateId = this.getPlate(point)
-        return this.#surfaceModel.get(plateId)
-    }
-
-    isContinent(surfaceId) {
-        return this.#surfaceModel.isContinent(surfaceId)
-    }
-
-    getSurfaces() {
-        return this.#surfaceModel.getSurfaces()
-    }
-
-    getProvince(point) {
-        return this.#provinceModel.getProvince(point)
-    }
-
-    getProvinceLevel(point) {
-        return this.#provinceModel.getProvinceLevel(point)
-    }
-
-    getProvinces() {
-        return this.#provinceModel.getProvinces()
-    }
-
-    isProvinceBorder(point) {
-        return this.#provinceModel.isProvinceBorder(point)
-    }
-
-    isPlateOrigin(point) {
-        const regionOrigin = this.#regionTileMap.getRegionOrigin(point)
-        return Point.equals(regionOrigin, point)
-    }
-
-    getFeature(point) {
-        return this.#featureModel.get(point)
+    get surface() {
+        return this.#outlineModel
     }
 
     getDescription() {
-        const continentCount = this.#surfaceModel.getContinents().length
-        const oceanCount = this.#surfaceModel.getOceans().length
-        return `${this.#plateModel.size} plates, ${continentCount} continents, ${oceanCount} oceans`
+        return [
+            `${this.#regionTileMap.size} plates`,
+            `${this.continent.ids.length} continents`,
+        ].join(', ')
     }
 
     map(callback) {
-        const plates = this.#plateModel.getPlates()
-        return plates.map(callback)
+        return this.continent.ids.map(callback)
     }
 }
