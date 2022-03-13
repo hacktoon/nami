@@ -13,6 +13,7 @@ export class OutlineModel {
     #levelMatrix
     #outlineMatrix
     #maxLevelMap
+    #landArea
 
     #buildOrigins(regionTileMap, continentModel) {
         const origins = []
@@ -58,17 +59,24 @@ export class OutlineModel {
         const maxLevel = this.#maxLevelMap.get(plate)
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
+        let type = LAND
         if (isOceanic) {
-            return noise > .75 ? LAND : WATER
+            type = noise > .75 ? LAND : WATER
         } else {
-            if (range > .4) return LAND
-            return noise > .6 ? LAND : WATER
+            if (range > .4) {
+                type = LAND
+            } else {
+                type = noise > .6 ? LAND : WATER
+            }
         }
+        this.#landArea += type === LAND ? 1 : 0
+        return type
     }
 
     constructor(seed, regionTileMap, continentModel) {
         const rect = regionTileMap.rect
         const noiseTileMap = this.#buildNoiseMatrix(rect, seed)
+        this.#landArea = 0
         this.#maxLevelMap = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
         this.#outlineMatrix = Matrix.fromRect(rect, point => {
@@ -85,6 +93,10 @@ export class OutlineModel {
         return this.#levelMatrix.get(point)
     }
 
+    landArea() {
+        return this.#landArea
+    }
+
     isLand(point) {
         return this.#outlineMatrix.get(point) === LAND
     }
@@ -99,8 +111,8 @@ class LevelMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, LevelFloodFill, context)
     }
-    getChance(fill, origin) { return .5 }
-    getGrowth(fill, origin) { return 4 }
+    getChance(fill, origin) { return .2 }
+    getGrowth(fill, origin) { return 8 }
 }
 
 
