@@ -49,7 +49,12 @@ export class OutlineModel {
         const rect = regionTileMap.rect
         return Matrix.fromRect(rect, point => {
             const noise = noiseTileMap.getNoise(point)
-            return this.#buildOutline(continentModel, noise, point)
+            const outline = this.#buildOutline(continentModel, noise, point)
+            if (outline === LAND) {
+                this.#shorePoints.add(point)
+                this.#landArea += 1
+            }
+            return outline
         })
     }
 
@@ -93,6 +98,10 @@ export class OutlineModel {
 
     isWater(point) {
         return this.#outlineMatrix.get(point) === WATER
+    }
+
+    isShore(point) {
+        return this.#shorePoints.has(point)
     }
 }
 
