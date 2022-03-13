@@ -10,8 +10,8 @@ const LAND = 1
 
 
 export class OutlineModel {
-    #levelMatrix
     #outlineMatrix
+    #levelMatrix
     #maxLevelMap
     #landArea
 
@@ -42,15 +42,25 @@ export class OutlineModel {
     }
 
     #buildLevelMatrix(regionTileMap, continentModel) {
+        const rect = regionTileMap.rect
         const origins = this.#buildOrigins(regionTileMap, continentModel)
-        const matrix = Matrix.fromRect(regionTileMap.rect, _ => NO_LEVEL)
+        const matrix = Matrix.fromRect(rect, _ => NO_LEVEL)
         new LevelMultiFill(origins, {
             maxLevelMap: this.#maxLevelMap,
-            area: regionTileMap.rect.area,
+            area: rect.area,
             levelMatrix: matrix,
             continentModel,
         }).fill()
         return matrix
+    }
+
+    #buildOutlineMatrix(seed, regionTileMap, continentModel) {
+        const rect = regionTileMap.rect
+        const noiseTileMap = this.#buildNoiseMatrix(rect, seed)
+        return Matrix.fromRect(rect, point => {
+            const noise = noiseTileMap.getNoise(point)
+            return this.#buildOutline(continentModel, noise, point)
+        })
     }
 
     #buildOutline(continentModel, noise, point) {
@@ -59,30 +69,20 @@ export class OutlineModel {
         const maxLevel = this.#maxLevelMap.get(plate)
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
-        let type = LAND
         if (isOceanic) {
-            type = noise > .75 ? LAND : WATER
-        } else {
-            if (range > .4) {
-                type = LAND
-            } else {
-                type = noise > .6 ? LAND : WATER
-            }
+            return noise > .75 ? LAND : WATER
         }
-        this.#landArea += type === LAND ? 1 : 0
-        return type
+        if (range > .3) return LAND
+        return noise > .6 ? LAND : WATER
     }
 
     constructor(seed, regionTileMap, continentModel) {
-        const rect = regionTileMap.rect
-        const noiseTileMap = this.#buildNoiseMatrix(rect, seed)
         this.#landArea = 0
         this.#maxLevelMap = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
-        this.#outlineMatrix = Matrix.fromRect(rect, point => {
-            const noise = noiseTileMap.getNoise(point)
-            return this.#buildOutline(continentModel, noise, point)
-        })
+        this.#outlineMatrix = this.#buildOutlineMatrix(
+            seed, regionTileMap, continentModel
+        )
     }
 
     get(point) {
