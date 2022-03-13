@@ -1,7 +1,7 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
-import { NoiseTileMap } from '/src/model/tilemap/noise'
+import { PointSet } from '/src/lib/point/set'
 
 
 const NO_LEVEL = null
@@ -10,6 +10,7 @@ const LAND = 1
 
 
 export class OutlineModel {
+    #shorePoints = new PointSet()
     #outlineMatrix
     #levelMatrix
     #maxLevelMap
@@ -31,16 +32,6 @@ export class OutlineModel {
         return origins
     }
 
-    #buildNoiseMatrix(rect, seed) {
-        return NoiseTileMap.fromData({
-            rect: rect.hash(),
-            octaves:     5,
-            resolution: .8,
-            scale:      .1,
-            seed: seed,
-        })
-    }
-
     #buildLevelMatrix(regionTileMap, continentModel) {
         const rect = regionTileMap.rect
         const origins = this.#buildOrigins(regionTileMap, continentModel)
@@ -54,9 +45,8 @@ export class OutlineModel {
         return matrix
     }
 
-    #buildOutlineMatrix(seed, regionTileMap, continentModel) {
+    #buildOutlineMatrix(noiseTileMap, regionTileMap, continentModel) {
         const rect = regionTileMap.rect
-        const noiseTileMap = this.#buildNoiseMatrix(rect, seed)
         return Matrix.fromRect(rect, point => {
             const noise = noiseTileMap.getNoise(point)
             return this.#buildOutline(continentModel, noise, point)
@@ -76,12 +66,12 @@ export class OutlineModel {
         return noise > .6 ? LAND : WATER
     }
 
-    constructor(seed, regionTileMap, continentModel) {
+    constructor(noiseTileMap, regionTileMap, continentModel) {
         this.#landArea = 0
         this.#maxLevelMap = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
         this.#outlineMatrix = this.#buildOutlineMatrix(
-            seed, regionTileMap, continentModel
+            noiseTileMap, regionTileMap, continentModel
         )
     }
 

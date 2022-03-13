@@ -24,12 +24,12 @@ export class ReliefModel {
     #levelMatrix
     #reliefMatrix
 
-    constructor(seed, regionTileMap, continentModel) {
-        const rect = regionTileMap.rect
-        // this.#reliefMatrix = Matrix.fromRect(rect, point => {
-
-
-        // })
+    constructor(rect, noiseTileMap, outlineModel) {
+        this.#reliefMatrix = Matrix.fromRect(rect, point => {
+            if (outlineModel.isLand(point)) {
+                const outline = outlineModel.get(point)
+            }
+        })
     }
 
     get(point) {

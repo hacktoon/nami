@@ -3,10 +3,12 @@ import { Type } from '/src/lib/type'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
+import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { RegionTileMap } from '/src/model/tilemap/region'
 import { GeologyTileMapDiagram } from './diagram'
 import { ContinentModel } from './continent'
 import { OutlineModel } from './outline'
+import { ReliefModel } from './relief'
 
 
 const ID = 'GeologyTileMap'
@@ -33,19 +35,9 @@ export class GeologyTileMap extends TileMap {
     #regionTileMap
     #continentModel
     #outlineModel
+    #reliefModel
 
-    constructor(params) {
-        super(params)
-        this.#regionTileMap = this._buildRegionTileMap(params)
-        this.#continentModel = new ContinentModel(params, this.#regionTileMap)
-        this.#outlineModel = new OutlineModel(
-            this.seed,
-            this.#regionTileMap,
-            this.#continentModel,
-        )
-    }
-
-    _buildRegionTileMap(params) {
+    #buildRegionTileMap(params) {
         return RegionTileMap.fromData({
             rect: this.rect.hash(),
             scale: params.get('scale'),
@@ -54,6 +46,34 @@ export class GeologyTileMap extends TileMap {
             seed: this.seed,
         })
     }
+
+    #buildNoiseTileMap(rect) {
+        return NoiseTileMap.fromData({
+            rect: rect.hash(),
+            octaves:     5,
+            resolution: .8,
+            scale:      .1,
+            seed: this.seed,
+        })
+    }
+
+    constructor(params) {
+        super(params)
+        const noiseTileMap = this.#buildNoiseTileMap(this.rect)
+        this.#regionTileMap = this.#buildRegionTileMap(params)
+        this.#continentModel = new ContinentModel(params, this.#regionTileMap)
+        this.#outlineModel = new OutlineModel(
+            noiseTileMap,
+            this.#regionTileMap,
+            this.#continentModel,
+        )
+        this.#reliefModel = new ReliefModel(
+            this.#regionTileMap.rect,
+            noiseTileMap,
+            this.#outlineModel,
+        )
+    }
+
 
     get(point) {
         const plate = this.continent.getPlate(point)
