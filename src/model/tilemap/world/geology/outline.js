@@ -1,7 +1,6 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
-import { PointSet } from '/src/lib/point/set'
 
 
 const NO_LEVEL = null
@@ -10,7 +9,6 @@ const LAND = 1
 
 
 export class OutlineModel {
-    #shorePoints = new PointSet()
     #outlineMatrix
     #levelMatrix
     #maxLevelMap
@@ -51,7 +49,6 @@ export class OutlineModel {
             const noise = noiseTileMap.getNoise(point)
             const outline = this.#buildOutline(continentModel, noise, point)
             if (outline === LAND) {
-                this.#shorePoints.add(point)
                 this.#landArea += 1
             }
             return outline
@@ -98,10 +95,6 @@ export class OutlineModel {
 
     isWater(point) {
         return this.#outlineMatrix.get(point) === WATER
-    }
-
-    isShore(point) {
-        return this.#shorePoints.has(point)
     }
 }
 

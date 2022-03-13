@@ -38,6 +38,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showContinent', 'Continent', {default: false}),
         Type.boolean('showLevel', 'Levels', {default: false}),
         Type.boolean('showOutline', 'Outline', {default: true}),
+        Type.boolean('showShore', 'Shore', {default: true}),
     )
     static colorMap = GeologyColorMap
 
@@ -53,6 +54,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.showNoise = params.get('showNoise')
         this.showLevel = params.get('showLevel')
         this.showOutline = params.get('showOutline')
+        this.showShore = params.get('showShore')
     }
 
     get(_point) {
@@ -64,6 +66,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
         if (this.showOutline) {
             color = Color.fromHex(this.colorMap.getByOutline(point))
+        }
+        if (this.showShore && this.tileMap.relief.isShore(point)) {
+            color = color.darken(20)
         }
         if (this.showContinent) {
             color = this.colorMap.getByContinent(continent).average(color)

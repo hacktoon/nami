@@ -21,19 +21,28 @@ const FEATURES = {
 
 
 export class ReliefModel {
-    #levelMatrix
     #reliefMatrix
+    #shorePoints = new PointSet()
 
     constructor(rect, noiseTileMap, outlineModel) {
         this.#reliefMatrix = Matrix.fromRect(rect, point => {
-            if (outlineModel.isLand(point)) {
-                const outline = outlineModel.get(point)
+            if (outlineModel.isWater(point)) return
+            for(let sidePoint of Point.adjacents(point)) {
+                if (outlineModel.isWater(sidePoint)) {
+                    this.#shorePoints.add(point)
+                    break
+                }
             }
+            return 1
         })
     }
 
     get(point) {
         return this.#reliefMatrix.get(point)
+    }
+
+    isShore(point) {
+        return this.#shorePoints.has(point)
     }
 
 }
