@@ -81,7 +81,7 @@ export class OutlineModel {
         if (range > .3) {
             if (range > .5 && range < .9 && noise > .55) { return MOUNTAIN }
             if (range > .3 && noise > .5) { return PLATEAU }
-            return PLAIN
+            return noise > .45 ? PLATEAU : PLAIN
         }
         // areas between continents
         if (noise > .65) return PLAIN  // islands
@@ -90,9 +90,7 @@ export class OutlineModel {
 
     #detectShore(point) {
         for(let sidePoint of Point.adjacents(point)) {
-            if (this.isWater(sidePoint)) {
-                return true
-            }
+            if (this.isWater(sidePoint)) return true
         }
         return false
     }
@@ -104,7 +102,7 @@ export class OutlineModel {
             noiseTileMap, regionTileMap, continentModel
         )
         this.#landArea = 0
-        Matrix.fromRect(regionTileMap.rect, point => {
+        this.#reliefMatrix = Matrix.fromRect(regionTileMap.rect, point => {
             if (this.isLand(point)) {
                 this.#landArea += 1
                 if (this.#detectShore(point)) {
@@ -123,6 +121,10 @@ export class OutlineModel {
         return this.#levelMatrix.get(point)
     }
 
+    getShorePoints() {
+        return this.#shorePoints
+    }
+
     landArea() {
         return this.#landArea
     }
@@ -137,6 +139,31 @@ export class OutlineModel {
 
     isShore(point) {
         return this.#shorePoints.has(point)
+    }
+
+    isPlain(point) {
+        const outline = this.#outlineMatrix.get(point)
+        return outline === PLAIN
+    }
+
+    isPlateau(point) {
+        const outline = this.#outlineMatrix.get(point)
+        return outline === PLATEAU
+    }
+
+    isMountain(point) {
+        const outline = this.#outlineMatrix.get(point)
+        return outline === MOUNTAIN
+    }
+
+    isShallowSea(point) {
+        const outline = this.#outlineMatrix.get(point)
+        return outline === SHALLOW_SEA
+    }
+
+    isDeepSea(point) {
+        const outline = this.#outlineMatrix.get(point)
+        return outline === DEEP_SEA
     }
 }
 
