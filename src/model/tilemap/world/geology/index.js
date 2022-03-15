@@ -8,7 +8,6 @@ import { RegionTileMap } from '/src/model/tilemap/region'
 import { GeologyTileMapDiagram } from './diagram'
 import { ContinentModel } from './continent'
 import { OutlineModel } from './outline'
-import { ReliefModel } from './relief'
 
 
 const ID = 'GeologyTileMap'
@@ -35,7 +34,6 @@ export class GeologyTileMap extends TileMap {
     #regionTileMap
     #continentModel
     #outlineModel
-    #reliefModel
 
     #buildRegionTileMap(params) {
         return RegionTileMap.fromData({
@@ -67,11 +65,6 @@ export class GeologyTileMap extends TileMap {
             this.#regionTileMap,
             this.#continentModel,
         )
-        this.#reliefModel = new ReliefModel(
-            this.#regionTileMap.rect,
-            noiseTileMap,
-            this.#outlineModel,
-        )
     }
 
 
@@ -80,8 +73,8 @@ export class GeologyTileMap extends TileMap {
         return {
             plate,
             continent: this.continent.get(plate),
-            surfaceLevel: this.surface.getLevel(point),
-            type: this.surface.isWater(point) ? 'water' : 'land',
+            level: this.outline.getLevel(point),
+            type: this.outline.isWater(point) ? 'water' : 'land',
             plateType: this.continent.isOceanic(plate) ? 'water' : 'land',
         }
     }
@@ -90,16 +83,12 @@ export class GeologyTileMap extends TileMap {
         return this.#continentModel
     }
 
-    get surface() {
+    get outline() {
         return this.#outlineModel
     }
 
-    get relief() {
-        return this.#reliefModel
-    }
-
     getDescription() {
-        const landArea = (100 * this.surface.landArea()) / this.area
+        const landArea = (100 * this.outline.landArea()) / this.area
         return [
             `${this.#regionTileMap.size} plates`,
             `${this.continent.ids.length} continents`,

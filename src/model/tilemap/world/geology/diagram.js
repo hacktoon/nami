@@ -19,11 +19,6 @@ class GeologyColorMap {
         return this.#continentColorMap.get(continent)
     }
 
-    getByOutline(point) {
-        const isWater = this.tileMap.surface.isWater(point)
-        return isWater ? '#047' : '#574'
-    }
-
     getByPlate(plate) {
         const isOceanic = this.tileMap.continent.isOceanic(plate)
         return Color.fromHex(isOceanic ? '#047' : '#574')
@@ -38,7 +33,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         Type.boolean('showContinent', 'Continent', {default: false}),
         Type.boolean('showLevel', 'Levels', {default: false}),
         Type.boolean('showOutline', 'Outline', {default: true}),
-        Type.boolean('showShore', 'Shore', {default: true}),
+        Type.boolean('showShore', 'Shore', {default: false}),
     )
     static colorMap = GeologyColorMap
 
@@ -61,19 +56,19 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const point = this.tileMap.rect.wrap(_point)
         const plate = this.tileMap.continent.getPlate(point)
         const continent = this.tileMap.continent.get(plate)
-        const level = this.tileMap.surface.getLevel(point)
         let color = this.colorMap.getByPlate(plate)
 
         if (this.showOutline) {
-            color = Color.fromHex(this.colorMap.getByOutline(point))
+            color = Color.fromHex(this.tileMap.outline.get(point).color)
         }
-        if (this.showShore && this.tileMap.relief.isShore(point)) {
+        if (this.showShore && this.tileMap.outline.isShore(point)) {
             color = color.darken(20)
         }
         if (this.showContinent) {
             color = this.colorMap.getByContinent(continent).average(color)
         }
         if (this.showLevel) {
+            const level = this.tileMap.outline.getLevel(point)
             color = color.darken(2 * level)
         }
         if (this.showPlateBorder && this.tileMap.continent.isBorder(point)) {

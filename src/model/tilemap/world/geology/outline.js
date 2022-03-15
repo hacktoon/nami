@@ -1,16 +1,29 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
+import { PointSet } from '/src/lib/point/set'
 
 
 const NO_LEVEL = null
-const WATER = 0
-const LAND = 1
+const MOUNTAIN = 1
+const PLATEAU = 2
+const PLAIN = 3
+const SHALLOW_SEA = 4
+const DEEP_SEA = 5
 
+const FEATURES = {
+    [MOUNTAIN]: {name: 'Mountain', water: false, color: '#AAA'},
+    [PLATEAU]: {name: 'Hill', water: false, color: '#796'},
+    [PLAIN]: {name: 'Plain', water: false, color: '#574'},
+    [SHALLOW_SEA]: {name: 'Island', water: true, color: '#058'},
+    [DEEP_SEA]: {name: 'Deep sea', water: true, color: '#036'},
+}
 
 export class OutlineModel {
+    #shorePoints = new PointSet()
     #outlineMatrix
     #levelMatrix
+    #reliefMatrix
     #maxLevelMap
     #landArea
 
@@ -47,11 +60,7 @@ export class OutlineModel {
         const rect = regionTileMap.rect
         return Matrix.fromRect(rect, point => {
             const noise = noiseTileMap.getNoise(point)
-            const outline = this.#buildOutline(continentModel, noise, point)
-            if (outline === LAND) {
-                this.#landArea += 1
-            }
-            return outline
+            return this.#buildOutline(continentModel, noise, point)
         })
     }
 
@@ -62,23 +71,52 @@ export class OutlineModel {
         const level = this.#levelMatrix.get(point)
         const range = (1 * level) / maxLevel
         if (isOceanic) {
-            return noise > .75 ? LAND : WATER
+            // oceanic islands
+            if (range > .3 && range < .7 && noise > .7) {return PLAIN }
+            // ocean plateaus
+            if (range > .8 && noise > .5) { return SHALLOW_SEA }
+            return noise > .2 ? DEEP_SEA : SHALLOW_SEA
         }
-        if (range > .3) return LAND
-        return noise > .6 ? LAND : WATER
+        // areas inside continents
+        if (range > .3) {
+            if (range > .5 && range < .9 && noise > .55) { return MOUNTAIN }
+            if (range > .3 && noise > .5) { return PLATEAU }
+            return PLAIN
+        }
+        // areas between continents
+        if (noise > .65) return PLAIN  // islands
+        return noise > .4 ? SHALLOW_SEA : DEEP_SEA
+    }
+
+    #detectShore(point) {
+        for(let sidePoint of Point.adjacents(point)) {
+            if (this.isWater(sidePoint)) {
+                return true
+            }
+        }
+        return false
     }
 
     constructor(noiseTileMap, regionTileMap, continentModel) {
-        this.#landArea = 0
         this.#maxLevelMap = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
         this.#outlineMatrix = this.#buildOutlineMatrix(
             noiseTileMap, regionTileMap, continentModel
         )
+        this.#landArea = 0
+        Matrix.fromRect(regionTileMap.rect, point => {
+            if (this.isLand(point)) {
+                this.#landArea += 1
+                if (this.#detectShore(point)) {
+                    this.#shorePoints.add(point)
+                }
+            }
+        })
     }
 
     get(point) {
-        return this.#outlineMatrix.get(point)
+        const outline = this.#outlineMatrix.get(point)
+        return FEATURES[outline]
     }
 
     getLevel(point) {
@@ -90,11 +128,15 @@ export class OutlineModel {
     }
 
     isLand(point) {
-        return this.#outlineMatrix.get(point) === LAND
+        return ! this.get(point).water
     }
 
     isWater(point) {
-        return this.#outlineMatrix.get(point) === WATER
+        return this.get(point).water
+    }
+
+    isShore(point) {
+        return this.#shorePoints.has(point)
     }
 }
 
