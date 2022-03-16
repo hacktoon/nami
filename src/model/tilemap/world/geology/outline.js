@@ -73,15 +73,13 @@ export class OutlineModel {
         if (isOceanic) {
             // oceanic islands
             if (range > .3 && range < .7 && noise > .7) {return PLAIN }
-            // ocean plateaus
-            if (range > .8 && noise > .5) { return SHALLOW_SEA }
             return noise > .2 ? DEEP_SEA : SHALLOW_SEA
         }
         // areas inside continents
         if (range > .3) {
-            if (range > .5 && range < .9 && noise > .55) { return MOUNTAIN }
+            if (range > .6 && range < .9 && noise > .55) { return MOUNTAIN }
             if (range > .3 && noise > .5) { return PLATEAU }
-            return noise > .45 ? PLATEAU : PLAIN
+            return PLAIN
         }
         // areas between continents
         if (noise > .65) return PLAIN  // islands
