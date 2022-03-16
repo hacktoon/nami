@@ -19,9 +19,8 @@ const FEATURES = {
     [DEEP_SEA]: {name: 'Deep sea', water: true, color: '#036'},
 }
 
-export class OutlineModel {
+export class ReliefModel {
     #shorePoints = new PointSet()
-    #outlineMatrix
     #levelMatrix
     #reliefMatrix
     #maxLevelMap
@@ -56,15 +55,15 @@ export class OutlineModel {
         return matrix
     }
 
-    #buildOutlineMatrix(noiseTileMap, regionTileMap, continentModel) {
+    #buildReliefMatrix(noiseTileMap, regionTileMap, continentModel) {
         const rect = regionTileMap.rect
         return Matrix.fromRect(rect, point => {
             const noise = noiseTileMap.getNoise(point)
-            return this.#buildOutline(continentModel, noise, point)
+            return this.#buildRelief(continentModel, noise, point)
         })
     }
 
-    #buildOutline(continentModel, noise, point) {
+    #buildRelief(continentModel, noise, point) {
         const plate = continentModel.getPlate(point)
         const isOceanic = continentModel.isOceanic(plate)
         const maxLevel = this.#maxLevelMap.get(plate)
@@ -96,14 +95,16 @@ export class OutlineModel {
     constructor(noiseTileMap, regionTileMap, continentModel) {
         this.#maxLevelMap = new Map(regionTileMap.map(region => [region, 0]))
         this.#levelMatrix = this.#buildLevelMatrix(regionTileMap, continentModel)
-        this.#outlineMatrix = this.#buildOutlineMatrix(
+        this.#reliefMatrix = this.#buildReliefMatrix(
             noiseTileMap, regionTileMap, continentModel
         )
         this.#landArea = 0
-        this.#reliefMatrix = Matrix.fromRect(regionTileMap.rect, point => {
+        // count land, detect shores and make adjustments to relief matrix
+        Matrix.fromRect(regionTileMap.rect, point => {
             if (this.isLand(point)) {
                 this.#landArea += 1
                 if (this.#detectShore(point)) {
+                    this.#reliefMatrix.set(point, PLAIN)
                     this.#shorePoints.add(point)
                 }
             }
@@ -111,8 +112,8 @@ export class OutlineModel {
     }
 
     get(point) {
-        const outline = this.#outlineMatrix.get(point)
-        return FEATURES[outline]
+        const relief = this.#reliefMatrix.get(point)
+        return FEATURES[relief]
     }
 
     getLevel(point) {
@@ -140,28 +141,28 @@ export class OutlineModel {
     }
 
     isPlain(point) {
-        const outline = this.#outlineMatrix.get(point)
-        return outline === PLAIN
+        const relief = this.#reliefMatrix.get(point)
+        return relief === PLAIN
     }
 
     isPlateau(point) {
-        const outline = this.#outlineMatrix.get(point)
-        return outline === PLATEAU
+        const relief = this.#reliefMatrix.get(point)
+        return relief === PLATEAU
     }
 
     isMountain(point) {
-        const outline = this.#outlineMatrix.get(point)
-        return outline === MOUNTAIN
+        const relief = this.#reliefMatrix.get(point)
+        return relief === MOUNTAIN
     }
 
     isShallowSea(point) {
-        const outline = this.#outlineMatrix.get(point)
-        return outline === SHALLOW_SEA
+        const relief = this.#reliefMatrix.get(point)
+        return relief === SHALLOW_SEA
     }
 
     isDeepSea(point) {
-        const outline = this.#outlineMatrix.get(point)
-        return outline === DEEP_SEA
+        const relief = this.#reliefMatrix.get(point)
+        return relief === DEEP_SEA
     }
 }
 
