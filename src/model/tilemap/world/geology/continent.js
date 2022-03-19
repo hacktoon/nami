@@ -23,12 +23,12 @@ export class ContinentModel {
             const area1 = regionTileMap.getArea(id1)
             return area1 - area0
         }
-        const continents = this.#regionTileMap.getRegions().sort(cmpDescendingArea)
-        for (let continent of continents) {
-            totalOceanicArea += regionTileMap.getArea(continent)
+        const plates = this.#regionTileMap.getRegions().sort(cmpDescendingArea)
+        for (let plate of plates) {
+            totalOceanicArea += regionTileMap.getArea(plate)
             const isOceanic = totalOceanicArea < halfArea
-            this.#typeMap.set(continent, isOceanic ? TYPE_OCEAN : TYPE_LAND)
-            this.#plates.push(continent)
+            this.#typeMap.set(plate, isOceanic ? TYPE_OCEAN : TYPE_LAND)
+            this.#plates.push(plate)
         }
     }
 
