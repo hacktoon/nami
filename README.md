@@ -10,7 +10,12 @@
 - Rename IndexMap to RandomQueue
 
 #### GeologyTileMap
-
+  - add border size to regionTileMap
+    - plates pick bigger border sizes first
+  - plateModel -> regions + boundary
+    - continentModel
+    - oceanModel
+  - microcontinents: continents with 1 plate size
 
 #### ClimateTileMap
 - Start with each row in righ colum of regions of regionTileMap
