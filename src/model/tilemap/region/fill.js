@@ -8,7 +8,6 @@ const NO_REGION = null
 class RegionFloodFill extends ConcurrentFillUnit {
     setValue(fill, point, level) {
         fill.context.regionMatrix.set(point, fill.id)
-        fill.context.levelMatrix.set(point, level)
     }
 
     isEmpty(fill, point) {

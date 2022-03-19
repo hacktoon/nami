@@ -10,18 +10,7 @@
 - Rename IndexMap to RandomQueue
 
 #### GeologyTileMap
-- split conjoined continents by seas
-- set border provinces
-- PROVINCE
-  - each province may be a basin, uplift?
-  - central province may be a plateau, sea or hills
 
-- Redefine HotspotsModel as VolcanismModel
-  - hotspot provinces
-
-#### TerrainTileMap
-- Recreate erosion algorithm using regions
-- Add islets (same neighbors)
 
 #### ClimateTileMap
 - Start with each row in righ colum of regions of regionTileMap

@@ -45,7 +45,6 @@ export class RegionTileMap extends TileMap {
     #borderMap = new PairMap()
     #centerPoints
     #regionMatrix
-    #levelMatrix
     #regions
     #origins
     #mapFill
@@ -56,12 +55,10 @@ export class RegionTileMap extends TileMap {
         const scale = params.get('scale')
         this.#origins = EvenPointSampling.create(this.rect, scale)
         this.#regionMatrix = Matrix.fromRect(this.rect, () => NO_REGION)
-        this.#levelMatrix = Matrix.fromRect(this.rect, () => 0)
         this.#centerPoints = new PointSet(this.#origins)
         this.#regions = this.#origins.map((_, id) => id)
         this.#mapFill = new RegionMultiFill(this.#origins, {
             regionMatrix: this.#regionMatrix,
-            levelMatrix: this.#levelMatrix,
             borderMap: this.#borderMap,
             graph: this.#graph,
             chance: params.get('chance'),
@@ -109,14 +106,6 @@ export class RegionTileMap extends TileMap {
 
     getArea(id) {
         return this.#mapFill.getArea(id)
-    }
-
-    getRegionAreaById(id) {
-        return this.#mapFill.getArea(id)
-    }
-
-    getLevel(point) {
-        return this.#levelMatrix.get(point)
     }
 
     getBorderRegions(point) {
