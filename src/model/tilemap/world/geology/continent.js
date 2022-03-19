@@ -5,14 +5,18 @@ import { Point } from '/src/lib/point'
 
 const TYPE_LAND = 0
 const TYPE_OCEAN = 1
-
+const CONTINENT_SCALE = .2
 
 export class ContinentModel {
     #regionTileMap
     #typeMap = new Map()
     #plates = []
+    #oceanPlates = []
+    #landPlates = []
     #plateContinentMap = new Map()
     #continents = []
+    #landContinents = []
+    #oceanContinents = []
 
     #buildPlates(regionTileMap) {
         let totalOceanicArea = 0
@@ -26,38 +30,51 @@ export class ContinentModel {
         const plates = this.#regionTileMap.getRegions().sort(cmpDescendingArea)
         for (let plate of plates) {
             totalOceanicArea += regionTileMap.getArea(plate)
-            const isOceanic = totalOceanicArea < halfArea
-            this.#typeMap.set(plate, isOceanic ? TYPE_OCEAN : TYPE_LAND)
+            if (totalOceanicArea < halfArea) {
+                this.#typeMap.set(plate, TYPE_OCEAN)
+                this.#oceanPlates.push(plate)
+            } else {
+                this.#typeMap.set(plate, TYPE_LAND)
+                this.#landPlates.push(plate)
+            }
             this.#plates.push(plate)
         }
     }
 
-    #buildContinents(params, regionTileMap) {
-        const continentScale = params.get('continentScale')
+    #buildContinents(regionTileMap) {
         const plateQueue = new IndexMap(this.#plates)
-        const maxContinentSize = Math.round(this.#plates.length * continentScale)
         const continentSizeMap = new Map()
         let continentId = 0
         while(plateQueue.size > 0) {
+            let maxContinentSize
+            let totalPlates
             const plate = plateQueue.random()
             continentSizeMap.set(continentId, 0)
             this.#continents.push(continentId)
+            if (this.#typeMap.get(plate) === TYPE_OCEAN) {
+                totalPlates = this.#oceanPlates.length
+                this.#oceanContinents.push(continentId)
+            } else {
+                totalPlates = this.#landPlates.length
+                this.#landContinents.push(continentId)
+            }
+            maxContinentSize = Math.round(totalPlates * CONTINENT_SCALE)
             new ContinentFloodFill(plate, {
                 plateContinentMap: this.#plateContinentMap,
                 typeMap: this.#typeMap,
                 continentId: continentId++,
-                plateQueue,
                 maxContinentSize,
                 continentSizeMap,
                 regionTileMap,
+                plateQueue,
             }).growFull()
         }
     }
 
-    constructor(params, regionTileMap) {
+    constructor(regionTileMap) {
         this.#regionTileMap = regionTileMap
         this.#buildPlates(regionTileMap)
-        this.#buildContinents(params, regionTileMap)
+        this.#buildContinents(regionTileMap)
     }
 
     get size() {
@@ -66,6 +83,14 @@ export class ContinentModel {
 
     get ids() {
         return this.#continents
+    }
+
+    get landContinents() {
+        return this.#landContinents
+    }
+
+    get oceanContinents() {
+        return this.#oceanContinents
     }
 
     get plates() {

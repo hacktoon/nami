@@ -16,7 +16,6 @@ const SCHEMA = new Schema(
     Type.rect('rect', 'Size', {default: '150x100'}),
     Type.number('scale', 'Scale', {default: 20, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 90, step: 1, min: 1, max: 100}),
-    Type.number('continentScale', 'Continent scale', {default: .1, step: .05, min: .1, max: .5}),
     Type.text('seed', 'Seed', {default: ''})
 )
 
@@ -59,7 +58,7 @@ export class GeologyTileMap extends TileMap {
         super(params)
         const noiseTileMap = this.#buildNoiseTileMap(this.rect)
         this.#regionTileMap = this.#buildRegionTileMap(params)
-        this.#continentModel = new ContinentModel(params, this.#regionTileMap)
+        this.#continentModel = new ContinentModel(this.#regionTileMap)
         this.#reliefModel = new ReliefModel(
             noiseTileMap,
             this.#regionTileMap,
@@ -91,7 +90,8 @@ export class GeologyTileMap extends TileMap {
         const landArea = (100 * this.relief.landArea()) / this.area
         return [
             `${this.#regionTileMap.size} plates`,
-            `${this.continent.ids.length} continents`,
+            `${this.continent.landContinents.length} continents`,
+            `${this.continent.oceanContinents.length} oceans`,
             `${Math.round(landArea)}% land`,
         ].join(', ')
     }
