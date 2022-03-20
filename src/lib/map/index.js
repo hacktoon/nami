@@ -68,18 +68,8 @@ export class PairMap {
     }
 
     get(source, target) {
+        if (! this.#sources.has(source)) return
         return this.#sources.get(source).get(target)
-    }
-
-    getPairs() {
-        const items = []
-        this.#sources.forEach((yMap, x) => {
-            yMap.forEach((value, y) => {
-                const point = [x, y]
-                items.push([point, value])
-            })
-        })
-        return items
     }
 
     set(source, target, value) {
@@ -98,12 +88,12 @@ export class PairMap {
         return this.#sources.get(source).has(target)
     }
 
-    delete([x, y]) {
-        if (! this.has()) return false
-        const yMap = this.map.get(x)
-        yMap.delete(y)
+    delete([source, target]) {
+        if (! this.has(source)) return false
+        const yMap = this.map.get(source)
+        yMap.delete(target)
         if (yMap.size === 0) {
-            this.map.delete(x)
+            this.map.delete(source)
         }
         this.#size--
         return true
@@ -117,3 +107,53 @@ export class PairMap {
         })
     }
 }
+
+
+export class PairRelationMap {
+    #map
+
+    constructor() {
+        this.#map = new PairMap()
+    }
+
+    get size() {
+        return this.#map.size
+    }
+
+    #sortKeys(source, target) {
+        return source < target ? [source, target] : [target, source]
+    }
+
+    get(source, target) {
+        const [min, max] = this.#sortKeys(source, target)
+        return this.#map.get(min, max)
+    }
+
+    set(source, target, value) {
+        const [min, max] = this.#sortKeys(source, target)
+        if (source == 17) {
+            let x = this.get(min, max)
+            console.log('before', min, max, x);
+        }
+        this.#map.set(min, max, value)
+        if (source == 17) {
+            let x = this.get(min, max)
+            console.log('after', min, max, x);
+        }
+    }
+
+    has(source, target) {
+        const [min, max] = this.#sortKeys(source, target)
+        return this.#map.has(min, max)
+    }
+
+    delete(source, target) {
+        const [min, max] = this.#sortKeys(source, target)
+        return this.#map.delete([min, max])
+    }
+
+    forEach(callback) {
+        this.#map.forEach(callback)
+    }
+}
+window.PairRelationMap = PairRelationMap

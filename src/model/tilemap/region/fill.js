@@ -25,6 +25,12 @@ class RegionFloodFill extends ConcurrentFillUnit {
         // mark region when neighbor point belongs to another region
         fill.context.borderMap.get(x, y).add(neighborId)
         fill.context.graph.setEdge(fill.id, neighborId)
+        const borderSize = fill.context.borderSizeMap.get(fill.id, neighborId) ?? 0
+        // if (fill.id == 17)
+        //     console.log('before', borderSize);
+        fill.context.borderSizeMap.set(fill.id, neighborId, borderSize + 1)
+        // if (fill.id == 17)
+        //     console.log('after', fill.context.borderSizeMap.get(fill.id, neighborId));
     }
 
     getNeighbors(fill, originPoint) {

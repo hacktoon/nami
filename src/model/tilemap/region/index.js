@@ -6,6 +6,7 @@ import { Matrix } from '/src/lib/matrix'
 import { Graph } from '/src/lib/graph'
 import { EvenPointSampling } from '/src/lib/point/sampling'
 import { PairMap } from '/src/lib/map'
+import { PairRelationMap } from '/src/lib/map'
 
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
@@ -43,6 +44,7 @@ export class RegionTileMap extends TileMap {
 
     #graph = new Graph()
     #borderMap = new PairMap()
+    #borderSizeMap = new PairRelationMap()
     #centerPoints
     #regionMatrix
     #regions
@@ -60,11 +62,13 @@ export class RegionTileMap extends TileMap {
         this.#mapFill = new RegionMultiFill(this.#origins, {
             regionMatrix: this.#regionMatrix,
             borderMap: this.#borderMap,
+            borderSizeMap: this.#borderSizeMap,
             graph: this.#graph,
             chance: params.get('chance'),
             growth: params.get('growth'),
         })
         this.#mapFill.fill()
+        console.log(this.#borderSizeMap);
     }
 
     get size() {
@@ -111,10 +115,6 @@ export class RegionTileMap extends TileMap {
     getBorderRegions(point) {
         // a single tile can have two different region neighbors
         return Array.from(this.#borderMap.get(...point) ?? [])
-    }
-
-    getBorders() {
-        return this.#borderMap.getPairs()
     }
 
     getSideRegions(regionId) {
