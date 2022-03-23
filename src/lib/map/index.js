@@ -77,10 +77,8 @@ export class PairMap {
             this.#sources.set(source, new Map())
         }
         const targets = this.#sources.get(source)
-        if (! targets.has(target)) {
-            targets.set(target, value)
-            this.#size++
-        }
+        if (! targets.has(target)) this.#size++
+        targets.set(target, value)
     }
 
     has(source, target) {
@@ -107,53 +105,3 @@ export class PairMap {
         })
     }
 }
-
-
-export class PairRelationMap {
-    #map
-
-    constructor() {
-        this.#map = new PairMap()
-    }
-
-    get size() {
-        return this.#map.size
-    }
-
-    #sortKeys(source, target) {
-        return source < target ? [source, target] : [target, source]
-    }
-
-    get(source, target) {
-        const [min, max] = this.#sortKeys(source, target)
-        return this.#map.get(min, max)
-    }
-
-    set(source, target, value) {
-        const [min, max] = this.#sortKeys(source, target)
-        if (source == 17) {
-            let x = this.get(min, max)
-            console.log('before', min, max, x);
-        }
-        this.#map.set(min, max, value)
-        if (source == 17) {
-            let x = this.get(min, max)
-            console.log('after', min, max, x);
-        }
-    }
-
-    has(source, target) {
-        const [min, max] = this.#sortKeys(source, target)
-        return this.#map.has(min, max)
-    }
-
-    delete(source, target) {
-        const [min, max] = this.#sortKeys(source, target)
-        return this.#map.delete([min, max])
-    }
-
-    forEach(callback) {
-        this.#map.forEach(callback)
-    }
-}
-window.PairRelationMap = PairRelationMap

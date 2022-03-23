@@ -16,21 +16,19 @@ class RegionFloodFill extends ConcurrentFillUnit {
 
     checkNeighbor(fill, neighborPoint, centerPoint) {
         if (this.isEmpty(fill, neighborPoint)) return
-        const neighborId = fill.context.regionMatrix.get(neighborPoint)
+        const {borderPointMap, borderMap, regionMatrix} = fill.context
+        const neighborId = regionMatrix.get(neighborPoint)
         if (fill.id === neighborId) return
-        const [x, y] = fill.context.regionMatrix.rect.wrap(centerPoint)
-        if (! fill.context.borderMap.has(x, y)) {
-            fill.context.borderMap.set(x, y, new Set())
+        const [x, y] = regionMatrix.rect.wrap(centerPoint)
+        if (! borderMap.has(x, y)) {
+            borderMap.set(x, y, new Set())
         }
         // mark region when neighbor point belongs to another region
-        fill.context.borderMap.get(x, y).add(neighborId)
+        // these operations are idempotents
+        borderMap.get(x, y).add(neighborId)
         fill.context.graph.setEdge(fill.id, neighborId)
-        const borderSize = fill.context.borderSizeMap.get(fill.id, neighborId) ?? 0
-        // if (fill.id == 17)
-        //     console.log('before', borderSize);
-        fill.context.borderSizeMap.set(fill.id, neighborId, borderSize + 1)
-        // if (fill.id == 17)
-        //     console.log('after', fill.context.borderSizeMap.get(fill.id, neighborId));
+        // count border points for each neighbor region
+        // borderPointMap.set(...centerPoint, )
     }
 
     getNeighbors(fill, originPoint) {

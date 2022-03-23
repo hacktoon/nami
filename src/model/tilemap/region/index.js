@@ -6,7 +6,6 @@ import { Matrix } from '/src/lib/matrix'
 import { Graph } from '/src/lib/graph'
 import { EvenPointSampling } from '/src/lib/point/sampling'
 import { PairMap } from '/src/lib/map'
-import { PairRelationMap } from '/src/lib/map'
 
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
@@ -44,7 +43,7 @@ export class RegionTileMap extends TileMap {
 
     #graph = new Graph()
     #borderMap = new PairMap()
-    #borderSizeMap = new PairRelationMap()
+    #borderSizeMap = new PairMap()
     #centerPoints
     #regionMatrix
     #regions
