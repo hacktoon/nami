@@ -61,13 +61,19 @@ export class RegionTileMap extends TileMap {
         this.#mapFill = new RegionMultiFill(this.#origins, {
             regionMatrix: this.#regionMatrix,
             borderMap: this.#borderMap,
-            borderSizeMap: this.#borderSizeMap,
             graph: this.#graph,
             chance: params.get('chance'),
             growth: params.get('growth'),
         })
         this.#mapFill.fill()
-        console.log(this.#borderSizeMap);
+        // count the border size for each neighbor pair
+        this.#borderMap.forEach((point, sideRegions) => {
+            const region = this.#regionMatrix.get(point)
+            for (let sideRegion of sideRegions) {
+                const count = this.#borderSizeMap.get(region, sideRegion) ?? 0
+                this.#borderSizeMap.set(region, sideRegion, count + 1)
+            }
+        })
     }
 
     get size() {
@@ -114,6 +120,10 @@ export class RegionTileMap extends TileMap {
     getBorderRegions(point) {
         // a single tile can have two different region neighbors
         return Array.from(this.#borderMap.get(...point) ?? [])
+    }
+
+    getBorderSize(region, sideRegion) {
+        return this.#borderSizeMap.get(region, sideRegion)
     }
 
     getSideRegions(regionId) {
