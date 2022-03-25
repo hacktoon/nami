@@ -1,5 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
+import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
 
 import { TileMapDiagram } from '/src/lib/model/tilemap'
@@ -29,6 +30,7 @@ class GeologyColorMap {
 export class GeologyTileMapDiagram extends TileMapDiagram {
     static schema = new Schema(
         'Geology3TileMapDiagram',
+        Type.boolean('showOrigins', 'Show origins', {default: true}),
         Type.boolean('showPlateBorder', 'Plate border', {default: false}),
         Type.boolean('showContinent', 'Continent', {default: false}),
         Type.boolean('showLevel', 'Levels', {default: false}),
@@ -44,6 +46,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
+        this.showOrigins = params.get('showOrigins')
         this.showPlateBorder = params.get('showPlateBorder')
         this.showContinent = params.get('showContinent')
         this.showNoise = params.get('showNoise')

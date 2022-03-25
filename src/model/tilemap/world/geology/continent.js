@@ -48,11 +48,11 @@ export class ContinentModel {
             let totalPlates
             let plateCount = 1
             const plate = plateQueue.random()
-            // TODO: order by borderSize
-            const cmpDescendingBorderSize = (id0, id1) => {
-                const area0 = regionTileMap.getBorderSize(plate, id1)
-                const area1 = regionTileMap.getBorderSize(id1, id0)
-                return area1 - area0
+            const cmpDescendingBdrSize = (id0, id1) => {
+                // order by borderSize
+                const border0 = regionTileMap.getBorderSize(plate, id0)
+                const border1 = regionTileMap.getBorderSize(plate, id1)
+                return border1 - border0
             }
             const continentType = this.#typeMap.get(plate)
             plateQueue.delete(plate)
@@ -66,8 +66,7 @@ export class ContinentModel {
                 this.#landContinents.push(continentId)
             }
             const sidePlates = regionTileMap.getSideRegions(plate)
-
-            for (let sidePlate of sidePlates) {
+            for (let sidePlate of sidePlates.sort(cmpDescendingBdrSize)) {
                 const notSameType = continentType !== this.#typeMap.get(sidePlate)
                 const isMapped = this.#plateContinentMap.has(sidePlate)
                 const invalidSize = plateCount >= MAX_PLATE_COUNT
