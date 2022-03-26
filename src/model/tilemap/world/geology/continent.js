@@ -4,8 +4,7 @@ import { Point } from '/src/lib/point'
 
 const TYPE_LAND = 0
 const TYPE_OCEAN = 1
-const MAX_LAND_PLATE_COUNT = 2
-const MAX_OCEAN_PLATE_COUNT = 6
+const MAX_LAND_PLATES = 2
 
 
 export class ContinentModel {
@@ -19,41 +18,42 @@ export class ContinentModel {
 
     #buildContinents() {
         const plateQueue = new IndexMap(this.#plates)
-        const halfArea = this.#regionTileMap.area / 2
-        const state = {halfArea, continentId: 0, totalArea: 0}
+        const halfPlates = Math.ceil(this.#plates.length / 2)
+        let continentId = 0
+        // build continents
+        while(this.#plateContinentMap.size <= halfPlates) {
+            this.#buildContinent(plateQueue, continentId)
+            this.#continents.push(continentId)
+            this.#landContinents.push(continentId)
+            continentId++
+        }
+        // build oceans
         while(plateQueue.size > 0) {
-            const continentId = this.#buildContinent(plateQueue, state)
-            this.#continents.push(state.continentId)
-            state.continentId = state.continentId + 1
+            const plate = plateQueue.random()
+            plateQueue.delete(plate)
+            this.#plateContinentMap.set(plate, continentId)
+            this.#typeMap.set(plate, TYPE_OCEAN)
+            this.#continents.push(continentId)
+            this.#oceanContinents.push(continentId)
+            continentId++
         }
     }
 
-    #buildContinent(plateQueue, state) {
+    #buildContinent(plateQueue, continentId) {
+        let plateCount = 0
         const plate = plateQueue.random()
-        let plateCount = 1
-        let maxPlateCount = MAX_LAND_PLATE_COUNT
-        let plateType
-        const addPlateToContinent = (plate, type) => {
-            state.totalArea += this.#regionTileMap.getArea(plate)
-            this.#plateContinentMap.set(plate, state.continentId)
-            this.#typeMap.set(plate, type)
+        const addPlateToContinent = plate => {
+            this.#plateContinentMap.set(plate, continentId)
+            this.#typeMap.set(plate, TYPE_LAND)
             plateQueue.delete(plate)
+            plateCount += 1
         }
-        if (state.totalArea < state.halfArea) {
-            plateType = TYPE_LAND
-            this.#landContinents.push(state.continentId)
-        } else {
-            maxPlateCount = MAX_OCEAN_PLATE_COUNT
-            plateType = TYPE_OCEAN
-            this.#oceanContinents.push(state.continentId)
-        }
-        addPlateToContinent(plate, plateType)
+        addPlateToContinent(plate)
         for (let sidePlate of this.#getSidePlates(plate)) {
-            const isMapped = this.#plateContinentMap.has(sidePlate)
-            const invalidSize = plateCount >= maxPlateCount
-            if (invalidSize || isMapped) continue
-            addPlateToContinent(sidePlate, plateType)
-            plateCount++
+            if (plateCount >= MAX_LAND_PLATES) break
+            if (this.#plateContinentMap.has(sidePlate)) continue
+            // console.log(plate, sidePlate, plateCount, this.#continents.length);
+            addPlateToContinent(sidePlate)
         }
     }
 
