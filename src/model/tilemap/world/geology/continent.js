@@ -8,81 +8,77 @@ const MAX_PLATE_COUNT = 3
 
 
 export class ContinentModel {
-    #regionTileMap
-    #typeMap = new Map()
-    #plates = []
-    #oceanPlates = []
-    #landPlates = []
     #plateContinentMap = new Map()
-    #continents = []
-    #landContinents = []
+    #typeMap = new Map()
     #oceanContinents = []
-
-    #buildPlates(regionTileMap) {
-        let totalOceanicArea = 0
-        const halfArea = Math.floor(regionTileMap.area / 2)
-        // sort by bigger to smaller plates
-        const cmpDescendingArea = (id0, id1) => {
-            const area0 = regionTileMap.getArea(id0)
-            const area1 = regionTileMap.getArea(id1)
-            return area1 - area0
-        }
-        const plates = this.#regionTileMap.getRegions().sort(cmpDescendingArea)
-        for (let plate of plates) {
-            totalOceanicArea += regionTileMap.getArea(plate)
-            if (totalOceanicArea < halfArea) {
-                this.#typeMap.set(plate, TYPE_OCEAN)
-                this.#oceanPlates.push(plate)
-            } else {
-                this.#typeMap.set(plate, TYPE_LAND)
-                this.#landPlates.push(plate)
-            }
-            this.#plates.push(plate)
-        }
-    }
+    #landContinents = []
+    #continents = []
+    #regionTileMap
+    #plates
 
     #buildContinents(regionTileMap) {
         const plateQueue = new IndexMap(this.#plates)
-        let continentId = 0
-        while(plateQueue.size > 0) {
-            let totalPlates
-            let plateCount = 1
-            const plate = plateQueue.random()
-            const cmpDescendingBdrSize = (id0, id1) => {
-                // order by borderSize
-                const border0 = regionTileMap.getBorderSize(plate, id0)
-                const border1 = regionTileMap.getBorderSize(plate, id1)
-                return border1 - border0
-            }
-            const continentType = this.#typeMap.get(plate)
-            plateQueue.delete(plate)
-            this.#plateContinentMap.set(plate, continentId)
-            this.#continents.push(continentId)
-            if (continentType === TYPE_OCEAN) {
-                totalPlates = this.#oceanPlates.length
-                this.#oceanContinents.push(continentId)
-            } else {
-                totalPlates = this.#landPlates.length
-                this.#landContinents.push(continentId)
-            }
-            const sidePlates = regionTileMap.getSideRegions(plate)
-            for (let sidePlate of sidePlates.sort(cmpDescendingBdrSize)) {
-                const notSameType = continentType !== this.#typeMap.get(sidePlate)
-                const isMapped = this.#plateContinentMap.has(sidePlate)
-                const invalidSize = plateCount >= MAX_PLATE_COUNT
-                if (invalidSize || notSameType || isMapped) continue
-
-                this.#plateContinentMap.set(sidePlate, continentId)
-                plateQueue.delete(sidePlate)
-                plateCount++
-            }
-            continentId = continentId + 1
+        const config = {
+            halfArea: Math.floor(regionTileMap.area / 2),
+            continentId: 0,
+            totalArea: 0,
+            regionTileMap,
         }
+        while(plateQueue.size > 0) {
+            this.#buildContinent(plateQueue, config)
+        }
+    }
+
+    #buildContinent(plateQueue, config) {
+        const plate = plateQueue.random()
+        let plateCount = 1
+        plateQueue.delete(plate)
+        config.totalArea += config.regionTileMap.getArea(plate)
+        this.#plateContinentMap.set(plate, config.continentId)
+        this.#continents.push(config.continentId)
+        if (config.totalArea <= config.halfArea) {
+            this.#typeMap.set(plate, TYPE_LAND)
+            this.#landContinents.push(config.continentId)
+        } else {
+            this.#typeMap.set(plate, TYPE_OCEAN)
+            this.#oceanContinents.push(config.continentId)
+        }
+        const sidePlates = this.#getSidePlates(config.regionTileMap, plate)
+        for (let sidePlate of sidePlates) {
+            const isMapped = this.#plateContinentMap.has(sidePlate)
+            const invalidSize = plateCount >= MAX_PLATE_COUNT
+            if (invalidSize || isMapped) continue
+            const sidePlateArea = config.regionTileMap.getArea(sidePlate)
+            this.#plateContinentMap.set(sidePlate, config.continentId)
+            if (plate == 1) {
+                console.log("plate: ", plate);
+                console.log(
+                    "sidePlate: ", sidePlate,
+                    "continent: ", config.continentId
+                );
+            }
+            config.totalArea += sidePlateArea
+            plateQueue.delete(sidePlate)
+            plateCount++
+        }
+        config.continentId = config.continentId + 1
+    }
+
+    #getSidePlates(regionTileMap, plate) {
+        const sortFunction = (id0, id1) => {
+            // descending sort by borderSize
+            const border0 = regionTileMap.getBorderSize(plate, id0)
+            const border1 = regionTileMap.getBorderSize(plate, id1)
+            return border1 - border0
+        }
+        let x = regionTileMap.getSideRegions(plate).sort(sortFunction)
+        // console.log(plate, x);
+        return x
     }
 
     constructor(regionTileMap) {
         this.#regionTileMap = regionTileMap
-        this.#buildPlates(regionTileMap)
+        this.#plates = regionTileMap.getRegions()
         this.#buildContinents(regionTileMap)
     }
 
