@@ -43,7 +43,6 @@ export class RegionTileMap extends TileMap {
 
     #graph = new Graph()
     #borderMap = new PairMap()
-    #borderSizeMap = new PairMap()
     #centerPoints
     #regionMatrix
     #regions
@@ -66,14 +65,6 @@ export class RegionTileMap extends TileMap {
             growth: params.get('growth'),
         })
         this.#mapFill.fill()
-        // count the border size for each neighbor pair
-        this.#borderMap.forEach((point, sideRegions) => {
-            const region = this.#regionMatrix.get(point)
-            for (let sideRegion of sideRegions) {
-                const count = this.#borderSizeMap.get(region, sideRegion) ?? 0
-                this.#borderSizeMap.set(region, sideRegion, count + 1)
-            }
-        })
     }
 
     get size() {
@@ -120,10 +111,6 @@ export class RegionTileMap extends TileMap {
     getBorderRegions(point) {
         // a single tile can have two different region neighbors
         return Array.from(this.#borderMap.get(...point) ?? [])
-    }
-
-    getBorderSize(region, sideRegion) {
-        return this.#borderSizeMap.get(region, sideRegion)
     }
 
     getSideRegions(regionId) {

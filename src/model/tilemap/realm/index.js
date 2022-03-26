@@ -79,7 +79,6 @@ export class RealmTileMap extends TileMap {
                 this.#cornerRegionSet.add(region)
             }
         })
-        console.log(`RealmTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
     _buildRegionTileMap(params) {

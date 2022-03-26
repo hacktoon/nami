@@ -11,7 +11,8 @@ class GeologyColorMap {
 
     constructor(tileMap) {
         this.tileMap = tileMap
-        this.#continentColorMap = new Map(tileMap.continent.ids.map(continent => {
+        const continents = tileMap.continent.ids
+        this.#continentColorMap = new Map(continents.map(continent => {
             return [continent, new Color()]
         }))
     }

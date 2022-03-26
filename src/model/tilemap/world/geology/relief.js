@@ -76,13 +76,14 @@ export class ReliefModel {
         }
         // areas inside continents
         if (range > .3) {
-            if (range > .6 && range < .9 && noise > .55) { return MOUNTAIN }
-            if (range > .3 && noise > .5) { return PLATEAU }
+            // if (range > .6 && range < .9 && noise > .55) { return MOUNTAIN }
+            // if (range > .3 && noise > .5) { return PLATEAU }
             return PLAIN
         }
         // areas between continents
         if (noise > .65) return PLAIN  // islands
-        return noise > .4 ? SHALLOW_SEA : DEEP_SEA
+        // return noise > .4 ? SHALLOW_SEA : DEEP_SEA
+        return DEEP_SEA
     }
 
     #detectShore(point) {
@@ -138,31 +139,6 @@ export class ReliefModel {
 
     isShore(point) {
         return this.#shorePoints.has(point)
-    }
-
-    isPlain(point) {
-        const relief = this.#reliefMatrix.get(point)
-        return relief === PLAIN
-    }
-
-    isPlateau(point) {
-        const relief = this.#reliefMatrix.get(point)
-        return relief === PLATEAU
-    }
-
-    isMountain(point) {
-        const relief = this.#reliefMatrix.get(point)
-        return relief === MOUNTAIN
-    }
-
-    isShallowSea(point) {
-        const relief = this.#reliefMatrix.get(point)
-        return relief === SHALLOW_SEA
-    }
-
-    isDeepSea(point) {
-        const relief = this.#reliefMatrix.get(point)
-        return relief === DEEP_SEA
     }
 }
 
