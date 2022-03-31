@@ -71,14 +71,14 @@ export class ReliefModel {
         const range = (1 * level) / maxLevel
         if (isOceanic) {
             // oceanic islands
-            if (range > .3 && range < .7 && noise > .7) {return PLAIN }
+            if (range > .3 && range < .7 && noise > .7) { return PLAIN }
             return noise > .2 ? DEEP_SEA : SHALLOW_SEA
         }
+        return PLAIN
         // areas inside continents
         if (range > .3) {
             // if (range > .6 && range < .9 && noise > .55) { return MOUNTAIN }
             // if (range > .3 && noise > .5) { return PLATEAU }
-            return PLAIN
         }
         // areas between continents
         if (noise > .65) return PLAIN  // islands
