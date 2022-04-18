@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ReactDOM from 'react-dom'
+import * as ReactDOM from 'react-dom/client';
 
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
@@ -55,5 +55,5 @@ function RootComponent() {
     </section>
 }
 
-
-ReactDOM.render(<RootComponent />, document.getElementById('app'));
+const root = ReactDOM.createRoot(document.getElementById('app'));
+root.render(<RootComponent />)
