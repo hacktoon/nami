@@ -19,9 +19,6 @@ class NoiseColorMap {
         const step = Math.floor(255 / colors)
         const index = clamp(Math.floor(octet / step), 0, colors - 1)
         const color = clamp(index * step, 0, octet)
-        if (point[0] == 1 && point[1] == 63) {
-            console.log(octet, index, color);
-        }
         return new Color(color, color, color)
     }
 }

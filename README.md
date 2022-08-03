@@ -9,11 +9,10 @@
 - Rename Diagram to PixelMap
 - Rename IndexMap to RandomQueue
 
-#### GeologyTileMap
-  - plateModel -> regions + boundary
-    - continentModel
-    - oceanModel
-  - microcontinents: continents with 1 plate size
+#### SurfaceTileMap
+  - store natural noise
+  - filter by water or land
+  - start from shore and build distance field
 
 #### ClimateTileMap
 - Start with each row in righ colum of regions of regionTileMap
