@@ -10,8 +10,6 @@
 - Rename IndexMap to RandomQueue
 
 #### SurfaceTileMap
-  - store natural noise
-  - filter by water or land
   - start from shore and build distance field
 
 #### ClimateTileMap
