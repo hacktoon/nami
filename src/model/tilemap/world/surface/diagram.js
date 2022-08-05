@@ -17,9 +17,9 @@ class SurfaceColorMap {
 
     get(point) {
         const type = this.tileMap.get(point)
-        const water = new Color(40, 120, 160)
-        const land = new Color(150, 200, 70)
-        return type == 0 ? water : land
+        if (type == 0) return new Color(40, 120, 160) // water
+        if (type == 1) return new Color(150, 200, 70) // land
+        return new Color(100, 160, 100) // shore
     }
 }
 

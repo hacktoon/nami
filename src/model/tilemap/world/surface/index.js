@@ -1,6 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Color } from '/src/lib/color'
+import { Point } from '/src/lib/point'
 import { Matrix } from '/src/lib/matrix'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
@@ -30,6 +30,7 @@ export class SurfaceTileMap extends TileMap {
 
     #noiseTileMap
     #surfaceMap
+    #shorePoints
 
     #buildNoiseTileMap() {
         return NoiseTileMap.fromData({
@@ -44,12 +45,25 @@ export class SurfaceTileMap extends TileMap {
     constructor(params) {
         super(params)
         this.#noiseTileMap = this.#buildNoiseTileMap()
+        this.#shorePoints = []
         this.#surfaceMap = Matrix.fromRect(this.rect, point => {
             const seaLevel = params.get('seaLevel')
-            const noise = this.#noiseTileMap.getNoise(point)
-            const octet = parseInt(noise * 255, 10)
-            return octet < seaLevel ? 0 : 1
+            const level = this.getLevel(point)
+            if (level <= seaLevel) return 0
+            // detect shore points
+            for(let sidePoint of Point.adjacents(point)) {
+                if (this.getLevel(sidePoint) <= seaLevel) {
+                    this.#shorePoints.push(point)
+                    return 2
+                }
+            }
+            return 1
         })
+    }
+
+    getLevel(point) {
+        const noise = this.#noiseTileMap.getNoise(point)
+        return parseInt(noise * 255, 10)
     }
 
     get(point) {
@@ -57,8 +71,6 @@ export class SurfaceTileMap extends TileMap {
     }
 
     getDescription() {
-        return [
-            `Area: ${this.#noiseTileMap.area}`,
-        ].join(', ')
+        return [`Area: ${this.#noiseTileMap.area}`].join(', ')
     }
 }
