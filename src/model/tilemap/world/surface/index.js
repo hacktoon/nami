@@ -1,7 +1,7 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Color } from '/src/lib/color'
-import { clamp } from '/src/lib/number'
+import { Matrix } from '/src/lib/matrix'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
@@ -29,6 +29,7 @@ export class SurfaceTileMap extends TileMap {
     }
 
     #noiseTileMap
+    #surfaceMap
 
     #buildNoiseTileMap() {
         return NoiseTileMap.fromData({
@@ -42,17 +43,17 @@ export class SurfaceTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.params = params
         this.#noiseTileMap = this.#buildNoiseTileMap()
+        this.#surfaceMap = Matrix.fromRect(this.rect, point => {
+            const seaLevel = params.get('seaLevel')
+            const noise = this.#noiseTileMap.getNoise(point)
+            const octet = parseInt(noise * 255, 10)
+            return octet < seaLevel ? 0 : 1
+        })
     }
 
     get(point) {
-        const seaLevel = this.params.get('seaLevel')
-        const noise = this.#noiseTileMap.getNoise(point)
-        const octet = parseInt(noise * 255, 10)
-        if (octet < seaLevel)
-            return new Color(40, 120, 160)
-        return new Color(150, 200, 70)
+        return this.#surfaceMap.get(point)
     }
 
     getDescription() {

@@ -7,7 +7,6 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 const SCHEMA = new Schema(
     'SurfaceTileMapDiagram',
-
 )
 
 
@@ -17,7 +16,10 @@ class SurfaceColorMap {
     }
 
     get(point) {
-        return this.tileMap.get(point)
+        const type = this.tileMap.get(point)
+        const water = new Color(40, 120, 160)
+        const land = new Color(150, 200, 70)
+        return type == 0 ? water : land
     }
 }
 
