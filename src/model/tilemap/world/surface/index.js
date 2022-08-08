@@ -13,7 +13,7 @@ const ID = 'SurfaceTileMap'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
-    Type.number('seaLevel', 'Sea Level', {default: 150, min:1, max: 255}),
+    Type.number('seaLevel', 'Sea Level', {default: .65, step: .01, min: .1, max: 1}),
     Type.text('seed', 'Seed', {default: ''}),
 )
 
@@ -32,7 +32,17 @@ export class SurfaceTileMap extends TileMap {
     #surfaceMap
     #shorePoints
 
-    #buildNoiseTileMap() {
+    #buildLandNoiseTileMap() {
+        return NoiseTileMap.fromData({
+            rect: this.rect.hash(),
+            octaves: 6,
+            resolution: .8,
+            scale: .02,
+            seed: this.seed,
+        })
+    }
+
+    #builHeightNoiseTileMap() {
         return NoiseTileMap.fromData({
             rect: this.rect.hash(),
             octaves: 6,
@@ -44,15 +54,17 @@ export class SurfaceTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.#noiseTileMap = this.#buildNoiseTileMap()
+        this.#noiseTileMap = this.#buildLandNoiseTileMap()
         this.#shorePoints = []
         this.#surfaceMap = Matrix.fromRect(this.rect, point => {
             const seaLevel = params.get('seaLevel')
-            const level = this.getLevel(point)
-            if (level <= seaLevel) return 0
+            let level = this.#noiseTileMap.getNoise(point)
+            if (level <= seaLevel)
+                return 0
             // detect shore points
             for(let sidePoint of Point.adjacents(point)) {
-                if (this.getLevel(sidePoint) <= seaLevel) {
+                let level = this.#noiseTileMap.getNoise(sidePoint)
+                if (level <= seaLevel) {
                     this.#shorePoints.push(point)
                     return 2
                 }
@@ -61,16 +73,7 @@ export class SurfaceTileMap extends TileMap {
         })
     }
 
-    getLevel(point) {
-        const noise = this.#noiseTileMap.getNoise(point)
-        return parseInt(noise * 255, 10)
-    }
-
     get(point) {
         return this.#surfaceMap.get(point)
-    }
-
-    getDescription() {
-        return [`Area: ${this.#noiseTileMap.area}`].join(', ')
     }
 }

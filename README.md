@@ -12,14 +12,6 @@
 #### SurfaceTileMap
   - start from shore and build distance field
 
-#### ClimateTileMap
-- Start with each row in righ colum of regions of regionTileMap
-- Go left following the direction of winds based on termic zone
-- Add shadow rain
-
-#### RiverTileMap
-- Start from river mouths and depression lakes and fill uphill
-  - Should stop when meeting other fills
 
 #### CivilTileMap
 - Determine capitals and villages
