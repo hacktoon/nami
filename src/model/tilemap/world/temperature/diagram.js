@@ -1,12 +1,18 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
+import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
-
 import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 
+const SCHEMA = new Schema(
+    'TemperatureTileMapDiagram',
+)
+
+
 class TemperatureColorMap {
-    constructor() {
+    constructor(tileMap) {
+        this.tileMap = tileMap
         this.map = new Map([
             [0, Color.fromHex('#ff4444')], // tropical
             [1, Color.fromHex('#ffc600')], // subtropical
@@ -15,31 +21,27 @@ class TemperatureColorMap {
         ])
     }
 
-    get(zone) {
-        return this.map.get(zone)
+    get(point) {
+        const index = this.tileMap.get(point)
+        return this.map.get(index)
     }
 }
 
 
 export class TemperatureTileMapDiagram extends TileMapDiagram {
-    static schema = new Schema(
-        'TemperatureTileMapDiagram',
-        // Type.boolean('showPlateBorders', 'Show borders', {default: true}),
-    )
+    static schema = SCHEMA
     static colorMap = TemperatureColorMap
 
-    static create(tileMap, params) {
-        return new TemperatureTileMapDiagram(tileMap, params)
+    static create(tileMap, colorMap, params) {
+        return new TemperatureTileMapDiagram(tileMap, colorMap, params)
     }
 
-    constructor(tileMap, params) {
+    constructor(tileMap, colorMap) {
         super(tileMap)
-        this.colorMap = new TemperatureColorMap(tileMap)
+        this.colorMap = colorMap
     }
 
     get(point) {
-        const temp = this.tileMap.getTemperature(point)
-        const color = this.colorMap.get(temp.zone)
-        return color.darken(temp.temp * 2)
+        return this.colorMap.get(point)
     }
 }
