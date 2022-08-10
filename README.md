@@ -9,7 +9,7 @@
 - Rename Diagram to PixelMap
 - Rename IndexMap to RandomQueue
 
-#### SurfaceTileMap
+#### TerrainTileMap
   - start from shore and build distance field
 
 

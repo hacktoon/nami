@@ -31,9 +31,8 @@ const CLIMATE_TABLE = [
 
 export class ClimateModel {
     constructor() {
-        this.idMap = new Map(CLIMATE_TABLE.map(climate => {
-            return [climate.id, climate]
-        }))
+        const entries = CLIMATE_TABLE.map(climate => [climate.id, climate])
+        this.idMap = new Map(entries)
     }
 
     climates() {

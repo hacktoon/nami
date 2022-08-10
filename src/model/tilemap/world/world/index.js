@@ -3,7 +3,7 @@ import { Type } from '/src/lib/type'
 import { Matrix } from '/src/lib/matrix'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
-import { SurfaceTileMap } from '/src/model/tilemap/world/surface'
+import { TerrainTileMap } from '/src/model/tilemap/world/surface'
 
 import { WorldTileMapDiagram } from './diagram'
 
@@ -29,8 +29,8 @@ export class WorldTileMap extends TileMap {
 
     #surfaceTileMap
 
-    #buildSurfaceTileMap() {
-        return new SurfaceTileMap({
+    #buildTerrainTileMap() {
+        return new TerrainTileMap({
             rect: this.rect.hash(),
             seed: this.seed,
             seaLevel: 150,
@@ -39,7 +39,7 @@ export class WorldTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.#surfaceTileMap = this.#buildSurfaceTileMap()
+        this.#surfaceTileMap = this.#buildTerrainTileMap()
     }
 
     get(point) {

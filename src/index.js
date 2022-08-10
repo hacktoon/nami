@@ -8,7 +8,7 @@ import { Title } from '/src/ui'
 
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { RegionTileMap } from '/src/model/tilemap/region'
-import { SurfaceTileMap } from '/src/model/tilemap/world/surface'
+import { TerrainTileMap } from '/src/model/tilemap/world/terrain'
 import { ClimateTileMap } from '/src/model/tilemap/world/climate'
 
 import "/src/ui/css/base.css"
@@ -16,7 +16,7 @@ import "/src/ui/css/tilemap.css"
 
 
 const APPS = [
-    SurfaceTileMap,
+    TerrainTileMap,
     NoiseTileMap,
     RegionTileMap,
     ClimateTileMap,

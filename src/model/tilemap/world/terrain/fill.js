@@ -1,5 +1,6 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Point } from '/src/lib/point'
+import { LAND_OUTLINE } from './model'
 
 
 const EMPTY = null
@@ -7,12 +8,12 @@ const EMPTY = null
 
 class HeightFloodFill extends ConcurrentFillUnit {
     setValue(fill, point, level) {
-        fill.context.heightMap.set(point, level)
+        fill.context.typeMap.set(point, level)
     }
 
     isEmpty(fill, point) {
-        const isLand = fill.context.surfaceMap.get(point) > 0
-        return isLand && fill.context.heightMap.get(point) === EMPTY
+        const isLand = fill.context.outlineMap.get(point) === LAND_OUTLINE
+        return isLand && fill.context.typeMap.get(point) === EMPTY
     }
 
     getNeighbors(fill, originPoint) {

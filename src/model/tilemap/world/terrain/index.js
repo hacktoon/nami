@@ -6,11 +6,12 @@ import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { NoiseTileMap } from '/src/model/tilemap/noise'
-import { SurfaceTileMapDiagram } from './diagram'
+import { TerrainTileMapDiagram } from './diagram'
 import { HeightMultiFill } from './fill'
+import { LAND_OUTLINE, TerrainModel, WATER_OUTLINE } from './model'
 
 
-const ID = 'SurfaceTileMap'
+const ID = 'TerrainTileMap'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
@@ -19,21 +20,22 @@ const SCHEMA = new Schema(
 )
 
 
-export class SurfaceTileMap extends TileMap {
+export class TerrainTileMap extends TileMap {
     static id = ID
-    static diagram = SurfaceTileMapDiagram
+    static diagram = TerrainTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
 
     static create(params) {
-        return new SurfaceTileMap(params)
+        return new TerrainTileMap(params)
     }
 
     #landNoiseTileMap
     #heightNoiseTileMap
-    #surfaceMap
-    #heightMap
-    #shorePoints = []
+    #outlineMap
+    #typeMap
+    #outlineLandCount = 0
+    #model
 
     #buildLandNoiseTileMap() {
         return NoiseTileMap.fromData({
@@ -55,58 +57,63 @@ export class SurfaceTileMap extends TileMap {
         })
     }
 
-    #buildSurfaceMap(params) {
+    #buildOutlineMap(params) {
+        const shorePoints = []
         return Matrix.fromRect(this.rect, point => {
             const seaLevel = params.get('seaLevel')
             let level = this.#landNoiseTileMap.getNoise(point)
             if (level <= seaLevel)
-                return 0
+                return WATER_OUTLINE.id
             // detect shore points
+            this.#outlineLandCount += 1
             for(let sidePoint of Point.adjacents(point)) {
                 let level = this.#landNoiseTileMap.getNoise(sidePoint)
                 if (level <= seaLevel) {
-                    this.#shorePoints.push(point)
-                    return 2
+                    shorePoints.push(point)
+                    break
                 }
             }
-            if (this.#heightNoiseTileMap.getNoise(point) > .3 &&
-            this.#heightNoiseTileMap.getNoise(point) < .6) {
-                return 3
-            }
-            return 1
+            return LAND_OUTLINE.id
         })
+        // use flood fill to add or remove land to reach 60% water
+        // const mapFill = new HeightMultiFill(this.#shorePoints, {
+        //     outlineMap: outlineMap,
+        //     typeMap: typeMap,
+        // })
+        // mapFill.fill()
     }
 
-    #buildHeightMap() {
-        const heightMap = Matrix.fromRect(this.rect)
-        const mapFill = new HeightMultiFill(this.#shorePoints, {
-            surfaceMap: this.#surfaceMap,
-            heightMap: heightMap,
+    #buildTypeMap(outlineMap) {
+        const typeMap = Matrix.fromRect(this.rect, point => {
+            let height = this.#landNoiseTileMap.getNoise(point)
+            return this.#model.terrainIdByRatio(height)
         })
-        mapFill.fill()
-        return heightMap
+        console.log(typeMap);
+        return typeMap
     }
 
     constructor(params) {
         super(params)
+        this.#model = new TerrainModel()
         this.#landNoiseTileMap = this.#buildLandNoiseTileMap()
-        this.#heightNoiseTileMap = this.#builHeightNoiseTileMap()
-        this.#surfaceMap = this.#buildSurfaceMap(params)
-        this.#heightMap = this.#buildHeightMap()
+        this.#outlineMap = this.#buildOutlineMap(params)
+        this.#typeMap = this.#buildTypeMap(this.#outlineMap)
     }
 
     get(point) {
         return {
-            surface: this.#surfaceMap.get(point),
-            height: this.#heightMap.get(point),
+            outline: this.getOutline(point).name,
+            type: this.getType(point).name,
         }
     }
 
-    getSurface(point) {
-        return this.#surfaceMap.get(point)
+    getOutline(point) {
+        const id = this.#outlineMap.get(point)
+        return LAND_OUTLINE.id === id ? LAND_OUTLINE : WATER_OUTLINE
     }
 
-    getHeight(point) {
-        return this.#heightNoiseTileMap.get(point)
+    getType(point) {
+        const id = this.#typeMap.get(point)
+        return this.#model.fromId(id)
     }
 }
