@@ -115,4 +115,10 @@ export class TerrainTileMap extends TileMap {
         const id = this.#typeMap.get(point)
         return this.#model.fromId(id)
     }
+
+    getDescription() {
+        const landCount = this.#outlineLandCount
+        const landRatio = Math.round((landCount * 100) / this.area)
+        return `${landRatio}% land`
+    }
 }
