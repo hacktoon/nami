@@ -18,7 +18,7 @@ const TYPE_TABLE = [
     },
     {
         id: 1,
-        ratio: .3,
+        ratio: .5,
         name: 'Sea',
         color: Color.fromHex('#2878a0'),
     },
@@ -30,13 +30,13 @@ const TYPE_TABLE = [
     },
     {
         id: 3,
-        ratio: .7,
+        ratio: .75,
         name: 'Plateau',
-        color: Color.fromHex('#666'),
+        color: Color.fromHex('#a4a05b'),
     },
     {
         id: 4,
-        ratio: .8,
+        ratio: .85,
         name: 'Mountain',
         color: Color.fromHex('#CCC'),
     }
@@ -45,7 +45,7 @@ const TYPE_TABLE = [
 
 export class TerrainModel {
     constructor() {
-        const entries = TYPE_TABLE.map(climate => [climate.id, climate])
+        const entries = TYPE_TABLE.map(terrain => [terrain.id, terrain])
         this.idMap = new Map(entries)
     }
 

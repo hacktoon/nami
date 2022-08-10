@@ -88,7 +88,6 @@ export class TerrainTileMap extends TileMap {
             let height = this.#landNoiseTileMap.getNoise(point)
             return this.#model.terrainIdByRatio(height)
         })
-        console.log(typeMap);
         return typeMap
     }
 
