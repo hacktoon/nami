@@ -34,6 +34,7 @@ export class TerrainTileMapDiagram extends TileMapDiagram {
         super(tileMap)
         this.colorMap = colorMap
         this.showShore = params.get('showShore')
+        this.showLevel = params.get('showLevel')
     }
 
     get(point) {

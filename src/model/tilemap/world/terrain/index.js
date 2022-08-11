@@ -8,7 +8,6 @@ import { UITileMap } from '/src/ui/tilemap'
 
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { TerrainTileMapDiagram } from './diagram'
-import { HeightMultiFill } from './fill'
 import { TerrainModel, WATER_OUTLINE, LAND_OUTLINE } from './model'
 
 
@@ -32,7 +31,6 @@ export class TerrainTileMap extends TileMap {
 
     #outlineNoiseTileMap
     #outlineMap
-    #levelMap
     #landCount = 0
     #shorePoints = new PointSet()
     #model
@@ -58,32 +56,30 @@ export class TerrainTileMap extends TileMap {
     }
 
     #buildOutlineMap() {
-        this.#levelMap = Matrix.fromRect(this.rect, _ => null)
+        let points = []
         const outlineMap = Matrix.fromRect(this.rect, point => {
             let noise = this.#outlineNoiseTileMap.getNoise(point)
             if (this.#model.isLand(noise)) {
                 this.#landCount += 1
-                this.#detectShorePoints(point)
+                if (this.#isShorePoint(point)) {
+                    this.#shorePoints.add(point)
+                    points.push(point)
+                }
                 return LAND_OUTLINE.id
             }
             return WATER_OUTLINE.id
         })
-        const mapFill = new HeightMultiFill(this.#shorePoints.points, {
-            outlineMap: outlineMap,
-            levelMap: this.#levelMap
-        })
-        mapFill.fill()
         return outlineMap
     }
 
-    #detectShorePoints(point) {
+    #isShorePoint(point) {
         for(let sidePoint of Point.adjacents(point)) {
             let sideNoise = this.#outlineNoiseTileMap.getNoise(sidePoint)
             if (! this.#model.isLand(sideNoise)) {
-                this.#shorePoints.add(point)
-                break
+                return true
             }
         }
+        return false
     }
 
     constructor(params) {
@@ -94,7 +90,13 @@ export class TerrainTileMap extends TileMap {
     }
 
     get(point) {
-        return this.getOutline(point).name
+        const outline = this.getOutline(point).name
+        return `outline: ${outline}`
+    }
+
+    getLandRatio() {
+        const landCount = this.#landCount
+        return Math.round((landCount * 100) / this.area)
     }
 
     getOutline(point) {
@@ -112,8 +114,7 @@ export class TerrainTileMap extends TileMap {
     }
 
     getDescription() {
-        const landCount = this.#landCount
-        const landRatio = Math.round((landCount * 100) / this.area)
+        const landRatio = this.getLandRatio()
         return `${landRatio}% land`
     }
 }

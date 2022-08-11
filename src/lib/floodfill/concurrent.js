@@ -20,12 +20,12 @@ export class ConcurrentFillUnit {
 
     _growSeeds(id, seeds) {
         let newSeeds = []
+        if (newSeeds.length >= 0) {
+            this.levelTable[id] += 1
+        }
         for(let seed of seeds) {
             const filledNeighbors = this._fillNeighbors(id, seed)
             newSeeds.push(...filledNeighbors)
-        }
-        if (newSeeds.length >= 0) {
-            this.levelTable[id] += 1
         }
         return newSeeds
     }
@@ -124,7 +124,7 @@ export class ConcurrentFill {
     }
 
     getChance(fill, origin) {
-        return .1  // default value
+        return 0  // default value
     }
 
     getGrowth(fill, origin) {

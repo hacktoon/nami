@@ -8,12 +8,13 @@ const EMPTY = null
 
 class HeightFloodFill extends ConcurrentFillUnit {
     setValue(fill, point, level) {
-        fill.context.levelMap.set(point, level)
+        const isLand = fill.context.outlineMap.get(point) === LAND_OUTLINE.id
+        let value = isLand ? level : -level
+        fill.context.levelMap.set(point, value)
     }
 
     isEmpty(fill, point) {
-        const isLand = fill.context.outlineMap.get(point) === LAND_OUTLINE.id
-        return isLand && fill.context.levelMap.get(point) === EMPTY
+        return fill.context.levelMap.get(point) === EMPTY
     }
 
     getNeighbors(fill, originPoint) {
@@ -25,13 +26,5 @@ class HeightFloodFill extends ConcurrentFillUnit {
 export class HeightMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, HeightFloodFill, context)
-    }
-
-    getChance(fill, origin) {
-        return .1
-    }
-
-    getGrowth(fill, origin) {
-        return 2
     }
 }

@@ -79,22 +79,16 @@ export class IndexedPointSet {
 
 export class PointSet {
     #size = 0
-    #points = []
     #xMap = new Map()
 
     constructor(points=[]) {
         for(let point of points) {
             this.add(point)
         }
-        this.#points = points
     }
 
     get size() {
         return this.#size
-    }
-
-    get points() {
-        return this.#points
     }
 
     add([x, y]) {
