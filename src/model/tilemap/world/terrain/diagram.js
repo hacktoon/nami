@@ -6,18 +6,13 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 const SCHEMA = new Schema(
     'TerrainTileMapDiagram',
-    Type.boolean('showOutline', 'Show outline', {default: true}),
+    Type.boolean('showShore', 'Show shore', {default: true}),
 )
 
 
 class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
-    }
-
-    getOutline(point) {
-        const outline = this.tileMap.getOutline(point)
-        return outline.color
     }
 
     getType(point) {
@@ -38,12 +33,14 @@ export class TerrainTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.showOutline = params.get('showOutline')
+        this.showShore = params.get('showShore')
     }
 
     get(point) {
-        if (this.showOutline)
-            return this.colorMap.getOutline(point)
-        return this.colorMap.getType(point)
+        const color = this.colorMap.getType(point)
+        if (this.showShore && this.tileMap.isShore(point)) {
+            return color.darken(40)
+        }
+        return color
     }
 }
