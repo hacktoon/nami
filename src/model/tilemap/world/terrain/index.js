@@ -9,7 +9,7 @@ import { UITileMap } from '/src/ui/tilemap'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { TerrainTileMapDiagram } from './diagram'
 import { HeightMultiFill } from './fill'
-import { TerrainModel } from './model'
+import { TerrainModel, WATER_OUTLINE, LAND_OUTLINE } from './model'
 
 
 const ID = 'TerrainTileMap'
@@ -31,8 +31,7 @@ export class TerrainTileMap extends TileMap {
     }
 
     #outlineNoiseTileMap
-    #reliefNoiseTileMap
-    #typeMap
+    #outlineMap
     #landCount = 0
     #shorePoints = new PointSet()
     #model
@@ -47,65 +46,67 @@ export class TerrainTileMap extends TileMap {
         })
     }
 
-    #buildReliefNoiseTileMap() {
+    #buildLandNoiseTileMap() {
         return NoiseTileMap.fromData({
             rect: this.rect.hash(),
             octaves: 5,
             resolution: .8,
-            scale: .03,
+            scale: .05,
             seed: this.seed,
         })
     }
 
-    #buildOutlineMap(params) {
+    #buildOutlineMap() {
+        const map = Matrix.fromRect(this.rect, point => {
+            let noise = this.#outlineNoiseTileMap.getNoise(point)
+            if (this.#model.isLand(noise)) {
+                this.#landCount += 1
+                this.#detectShorePoints(point)
+                return LAND_OUTLINE.id
+            }
+            return WATER_OUTLINE.id
+        })
         // use flood fill to add or remove land to reach 60% water
         // const mapFill = new HeightMultiFill(this.#shorePoints, {
-        //     outlineMap: outlineMap,
-        //     typeMap: typeMap,
+        //     map: map,
         // })
         // mapFill.fill()
+        return map
     }
 
-    #buildTypeMap() {
-        const typeMap = Matrix.fromRect(this.rect, point => {
-            let noise = this.#outlineNoiseTileMap.getNoise(point)
-            const terrain = this.#model.terrainByRatio(noise)
-            if (terrain.isLand) {
-                // detect shore points
-                for(let sidePoint of Point.adjacents(point)) {
-                    let noise2 = this.#outlineNoiseTileMap.getNoise(sidePoint)
-                    const terrain2 = this.#model.terrainByRatio(noise2)
-                    if (! terrain2.isLand) {
-                        this.#shorePoints.add(point)
-                        break
-                    }
-                }
-                this.#landCount += 1
+    #detectShorePoints(point) {
+        for(let sidePoint of Point.adjacents(point)) {
+            let sideNoise = this.#outlineNoiseTileMap.getNoise(sidePoint)
+            if (! this.#model.isLand(sideNoise)) {
+                this.#shorePoints.add(point)
+                break
             }
-            return terrain.id
-        })
-        return typeMap
+        }
     }
 
     constructor(params) {
         super(params)
         this.#model = new TerrainModel()
         this.#outlineNoiseTileMap = this.#buildOutlineNoiseTileMap()
-        this.#reliefNoiseTileMap = this.#buildReliefNoiseTileMap()
-        this.#typeMap = this.#buildTypeMap()
+        this.#outlineMap = this.#buildOutlineMap()
     }
 
     get(point) {
-        return this.getType(point).name
+        return this.getOutline(point).name
+    }
+
+    getOutline(point) {
+        const id = this.#outlineMap.get(point)
+        return this.#model.outlineById(id)
+    }
+
+    getType(point) {
+        const id = this.#outlineMap.get(point)
+        return this.#model.fromId(id)
     }
 
     isShore(point) {
         return this.#shorePoints.has(point)
-    }
-
-    getType(point) {
-        const id = this.#typeMap.get(point)
-        return this.#model.fromId(id)
     }
 
     getDescription() {
