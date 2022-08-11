@@ -32,6 +32,7 @@ export class TerrainTileMap extends TileMap {
 
     #outlineNoiseTileMap
     #outlineMap
+    #levelMap
     #landCount = 0
     #shorePoints = new PointSet()
     #model
@@ -57,7 +58,8 @@ export class TerrainTileMap extends TileMap {
     }
 
     #buildOutlineMap() {
-        const map = Matrix.fromRect(this.rect, point => {
+        this.#levelMap = Matrix.fromRect(this.rect, _ => null)
+        const outlineMap = Matrix.fromRect(this.rect, point => {
             let noise = this.#outlineNoiseTileMap.getNoise(point)
             if (this.#model.isLand(noise)) {
                 this.#landCount += 1
@@ -66,12 +68,12 @@ export class TerrainTileMap extends TileMap {
             }
             return WATER_OUTLINE.id
         })
-        // use flood fill to add or remove land to reach 60% water
-        // const mapFill = new HeightMultiFill(this.#shorePoints, {
-        //     map: map,
-        // })
-        // mapFill.fill()
-        return map
+        const mapFill = new HeightMultiFill(this.#shorePoints.points, {
+            outlineMap: outlineMap,
+            levelMap: this.#levelMap
+        })
+        mapFill.fill()
+        return outlineMap
     }
 
     #detectShorePoints(point) {
