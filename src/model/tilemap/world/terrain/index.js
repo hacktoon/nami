@@ -39,7 +39,7 @@ export class TerrainTileMap extends TileMap {
     }
 
     getLandRatio() {
-        const landCount = this.#outlineModel.landCount
+        const landCount = this.#outlineModel.highCount
         return Math.round((landCount * 100) / this.area)
     }
 
@@ -47,12 +47,12 @@ export class TerrainTileMap extends TileMap {
         return this.#outlineModel.get(point)
     }
 
-    isLandMargin(point) {
-        return this.#outlineModel.isLandMargin(point)
+    isHigherMargin(point) {
+        return this.#outlineModel.isHigherMargin(point)
     }
 
-    isWaterMargin(point) {
-        return this.#outlineModel.isWaterMargin(point)
+    isLowerMargin(point) {
+        return this.#outlineModel.isLowerMargin(point)
     }
 
     getDescription() {

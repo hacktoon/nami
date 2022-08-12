@@ -4,7 +4,7 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 
 const SCHEMA = new Schema(
-    'TerrainTileMapDiagram',
+    'NoiseOutlineTileMapDiagram',
     Type.boolean('showMargins', 'Show margins', {default: true}),
 )
 
@@ -21,12 +21,12 @@ class ColorMap {
 }
 
 
-export class TerrainTileMapDiagram extends TileMapDiagram {
+export class NoiseOutlineTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
     static colorMap = ColorMap
 
     static create(tileMap, colorMap, params) {
-        return new TerrainTileMapDiagram(tileMap, colorMap, params)
+        return new NoiseOutlineTileMapDiagram(tileMap, colorMap, params)
     }
 
     constructor(tileMap, colorMap, params) {
@@ -40,9 +40,9 @@ export class TerrainTileMapDiagram extends TileMapDiagram {
         const color = this.colorMap.getOutline(point)
         if (this.showMargins) {
             if (this.tileMap.isHigherMargin(point))
-                return color.darken(40)
+                return color.darken(50)
             if (this.tileMap.isLowerMargin(point))
-                return color.brighten(20)
+                return color.brighten(40)
         }
         return color
     }

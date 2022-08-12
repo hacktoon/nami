@@ -5,27 +5,25 @@ import { PointSet } from '/src/lib/point/set'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
-const WATER_OUTLINE = {
+const LOWER_OUTLINE = {
     id: 0,
-    name: 'Water',
-    ratio: 0,
-    color: Color.fromHex('#216384'),
+    name: 'Low',
+    color: Color.fromHex('#333'),
 }
 
-const LAND_OUTLINE = {
+const HIGHER_OUTLINE = {
     id: 1,
-    name: 'Land',
-    ratio: .6,
-    color: Color.fromHex('#99d966'),
+    name: 'High',
+    color: Color.fromHex('#DDD'),
 }
 
 
-function buildNoiseTileMap(rect, seed) {
+function buildNoiseTileMap(rect, seed, params) {
     return NoiseTileMap.fromData({
         rect: rect.hash(),
-        octaves: 6,
-        resolution: .8,
-        scale: .02,
+        octaves: params.octaves,
+        resolution: params.resolution,
+        scale: params.scale,
         seed: seed,
     })
 }
@@ -37,33 +35,30 @@ export class OutlineModel {
     #lowerMargins = new PointSet()
     #higherMargins = new PointSet()
 
-    #isNoiseLand(noise) {
-        return noise >= LAND_OUTLINE.ratio
-    }
-
-    constructor(rect, seed) {
-        const noiseTileMap = buildNoiseTileMap(rect, seed)
+    constructor(rect, seed, params) {
+        const noiseTileMap = buildNoiseTileMap(rect, seed, params)
+        const ratio = params.ratio
         this.#map = Matrix.fromRect(rect, point => {
             let noise = noiseTileMap.getNoise(point)
-            if (this.#isNoiseLand(noise)) {
+            if (noise >= ratio) {
                 this.#highCount += 1
                 // detect margins on water and land points
                 for(let sidePoint of Point.adjacents(point)) {
                     let sideNoise = noiseTileMap.getNoise(sidePoint)
-                    if (! this.#isNoiseLand(sideNoise)) {
+                    if (sideNoise < ratio) {
                         this.#lowerMargins.add(sidePoint)
                         this.#higherMargins.add(point)
                     }
                 }
-                return LAND_OUTLINE.id
+                return HIGHER_OUTLINE.id
             }
-            return WATER_OUTLINE.id
+            return LOWER_OUTLINE.id
         })
     }
 
     get(point) {
         const id = this.#map.get(point)
-        return id === WATER_OUTLINE.id ? WATER_OUTLINE : LAND_OUTLINE
+        return id === LOWER_OUTLINE.id ? LOWER_OUTLINE : HIGHER_OUTLINE
     }
 
     get highCount() {
@@ -78,11 +73,11 @@ export class OutlineModel {
         return this.#higherMargins.has(point)
     }
 
-    isLand(point) {
-        return this.#map.get(point) === LAND_OUTLINE.id
+    isHigher(point) {
+        return this.#map.get(point) === HIGHER_OUTLINE.id
     }
 
-    isWater(point) {
-        return this.#map.get(point) === WATER_OUTLINE.id
+    isLower(point) {
+        return this.#map.get(point) === LOWER_OUTLINE.id
     }
 }
