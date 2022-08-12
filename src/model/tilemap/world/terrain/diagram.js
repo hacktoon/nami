@@ -6,7 +6,7 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 const SCHEMA = new Schema(
     'TerrainTileMapDiagram',
-    Type.boolean('showShore', 'Show shore', {default: true}),
+    Type.boolean('showMargins', 'Show margins', {default: true}),
 )
 
 
@@ -33,14 +33,17 @@ export class TerrainTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.showShore = params.get('showShore')
+        this.showMargins = params.get('showMargins')
         this.showLevel = params.get('showLevel')
     }
 
     get(point) {
         const color = this.colorMap.getOutline(point)
-        if (this.showShore && this.tileMap.isShore(point)) {
-            return color.darken(40)
+        if (this.showMargins) {
+            if (this.tileMap.isLandMargin(point))
+                return color.darken(40)
+            if (this.tileMap.isSeaMargin(point))
+                return color.brighten(20)
         }
         return color
     }
