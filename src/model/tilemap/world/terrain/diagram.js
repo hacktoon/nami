@@ -42,7 +42,7 @@ export class TerrainTileMapDiagram extends TileMapDiagram {
         if (this.showMargins) {
             if (this.tileMap.isLandMargin(point))
                 return color.darken(40)
-            if (this.tileMap.isSeaMargin(point))
+            if (this.tileMap.isWaterMargin(point))
                 return color.brighten(20)
         }
         return color

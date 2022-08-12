@@ -1,14 +1,10 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/point'
-import { PointSet } from '/src/lib/point/set'
-import { Matrix } from '/src/lib/matrix'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
-import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { TerrainTileMapDiagram } from './diagram'
-import { TerrainModel, WATER_OUTLINE, LAND_OUTLINE } from './model'
+import { OutlineModel } from './model'
 
 
 const ID = 'TerrainTileMap'
@@ -29,90 +25,34 @@ export class TerrainTileMap extends TileMap {
         return new TerrainTileMap(params)
     }
 
-    #outlineNoiseTileMap
-    #outlineMap
-    #landCount = 0
-    #landMarginPoints = new PointSet()
-    #seaMarginPoints = new PointSet()
-
-    #model
-
-    #buildOutlineNoiseTileMap() {
-        return NoiseTileMap.fromData({
-            rect: this.rect.hash(),
-            octaves: 6,
-            resolution: .8,
-            scale: .02,
-            seed: this.seed,
-        })
-    }
-
-    #buildLandNoiseTileMap() {
-        return NoiseTileMap.fromData({
-            rect: this.rect.hash(),
-            octaves: 5,
-            resolution: .8,
-            scale: .05,
-            seed: this.seed,
-        })
-    }
-
-    #buildOutlineMap() {
-        const outlineMap = Matrix.fromRect(this.rect, point => {
-            let noise = this.#outlineNoiseTileMap.getNoise(point)
-            if (this.#model.isLand(noise)) {
-                this.#landCount += 1
-                this.#detectMarginPoint(point)
-                return LAND_OUTLINE.id
-            }
-            return WATER_OUTLINE.id
-        })
-        return outlineMap
-    }
-
-    #detectMarginPoint(point) {
-        for(let sidePoint of Point.adjacents(point)) {
-            let sideNoise = this.#outlineNoiseTileMap.getNoise(sidePoint)
-            if (! this.#model.isLand(sideNoise)) {
-                this.#seaMarginPoints.add(sidePoint)
-                this.#landMarginPoints.add(point)
-            }
-        }
-    }
+    #outlineModel
 
     constructor(params) {
         super(params)
-        this.#model = new TerrainModel()
-        this.#outlineNoiseTileMap = this.#buildOutlineNoiseTileMap()
-        this.#outlineMap = this.#buildOutlineMap()
+        this.#outlineModel = new OutlineModel(this.rect, this.seed)
+        // this.#reliefMap = this.#buildReliefMap()
     }
 
     get(point) {
-        const outline = this.getOutline(point).name
-        return `outline: ${outline}`
+        const outline = this.#outlineModel.get(point)
+        return `outline: ${outline.name}`
     }
 
     getLandRatio() {
-        const landCount = this.#landCount
+        const landCount = this.#outlineModel.landCount
         return Math.round((landCount * 100) / this.area)
     }
 
     getOutline(point) {
-        const id = this.#outlineMap.get(point)
-        return this.#model.outlineById(id)
-    }
-
-    getType(point) {
-        const id = this.#outlineMap.get(point)
-        return this.#model.fromId(id)
+        return this.#outlineModel.get(point)
     }
 
     isLandMargin(point) {
-        return this.#landMarginPoints.has(point)
+        return this.#outlineModel.isLandMargin(point)
     }
 
-    isSeaMargin(point) {
-        return this.#seaMarginPoints.has(point)
+    isWaterMargin(point) {
+        return this.#outlineModel.isWaterMargin(point)
     }
 
     getDescription() {
