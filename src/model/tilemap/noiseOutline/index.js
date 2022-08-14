@@ -11,6 +11,9 @@ const ID = 'NoiseOutlineTileMap'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x100'}),
+    Type.number('octaves', 'Octaves', {default: 6, min: 1, step: 1, max: 10}),
+    Type.number('resolution', 'Resolution', {default: .8, step: .01, min: .1, max: 10}),
+    Type.number('scale', 'Scale', {default: .02, min: .01, step: .01, max: 1}),
     Type.number('ratio', 'Ratio', {default: .55, min: 0.1, step: .01, max: 1}),
     Type.text('seed', 'Seed', {default: ''}),
 )
@@ -30,13 +33,7 @@ export class NoiseOutlineTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const modelParams = {
-            octaves: 6,
-            resolution: .8,
-            scale: .02,
-            ratio: params.get('ratio')
-        }
-        this.#outlineModel = new OutlineModel(this.rect, this.seed, modelParams)
+        this.#outlineModel = new OutlineModel(this.rect, this.seed, params)
         // this.#reliefMap = this.#buildReliefMap()
     }
 

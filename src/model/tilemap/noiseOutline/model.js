@@ -21,9 +21,9 @@ const HIGHER_OUTLINE = {
 function buildNoiseTileMap(rect, seed, params) {
     return NoiseTileMap.fromData({
         rect: rect.hash(),
-        octaves: params.octaves,
-        resolution: params.resolution,
-        scale: params.scale,
+        octaves: params.get('octaves'),
+        resolution: params.get('resolution'),
+        scale: params.get('scale'),
         seed: seed,
     })
 }
@@ -37,7 +37,7 @@ export class OutlineModel {
 
     constructor(rect, seed, params) {
         const noiseTileMap = buildNoiseTileMap(rect, seed, params)
-        const ratio = params.ratio
+        const ratio = params.get('ratio')
         this.#map = Matrix.fromRect(rect, point => {
             let noise = noiseTileMap.getNoise(point)
             if (noise >= ratio) {
