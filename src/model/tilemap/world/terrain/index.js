@@ -39,7 +39,7 @@ export class TerrainTileMap extends TileMap {
     }
 
     getLandRatio() {
-        const landCount = this.#outlineModel.highCount
+        const landCount = this.#outlineModel.landCount
         return Math.round((landCount * 100) / this.area)
     }
 

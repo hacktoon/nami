@@ -7,7 +7,6 @@ import { Form } from '/src/ui/form'
 import { Title } from '/src/ui'
 
 import { NoiseTileMap } from '/src/model/tilemap/noise'
-import { NoiseOutlineTileMap } from '/src/model/tilemap/noiseOutline'
 import { RegionTileMap } from '/src/model/tilemap/region'
 import { TerrainTileMap } from '/src/model/tilemap/world/terrain'
 import { ClimateTileMap } from '/src/model/tilemap/world/climate'
@@ -17,7 +16,6 @@ import "/src/ui/css/tilemap.css"
 
 
 const APPS = [
-    NoiseOutlineTileMap,
     TerrainTileMap,
     NoiseTileMap,
     RegionTileMap,
