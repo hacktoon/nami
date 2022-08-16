@@ -38,12 +38,7 @@ export class TerrainTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const color = this.colorMap.getOutline(point)
-        if (this.showMargins) {
-            if (this.tileMap.isHigherMargin(point))
-                return color.darken(40)
-            if (this.tileMap.isLowerMargin(point))
-                return color.brighten(20)
-        }
+
         return color
     }
 }

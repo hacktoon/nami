@@ -47,14 +47,6 @@ export class TerrainTileMap extends TileMap {
         return this.#outlineModel.get(point)
     }
 
-    isHigherMargin(point) {
-        return this.#outlineModel.isHigherMargin(point)
-    }
-
-    isLowerMargin(point) {
-        return this.#outlineModel.isLowerMargin(point)
-    }
-
     getDescription() {
         const landRatio = this.getLandRatio()
         return `${landRatio}% land`
