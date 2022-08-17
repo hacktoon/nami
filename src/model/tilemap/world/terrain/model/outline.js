@@ -4,7 +4,7 @@ import { Matrix } from '/src/lib/matrix'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
-const OUTLINE_RATE = .6
+const OUTLINE_RATE = .55
 const SEA_RATE = .5
 
 const OCEAN_TYPE = {
