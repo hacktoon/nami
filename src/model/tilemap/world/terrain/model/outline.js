@@ -39,14 +39,14 @@ const PLATEAU_TYPE = {
     id: 4,
     name: 'Plateau',
     water: false,
-    color: Color.fromHex('#a4a05b'),
+    color: Color.fromHex('#789d70'),
 }
 
 const MOUNTAIN_TYPE = {
     id: 5,
     name: 'Mountain',
     water: false,
-    color: Color.fromHex('#b1b1b1'),
+    color: Color.fromHex('#9ebf97'),
 }
 
 
@@ -73,10 +73,8 @@ export class OutlineModel {
 
     #buildBaseMap(noiseMap, rect) {
         const outlineNoiseMap = noiseMap.base
-        const seaNoiseTileMap = noiseMap.sea
         return Matrix.fromRect(rect, point => {
             let outlineNoise = outlineNoiseMap.getNoise(point)
-            let seaNoise = seaNoiseTileMap.getNoise(point)
             // LAND TILE ----------------------------------------
             if (outlineNoise >= OUTLINE_RATE) { // is land
                 this.#landCount += 1
@@ -96,9 +94,7 @@ export class OutlineModel {
                     return SEA_TYPE.id
                 }
             }
-            if (seaNoise > SEA_RATE) {
-                return SEA_TYPE.id
-            }
+
             return OCEAN_TYPE.id
         })
     }
@@ -124,38 +120,13 @@ export class OutlineModel {
         })
     }
 
-    #buildMountainMap(plateauMap, noiseMap, rect) {
-        const mountainNoiseMap = noiseMap.mountain
-        return Matrix.fromRect(rect, point => {
-            let mountainNoise = mountainNoiseMap.getNoise(point)
-            let baseOutlineId = plateauMap.get(point)
-            if (baseOutlineId !== PLATEAU_TYPE.id) {
-                return baseOutlineId
-            }
-            for(let sidePoint of Point.adjacents(point)) {
-                let sideBaseOutlineId = plateauMap.get(sidePoint)
-                if (sideBaseOutlineId === PLAINS_TYPE.id) {
-                    return PLATEAU_TYPE.id
-                }
-            }
-            if (mountainNoise > .6) {
-                return MOUNTAIN_TYPE.id
-            }
-            return PLATEAU_TYPE.id
-        })
-    }
-
     constructor(rect, seed) {
         const noiseMap = {
             base: buildNoiseMap(rect, seed, BASE_NOISE),
             sea: buildNoiseMap(rect, seed, SEA_NOISE),
-            plateau: buildNoiseMap(rect, seed + 'plateau', PLATEAU_NOISE),
-            mountain: buildNoiseMap(rect, seed + 'mountain', MOUNTAIN_NOISE),
         }
         const baseMap = this.#buildBaseMap(noiseMap, rect)
-        const plateauMap = this.#buildPlateauMap(baseMap, noiseMap, rect)
-        const mountainMap = this.#buildMountainMap(plateauMap, noiseMap, rect)
-        this.#map = mountainMap
+        this.#map = baseMap
     }
 
     get(point) {
