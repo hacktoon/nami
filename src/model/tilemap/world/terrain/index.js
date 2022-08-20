@@ -38,17 +38,7 @@ export class TerrainTileMap extends TileMap {
         return `outline: ${outline.name}`
     }
 
-    getLandRatio() {
-        const landCount = this.#outlineModel.landCount
-        return Math.round((landCount * 100) / this.area)
-    }
-
     getOutline(point) {
         return this.#outlineModel.get(point)
-    }
-
-    getDescription() {
-        const landRatio = this.getLandRatio()
-        return `${landRatio}% land`
     }
 }
