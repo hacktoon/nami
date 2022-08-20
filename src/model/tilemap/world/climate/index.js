@@ -4,7 +4,6 @@ import { Matrix } from '/src/lib/matrix'
 
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
-import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { ClimateTileMapDiagram } from './diagram'
 import { ClimateModel } from './model'
 
@@ -30,23 +29,12 @@ export class ClimateTileMap extends TileMap {
     #climateMap
     #model
 
-    #buildNoiseTileMap() {
-        return NoiseTileMap.fromData({
-            rect: this.rect.hash(),
-            octaves: 5,
-            resolution: .8,
-            scale: .01,
-            seed: this.seed,
-        })
-    }
-
     constructor(params) {
         super(params)
-        const noiseTileMap = this.#buildNoiseTileMap()
-        this.#model = new ClimateModel()
+        this.#model = new ClimateModel(this.rect, this.seed)
         this.#climateMap = Matrix.fromRect(this.rect, point => {
-            const noise = noiseTileMap.getNoise(point)
-            return this.#model.climateByRatio(noise).id
+            const noise = this.#model.getNoise(point)
+            return this.#model.get(noise).id
         })
     }
 

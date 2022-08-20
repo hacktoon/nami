@@ -16,10 +16,10 @@ import "/src/ui/css/tilemap.css"
 
 
 const APPS = [
+    ClimateTileMap,
     TerrainTileMap,
     NoiseTileMap,
     RegionTileMap,
-    ClimateTileMap,
 ]
 const appMap = new Map(APPS.map(TileMap => {
     const UITileMap = TileMap.ui
