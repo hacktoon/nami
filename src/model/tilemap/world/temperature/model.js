@@ -46,6 +46,7 @@ function buildNoiseTileMap(rect, seed) {
     })
 }
 
+
 export class TemperatureModel {
     #typeMap
     #map

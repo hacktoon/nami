@@ -26,12 +26,7 @@ export class TemperatureTileMapDiagram extends TileMapDiagram {
         return new TemperatureTileMapDiagram(tileMap, colorMap, params)
     }
 
-    constructor(tileMap, colorMap) {
-        super(tileMap)
-        this.colorMap = colorMap
-    }
-
     get(point) {
-        return this.colorMap.get(point)
+        return this.tileMap.getColor(point)
     }
 }
