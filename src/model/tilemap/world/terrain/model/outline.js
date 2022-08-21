@@ -86,15 +86,6 @@ const TERRAIN_TYPES = [
 ]
 
 
-function buildTerrainTypeMap(types) {
-    const map = new Map()
-    for(let type of types) {
-        map.set(type.id, type)
-    }
-    return map
-}
-
-
 function buildNoiseMap(rect, seed, params) {
     return NoiseTileMap.fromData({
         rect: rect.hash(),
@@ -129,7 +120,8 @@ export class OutlineModel {
     }
 
     constructor(rect, seed) {
-        this.#typeMap = buildTerrainTypeMap(TERRAIN_TYPES)
+        const entries = TERRAIN_TYPES.map(type => [type.id, type])
+        this.#typeMap = new Map(entries)
         this.#map = this.#buildBaseMap(rect, seed)
     }
 

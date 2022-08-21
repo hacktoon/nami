@@ -3,7 +3,7 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 
 const SCHEMA = new Schema(
-    'ClimateTileMapDiagram',
+    'TemperatureTileMapDiagram',
 )
 
 
@@ -18,12 +18,12 @@ class TemperatureColorMap {
 }
 
 
-export class ClimateTileMapDiagram extends TileMapDiagram {
+export class TemperatureTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
     static colorMap = TemperatureColorMap
 
     static create(tileMap, colorMap, params) {
-        return new ClimateTileMapDiagram(tileMap, colorMap, params)
+        return new TemperatureTileMapDiagram(tileMap, colorMap, params)
     }
 
     constructor(tileMap, colorMap) {

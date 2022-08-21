@@ -30,7 +30,6 @@ export class TerrainTileMap extends TileMap {
     constructor(params) {
         super(params)
         this.#outlineModel = new OutlineModel(this.rect, this.seed)
-        // this.#reliefMap = this.#buildReliefMap()
     }
 
     get(point) {
