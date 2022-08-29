@@ -106,15 +106,15 @@ export class OutlineModel {
             [BASE_NOISE_TYPE]: buildNoiseMap(rect, seed, BASE_NOISE),
             [RELIEF_NOISE_TYPE]: buildNoiseMap(rect, seed, RELIEF_NOISE),
         }
-
+        const baseTileMap = noiseTypeMap[BASE_NOISE_TYPE]
         return Matrix.fromRect(rect, point => {
-            const baseTileMap = noiseTypeMap[BASE_NOISE_TYPE]
             for (let type of TERRAIN_TYPES) {
                 const baseNoise = baseTileMap.getNoise(point)
-                const noise = noiseTypeMap[type.noise].getNoise(point)
-                if (baseNoise >= type.baseRatio && noise >= type.ratio)
+                const reliefNoise = noiseTypeMap[type.noise].getNoise(point)
+                if (baseNoise >= type.baseRatio && reliefNoise >= type.ratio)
                     return type.id
             }
+            // default value = lowest type
             return TERRAIN_TYPES[TERRAIN_TYPES.length - 1].id
         })
     }
