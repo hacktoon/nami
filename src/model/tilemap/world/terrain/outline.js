@@ -1,5 +1,6 @@
 import { Color } from '/src/lib/color'
 import { Matrix } from '/src/lib/matrix'
+import { Point } from '/src/lib/point'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
@@ -19,6 +20,7 @@ const TERRAIN_TYPES = [
         ratio: .8,
         water: false,
         color: Color.fromHex('#DDD'),
+        erosion: true,
     },
     {
         id: 6,
@@ -28,6 +30,7 @@ const TERRAIN_TYPES = [
         ratio: .65,
         water: false,
         color: Color.fromHex('#c0b896'),
+        erosion: true,
     },
     {
         id: 5,
@@ -37,6 +40,7 @@ const TERRAIN_TYPES = [
         ratio: .5,
         water: false,
         color: Color.fromHex('#b6e491'),
+        erosion: true,
     },
     {
         id: 4,
@@ -46,6 +50,7 @@ const TERRAIN_TYPES = [
         ratio: .6,
         water: false,
         color: Color.fromHex('#99d966'),
+        erosion: true,
     },
     {
         id: 3,
@@ -55,6 +60,7 @@ const TERRAIN_TYPES = [
         ratio: .55,
         water: false,
         color: Color.fromHex('#71b13e'),
+        erosion: true,
     },
     {
         id: 2,
@@ -64,6 +70,7 @@ const TERRAIN_TYPES = [
         ratio: .45,
         water: true,
         color: Color.fromHex('#2878a0'),
+        erosion: false,
     },
     {
         id: 1,
@@ -73,6 +80,7 @@ const TERRAIN_TYPES = [
         ratio: .2,
         water: true,
         color: Color.fromHex('#216384'),
+        erosion: false,
     },
     {
         id: 0,
@@ -82,6 +90,7 @@ const TERRAIN_TYPES = [
         ratio: 0,
         water: true,
         color: Color.fromHex('#1d5674'),
+        erosion: false,
     }
 ]
 
@@ -97,32 +106,81 @@ function buildNoiseMap(rect, seed, params) {
 }
 
 
+class TypePointsMap {
+    // store a list of points for each type id
+    #map
+
+    constructor() {
+        this.#map = new Map()
+    }
+
+    add(typeId, point) {
+        if (! this.#map.has(typeId)) {
+            this.#map.set(typeId, [])
+        }
+        this.#map.get(typeId).push(point)
+    }
+
+    forEach(callback) {
+        const ids = Array.from(this.#map.keys())
+        const cmp = (id0, id1) => id1 - id0
+        // sort from highest to lowest type
+        for(let id of ids.sort(cmp)) {
+            callback(id, this.#map.get(id))
+        }
+    }
+}
+
+
 export class OutlineModel {
     #map
     #typeMap
 
-    #buildBaseMap(rect, seed) {
+    #buildBaseMaps(rect, seed) {
         const noiseTypeMap = {
             [BASE_NOISE_TYPE]: buildNoiseMap(rect, seed, BASE_NOISE),
             [RELIEF_NOISE_TYPE]: buildNoiseMap(rect, seed, RELIEF_NOISE),
         }
         const baseTileMap = noiseTypeMap[BASE_NOISE_TYPE]
-        return Matrix.fromRect(rect, point => {
+        const typePointsMap = new TypePointsMap()
+        const matrix = Matrix.fromRect(rect, point => {
+            const baseNoise = baseTileMap.getNoise(point)
             for (let type of TERRAIN_TYPES) {
-                const baseNoise = baseTileMap.getNoise(point)
                 const reliefNoise = noiseTypeMap[type.noise].getNoise(point)
-                if (baseNoise >= type.baseRatio && reliefNoise >= type.ratio)
+                if (baseNoise >= type.baseRatio && reliefNoise >= type.ratio) {
+                    if (type.erosion)
+                        typePointsMap.add(type.id, point)
                     return type.id
+                }
             }
-            // default value = lowest type
-            return TERRAIN_TYPES[TERRAIN_TYPES.length - 1].id
         })
+        return [matrix, typePointsMap]
+    }
+
+    #buildErosionMap(baseMap, typePointsMap) {
+        typePointsMap.forEach((typeId, points) => {
+            for (let point of points) {
+                for (let sidePoint of Point.adjacents(point)) {
+                    const sideTypeId = baseMap.get(sidePoint)
+                    // get only neighbors with cliffs
+                    if (typeId > sideTypeId + 1) {
+                        // get next lower level
+                        const nextLowerId = typeId - 1 >= 0 ? typeId - 1 : typeId
+                        baseMap.set(sidePoint, nextLowerId)
+                        typePointsMap.add(nextLowerId, sidePoint)
+                    }
+                }
+            }
+        })
+        return baseMap
     }
 
     constructor(rect, seed) {
-        const entries = TERRAIN_TYPES.map(type => [type.id, type])
-        this.#typeMap = new Map(entries)
-        this.#map = this.#buildBaseMap(rect, seed)
+        const typeMap = new Map(TERRAIN_TYPES.map(type => [type.id, type]))
+        const [baseMap, typePointsMap] = this.#buildBaseMaps(rect, seed)
+        // this.#map = baseMap
+        this.#map = this.#buildErosionMap(baseMap, typePointsMap)
+        this.#typeMap = typeMap
     }
 
     get(point) {
