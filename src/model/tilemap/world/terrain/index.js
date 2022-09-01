@@ -4,7 +4,7 @@ import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { TerrainTileMapDiagram } from './diagram'
-import { OutlineModel } from './outline'
+import { TerrainModel } from './model'
 
 
 const ID = 'TerrainTileMap'
@@ -25,19 +25,23 @@ export class TerrainTileMap extends TileMap {
         return new TerrainTileMap(params)
     }
 
-    #outlineModel
+    #terrainModel
 
     constructor(params) {
         super(params)
-        this.#outlineModel = new OutlineModel(this.rect, this.seed)
+        this.#terrainModel = new TerrainModel(this.rect, this.seed)
     }
 
     get(point) {
-        const outline = this.#outlineModel.get(point)
+        const outline = this.#terrainModel.get(point)
         return `Terrain=${outline.name}`
     }
 
-    getOutline(point) {
-        return this.#outlineModel.get(point)
+    getTerrain(point) {
+        return this.#terrainModel.get(point)
+    }
+
+    isMargin(point) {
+        return this.#terrainModel.isMargin(point)
     }
 }

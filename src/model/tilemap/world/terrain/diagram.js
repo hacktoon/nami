@@ -14,8 +14,8 @@ class ColorMap {
         this.tileMap = tileMap
     }
 
-    getOutline(point) {
-        const outline = this.tileMap.getOutline(point)
+    getTerrain(point) {
+        const outline = this.tileMap.getTerrain(point)
         return outline.color
     }
 }
@@ -37,8 +37,10 @@ export class TerrainTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const color = this.colorMap.getOutline(point)
-
+        const color = this.colorMap.getTerrain(point)
+        if (this.showMargins && this.tileMap.isMargin(point)) {
+            return color.darken(50)
+        }
         return color
     }
 }

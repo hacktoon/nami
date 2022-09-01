@@ -1,4 +1,3 @@
-import { Color } from '/src/lib/color'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
@@ -85,7 +84,7 @@ const PIPELINE = [
 ]
 
 
-export class OutlineModel {
+export class TerrainModel {
     #terrainMap
     #typeMap = new TerrainTypeMap()
 
@@ -115,7 +114,7 @@ export class OutlineModel {
                 for (let sidePoint of Point.adjacents(point)) {
                     const sideNoise = noiseMap.getNoise(sidePoint)
                     if (sideNoise < step.ratio) {
-                        return step.aboveRatio  // border
+                        return step.aboveRatio  // positive = is a margin
                     }
                 }
                 return -step.aboveRatio
@@ -143,6 +142,11 @@ export class OutlineModel {
     get(point) {
         const id = this.#terrainMap.get(point)
         return this.#typeMap.get(Math.abs(id))
+    }
+
+    isMargin(point) {
+        const id = this.#terrainMap.get(point)
+        return id >= 0
     }
 
     isLand(point) {
