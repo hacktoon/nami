@@ -10,30 +10,32 @@ const NOISE_SPEC = {
     secondary: {id: 'secondary', octaves: 6, resolution: .8, scale: .05},
 }
 
+
+class Layer {
+
+}
+
+
 const PIPELINE = [
     {
         name: 'Land/water outline',
         ratio: .55,
         noise: NOISE_SPEC.outline,
-        aboveRatio: TerrainTypeMap.types.PLAIN,
-        belowRatio: TerrainTypeMap.types.SEA,
-        buildLayer: (baseMap, step, noiseMap) => {
-            return Matrix.fromRect(baseMap.rect, point => {
-                const value = baseMap.get(point)
-                if (value !== EMPTY && value >= 0) {
-                    return value
-                }
+        buildLayer: (step, noiseMap) => {
+            const aboveRatio = TerrainTypeMap.types.PLAIN
+            const belowRatio = TerrainTypeMap.types.SEA
+            return Matrix.fromRect(noiseMap.rect, point => {
                 const noise = noiseMap.getNoise(point)
                 if (noise >= step.ratio) {
                     for (let sidePoint of Point.adjacents(point)) {
                         const sideNoise = noiseMap.getNoise(sidePoint)
                         if (sideNoise < step.ratio) {
-                            return step.aboveRatio  // positive = is a margin
+                            return aboveRatio  // positive = is a margin
                         }
                     }
-                    return -step.aboveRatio
+                    return -aboveRatio
                 }
-                return step.belowRatio === undefined ? value : -step.belowRatio
+                return belowRatio === undefined ? value : -belowRatio
             })
         }
     },
@@ -122,11 +124,11 @@ export class TerrainModel {
         return noiseMaps
     }
 
-    #buildMap(rect, noiseMaps) {
-        let baseMap = Matrix.fromRect(rect, () => EMPTY)
+    #buildMap(noiseMaps) {
+        let baseMap
         for(let step of PIPELINE) {
             const noiseMap = noiseMaps.get(step.noise.id)
-            baseMap = step.buildLayer(baseMap, step, noiseMap)
+            baseMap = step.buildLayer(step, noiseMap)
         }
         return baseMap
     }
@@ -134,7 +136,7 @@ export class TerrainModel {
     constructor(rect, seed) {
         const noiseMaps = this.#buildNoiseMaps(rect, seed)
         // const baseMap = Matrix.fromRect(rect, point => 3)
-        const baseMap = this.#buildMap(rect, noiseMaps)
+        const baseMap = this.#buildMap(noiseMaps)
         this.#terrainMap = baseMap
     }
 
