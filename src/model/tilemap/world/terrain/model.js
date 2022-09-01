@@ -17,6 +17,25 @@ const PIPELINE = [
         noise: NOISE_SPEC.outline,
         aboveRatio: TerrainTypeMap.types.PLAIN,
         belowRatio: TerrainTypeMap.types.SEA,
+        buildLayer: (baseMap, step, noiseMap) => {
+            return Matrix.fromRect(baseMap.rect, point => {
+                const value = baseMap.get(point)
+                if (value !== EMPTY && value >= 0) {
+                    return value
+                }
+                const noise = noiseMap.getNoise(point)
+                if (noise >= step.ratio) {
+                    for (let sidePoint of Point.adjacents(point)) {
+                        const sideNoise = noiseMap.getNoise(sidePoint)
+                        if (sideNoise < step.ratio) {
+                            return step.aboveRatio  // positive = is a margin
+                        }
+                    }
+                    return -step.aboveRatio
+                }
+                return step.belowRatio === undefined ? value : -step.belowRatio
+            })
+        }
     },
     // {
     //     id: 1,
@@ -103,31 +122,11 @@ export class TerrainModel {
         return noiseMaps
     }
 
-    #buildLayer(baseMap, step, noiseMap) {
-        return Matrix.fromRect(baseMap.rect, point => {
-            const value = baseMap.get(point)
-            if (value !== EMPTY && value >= 0) {
-                return value
-            }
-            const noise = noiseMap.getNoise(point)
-            if (noise >= step.ratio) {
-                for (let sidePoint of Point.adjacents(point)) {
-                    const sideNoise = noiseMap.getNoise(sidePoint)
-                    if (sideNoise < step.ratio) {
-                        return step.aboveRatio  // positive = is a margin
-                    }
-                }
-                return -step.aboveRatio
-            }
-            return step.belowRatio === undefined ? value : -step.belowRatio
-        })
-    }
-
     #buildMap(rect, noiseMaps) {
         let baseMap = Matrix.fromRect(rect, () => EMPTY)
         for(let step of PIPELINE) {
             const noiseMap = noiseMaps.get(step.noise.id)
-            baseMap = this.#buildLayer(baseMap, step, noiseMap)
+            baseMap = step.buildLayer(baseMap, step, noiseMap)
         }
         return baseMap
     }
