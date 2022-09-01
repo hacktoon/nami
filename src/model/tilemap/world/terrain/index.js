@@ -5,7 +5,6 @@ import { UITileMap } from '/src/ui/tilemap'
 
 import { TerrainTileMapDiagram } from './diagram'
 import { OutlineModel } from './outline'
-import { Terrain } from './terrain'
 
 
 const ID = 'TerrainTileMap'
@@ -35,7 +34,7 @@ export class TerrainTileMap extends TileMap {
 
     get(point) {
         const outline = this.#outlineModel.get(point)
-        return `outline: ${outline.name}`
+        return `Terrain=${outline.name}`
     }
 
     getOutline(point) {
