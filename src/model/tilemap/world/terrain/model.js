@@ -11,39 +11,64 @@ const NOISE_SPEC = {
 }
 
 
-class Layer {
+class NoiseLayer {
+    constructor(params) {
+        this.params = params
+    }
 
+    build(noiseMaps, baseMap=null) {
+        const noiseMap = noiseMaps.get(this.params.noise.id)
+        const params = {noiseMap, baseMap, ...this.params}
+        return Matrix.fromRect(noiseMap.rect, point => {
+            return this.buildTile(point, params)
+        })
+    }
+
+    buildBySides(point, params) {
+        for (let sidePoint of Point.adjacents(point)) {
+            const tile = this.buildTileBySide(point, sidePoint, params)
+            if (tile !== EMPTY) {
+                return tile
+            }
+        }
+        return EMPTY
+    }
+}
+
+
+class OutlineNoiseLayer extends NoiseLayer {
+    buildTile(point, params) {
+        const noise = params.noiseMap.getNoise(point)
+        // check if is margin
+        const side = this.buildBySides(point, params)
+        if (side !== EMPTY) {
+            return side
+        }
+        // not a margin
+        return noise >= params.ratio ? -params.aboveRatio : -params.belowRatio
+    }
+
+    buildTileBySide(point, sidePoint, params) {
+        const noise = params.noiseMap.getNoise(point)
+        const sideNoise = params.noiseMap.getNoise(sidePoint)
+        if (noise >= params.ratio && sideNoise < params.ratio) {
+            return params.aboveRatio
+        }
+        if (noise < params.ratio && sideNoise >= params.ratio) {
+            return params.belowRatio
+        }
+        return EMPTY
+    }
 }
 
 
 const PIPELINE = [
-    {
-        name: 'Land/water outline',
-        ratio: .55,
+    new OutlineNoiseLayer({
         noise: NOISE_SPEC.outline,
-        buildLayer: (step, noiseMap) => {
-            const aboveRatio = TerrainTypeMap.types.PLAIN
-            const belowRatio = TerrainTypeMap.types.SEA
-            return Matrix.fromRect(noiseMap.rect, point => {
-                const noise = noiseMap.getNoise(point)
-                // check if is margin
-                for (let sidePoint of Point.adjacents(point)) {
-                    const sideNoise = noiseMap.getNoise(sidePoint)
-                    if (noise >= step.ratio && sideNoise < step.ratio) {
-                        return aboveRatio
-                    }
-                    if (noise < step.ratio && sideNoise >= step.ratio) {
-                        return belowRatio
-                    }
-                }
-                // not a margin
-                if (noise >= step.ratio)
-                    return -aboveRatio
-                else
-                    return -belowRatio
-            })
-        }
-    },
+        ratio: .55,
+        aboveRatio: TerrainTypeMap.types.PLAIN,
+        belowRatio: TerrainTypeMap.types.SEA,
+    }),
     // {
     //     id: 1,
     //     name: 'Ocean',
@@ -130,10 +155,9 @@ export class TerrainModel {
     }
 
     #buildMap(noiseMaps) {
-        let baseMap
-        for(let step of PIPELINE) {
-            const noiseMap = noiseMaps.get(step.noise.id)
-            baseMap = step.buildLayer(step, noiseMap)
+        let baseMap = null
+        for(let layer of PIPELINE) {
+            baseMap = layer.build(noiseMaps, baseMap)
         }
         return baseMap
     }
