@@ -26,16 +26,21 @@ const PIPELINE = [
             const belowRatio = TerrainTypeMap.types.SEA
             return Matrix.fromRect(noiseMap.rect, point => {
                 const noise = noiseMap.getNoise(point)
-                if (noise >= step.ratio) {
-                    for (let sidePoint of Point.adjacents(point)) {
-                        const sideNoise = noiseMap.getNoise(sidePoint)
-                        if (sideNoise < step.ratio) {
-                            return aboveRatio  // positive = is a margin
-                        }
+                // check if is margin
+                for (let sidePoint of Point.adjacents(point)) {
+                    const sideNoise = noiseMap.getNoise(sidePoint)
+                    if (noise >= step.ratio && sideNoise < step.ratio) {
+                        return aboveRatio
                     }
-                    return -aboveRatio
+                    if (noise < step.ratio && sideNoise >= step.ratio) {
+                        return belowRatio
+                    }
                 }
-                return belowRatio === undefined ? value : -belowRatio
+                // not a margin
+                if (noise >= step.ratio)
+                    return -aboveRatio
+                else
+                    return -belowRatio
             })
         }
     },
