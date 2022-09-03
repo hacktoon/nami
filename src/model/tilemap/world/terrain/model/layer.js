@@ -53,27 +53,30 @@ export class BaseTerrainNoiseLayer extends NoiseLayer {
         const currentId = params.terrainMap.get(point)
         if (params.typeMap.isMargin(currentId))
             return currentId
-        let range = [TerrainTypeMap.types.PLAIN, TerrainTypeMap.types.BASIN]
         let condition = noise >= params.landRatio
+        let range = [TerrainTypeMap.types.PLAIN, TerrainTypeMap.types.BASIN]
         if (params.typeMap.isWater(currentId)) {
             condition = noise >= params.waterRatio
             range = [TerrainTypeMap.types.SEA, TerrainTypeMap.types.OCEAN]
         }
-        return - (condition ? range[0] : range[1])
+        return -(condition ? range[0] : range[1])
     }
 
     buildMarginTile(point, sidePoint, params) {
-        // const noise = params.noiseMap.getNoise(point)
-        // const sideNoise = params.noiseMap.getNoise(sidePoint)
-        // const current = params.terrainMap.get(point)
-        // if (params.typeMap.isMargin(current)) return current
-        // if (params.typeMap.isWater(current)) return current
-        // if (noise >= params.ratio && sideNoise < params.ratio) {
-        //     return params.aboveRatio
-        // }
-        // if (noise < params.ratio && sideNoise >= params.ratio) {
-        //     return params.belowRatio
-        // }
+        const noise = params.noiseMap.getNoise(point)
+        const sideNoise = params.noiseMap.getNoise(sidePoint)
+        const currentId = params.terrainMap.get(point)
+        if (params.typeMap.isMargin(currentId))
+            return currentId
+        if (params.typeMap.isWater(currentId)) {
+            if (noise <= params.waterRatio && sideNoise > params.waterRatio) {
+                return TerrainTypeMap.types.OCEAN
+            }
+        } else {
+            if (noise >= params.landRatio && sideNoise < params.landRatio) {
+                return TerrainTypeMap.types.PLAIN
+            }
+        }
         return null
     }
 }

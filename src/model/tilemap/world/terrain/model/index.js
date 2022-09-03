@@ -19,8 +19,8 @@ const PIPELINE = [
     }),
     new BaseTerrainNoiseLayer({
         noise: NOISE_SPEC.feature,
-        landRatio: .5,
-        waterRatio: .6,
+        landRatio: .4,
+        waterRatio: .55,
     }),
 ]
 
