@@ -89,7 +89,19 @@ export class TerrainTypeMap {
     }
 
     get(id) {
-        return this.#map.get(id)
+        return this.#map.get(Math.abs(id))
+    }
+
+    isMargin(id) {
+        return id >= 0
+    }
+
+    isLand(id) {
+        return ! this.get(id).water
+    }
+
+    isWater(id) {
+        return this.get(id).water
     }
 
     forEach(callback) {

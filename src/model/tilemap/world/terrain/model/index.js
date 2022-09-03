@@ -2,35 +2,32 @@ import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { TerrainTypeMap } from './terrain'
 import {
     OutlineNoiseLayer,
-    PlainsNoiseLayer,
+    BaseTerrainNoiseLayer,
  } from './layer'
 
 
 const NOISE_SPEC = {
     outline: {id: 'outline', octaves: 6, resolution: .8, scale: .02},
-    secondary: {id: 'secondary', octaves: 6, resolution: .8, scale: .05},
+    feature: {id: 'feature', octaves: 6, resolution: .8, scale: .05},
 }
 
 
 const PIPELINE = [
     new OutlineNoiseLayer({
         noise: NOISE_SPEC.outline,
-        ratio: .55,
-        aboveRatio: TerrainTypeMap.types.PLAIN,
-        belowRatio: TerrainTypeMap.types.SEA,
+        ratio: .55
     }),
-    // new PlainsNoiseLayer({
-    //     noise: NOISE_SPEC.outline,
-    //     ratio: .6,
-    //     aboveRatio: TerrainTypeMap.types.PLATEAU,
-    //     belowRatio: TerrainTypeMap.types.BASIN,
-    // }),
+    new BaseTerrainNoiseLayer({
+        noise: NOISE_SPEC.feature,
+        landRatio: .5,
+        waterRatio: .6,
+    }),
 ]
 
 
 export class TerrainModel {
     #terrainMap
-    #typeMap = new TerrainTypeMap()
+    #typeMap
 
     #buildNoiseMaps(rect, seed) {
         const noiseMaps = new Map()
@@ -47,24 +44,20 @@ export class TerrainModel {
         return noiseMaps
     }
 
-    #buildMap(noiseMaps) {
-        let baseMap = null
-        for(let layer of PIPELINE) {
-            baseMap = layer.build(noiseMaps, baseMap)
-        }
-        return baseMap
-    }
-
     constructor(rect, seed) {
+        let terrainMap = null
+        const typeMap = new TerrainTypeMap()
         const noiseMaps = this.#buildNoiseMaps(rect, seed)
-        // const baseMap = Matrix.fromRect(rect, point => 3)
-        const baseMap = this.#buildMap(noiseMaps)
-        this.#terrainMap = baseMap
+        for(let layer of PIPELINE) {
+            terrainMap = layer.build(noiseMaps, typeMap, terrainMap)
+        }
+        this.#terrainMap = terrainMap
+        this.#typeMap = typeMap
     }
 
     get(point) {
         const id = this.#terrainMap.get(point)
-        return this.#typeMap.get(Math.abs(id))
+        return this.#typeMap.get(id)
     }
 
     isMargin(point) {
