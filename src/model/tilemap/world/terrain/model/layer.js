@@ -4,40 +4,45 @@ import { TerrainTypeMap } from './terrain'
 
 
 class Layer {
-    constructor(params) {
-        this.params = params
+    constructor(...rules) {
+        this.rules = rules
     }
 }
 
 
 export class OutlineNoiseLayer extends Layer {
     build(noiseMaps, typeMap, terrainMap) {
-        const noiseMap = noiseMaps.get(this.params.noise.id)
-        const params = {noiseMap, typeMap, terrainMap, ...this.params}
-        return Matrix.fromRect(noiseMap.rect, point => {
-            if (this.isBlocked(point, params)) {
-                return params.terrainMap.get(point)
+        return Matrix.fromRect(terrainMap.rect, point => {
+            const currentId = terrainMap.get(point)
+            for (let rule of this.rules) {
+                const noiseMap = noiseMaps.get(rule.noise.id)
+                const params = {noiseMap, typeMap, terrainMap, ...rule}
+                if (this.isBlocked(point, params)) {
+                    return currentId  // return what was given
+                }
+                return this.buildPoint(point, currentId, params)
             }
-            return this.buildPoint(point, params)
+            return currentId
         })
     }
 
     isBlocked(point, params) {
         const id = params.terrainMap.get(point)
-        if (id === null || id === undefined)
-            return false
-        if (params.typeMap.isMargin(id))
-            return true
         if (params.base === undefined)
+            return false
+        if (! params.typeMap.isMargin(id))
             return true
         if (params.base === params.typeMap.get(id).id)
             return true
-        return false
+        return true
     }
 
-    buildPoint(point, params) {
+    buildPoint(point, currentId, params) {
         const noise = params.noiseMap.getNoise(point)
-        const id = this.buildTerrain(noise, params)
+        let id = currentId
+        if (noise >= params.ratio) {
+            id = params.value
+        }
         for (let sidePoint of Point.adjacents(point)) {
             const sideNoise = params.noiseMap.getNoise(sidePoint)
             const isSideBlocked = this.isBlocked(sidePoint, params)
@@ -47,20 +52,9 @@ export class OutlineNoiseLayer extends Layer {
         return -id  // non-margin: is negative
     }
 
-    buildTerrain(noise, params) {
-        const [above, below] = params.range
-        return noise >= params.ratio ? above : below
-    }
-
     isMargin(noise, sideNoise, params) {
         const isAbove = noise >= params.ratio && sideNoise < params.ratio
         const isBelow = noise < params.ratio && sideNoise >= params.ratio
         return isAbove || isBelow
     }
 }
-
-
-export class TypeOutlineNoiseLayer extends OutlineNoiseLayer {
-
-}
-

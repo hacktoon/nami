@@ -1,10 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { TerrainTypeMap } from './terrain'
-import {
-    OutlineNoiseLayer,
-    TypeOutlineNoiseLayer,
- } from './layer'
+import { OutlineNoiseLayer } from './layer'
 
 
 const NOISE_SPEC = {
@@ -16,14 +13,23 @@ const NOISE_SPEC = {
 const PIPELINE = [
     new OutlineNoiseLayer({
         noise: NOISE_SPEC.outline,
-        range: [TerrainTypeMap.types.BASIN, TerrainTypeMap.types.SEA],
+        value: TerrainTypeMap.types.BASIN,
         ratio: .55
     }),
-    // new TypeOutlineNoiseLayer({
-    //     noise: NOISE_SPEC.feature,
-    //     range: [TerrainTypeMap.types.PLAIN, TerrainTypeMap.types.BASIN],
-    //     ratio: .55
-    // }),
+    new OutlineNoiseLayer(
+        {
+            noise: NOISE_SPEC.feature,
+            base: TerrainTypeMap.types.BASIN,
+            value: TerrainTypeMap.types.PLAIN,
+            ratio: .4
+        },
+        {
+            noise: NOISE_SPEC.feature,
+            base: TerrainTypeMap.types.SEA,
+            value: TerrainTypeMap.types.OCEAN,
+            ratio: .4
+        }
+    ),
     // new BaseTerrainNoiseLayer({
     //     noise: NOISE_SPEC.feature,
     //     landRange: [TerrainTypeMap.types.PLAIN, TerrainTypeMap.types.BASIN],
@@ -56,7 +62,7 @@ export class TerrainModel {
     constructor(rect, seed) {
         const typeMap = new TerrainTypeMap()
         const noiseMaps = this.#buildNoiseMaps(rect, seed)
-        let terrainMap = Matrix.fromRect(rect)
+        let terrainMap = Matrix.fromRect(rect, () =>  TerrainTypeMap.types.SEA)
         for(let layer of PIPELINE) {
             terrainMap = layer.build(noiseMaps, typeMap, terrainMap)
         }
