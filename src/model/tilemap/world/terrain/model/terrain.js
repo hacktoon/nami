@@ -42,7 +42,7 @@ const TERRAIN_SPEC = [
         id: 6,
         name: 'Plateau',
         water: false,
-        color: Color.fromHex('#b6e491'),
+        color: Color.fromHex('#c6df8e'),
     },
     {
         id: 7,

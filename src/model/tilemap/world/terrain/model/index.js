@@ -77,11 +77,11 @@ const PIPELINE = [
             ratio: .65
         },
         {// put islands on shelves
-            type: 'water',
-            noise: NOISE_SPEC.feature,
+            type: 'land',
+            noise: NOISE_SPEC.grained,
             value: TerrainTypeMap.types.BASIN,
             baseTerrain: TerrainTypeMap.types.SHELF,
-            ratio: .35
+            ratio: .55
         }
     ],
     [
@@ -90,7 +90,7 @@ const PIPELINE = [
             noise: NOISE_SPEC.feature,
             value: TerrainTypeMap.types.BASIN,
             baseTerrain: TerrainTypeMap.types.PLAIN,
-            ratio: .5
+            ratio: .55
         },
     ],
 ]
