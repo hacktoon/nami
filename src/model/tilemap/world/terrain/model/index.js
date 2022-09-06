@@ -62,10 +62,10 @@ const PIPELINE = [
         },
         {
             type: 'water',
-            noise: NOISE_SPEC.outline,
+            noise: NOISE_SPEC.feature,
             value: TerrainTypeMap.types.SHELF,
             baseTerrain: TerrainTypeMap.types.OCEAN,
-            ratio: .25
+            ratio: .3
         }
     ],
     [
