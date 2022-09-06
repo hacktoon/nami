@@ -5,7 +5,7 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 const SCHEMA = new Schema(
     'TerrainTileMapDiagram',
-    Type.boolean('showBorders', 'Show borders', {default: true}),
+    Type.boolean('showBorders', 'Show borders', {default: false}),
 )
 
 

@@ -16,8 +16,8 @@ import "/src/ui/css/tilemap.css"
 
 
 const APPS = [
-    TemperatureTileMap,
     TerrainTileMap,
+    TemperatureTileMap,
     NoiseTileMap,
     RegionTileMap,
 ]
