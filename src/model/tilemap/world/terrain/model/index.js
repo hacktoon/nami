@@ -8,8 +8,8 @@ const DEFAULT_TERRAIN = TerrainTypeMap.types.SEA
 
 const NOISE_SPEC = {
     outline: {id: 'outline', octaves: 6, resolution: .8, scale: .02},
-    feature: {id: 'feature', octaves: 6, resolution: .8, scale: .05},
-    grained: {id: 'grained', octaves: 4, resolution: .5, scale: .08},
+    feature: {id: 'feature', octaves: 5, resolution: .8, scale: .05},
+    grained: {id: 'grained', octaves: 4, resolution: .8, scale: .06},
 }
 
 const PIPELINE = [
@@ -34,28 +34,14 @@ const PIPELINE = [
         noise: NOISE_SPEC.feature,
         base: TerrainTypeMap.types.PLATEAU,
         value: TerrainTypeMap.types.MOUNTAIN,
-        ratio: .5
+        ratio: .4
     },
     {
         noise: NOISE_SPEC.grained,
         base: TerrainTypeMap.types.MOUNTAIN,
         value: TerrainTypeMap.types.PEAK,
         ratio: .6
-    },
-    // new OutlineNoiseStep(
-    //     {
-    //         noise: NOISE_SPEC.feature,
-    //         base: TerrainTypeMap.types.BASIN,
-    //         value: TerrainTypeMap.types.PLAIN,
-    //         ratio: .4
-    //     },
-    //     {
-    //         noise: NOISE_SPEC.feature,
-    //         base: TerrainTypeMap.types.SEA,
-    //         value: TerrainTypeMap.types.OCEAN,
-    //         ratio: .4
-    //     }
-    // ),
+    }
 ]
 
 
