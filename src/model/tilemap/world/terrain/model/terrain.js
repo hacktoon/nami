@@ -59,7 +59,16 @@ const TERRAIN_SPEC = [
 ]
 
 
+const TYPE_MAP = new Map(TERRAIN_SPEC.map(spec => {
+    return [spec.id, spec]
+}))
+
+
 export class Terrain {
+    static fromId(id) {
+        return new Terrain(TYPE_MAP.get(id))
+    }
+
     constructor(spec) {
         this.id = spec.id
         this.name = spec.name
@@ -69,38 +78,98 @@ export class Terrain {
 }
 
 
-export class TerrainTypeMap {
-    #map
+TERRAIN_SPEC.forEach(spec => {
+    const name = spec.name.toUpperCase()
+    Terrain[name] = spec.id
+})
 
-    static nameReference = Object.fromEntries(TERRAIN_SPEC.map(spec => {
-        return [spec.name.toUpperCase(), spec.id]
-    }))
 
-    static get types() {
-        return TerrainTypeMap.nameReference
-    }
-
-    constructor() {
-        this.#map = new Map(TERRAIN_SPEC.map(spec => {
-            return [spec.id, new Terrain(spec)]
-        }))
-    }
-
-    get(id) {
-        return this.#map.get(Math.abs(id))
-    }
-
-    isLand(id) {
-        return ! this.get(id).water
-    }
-
-    isWater(id) {
-        return this.get(id).water
-    }
-
-    forEach(callback) {
-        for(let terrain of this.#map.values()) {
-            callback(terrain)
-        }
-    }
+export const NOISE_SPEC = {
+    outline: {id: 'outline', octaves: 6, resolution: .7, scale: .02},
+    feature: {id: 'feature', octaves: 5, resolution: .8, scale: .05},
+    grained: {id: 'grained', octaves: 6, resolution: .8, scale: .06},
 }
+
+
+export const PIPELINE = [
+    [{
+        type: 'land',
+        noise: NOISE_SPEC.outline,
+        value: Terrain.BASIN,
+        baseTerrain: Terrain.SEA,
+        ratio: .55
+    }],
+    [
+        {
+            type: 'land',
+            noise: NOISE_SPEC.outline,
+            value: Terrain.PLAIN,
+            baseTerrain: Terrain.BASIN,
+            ratio: .6
+        },
+        {
+            type: 'water',
+            noise: NOISE_SPEC.outline,
+            value: Terrain.OCEAN,
+            baseTerrain: Terrain.SEA,
+            ratio: .5
+        }
+    ],
+    [
+        {
+            type: 'land',
+            noise: NOISE_SPEC.grained,
+            value: Terrain.PLATEAU,
+            baseTerrain: Terrain.PLAIN,
+            ratio: .45
+        },
+        {
+            type: 'water',
+            noise: NOISE_SPEC.grained,
+            value: Terrain.ABYSS,
+            baseTerrain: Terrain.OCEAN,
+            ratio: .4
+        }
+    ],
+    [
+        {
+            type: 'land',
+            noise: NOISE_SPEC.feature,
+            value: Terrain.MOUNTAIN,
+            baseTerrain: Terrain.PLATEAU,
+            ratio: .45
+        },
+        {
+            type: 'water',
+            noise: NOISE_SPEC.feature,
+            value: Terrain.SHELF,
+            baseTerrain: Terrain.OCEAN,
+            ratio: .3
+        }
+    ],
+    [
+        {// put peaks on mountains
+            type: 'land',
+            noise: NOISE_SPEC.grained,
+            value: Terrain.PEAK,
+            baseTerrain: Terrain.MOUNTAIN,
+            ratio: .65
+        },
+        {// put islands on shelves
+            type: 'land',
+            noise: NOISE_SPEC.grained,
+            value: Terrain.BASIN,
+            baseTerrain: Terrain.SHELF,
+            ratio: .55
+        }
+    ],
+    [
+        {// put basins
+            type: 'land',
+            noise: NOISE_SPEC.feature,
+            value: Terrain.BASIN,
+            baseTerrain: Terrain.PLAIN,
+            ratio: .55
+        },
+    ],
+]

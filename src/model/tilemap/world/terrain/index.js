@@ -10,7 +10,7 @@ import { TerrainModel } from './model'
 const ID = 'TerrainTileMap'
 const SCHEMA = new Schema(
     ID,
-    Type.rect('rect', 'Size', {default: '200x200'}),
+    Type.rect('rect', 'Size', {default: '150x150'}),
     Type.text('seed', 'Seed', {default: ''}),
 )
 
@@ -39,9 +39,5 @@ export class TerrainTileMap extends TileMap {
 
     getTerrain(point) {
         return this.#terrainModel.get(point)
-    }
-
-    isBorder(point) {
-        return this.#terrainModel.isBorder(point)
     }
 }

@@ -1,104 +1,12 @@
 import { Matrix } from '/src/lib/matrix'
+import { Point } from '/src/lib/point'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
-import { TerrainTypeMap } from './terrain'
-import { OutlineNoiseStep } from './layer'
 
-
-const DEFAULT_TERRAIN = TerrainTypeMap.types.SEA
-
-const NOISE_SPEC = {
-    outline: {id: 'outline', octaves: 6, resolution: .7, scale: .02},
-    feature: {id: 'feature', octaves: 5, resolution: .8, scale: .05},
-    grained: {id: 'grained', octaves: 6, resolution: .8, scale: .06},
-}
-
-const PIPELINE = [
-    [{
-        type: 'land',
-        noise: NOISE_SPEC.outline,
-        value: TerrainTypeMap.types.BASIN,
-        baseTerrain: DEFAULT_TERRAIN,
-        ratio: .55
-    }],
-    [
-        {
-            type: 'land',
-            noise: NOISE_SPEC.outline,
-            value: TerrainTypeMap.types.PLAIN,
-            baseTerrain: TerrainTypeMap.types.BASIN,
-            ratio: .6
-        },
-        {
-            type: 'water',
-            noise: NOISE_SPEC.outline,
-            value: TerrainTypeMap.types.OCEAN,
-            baseTerrain: TerrainTypeMap.types.SEA,
-            ratio: .5
-        }
-    ],
-    [
-        {
-            type: 'land',
-            noise: NOISE_SPEC.grained,
-            value: TerrainTypeMap.types.PLATEAU,
-            baseTerrain: TerrainTypeMap.types.PLAIN,
-            ratio: .45
-        },
-        {
-            type: 'water',
-            noise: NOISE_SPEC.grained,
-            value: TerrainTypeMap.types.ABYSS,
-            baseTerrain: TerrainTypeMap.types.OCEAN,
-            ratio: .4
-        }
-    ],
-    [
-        {
-            type: 'land',
-            noise: NOISE_SPEC.feature,
-            value: TerrainTypeMap.types.MOUNTAIN,
-            baseTerrain: TerrainTypeMap.types.PLATEAU,
-            ratio: .45
-        },
-        {
-            type: 'water',
-            noise: NOISE_SPEC.feature,
-            value: TerrainTypeMap.types.SHELF,
-            baseTerrain: TerrainTypeMap.types.OCEAN,
-            ratio: .3
-        }
-    ],
-    [
-        {// put peaks on mountains
-            type: 'land',
-            noise: NOISE_SPEC.grained,
-            value: TerrainTypeMap.types.PEAK,
-            baseTerrain: TerrainTypeMap.types.MOUNTAIN,
-            ratio: .65
-        },
-        {// put islands on shelves
-            type: 'land',
-            noise: NOISE_SPEC.grained,
-            value: TerrainTypeMap.types.BASIN,
-            baseTerrain: TerrainTypeMap.types.SHELF,
-            ratio: .55
-        }
-    ],
-    [
-        {// put basins
-            type: 'land',
-            noise: NOISE_SPEC.feature,
-            value: TerrainTypeMap.types.BASIN,
-            baseTerrain: TerrainTypeMap.types.PLAIN,
-            ratio: .55
-        },
-    ],
-]
+import { NOISE_SPEC, PIPELINE, Terrain } from './terrain'
 
 
 export class TerrainModel {
     #idMap
-    #typeMap
 
     #buildNoiseMaps(rect, seed) {
         const noiseMaps = new Map()
@@ -117,23 +25,18 @@ export class TerrainModel {
 
     constructor(rect, seed) {
         const noiseMaps = this.#buildNoiseMaps(rect, seed)
-        let layer = Matrix.fromRect(rect, () => DEFAULT_TERRAIN)
+        let idMap = Matrix.fromRect(rect, () => Terrain.SEA)
         let borderMap = Matrix.fromRect(rect, () => false)
         for(let spec of PIPELINE) {
-            const step = new OutlineNoiseStep(layer, noiseMaps)
-            layer = step.buildLayer(borderMap, spec)
+            const layer = new Layer(idMap, noiseMaps)
+            idMap = layer.build(borderMap, spec)
         }
-        this.#idMap = layer
-        this.#typeMap = new TerrainTypeMap()
+        this.#idMap = idMap
     }
 
     get(point) {
         const id = this.#idMap.get(point)
-        return this.#typeMap.get(id)
-    }
-
-    isBorder(point) {
-        return this.#idMap.isBorder(point)
+        return Terrain.fromId(id)
     }
 
     isLand(point) {
@@ -142,5 +45,53 @@ export class TerrainModel {
 
     isWater(point) {
         return this.get(point).water
+    }
+}
+
+
+class Layer {
+    constructor(baseLayer, noiseMaps) {
+        this.baseLayer = baseLayer
+        this.noiseMaps = noiseMaps
+    }
+
+    build(borderMap, spec) {
+        // convert noise to terrain id
+        const layer = Matrix.fromRect(this.baseLayer.rect, point => {
+            const currentId = this.baseLayer.get(point)
+            for (let rule of spec) {
+                if (currentId === rule.baseTerrain) {
+                    const noiseMap = this.noiseMaps.get(rule.noise.id)
+                    const noise = noiseMap.getNoise(point)
+                    return this.buildPoint(point, noise, borderMap, rule)
+                }
+            }
+            return currentId
+        })
+        // update borders
+        layer.forEach((point, currentId) => {
+            for (let sidePoint of Point.adjacents(point)) {
+                if (currentId != layer.get(sidePoint)) {
+                    borderMap.set(point, true)
+                }
+            }
+        })
+        return layer
+    }
+
+    buildPoint(point, noise, borderMap, rule) {
+        const notBorder = borderMap.get(point) === false
+        const isBaseTerrain = this.isBaseTerrain(point, rule.baseTerrain)
+        const isAboveRatio = noise >= rule.ratio
+        const isRated = rule.type == 'land' ? isAboveRatio : ! isAboveRatio
+        const isValid = isBaseTerrain && notBorder && isRated
+        return isValid ? rule.value : this.baseLayer.get(point)
+    }
+
+    isBaseTerrain(point, baseTerrain) {
+        if (baseTerrain === null || baseTerrain === undefined) {
+            return true
+        }
+        return this.baseLayer.get(point) === baseTerrain
     }
 }
