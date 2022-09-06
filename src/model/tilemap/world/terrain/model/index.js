@@ -1,7 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { TerrainTypeMap } from './terrain'
-import { TerrainLayerMatrix, OutlineNoiseStep } from './layer'
+import { OutlineNoiseStep } from './layer'
 
 
 const DEFAULT_TERRAIN = TerrainTypeMap.types.SEA
@@ -66,10 +66,11 @@ export class TerrainModel {
 
     constructor(rect, seed) {
         const noiseMaps = this.#buildNoiseMaps(rect, seed)
-        let layer = new TerrainLayerMatrix(rect, () => DEFAULT_TERRAIN)
+        let layer = Matrix.fromRect(rect, () => DEFAULT_TERRAIN)
+        let filledMap = Matrix.fromRect(rect, () => false)
         for(let spec of PIPELINE) {
             const step = new OutlineNoiseStep(spec, layer, noiseMaps)
-            layer = step.buildLayer()
+            layer = step.buildLayer(filledMap)
         }
         this.#idMap = layer
         this.#typeMap = new TerrainTypeMap()
