@@ -33,57 +33,36 @@ export class OutlineNoiseStep {
         this.spec = spec
         this.baseLayer = baseLayer
         this.noiseMaps = noiseMaps
-        this.layer = new TerrainLayerMatrix(baseLayer.rect)
     }
 
     buildLayer() {
+        // create fill map
         const noiseMap = this.noiseMaps.get(this.spec.noise.id)
-        // create new layer based on previous
-        this.baseLayer.forEach((point, currentId) => {
-            this.buildPoint(point, currentId, noiseMap)
+        // convert from noise
+        const layer = new TerrainLayerMatrix(this.baseLayer.rect, point => {
+            const noise = noiseMap.getNoise(point)
+            const notBorder = ! this.baseLayer.isBorder(point)
+            const isOpenTerrain = this.isOpenTerrain(point)
+            const isValid = isOpenTerrain && notBorder && noise >= this.spec.ratio
+            return isValid ? this.spec.value : this.baseLayer.get(point)
         })
-        return this.layer
+        // discover borders
+        layer.forEach(point => {
+            const currentId = layer.get(point)
+            for (let sidePoint of Point.adjacents(point)) {
+                if (currentId != layer.get(sidePoint)) {
+                    layer.setBorder(point, currentId)
+                    return
+                }
+            }
+        })
+        return layer
     }
 
-    buildPoint(point, currentId, noiseMap) {
-        // previous layer point is locked, reuse id and lock
-        if (this.baseLayer.isBorder(point)) {
-            return this.layer.setBorder(point, currentId)
-        }
-        const noise = noiseMap.getNoise(point)
-        const isTerrainAllowed = this.isTerrainAllowed(point)
-        const enabled = isTerrainAllowed && this.isAboveRatio(noise)
-        const id = enabled ? this.spec.value : currentId
-        if (isTerrainAllowed && this.isBorder(point, noise, noiseMap)) {
-            this.layer.setBorder(point, id)
-        } else {
-            this.layer.set(point, id)
-        }
-    }
-
-    isTerrainAllowed(point) {
+    isOpenTerrain(point) {
         if (this.spec.base === null || this.spec.base === undefined) {
             return true
         }
         return this.baseLayer.get(point) === this.spec.base
-    }
-
-    isBorder(point, noise, noiseMap) {
-        const isAboveRatio = this.isAboveRatio(noise)
-        for (let sidePoint of Point.adjacents(point)) {
-            if (this.baseLayer.isBorder(sidePoint))
-                return true
-            const sideNoise = noiseMap.getNoise(sidePoint)
-            const isSideAboveRatio = this.isAboveRatio(sideNoise)
-            const isHighBorder = isAboveRatio && ! isSideAboveRatio
-            const isLowBorder = ! isAboveRatio && isSideAboveRatio
-            if (isHighBorder || isLowBorder)
-                return true
-        }
-        return false
-    }
-
-    isAboveRatio(noise) {
-        return noise >= this.spec.ratio
     }
 }
