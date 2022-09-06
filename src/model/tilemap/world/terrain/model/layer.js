@@ -3,18 +3,23 @@ import { Point } from '/src/lib/point'
 
 
 export class OutlineNoiseStep {
-    constructor(spec, baseLayer, noiseMaps) {
-        this.spec = spec
+    constructor(baseLayer, noiseMaps) {
         this.baseLayer = baseLayer
         this.noiseMaps = noiseMaps
     }
 
-    buildLayer(borderMap) {
+    buildLayer(borderMap, spec) {
         // convert noise to terrain id
         const layer = Matrix.fromRect(this.baseLayer.rect, point => {
-            const noiseMap = this.noiseMaps.get(this.spec.noise.id)
-            const noise = noiseMap.getNoise(point)
-            return this.buildPoint(point, noise, borderMap, this.spec)
+            const currentId = this.baseLayer.get(point)
+            for (let rule of spec) {
+                if (currentId === rule.baseTerrain) {
+                    const noiseMap = this.noiseMaps.get(rule.noise.id)
+                    const noise = noiseMap.getNoise(point)
+                    return this.buildPoint(point, noise, borderMap, rule)
+                }
+            }
+            return currentId
         })
         // mark borders
         layer.forEach((point, currentId) => {
@@ -26,8 +31,10 @@ export class OutlineNoiseStep {
 
     buildPoint(point, noise, borderMap, rule) {
         const notBorder = borderMap.get(point) === false
-        const isOpenTerrain = this.isOpenTerrain(point, rule.base)
-        const isValid = isOpenTerrain && notBorder && noise >= rule.ratio
+        const isBaseTerrain = this.isBaseTerrain(point, rule.baseTerrain)
+        const isAboveRatio = noise >= rule.ratio
+        const isRated = rule.type == 'land' ? isAboveRatio : ! isAboveRatio
+        const isValid = isBaseTerrain && notBorder && isRated
         return isValid ? rule.value : this.baseLayer.get(point)
     }
 
@@ -40,10 +47,10 @@ export class OutlineNoiseStep {
         return false
     }
 
-    isOpenTerrain(point, base) {
-        if (base === null || base === undefined) {
+    isBaseTerrain(point, baseTerrain) {
+        if (baseTerrain === null || baseTerrain === undefined) {
             return true
         }
-        return this.baseLayer.get(point) === base
+        return this.baseLayer.get(point) === baseTerrain
     }
 }
