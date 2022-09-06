@@ -1,16 +1,14 @@
 import { Point } from '/src/lib/point'
-import { Rect } from '/src/lib/number'
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { createCanvas } from '/src/ui/canvas'
 
 
 export class TileMapScene {
     static schema = new Schema(
         'TileMapScene',
-        Type.point('focus', "Focus", {default: '77,50'}),
+        Type.point('focus', "Focus", {default: '95,98'}),
         Type.boolean('wrap', "Wrap", {default: false}),
-        Type.number('zoom', "Zoom", {default: 6, step: 1, min: 1, max: 100}),
+        Type.number('zoom', "Zoom", {default: 4, step: 1, min: 1, max: 100}),
     )
 
     static create(diagram, viewport, params) {

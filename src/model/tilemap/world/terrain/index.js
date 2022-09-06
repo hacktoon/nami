@@ -10,7 +10,7 @@ import { TerrainModel } from './model'
 const ID = 'TerrainTileMap'
 const SCHEMA = new Schema(
     ID,
-    Type.rect('rect', 'Size', {default: '150x100'}),
+    Type.rect('rect', 'Size', {default: '200x200'}),
     Type.text('seed', 'Seed', {default: ''}),
 )
 
