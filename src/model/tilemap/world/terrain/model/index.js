@@ -17,6 +17,12 @@ const PIPELINE = [
         value: TerrainTypeMap.types.BASIN,
         ratio: .55
     },
+    {
+        noise: NOISE_SPEC.feature,
+        base: TerrainTypeMap.types.BASIN,
+        value: TerrainTypeMap.types.PLAIN,
+        ratio: .45
+    },
     // new OutlineNoiseStep(
     //     {
     //         noise: NOISE_SPEC.feature,
