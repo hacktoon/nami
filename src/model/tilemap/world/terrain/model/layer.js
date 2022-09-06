@@ -45,39 +45,33 @@ export class OutlineNoiseStep {
         return this.layer
     }
 
-    isRequiredTerrain(point) {
-        if (this.spec.base === null || this.spec.base === undefined) {
-            return true
-        }
-        return this.baseLayer.get(point) == this.spec.base
-    }
-
     buildPoint(point, currentId, noiseMap) {
         // previous layer point is locked, reuse id and lock
         if (this.baseLayer.isBorder(point)) {
-            this.layer.setBorder(point, currentId)
-            return
+            return this.layer.setBorder(point, currentId)
         }
         const noise = noiseMap.getNoise(point)
-        const enabled = this.isAboveRatio(noise) && this.isRequiredTerrain(point)
+        const isTerrainAllowed = this.isTerrainAllowed(point)
+        const enabled = isTerrainAllowed && this.isAboveRatio(noise)
         const id = enabled ? this.spec.value : currentId
-        if (this.isBorder(point, noise, noiseMap)) {
+        if (isTerrainAllowed && this.isBorder(point, noise, noiseMap)) {
             this.layer.setBorder(point, id)
         } else {
             this.layer.set(point, id)
         }
     }
 
-    isAboveRatio(noise) {
-        return noise >= this.spec.ratio
+    isTerrainAllowed(point) {
+        if (this.spec.base === null || this.spec.base === undefined) {
+            return true
+        }
+        return this.baseLayer.get(point) === this.spec.base
     }
 
     isBorder(point, noise, noiseMap) {
         const isAboveRatio = this.isAboveRatio(noise)
         for (let sidePoint of Point.adjacents(point)) {
-            const isSideBorder = this.baseLayer.isBorder(sidePoint)
-            const isRequiredTerrain = this.isRequiredTerrain(sidePoint)
-            if (isSideBorder || ! isRequiredTerrain)
+            if (this.baseLayer.isBorder(sidePoint))
                 return true
             const sideNoise = noiseMap.getNoise(sidePoint)
             const isSideAboveRatio = this.isAboveRatio(sideNoise)
@@ -87,5 +81,9 @@ export class OutlineNoiseStep {
                 return true
         }
         return false
+    }
+
+    isAboveRatio(noise) {
+        return noise >= this.spec.ratio
     }
 }
