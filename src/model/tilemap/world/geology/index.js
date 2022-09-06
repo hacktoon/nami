@@ -4,7 +4,7 @@ import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { TerrainTileMapDiagram } from './diagram'
-import { TerrainModel } from './model'
+import { TerrainModel } from './terrain'
 
 
 const ID = 'TerrainTileMap'

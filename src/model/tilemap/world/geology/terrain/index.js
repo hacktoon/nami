@@ -2,7 +2,7 @@ import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 
-import { NOISE_SPEC, PIPELINE, Terrain } from './terrain'
+import { NOISE_SPEC, PIPELINE, Terrain } from './spec'
 
 
 export class TerrainModel {

@@ -8,7 +8,7 @@ import { Title } from '/src/ui'
 
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { RegionTileMap } from '/src/model/tilemap/region'
-import { TerrainTileMap } from '/src/model/tilemap/world/terrain'
+import { TerrainTileMap } from '/src/model/tilemap/world/geology'
 import { TemperatureTileMap } from '/src/model/tilemap/world/temperature'
 
 import "/src/ui/css/base.css"
