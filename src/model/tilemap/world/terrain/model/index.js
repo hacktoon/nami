@@ -67,10 +67,10 @@ export class TerrainModel {
     constructor(rect, seed) {
         const noiseMaps = this.#buildNoiseMaps(rect, seed)
         let layer = Matrix.fromRect(rect, () => DEFAULT_TERRAIN)
-        let filledMap = Matrix.fromRect(rect, () => false)
+        let borderMap = Matrix.fromRect(rect, () => false)
         for(let spec of PIPELINE) {
             const step = new OutlineNoiseStep(spec, layer, noiseMaps)
-            layer = step.buildLayer(filledMap)
+            layer = step.buildLayer(borderMap)
         }
         this.#idMap = layer
         this.#typeMap = new TerrainTypeMap()

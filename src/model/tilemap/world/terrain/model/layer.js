@@ -9,32 +9,41 @@ export class OutlineNoiseStep {
         this.noiseMaps = noiseMaps
     }
 
-    buildLayer(filledMap) {
-        const noiseMap = this.noiseMaps.get(this.spec.noise.id)
+    buildLayer(borderMap) {
         // convert noise to terrain id
         const layer = Matrix.fromRect(this.baseLayer.rect, point => {
+            const noiseMap = this.noiseMaps.get(this.spec.noise.id)
             const noise = noiseMap.getNoise(point)
-            const notBorder = filledMap.get(point) === false
-            const isOpenTerrain = this.isOpenTerrain(point)
-            const isValid = isOpenTerrain && notBorder && noise >= this.spec.ratio
-            return isValid ? this.spec.value : this.baseLayer.get(point)
+            return this.buildPoint(point, noise, borderMap, this.spec)
         })
-        // detect borders
+        // mark borders
         layer.forEach((point, currentId) => {
-            for (let sidePoint of Point.adjacents(point)) {
-                if (currentId != layer.get(sidePoint)) {
-                    filledMap.set(point, true)
-                    return
-                }
-            }
+            const border = this.detectBorder(point, currentId, layer)
+            borderMap.set(point, border)
         })
         return layer
     }
 
-    isOpenTerrain(point) {
-        if (this.spec.base === null || this.spec.base === undefined) {
+    buildPoint(point, noise, borderMap, rule) {
+        const notBorder = borderMap.get(point) === false
+        const isOpenTerrain = this.isOpenTerrain(point, rule.base)
+        const isValid = isOpenTerrain && notBorder && noise >= rule.ratio
+        return isValid ? rule.value : this.baseLayer.get(point)
+    }
+
+    detectBorder(point, currentId, layer) {
+        for (let sidePoint of Point.adjacents(point)) {
+            if (currentId != layer.get(sidePoint)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    isOpenTerrain(point, base) {
+        if (base === null || base === undefined) {
             return true
         }
-        return this.baseLayer.get(point) === this.spec.base
+        return this.baseLayer.get(point) === base
     }
 }
