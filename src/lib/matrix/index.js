@@ -40,4 +40,12 @@ export class Matrix {
     isWrappable(point) {
         return ! this.rect.isInside(point)
     }
+
+    forEach(callback) {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                callback([x, y], this.matrix[y][x])
+            }
+        }
+    }
 }

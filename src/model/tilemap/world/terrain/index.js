@@ -41,7 +41,7 @@ export class TerrainTileMap extends TileMap {
         return this.#terrainModel.get(point)
     }
 
-    isMargin(point) {
-        return this.#terrainModel.isMargin(point)
+    isBorder(point) {
+        return this.#terrainModel.isBorder(point)
     }
 }

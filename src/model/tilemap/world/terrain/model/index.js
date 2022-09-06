@@ -1,47 +1,41 @@
 import { Matrix } from '/src/lib/matrix'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 import { TerrainTypeMap } from './terrain'
-import { OutlineNoiseLayer } from './layer'
+import { TerrainLayerMatrix, OutlineNoiseStep } from './layer'
 
+
+const DEFAULT_TERRAIN = TerrainTypeMap.types.SEA
 
 const NOISE_SPEC = {
     outline: {id: 'outline', octaves: 6, resolution: .8, scale: .02},
     feature: {id: 'feature', octaves: 6, resolution: .8, scale: .05},
 }
 
-
 const PIPELINE = [
-    new OutlineNoiseLayer({
+    {
         noise: NOISE_SPEC.outline,
         value: TerrainTypeMap.types.BASIN,
         ratio: .55
-    }),
-    new OutlineNoiseLayer(
-        {
-            noise: NOISE_SPEC.feature,
-            base: TerrainTypeMap.types.BASIN,
-            value: TerrainTypeMap.types.PLAIN,
-            ratio: .4
-        },
-        {
-            noise: NOISE_SPEC.feature,
-            base: TerrainTypeMap.types.SEA,
-            value: TerrainTypeMap.types.OCEAN,
-            ratio: .4
-        }
-    ),
-    // new BaseTerrainNoiseLayer({
-    //     noise: NOISE_SPEC.feature,
-    //     landRange: [TerrainTypeMap.types.PLAIN, TerrainTypeMap.types.BASIN],
-    //     waterRange: [TerrainTypeMap.types.SEA, TerrainTypeMap.types.OCEAN],
-    //     landRatio: .4,
-    //     waterRatio: .5,
-    // }),
+    },
+    // new OutlineNoiseStep(
+    //     {
+    //         noise: NOISE_SPEC.feature,
+    //         base: TerrainTypeMap.types.BASIN,
+    //         value: TerrainTypeMap.types.PLAIN,
+    //         ratio: .4
+    //     },
+    //     {
+    //         noise: NOISE_SPEC.feature,
+    //         base: TerrainTypeMap.types.SEA,
+    //         value: TerrainTypeMap.types.OCEAN,
+    //         ratio: .4
+    //     }
+    // ),
 ]
 
 
 export class TerrainModel {
-    #terrainMap
+    #idMap
     #typeMap
 
     #buildNoiseMaps(rect, seed) {
@@ -60,24 +54,23 @@ export class TerrainModel {
     }
 
     constructor(rect, seed) {
-        const typeMap = new TerrainTypeMap()
         const noiseMaps = this.#buildNoiseMaps(rect, seed)
-        let terrainMap = Matrix.fromRect(rect, () =>  TerrainTypeMap.types.SEA)
-        for(let layer of PIPELINE) {
-            terrainMap = layer.build(noiseMaps, typeMap, terrainMap)
+        let layer = new TerrainLayerMatrix(rect, () => DEFAULT_TERRAIN)
+        for(let spec of PIPELINE) {
+            const step = new OutlineNoiseStep(spec, layer, noiseMaps)
+            layer = step.buildLayer()
         }
-        this.#terrainMap = terrainMap
-        this.#typeMap = typeMap
+        this.#idMap = layer
+        this.#typeMap = new TerrainTypeMap()
     }
 
     get(point) {
-        const id = this.#terrainMap.get(point)
+        const id = this.#idMap.get(point)
         return this.#typeMap.get(id)
     }
 
-    isMargin(point) {
-        const id = this.#terrainMap.get(point)
-        return id >= 0
+    isBorder(point) {
+        return this.#idMap.isBorder(point)
     }
 
     isLand(point) {

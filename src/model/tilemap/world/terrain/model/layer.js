@@ -1,60 +1,91 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
-import { TerrainTypeMap } from './terrain'
 
 
-class Layer {
-    constructor(...rules) {
-        this.rules = rules
+export class TerrainLayerMatrix extends Matrix {
+    constructor(rect, buildValue) {
+        const {width, height} = rect
+        super(width, height, buildValue)
+    }
+
+    get(point) {
+        return Math.abs(super.get(point))
+    }
+
+    set(point, id) {
+        // save only positive id values = unlocked
+        super.set(point, Math.abs(id))
+    }
+
+    setBorder(point, id) {
+        // border points have negative ids
+        super.set(point, - Math.abs(id))
+    }
+
+    isBorder(point) {
+        return super.get(point) < 0
     }
 }
 
 
-export class OutlineNoiseLayer extends Layer {
-    build(noiseMaps, typeMap, terrainMap) {
-        return Matrix.fromRect(terrainMap.rect, point => {
-            const currentId = terrainMap.get(point)
-            for (let rule of this.rules) {
-                const noiseMap = noiseMaps.get(rule.noise.id)
-                const params = {noiseMap, typeMap, terrainMap, ...rule}
-                if (this.isBlocked(point, params)) {
-                    return currentId  // return what was given
-                }
-                return this.buildPoint(point, currentId, params)
-            }
-            return currentId
+export class OutlineNoiseStep {
+    constructor(spec, baseLayer, noiseMaps) {
+        this.spec = spec
+        this.baseLayer = baseLayer
+        this.noiseMaps = noiseMaps
+        this.layer = new TerrainLayerMatrix(baseLayer.rect)
+    }
+
+    buildLayer() {
+        const noiseMap = this.noiseMaps.get(this.spec.noise.id)
+        // create new layer based on previous
+        this.baseLayer.forEach((point, currentId) => {
+            this.buildPoint(point, currentId, noiseMap)
         })
+        return this.layer
     }
 
-    isBlocked(point, params) {
-        const id = params.terrainMap.get(point)
-        if (params.base === undefined)
-            return false
-        if (! params.typeMap.isMargin(id))
+    isRequiredTerrain(point) {
+        if (this.spec.base === null || this.spec.base === undefined) {
             return true
-        if (params.base === params.typeMap.get(id).id)
-            return true
-        return true
-    }
-
-    buildPoint(point, currentId, params) {
-        const noise = params.noiseMap.getNoise(point)
-        let id = currentId
-        if (noise >= params.ratio) {
-            id = params.value
         }
+        return this.baseLayer.get(point) == this.spec.base
+    }
+
+    buildPoint(point, currentId, noiseMap) {
+        // previous layer point is locked, reuse id and lock
+        if (this.baseLayer.isBorder(point)) {
+            this.layer.setBorder(point, currentId)
+            return
+        }
+        const noise = noiseMap.getNoise(point)
+        const enabled = this.isAboveRatio(noise) && this.isRequiredTerrain(point)
+        const id = enabled ? this.spec.value : currentId
+        if (this.isBorder(point, noise, noiseMap)) {
+            this.layer.setBorder(point, id)
+        } else {
+            this.layer.set(point, id)
+        }
+    }
+
+    isAboveRatio(noise) {
+        return noise >= this.spec.ratio
+    }
+
+    isBorder(point, noise, noiseMap) {
+        const isAboveRatio = this.isAboveRatio(noise)
         for (let sidePoint of Point.adjacents(point)) {
-            const sideNoise = params.noiseMap.getNoise(sidePoint)
-            const isSideBlocked = this.isBlocked(sidePoint, params)
-            if (isSideBlocked || this.isMargin(noise, sideNoise, params))
-                return id  // margin: is positive
+            const isSideBorder = this.baseLayer.isBorder(sidePoint)
+            const isRequiredTerrain = this.isRequiredTerrain(sidePoint)
+            if (isSideBorder || ! isRequiredTerrain)
+                return true
+            const sideNoise = noiseMap.getNoise(sidePoint)
+            const isSideAboveRatio = this.isAboveRatio(sideNoise)
+            const isHighBorder = isAboveRatio && ! isSideAboveRatio
+            const isLowBorder = ! isAboveRatio && isSideAboveRatio
+            if (isHighBorder || isLowBorder)
+                return true
         }
-        return -id  // non-margin: is negative
-    }
-
-    isMargin(noise, sideNoise, params) {
-        const isAbove = noise >= params.ratio && sideNoise < params.ratio
-        const isBelow = noise < params.ratio && sideNoise >= params.ratio
-        return isAbove || isBelow
+        return false
     }
 }

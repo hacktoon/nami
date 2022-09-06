@@ -7,56 +7,48 @@ const TERRAIN_SPEC = [
         name: 'Abyss',
         water: true,
         color: Color.fromHex('#1d5674'),
-        erosible: false,
     },
     {
         id: 1,
         name: 'Ocean',
         water: true,
         color: Color.fromHex('#216384'),
-        erosible: false,
     },
     {
         id: 2,
         name: 'Sea',
         water: true,
         color: Color.fromHex('#2878a0'),
-        erosible: false,
     },
     {
         id: 3,
         name: 'Basin',
         water: false,
         color: Color.fromHex('#71b13e'),
-        erosible: true,
     },
     {
         id: 4,
         name: 'Plain',
         water: false,
         color: Color.fromHex('#99d966'),
-        erosible: true,
     },
     {
         id: 5,
         name: 'Plateau',
         water: false,
         color: Color.fromHex('#b6e491'),
-        erosible: true,
     },
     {
         id: 6,
         name: 'Mountain',
         water: false,
         color: Color.fromHex('#c0b896'),
-        erosible: true,
     },
     {
         id: 7,
         name: 'Peak',
         water: false,
         color: Color.fromHex('#DDD'),
-        erosible: true,
     }
 ]
 
@@ -90,10 +82,6 @@ export class TerrainTypeMap {
 
     get(id) {
         return this.#map.get(Math.abs(id))
-    }
-
-    isMargin(id) {
-        return id >= 0
     }
 
     isLand(id) {
