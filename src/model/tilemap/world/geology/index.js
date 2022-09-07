@@ -3,11 +3,11 @@ import { Type } from '/src/lib/type'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
-import { TerrainTileMapDiagram } from './diagram'
+import { GeologyTileMapDiagram } from './diagram'
 import { TerrainModel } from './terrain'
 
 
-const ID = 'TerrainTileMap'
+const ID = 'GeologyTileMap'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '150x150'}),
@@ -15,14 +15,14 @@ const SCHEMA = new Schema(
 )
 
 
-export class TerrainTileMap extends TileMap {
+export class GeologyTileMap extends TileMap {
     static id = ID
-    static diagram = TerrainTileMapDiagram
+    static diagram = GeologyTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
 
     static create(params) {
-        return new TerrainTileMap(params)
+        return new GeologyTileMap(params)
     }
 
     #terrainModel
