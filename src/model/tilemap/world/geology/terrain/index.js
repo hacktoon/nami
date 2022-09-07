@@ -28,8 +28,8 @@ export class TerrainModel {
         let idMap = Matrix.fromRect(rect, () => Terrain.SEA)
         let borderMap = Matrix.fromRect(rect, () => false)
         for(let spec of PIPELINE) {
-            const layer = new Layer(idMap, noiseMaps)
-            idMap = layer.build(borderMap, spec)
+            const layer = new Layer(idMap, borderMap, noiseMaps)
+            idMap = layer.build(spec)
         }
         this.#idMap = idMap
     }
@@ -50,21 +50,22 @@ export class TerrainModel {
 
 
 class Layer {
-    constructor(baseLayer, noiseMaps) {
+    constructor(baseLayer, borderMap, noiseMaps) {
         this.baseLayer = baseLayer
+        this.borderMap = borderMap
         this.noiseMaps = noiseMaps
     }
 
-    build(borderMap, spec) {
+    build(spec) {
         // convert noise to terrain id
         const layer = Matrix.fromRect(this.baseLayer.rect, point => {
             const currentId = this.baseLayer.get(point)
             for (let rule of spec) {
-                if (currentId === rule.baseTerrain) {
-                    const noiseMap = this.noiseMaps.get(rule.noise.id)
-                    const noise = noiseMap.getNoise(point)
-                    return this.buildPoint(point, noise, borderMap, rule)
-                }
+                if (currentId !== rule.baseTerrain)
+                    continue
+                const noiseMap = this.noiseMaps.get(rule.noise.id)
+                const noise = noiseMap.getNoise(point)
+                return this.buildPoint(point, noise, rule)
             }
             return currentId
         })
@@ -72,26 +73,20 @@ class Layer {
         layer.forEach((point, currentId) => {
             for (let sidePoint of Point.adjacents(point)) {
                 if (currentId != layer.get(sidePoint)) {
-                    borderMap.set(point, true)
+                    this.borderMap.set(point, true)
                 }
             }
         })
         return layer
     }
 
-    buildPoint(point, noise, borderMap, rule) {
-        const notBorder = borderMap.get(point) === false
-        const isBaseTerrain = this.isBaseTerrain(point, rule.baseTerrain)
+    buildPoint(point, noise, rule) {
+        const terrain = Terrain.fromId(rule.value)
+        const notBorder = this.borderMap.get(point) === false
+        const isBaseTerrain = this.baseLayer.get(point) === rule.baseTerrain
         const isAboveRatio = noise >= rule.ratio
-        const isRated = rule.type == 'land' ? isAboveRatio : ! isAboveRatio
+        const isRated = terrain.water ? ! isAboveRatio : isAboveRatio
         const isValid = isBaseTerrain && notBorder && isRated
         return isValid ? rule.value : this.baseLayer.get(point)
-    }
-
-    isBaseTerrain(point, baseTerrain) {
-        if (baseTerrain === null || baseTerrain === undefined) {
-            return true
-        }
-        return this.baseLayer.get(point) === baseTerrain
     }
 }

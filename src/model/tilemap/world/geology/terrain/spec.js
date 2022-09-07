@@ -24,7 +24,7 @@ const TERRAIN_SPEC = [
         id: 3,
         name: 'Shelf',
         water: true,
-        color: Color.fromHex('#2878a0'),
+        color: Color.fromHex('#2c83af'),
     },
     {
         id: 4,
@@ -42,7 +42,7 @@ const TERRAIN_SPEC = [
         id: 6,
         name: 'Plateau',
         water: false,
-        color: Color.fromHex('#c6df8e'),
+        color: Color.fromHex('#c7d996'),
     },
     {
         id: 7,
@@ -93,7 +93,6 @@ export const NOISE_SPEC = {
 
 export const PIPELINE = [
     [{
-        type: 'land',
         noise: NOISE_SPEC.outline,
         value: Terrain.BASIN,
         baseTerrain: Terrain.SEA,
@@ -101,30 +100,26 @@ export const PIPELINE = [
     }],
     [
         {
-            type: 'land',
             noise: NOISE_SPEC.outline,
             value: Terrain.PLAIN,
             baseTerrain: Terrain.BASIN,
             ratio: .6
         },
         {
-            type: 'water',
             noise: NOISE_SPEC.outline,
             value: Terrain.OCEAN,
             baseTerrain: Terrain.SEA,
-            ratio: .5
+            ratio: .47
         }
     ],
     [
         {
-            type: 'land',
             noise: NOISE_SPEC.grained,
             value: Terrain.PLATEAU,
             baseTerrain: Terrain.PLAIN,
             ratio: .45
         },
         {
-            type: 'water',
             noise: NOISE_SPEC.grained,
             value: Terrain.ABYSS,
             baseTerrain: Terrain.OCEAN,
@@ -133,14 +128,12 @@ export const PIPELINE = [
     ],
     [
         {
-            type: 'land',
             noise: NOISE_SPEC.feature,
             value: Terrain.MOUNTAIN,
             baseTerrain: Terrain.PLATEAU,
             ratio: .45
         },
         {
-            type: 'water',
             noise: NOISE_SPEC.feature,
             value: Terrain.SHELF,
             baseTerrain: Terrain.OCEAN,
@@ -149,26 +142,15 @@ export const PIPELINE = [
     ],
     [
         {// put peaks on mountains
-            type: 'land',
             noise: NOISE_SPEC.grained,
             value: Terrain.PEAK,
             baseTerrain: Terrain.MOUNTAIN,
             ratio: .65
         },
         {// put islands on shelves
-            type: 'land',
             noise: NOISE_SPEC.grained,
             value: Terrain.BASIN,
             baseTerrain: Terrain.SHELF,
-            ratio: .55
-        }
-    ],
-    [
-        {// put basins
-            type: 'land',
-            noise: NOISE_SPEC.feature,
-            value: Terrain.BASIN,
-            baseTerrain: Terrain.PLAIN,
             ratio: .55
         },
     ],
