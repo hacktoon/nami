@@ -11,7 +11,7 @@ import { NoiseTileMapDiagram } from './diagram'
 
 const SCHEMA = new Schema(
     'NoiseTileMap',
-    Type.rect('rect', 'Size', {default: '150x100'}),
+    Type.rect('rect', 'Size', {default: '150x150'}),
     Type.number('octaves', 'Octaves', {default: 5, step: 1, min: 1, max: 20}),
     Type.number('resolution', 'Resolution', {default: .6, step: 0.1, min: 0.1, max: 1}),
     Type.number('scale', 'Scale', {default: .03, step: 0.01, min: 0.01, max: 1}),
