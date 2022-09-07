@@ -1,12 +1,11 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Point } from '/src/lib/point'
-import { LAND_OUTLINE } from './model'
 
 
 const EMPTY = null
 
 
-class HeightFloodFill extends ConcurrentFillUnit {
+class BasinFloodFill extends ConcurrentFillUnit {
     setValue(fill, point, level) {
         const isLand = fill.context.outlineMap.get(point) === LAND_OUTLINE.id
         let value = isLand ? level : -level
@@ -23,8 +22,8 @@ class HeightFloodFill extends ConcurrentFillUnit {
 }
 
 
-export class HeightMultiFill extends ConcurrentFill {
+export class BasinMultiFill extends ConcurrentFill {
     constructor(origins, context) {
-        super(origins, HeightFloodFill, context)
+        super(origins, BasinFloodFill, context)
     }
 }

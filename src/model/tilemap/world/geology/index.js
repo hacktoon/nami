@@ -5,6 +5,7 @@ import { UITileMap } from '/src/ui/tilemap'
 
 import { GeologyTileMapDiagram } from './diagram'
 import { TerrainModel } from './terrain'
+import { ErosionModel } from './erosion'
 
 
 const ID = 'GeologyTileMap'
@@ -26,10 +27,12 @@ export class GeologyTileMap extends TileMap {
     }
 
     #terrainModel
+    #erosionModel
 
     constructor(params) {
         super(params)
         this.#terrainModel = new TerrainModel(this.rect, this.seed)
+        this.#erosionModel = new ErosionModel(this.rect, this.#terrainModel)
     }
 
     get(point) {
