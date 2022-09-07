@@ -33,8 +33,8 @@ export class TerrainTileMap extends TileMap {
     }
 
     get(point) {
-        const outline = this.#terrainModel.get(point)
-        return `Terrain=${outline.name}`
+        const terrain = this.getTerrain(point)
+        return `Terrain=${terrain.name}`
     }
 
     getTerrain(point) {
