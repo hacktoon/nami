@@ -4,7 +4,8 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 
 const SCHEMA = new Schema(
-    'GeologyTileMapDiagram'
+    'GeologyTileMapDiagram',
+    Type.boolean('showBorders', 'Show borders', {default: false}),
 )
 
 
@@ -36,6 +37,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        return this.colorMap.getTerrain(point)
+        const color = this.colorMap.getTerrain(point)
+        if (this.showBorders && this.tileMap.isBorder(point))
+            return color.darken(20)
+        return color
     }
 }

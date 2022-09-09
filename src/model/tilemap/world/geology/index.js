@@ -32,7 +32,7 @@ export class GeologyTileMap extends TileMap {
     constructor(params) {
         super(params)
         this.#terrainModel = new TerrainModel(this.rect, this.seed)
-        this.#erosionModel = new ErosionModel(this.rect, this.#terrainModel)
+        // this.#erosionModel = new ErosionModel(this.rect, this.#terrainModel)
     }
 
     get(point) {
@@ -42,5 +42,9 @@ export class GeologyTileMap extends TileMap {
 
     getTerrain(point) {
         return this.#terrainModel.get(point)
+    }
+
+    isBorder(point) {
+        return this.#terrainModel.isBorder(point)
     }
 }

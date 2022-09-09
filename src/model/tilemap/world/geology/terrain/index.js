@@ -7,6 +7,7 @@ import { NOISE_SPEC, PIPELINE, Terrain } from './spec'
 
 export class TerrainModel {
     #idMap
+    #borderMap
 
     #buildNoiseMaps(rect, seed) {
         const noiseMaps = new Map()
@@ -26,17 +27,22 @@ export class TerrainModel {
     constructor(rect, seed) {
         const noiseMaps = this.#buildNoiseMaps(rect, seed)
         let idMap = Matrix.fromRect(rect, () => Terrain.SEA)
-        let borderMap = Matrix.fromRect(rect, () => false)
+        const borderMap = Matrix.fromRect(rect, () => false)
         for(let spec of PIPELINE) {
             const layer = new Layer(idMap, borderMap, noiseMaps)
             idMap = layer.build(spec)
         }
         this.#idMap = idMap
+        this.#borderMap = borderMap
     }
 
     get(point) {
         const id = this.#idMap.get(point)
         return Terrain.fromId(id)
+    }
+
+    isBorder(point) {
+        return this.#borderMap.get(point)
     }
 
     isLand(point) {
@@ -69,11 +75,12 @@ class Layer {
             }
             return currentId
         })
-        // update borders
+        // set borders
         layer.forEach((point, currentId) => {
             for (let sidePoint of Point.adjacents(point)) {
                 if (currentId != layer.get(sidePoint)) {
                     this.borderMap.set(point, true)
+                    return
                 }
             }
         })
