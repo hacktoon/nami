@@ -6,6 +6,7 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
     Type.boolean('showBorders', 'Show borders', {default: false}),
+    Type.number('borderLevel', 'Border level', {default: 0}),
 )
 
 
@@ -33,13 +34,18 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         super(tileMap)
         this.colorMap = colorMap
         this.showBorders = params.get('showBorders')
-        this.showLevel = params.get('showLevel')
+        this.borderLevel = params.get('borderLevel')
     }
 
     get(point) {
+        const terrain = this.tileMap.getTerrain(point)
         const color = this.colorMap.getTerrain(point)
-        if (this.showBorders && this.tileMap.isBorder(point))
-            return color.darken(20)
+        if (this.showBorders && this.tileMap.isBorder(point)) {
+            if (this.borderLevel < 0) {
+                return color.darken(20)
+            }
+            return this.borderLevel == terrain.id ? color.darken(50) : color
+        }
         return color
     }
 }
