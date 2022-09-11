@@ -17,7 +17,7 @@ export class TerrainModel {
                 octaves: spec.octaves,
                 resolution: spec.resolution,
                 scale: spec.scale,
-                seed: seed + id,
+                seed: `${seed}${id}`,
             })
             noiseMaps.set(id, map)
         }
@@ -37,7 +37,7 @@ export class TerrainModel {
         layer.forEach((point, currentId) => {
             for (let sidePoint of Point.adjacents(point)) {
                 if (currentId !== layer.get(sidePoint)) {
-                    this.#borderMap.set(point, true)
+                    this.#borderMap.set(point, currentId)
                     return
                 }
             }
@@ -59,7 +59,7 @@ export class TerrainModel {
 
     constructor(rect, seed) {
         this.noiseMaps = this.#buildNoiseMaps(rect, seed)
-        this.#borderMap = Matrix.fromRect(rect, () => false)
+        this.#borderMap = new BorderMap(rect)
         let idMap = Matrix.fromRect(rect, () => Terrain.SEA)
         for(let spec of PIPELINE) {
             idMap = this.#build(idMap, spec)
@@ -81,6 +81,32 @@ export class TerrainModel {
     }
 
     isWater(point) {
-        return this.get(point).water
+        return ! this.isLand(point)
+    }
+}
+
+
+class BorderMap {
+    #matrix
+    #borders
+
+    constructor(rect) {
+        this.#matrix = Matrix.fromRect(rect, () => false)
+        this.#borders = new Map(
+            Terrain.types().map(terrain => [terrain.id, []])
+        )
+    }
+
+    get(point) {
+        return this.#matrix.get(point)
+    }
+
+    set(point, terrainId) {
+        this.#borders.get(terrainId).push(point)
+        return this.#matrix.set(point, true)
+    }
+
+    getBorders(id) {
+        return this.#borders.get(id)
     }
 }

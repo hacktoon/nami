@@ -63,6 +63,10 @@ export class Terrain {
         return new Terrain(TYPE_MAP.get(id))
     }
 
+    static types() {
+        return TERRAIN_SPEC
+    }
+
     constructor(spec) {
         this.id = spec.id
         this.name = spec.name
