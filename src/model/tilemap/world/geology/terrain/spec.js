@@ -22,36 +22,30 @@ const TERRAIN_SPEC = [
     },
     {
         id: 3,
-        name: 'Shelf',
-        water: true,
-        color: Color.fromHex('#2c83af'),
-    },
-    {
-        id: 4,
         name: 'Basin',
         water: false,
         color: Color.fromHex('#71b13e'),
     },
     {
-        id: 5,
+        id: 4,
         name: 'Plain',
         water: false,
         color: Color.fromHex('#99d966'),
     },
     {
-        id: 6,
+        id: 5,
         name: 'Plateau',
         water: false,
         color: Color.fromHex('#c7d996'),
     },
     {
-        id: 7,
+        id: 6,
         name: 'Mountain',
         water: false,
         color: Color.fromHex('#c0b896'),
     },
     {
-        id: 8,
+        id: 7,
         name: 'Peak',
         water: false,
         color: Color.fromHex('#DDD'),
@@ -135,7 +129,7 @@ export const PIPELINE = [
         },
         {
             noise: NOISE_SPEC.feature,
-            value: Terrain.SHELF,
+            value: Terrain.SEA,
             baseTerrain: Terrain.OCEAN,
             ratio: .3
         }
@@ -150,8 +144,8 @@ export const PIPELINE = [
         {// put islands on shelves
             noise: NOISE_SPEC.grained,
             value: Terrain.BASIN,
-            baseTerrain: Terrain.SHELF,
-            ratio: .55
+            baseTerrain: Terrain.SEA,
+            ratio: .6
         },
     ],
 ]
