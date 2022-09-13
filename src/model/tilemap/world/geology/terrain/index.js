@@ -24,7 +24,7 @@ export class TerrainModel {
         return noiseMaps
     }
 
-    #build(baseLayer, spec) {
+    #buildLayer(baseLayer, spec) {
         // convert noise to terrain id
         const layer = Matrix.fromRect(baseLayer.rect, point => {
             const currentId = baseLayer.get(point)
@@ -62,7 +62,7 @@ export class TerrainModel {
         this.#borderMap = new BorderMap(rect)
         let idMap = Matrix.fromRect(rect, () => Terrain.SEA)
         for(let spec of PIPELINE) {
-            idMap = this.#build(idMap, spec)
+            idMap = this.#buildLayer(idMap, spec)
         }
         this.#idMap = idMap
     }
