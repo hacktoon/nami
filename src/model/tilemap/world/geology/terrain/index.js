@@ -77,11 +77,11 @@ export class TerrainModel {
     }
 
     isLand(point) {
-        return ! this.get(point).water
+        return ! this.isWater(point)
     }
 
     isWater(point) {
-        return ! this.isLand(point)
+        return this.get(point).water
     }
 }
 
