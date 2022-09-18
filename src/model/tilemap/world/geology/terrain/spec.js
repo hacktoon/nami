@@ -83,8 +83,8 @@ TERRAIN_SPEC.forEach(spec => {
 
 
 export const NOISE_SPEC = {
-    outline: {id: 'outline', octaves: 6, resolution: .7, scale: .02},
-    feature: {id: 'feature', octaves: 5, resolution: .8, scale: .05},
+    outline: {id: 'outline', octaves: 6, resolution: .8, scale: .02},
+    feature: {id: 'feature', octaves: 6, resolution: .8, scale: .05},
     grained: {id: 'grained', octaves: 6, resolution: .8, scale: .06},
 }
 
@@ -98,10 +98,10 @@ export const PIPELINE = [
     }],
     [
         {
-            noise: NOISE_SPEC.outline,
+            noise: NOISE_SPEC.feature,
             value: Terrain.PLAIN,
             baseTerrain: Terrain.BASIN,
-            ratio: .6
+            ratio: .4
         },
         {
             noise: NOISE_SPEC.outline,
@@ -110,46 +110,46 @@ export const PIPELINE = [
             ratio: .47
         }
     ],
-    [
-        {
-            noise: NOISE_SPEC.grained,
-            value: Terrain.PLATEAU,
-            baseTerrain: Terrain.PLAIN,
-            ratio: .45
-        },
-        {
-            noise: NOISE_SPEC.grained,
-            value: Terrain.ABYSS,
-            baseTerrain: Terrain.OCEAN,
-            ratio: .4
-        }
-    ],
-    [
-        {
-            noise: NOISE_SPEC.feature,
-            value: Terrain.MOUNTAIN,
-            baseTerrain: Terrain.PLATEAU,
-            ratio: .45
-        },
-        {
-            noise: NOISE_SPEC.feature,
-            value: Terrain.SEA,
-            baseTerrain: Terrain.OCEAN,
-            ratio: .3
-        }
-    ],
-    [
-        {// put peaks on mountains
-            noise: NOISE_SPEC.grained,
-            value: Terrain.PEAK,
-            baseTerrain: Terrain.MOUNTAIN,
-            ratio: .65
-        },
-        {// put islands on shelves
-            noise: NOISE_SPEC.grained,
-            value: Terrain.BASIN,
-            baseTerrain: Terrain.SEA,
-            ratio: .6
-        },
-    ],
+    // [
+    //     {
+    //         noise: NOISE_SPEC.grained,
+    //         value: Terrain.PLATEAU,
+    //         baseTerrain: Terrain.PLAIN,
+    //         ratio: .45
+    //     },
+    //     {
+    //         noise: NOISE_SPEC.grained,
+    //         value: Terrain.ABYSS,
+    //         baseTerrain: Terrain.OCEAN,
+    //         ratio: .4
+    //     }
+    // ],
+    // [
+    //     {
+    //         noise: NOISE_SPEC.feature,
+    //         value: Terrain.MOUNTAIN,
+    //         baseTerrain: Terrain.PLATEAU,
+    //         ratio: .45
+    //     },
+    //     {
+    //         noise: NOISE_SPEC.feature,
+    //         value: Terrain.SEA,
+    //         baseTerrain: Terrain.OCEAN,
+    //         ratio: .3
+    //     }
+    // ],
+    // [
+    //     {// put peaks on mountains
+    //         noise: NOISE_SPEC.grained,
+    //         value: Terrain.PEAK,
+    //         baseTerrain: Terrain.MOUNTAIN,
+    //         ratio: .65
+    //     },
+    //     {// put islands on shelves
+    //         noise: NOISE_SPEC.grained,
+    //         value: Terrain.BASIN,
+    //         baseTerrain: Terrain.SEA,
+    //         ratio: .6
+    //     },
+    // ],
 ]

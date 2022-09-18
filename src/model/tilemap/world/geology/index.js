@@ -11,7 +11,7 @@ import { ErosionModel } from './erosion'
 const ID = 'GeologyTileMap'
 const SCHEMA = new Schema(
     ID,
-    Type.rect('rect', 'Size', {default: '150x150'}),
+    Type.rect('rect', 'Size', {default: '100x100'}),
     Type.text('seed', 'Seed', {default: ''}),
 )
 
