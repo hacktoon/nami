@@ -42,7 +42,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const color = this.colorMap.getTerrain(point)
         if (this.showBorders && this.tileMap.isBorder(point)) {
             if (this.borderLevel < 0) return color
-            return this.borderLevel == terrain.id ? color.darken(50) : color
+            return this.borderLevel == terrain.id ? color.darken(20) : color
         }
         return color
     }

@@ -46,7 +46,7 @@ export class TerrainModel {
     }
 
     #buildPoint(point, currentId, spec) {
-        const terrain = Terrain.fromId(spec.value)
+        const terrain = Terrain.fromId(spec.terrain)
         const notBorder = this.#borderMap.get(point) === false
         const noiseMap = this.noiseMaps.get(spec.noise.id)
         const noise = noiseMap.getNoise(point)
@@ -54,7 +54,7 @@ export class TerrainModel {
         const isRated = terrain.water ? ! isAboveRatio : isAboveRatio
         const isBaseTerrain = currentId === spec.baseTerrain
         const isValid = isBaseTerrain && notBorder && isRated
-        return isValid ? spec.value : currentId
+        return isValid ? spec.terrain : currentId
     }
 
     constructor(rect, seed) {

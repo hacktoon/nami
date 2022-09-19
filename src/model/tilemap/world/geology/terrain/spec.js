@@ -85,6 +85,7 @@ TERRAIN_SPEC.forEach(spec => {
 export const NOISE_SPEC = {
     outline: {id: 'outline', octaves: 6, resolution: .8, scale: .02},
     feature: {id: 'feature', octaves: 6, resolution: .8, scale: .05},
+    mountain: {id: 'mountain', octaves: 6, resolution: .8, scale: .05},
     grained: {id: 'grained', octaves: 6, resolution: .8, scale: .06},
 }
 
@@ -92,34 +93,34 @@ export const NOISE_SPEC = {
 export const PIPELINE = [
     [{
         noise: NOISE_SPEC.outline,
-        value: Terrain.BASIN,
+        terrain: Terrain.BASIN,
         baseTerrain: Terrain.SEA,
         ratio: .55
     }],
-    [
-        {
-            noise: NOISE_SPEC.feature,
-            value: Terrain.PLAIN,
-            baseTerrain: Terrain.BASIN,
-            ratio: .4
-        },
-        {
-            noise: NOISE_SPEC.outline,
-            value: Terrain.OCEAN,
-            baseTerrain: Terrain.SEA,
-            ratio: .47
-        }
-    ],
+    // [
+    //     {
+    //         noise: NOISE_SPEC.feature,
+    //         terrain: Terrain.PLAIN,
+    //         baseTerrain: Terrain.BASIN,
+    //         ratio: .4
+    //     },
+    //     {
+    //         noise: NOISE_SPEC.outline,
+    //         terrain: Terrain.OCEAN,
+    //         baseTerrain: Terrain.SEA,
+    //         ratio: .47
+    //     }
+    // ],
     // [
     //     {
     //         noise: NOISE_SPEC.grained,
-    //         value: Terrain.PLATEAU,
+    //         terrain: Terrain.PLATEAU,
     //         baseTerrain: Terrain.PLAIN,
     //         ratio: .45
     //     },
     //     {
     //         noise: NOISE_SPEC.grained,
-    //         value: Terrain.ABYSS,
+    //         terrain: Terrain.ABYSS,
     //         baseTerrain: Terrain.OCEAN,
     //         ratio: .4
     //     }
@@ -127,13 +128,13 @@ export const PIPELINE = [
     // [
     //     {
     //         noise: NOISE_SPEC.feature,
-    //         value: Terrain.MOUNTAIN,
+    //         terrain: Terrain.MOUNTAIN,
     //         baseTerrain: Terrain.PLATEAU,
     //         ratio: .45
     //     },
     //     {
     //         noise: NOISE_SPEC.feature,
-    //         value: Terrain.SEA,
+    //         terrain: Terrain.SEA,
     //         baseTerrain: Terrain.OCEAN,
     //         ratio: .3
     //     }
@@ -141,13 +142,13 @@ export const PIPELINE = [
     // [
     //     {// put peaks on mountains
     //         noise: NOISE_SPEC.grained,
-    //         value: Terrain.PEAK,
+    //         terrain: Terrain.PEAK,
     //         baseTerrain: Terrain.MOUNTAIN,
     //         ratio: .65
     //     },
     //     {// put islands on shelves
     //         noise: NOISE_SPEC.grained,
-    //         value: Terrain.BASIN,
+    //         terrain: Terrain.BASIN,
     //         baseTerrain: Terrain.SEA,
     //         ratio: .6
     //     },
