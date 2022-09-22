@@ -5,7 +5,6 @@ import { UITileMap } from '/src/ui/tilemap'
 
 import { GeologyTileMapDiagram } from './diagram'
 import { TerrainModel } from './terrain'
-import { ErosionModel } from './erosion'
 
 
 const ID = 'GeologyTileMap'

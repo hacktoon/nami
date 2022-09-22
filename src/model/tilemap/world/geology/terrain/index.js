@@ -2,7 +2,8 @@ import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 
-import { NOISE_SPEC, PIPELINE, Terrain } from './spec'
+import { NOISE_SPEC } from './noise'
+import { PIPELINE, Terrain } from './spec'
 
 
 export class TerrainModel {
@@ -25,7 +26,7 @@ export class TerrainModel {
     }
 
     #buildLayer(baseLayer, spec) {
-        // convert noise to terrain id
+        // convert noise map to terrain id map
         const layer = Matrix.fromRect(baseLayer.rect, point => {
             const currentId = baseLayer.get(point)
             for (let rule of spec)
@@ -33,7 +34,7 @@ export class TerrainModel {
                     return this.#buildPoint(point, currentId, rule)
             return currentId
         })
-        // set borders
+        // set borders for each different terrain type
         layer.forEach((point, currentId) => {
             if (this.#borderMap.has(point))
                 return
@@ -52,9 +53,9 @@ export class TerrainModel {
         const notBorder = this.#borderMap.get(point) === false
         const noiseMap = this.noiseMaps.get(spec.noise.id)
         const noise = noiseMap.getNoise(point)
-        const isAboveRatio = noise >= spec.ratio
-        const isRated = terrain.water ? ! isAboveRatio : isAboveRatio
+        const isValidRatio = noise >= spec.ratio
         const isBaseTerrain = currentId === spec.baseTerrain
+        const isRated = terrain.water ? ! isValidRatio : isValidRatio
         const isValid = isBaseTerrain && notBorder && isRated
         return isValid ? spec.terrain : currentId
     }
