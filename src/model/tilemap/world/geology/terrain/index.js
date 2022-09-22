@@ -35,6 +35,8 @@ export class TerrainModel {
         })
         // set borders
         layer.forEach((point, currentId) => {
+            if (this.#borderMap.has(point))
+                return
             for (let sidePoint of Point.adjacents(point)) {
                 if (currentId !== layer.get(sidePoint)) {
                     this.#borderMap.set(point, currentId)
@@ -95,6 +97,10 @@ class BorderMap {
         this.#borders = new Map(
             Terrain.types().map(terrain => [terrain.id, []])
         )
+    }
+
+    has(point) {
+        return this.#matrix.get(point) === true
     }
 
     get(point) {
