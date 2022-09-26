@@ -102,6 +102,17 @@ export class PointSet {
         }
     }
 
+    delete([x, y]) {
+        if (! this.#xMap.has(x)) return
+        const yMap = this.#xMap.get(x)
+        if (! yMap.has(y)) return
+        yMap.delete(y)
+        if (yMap.size === 0) {
+            this.#xMap.delete(x)
+        }
+        this.#size--
+    }
+
     has([x, y]) {
         if (! this.#xMap.has(x)) return false
         return this.#xMap.get(x).has(y)
