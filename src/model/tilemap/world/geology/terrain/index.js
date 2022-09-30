@@ -33,11 +33,11 @@ export class TerrainModel {
         const pointSet = new PointSet()
         const noiseMap = this.noiseMaps.get(rule.noise.id)
         this.#pointSetByType[type].forEach(point => {
-            if (this.#borderMap.has(point)) return
             const noise = noiseMap.getNoise(point)
-            if (noise >= rule.ratio) {
-                pointSet.add(point)
-            }
+            if (this.#borderMap.has(point)) return
+            if (noise < rule.ratio) return
+            this.#terrainMap.set(point, terrain)
+            pointSet.add(point)
             // detect borders
             for (let sidePoint of Point.adjacents(point)) {
                 const sideNoise = noiseMap.getNoise(sidePoint)
@@ -73,18 +73,6 @@ export class TerrainModel {
             }
             return terrain
         })
-    }
-
-    #buildPoint(point, currentId, spec) {
-        const terrain = Terrain.fromId(spec.terrain)
-        // const notBorder = this.#borderMap.get(point) === false
-        const noiseMap = this.noiseMaps.get(spec.noise.id)
-        const noise = noiseMap.getNoise(point)
-        const isValidRatio = noise >= spec.ratio
-        const isBaseTerrain = currentId === spec.baseTerrain
-        const isRated = terrain.water ? ! isValidRatio : isValidRatio
-        const isValid = isBaseTerrain && notBorder && isRated
-        return isValid ? spec.terrain : currentId
     }
 
     constructor(rect, seed) {
