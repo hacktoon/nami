@@ -27,17 +27,15 @@ export class GeologyTileMap extends TileMap {
     }
 
     #terrainModel
-    #erosionModel
 
     constructor(params) {
         super(params)
         this.#terrainModel = new TerrainModel(this.rect, this.seed)
-        // this.#erosionModel = new ErosionModel(this.rect, this.#terrainModel)
     }
 
     get(point) {
         const terrain = this.getTerrain(point)
-        return `Terrain=${terrain.name}, ${Point.hash(point)}`
+        return `${Point.hash(point)} | terrain=${terrain.name}`
     }
 
     getTerrain(point) {

@@ -1,4 +1,5 @@
 import { Schema } from '/src/lib/schema'
+import { Color } from '/src/lib/color'
 import { Type } from '/src/lib/type'
 import { TileMapDiagram } from '/src/lib/model/tilemap'
 
@@ -42,7 +43,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const color = this.colorMap.getTerrain(point)
         if (this.showBorders && this.tileMap.isBorder(point)) {
             if (this.borderLevel < 0) return color
-            return this.borderLevel == terrain.id ? color.darken(20) : color
+            if (this.borderLevel == terrain.id) {
+                return color.average(Color.RED).average(color)
+            }
+            return color
         }
         return color
     }

@@ -23,7 +23,7 @@ export class NoiseMapSet {
         }
     }
 
-    get(id) {
-        return this.map.get(id)
+    get(spec) {
+        return this.map.get(spec.id)
     }
 }

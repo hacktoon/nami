@@ -62,8 +62,8 @@ export class Terrain {
         return new Terrain(TYPE_MAP.get(id))
     }
 
-    static types() {
-        return TERRAIN_SPEC
+    static landTypes() {
+        return TERRAIN_SPEC.filter(terrain => ! terrain.water)
     }
 
     static isLand(id) {
@@ -84,6 +84,8 @@ TERRAIN_SPEC.forEach(spec => {
     Terrain[name] = spec.id
 })
 
+
+export const BASE_NOISE = NOISE_SPEC.outline
 export const BASE_RATIO = .55
 export const LAYERS = [
     {
@@ -109,7 +111,7 @@ export const LAYERS = [
     {
         terrain: Terrain.OCEAN,
         noise: NOISE_SPEC.feature,
-        ratio: .40
+        ratio: .35
     },
     {
         terrain: Terrain.ABYSS,
