@@ -1,5 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
+import { Point } from '/src/lib/point'
 import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
@@ -36,7 +37,7 @@ export class GeologyTileMap extends TileMap {
 
     get(point) {
         const terrain = this.getTerrain(point)
-        return `Terrain=${terrain.name}`
+        return `Terrain=${terrain.name}, ${Point.hash(point)}`
     }
 
     getTerrain(point) {

@@ -1,11 +1,9 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
-import { NoiseTileMap } from '/src/model/tilemap/noise'
 
-import { NOISE_SPEC } from './noise'
-import { Terrain } from './spec'
-import { LAYERS } from './layer'
+import { NOISE_SPEC, NoiseMapSet } from './noise'
+import { LAYERS, BASE_RATIO, Terrain } from './spec'
 
 
 export class TerrainModel {
@@ -13,49 +11,35 @@ export class TerrainModel {
     #terrainMap
     #pointSetByType
 
-    #buildNoiseMaps(rect, seed) {
-        const noiseMaps = new Map()
-        for(let [id, spec] of Object.entries(NOISE_SPEC)) {
-            const map = NoiseTileMap.fromData({
-                rect: rect.hash(),
-                octaves: spec.octaves,
-                resolution: spec.resolution,
-                scale: spec.scale,
-                seed: `${seed}${id}`,
-            })
-            noiseMaps.set(id, map)
-        }
-        return noiseMaps
-    }
-
-    #buildLayer(type, rule) {
-        const terrain = Terrain.PLAIN
-        const pointSet = new PointSet()
-        const noiseMap = this.noiseMaps.get(rule.noise.id)
-        this.#pointSetByType[type].forEach(point => {
+    #buildLayer(layer) {
+        const terrain = Terrain.fromId(layer.terrain)
+        const layerType = terrain.water ? 'water' : 'land'
+        const newPointSet = new PointSet()
+        const noiseMap = this.noiseMaps.get(layer.noise.id)
+        this.#pointSetByType[layerType].forEach(point => {
             const noise = noiseMap.getNoise(point)
-            if (this.#borderMap.has(point)) return
-            if (noise < rule.ratio) return
-            this.#terrainMap.set(point, terrain)
-            pointSet.add(point)
-            // detect borders
+            if (this.#borderMap.has(point) || noise < layer.ratio)
+                return
+            this.#terrainMap.set(point, layer.terrain)
+            newPointSet.add(point)
+        })
+        // detect borders on new points
+        newPointSet.forEach(point => {
             for (let sidePoint of Point.adjacents(point)) {
-                const sideNoise = noiseMap.getNoise(sidePoint)
-                if (sideNoise < rule.ratio) {
+                if (this.#terrainMap.get(sidePoint) !== layer.terrain) {
                     // side is different, this point is a border
-                    this.#borderMap.set(point, terrain)
+                    this.#borderMap.set(point, layer.terrain)
                     return
                 }
             }
         })
-        this.#pointSetByType[type] = pointSet
+        this.#pointSetByType[layerType] = newPointSet
     }
 
     #buildBaseLayer() {
-        const BASE_RATIO = .55
         const outlineNoiseMap = this.noiseMaps.get(NOISE_SPEC.outline.id)
         const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
-        const getType = noise => noise >= BASE_RATIO ? 'land' : 'water'
+        const getType = noise => noise < BASE_RATIO ? 'water' : 'land'
         return Matrix.fromRect(outlineNoiseMap.rect, point => {
             const noise = outlineNoiseMap.getNoise(point)
             const type = getType(noise)
@@ -80,13 +64,12 @@ export class TerrainModel {
             water: new PointSet(),
             land: new PointSet(),
         }
-        this.noiseMaps = this.#buildNoiseMaps(rect, seed)
+        this.noiseMaps = new NoiseMapSet(rect, seed)
         this.#borderMap = new BorderMap(rect)
         this.#terrainMap = this.#buildBaseLayer()
-        this.#buildLayer('land', LAYERS[0])
-        // for(let rules of PIPELINE) {
-        //     this.#buildLayer(rules)
-        // }
+        for (let layer of LAYERS) {
+            this.#buildLayer(layer)
+        }
     }
 
     get(point) {
@@ -96,6 +79,10 @@ export class TerrainModel {
 
     isBorder(point) {
         return this.#borderMap.get(point)
+    }
+
+    getBorders(id) {
+        return this.#borderMap.getBorders(id)
     }
 
     isLand(point) {
@@ -128,7 +115,8 @@ class BorderMap {
     }
 
     set(point, terrainId) {
-        this.#borders.get(terrainId).push(point)
+        if (Terrain.isLand(terrainId))
+            this.#borders.get(terrainId).push(point)
         return this.#matrix.set(point, true)
     }
 

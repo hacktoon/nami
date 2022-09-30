@@ -66,6 +66,10 @@ export class Terrain {
         return TERRAIN_SPEC
     }
 
+    static isLand(id) {
+        return ! TYPE_MAP.get(id).water
+    }
+
     constructor(spec) {
         this.id = spec.id
         this.name = spec.name
@@ -80,68 +84,36 @@ TERRAIN_SPEC.forEach(spec => {
     Terrain[name] = spec.id
 })
 
-
-export const PIPELINE = [
-    [{
-        noise: NOISE_SPEC.outline,
-        terrain: Terrain.BASIN,
-        baseTerrain: Terrain.SEA,
-        ratio: .55
-    }],
-    [
-        {
-            noise: NOISE_SPEC.feature,
-            terrain: Terrain.PLAIN,
-            baseTerrain: Terrain.BASIN,
-            ratio: .33
-        },
-        {
-            noise: NOISE_SPEC.outline,
-            terrain: Terrain.OCEAN,
-            baseTerrain: Terrain.SEA,
-            ratio: .47
-        }
-    ],
-    [
-        {
-            noise: NOISE_SPEC.grained,
-            terrain: Terrain.PLATEAU,
-            baseTerrain: Terrain.PLAIN,
-            ratio: .42
-        },
-        {
-            noise: NOISE_SPEC.grained,
-            terrain: Terrain.ABYSS,
-            baseTerrain: Terrain.OCEAN,
-            ratio: .4
-        }
-    ],
-    [
-        {
-            noise: NOISE_SPEC.feature,
-            terrain: Terrain.MOUNTAIN,
-            baseTerrain: Terrain.PLATEAU,
-            ratio: .45
-        },
-        {
-            noise: NOISE_SPEC.feature,
-            terrain: Terrain.SEA,
-            baseTerrain: Terrain.OCEAN,
-            ratio: .3
-        }
-    ],
-    [
-        {// put peaks on mountains
-            noise: NOISE_SPEC.grained,
-            terrain: Terrain.PEAK,
-            baseTerrain: Terrain.MOUNTAIN,
-            ratio: .65
-        },
-        {// put islands on sea
-            noise: NOISE_SPEC.grained,
-            terrain: Terrain.BASIN,
-            baseTerrain: Terrain.SEA,
-            ratio: .6
-        },
-    ],
+export const BASE_RATIO = .55
+export const LAYERS = [
+    {
+        terrain: Terrain.PLAIN,
+        noise: NOISE_SPEC.feature,
+        ratio: .33
+    },
+    {
+        terrain: Terrain.PLATEAU,
+        noise: NOISE_SPEC.grained,
+        ratio: .42
+    },
+    {
+        terrain: Terrain.MOUNTAIN,
+        noise: NOISE_SPEC.feature,
+        ratio: .45
+    },
+    {
+        terrain: Terrain.PEAK,
+        noise: NOISE_SPEC.grained,
+        ratio: .65
+    },
+    {
+        terrain: Terrain.OCEAN,
+        noise: NOISE_SPEC.feature,
+        ratio: .40
+    },
+    {
+        terrain: Terrain.ABYSS,
+        noise: NOISE_SPEC.grained,
+        ratio: .60
+    },
 ]
