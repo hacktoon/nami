@@ -7,6 +7,7 @@ import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './schema'
 
 
 export class TerrainModel {
+    #erosionPoints
     #borderPoints
     #terrainMap
 
@@ -24,8 +25,8 @@ export class TerrainModel {
         // detect borders on new points
         newPoints.forEach(point => {
             for (let sidePoint of Point.adjacents(point)) {
-                if (this.#terrainMap.get(sidePoint) !== props.layer.terrain) {
-                    // side is different, this point is a border
+                const sideTerrain = this.#terrainMap.get(sidePoint)
+                if (sideTerrain !== props.layer.terrain) {
                     this.#setBorder(point, props.layer.terrain, props)
                     return
                 }
@@ -37,16 +38,17 @@ export class TerrainModel {
     #buildBaseLayer(props) {
         const outlineNoiseMap = props.noiseMapSet.get(BASE_NOISE)
         const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
-        const getType = noise => noise < BASE_RATIO ? 'water' : 'land'
-        return Matrix.fromRect(outlineNoiseMap.rect, point => {
+        const getLayerType = point => {
             const noise = outlineNoiseMap.getNoise(point)
-            const type = getType(noise)
-            const terrain = typeMap[type]
-            props.pointQueue[type].push(point)
+            return noise < BASE_RATIO ? 'water' : 'land'
+        }
+        const layer = Matrix.fromRect(outlineNoiseMap.rect, point => {
+            const layerType = getLayerType(point)
+            const terrain = typeMap[layerType]
+            props.pointQueue[layerType].push(point)
             // detect borders
             for (let sidePoint of Point.adjacents(point)) {
-                const sideNoise = outlineNoiseMap.getNoise(sidePoint)
-                const sideTerrain = typeMap[getType(sideNoise)]
+                const sideTerrain = typeMap[getLayerType(sidePoint)]
                 if (terrain !== sideTerrain) {
                     // side is different, this point is a border
                     this.#setBorder(point, terrain, props)
@@ -55,26 +57,32 @@ export class TerrainModel {
             }
             return terrain
         })
+        return layer
+    }
+
+    #detectAreas() {
+
     }
 
     #setBorder(point, terrain, props) {
         this.#borderPoints.add(point)
         if (Terrain.isLand(terrain))
-            props.terrainErosionPoints.get(terrain).push(point)
+            props.erosionPoints.get(terrain).push(point)
     }
 
     constructor(rect, seed) {
         const noiseMapSet = new NoiseMapSet(rect, seed)
         const pointQueue = {water: [], land: []}
-        const terrainErosionPoints = new Map(
+        const erosionPoints = new Map(
             Terrain.landTypes().map(terrain => [terrain.id, []])
         )
-        const props = {pointQueue,  noiseMapSet, terrainErosionPoints}
+        const props = {pointQueue,  noiseMapSet, erosionPoints}
         this.#borderPoints = new PointSet()
         this.#terrainMap = this.#buildBaseLayer(props)
         for (let layer of LAYERS) {
             this.#buildLayer({...props, layer})
         }
+        this.#erosionPoints = erosionPoints
     }
 
     get(point) {
@@ -84,5 +92,9 @@ export class TerrainModel {
 
     isBorder(point) {
         return this.#borderPoints.has(point)
+    }
+
+    getErosionPoints() {
+        return this.#erosionPoints
     }
 }
