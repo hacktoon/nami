@@ -24,25 +24,24 @@ export class ScanlineFill {
 
     #stepFill() {
         let ranges = this.#rangeQueue
-
         this.#rangeQueue = []
         while (ranges.length) {
-            this.#fillRange(ranges.pop())
+            this.fillRange(ranges.pop())
         }
     }
 
-    #fillRange(range) {
+    fillRange(range) {
         let point = range.point
 
         while (this.config.canFill(point)) {
             this.config.onFill(point)
-            this.#detectRangeAbove(Point.atNorth(point), range)
-            this.#detectRangeBelow(Point.atSouth(point), range)
+            this.detectRangeAbove(Point.atNorth(point), range)
+            this.detectRangeBelow(Point.atSouth(point), range)
             point = this.config.filterPoint(Point.atEast(point))
         }
     }
 
-    #detectRangeAbove(referencePoint, referenceRange) {
+    detectRangeAbove(referencePoint, referenceRange) {
         let pointAbove = this.config.filterPoint(referencePoint)
         if (this.config.canFill(pointAbove)) {
             if (referenceRange.canCheckAbove) {
@@ -54,7 +53,7 @@ export class ScanlineFill {
         }
     }
 
-    #detectRangeBelow(referencePoint, referenceRange) {
+    detectRangeBelow(referencePoint, referenceRange) {
         let pointBelow = this.config.filterPoint(referencePoint)
         if (this.config.canFill(pointBelow)) {
             if (referenceRange.canCheckBelow) {
@@ -70,6 +69,7 @@ export class ScanlineFill {
         this.startPoint = startPoint
         this.config = config
         this.#createRange(startPoint)
+
     }
 
     fill() {
@@ -84,20 +84,20 @@ export class ScanlineFill {
 }
 
 
-// export class ScanlineFill8 extends ScanlineFill {
-//     #fillRange(range) {
-//         let point = range.point
+export class ScanlineFill8 extends ScanlineFill {
+    fillRange(range) {
+        let point = range.point
 
-//         while (this.config.canFill(point)) {
-//             this.config.onFill(point)
-//             this.#detectRangeAbove(Point.atNorthwest(point), range)
-//             this.#detectRangeAbove(Point.atNorth(point), range)
-//             this.#detectRangeAbove(Point.atNortheast(point), range)
-//             this.#detectRangeBelow(Point.atSouthwest(point), range)
-//             this.#detectRangeBelow(Point.atSouth(point), range)
-//             this.#detectRangeBelow(Point.atSoutheast(point), range)
-//             point = Point.atEast(point)
-//         }
-//     }
-// }
+        while (this.config.canFill(point)) {
+            this.config.onFill(point)
+            this.detectRangeAbove(Point.atNorthwest(point), range)
+            this.detectRangeAbove(Point.atNorth(point), range)
+            this.detectRangeAbove(Point.atNortheast(point), range)
+            this.detectRangeBelow(Point.atSouthwest(point), range)
+            this.detectRangeBelow(Point.atSouth(point), range)
+            this.detectRangeBelow(Point.atSoutheast(point), range)
+            point = Point.atEast(point)
+        }
+    }
+}
 

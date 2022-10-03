@@ -1,8 +1,11 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
+import { PairMap } from '/src/lib/map'
+import { ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { NoiseMapSet } from './noise'
+import { WaterSurfaceMap } from './surface'
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './schema'
 
 
@@ -10,6 +13,7 @@ export class TerrainModel {
     #erosionPoints
     #borderPoints
     #terrainMap
+    #waterSurfaceMap
 
     #buildLayer(props) {
         const newPoints = []
@@ -42,7 +46,7 @@ export class TerrainModel {
             const noise = outlineNoiseMap.getNoise(point)
             return noise < BASE_RATIO ? 'water' : 'land'
         }
-        const layer = Matrix.fromRect(outlineNoiseMap.rect, point => {
+        return Matrix.fromRect(outlineNoiseMap.rect, point => {
             const layerType = getLayerType(point)
             const terrain = typeMap[layerType]
             props.pointQueue[layerType].push(point)
@@ -57,11 +61,6 @@ export class TerrainModel {
             }
             return terrain
         })
-        return layer
-    }
-
-    #detectAreas() {
-
     }
 
     #setBorder(point, terrain, props) {
@@ -71,18 +70,20 @@ export class TerrainModel {
     }
 
     constructor(rect, seed) {
-        const noiseMapSet = new NoiseMapSet(rect, seed)
-        const pointQueue = {water: [], land: []}
-        const erosionPoints = new Map(
-            Terrain.landTypes().map(terrain => [terrain.id, []])
-        )
-        const props = {pointQueue,  noiseMapSet, erosionPoints}
+        const props = {
+            pointQueue: {water: [], land: []},
+            noiseMapSet: new NoiseMapSet(rect, seed),
+            erosionPoints: new Map(
+                Terrain.landTypes().map(terrain => [terrain.id, []])
+            )
+        }
         this.#borderPoints = new PointSet()
         this.#terrainMap = this.#buildBaseLayer(props)
+        this.#waterSurfaceMap = new WaterSurfaceMap(this.#terrainMap, props.pointQueue.water)
         for (let layer of LAYERS) {
             this.#buildLayer({...props, layer})
         }
-        this.#erosionPoints = erosionPoints
+        this.#erosionPoints = props.erosionPoints
     }
 
     get(point) {
@@ -92,6 +93,10 @@ export class TerrainModel {
 
     isBorder(point) {
         return this.#borderPoints.has(point)
+    }
+
+    isOcean(point) {
+        return this.#waterSurfaceMap.isOcean(point)
     }
 
     getErosionPoints() {
