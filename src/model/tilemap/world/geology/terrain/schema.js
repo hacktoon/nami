@@ -70,6 +70,10 @@ export class Terrain {
         return ! TYPE_MAP.get(id).water
     }
 
+    static isWater(id) {
+        return TYPE_MAP.get(id).water
+    }
+
     constructor(spec) {
         this.id = spec.id
         this.name = spec.name

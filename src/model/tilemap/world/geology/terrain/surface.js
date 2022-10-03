@@ -1,6 +1,6 @@
-import { PointSet } from '/src/lib/point/set'
 import { PairMap } from '/src/lib/map'
 import { ScanlineFill8 } from '/src/lib/floodfill/scanline'
+import { Terrain } from './schema'
 
 
 const MINIMUN_OCEAN_RATIO = 1  // 1%
@@ -8,9 +8,8 @@ const MINIMUN_OCEAN_RATIO = 1  // 1%
 
 export class WaterSurfaceMap {
     constructor(terrainMap, waterPoints) {
-        this.rect = terrainMap.rect
+        this.terrainMap = terrainMap
         this.currentID = 1
-        this.allowed = new PointSet(waterPoints)
         this.filled = new PairMap()
         this.bodies = new Map()
         this.oceans = new Set()
@@ -21,25 +20,28 @@ export class WaterSurfaceMap {
 
     #detectWaterbody(startPoint) {
         let area = 0
-        const canFill = point => this.allowed.has(point) && ! this.filled.has(...point)
+        const canFill = point => {
+            const isWater = Terrain.isWater(this.terrainMap.get(point))
+            return isWater && ! this.filled.has(...point)
+        }
         const onFill = point => {
             this.filled.set(...point, this.currentID)
             area++
         }
-        const filterPoint = point => this.rect.wrap(point)
+        const filterPoint = point => this.terrainMap.rect.wrap(point)
         if (canFill(startPoint)) {
             new ScanlineFill8(startPoint, {canFill, filterPoint, onFill}).fill()
-            const totalArea = this.rect.area
             const id = this.currentID++
             this.bodies.set(id, area)
-            const ratio = Math.round((area * 100) / totalArea)
+            const ratio = Math.round((area * 100) / this.terrainMap.area)
             if (ratio >= MINIMUN_OCEAN_RATIO) {
                 this.oceans.add(id)
             }
         }
     }
 
-    isOcean(point) {
+    isOcean(rawPoint) {
+        const point = this.terrainMap.rect.wrap(rawPoint)
         if (this.filled.has(...point)) {
             const id = this.filled.get(...point)
             return this.oceans.has(id)

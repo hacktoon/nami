@@ -1,8 +1,6 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
-import { PairMap } from '/src/lib/map'
-import { ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { NoiseMapSet } from './noise'
 import { WaterSurfaceMap } from './surface'
@@ -70,20 +68,22 @@ export class TerrainModel {
     }
 
     constructor(rect, seed) {
-        const props = {
-            pointQueue: {water: [], land: []},
-            noiseMapSet: new NoiseMapSet(rect, seed),
-            erosionPoints: new Map(
-                Terrain.landTypes().map(terrain => [terrain.id, []])
-            )
-        }
+        const pointQueue = {water: [], land: []}
+        const noiseMapSet = new NoiseMapSet(rect, seed)
+        const erosionPoints = new Map(
+            Terrain.landTypes().map(terrain => [terrain.id, []])
+        )
+        const props = {pointQueue, noiseMapSet, erosionPoints}
         this.#borderPoints = new PointSet()
         this.#terrainMap = this.#buildBaseLayer(props)
-        this.#waterSurfaceMap = new WaterSurfaceMap(this.#terrainMap, props.pointQueue.water)
+        this.#waterSurfaceMap = new WaterSurfaceMap(
+            this.#terrainMap,
+            pointQueue.water
+        )
         for (let layer of LAYERS) {
             this.#buildLayer({...props, layer})
         }
-        this.#erosionPoints = props.erosionPoints
+        this.#erosionPoints = erosionPoints
     }
 
     get(point) {
@@ -92,7 +92,8 @@ export class TerrainModel {
     }
 
     isBorder(point) {
-        return this.#borderPoints.has(point)
+        const wrappedPoint = this.#terrainMap.rect.wrap(point)
+        return this.#borderPoints.has(wrappedPoint)
     }
 
     isOcean(point) {
