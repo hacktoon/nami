@@ -13,13 +13,24 @@ export class ScanlineFill {
     }
 
     #findRangeStart(origin) {
+        console.log(`#findRangeStart(${origin})`);
         let currentPoint = origin
-        let nextPoint = this.config.filterPoint(Point.atWest(currentPoint))
-        while (this.config.canFill(nextPoint) && nextPoint[0] != origin[0]) {
+        let nextPoint = this.config.wrapPoint(Point.atWest(currentPoint))
+        while (this.canFill(nextPoint) && nextPoint[0] != origin[0]) {
             currentPoint = nextPoint
-            nextPoint = this.config.filterPoint(Point.atWest(nextPoint))
+            nextPoint = this.config.wrapPoint(Point.atWest(nextPoint))
         }
         return currentPoint
+    }
+
+    canFill(point) {
+        const wrappedPoint = this.config.wrapPoint(point)
+        return this.config.canFill(wrappedPoint)
+    }
+
+    onFill(point) {
+        const wrappedPoint = this.config.wrapPoint(point)
+        return this.config.onFill(wrappedPoint)
     }
 
     #stepFill() {
@@ -33,17 +44,17 @@ export class ScanlineFill {
     fillRange(range) {
         let point = range.point
 
-        while (this.config.canFill(point)) {
-            this.config.onFill(point)
+        while (this.canFill(point)) {
+            this.onFill(point)
             this.detectRangeAbove(Point.atNorth(point), range)
             this.detectRangeBelow(Point.atSouth(point), range)
-            point = this.config.filterPoint(Point.atEast(point))
+            point = this.config.wrapPoint(Point.atEast(point))
         }
     }
 
     detectRangeAbove(referencePoint, referenceRange) {
-        let pointAbove = this.config.filterPoint(referencePoint)
-        if (this.config.canFill(pointAbove)) {
+        let pointAbove = this.config.wrapPoint(referencePoint)
+        if (this.canFill(pointAbove)) {
             if (referenceRange.canCheckAbove) {
                 this.#createRange(pointAbove)
                 referenceRange.canCheckAbove = false
@@ -54,8 +65,8 @@ export class ScanlineFill {
     }
 
     detectRangeBelow(referencePoint, referenceRange) {
-        let pointBelow = this.config.filterPoint(referencePoint)
-        if (this.config.canFill(pointBelow)) {
+        let pointBelow = this.config.wrapPoint(referencePoint)
+        if (this.canFill(pointBelow)) {
             if (referenceRange.canCheckBelow) {
                 this.#createRange(pointBelow)
                 referenceRange.canCheckBelow = false
@@ -88,8 +99,8 @@ export class ScanlineFill8 extends ScanlineFill {
     fillRange(range) {
         let point = range.point
 
-        while (this.config.canFill(point)) {
-            this.config.onFill(point)
+        while (this.canFill(point)) {
+            this.onFill(point)
             this.detectRangeAbove(Point.atNorthwest(point), range)
             this.detectRangeAbove(Point.atNorth(point), range)
             this.detectRangeAbove(Point.atNortheast(point), range)

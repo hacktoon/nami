@@ -42,8 +42,8 @@ export class GeologyTileMap extends TileMap {
         return this.#terrainModel.get(point)
     }
 
-    isBorder(point) {
-        return this.#terrainModel.isBorder(point)
+    isShore(point) {
+        return this.#terrainModel.isShore(point)
     }
 
     isOcean(point) {

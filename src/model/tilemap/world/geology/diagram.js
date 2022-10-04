@@ -8,7 +8,6 @@ const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
     Type.boolean('showBorders', 'Show borders', {default: false}),
     Type.boolean('showOceans', 'Show oceans', {default: false}),
-    Type.number('borderLevel', 'Border level', {default: 0}),
 )
 
 
@@ -37,7 +36,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.colorMap = colorMap
         this.showBorders = params.get('showBorders')
         this.showOceans = params.get('showOceans')
-        this.borderLevel = params.get('borderLevel')
     }
 
     get(point) {
@@ -46,12 +44,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (this.showOceans && this.tileMap.isOcean(point)) {
             return color.average(Color.BLUE).darken(60)
         }
-        if (this.showBorders && this.tileMap.isBorder(point)) {
-            if (this.borderLevel < 0) return color
-            if (this.borderLevel == terrain.id) {
-                return color.average(Color.RED).average(color)
-            }
-            return color
+        if (this.showBorders && this.tileMap.isShore(point)) {
+            return color.average(Color.RED).average(color)
         }
         return color
     }
