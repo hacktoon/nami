@@ -13,7 +13,6 @@ export class ScanlineFill {
     }
 
     #findRangeStart(origin) {
-        console.log(`#findRangeStart(${origin})`);
         let currentPoint = origin
         let nextPoint = this.config.wrapPoint(Point.atWest(currentPoint))
         while (this.canFill(nextPoint) && nextPoint[0] != origin[0]) {
