@@ -3,33 +3,45 @@ import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 
 import { NoiseMapSet } from './noise'
-import { LandmassMap } from './landmass'
+import { LandmassLayer } from './landmass'
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './schema'
 
 
 export class TerrainModel {
     #shorePoints
-    #terrainLayer
-    #landmassMap
+    #baseLayer
+    #landmassLayer
 
     #buildBaseLayer(props) {
-        const outlineNoiseMap = props.noiseMapSet.get(BASE_NOISE)
+        let landmassId = 1
+        const noiseMap = props.noiseMapSet.get(BASE_NOISE)
         const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
         const getLayerType = point => {
-            const noise = outlineNoiseMap.getNoise(point)
+            const noise = noiseMap.getNoise(point)
             return noise < BASE_RATIO ? 'water' : 'land'
         }
-        return Matrix.fromRect(outlineNoiseMap.rect, point => {
+        return Matrix.fromRect(noiseMap.rect, point => {
             const layerType = getLayerType(point)
             const terrain = typeMap[layerType]
+            let isOcean = false
+            let isWater = Terrain.isWater(terrain)
             props.pointQueue[layerType].push(point)
-            // detect borders
+            // detect landmasses by area
+            if (isWater) {
+                isOcean = this.#landmassLayer.detectOcean(
+                    point => typeMap[getLayerType(point)],
+                    landmassId,
+                    point
+                )
+                landmassId += isOcean ? 1 : 0
+            }
+            // detect borders between terrains and shore points
             for (let sidePoint of Point.adjacents(point)) {
                 const sideTerrain = typeMap[getLayerType(sidePoint)]
                 if (terrain !== sideTerrain) {
                     props.borderPoints.add(point)
-                    if (Terrain.isLand(terrain)) // is shore
-                        props.shorePoints.add(point)
+                    if (! isWater) // is shore
+                        this.#shorePoints.add(point)
                     break
                 }
             }
@@ -37,25 +49,13 @@ export class TerrainModel {
         })
     }
 
-    #buildLandmassLayer(props) {
-        let landmassId = 1
-        for (let point of props.pointQueue.water) {
-            const status = props.landmassMap.detect(
-                this.#terrainLayer,
-                landmassId,
-                point
-            )
-            landmassId += status ? 1 : 0
+    #buildSurfaceLayers(props, layers) {
+        for (let layer of layers) {
+            this.#buildSurfaceLayer({...props, layer})
         }
     }
 
-    #buildSurfaceLayers(props) {
-        for (let layer of LAYERS) {
-            this.#buildLayer({...props, layer})
-        }
-    }
-
-    #buildLayer(props) {
+    #buildSurfaceLayer(props) {
         const newPoints = []
         const layerType = Terrain.isLand(props.layer.terrain) ? 'land' : 'water'
         const noiseMap = props.noiseMapSet.get(props.layer.noise)
@@ -63,13 +63,13 @@ export class TerrainModel {
             const noise = noiseMap.getNoise(point)
             if (props.borderPoints.has(point) || noise < props.layer.ratio)
                 return
-            this.#terrainLayer.set(point, props.layer.terrain)
+            this.#baseLayer.set(point, props.layer.terrain)
             newPoints.push(point)
         })
         // detect borders on new points
         newPoints.forEach(point => {
             for (let sidePoint of Point.adjacents(point)) {
-                const sideTerrain = this.#terrainLayer.get(sidePoint)
+                const sideTerrain = this.#baseLayer.get(sidePoint)
                 if (sideTerrain !== props.layer.terrain) {
                     props.borderPoints.add(point)
                     return
@@ -81,33 +81,27 @@ export class TerrainModel {
 
     constructor(rect, seed) {
         const pointQueue = {water: [], land: []}
-        const landmassMap = new LandmassMap()
         const noiseMapSet = new NoiseMapSet(rect, seed)
-        const shorePoints = new PointSet()
         const borderPoints = new PointSet()
-        const props = {
-            noiseMapSet, pointQueue, borderPoints, shorePoints,
-            landmassMap
-        }
-        this.#shorePoints = shorePoints
-        this.#landmassMap = landmassMap
-        this.#terrainLayer = this.#buildBaseLayer(props)
-        this.#buildLandmassLayer(props)
-        this.#buildSurfaceLayers(props)
+        const props = {noiseMapSet, pointQueue, borderPoints}
+        this.#landmassLayer = new LandmassLayer(rect)
+        this.#shorePoints = new PointSet()
+        this.#baseLayer = this.#buildBaseLayer(props)
+        // this.#buildTerrainLayer(props)
+        this.#buildSurfaceLayers(props, LAYERS)
     }
 
     get(point) {
-        const id = this.#terrainLayer.get(point)
+        const id = this.#baseLayer.get(point)
         return Terrain.fromId(id)
     }
 
     isShore(point) {
-        const wrappedPoint = this.#terrainLayer.rect.wrap(point)
+        const wrappedPoint = this.#baseLayer.rect.wrap(point)
         return this.#shorePoints.has(wrappedPoint)
     }
 
     isOcean(point) {
-        const wrappedPoint = this.#terrainLayer.rect.wrap(point)
-        return this.#landmassMap.isOcean(wrappedPoint)
+        return this.#landmassLayer.isOcean(point)
     }
 }

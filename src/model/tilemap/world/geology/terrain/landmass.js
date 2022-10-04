@@ -7,28 +7,29 @@ import { Terrain } from './schema'
 const MINIMUN_OCEAN_RATIO = 1  // 1%
 
 
-export class LandmassMap {
-    constructor() {
+export class LandmassLayer {
+    constructor(rect) {
         this.waterBodyMap = new PairMap()
-        this.bodies = new Map()
+        this.rect = rect
+        this.areaMap = new Map()
         this.oceans = new Set()
     }
 
-    detect(terrainLayer, landmassId, startPoint) {
+    detectOcean(detectType, landmassId, startPoint) {
         let area = 0
         const canFill = point => {
-            const isWater = Terrain.isWater(terrainLayer.get(point))
+            const isWater = Terrain.isWater(detectType(point))
             return isWater && ! this.waterBodyMap.has(...point)
         }
         const onFill = point => {
             this.waterBodyMap.set(...point, landmassId)
             area++
         }
-        const wrapPoint = point => terrainLayer.rect.wrap(point)
+        const wrapPoint = point => this.rect.wrap(point)
         if (canFill(startPoint)) {
             new ScanlineFill8(startPoint, {canFill, wrapPoint, onFill}).fill()
-            this.bodies.set(landmassId, area)
-            const ratio = Math.round((area * 100) / terrainLayer.area)
+            this.areaMap.set(landmassId, area)
+            const ratio = Math.round((area * 100) / this.rect.area)
             if (ratio >= MINIMUN_OCEAN_RATIO) {
                 this.oceans.add(landmassId)
             }
@@ -38,8 +39,9 @@ export class LandmassMap {
     }
 
     isOcean(point) {
-        if (this.waterBodyMap.has(...point)) {
-            const id = this.waterBodyMap.get(...point)
+        const wrappedPoint = this.rect.wrap(point)
+        if (this.waterBodyMap.has(...wrappedPoint)) {
+            const id = this.waterBodyMap.get(...wrappedPoint)
             return this.oceans.has(id)
         }
         return false
