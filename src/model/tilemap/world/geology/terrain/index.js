@@ -3,7 +3,7 @@ import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 
 import { NoiseMapSet } from './noise'
-import { OceanLayer } from './landmass'
+import { OceanLayer } from './ocean'
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './schema'
 
 
@@ -13,7 +13,6 @@ export class TerrainModel {
     #oceanLayer
 
     #buildBaseLayer(props) {
-        let oceanId = 1
         const noiseMap = props.noiseMapSet.get(BASE_NOISE)
         const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
         const getLayerType = point => {
@@ -26,10 +25,8 @@ export class TerrainModel {
             let isWater = Terrain.isWater(terrain)
             // detect oceans by area
             if (isWater) {
-                let status = this.#oceanLayer.detect(point, oceanId, pt => {
-                    return Terrain.isWater(typeMap[getLayerType(pt)])
-                })
-                if (status) oceanId++
+                const isType = pt => Terrain.isWater(typeMap[getLayerType(pt)])
+                this.#oceanLayer.detect(point, isType)
             }
             // detect borders between terrains and shore points
             for (let sidePoint of Point.adjacents(point)) {
