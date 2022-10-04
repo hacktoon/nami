@@ -39,7 +39,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const terrain = this.tileMap.getTerrain(point)
         const color = this.colorMap.getTerrain(point)
         if (this.showOceans && this.tileMap.isOcean(point)) {
             return color.darken(60)

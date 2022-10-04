@@ -95,7 +95,7 @@ export const LAYERS = [
     {
         terrain: Terrain.PLAIN,
         noise: NOISE_SPEC.feature,
-        ratio: .33
+        ratio: .32
     },
     {
         terrain: Terrain.PLATEAU,

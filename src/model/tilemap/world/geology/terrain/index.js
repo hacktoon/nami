@@ -23,27 +23,32 @@ export class TerrainModel {
         return Matrix.fromRect(noiseMap.rect, point => {
             const layerType = getLayerType(point)
             const terrain = typeMap[layerType]
-            let isOcean = false
             let isWater = Terrain.isWater(terrain)
-            props.pointQueue[layerType].push(point)
-            // detect landmasses by area
+            // detect oceans by area
             if (isWater) {
-                isOcean = this.#landmassLayer.detectOcean(
+                const detected = this.#landmassLayer.detectOcean(
                     point => typeMap[getLayerType(point)],
                     landmassId,
                     point
                 )
-                landmassId += isOcean ? 1 : 0
+                landmassId += detected ? 1 : 0
             }
             // detect borders between terrains and shore points
             for (let sidePoint of Point.adjacents(point)) {
                 const sideTerrain = typeMap[getLayerType(sidePoint)]
                 if (terrain !== sideTerrain) {
                     props.borderPoints.add(point)
-                    if (! isWater) // is shore
+                    if (this.#landmassLayer.isOcean(sidePoint)) // is shore
                         this.#shorePoints.add(point)
                     break
                 }
+            }
+            // reset lakes as depressions
+            if (isWater && ! this.#landmassLayer.isOcean(point)) {
+                props.pointQueue.land.push(point)
+                return Terrain.BASIN
+            } else {
+                props.pointQueue[layerType].push(point)
             }
             return terrain
         })
