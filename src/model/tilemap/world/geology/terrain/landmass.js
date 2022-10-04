@@ -1,37 +1,36 @@
 import { PairMap } from '/src/lib/map'
 import { ScanlineFill8 } from '/src/lib/floodfill/scanline'
 import { PairMap } from '/src/lib/map'
-import { Terrain } from './schema'
 
 
 const MINIMUN_OCEAN_RATIO = 1  // 1%
 
 
-export class LandmassLayer {
+export class OceanLayer {
     constructor(rect) {
-        this.waterBodyMap = new PairMap()
         this.rect = rect
+        this.pointOceanMap = new PairMap()
         this.areaMap = new Map()
-        this.oceans = new Set()
+        this.idMap = new Set()
+        this.buildId = 1
     }
 
-    detectOcean(detectType, landmassId, startPoint) {
+    detect(startPoint, buildId, isWater) {
         let area = 0
         const canFill = point => {
-            const isWater = Terrain.isWater(detectType(point))
-            return isWater && ! this.waterBodyMap.has(...point)
+            return isWater(point) && ! this.pointOceanMap.has(...point)
         }
         const onFill = point => {
-            this.waterBodyMap.set(...point, landmassId)
+            this.pointOceanMap.set(...point, buildId)
             area++
         }
         const wrapPoint = point => this.rect.wrap(point)
         if (canFill(startPoint)) {
             new ScanlineFill8(startPoint, {canFill, wrapPoint, onFill}).fill()
-            this.areaMap.set(landmassId, area)
+            this.areaMap.set(buildId, area)
             const ratio = Math.round((area * 100) / this.rect.area)
             if (ratio >= MINIMUN_OCEAN_RATIO) {
-                this.oceans.add(landmassId)
+                this.idMap.add(buildId)
             }
             return true
         }
@@ -40,9 +39,9 @@ export class LandmassLayer {
 
     isOcean(point) {
         const wrappedPoint = this.rect.wrap(point)
-        if (this.waterBodyMap.has(...wrappedPoint)) {
-            const id = this.waterBodyMap.get(...wrappedPoint)
-            return this.oceans.has(id)
+        if (this.pointOceanMap.has(...wrappedPoint)) {
+            const id = this.pointOceanMap.get(...wrappedPoint)
+            return this.idMap.has(id)
         }
         return false
     }
