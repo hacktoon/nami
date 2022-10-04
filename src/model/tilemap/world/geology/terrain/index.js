@@ -2,19 +2,52 @@ import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 
-import { ScanlineFill8 } from '/src/lib/floodfill/scanline'
-
 import { NoiseMapSet } from './noise'
 import { LandmassMap } from './landmass'
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './schema'
-
-const MINIMUN_OCEAN_RATIO = 1  // 1%
 
 
 export class TerrainModel {
     #shorePoints
     #terrainLayer
     #landmassMap
+
+    #buildBaseLayer(props) {
+        const outlineNoiseMap = props.noiseMapSet.get(BASE_NOISE)
+        const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
+        const getLayerType = point => {
+            const noise = outlineNoiseMap.getNoise(point)
+            return noise < BASE_RATIO ? 'water' : 'land'
+        }
+        return Matrix.fromRect(outlineNoiseMap.rect, point => {
+            const layerType = getLayerType(point)
+            const terrain = typeMap[layerType]
+            props.pointQueue[layerType].push(point)
+            // detect borders
+            for (let sidePoint of Point.adjacents(point)) {
+                const sideTerrain = typeMap[getLayerType(sidePoint)]
+                if (terrain !== sideTerrain) {
+                    props.borderPoints.add(point)
+                    if (Terrain.isLand(terrain)) // is shore
+                        props.shorePoints.add(point)
+                    break
+                }
+            }
+            return terrain
+        })
+    }
+
+    #buildLandmassLayer(props) {
+        let landmassId = 1
+        for (let point of props.pointQueue.water) {
+            const status = props.landmassMap.detect(
+                this.#terrainLayer,
+                landmassId,
+                point
+            )
+            landmassId += status ? 1 : 0
+        }
+    }
 
     #buildSurfaceLayers(props) {
         for (let layer of LAYERS) {
@@ -46,50 +79,20 @@ export class TerrainModel {
         props.pointQueue[layerType] = newPoints
     }
 
-    #buildBaseLayer(props) {
-        const outlineNoiseMap = props.noiseMapSet.get(BASE_NOISE)
-        const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
-        const getLayerType = point => {
-            const noise = outlineNoiseMap.getNoise(point)
-            return noise < BASE_RATIO ? 'water' : 'land'
-        }
-        return Matrix.fromRect(outlineNoiseMap.rect, point => {
-            const layerType = getLayerType(point)
-            const terrain = typeMap[layerType]
-            props.pointQueue[layerType].push(point)
-            // detect borders
-            for (let sidePoint of Point.adjacents(point)) {
-                const sideTerrain = typeMap[getLayerType(sidePoint)]
-                if (terrain !== sideTerrain) {
-                    props.borderPoints.add(point)
-                    if (Terrain.isLand(terrain)) // is shore
-                        props.shorePoints.add(point)
-                    break
-                }
-            }
-            return terrain
-        })
-    }
-
-    #buildLandmassLayer(waterPoints) {
-        let landmassId = 1
-        const landmass = new LandmassMap(this.#terrainLayer)
-        for (let point of waterPoints) {
-            const status = landmass.detect(landmassId, point)
-            landmassId += status ? 1 : 0
-        }
-        return landmass
-    }
-
     constructor(rect, seed) {
         const pointQueue = {water: [], land: []}
+        const landmassMap = new LandmassMap()
         const noiseMapSet = new NoiseMapSet(rect, seed)
         const shorePoints = new PointSet()
         const borderPoints = new PointSet()
-        const props = {noiseMapSet, pointQueue, borderPoints, shorePoints}
+        const props = {
+            noiseMapSet, pointQueue, borderPoints, shorePoints,
+            landmassMap
+        }
         this.#shorePoints = shorePoints
+        this.#landmassMap = landmassMap
         this.#terrainLayer = this.#buildBaseLayer(props)
-        this.#landmassMap = this.#buildLandmassLayer(pointQueue.water)
+        this.#buildLandmassLayer(props)
         this.#buildSurfaceLayers(props)
     }
 

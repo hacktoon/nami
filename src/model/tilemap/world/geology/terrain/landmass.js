@@ -8,28 +8,27 @@ const MINIMUN_OCEAN_RATIO = 1  // 1%
 
 
 export class LandmassMap {
-    constructor(terrainLayer) {
-        this.terrainLayer = terrainLayer
+    constructor() {
         this.waterBodyMap = new PairMap()
         this.bodies = new Map()
         this.oceans = new Set()
     }
 
-    detect(landmassId, startPoint) {
+    detect(terrainLayer, landmassId, startPoint) {
         let area = 0
         const canFill = point => {
-            const isWater = Terrain.isWater(this.terrainLayer.get(point))
+            const isWater = Terrain.isWater(terrainLayer.get(point))
             return isWater && ! this.waterBodyMap.has(...point)
         }
         const onFill = point => {
             this.waterBodyMap.set(...point, landmassId)
             area++
         }
-        const wrapPoint = point => this.terrainLayer.rect.wrap(point)
+        const wrapPoint = point => terrainLayer.rect.wrap(point)
         if (canFill(startPoint)) {
             new ScanlineFill8(startPoint, {canFill, wrapPoint, onFill}).fill()
             this.bodies.set(landmassId, area)
-            const ratio = Math.round((area * 100) / this.terrainLayer.area)
+            const ratio = Math.round((area * 100) / terrainLayer.area)
             if (ratio >= MINIMUN_OCEAN_RATIO) {
                 this.oceans.add(landmassId)
             }
