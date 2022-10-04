@@ -91,6 +91,12 @@ export class PointSet {
         return this.#size
     }
 
+    get points() {
+        const points = []
+        this.forEach(point => points.push(point))
+        return points
+    }
+
     add([x, y]) {
         if (! this.#xMap.has(x)) {
             this.#xMap.set(x, new Set())

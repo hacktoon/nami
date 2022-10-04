@@ -6,7 +6,7 @@ import { PairMap } from '/src/lib/map'
 const MINIMUN_OCEAN_RATIO = 1  // 1%
 
 
-export class OceanLayer {
+export class OceanMap {
     constructor(rect) {
         this.rect = rect
         this.pointOceanMap = new PairMap()

@@ -3,104 +3,110 @@ import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 
 import { NoiseMapSet } from './noise'
-import { OceanLayer } from './ocean'
+import { OceanMap } from './ocean'
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './schema'
+import { ErosionLayer } from './erosion'
 
 
 export class TerrainModel {
     #shorePoints
-    #baseLayer
-    #oceanLayer
+    #terrainLayer
+    #oceanMap
+    #erosionLayer
 
-    #buildBaseLayer(props) {
+    #buildTerrainLayer(layers, props) {
         const noiseMap = props.noiseMapSet.get(BASE_NOISE)
         const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
         const getLayerType = point => {
             const noise = noiseMap.getNoise(point)
             return noise < BASE_RATIO ? 'water' : 'land'
         }
-        return Matrix.fromRect(noiseMap.rect, point => {
+        const baseLayer = Matrix.fromRect(noiseMap.rect, point => {
             const layerType = getLayerType(point)
             const terrain = typeMap[layerType]
             let isWater = Terrain.isWater(terrain)
             // detect oceans by area
             if (isWater) {
                 const isType = pt => Terrain.isWater(typeMap[getLayerType(pt)])
-                this.#oceanLayer.detect(point, isType)
+                props.oceanMap.detect(point, isType)
             }
             // detect borders between terrains and shore points
             for (let sidePoint of Point.adjacents(point)) {
                 const sideTerrain = typeMap[getLayerType(sidePoint)]
                 if (terrain !== sideTerrain) {
                     props.borderPoints.add(point)
-                    if (this.#oceanLayer.isOcean(sidePoint)) // is shore
-                        this.#shorePoints.add(point)
+                    if (props.oceanMap.isOcean(sidePoint)) // is shore
+                        props.shorePoints.add(point)
                     break
                 }
             }
             // reset lakes as depressions
-            if (isWater && ! this.#oceanLayer.isOcean(point)) {
+            if (isWater && ! props.oceanMap.isOcean(point)) {
                 props.pointQueue.land.push(point)
                 return Terrain.BASIN
             }
             props.pointQueue[layerType].push(point)
             return terrain
         })
+        return this.#buildSurfaceLayer(baseLayer, layers, props)
     }
 
-    #buildSurfaceLayers(props, layers) {
+    #buildSurfaceLayer(baseLayer, layers, props) {
         for (let layer of layers) {
-            this.#buildSurfaceLayer({...props, layer})
+            const newPoints = []
+            const layerType = Terrain.isLand(layer.terrain) ? 'land' : 'water'
+            const noiseMap = props.noiseMapSet.get(layer.noise)
+            props.pointQueue[layerType].forEach(point => {
+                const noise = noiseMap.getNoise(point)
+                if (props.borderPoints.has(point) || noise < layer.ratio)
+                    return
+                baseLayer.set(point, layer.terrain)
+                newPoints.push(point)
+            })
+            // detect borders on new points
+            newPoints.forEach(point => {
+                for (let sidePoint of Point.adjacents(point)) {
+                    const sideTerrain = baseLayer.get(sidePoint)
+                    if (sideTerrain !== layer.terrain) {
+                        props.borderPoints.add(point)
+                        return
+                    }
+                }
+            })
+            props.pointQueue[layerType] = newPoints
         }
+        return baseLayer
     }
 
-    #buildSurfaceLayer(props) {
-        const newPoints = []
-        const layerType = Terrain.isLand(props.layer.terrain) ? 'land' : 'water'
-        const noiseMap = props.noiseMapSet.get(props.layer.noise)
-        props.pointQueue[layerType].forEach(point => {
-            const noise = noiseMap.getNoise(point)
-            if (props.borderPoints.has(point) || noise < props.layer.ratio)
-                return
-            this.#baseLayer.set(point, props.layer.terrain)
-            newPoints.push(point)
-        })
-        // detect borders on new points
-        newPoints.forEach(point => {
-            for (let sidePoint of Point.adjacents(point)) {
-                const sideTerrain = this.#baseLayer.get(sidePoint)
-                if (sideTerrain !== props.layer.terrain) {
-                    props.borderPoints.add(point)
-                    return
-                }
-            }
-        })
-        props.pointQueue[layerType] = newPoints
+    #buildErosionLayer(terrainLayer, props) {
+        return new ErosionLayer(terrainLayer, props)
     }
 
     constructor(rect, seed) {
-        const pointQueue = {water: [], land: []}
-        const noiseMapSet = new NoiseMapSet(rect, seed)
-        const borderPoints = new PointSet()
-        const props = {noiseMapSet, pointQueue, borderPoints}
-        this.#oceanLayer = new OceanLayer(rect)
-        this.#shorePoints = new PointSet()
-        this.#baseLayer = this.#buildBaseLayer(props)
-        // this.#buildTerrainLayer(props)
-        this.#buildSurfaceLayers(props, LAYERS)
+        const props = {
+            noiseMapSet: new NoiseMapSet(rect, seed),
+            pointQueue: {water: [], land: []},
+            borderPoints: new PointSet(),
+            shorePoints: new PointSet(),
+            oceanMap: new OceanMap(rect),
+        }
+        this.#shorePoints = props.shorePoints
+        this.#oceanMap = props.oceanMap
+        this.#terrainLayer = this.#buildTerrainLayer(LAYERS, props)
+        this.#erosionLayer = this.#buildErosionLayer(this.#terrainLayer, props)
     }
 
     get(point) {
-        const id = this.#baseLayer.get(point)
+        const id = this.#terrainLayer.get(point)
         return Terrain.fromId(id)
     }
 
     isShore(point) {
-        const wrappedPoint = this.#baseLayer.rect.wrap(point)
+        const wrappedPoint = this.#terrainLayer.rect.wrap(point)
         return this.#shorePoints.has(wrappedPoint)
     }
 
     isOcean(point) {
-        return this.#oceanLayer.isOcean(point)
+        return this.#oceanMap.isOcean(point)
     }
 }
