@@ -44,9 +44,7 @@ export class ErosionLayer {
     }
 
     get(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        const [id, level] = this.erodedPoints.get(wrappedPoint)
-        return id
+        return this.erodedPoints.get(...this.rect.wrap(point))
     }
 }
 
