@@ -6,8 +6,9 @@ import { TileMapDiagram } from '/src/lib/model/tilemap'
 
 const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
-    Type.boolean('showShoreline', 'Show shoreline', {default: false}),
-    Type.boolean('showOceans', 'Show oceans', {default: false}),
+    Type.boolean('showShoreline', 'Shoreline', {default: false}),
+    Type.boolean('showOceans', 'Oceans', {default: false}),
+    Type.boolean('showErosion', 'Erosion', {default: false}),
 )
 
 
@@ -36,12 +37,13 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.colorMap = colorMap
         this.showShoreline = params.get('showShoreline')
         this.showOceans = params.get('showOceans')
+        this.showErosion = params.get('showErosion')
     }
 
     get(point) {
         const color = this.colorMap.getTerrain(point)
         const erosion = this.tileMap.getErosion(point)
-        if (erosion) {
+        if (this.showErosion && erosion) {
             const [id, level] = erosion
             return color.darken(level * 20)
         }

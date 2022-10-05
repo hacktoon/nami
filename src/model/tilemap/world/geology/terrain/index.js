@@ -94,7 +94,6 @@ export class TerrainModel {
         this.#oceanMap = props.oceanMap
         this.#terrainLayer = this.#buildTerrainLayer(LAYERS, props)
         this.#erosionLayer = this.#buildErosionLayer(this.#terrainLayer, props)
-        console.log(this.#erosionLayer);
     }
 
     get(point) {
