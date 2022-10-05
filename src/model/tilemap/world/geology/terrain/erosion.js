@@ -38,9 +38,10 @@ export class ErosionLayer {
         const mapFill = new ErosionMultiFill(props.shorePoints.points, context)
 
         mapFill.fill()
-
         this.erodedPoints = context.erodedPoints
         this.rect = terrainLayer.rect
+        this.basinCount = props.shorePoints.size
+        console.log(this.basinCount);
     }
 
     get(point) {
