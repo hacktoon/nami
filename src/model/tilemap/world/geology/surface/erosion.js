@@ -8,14 +8,14 @@ import { Terrain } from './schema'
 
 class ErosionFloodFill extends ConcurrentFillUnit {
     setValue(fill, point, level) {
-        const wrappedPoint = fill.context.terrainLayer.rect.wrap(point)
+        const wrappedPoint = fill.context.rect.wrap(point)
         fill.context.levelMap.set(...wrappedPoint, level)
         fill.context.basinMap.set(...wrappedPoint, fill.id)
         fill.context.basins.add(fill.id)
     }
 
     isEmpty(fill, point) {
-        const wrappedPoint = fill.context.terrainLayer.rect.wrap(point)
+        const wrappedPoint = fill.context.rect.wrap(point)
         const terrainId = fill.context.terrainLayer.get(wrappedPoint)
         const isLand = terrainId == Terrain.BASIN
         const isEmpty = ! fill.context.levelMap.has(...wrappedPoint)
@@ -41,6 +41,7 @@ export class ErosionLayer {
             levelMap: new PairMap(),
             basinMap: new PairMap(),
             basins: new Set(),
+            rect: props.rect,
             terrainLayer,
         }
         const mapFill = new ErosionMultiFill(props.shorePoints.points, context)
@@ -49,7 +50,7 @@ export class ErosionLayer {
         this.basinMap = context.basinMap
         this.levelMap = context.levelMap
         this.basinCount = props.shorePoints.size
-        this.rect = terrainLayer.rect
+        this.rect = props.rect
     }
 
     getErosionLevel(point) {

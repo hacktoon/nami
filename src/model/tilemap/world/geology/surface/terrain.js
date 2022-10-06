@@ -1,18 +1,11 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
-import { PointSet } from '/src/lib/point/set'
 
-import { NoiseMapSet } from './noise'
-import { OceanMap } from './ocean'
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './schema'
-import { ErosionLayer } from './erosion'
 
 
-export class TerrainModel {
-    #shorePoints
+export class TerrainLayer {
     #terrainLayer
-    #oceanMap
-    #erosionLayer
 
     #buildTerrainLayer(layers, props) {
         const noiseMap = props.noiseMapSet.get(BASE_NOISE)
@@ -78,47 +71,11 @@ export class TerrainModel {
         return baseLayer
     }
 
-    #buildErosionLayer(terrainLayer, props) {
-        return new ErosionLayer(terrainLayer, props)
-    }
-
-    constructor(rect, seed) {
-        const props = {
-            noiseMapSet: new NoiseMapSet(rect, seed),
-            pointQueue: {water: [], land: []},
-            borderPoints: new PointSet(),
-            shorePoints: new PointSet(),
-            oceanMap: new OceanMap(rect),
-        }
-        this.#shorePoints = props.shorePoints
-        this.#oceanMap = props.oceanMap
+    constructor(props) {
         this.#terrainLayer = this.#buildTerrainLayer(LAYERS, props)
-        this.#erosionLayer = this.#buildErosionLayer(this.#terrainLayer, props)
     }
 
     get(point) {
-        const id = this.#terrainLayer.get(point)
-        return Terrain.fromId(id)
-    }
-
-    getErosionLevel(point) {
-        return this.#erosionLayer.getErosionLevel(point)
-    }
-
-    getBasin(point) {
-        return this.#erosionLayer.getBasin(point)
-    }
-
-    getBasinCount() {
-        return this.#erosionLayer.basinCount
-    }
-
-    isShore(point) {
-        const wrappedPoint = this.#terrainLayer.rect.wrap(point)
-        return this.#shorePoints.has(wrappedPoint)
-    }
-
-    isOcean(point) {
-        return this.#oceanMap.isOcean(point)
+        return this.#terrainLayer.get(point)
     }
 }
