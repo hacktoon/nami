@@ -1,9 +1,9 @@
 import { Matrix } from '/src/lib/matrix'
-import { TileMap } from '/src/lib/model/tilemap'
 import { SimplexNoise } from '/src/lib/noise'
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
+import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { NoiseTileMapDiagram } from './diagram'

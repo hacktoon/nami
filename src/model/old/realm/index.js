@@ -3,7 +3,7 @@ import { Type } from '/src/lib/type'
 import { Graph } from '/src/lib/graph'
 import { PairMap } from '/src/lib/map'
 
-import { TileMap } from '/src/lib/model/tilemap'
+import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { RegionTileMap } from '/src/model/tilemap/region'

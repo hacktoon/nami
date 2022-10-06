@@ -1,6 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { TileMap } from '/src/lib/model/tilemap'
+import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { Temperature } from './model'

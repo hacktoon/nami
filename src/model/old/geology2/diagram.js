@@ -2,7 +2,7 @@ import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Color } from '/src/lib/color'
 
-import { TileMapDiagram } from '/src/lib/model/tilemap'
+import { TileMapDiagram } from '/src/model/lib/tilemap'
 
 
 class GeologyColorMap {

@@ -2,7 +2,7 @@ import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
-import { TileMapDiagram } from '/src/lib/model/tilemap'
+import { TileMapDiagram } from '/src/model/lib/tilemap'
 
 
 const SCHEMA = new Schema(

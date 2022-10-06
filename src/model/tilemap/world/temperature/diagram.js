@@ -1,5 +1,5 @@
 import { Schema } from '/src/lib/schema'
-import { TileMapDiagram } from '/src/lib/model/tilemap'
+import { TileMapDiagram } from '/src/model/lib/tilemap'
 
 
 const SCHEMA = new Schema(

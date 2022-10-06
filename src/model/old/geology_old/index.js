@@ -1,7 +1,7 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
-import { TileMap } from '/src/lib/model/tilemap'
+import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { RegionTileMap } from '/src/model/tilemap/region'

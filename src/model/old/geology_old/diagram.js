@@ -3,7 +3,7 @@ import { Type } from '/src/lib/type'
 import { Direction } from '/src/lib/direction'
 import { Color } from '/src/lib/color'
 
-import { TileMapDiagram } from '/src/lib/model/tilemap'
+import { TileMapDiagram } from '/src/model/lib/tilemap'
 
 const PL_LAND = '#574'
 const PL_OCEAN = '#058'

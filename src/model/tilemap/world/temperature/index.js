@@ -1,7 +1,8 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { TileMap } from '/src/lib/model/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
+import { TileMap } from '/src/model/lib/tilemap'
+
 import { TemperatureTileMapDiagram } from './diagram'
 import { TemperatureModel } from './model'
 
