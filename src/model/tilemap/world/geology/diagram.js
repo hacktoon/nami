@@ -8,16 +8,25 @@ const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
     Type.boolean('showShoreline', 'Shoreline', {default: false}),
     Type.boolean('showOceans', 'Oceans', {default: false}),
-    Type.boolean('showErosion', 'Erosion', {default: false}),
+    Type.boolean('showBasins', 'Basins', {default: false}),
 )
 
 
 class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
+        this.basinColors = new Map()
+        for(let i=0; i<= tileMap.getBasinCount(); i++) {
+            this.basinColors.set(i, new Color())
+        }
     }
 
-    getTerrain(point) {
+    getByBasin(point) {
+        const basin = this.tileMap.getBasin(point)
+        return this.basinColors.get(basin)
+    }
+
+    getByTerrain(point) {
         const outline = this.tileMap.getTerrain(point)
         return outline.color
     }
@@ -37,22 +46,22 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         this.colorMap = colorMap
         this.showShoreline = params.get('showShoreline')
         this.showOceans = params.get('showOceans')
-        this.showErosion = params.get('showErosion')
+        this.showBasins = params.get('showBasins')
     }
 
     get(point) {
-        const color = this.colorMap.getTerrain(point)
-        const erosion = this.tileMap.getErosion(point)
-        if (this.showErosion && erosion) {
-            const [id, level] = erosion
-            return color.darken(level * 10)
+        const terrainColor = this.colorMap.getByTerrain(point)
+        const basin = this.tileMap.getBasin(point)
+        if (this.showBasins && basin) {
+            const basinColor = this.colorMap.getByBasin(point)
+            return basinColor
         }
         if (this.showOceans && this.tileMap.isOcean(point)) {
-            return color.darken(60)
+            return terrainColor.darken(60)
         }
         if (this.showShoreline && this.tileMap.isShore(point)) {
-            return color.average(Color.RED).average(color)
+            return terrainColor.average(Color.RED).average(terrainColor)
         }
-        return color
+        return terrainColor
     }
 }

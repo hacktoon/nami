@@ -1,6 +1,7 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { PairMap } from '/src/lib/map'
 import { Point } from '/src/lib/point'
+import { Direction } from '/src/lib/direction'
 
 import { Terrain } from './schema'
 
@@ -8,14 +9,16 @@ import { Terrain } from './schema'
 class ErosionFloodFill extends ConcurrentFillUnit {
     setValue(fill, point, level) {
         const wrappedPoint = fill.context.terrainLayer.rect.wrap(point)
-        fill.context.erodedPoints.set(...wrappedPoint, [fill.id, level])
+        fill.context.levelMap.set(...wrappedPoint, level)
+        fill.context.basinMap.set(...wrappedPoint, fill.id)
+        fill.context.basins.add(fill.id)
     }
 
     isEmpty(fill, point) {
         const wrappedPoint = fill.context.terrainLayer.rect.wrap(point)
         const terrainId = fill.context.terrainLayer.get(wrappedPoint)
         const isLand = terrainId == Terrain.BASIN
-        const isEmpty = ! fill.context.erodedPoints.has(...wrappedPoint)
+        const isEmpty = ! fill.context.levelMap.has(...wrappedPoint)
         return isLand && isEmpty
     }
 
@@ -34,18 +37,27 @@ class ErosionMultiFill extends ConcurrentFill {
 
 export class ErosionLayer {
     constructor(terrainLayer, props) {
-        const context = {terrainLayer, erodedPoints: new PairMap()}
+        const context = {
+            levelMap: new PairMap(),
+            basinMap: new PairMap(),
+            basins: new Set(),
+            terrainLayer,
+        }
         const mapFill = new ErosionMultiFill(props.shorePoints.points, context)
 
         mapFill.fill()
-        this.erodedPoints = context.erodedPoints
-        this.rect = terrainLayer.rect
+        this.basinMap = context.basinMap
+        this.levelMap = context.levelMap
         this.basinCount = props.shorePoints.size
-        console.log(this.basinCount);
+        this.rect = terrainLayer.rect
     }
 
-    get(point) {
-        return this.erodedPoints.get(...this.rect.wrap(point))
+    getErosionLevel(point) {
+        return this.levelMap.get(...this.rect.wrap(point))
+    }
+
+    getBasin(point) {
+        return this.basinMap.get(...this.rect.wrap(point))
     }
 }
 

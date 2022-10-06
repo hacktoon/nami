@@ -72,7 +72,6 @@ export class GeologyTileMap extends TileMap {
             this.#plateModel,
             this.#provinceModel
         )
-        console.log(`GeologyTileMap: ${Math.round(performance.now() - t0)}ms`);
     }
 
     _buildRegionTileMap(params) {

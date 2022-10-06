@@ -35,11 +35,12 @@ export class GeologyTileMap extends TileMap {
 
     get(point) {
         const terrain = this.getTerrain(point)
-        const [erosionId, erosionLevel] = this.getErosion(point)
+        const erosionLevel = this.getErosionLevel(point)
+        const basin = this.getBasin(point)
         return [
             `${Point.hash(point)}`,
             `terrain=${terrain.name}`,
-            `basin=${erosionId}, level=${erosionLevel}`,
+            `basin=${basin}, level=${erosionLevel}`,
         ].join(' | ')
     }
 
@@ -51,8 +52,16 @@ export class GeologyTileMap extends TileMap {
         return this.#terrainModel.isShore(point)
     }
 
-    getErosion(point) {
-        return this.#terrainModel.getErosion(point)
+    getErosionLevel(point) {
+        return this.#terrainModel.getErosionLevel(point)
+    }
+
+    getBasin(point) {
+        return this.#terrainModel.getBasin(point)
+    }
+
+    getBasinCount() {
+        return this.#terrainModel.getBasinCount()
     }
 
     isOcean(point) {

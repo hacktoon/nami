@@ -40,7 +40,7 @@ export class TerrainModel {
                     break
                 }
             }
-            // reset lakes as depressions
+            // reset lakes as basins
             if (isWater && ! props.oceanMap.isOcean(point)) {
                 props.pointQueue.land.push(point)
                 return Terrain.BASIN
@@ -101,8 +101,16 @@ export class TerrainModel {
         return Terrain.fromId(id)
     }
 
-    getErosion(point) {
-        return this.#erosionLayer.get(point)
+    getErosionLevel(point) {
+        return this.#erosionLayer.getErosionLevel(point)
+    }
+
+    getBasin(point) {
+        return this.#erosionLayer.getBasin(point)
+    }
+
+    getBasinCount() {
+        return this.#erosionLayer.basinCount
     }
 
     isShore(point) {
