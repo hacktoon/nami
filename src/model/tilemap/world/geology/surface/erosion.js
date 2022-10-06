@@ -32,6 +32,9 @@ class ErosionMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, ErosionFloodFill, context)
     }
+
+    getChance(fill, origin) { return .2 }
+    getGrowth(fill, origin) { return 3 }
 }
 
 
