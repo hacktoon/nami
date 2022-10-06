@@ -22,6 +22,7 @@ export class SurfaceModel {
             oceanMap: new OceanMap(rect),
             rect,
         }
+        this.rect = rect
         this.#shorePoints = props.shorePoints
         this.#oceanMap = props.oceanMap
         this.#terrainLayer = new TerrainLayer(props)
@@ -46,7 +47,7 @@ export class SurfaceModel {
     }
 
     isShore(point) {
-        const wrappedPoint = this.#terrainLayer.rect.wrap(point)
+        const wrappedPoint = this.rect.wrap(point)
         return this.#shorePoints.has(wrappedPoint)
     }
 
