@@ -39,7 +39,7 @@ export class GeologyTileMap extends TileMap {
         return [
             `${Point.hash(point)}`,
             `terrain=${terrain.name}`,
-            `basin=${erosionId}`,
+            `basin=${erosionId}, level=${erosionLevel}`,
         ].join(' | ')
     }
 

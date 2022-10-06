@@ -14,7 +14,7 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     isEmpty(fill, point) {
         const wrappedPoint = fill.context.terrainLayer.rect.wrap(point)
         const terrainId = fill.context.terrainLayer.get(wrappedPoint)
-        const isLand = Terrain.isLand(terrainId)
+        const isLand = terrainId == Terrain.BASIN
         const isEmpty = ! fill.context.erodedPoints.has(...wrappedPoint)
         return isLand && isEmpty
     }

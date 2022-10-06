@@ -45,7 +45,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const erosion = this.tileMap.getErosion(point)
         if (this.showErosion && erosion) {
             const [id, level] = erosion
-            return color.darken(level * 20)
+            return color.darken(level * 10)
         }
         if (this.showOceans && this.tileMap.isOcean(point)) {
             return color.darken(60)
