@@ -5,32 +5,44 @@ import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 const TYPES = [
     {
-        id: 5,
+        id: 7,
         name: 'Frozen',
         ratio: .85,
         color: Color.fromHex('#edffff'),
     },
     {
-        id: 4,
-        name: 'Cold',
+        id: 6,
+        name: 'Very cold',
         ratio: .7,
         color: Color.fromHex('#c4fdff'),
     },
     {
-        id: 3,
-        name: 'Cool',
-        ratio: .55,
+        id: 5,
+        name: 'Cold',
+        ratio: .6,
         color: Color.fromHex('#99d966'),
     },
     {
-        id: 2,
+        id: 4,
+        name: 'Cool',
+        ratio: .45,
+        color: Color.fromHex('#c6ff22'),
+    },
+    {
+        id: 3,
         name: 'Warm',
         ratio: .35,
-        color: Color.fromHex('#ffc600'),
+        color: Color.fromHex('#FFAA22'),
+    },
+    {
+        id: 2,
+        name: 'Hot',
+        ratio: .25,
+        color: Color.fromHex('#ff8800'),
     },
     {
         id: 1,
-        name: 'Hot',
+        name: 'Very hot',
         ratio: 0,
         color: Color.fromHex('#ff4444'),
     }
@@ -39,7 +51,7 @@ const TYPES = [
 function buildNoiseTileMap(rect, seed) {
     return NoiseTileMap.fromData({
         rect: rect.hash(),
-        octaves: 6,
+        octaves: 5,
         resolution: .7,
         scale: .02,
         seed: seed,
