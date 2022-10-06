@@ -26,11 +26,11 @@ export class GeologyTileMap extends TileMap {
         return new GeologyTileMap(params)
     }
 
-    #terrainModel
+    #surfaceModel
 
     constructor(params) {
         super(params)
-        this.#terrainModel = new SurfaceModel(this.rect, this.seed)
+        this.#surfaceModel = new SurfaceModel(this.rect, this.seed)
     }
 
     get(point) {
@@ -45,26 +45,26 @@ export class GeologyTileMap extends TileMap {
     }
 
     getTerrain(point) {
-        return this.#terrainModel.get(point)
+        return this.#surfaceModel.get(point)
     }
 
     isShore(point) {
-        return this.#terrainModel.isShore(point)
+        return this.#surfaceModel.isShore(point)
     }
 
     getErosionLevel(point) {
-        return this.#terrainModel.getErosionLevel(point)
+        return this.#surfaceModel.getErosionLevel(point)
     }
 
     getBasin(point) {
-        return this.#terrainModel.getBasin(point)
+        return this.#surfaceModel.getBasin(point)
     }
 
     getBasinCount() {
-        return this.#terrainModel.getBasinCount()
+        return this.#surfaceModel.getBasinCount()
     }
 
     isOcean(point) {
-        return this.#terrainModel.isOcean(point)
+        return this.#surfaceModel.isOcean(point)
     }
 }
