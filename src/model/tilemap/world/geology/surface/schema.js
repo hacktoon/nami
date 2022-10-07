@@ -94,8 +94,8 @@ export const BASE_RATIO = .55
 export const LAYERS = [
     {
         terrain: Terrain.PLAIN,
-        noise: NOISE_SPEC.feature,
-        ratio: .32
+        noise: NOISE_SPEC.outline,
+        ratio: .6
     },
     {
         terrain: Terrain.PLATEAU,

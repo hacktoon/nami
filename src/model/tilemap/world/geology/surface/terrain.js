@@ -22,10 +22,20 @@ export class TerrainLayer {
             if (isWater) {
                 const isType = pt => Terrain.isWater(typeMap[getLayerType(pt)])
                 props.oceanMap.detect(point, isType)
+                // reset lakes as basins
+                if (! props.oceanMap.isOcean(point)) {
+                    props.pointQueue.land.push(point)
+                    return Terrain.BASIN
+                }
             }
-            // detect borders between terrains and shore points
+            props.pointQueue[layerType].push(point)
+            return terrain
+        })
+        // detect borders between terrains and shore points
+        // after oceanMap is complete
+        baseLayer.forEach((point, terrain) => {
             for (let sidePoint of Point.adjacents(point)) {
-                const sideTerrain = typeMap[getLayerType(sidePoint)]
+                const sideTerrain = baseLayer.get(sidePoint)
                 if (terrain !== sideTerrain) {
                     props.borderPoints.add(point)
                     if (props.oceanMap.isOcean(sidePoint)) // is shore
@@ -33,13 +43,6 @@ export class TerrainLayer {
                     break
                 }
             }
-            // reset lakes as basins
-            if (isWater && ! props.oceanMap.isOcean(point)) {
-                props.pointQueue.land.push(point)
-                return Terrain.BASIN
-            }
-            props.pointQueue[layerType].push(point)
-            return terrain
         })
         return this.#buildSurfaceLayer(baseLayer, layers, props)
     }
