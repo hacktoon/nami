@@ -22,10 +22,10 @@ class ErosionFloodFill extends ConcurrentFillUnit {
 
     checkNeighbor(fill, sidePoint, centerPoint) {
         const wrappedSidePoint = fill.context.rect.wrap(sidePoint)
-        if (fill.context.flowTargetMap.has(...wrappedSidePoint))
+        if (fill.context.flowMap.has(...wrappedSidePoint))
             return
         const wrappedCenterPoint = fill.context.rect.wrap(centerPoint)
-        fill.context.flowTargetMap.set(...wrappedSidePoint, wrappedCenterPoint)
+        fill.context.flowMap.set(...wrappedSidePoint, wrappedCenterPoint)
     }
 
     getNeighbors(fill, originPoint) {
@@ -47,8 +47,9 @@ class ErosionMultiFill extends ConcurrentFill {
 export class ErosionLayer {
     constructor(terrainLayer, props) {
         const context = {
+            shorePoints: props.shorePoints,
+            flowMap: new PairMap(),
             basinMap: new PairMap(),
-            flowTargetMap: new PairMap(),
             basins: new Set(),
             rect: props.rect,
             terrainLayer,
@@ -57,7 +58,7 @@ export class ErosionLayer {
 
         mapFill.fill()
         this.basinMap = context.basinMap
-        this.flowTargetMap = context.flowTargetMap
+        this.flowMap = context.flowMap
         this.basinCount = props.shorePoints.size
         this.rect = props.rect
     }
@@ -67,7 +68,7 @@ export class ErosionLayer {
     }
 
     getFlowTarget(point) {
-        return this.flowTargetMap.get(...this.rect.wrap(point))
+        return this.flowMap.get(...this.rect.wrap(point))
     }
 }
 
