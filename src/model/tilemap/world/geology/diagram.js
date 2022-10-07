@@ -52,6 +52,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     get(point) {
         const terrainColor = this.colorMap.getByTerrain(point)
         const basin = this.tileMap.getBasin(point)
+        if (this.showShoreline && this.tileMap.isShore(point)) {
+            return terrainColor.darken(120)
+        }
         if (this.showBasins && basin) {
             const basinColor = this.colorMap.getByBasin(point)
             return basinColor
@@ -59,9 +62,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (this.showOceans && this.tileMap.isOcean(point)) {
             return terrainColor.darken(60)
         }
-        if (this.showShoreline && this.tileMap.isShore(point)) {
-            return terrainColor.average(Color.RED).average(terrainColor)
-        }
         return terrainColor
+    }
+
+    getArrow(point) {
+        const flowTarget = this.tileMap.getFlowTarget(point)
     }
 }

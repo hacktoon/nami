@@ -46,6 +46,10 @@ export class SurfaceModel {
         return this.#erosionLayer.basinCount
     }
 
+    getFlowTarget(point) {
+        return this.#erosionLayer.getFlowTarget(point)
+    }
+
     isShore(point) {
         const wrappedPoint = this.rect.wrap(point)
         return this.#shorePoints.has(wrappedPoint)
