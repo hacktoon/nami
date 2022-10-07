@@ -26,7 +26,11 @@ export class SurfaceModel {
         this.#shorePoints = props.shorePoints
         this.#oceanMap = props.oceanMap
         this.#terrainLayer = new TerrainLayer(props)
-        this.#erosionLayer = new ErosionLayer(this.#terrainLayer, props)
+        this.#erosionLayer = new ErosionLayer(
+            this.#terrainLayer,
+            this.#oceanMap,
+            props
+        )
     }
 
     get(point) {

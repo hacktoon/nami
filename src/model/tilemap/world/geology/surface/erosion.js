@@ -45,7 +45,7 @@ class ErosionMultiFill extends ConcurrentFill {
 
 
 export class ErosionLayer {
-    constructor(terrainLayer, props) {
+    constructor(terrainLayer, oceanMap, props) {
         const context = {
             shorePoints: props.shorePoints,
             flowMap: new PairMap(),
@@ -53,6 +53,7 @@ export class ErosionLayer {
             basins: new Set(),
             rect: props.rect,
             terrainLayer,
+            oceanMap,
         }
         const mapFill = new ErosionMultiFill(props.shorePoints.points, context)
 
