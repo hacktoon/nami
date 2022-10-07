@@ -29,7 +29,7 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     }
 
     getNeighbors(fill, originPoint) {
-        return Point.adjacents(originPoint)
+        return Point.around(originPoint)
     }
 }
 
