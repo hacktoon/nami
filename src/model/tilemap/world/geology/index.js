@@ -41,7 +41,7 @@ export class GeologyTileMap extends TileMap {
             `${Point.hash(point)}`,
             `terrain=${terrain.name}`,
             `basin=${basin}`,
-            `flowsTo=${Point.hash(flowTarget)}`,
+            `flowsTo=${flowTarget && Point.hash(flowTarget) || ''}`,
         ].join(' | ')
     }
 
