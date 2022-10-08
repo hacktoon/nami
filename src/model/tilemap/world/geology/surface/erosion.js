@@ -1,6 +1,7 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { PairMap } from '/src/lib/map'
 import { Point } from '/src/lib/point'
+import { Direction } from '/src/lib/direction'
 
 import { Terrain } from './schema'
 
@@ -15,9 +16,9 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     isEmpty(fill, point) {
         const wrappedPoint = fill.context.rect.wrap(point)
         const terrainId = fill.context.terrainLayer.get(wrappedPoint)
-        const isLand = terrainId == Terrain.BASIN
+        const isCurrentTerrain = terrainId == Terrain.BASIN
         const isEmpty = ! fill.context.basinMap.has(...wrappedPoint)
-        return isLand && isEmpty
+        return isCurrentTerrain && isEmpty
     }
 
     checkNeighbor(fill, sidePoint, centerPoint) {
@@ -26,14 +27,19 @@ class ErosionFloodFill extends ConcurrentFillUnit {
         const wSidePoint = fill.context.rect.wrap(sidePoint)
         const wCenterPoint = fill.context.rect.wrap(centerPoint)
         const sideTerrain = fill.context.terrainLayer.get(wSidePoint)
-        const isLand = sideTerrain == Terrain.BASIN
+        const isCurrentTerrain = sideTerrain == Terrain.BASIN
+        // detect river mouth, point to straight neighbor
         if (shorePoints.has(wCenterPoint) && Terrain.isWater(sideTerrain)) {
-            flowMap.set(...wCenterPoint, wSidePoint)
+            const angle = Point.angle(wCenterPoint, wSidePoint)
+            const direction = Direction.fromAngle(angle)
+            if(Direction.isCardinal(direction)) {
+                flowMap.set(...wCenterPoint, wSidePoint)
+            }
             return
         }
         if (flowMap.has(...wSidePoint))
             return
-        if (isLand)
+        if (isCurrentTerrain)
             flowMap.set(...wSidePoint, wCenterPoint)
     }
 

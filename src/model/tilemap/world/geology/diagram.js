@@ -73,8 +73,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             const flowTarget = this.tileMap.getFlowTarget(point)
             if (flowTarget) {
                 const angle = Point.angle(point, flowTarget)
-                const diretion = Direction.fromAngle(angle)
-                return diretion.symbol
+                const direction = Direction.fromAngle(angle)
+                return direction.symbol
             }
         }
         return ''

@@ -27,6 +27,12 @@ const DIRECTION_MAP = (() => {
     return _map
 })()
 
+const CARDINAL_DIRECTIONS = new Set([
+    DIRECTIONS.NORTH.id,
+    DIRECTIONS.EAST.id,
+    DIRECTIONS.SOUTH.id,
+    DIRECTIONS.WEST.id
+])
 
 export class Direction {
     static get NORTH () { return DIRECTIONS.NORTH.id }
@@ -85,5 +91,9 @@ export class Direction {
             Direction.SOUTH,
             Direction.WEST
         )
+    }
+
+    static isCardinal(direction) {
+        return CARDINAL_DIRECTIONS.has(direction.id)
     }
 }
