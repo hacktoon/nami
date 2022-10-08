@@ -1,6 +1,8 @@
 import { Schema } from '/src/lib/schema'
-import { Color } from '/src/lib/color'
 import { Type } from '/src/lib/type'
+import { Color } from '/src/lib/color'
+import { Point } from '/src/lib/point'
+import { Direction } from '/src/lib/direction'
 import { TileMapDiagram } from '/src/model/lib/tilemap'
 
 
@@ -51,13 +53,14 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const terrainColor = this.colorMap.getByTerrain(point)
-        const basin = this.tileMap.getBasin(point)
         if (this.showShoreline && this.tileMap.isShore(point)) {
             return terrainColor.darken(120)
         }
-        if (this.showBasins && basin) {
-            const basinColor = this.colorMap.getByBasin(point)
-            return basinColor
+        if (this.showBasins) {
+            if (this.tileMap.getBasin(point)) {
+                return this.colorMap.getByBasin(point)
+            }
+            return terrainColor.grayscale()
         }
         if (this.showOceans && this.tileMap.isOcean(point)) {
             return terrainColor.darken(60)
@@ -65,7 +68,15 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         return terrainColor
     }
 
-    getArrow(point) {
-        const flowTarget = this.tileMap.getFlowTarget(point)
+    getText(point) {
+        if (this.showBasins) {
+            const flowTarget = this.tileMap.getFlowTarget(point)
+            if (flowTarget) {
+                const angle = Point.angle(point, flowTarget)
+                const diretion = Direction.fromAngle(angle)
+                return diretion.symbol
+            }
+        }
+        return ''
     }
 }

@@ -38,12 +38,9 @@ export class SurfaceModel {
         return Terrain.fromId(id)
     }
 
-    getErosionLevel(point) {
-        return this.#erosionLayer.getErosionLevel(point)
-    }
-
     getBasin(point) {
-        return this.#erosionLayer.getBasin(point)
+        const wrappedPoint = this.rect.wrap(point)
+        return this.#erosionLayer.getBasin(wrappedPoint)
     }
 
     getBasinCount() {
@@ -51,7 +48,8 @@ export class SurfaceModel {
     }
 
     getFlowTarget(point) {
-        return this.#erosionLayer.getFlowTarget(point)
+        const wrappedPoint = this.rect.wrap(point)
+        return this.#erosionLayer.getFlowTarget(wrappedPoint)
     }
 
     isShore(point) {

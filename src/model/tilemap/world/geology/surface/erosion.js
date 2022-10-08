@@ -23,17 +23,18 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     checkNeighbor(fill, sidePoint, centerPoint) {
         const flowMap = fill.context.flowMap
         const shorePoints = fill.context.shorePoints
-        const wrappedSidePoint = fill.context.rect.wrap(sidePoint)
-        const sideTerrain = fill.context.terrainLayer.get(wrappedSidePoint)
-        const wrappedCenterPoint = fill.context.rect.wrap(centerPoint)
-        if (shorePoints.has(wrappedCenterPoint) && Terrain.isWater(sideTerrain)) {
-            flowMap.set(...wrappedCenterPoint, wrappedSidePoint)
+        const wSidePoint = fill.context.rect.wrap(sidePoint)
+        const wCenterPoint = fill.context.rect.wrap(centerPoint)
+        const sideTerrain = fill.context.terrainLayer.get(wSidePoint)
+        const isLand = sideTerrain == Terrain.BASIN
+        if (shorePoints.has(wCenterPoint) && Terrain.isWater(sideTerrain)) {
+            flowMap.set(...wCenterPoint, wSidePoint)
             return
         }
-        if (flowMap.has(...wrappedSidePoint)
-            || flowMap.has(...wrappedCenterPoint))
+        if (flowMap.has(...wSidePoint))
             return
-        flowMap.set(...wrappedSidePoint, wrappedCenterPoint)
+        if (isLand)
+            flowMap.set(...wSidePoint, wCenterPoint)
     }
 
     getNeighbors(fill, originPoint) {

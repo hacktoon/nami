@@ -33,11 +33,12 @@ class CanvasContext {
         this.context.fillRect(x, y, size, size)
     }
 
-    text(point, text, color='#000') {
+    text(point, size, text, color='#000') {
+        const offset = Math.floor(size / 2)
         this.context.fillStyle = color
         this.context.textAlign = "center"
-        this.context.font = "20px monospace"
-        this.context.fillText(text, point[0], point[1])
+        this.context.font = "25px monospace"
+        this.context.fillText(text, point[0] + offset, point[1] + offset)
     }
 
     reset() {

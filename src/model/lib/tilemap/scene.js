@@ -34,7 +34,12 @@ export class TileMapScene {
         this.#renderFrame((tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
                 let color = this.diagram.get(tilePoint)
+                let text = this.diagram.getText(tilePoint)
                 canvas.rect(canvasPoint, this.zoom, color.toHex())
+                if (text) {
+                    const txtColor = color.invert().toHex()
+                    canvas.text(canvasPoint, this.zoom, text, txtColor)
+                }
             } else {
                 canvas.clear(this.zoom, canvasPoint)
             }
