@@ -1,7 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 
-import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './schema'
+import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './data'
 
 
 export class TerrainLayer {

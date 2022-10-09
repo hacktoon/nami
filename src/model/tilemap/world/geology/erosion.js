@@ -4,7 +4,7 @@ import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 
-import { Terrain } from './schema'
+import { Terrain } from './data'
 
 
 class ErosionFloodFill extends ConcurrentFillUnit {
