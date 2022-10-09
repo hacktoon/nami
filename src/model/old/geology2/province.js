@@ -1,4 +1,4 @@
-import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { ConcurrentFillSchedule, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Random } from '/src/lib/random'
 
 
@@ -68,7 +68,7 @@ export class ProvinceModel {
 }
 
 
-class ProvinceMultiFill extends ConcurrentFill {
+class ProvinceMultiFill extends ConcurrentFillSchedule {
     constructor(regions, context) {
         super(regions, ProvinceFloodFill, context)
     }

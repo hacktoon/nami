@@ -1,4 +1,4 @@
-import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { ConcurrentFillSchedule, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { PairMap } from '/src/lib/map'
 import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
@@ -16,7 +16,7 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     isEmpty(fill, point) {
         const wrappedPoint = fill.context.rect.wrap(point)
         const terrainId = fill.context.terrainLayer.get(wrappedPoint)
-        const isCurrentTerrain = terrainId == fill.context.currentTerrain
+        const isCurrentTerrain = terrainId == fill.schedule.terrain
         const isEmpty = ! fill.context.basinMap.has(...wrappedPoint)
         return isCurrentTerrain && isEmpty
     }
@@ -40,14 +40,11 @@ class ErosionFloodFill extends ConcurrentFillUnit {
             return
         }
         // set flow only on current terrain layer
-        if (sideTerrain === fill.context.currentTerrain) {
+        if (sideTerrain === fill.schedule.terrain) {
             const directionId = this.getDirectionId(sidePoint, centerPoint)
             fill.context.flowMap.set(...wSidePoint, directionId)
         } else if (Terrain.isLand(sideTerrain)) {
-            if (Point.hash(sidePoint) == '28,23') {
-                console.log(sidePoint);
-            }
-            fill.context.nextPoints.add(wSidePoint)
+            fill.schedule.nextPoints.add(wSidePoint)
         }
     }
 
@@ -55,20 +52,14 @@ class ErosionFloodFill extends ConcurrentFillUnit {
         const angle = Point.angle(sourcePoint, targetPoint)
         return Direction.fromAngle(angle).id
     }
-
 }
 
 
-class ErosionMultiFill extends ConcurrentFill {
-    constructor(origins, terrain, baseContext) {
-        const nextPoints = new PointSet()
-        const context = {
-            ...baseContext,
-            currentTerrain: terrain,
-            nextPoints,
-        }
+class ErosionConcurrentFill extends ConcurrentFillSchedule {
+    constructor(origins, terrain, context) {
         super(origins, ErosionFloodFill, context)
-        this.nextPoints = nextPoints
+        this.nextPoints = new PointSet()
+        this.terrain = terrain
     }
 
     getChance(fill, origin) { return .2 }
@@ -77,7 +68,7 @@ class ErosionMultiFill extends ConcurrentFill {
 
 
 export class ErosionLayer {
-    constructor(terrainLayer, props) {
+    #build(terrainLayer, props) {
         const context = {
             shorePoints: props.shorePoints,
             flowMap: new PairMap(),
@@ -85,14 +76,25 @@ export class ErosionLayer {
             rect: props.rect,
             terrainLayer,
         }
-        const origins = props.shorePoints.points
-        const mapFill = new ErosionMultiFill(origins, Terrain.BASIN, context)
+        let origins = props.shorePoints.points
+        let mapFill = this.#erodeLayer(origins, Terrain.BASIN, context)
+        origins = mapFill.nextPoints.points
+        mapFill = this.#erodeLayer(origins, Terrain.PLAIN, context)
+        return mapFill
+    }
 
-        mapFill.fill()
+    #erodeLayer(origins, terrain, context) {
+        const fill = new ErosionConcurrentFill(origins, terrain, context)
+        fill.fill()
+        return fill
+    }
+
+    constructor(terrainLayer, props) {
+        const mapFill = this.#build(terrainLayer, props)
 
         this.nextPoints = mapFill.nextPoints
-        this.basinMap = context.basinMap
-        this.flowMap = context.flowMap
+        this.basinMap = mapFill.context.basinMap
+        this.flowMap = mapFill.context.flowMap
         this.basinCount = props.shorePoints.size
         this.rect = props.rect
     }

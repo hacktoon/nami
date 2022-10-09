@@ -2,13 +2,14 @@ import { Random } from '/src/lib/random'
 
 
 export class ConcurrentFillUnit {
-    constructor(multiFill, context) {
+    constructor(schedule, context) {
+        this.schedule = schedule
         this.context = context
-        this.seedTable = multiFill.seedTable
-        this.areaTable = multiFill.areaTable
-        this.levelTable = multiFill.levelTable
-        this.growthTable = multiFill.growthTable
-        this.chanceTable = multiFill.chanceTable
+        this.seedTable = schedule.seedTable
+        this.areaTable = schedule.areaTable
+        this.levelTable = schedule.levelTable
+        this.growthTable = schedule.growthTable
+        this.chanceTable = schedule.chanceTable
     }
 
     grow(id) {
@@ -31,13 +32,13 @@ export class ConcurrentFillUnit {
     }
 
     _fillValue(id, origin, level) {
-        const fill = {id, context: this.context}
+        const fill = {id, schedule: this.schedule, context: this.context}
         this.setValue(fill, origin, level)
         this.areaTable[id] += this.getArea(fill, origin)
     }
 
     _fillNeighbors(id, origin) {
-        const fill = {id, context: this.context}
+        const fill = {id, schedule: this.schedule, context: this.context}
         const filledNeighbors = []
         const allNeighbors = this.getNeighbors(fill, origin)
         const emptyNeighbors = allNeighbors.filter(neighbor => {
@@ -90,7 +91,7 @@ export class ConcurrentFillUnit {
 }
 
 
-export class ConcurrentFill {
+export class ConcurrentFillSchedule {
     constructor(origins, FillUnit, context={}) {
         this.origins = origins
         this.context = context
@@ -105,7 +106,11 @@ export class ConcurrentFill {
 
     fill() {
         for(let fillId = 0; fillId < this.origins.length; fillId ++) {
-            const fill = {id: fillId, context: this.context}
+            const fill = {
+                id: fillId,
+                schedule: this.schedule,
+                context: this.context
+            }
             const origin = this.origins[fillId]
             this.areaTable.push(0)
             this.levelTable.push(0)
