@@ -44,6 +44,10 @@ export class Direction {
     static get SOUTHEAST () { return DIRECTIONS.SOUTHEAST.id }
     static get SOUTHWEST () { return DIRECTIONS.SOUTHWEST.id }
 
+    static fromId(id) {
+        return DIRECTION_MAP[id]
+    }
+
     static getName (direction) {
         return DIRECTION_MAP[direction.id].name
     }

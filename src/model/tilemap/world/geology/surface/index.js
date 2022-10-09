@@ -42,8 +42,8 @@ export class SurfaceModel {
         return this.#erosionLayer.basinCount
     }
 
-    getFlowTarget(point) {
-        return this.#erosionLayer.getFlowTarget(point)
+    getErosionDirection(point) {
+        return this.#erosionLayer.getErosionDirection(point)
     }
 
     isShore(point) {

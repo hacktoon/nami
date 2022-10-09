@@ -36,12 +36,10 @@ export class GeologyTileMap extends TileMap {
     get(point) {
         const terrain = this.getTerrain(point)
         const basin = this.getBasin(point)
-        const flowTarget = this.getFlowTarget(point)
         return [
             `${Point.hash(point)}`,
             `terrain=${terrain.name}`,
-            `basin=${basin}`,
-            `flowsTo=${flowTarget && Point.hash(flowTarget) || ''}`,
+            `basin=${basin}`
         ].join(' | ')
     }
 
@@ -61,8 +59,8 @@ export class GeologyTileMap extends TileMap {
         return this.#surfaceModel.getBasinCount()
     }
 
-    getFlowTarget(point) {
-        return this.#surfaceModel.getFlowTarget(point)
+    getErosionDirection(point) {
+        return this.#surfaceModel.getErosionDirection(point)
     }
 
     isOcean(point) {

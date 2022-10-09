@@ -35,17 +35,25 @@ class ErosionFloodFill extends ConcurrentFillUnit {
         const shorePoints = fill.context.shorePoints
         if (fill.context.flowMap.has(...wSidePoint))
             return
+
         // detect river mouth
         if (shorePoints.has(wCenterPoint) && Terrain.isWater(sideTerrain)) {
-            fill.context.flowMap.set(...wCenterPoint, wSidePoint)
+            const directionId = this.getDirectionId(centerPoint, sidePoint)
+            fill.context.flowMap.set(...wCenterPoint, directionId)
             return
         }
         // set flow only on current terrain layer
         if (sideTerrain === fill.context.currentTerrain) {
-            fill.context.flowMap.set(...wSidePoint, wCenterPoint)
+            const directionId = this.getDirectionId(sidePoint, centerPoint)
+            fill.context.flowMap.set(...wSidePoint, directionId)
         } else {
             //fill.context.nextPoints.add(wSidePoint)
         }
+    }
+
+    getDirectionId(sourcePoint, targetPoint) {
+        const angle = Point.angle(sourcePoint, targetPoint)
+        return Direction.fromAngle(angle).id
     }
 
 }
@@ -91,8 +99,9 @@ export class ErosionLayer {
         return this.basinMap.get(...this.rect.wrap(point))
     }
 
-    getFlowTarget(point) {
-        return this.flowMap.get(...this.rect.wrap(point))
+    getErosionDirection(point) {
+        const id = this.flowMap.get(...this.rect.wrap(point))
+        return Direction.fromId(id)
     }
 }
 

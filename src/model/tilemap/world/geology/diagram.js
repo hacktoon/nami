@@ -9,8 +9,8 @@ import { TileMapDiagram } from '/src/model/lib/tilemap'
 const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
     Type.boolean('showShoreline', 'Shoreline', {default: false}),
-    Type.boolean('showOceans', 'Oceans', {default: false}),
     Type.boolean('showBasins', 'Basins', {default: false}),
+    Type.boolean('showErosion', 'Erosion flow', {default: false}),
 )
 
 
@@ -46,40 +46,28 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     constructor(tileMap, colorMap, params) {
         super(tileMap)
         this.colorMap = colorMap
-        this.showShoreline = params.get('showShoreline')
-        this.showOceans = params.get('showOceans')
-        this.showBasins = params.get('showBasins')
+        this.params = params
     }
 
     get(point) {
         const terrainColor = this.colorMap.getByTerrain(point)
         const erosionLayer = this.tileMap.erosionDebug()
-        if (this.showShoreline && this.tileMap.isShore(point)) {
+        if (this.params.get('showShoreline') && this.tileMap.isShore(point)) {
             return terrainColor.darken(120)
         }
-        if (this.showBasins) {
-            // if (erosionLayer.nextPoints.has(point)) {
-            //     return terrainColor.darken(120)
-            // }
+        if (this.params.get('showBasins')) {
             if (this.tileMap.getBasin(point)) {
                 return this.colorMap.getByBasin(point)
             }
             return terrainColor.grayscale()
         }
-        if (this.showOceans && this.tileMap.isOcean(point)) {
-            return terrainColor.darken(60)
-        }
         return terrainColor
     }
 
     getText(point) {
-        const wPoint = this.tileMap.rect.wrap(point)
-        if (this.showBasins) {
-            const flowTarget = this.tileMap.getFlowTarget(wPoint)
-            // TODO: use stored direction
-            if (flowTarget) {
-                const angle = Point.angle(wPoint, flowTarget)
-                const direction = Direction.fromAngle(angle)
+        if (this.params.get('showErosion')) {
+            const direction = this.tileMap.getErosionDirection(point)
+            if (direction) {
                 return direction.symbol
             }
         }
