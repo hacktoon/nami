@@ -22,9 +22,6 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     }
 
     getNeighbors(fill, originPoint) {
-        if (originPoint[0] == 98 && originPoint[1] == 15) {
-            console.log(Point.around(originPoint));
-        }
         return Point.around(originPoint)
     }
 
@@ -46,8 +43,11 @@ class ErosionFloodFill extends ConcurrentFillUnit {
         if (sideTerrain === fill.context.currentTerrain) {
             const directionId = this.getDirectionId(sidePoint, centerPoint)
             fill.context.flowMap.set(...wSidePoint, directionId)
-        } else {
-            //fill.context.nextPoints.add(wSidePoint)
+        } else if (Terrain.isLand(sideTerrain)) {
+            if (Point.hash(sidePoint) == '28,23') {
+                console.log(sidePoint);
+            }
+            fill.context.nextPoints.add(wSidePoint)
         }
     }
 
@@ -60,14 +60,15 @@ class ErosionFloodFill extends ConcurrentFillUnit {
 
 
 class ErosionMultiFill extends ConcurrentFill {
-    constructor(baseContext, terrain) {
-        const origins = baseContext.nextPoints.points
+    constructor(origins, terrain, baseContext) {
+        const nextPoints = new PointSet()
         const context = {
             ...baseContext,
-            nextPoints: new PointSet(),
-            currentTerrain: terrain
+            currentTerrain: terrain,
+            nextPoints,
         }
         super(origins, ErosionFloodFill, context)
+        this.nextPoints = nextPoints
     }
 
     getChance(fill, origin) { return .2 }
@@ -78,17 +79,18 @@ class ErosionMultiFill extends ConcurrentFill {
 export class ErosionLayer {
     constructor(terrainLayer, props) {
         const context = {
-            nextPoints: props.shorePoints,
             shorePoints: props.shorePoints,
             flowMap: new PairMap(),
             basinMap: new PairMap(),
             rect: props.rect,
             terrainLayer,
         }
-        const mapFill = new ErosionMultiFill(context, Terrain.BASIN)
+        const origins = props.shorePoints.points
+        const mapFill = new ErosionMultiFill(origins, Terrain.BASIN, context)
 
         mapFill.fill()
-        this.nextPoints = context.nextPoints
+
+        this.nextPoints = mapFill.nextPoints
         this.basinMap = context.basinMap
         this.flowMap = context.flowMap
         this.basinCount = props.shorePoints.size

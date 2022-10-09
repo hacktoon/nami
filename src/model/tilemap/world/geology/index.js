@@ -36,7 +36,6 @@ export class GeologyTileMap extends TileMap {
     #shorePoints
     #terrainLayer
     #oceanMap
-    #erosionLayer
 
     constructor(params) {
         super(params)
@@ -51,12 +50,12 @@ export class GeologyTileMap extends TileMap {
         this.#shorePoints = props.shorePoints
         this.#oceanMap = props.oceanMap
         this.#terrainLayer = new TerrainLayer(props)
-        this.#erosionLayer = new ErosionLayer(this.#terrainLayer, props)
+        this.erosionLayer = new ErosionLayer(this.#terrainLayer, props)
     }
 
     get(point) {
         const terrain = this.getTerrain(point)
-        const basin = this.#erosionLayer.getBasin(point)
+        const basin = this.erosionLayer.getBasin(point)
         return [
             `${Point.hash(point)}`,
             `terrain=${terrain.name}`,
@@ -75,22 +74,18 @@ export class GeologyTileMap extends TileMap {
     }
 
     getBasin(point) {
-        return this.#erosionLayer.getBasin(point)
+        return this.erosionLayer.getBasin(point)
     }
 
     getBasinCount() {
-        return this.#erosionLayer.basinCount
+        return this.erosionLayer.basinCount
     }
 
     getErosionDirection(point) {
-        return this.#erosionLayer.getErosionDirection(point)
+        return this.erosionLayer.getErosionDirection(point)
     }
 
     isOcean(point) {
         return this.#oceanMap.isOcean(point)
-    }
-
-    erosionDebug() {
-        return this.#erosionLayer
     }
 }

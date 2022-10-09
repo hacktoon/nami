@@ -11,6 +11,7 @@ const SCHEMA = new Schema(
     Type.boolean('showShoreline', 'Shoreline', {default: false}),
     Type.boolean('showBasins', 'Basins', {default: false}),
     Type.boolean('showErosion', 'Erosion flow', {default: false}),
+    Type.boolean('showNextPoints', 'Next points', {default: false}),
 )
 
 
@@ -51,7 +52,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const terrainColor = this.colorMap.getByTerrain(point)
-        const erosionLayer = this.tileMap.erosionDebug()
+        const nextPoints = this.tileMap.erosionLayer.nextPoints
         if (this.params.get('showShoreline') && this.tileMap.isShore(point)) {
             return terrainColor.darken(120)
         }
@@ -60,6 +61,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
                 return this.colorMap.getByBasin(point)
             }
             return terrainColor.grayscale()
+        }
+        if (this.params.get('showNextPoints') && nextPoints.has(point)) {
+            return terrainColor.brighten(120)
         }
         return terrainColor
     }
