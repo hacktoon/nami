@@ -68,4 +68,8 @@ export class GeologyTileMap extends TileMap {
     isOcean(point) {
         return this.#surfaceModel.isOcean(point)
     }
+
+    erosionDebug() {
+        return this.#surfaceModel.erosionDebug()
+    }
 }

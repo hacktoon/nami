@@ -1,5 +1,6 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { PairMap } from '/src/lib/map'
+import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 
@@ -10,47 +11,54 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     setValue(fill, point, level) {
         const wrappedPoint = fill.context.rect.wrap(point)
         fill.context.basinMap.set(...wrappedPoint, fill.id)
-        fill.context.basins.add(fill.id)
     }
 
     isEmpty(fill, point) {
         const wrappedPoint = fill.context.rect.wrap(point)
         const terrainId = fill.context.terrainLayer.get(wrappedPoint)
-        const isCurrentTerrain = terrainId == Terrain.BASIN
+        const isCurrentTerrain = terrainId == fill.context.currentTerrain
         const isEmpty = ! fill.context.basinMap.has(...wrappedPoint)
         return isCurrentTerrain && isEmpty
     }
 
-    checkNeighbor(fill, sidePoint, centerPoint) {
-        const flowMap = fill.context.flowMap
-        const shorePoints = fill.context.shorePoints
-        const wSidePoint = fill.context.rect.wrap(sidePoint)
-        const wCenterPoint = fill.context.rect.wrap(centerPoint)
-        const sideTerrain = fill.context.terrainLayer.get(wSidePoint)
-        const isCurrentTerrain = sideTerrain == Terrain.BASIN
-        // detect river mouth, point to straight neighbor
-        if (shorePoints.has(wCenterPoint) && Terrain.isWater(sideTerrain)) {
-            const angle = Point.angle(wCenterPoint, wSidePoint)
-            const direction = Direction.fromAngle(angle)
-            if(Direction.isCardinal(direction)) {
-                flowMap.set(...wCenterPoint, wSidePoint)
-            }
-            return
-        }
-        if (flowMap.has(...wSidePoint))
-            return
-        if (isCurrentTerrain)
-            flowMap.set(...wSidePoint, wCenterPoint)
-    }
-
     getNeighbors(fill, originPoint) {
+        if (originPoint[0] == 98 && originPoint[1] == 15) {
+            console.log(Point.around(originPoint));
+        }
         return Point.around(originPoint)
     }
+
+    checkNeighbor(fill, sidePoint, centerPoint) {
+        const wSidePoint = fill.context.rect.wrap(sidePoint)
+        const wCenterPoint = fill.context.rect.wrap(centerPoint)
+        const sideTerrain = fill.context.terrainLayer.get(sidePoint)
+        const shorePoints = fill.context.shorePoints
+        if (fill.context.flowMap.has(...wSidePoint))
+            return
+        // detect river mouth
+        if (shorePoints.has(wCenterPoint) && Terrain.isWater(sideTerrain)) {
+            fill.context.flowMap.set(...wCenterPoint, wSidePoint)
+            return
+        }
+        // set flow only on current terrain layer
+        if (sideTerrain === fill.context.currentTerrain) {
+            fill.context.flowMap.set(...wSidePoint, wCenterPoint)
+        } else {
+            //fill.context.nextPoints.add(wSidePoint)
+        }
+    }
+
 }
 
 
 class ErosionMultiFill extends ConcurrentFill {
-    constructor(origins, context) {
+    constructor(baseContext, terrain) {
+        const origins = baseContext.nextPoints.points
+        const context = {
+            ...baseContext,
+            nextPoints: new PointSet(),
+            currentTerrain: terrain
+        }
         super(origins, ErosionFloodFill, context)
     }
 
@@ -60,19 +68,19 @@ class ErosionMultiFill extends ConcurrentFill {
 
 
 export class ErosionLayer {
-    constructor(terrainLayer, oceanMap, props) {
+    constructor(terrainLayer, props) {
         const context = {
+            nextPoints: props.shorePoints,
             shorePoints: props.shorePoints,
             flowMap: new PairMap(),
             basinMap: new PairMap(),
-            basins: new Set(),
             rect: props.rect,
             terrainLayer,
-            oceanMap,
         }
-        const mapFill = new ErosionMultiFill(props.shorePoints.points, context)
+        const mapFill = new ErosionMultiFill(context, Terrain.BASIN)
 
         mapFill.fill()
+        this.nextPoints = context.nextPoints
         this.basinMap = context.basinMap
         this.flowMap = context.flowMap
         this.basinCount = props.shorePoints.size

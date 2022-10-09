@@ -26,11 +26,7 @@ export class SurfaceModel {
         this.#shorePoints = props.shorePoints
         this.#oceanMap = props.oceanMap
         this.#terrainLayer = new TerrainLayer(props)
-        this.#erosionLayer = new ErosionLayer(
-            this.#terrainLayer,
-            this.#oceanMap,
-            props
-        )
+        this.#erosionLayer = new ErosionLayer(this.#terrainLayer, props)
     }
 
     get(point) {
@@ -39,8 +35,7 @@ export class SurfaceModel {
     }
 
     getBasin(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        return this.#erosionLayer.getBasin(wrappedPoint)
+        return this.#erosionLayer.getBasin(point)
     }
 
     getBasinCount() {
@@ -48,8 +43,7 @@ export class SurfaceModel {
     }
 
     getFlowTarget(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        return this.#erosionLayer.getFlowTarget(wrappedPoint)
+        return this.#erosionLayer.getFlowTarget(point)
     }
 
     isShore(point) {
@@ -59,5 +53,9 @@ export class SurfaceModel {
 
     isOcean(point) {
         return this.#oceanMap.isOcean(point)
+    }
+
+    erosionDebug() {
+        return this.#erosionLayer
     }
 }

@@ -53,10 +53,14 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const terrainColor = this.colorMap.getByTerrain(point)
+        const erosionLayer = this.tileMap.erosionDebug()
         if (this.showShoreline && this.tileMap.isShore(point)) {
             return terrainColor.darken(120)
         }
         if (this.showBasins) {
+            // if (erosionLayer.nextPoints.has(point)) {
+            //     return terrainColor.darken(120)
+            // }
             if (this.tileMap.getBasin(point)) {
                 return this.colorMap.getByBasin(point)
             }
@@ -69,10 +73,12 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     getText(point) {
+        const wPoint = this.tileMap.rect.wrap(point)
         if (this.showBasins) {
-            const flowTarget = this.tileMap.getFlowTarget(point)
+            const flowTarget = this.tileMap.getFlowTarget(wPoint)
+            // TODO: use stored direction
             if (flowTarget) {
-                const angle = Point.angle(point, flowTarget)
+                const angle = Point.angle(wPoint, flowTarget)
                 const direction = Direction.fromAngle(angle)
                 return direction.symbol
             }
