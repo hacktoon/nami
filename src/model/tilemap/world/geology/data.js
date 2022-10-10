@@ -74,6 +74,10 @@ export class Terrain {
         return TYPE_MAP.get(id).water
     }
 
+    static flowsTo(id1, id2) {
+        return id1 >= id2
+    }
+
     constructor(spec) {
         this.id = spec.id
         this.name = spec.name
