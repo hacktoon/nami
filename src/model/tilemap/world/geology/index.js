@@ -6,7 +6,7 @@ import { UITileMap } from '/src/ui/tilemap'
 import { PointSet } from '/src/lib/point/set'
 
 import { NoiseMapSet } from './noise'
-import { OceanMap } from './ocean'
+
 import { Terrain } from './data'
 import { ErosionLayer } from './erosion'
 import { TerrainLayer } from './terrain'
@@ -35,7 +35,6 @@ export class GeologyTileMap extends TileMap {
 
     #shorePoints
     #terrainLayer
-    #oceanMap
 
     constructor(params) {
         super(params)
@@ -44,11 +43,9 @@ export class GeologyTileMap extends TileMap {
             pointQueue: {water: [], land: []},
             borderPoints: new PointSet(),
             shorePoints: new PointSet(),
-            oceanMap: new OceanMap(this.rect),
             rect: this.rect,
         }
         this.#shorePoints = props.shorePoints
-        this.#oceanMap = props.oceanMap
         this.#terrainLayer = new TerrainLayer(props)
         this.erosionLayer = new ErosionLayer(this.#terrainLayer, props)
     }
@@ -83,9 +80,5 @@ export class GeologyTileMap extends TileMap {
 
     getErosionDirection(point) {
         return this.erosionLayer.getErosionDirection(point)
-    }
-
-    isOcean(point) {
-        return this.#oceanMap.isOcean(point)
     }
 }

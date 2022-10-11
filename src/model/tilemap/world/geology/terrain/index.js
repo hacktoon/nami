@@ -1,48 +1,39 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 
+import { OceanMap } from './ocean'
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from '../data'
 
 
 export class TerrainLayer {
     #terrainLayer
 
-    #buildBaseLayer(props) {
+    #getLayerType(noiseMap, point) {
+        const noise = noiseMap.getNoise(point)
+        return noise < BASE_RATIO ? 'water' : 'land'
+    }
+
+    #buildBaseLayer(oceanMap, props) {
         const noiseMap = props.noiseMapSet.get(BASE_NOISE)
         const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
-        const getLayerType = point => {
-            const noise = noiseMap.getNoise(point)
-            return noise < BASE_RATIO ? 'water' : 'land'
-        }
         const baseLayer = Matrix.fromRect(noiseMap.rect, point => {
-            const layerType = getLayerType(point)
+            const layerType = this.#getLayerType(noiseMap, point)
             const terrain = typeMap[layerType]
             let isWater = Terrain.isWater(terrain)
             // detect oceans by area
             if (isWater) {
-                const isType = pt => Terrain.isWater(typeMap[getLayerType(pt)])
-                props.oceanMap.detect(point, isType)
+                const isType = pt => {
+                    return Terrain.isWater(typeMap[this.#getLayerType(noiseMap, pt)])
+                }
+                oceanMap.detect(point, isType)
                 // reset lakes as basins
-                if (! props.oceanMap.isOcean(point)) {
+                if (! oceanMap.isOcean(point)) {
                     props.pointQueue.land.push(point)
                     return Terrain.BASIN
                 }
             }
             props.pointQueue[layerType].push(point)
             return terrain
-        })
-        // detect borders between terrains and shore points
-        // after oceanMap is complete
-        baseLayer.forEach((point, terrain) => {
-            for (let sidePoint of Point.adjacents(point)) {
-                const sideTerrain = baseLayer.get(sidePoint)
-                if (terrain !== sideTerrain) {
-                    props.borderPoints.add(point)
-                    if (props.oceanMap.isOcean(sidePoint)) // is shore
-                        props.shorePoints.add(point)
-                    break
-                }
-            }
         })
         return baseLayer
     }
@@ -74,8 +65,27 @@ export class TerrainLayer {
         return baseLayer
     }
 
+    #detectShoreline(baseLayer, oceanMap, props) {
+        // detect borders between terrains and shore points
+        // after oceanMap is complete
+        baseLayer.forEach((point, terrain) => {
+            for (let sidePoint of Point.adjacents(point)) {
+                const sideTerrain = baseLayer.get(sidePoint)
+                if (terrain !== sideTerrain) {
+                    props.borderPoints.add(point)
+                    if (oceanMap.isOcean(sidePoint)) // is shore
+                        props.shorePoints.add(point)
+                    break
+                }
+            }
+        })
+    }
+
     constructor(props) {
-        this.#terrainLayer = this.#buildBaseLayer(props)
+        const oceanMap = new OceanMap(props.rect)
+        const baseLayer = this.#buildBaseLayer(oceanMap, props)
+        this.#detectShoreline(baseLayer, oceanMap, props)
+        this.#terrainLayer = baseLayer
         // this.#buildSurfaceLayer(baseLayer, layers, props)
     }
 
