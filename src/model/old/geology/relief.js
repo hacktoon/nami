@@ -1,4 +1,4 @@
-import { ConcurrentFillSchedule, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
@@ -143,7 +143,7 @@ export class ReliefModel {
 }
 
 
-class LevelMultiFill extends ConcurrentFillSchedule {
+class LevelMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, LevelFloodFill, context)
     }

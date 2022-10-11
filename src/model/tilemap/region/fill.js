@@ -1,4 +1,4 @@
-import { ConcurrentFillSchedule, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Point } from '/src/lib/point'
 
 
@@ -35,7 +35,7 @@ class RegionFloodFill extends ConcurrentFillUnit {
 }
 
 
-export class RegionMultiFill extends ConcurrentFillSchedule {
+export class RegionMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, RegionFloodFill, context)
     }

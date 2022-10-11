@@ -1,7 +1,7 @@
-import { ConcurrentFillSchedule, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 
 
-export class RealmMultiFill extends ConcurrentFillSchedule {
+export class RealmMultiFill extends ConcurrentFill {
     constructor(origins, context) {
         const regionTileMap = context.regionTileMap
         const regionIds = origins.map(origin => regionTileMap.getRegion(origin))

@@ -2,17 +2,17 @@ import { Random } from '/src/lib/random'
 
 
 export class ConcurrentFillUnit {
-    constructor(schedule, context) {
-        this.schedule = schedule
+    constructor(fill, context) {
+        this.fill = fill
         this.context = context
-        this.seedTable = schedule.seedTable
-        this.areaTable = schedule.areaTable
-        this.levelTable = schedule.levelTable
-        this.growthTable = schedule.growthTable
-        this.chanceTable = schedule.chanceTable
+        this.seedTable = fill.seedTable
+        this.areaTable = fill.areaTable
+        this.levelTable = fill.levelTable
+        this.growthTable = fill.growthTable
+        this.chanceTable = fill.chanceTable
     }
 
-    grow(id) {
+    runStep(id) {
         const seeds = this._growSeeds(id, this.seedTable[id])
         this.seedTable[id] = seeds
         this._growRandomLayers(id)
@@ -32,13 +32,13 @@ export class ConcurrentFillUnit {
     }
 
     _fillValue(id, origin, level) {
-        const fill = {id, schedule: this.schedule, context: this.context}
+        const fill = {id, fill: this.fill, context: this.context}
         this.setValue(fill, origin, level)
         this.areaTable[id] += this.getArea(fill, origin)
     }
 
     _fillNeighbors(id, origin) {
-        const fill = {id, schedule: this.schedule, context: this.context}
+        const fill = {id, fill: this.fill, context: this.context}
         const filledNeighbors = []
         const allNeighbors = this.getNeighbors(fill, origin)
         const emptyNeighbors = allNeighbors.filter(neighbor => {
@@ -74,24 +74,14 @@ export class ConcurrentFillUnit {
     // EXTENSIBLE METHODS ==========================
 
     setValue(fill, origin, level) { }
-
-    isEmpty(fill, origin) {
-        return []
-    }
-
-    getNeighbors(fill, origin) {
-        return []
-    }
-
+    isEmpty(fill, origin) { return [] }
+    getNeighbors(fill, origin) { return [] }
     checkNeighbor(fill, neighbor, origin) { }
-
-    getArea(fill, origin) {
-        return 1
-    }
+    getArea(fill, origin) { return 1 }
 }
 
 
-export class ConcurrentFillSchedule {
+export class ConcurrentFill {
     constructor(origins, FillUnit, context={}) {
         this.origins = origins
         this.context = context
@@ -101,14 +91,14 @@ export class ConcurrentFillSchedule {
         this.growthTable = []
         this.chanceTable = []
         this.canGrow = true
-        this.filler = new FillUnit(this, context)
+        this.fillUnit = new FillUnit(this, context)
     }
 
     fill() {
         for(let fillId = 0; fillId < this.origins.length; fillId ++) {
             const fill = {
                 id: fillId,
-                schedule: this.schedule,
+                fill: this.fill,
                 context: this.context
             }
             const origin = this.origins[fillId]
@@ -117,10 +107,26 @@ export class ConcurrentFillSchedule {
             this.seedTable.push([origin])
             this.growthTable.push(this.getGrowth(fill, origin))
             this.chanceTable.push(this.getChance(fill, origin))
-            this.filler._fillValue(fillId, origin, 0)
+            this.fillUnit._fillValue(fillId, origin, 0)
         }
         while(this.canGrow) {
-            this._growFills()
+            this._runFillStep()
+        }
+    }
+
+    _runFillStep() {
+        let completedFills = 0
+
+        for(let fillId = 0; fillId < this.origins.length; fillId ++) {
+            const filledPoints = this.fillUnit.runStep(fillId)
+            if (filledPoints.length === 0) {
+                completedFills++
+            }
+        }
+        let allFillsComplete = completedFills === this.origins.length
+        if (allFillsComplete) {
+            // completedFills = 0  // reset to start new phase
+            this.canGrow = false
         }
     }
 
@@ -134,19 +140,5 @@ export class ConcurrentFillSchedule {
 
     getGrowth(fill, origin) {
         return 0  // default value
-    }
-
-    _growFills() {
-        let completedFills = 0
-
-        for(let fillId = 0; fillId < this.origins.length; fillId ++) {
-            const filledPoints = this.filler.grow(fillId)
-            if (filledPoints.length === 0) {
-                completedFills++
-            }
-        }
-        if (completedFills === this.origins.length) {
-            this.canGrow = false
-        }
     }
 }

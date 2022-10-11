@@ -1,4 +1,4 @@
-import { ConcurrentFillSchedule, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 import { Matrix } from '/src/lib/matrix'
@@ -97,7 +97,7 @@ export class ProvinceModel {
 }
 
 
-class ProvinceConcurrentFill extends ConcurrentFillSchedule {
+class ProvinceConcurrentFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, ProvinceFloodFill, context)
     }
