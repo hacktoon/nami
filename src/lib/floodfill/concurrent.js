@@ -1,5 +1,5 @@
 import { Random } from '/src/lib/random'
-import { Point } from '/src/lib/point'
+import { PointSet } from '/src/lib/point/set'
 
 
 export class ConcurrentFillUnit {
@@ -116,26 +116,39 @@ export class ConcurrentFill {
             this.chanceTable.push(this.getChance(refs, origin))
             this.fillUnit._fillValue(id, origin, 0)  // 0 is level
         }
-        // run while has next phases
-        while(this._runFillStep()) {}
+        let limit = 2000
+        // run while has next phases or loop limit ends
+        while(this._runFillStep() && limit > 0) {
+            limit--
+        }
     }
 
     _runFillStep() {
         let completedFills = 0
-        for(let fillId = 0; fillId < this.origins.length; fillId ++) {
-            const filledPoints = this.fillUnit.runStep(fillId)
+        for(let id = 0; id < this.origins.length; id ++) {
+            const filledPoints = this.fillUnit.runStep(id)
             if (filledPoints.length === 0) {
                 completedFills++
             }
         }
         if (completedFills === this.origins.length) {
-            if (this.#phaseIndex < this.phases.length) {
-                this.#phaseIndex++
-                this.phase = this.phases[this.#phaseIndex]
-                completedFills = 0  // reset to start new phase
-            } else {
+            if (this.#phaseIndex === this.phases.length - 1) {
                 return false
             }
+            // move to next fill phase
+            this.phase = this.phases[++this.#phaseIndex]
+            // reset all seeds
+            for(let id = 0; id < this.origins.length; id ++) {
+                const pSet = new PointSet(this.phaseSeedTable[id])
+                this.seedTable[id] = []
+                this.phaseSeedTable[id] = []
+                pSet.forEach(point => {
+                    this.seedTable[id].push(point)
+                    this.fillUnit._fillValue(id, point, this.levelTable[id])
+                })
+
+            }
+            completedFills = 0  // reset to start new phase
         }
         return true
     }

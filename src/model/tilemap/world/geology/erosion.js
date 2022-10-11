@@ -24,10 +24,11 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     isPhaseEmpty(ref, sidePoint) {
         const wSidePoint = ref.context.rect.wrap(sidePoint)
         const sideTerrainId = ref.context.terrainLayer.get(wSidePoint)
-        const isNextTerrainLayer = sideTerrainId === ref.fill.phase + 1
+        // get sides lower or equal than next layer + 1
+        const isValidTerrainLayer = sideTerrainId <= ref.fill.phase + 1
         const isEmpty = ! ref.context.basinMap.has(...wSidePoint)
         const isLand = Terrain.isLand(sideTerrainId)
-        return isNextTerrainLayer && isEmpty && isLand
+        return isValidTerrainLayer && isEmpty && isLand
     }
 
     getNeighbors(ref, originPoint) {
@@ -37,10 +38,11 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     checkNeighbor(ref, sidePoint, centerPoint) {
         const wSidePoint = ref.context.rect.wrap(sidePoint)
         const wCenterPoint = ref.context.rect.wrap(centerPoint)
-        const sideTerrain = ref.context.terrainLayer.get(sidePoint)
+        const sideTerrainId = ref.context.terrainLayer.get(sidePoint)
         const shorePoints = ref.context.shorePoints
-        const isSideWater = Terrain.isWater(sideTerrain)
+        const isSideWater = Terrain.isWater(sideTerrainId)
         // detect river mouth
+
         if (shorePoints.has(wCenterPoint) && isSideWater) {
             const directionId = this.getDirectionId(centerPoint, sidePoint)
             ref.context.flowMap.set(...wCenterPoint, directionId)
@@ -49,9 +51,8 @@ class ErosionFloodFill extends ConcurrentFillUnit {
         if (ref.context.flowMap.has(...wSidePoint) || isSideWater) {
             return
         }
-
         // set flow only on current or lower terrain layer
-        if (sideTerrain <= ref.fill.phase) {
+        if (sideTerrainId <= ref.fill.phase + 1) {
             const directionId = this.getDirectionId(sidePoint, centerPoint)
             ref.context.flowMap.set(...wSidePoint, directionId)
         }
@@ -83,7 +84,13 @@ export class ErosionLayer {
             rect: props.rect,
             terrainLayer,
         }
-        const phases = [Terrain.BASIN]
+        const phases = [
+            Terrain.BASIN,
+            Terrain.PLAIN,
+            // Terrain.PLATEAU,
+            // Terrain.MOUNTAIN,
+            // Terrain.PEAK,
+        ]
         let origins = props.shorePoints.points
         const fill = new ErosionConcurrentFill(origins, context, phases)
         fill.fill()

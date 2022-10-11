@@ -12,6 +12,7 @@
 #### GeologyTileMap
   - rivers from plains to basins often make rapids
   - rivers from plateaus to plains often make waterfalls
+  - add canyons where rivers meet a higher terrain
 
 #### CivilTileMap
 - Determine capitals and villages
