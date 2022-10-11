@@ -1,13 +1,13 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 
-import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from './data'
+import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from '../data'
 
 
 export class TerrainLayer {
     #terrainLayer
 
-    #buildTerrainLayer(layers, props) {
+    #buildBaseLayer(props) {
         const noiseMap = props.noiseMapSet.get(BASE_NOISE)
         const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
         const getLayerType = point => {
@@ -44,7 +44,7 @@ export class TerrainLayer {
                 }
             }
         })
-        return this.#buildSurfaceLayer(baseLayer, layers, props)
+        return baseLayer
     }
 
     #buildSurfaceLayer(baseLayer, layers, props) {
@@ -75,7 +75,8 @@ export class TerrainLayer {
     }
 
     constructor(props) {
-        this.#terrainLayer = this.#buildTerrainLayer(LAYERS, props)
+        this.#terrainLayer = this.#buildBaseLayer(props)
+        // this.#buildSurfaceLayer(baseLayer, layers, props)
     }
 
     get(point) {

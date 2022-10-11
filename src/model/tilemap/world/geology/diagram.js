@@ -9,9 +9,9 @@ import { TileMapDiagram } from '/src/model/lib/tilemap'
 const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
     Type.boolean('showShoreline', 'Shoreline', {default: false}),
-    Type.boolean('showBasins', 'Basins', {default: false}),
-    Type.boolean('showErosion', 'Erosion flow', {default: false}),
-    Type.boolean('showNextPoints', 'Next points', {default: false}),
+    // Type.boolean('showBasins', 'Basins', {default: false}),
+    // Type.boolean('showErosion', 'Erosion flow', {default: false}),
+    // Type.boolean('showNextPoints', 'Next points', {default: false}),
 )
 
 
@@ -52,22 +52,22 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const terrainColor = this.colorMap.getByTerrain(point)
-        const nextPoints = this.tileMap.erosionLayer.nextPoints
-        if (this.params.get('showNextPoints') && nextPoints.has(point)) {
-            return terrainColor.brighten(120)
-        }
+        // const nextPoints = this.tileMap.erosionLayer.nextPoints
+        // if (this.params.get('showNextPoints') && nextPoints.has(point)) {
+        //     return terrainColor.brighten(120)
+        // }
         if (this.params.get('showShoreline') && this.tileMap.isShore(point)) {
             return terrainColor.darken(120)
         }
-        if (this.params.get('showBasins')) {
-            if (this.tileMap.getBasin(point)) {
-                return this.colorMap.getByBasin(point)
-            }
-            if (this.tileMap.isOcean(point)) {
-                return terrainColor.grayscale().darken(40)
-            }
-            return terrainColor.grayscale().brighten(40)
-        }
+        // if (this.params.get('showBasins')) {
+        //     if (this.tileMap.getBasin(point)) {
+        //         return this.colorMap.getByBasin(point)
+        //     }
+        //     if (this.tileMap.isOcean(point)) {
+        //         return terrainColor.grayscale().darken(40)
+        //     }
+        //     return terrainColor.grayscale().brighten(40)
+        // }
         return terrainColor
     }
 
