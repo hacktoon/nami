@@ -10,17 +10,21 @@
 - Rename IndexMap to RandomQueue
 
 #### GeologyTileMap
-
-  - start from shore and build distance field
-
+  - rivers from plains to basins often make rapids
+  - rivers from plateaus to plains often make waterfalls
 
 #### CivilTileMap
 - Determine capitals and villages
 - Start a fill to determine realm area
   - define routes
 
+#### HistoryMap
+- Determine capitals and villages
+- Start a fill to determine realm area
+  - define routes
+
 #### Other
-- Vegetation/wildlife density: adjusted by humidity, temperature and height
+- Vegetation/wildlife density: function of rain x temperature
 - Roads
   - create junction points between two route points to set midpath detours
 
