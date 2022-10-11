@@ -35,6 +35,7 @@ export class TerrainLayer {
             props.pointQueue[layerType].push(point)
             return terrain
         })
+        // baseLayer.forEach((point, terrain) => {})
         return baseLayer
     }
 
