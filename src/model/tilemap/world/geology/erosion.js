@@ -1,6 +1,5 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { PairMap } from '/src/lib/map'
-import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 
@@ -8,46 +7,43 @@ import { Terrain } from './data'
 
 
 class ErosionFloodFill extends ConcurrentFillUnit {
-    setValue(fill, point, level) {
-        const wrappedPoint = fill.context.rect.wrap(point)
-        fill.context.basinMap.set(...wrappedPoint, fill.id)
+    setValue(ref, point, level) {
+        const wrappedPoint = ref.context.rect.wrap(point)
+        ref.context.basinMap.set(...wrappedPoint, ref.id)
     }
 
-    isEmpty(fill, point) {
-        const wrappedPoint = fill.context.rect.wrap(point)
-        const terrainId = fill.context.terrainLayer.get(wrappedPoint)
-        const isCurrentTerrain = terrainId == fill.context.terrain
-        const isEmpty = ! fill.context.basinMap.has(...wrappedPoint)
+    isEmpty(ref, sidePoint) {
+        const wrappedPoint = ref.context.rect.wrap(sidePoint)
+        const terrainId = ref.context.terrainLayer.get(wrappedPoint)
+        const isCurrentTerrain = terrainId == ref.fill.phase
+        const isEmpty = ! ref.context.basinMap.has(...wrappedPoint)
         return isCurrentTerrain && isEmpty
     }
 
-    getNeighbors(fill, originPoint) {
+    getNeighbors(ref, originPoint) {
         return Point.around(originPoint)
     }
 
-    checkNeighbor(fill, sidePoint, centerPoint) {
-        const wSidePoint = fill.context.rect.wrap(sidePoint)
-        const wCenterPoint = fill.context.rect.wrap(centerPoint)
-        const sideTerrain = fill.context.terrainLayer.get(sidePoint)
-        const shorePoints = fill.context.shorePoints
+    checkNeighbor(ref, sidePoint, centerPoint) {
+        const wSidePoint = ref.context.rect.wrap(sidePoint)
+        const wCenterPoint = ref.context.rect.wrap(centerPoint)
+        const sideTerrain = ref.context.terrainLayer.get(sidePoint)
+        const shorePoints = ref.context.shorePoints
         const isSideWater = Terrain.isWater(sideTerrain)
         // detect river mouth
         if (shorePoints.has(wCenterPoint) && isSideWater) {
             const directionId = this.getDirectionId(centerPoint, sidePoint)
-            fill.context.flowMap.set(...wCenterPoint, directionId)
+            ref.context.flowMap.set(...wCenterPoint, directionId)
             return
         }
-        if (fill.context.flowMap.has(...wSidePoint) || isSideWater) {
+        if (ref.context.flowMap.has(...wSidePoint) || isSideWater) {
             return
         }
 
         // set flow only on current or lower terrain layer
-        if (sideTerrain <= fill.context.terrain) {
+        if (sideTerrain <= ref.fill.phase) {
             const directionId = this.getDirectionId(sidePoint, centerPoint)
-            fill.context.nextPoints.delete(wSidePoint)
-            fill.context.flowMap.set(...wSidePoint, directionId)
-        } else {
-            fill.context.nextPoints.add(wSidePoint)
+            ref.context.flowMap.set(...wSidePoint, directionId)
         }
     }
 
@@ -59,46 +55,29 @@ class ErosionFloodFill extends ConcurrentFillUnit {
 
 
 class ErosionConcurrentFill extends ConcurrentFill {
-    constructor(origins, context) {
-        super(origins, ErosionFloodFill, context)
+    constructor(origins, context, phases) {
+        super(origins, ErosionFloodFill, context, phases)
     }
 
-    getChance(fill, origin) { return .2 }
-    getGrowth(fill, origin) { return 3 }
+    getChance(ref, origin) { return .2 }
+    getGrowth(ref, origin) { return 3 }
 }
 
 
 export class ErosionLayer {
-    #build(terrainLayer, props) {
+    constructor(terrainLayer, props) {
         const context = {
             shorePoints: props.shorePoints,
-            nextPoints: new PointSet(),
             basinMap: new PairMap(),
             flowMap: new PairMap(),
             rect: props.rect,
             terrainLayer,
         }
+        const phases = [Terrain.BASIN]
         let origins = props.shorePoints.points
-        let mapFill = this.#erodeLayer(Terrain.BASIN, origins, context)
-        // mapFill = this.#erodeLayer(Terrain.PLAIN, origins, context)
-        return mapFill
-    }
-
-    #erodeLayer(terrain, origins, context) {
-        context['terrain'] = terrain
-        const fill = new ErosionConcurrentFill(origins, context)
-        fill.fill()
-        return fill
-    }
-
-    constructor(terrainLayer, props) {
-        const mapFill = this.#build(terrainLayer, props)
-        // if (Point.hash(wrappedPoint) == '15,25') {
-        //     console.log('oipa');
-        // }
-        this.nextPoints = mapFill.context.nextPoints
-        this.basinMap = mapFill.context.basinMap
-        this.flowMap = mapFill.context.flowMap
+        new ErosionConcurrentFill(origins, context, phases).fill()
+        this.basinMap = context.basinMap
+        this.flowMap = context.flowMap
         this.basinCount = props.shorePoints.size
         this.rect = props.rect
     }
