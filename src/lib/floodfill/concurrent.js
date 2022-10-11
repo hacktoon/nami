@@ -7,6 +7,7 @@ export class ConcurrentFillUnit {
         this.fill = fill
         this.context = context
         this.seedTable = fill.seedTable
+        this.phaseSeedTable = fill.phaseSeedTable
         this.areaTable = fill.areaTable
         this.levelTable = fill.levelTable
         this.growthTable = fill.growthTable
@@ -26,7 +27,7 @@ export class ConcurrentFillUnit {
             this.levelTable[id] += 1
         }
         for(let seed of seeds) {
-            const filledNeighbors = this._fillNeighbors(id, seed)
+            const filledNeighbors = this._fillSides(id, seed)
             newSeeds.push(...filledNeighbors)
         }
         return newSeeds
@@ -38,15 +39,20 @@ export class ConcurrentFillUnit {
         this.areaTable[id] += this.getArea(refs, centerPoint)
     }
 
-    _fillNeighbors(id, centerPoint) {
+    _fillSides(id, centerPoint) {
         const refs = {id, fill: this.fill, context: this.context}
         const filledSides = []
         const sidesPoints = this.getNeighbors(refs, centerPoint)
         sidesPoints.forEach(sidePoint => {
+            // visit each side
             this.checkNeighbor(refs, sidePoint, centerPoint)
+            // fill only empty sides
             if (this.isEmpty(refs, sidePoint)) {
                 filledSides.push(sidePoint)
                 this._fillValue(id, sidePoint, this.levelTable[id])
+            }
+            if (this.isPhaseEmpty(refs, sidePoint)) {
+                this.phaseSeedTable[id].push(sidePoint)
             }
         })
         return filledSides
@@ -82,16 +88,19 @@ export class ConcurrentFillUnit {
 
 
 export class ConcurrentFill {
+    #phaseIndex = 0
+
     constructor(origins, FillUnit, context={}, phases=[]) {
         this.origins = origins
         this.context = context
         this.seedTable = []
+        this.phaseSeedTable = []
         this.levelTable = []
         this.areaTable = []
         this.growthTable = []
         this.chanceTable = []
         this.phases = phases.length > 0 ? phases : [0]
-        this.phase = this.phases[0]
+        this.phase = this.phases[this.#phaseIndex]
         this.fillUnit = new FillUnit(this, context)
     }
 
@@ -102,9 +111,10 @@ export class ConcurrentFill {
             this.areaTable.push(0)
             this.levelTable.push(0)
             this.seedTable.push([origin])
+            this.phaseSeedTable.push([])
             this.growthTable.push(this.getGrowth(refs, origin))
             this.chanceTable.push(this.getChance(refs, origin))
-            this.fillUnit._fillValue(id, origin, 0)
+            this.fillUnit._fillValue(id, origin, 0)  // 0 is level
         }
         // run while has next phases
         while(this._runFillStep()) {}
@@ -119,8 +129,9 @@ export class ConcurrentFill {
             }
         }
         if (completedFills === this.origins.length) {
-            if (this.phase < this.phases.length) {
-                this.phase++
+            if (this.#phaseIndex < this.phases.length) {
+                this.#phaseIndex++
+                this.phase = this.phases[this.#phaseIndex]
                 completedFills = 0  // reset to start new phase
             } else {
                 return false

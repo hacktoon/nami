@@ -1,6 +1,7 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { PairMap } from '/src/lib/map'
 import { Point } from '/src/lib/point'
+import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
 
 import { Terrain } from './data'
@@ -13,11 +14,20 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     }
 
     isEmpty(ref, sidePoint) {
-        const wrappedPoint = ref.context.rect.wrap(sidePoint)
-        const terrainId = ref.context.terrainLayer.get(wrappedPoint)
-        const isCurrentTerrain = terrainId == ref.fill.phase
-        const isEmpty = ! ref.context.basinMap.has(...wrappedPoint)
+        const wSidePoint = ref.context.rect.wrap(sidePoint)
+        const sideTerrainId = ref.context.terrainLayer.get(wSidePoint)
+        const isCurrentTerrain = sideTerrainId == ref.fill.phase
+        const isEmpty = ! ref.context.basinMap.has(...wSidePoint)
         return isCurrentTerrain && isEmpty
+    }
+
+    isPhaseEmpty(ref, sidePoint) {
+        const wSidePoint = ref.context.rect.wrap(sidePoint)
+        const sideTerrainId = ref.context.terrainLayer.get(wSidePoint)
+        const isNextTerrainLayer = sideTerrainId === ref.fill.phase + 1
+        const isEmpty = ! ref.context.basinMap.has(...wSidePoint)
+        const isLand = Terrain.isLand(sideTerrainId)
+        return isNextTerrainLayer && isEmpty && isLand
     }
 
     getNeighbors(ref, originPoint) {
@@ -75,7 +85,9 @@ export class ErosionLayer {
         }
         const phases = [Terrain.BASIN]
         let origins = props.shorePoints.points
-        new ErosionConcurrentFill(origins, context, phases).fill()
+        const fill = new ErosionConcurrentFill(origins, context, phases)
+        fill.fill()
+        this.nextPoints = new PointSet(fill.phaseSeedTable[43])
         this.basinMap = context.basinMap
         this.flowMap = context.flowMap
         this.basinCount = props.shorePoints.size
