@@ -40,7 +40,6 @@ export class GeologyTileMap extends TileMap {
         super(params)
         const props = {
             noiseMapSet: new NoiseMapSet(this.rect, this.seed),
-            pointQueue: {water: [], land: []},
             borderPoints: new PointSet(),
             shorePoints: new PointSet(),
             rect: this.rect,

@@ -1,7 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 
-import { OceanMap } from './ocean'
+import { WaterMap } from './water'
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from '../data'
 
 
@@ -16,40 +16,20 @@ export class TerrainLayer {
     #buildBaseLayer(props) {
         const noiseMap = props.noiseMapSet.get(BASE_NOISE)
         const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
-        const baseLayer = Matrix.fromRect(noiseMap.rect, point => {
+        return Matrix.fromRect(noiseMap.rect, point => {
             const layerType = this.#getLayerType(noiseMap, point)
-            const terrain = typeMap[layerType]
-
-            props.pointQueue[layerType].push(point)
-
-            if (Terrain.isWater(terrain)) return terrain
-
-            // detect shore points
-            for (let sidePoint of Point.adjacents(point)) {
-                const sideLayerType = this.#getLayerType(noiseMap, sidePoint)
-                const sideTerrain = typeMap[sideLayerType]
-                if (terrain !== sideTerrain) {
-                    props.borderPoints.add(point)
-                    if (Terrain.isWater(sideTerrain)) // is shore
-                        props.shorePoints.add(point)
-                    break
-                }
-            }
-
-            return terrain
+            return typeMap[layerType]
         })
-        return baseLayer
     }
 
-    #detectWaterBodies(baseLayer, oceanMap, props) {
+    #detectWaterBodies(baseLayer, waterMap, props) {
         baseLayer.forEach((point, terrain) => {
             // detect oceans by area
             if (Terrain.isWater(terrain)) {
                 const isType = pt => Terrain.isWater(baseLayer.get(pt))
-                oceanMap.detect(point, isType)
+                waterMap.detect(point, isType)
                 // reset lakes as basins
-                if (! oceanMap.isOcean(point)) {
-                    props.pointQueue.land.push(point)
+                if (! waterMap.isOcean(point)) {
                     return Terrain.BASIN
                 }
             }
@@ -61,7 +41,7 @@ export class TerrainLayer {
             const newPoints = []
             const layerType = Terrain.isLand(layer.terrain) ? 'land' : 'water'
             const noiseMap = props.noiseMapSet.get(layer.noise)
-            props.pointQueue[layerType].forEach(point => {
+            props.landPoints.forEach(point => {
                 const noise = noiseMap.getNoise(point)
                 if (props.borderPoints.has(point) || noise < layer.ratio)
                     return
@@ -83,10 +63,28 @@ export class TerrainLayer {
         return baseLayer
     }
 
+    #detectShorePoints() {
+        // props.pointQueue[layerType].push(point)
+
+        //  if (Terrain.isWater(terrain)) return terrain
+
+        //  // detect shore points
+        //  for (let sidePoint of Point.adjacents(point)) {
+        //      const sideLayerType = this.#getLayerType(noiseMap, sidePoint)
+        //      const sideTerrain = typeMap[sideLayerType]
+        //      if (terrain !== sideTerrain) {
+        //          props.borderPoints.add(point)
+        //          if (Terrain.isWater(sideTerrain)) // is shore
+        //              props.shorePoints.add(point)
+        //          break
+        //      }
+        //  }
+    }
+
     constructor(props) {
-        const oceanMap = new OceanMap(props.rect)
+        const waterMap = new WaterMap(props.rect)
         const baseLayer = this.#buildBaseLayer(props)
-        this.#detectWaterBodies(baseLayer, oceanMap, props)
+        this.#detectWaterBodies(baseLayer, waterMap, props)
         this.#terrainLayer = baseLayer
         // this.#buildSurfaceLayer(baseLayer, layers, props)
     }

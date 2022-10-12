@@ -6,10 +6,10 @@ import { PairMap } from '/src/lib/map'
 const MINIMUN_OCEAN_RATIO = 1  // 1%
 
 
-export class OceanMap {
+export class WaterMap {
     constructor(rect) {
         this.rect = rect
-        this.pointOceanMap = new PairMap()
+        this.bodyMap = new PairMap()
         this.areaMap = new Map()
         this.idMap = new Set()
         this.buildId = 1
@@ -18,10 +18,10 @@ export class OceanMap {
     detect(startPoint, isType) {
         let area = 0
         const canFill = point => {
-            return isType(point) && ! this.pointOceanMap.has(...point)
+            return isType(point) && ! this.bodyMap.has(...point)
         }
         const onFill = point => {
-            this.pointOceanMap.set(...point, this.buildId)
+            this.bodyMap.set(...point, this.buildId)
             area++
         }
         const wrapPoint = point => this.rect.wrap(point)
@@ -38,8 +38,8 @@ export class OceanMap {
 
     isOcean(point) {
         const wrappedPoint = this.rect.wrap(point)
-        if (this.pointOceanMap.has(...wrappedPoint)) {
-            const id = this.pointOceanMap.get(...wrappedPoint)
+        if (this.bodyMap.has(...wrappedPoint)) {
+            const id = this.bodyMap.get(...wrappedPoint)
             return this.idMap.has(id)
         }
         return false
