@@ -18,10 +18,10 @@ const SCHEMA = new Schema(
 class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
-        this.basinColors = new Map()
-        for(let i=0; i<= tileMap.getBasinCount(); i++) {
-            this.basinColors.set(i, new Color())
-        }
+        // this.basinColors = new Map()
+        // for(let i=0; i<= tileMap.getBasinCount(); i++) {
+        //     this.basinColors.set(i, new Color())
+        // }
     }
 
     getByBasin(point) {
@@ -29,9 +29,8 @@ class ColorMap {
         return this.basinColors.get(basin)
     }
 
-    getByTerrain(point) {
-        const outline = this.tileMap.getTerrain(point)
-        return outline.color
+    isWater(point) {
+        return this.tileMap.isWater(point)
     }
 }
 
@@ -51,14 +50,16 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const terrainColor = this.colorMap.getByTerrain(point)
+        const isWater = this.colorMap.isWater(point)
+        if (isWater) return Color.BLACK
+        return Color.WHITE
         // const nextPoints = this.tileMap.erosionLayer.nextPoints
         // if (this.params.get('showNextPoints') && nextPoints.has(point)) {
         //     return terrainColor.brighten(120)
         // }
-        if (this.params.get('showShoreline') && this.tileMap.isShore(point)) {
-            return terrainColor.darken(120)
-        }
+        // if (this.params.get('showShoreline') && this.tileMap.isShore(point)) {
+        //     return terrainColor.darken(120)
+        // }
         // if (this.params.get('showBasins')) {
         //     if (this.tileMap.getBasin(point)) {
         //         return this.colorMap.getByBasin(point)

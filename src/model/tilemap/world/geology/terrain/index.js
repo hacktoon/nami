@@ -5,20 +5,19 @@ import { WaterMap } from './water'
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from '../data'
 
 
+const WATER = 0
+const LAND = 1
+
+
 export class TerrainLayer {
     #terrainLayer
+    #baseLayer
 
-    #getLayerType(noiseMap, point) {
-        const noise = noiseMap.getNoise(point)
-        return noise < BASE_RATIO ? 'water' : 'land'
-    }
-
-    #buildBaseLayer(props) {
-        const noiseMap = props.noiseMapSet.get(BASE_NOISE)
-        const typeMap = {land: Terrain.BASIN, water: Terrain.SEA}
+    #buildBaseLayer(noiseId, ratio, props) {
+        const noiseMap = props.noiseMapSet.get(noiseId)
         return Matrix.fromRect(noiseMap.rect, point => {
-            const layerType = this.#getLayerType(noiseMap, point)
-            return typeMap[layerType]
+            const noise = noiseMap.getNoise(point)
+            return noise < ratio ? WATER : LAND
         })
     }
 
@@ -34,33 +33,6 @@ export class TerrainLayer {
                 }
             }
         })
-    }
-
-    #buildSurfaceLayer(baseLayer, layers, props) {
-        for (let layer of layers) {
-            const newPoints = []
-            const layerType = Terrain.isLand(layer.terrain) ? 'land' : 'water'
-            const noiseMap = props.noiseMapSet.get(layer.noise)
-            props.landPoints.forEach(point => {
-                const noise = noiseMap.getNoise(point)
-                if (props.borderPoints.has(point) || noise < layer.ratio)
-                    return
-                baseLayer.set(point, layer.terrain)
-                newPoints.push(point)
-            })
-            // detect borders on new points
-            newPoints.forEach(point => {
-                for (let sidePoint of Point.adjacents(point)) {
-                    const sideTerrain = baseLayer.get(sidePoint)
-                    if (sideTerrain !== layer.terrain) {
-                        props.borderPoints.add(point)
-                        return
-                    }
-                }
-            })
-            props.pointQueue[layerType] = newPoints
-        }
-        return baseLayer
     }
 
     #detectShorePoints() {
@@ -82,14 +54,14 @@ export class TerrainLayer {
     }
 
     constructor(props) {
-        const waterMap = new WaterMap(props.rect)
-        const baseLayer = this.#buildBaseLayer(props)
-        this.#detectWaterBodies(baseLayer, waterMap, props)
-        this.#terrainLayer = baseLayer
+        const baseLayer = this.#buildBaseLayer(BASE_NOISE, BASE_RATIO, props)
+        // this.#detectWaterBodies(baseLayer, waterMap, props)
+        this.#baseLayer = baseLayer
+        // this.#terrainLayer = baseLayer
         // this.#buildSurfaceLayer(baseLayer, layers, props)
     }
 
-    get(point) {
-        return this.#terrainLayer.get(point)
+    isWater(point) {
+        return this.#baseLayer.get(point) == WATER
     }
 }
