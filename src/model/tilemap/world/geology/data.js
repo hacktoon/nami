@@ -1,5 +1,4 @@
 import { Color } from '/src/lib/color'
-import { NOISE_SPEC } from './noise'
 
 
 const TERRAIN_SPEC = [
@@ -89,37 +88,37 @@ TERRAIN_SPEC.forEach(spec => {
 })
 
 
-export const BASE_NOISE = NOISE_SPEC.outline
+export const BASE_NOISE = 'outline'
 export const BASE_RATIO = .55
 export const LAYERS = [
     {
         terrain: Terrain.PLAIN,
-        noise: NOISE_SPEC.outline,
+        noise: 'outline',
         ratio: .6
     },
     {
         terrain: Terrain.PLATEAU,
-        noise: NOISE_SPEC.grained,
+        noise: 'grained',
         ratio: .42
     },
     {
         terrain: Terrain.MOUNTAIN,
-        noise: NOISE_SPEC.feature,
+        noise: 'feature',
         ratio: .45
     },
     {
         terrain: Terrain.PEAK,
-        noise: NOISE_SPEC.grained,
+        noise: 'grained',
         ratio: .65
     },
     {
         terrain: Terrain.OCEAN,
-        noise: NOISE_SPEC.feature,
+        noise: 'feature',
         ratio: .35
     },
     {
         terrain: Terrain.ABYSS,
-        noise: NOISE_SPEC.grained,
+        noise: 'grained',
         ratio: .60
     },
 ]

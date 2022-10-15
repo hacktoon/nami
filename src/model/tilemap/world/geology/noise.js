@@ -1,11 +1,11 @@
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
-export const NOISE_SPEC = {
-    outline: {id: 'outline', octaves: 6, resolution: .8, scale: .02},
-    feature: {id: 'feature', octaves: 6, resolution: .8, scale: .05},
-    grained: {id: 'grained', octaves: 6, resolution: .8, scale: .06},
-}
+export const NOISE_SPEC = [
+    {id: 'outline', octaves: 6, resolution: .8, scale: .02},
+    {id: 'feature', octaves: 6, resolution: .8, scale: .05},
+    {id: 'grained', octaves: 6, resolution: .8, scale: .06},
+]
 
 
 export class NoiseMapSet {
@@ -23,7 +23,7 @@ export class NoiseMapSet {
         }
     }
 
-    get(spec) {
-        return this.map.get(spec.id)
+    get(id) {
+        return this.map.get(id)
     }
 }
