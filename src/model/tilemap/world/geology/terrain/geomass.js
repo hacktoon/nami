@@ -2,14 +2,17 @@ import { Matrix } from '/src/lib/matrix'
 import { ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import {
-    WATER, OCEAN, SEA, LAKE, CONTINENT, ISLAND
- } from './data'
+    WATER,
+    OCEAN, SEA, LAKE,
+    CONTINENT, ISLAND
+} from '../data'
 
 
- const EMPTY = null
-const MINIMUN_OCEAN_RATIO = 2  // 2%
-const MINIMUN_SEA_RATIO = 1  // 1%
-const MINIMUN_CONTINENT_RATIO = 10  // 10%
+const EMPTY = null
+// percentages
+const MINIMUN_OCEAN_RATIO = 2
+const MINIMUN_SEA_RATIO = 0.2
+const MINIMUN_CONTINENT_RATIO = 2
 
 
 export class GeomassMap {
@@ -41,14 +44,14 @@ export class GeomassMap {
         const methods = {canFill, wrapPoint, onFill}
         new ScanlineFill8(startPoint, methods).fill()
 
-        const geomass = this.#getGeomassType(geotype, area)
+        const geomass = this.#buildGeomassType(geotype, area)
         this.#areaMap.set(this.#idCount, area)
         this.#typeMap.set(this.#idCount, geomass)
         this.#idCount++
     }
 
-    #getGeomassType(geotype, area) {
-        const massRatio = Math.round((area * 100) / this.#rect.area)
+    #buildGeomassType(geotype, area) {
+        const massRatio = (area * 100) / this.#rect.area
         if (geotype === WATER) {
             if (massRatio >= MINIMUN_OCEAN_RATIO) return OCEAN
             if (massRatio >= MINIMUN_SEA_RATIO) return SEA
@@ -62,6 +65,12 @@ export class GeomassMap {
     getType(point) {
         const id = this.#idMatrix.get(point)
         return this.#typeMap.get(id)
+    }
+
+    getArea(point) {
+        const id = this.#idMatrix.get(point)
+
+        return (this.#areaMap.get(id) * 100) / this.#rect.area
     }
 
 }

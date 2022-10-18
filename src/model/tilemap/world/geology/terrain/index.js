@@ -2,7 +2,7 @@ import { Matrix } from '/src/lib/matrix'
 
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from '../data'
 import { GeomassMap } from './geomass'
-import { LAND, WATER } from './data'
+import { LAND, WATER } from '../data'
 
 
 
