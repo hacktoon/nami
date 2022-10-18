@@ -1,11 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
-import {
-    WATER,
-    OCEAN, SEA, LAKE,
-    CONTINENT, ISLAND
-} from '../data'
+import { WATER, LAND, Geotype } from './data'
 
 
 const EMPTY = null
@@ -15,20 +11,28 @@ const MINIMUN_SEA_RATIO = 0.2
 const MINIMUN_CONTINENT_RATIO = 2
 
 
-export class GeomassMap {
-    // Geomasses are islands, continents, oceans, seas and lakes
-    #rect
+export class GeotypeLayer {
+    // Geotypes are islands, continents, oceans, seas and lakes
     #idCount = 1
+    #rect
     #idMatrix
     #areaMap = new Map()
     #typeMap = new Map()
 
-    constructor(rect) {
-        this.#idMatrix = Matrix.fromRect(rect, () => EMPTY)
-        this.#rect = rect
+    constructor(noiseMap, ratio) {
+        this.#rect = noiseMap.rect
+        const getType = point => {
+            const noise = noiseMap.getNoise(point)
+            return noise < ratio ? WATER : LAND
+        }
+        this.#idMatrix = Matrix.fromRect(this.#rect, () => EMPTY)
+        this.#idMatrix.forEach(point => {
+            const type = getType(point)
+            this.#detect(point, type, getType)
+        })
     }
 
-    detect(startPoint, geotype, getType) {
+    #detect(startPoint, geotype, getType) {
         if (this.#idMatrix.get(startPoint) !== EMPTY)
             return
         let area = 0
@@ -44,33 +48,35 @@ export class GeomassMap {
         const methods = {canFill, wrapPoint, onFill}
         new ScanlineFill8(startPoint, methods).fill()
 
-        const geomass = this.#buildGeomassType(geotype, area)
+        const type = this.#buildType(geotype, area)
         this.#areaMap.set(this.#idCount, area)
-        this.#typeMap.set(this.#idCount, geomass)
+        this.#typeMap.set(this.#idCount, type)
         this.#idCount++
     }
 
-    #buildGeomassType(geotype, area) {
+    #buildType(geotype, area) {
         const massRatio = (area * 100) / this.#rect.area
         if (geotype === WATER) {
-            if (massRatio >= MINIMUN_OCEAN_RATIO) return OCEAN
-            if (massRatio >= MINIMUN_SEA_RATIO) return SEA
-            return LAKE
+            if (massRatio >= MINIMUN_OCEAN_RATIO) return Geotype.OCEAN
+            if (massRatio >= MINIMUN_SEA_RATIO) return Geotype.SEA
+            return Geotype.LAKE
         }
         // land
-        if (massRatio >= MINIMUN_CONTINENT_RATIO) return CONTINENT
-        return ISLAND
+        if (massRatio >= MINIMUN_CONTINENT_RATIO) return Geotype.CONTINENT
+        return Geotype.ISLAND
     }
 
-    getType(point) {
+    get(point) {
         const id = this.#idMatrix.get(point)
-        return this.#typeMap.get(id)
+        return Geotype.fromId(this.#typeMap.get(id))
+    }
+
+    isWater(point) {
+        return this.get(point).water
     }
 
     getArea(point) {
         const id = this.#idMatrix.get(point)
-
         return (this.#areaMap.get(id) * 100) / this.#rect.area
     }
-
 }

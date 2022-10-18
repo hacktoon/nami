@@ -50,9 +50,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const isWater = this.colorMap.isWater(point)
-        if (isWater) return Color.BLACK
-        return Color.WHITE
+        const geotype = this.tileMap.getGeotype(point)
+        return geotype.color
         // const nextPoints = this.tileMap.erosionLayer.nextPoints
         // if (this.params.get('showNextPoints') && nextPoints.has(point)) {
         //     return terrainColor.brighten(120)
