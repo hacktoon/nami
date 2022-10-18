@@ -52,9 +52,11 @@ export class GeologyTileMap extends TileMap {
     get(point) {
         // const basin = this.erosionLayer.getBasin(point)
         const isWater = this.isWater(point)
+        const geomassType = this.#terrainLayer.geomassMap.getType(point)
         return [
             `${Point.hash(point)}`,
             `water=${isWater}`,
+            `geomassType=${geomassType}`,
         ].join(' | ')
     }
 

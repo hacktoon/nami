@@ -2,22 +2,19 @@ import { Matrix } from '/src/lib/matrix'
 
 import { LAYERS, BASE_RATIO, BASE_NOISE, Terrain } from '../data'
 import { GeomassMap } from './geomass'
+import { LAND, WATER } from './data'
 
-
-const WATER = 0
-const LAND = 1
 
 
 export class TerrainLayer {
     #layer
-    #geomassMap
     #shorePoints
 
     constructor(props) {
         const noiseMap = props.noiseMapSet.get(BASE_NOISE)
         const geomassMap = new GeomassMap(props.rect)
         const layer = this.#buildLayer(noiseMap, geomassMap, BASE_RATIO)
-        this.#geomassMap = geomassMap
+        this.geomassMap = geomassMap
         this.#layer = layer
     }
 
@@ -28,7 +25,7 @@ export class TerrainLayer {
         }
         return Matrix.fromRect(noiseMap.rect, point => {
             const type = getType(point)
-            // geomassMap.detect(point, type, getType)
+            geomassMap.detect(point, type, getType)
             return type
         })
     }
@@ -52,6 +49,6 @@ export class TerrainLayer {
     }
 
     isWater(point) {
-        return this.#layer.get(point) == WATER
+        return this.#layer.get(point) === WATER
     }
 }

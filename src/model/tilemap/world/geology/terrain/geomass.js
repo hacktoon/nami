@@ -1,50 +1,67 @@
 import { Matrix } from '/src/lib/matrix'
 import { ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
+import {
+    WATER, OCEAN, SEA, LAKE, CONTINENT, ISLAND
+ } from './data'
 
-const MINIMUN_OCEAN_RATIO = 1  // 1%
+
+ const EMPTY = null
+const MINIMUN_OCEAN_RATIO = 2  // 2%
+const MINIMUN_SEA_RATIO = 1  // 1%
+const MINIMUN_CONTINENT_RATIO = 10  // 10%
 
 
 export class GeomassMap {
     // Geomasses are islands, continents, oceans, seas and lakes
-    #idCount = 1
-    #matrix
     #rect
+    #idCount = 1
+    #idMatrix
     #areaMap = new Map()
+    #typeMap = new Map()
 
     constructor(rect) {
-        this.#matrix = Matrix.fromRect(rect, () => null)
+        this.#idMatrix = Matrix.fromRect(rect, () => EMPTY)
         this.#rect = rect
     }
 
-    detect(startPoint, type, getType) {
-        let area = 0
-        if (this.#matrix.get(startPoint) !== null)
+    detect(startPoint, geotype, getType) {
+        if (this.#idMatrix.get(startPoint) !== EMPTY)
             return
+        let area = 0
         const canFill = point => {
-            return getType(point) && ! this.#matrix.has(point)
+            const sameType = geotype === getType(point)
+            return sameType && this.#idMatrix.get(point) === EMPTY
         }
         const onFill = point => {
-            this.#matrix.set(point, this.#idCount)
+            this.#idMatrix.set(point, this.#idCount)
             area++
         }
         const wrapPoint = point => this.#rect.wrap(point)
         const methods = {canFill, wrapPoint, onFill}
         new ScanlineFill8(startPoint, methods).fill()
 
-        const ratio = Math.round((area * 100) / this.#rect.area)
-        if (ratio >= MINIMUN_OCEAN_RATIO) {
-            this.#areaMap.set(this.#idCount, area)
-        }
+        const geomass = this.#getGeomassType(geotype, area)
+        this.#areaMap.set(this.#idCount, area)
+        this.#typeMap.set(this.#idCount, geomass)
         this.#idCount++
     }
 
-    isOcean(point) {
-        const wrappedPoint = this.#rect.wrap(point)
-        if (this.#matrix.has(...wrappedPoint)) {
-            const id = this.#matrix.get(...wrappedPoint)
-            return this.#areaMap.has(id)
+    #getGeomassType(geotype, area) {
+        const massRatio = Math.round((area * 100) / this.#rect.area)
+        if (geotype === WATER) {
+            if (massRatio >= MINIMUN_OCEAN_RATIO) return OCEAN
+            if (massRatio >= MINIMUN_SEA_RATIO) return SEA
+            return LAKE
         }
-        return false
+        // land
+        if (massRatio >= MINIMUN_CONTINENT_RATIO) return CONTINENT
+        return ISLAND
     }
+
+    getType(point) {
+        const id = this.#idMatrix.get(point)
+        return this.#typeMap.get(id)
+    }
+
 }
