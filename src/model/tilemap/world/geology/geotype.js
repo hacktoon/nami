@@ -1,5 +1,5 @@
 import { Matrix } from '/src/lib/matrix'
-import { ScanlineFill8 } from '/src/lib/floodfill/scanline'
+import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { WATER, LAND, Geotype } from './data'
 
@@ -28,11 +28,11 @@ export class GeotypeLayer {
         this.#idMatrix = Matrix.fromRect(this.#rect, () => EMPTY)
         this.#idMatrix.forEach(point => {
             const type = getType(point)
-            this.#detect(point, type, getType)
+            this.#detectType(point, type, getType)
         })
     }
 
-    #detect(point, geotype, getType) {
+    #detectType(point, geotype, getType) {
         if (this.#idMatrix.get(point) !== EMPTY)
             return
         let area = 0
@@ -45,17 +45,17 @@ export class GeotypeLayer {
             area++
         }
         const wrapPoint = pt => this.#rect.wrap(pt)
-        const fill = new ScanlineFill8(point, {canFill, wrapPoint, onFill})
-        fill.fill()
+        const Fill = geotype === LAND ? ScanlineFill : ScanlineFill8
+        new Fill(point, {canFill, wrapPoint, onFill}).fill()
 
-        const type = this.#buildType(geotype, area)
+        const massRatio = (area * 100) / this.#rect.area
+        const type = this.#buildType(geotype, massRatio)
         this.#areaMap.set(this.#idCount, area)
         this.#typeMap.set(this.#idCount, type)
         this.#idCount++
     }
 
-    #buildType(geotype, area) {
-        const massRatio = (area * 100) / this.#rect.area
+    #buildType(geotype, massRatio) {
         if (geotype === WATER) {
             if (massRatio >= MINIMUN_OCEAN_RATIO)
                 return Geotype.OCEAN
