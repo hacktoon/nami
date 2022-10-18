@@ -13,9 +13,9 @@ const MINIMUN_CONTINENT_RATIO = 2
 
 export class GeotypeLayer {
     // Geotypes are islands, continents, oceans, seas and lakes
-    #idCount = 1
     #rect
     #idMatrix
+    #idCount = 1
     #areaMap = new Map()
     #typeMap = new Map()
 
@@ -32,21 +32,21 @@ export class GeotypeLayer {
         })
     }
 
-    #detect(startPoint, geotype, getType) {
-        if (this.#idMatrix.get(startPoint) !== EMPTY)
+    #detect(point, geotype, getType) {
+        if (this.#idMatrix.get(point) !== EMPTY)
             return
         let area = 0
-        const canFill = point => {
-            const sameType = geotype === getType(point)
-            return sameType && this.#idMatrix.get(point) === EMPTY
+        const canFill = pt => {
+            const sameType = geotype === getType(pt)
+            return sameType && this.#idMatrix.get(pt) === EMPTY
         }
-        const onFill = point => {
-            this.#idMatrix.set(point, this.#idCount)
+        const onFill = pt => {
+            this.#idMatrix.set(pt, this.#idCount)
             area++
         }
-        const wrapPoint = point => this.#rect.wrap(point)
-        const methods = {canFill, wrapPoint, onFill}
-        new ScanlineFill8(startPoint, methods).fill()
+        const wrapPoint = pt => this.#rect.wrap(pt)
+        const fill = new ScanlineFill8(point, {canFill, wrapPoint, onFill})
+        fill.fill()
 
         const type = this.#buildType(geotype, area)
         this.#areaMap.set(this.#idCount, area)
@@ -57,12 +57,15 @@ export class GeotypeLayer {
     #buildType(geotype, area) {
         const massRatio = (area * 100) / this.#rect.area
         if (geotype === WATER) {
-            if (massRatio >= MINIMUN_OCEAN_RATIO) return Geotype.OCEAN
-            if (massRatio >= MINIMUN_SEA_RATIO) return Geotype.SEA
+            if (massRatio >= MINIMUN_OCEAN_RATIO)
+                return Geotype.OCEAN
+            if (massRatio >= MINIMUN_SEA_RATIO)
+                return Geotype.SEA
             return Geotype.LAKE
         }
         // land
-        if (massRatio >= MINIMUN_CONTINENT_RATIO) return Geotype.CONTINENT
+        if (massRatio >= MINIMUN_CONTINENT_RATIO)
+            return Geotype.CONTINENT
         return Geotype.ISLAND
     }
 

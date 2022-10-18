@@ -140,7 +140,6 @@ export class Terrain {
     constructor(spec) {
         this.id = spec.id
         this.name = spec.name
-        this.water = spec.water
         this.color = spec.color
     }
 }
