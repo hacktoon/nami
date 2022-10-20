@@ -1,4 +1,5 @@
 import { Matrix } from '/src/lib/matrix'
+import { PointMap } from '/src/lib/matrix'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { WATER, LAND, Geotype } from './data'
@@ -14,30 +15,33 @@ const MINIMUN_CONTINENT_RATIO = 2
 export class GeotypeLayer {
     // Geotypes are islands, continents, oceans, seas and lakes
     #rect
+    #noiseMap
     #idMatrix
     #idCount = 1
     #areaMap = new Map()
     #typeMap = new Map()
 
     constructor(noiseMap, ratio) {
+        this.#noiseMap = noiseMap
         this.#rect = noiseMap.rect
-        const getType = point => {
-            const noise = noiseMap.getNoise(point)
-            return noise < ratio ? WATER : LAND
-        }
         this.#idMatrix = Matrix.fromRect(this.#rect, () => EMPTY)
         this.#idMatrix.forEach(point => {
-            const type = getType(point)
-            this.#detectType(point, type, getType)
+            const type = this.#getType(point, ratio)
+            this.#detectType(point, type, ratio)
         })
     }
 
-    #detectType(point, geotype, getType) {
+    #getType(point, ratio) {
+        const noise = this.#noiseMap.getNoise(point)
+        return noise < ratio ? WATER : LAND
+    }
+
+    #detectType(point, geotype, ratio) {
         if (this.#idMatrix.get(point) !== EMPTY)
             return
         let area = 0
         const canFill = pt => {
-            const sameType = geotype === getType(pt)
+            const sameType = geotype === this.#getType(pt, ratio)
             return sameType && this.#idMatrix.get(pt) === EMPTY
         }
         const onFill = pt => {

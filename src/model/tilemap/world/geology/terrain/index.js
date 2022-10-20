@@ -1,54 +1,42 @@
 import { Matrix } from '/src/lib/matrix'
+import { Point } from '/src/lib/point'
+import { PointSet } from '/src/lib/point/set'
 
 import { LAYERS, BASE_RATIO, BASE_NOISE } from '../data'
-import { GeomassMap } from './geomass'
 import { LAND, WATER } from '../data'
 
 
+const EMPTY = null
+
 
 export class TerrainLayer {
-    #layer
+    #matrix
+    #geotypeLayer
     #shorePoints
 
-    constructor(props) {
-        const noiseMap = props.noiseMapSet.get(BASE_NOISE)
-        const geomassMap = new GeomassMap(props.rect)
-        const layer = this.#buildLayer(noiseMap, geomassMap, BASE_RATIO)
-        this.geomassMap = geomassMap
-        this.#layer = layer
-    }
-
-    #buildLayer(noiseMap, geomassMap, ratio) {
-        const getType = point => {
-            const noise = noiseMap.getNoise(point)
-            return noise < ratio ? WATER : LAND
-        }
-        return Matrix.fromRect(noiseMap.rect, point => {
-            const type = getType(point)
-            geomassMap.detect(point, type, getType)
-            return type
+    constructor(noiseMapSet, geotypeLayer) {
+        const noiseMap = noiseMapSet.get(BASE_NOISE)
+        this.#shorePoints = new PointSet()
+        // todo: use PairMap
+        this.#geotypeLayer = geotypeLayer
+        const matrix = Matrix.fromRect(noiseMap.rect, point => {
+            this.#detectShorePoints(point)
+            return EMPTY
         })
     }
 
-    #detectShorePoints() {
-        // props.pointQueue[layerType].push(point)
-
-        //  if (Terrain.isWater(terrain)) return terrain
-
-        //  // detect shore points
-        //  for (let sidePoint of Point.adjacents(point)) {
-        //      const sideLayerType = this.#getLayerType(noiseMap, sidePoint)
-        //      const sideTerrain = typeMap[sideLayerType]
-        //      if (terrain !== sideTerrain) {
-        //          props.borderPoints.add(point)
-        //          if (Terrain.isWater(sideTerrain)) // is shore
-        //              props.shorePoints.add(point)
-        //          break
-        //      }
-        //  }
+    #detectShorePoints(point) {
+        if (this.#geotypeLayer.isWater(point))
+            return
+        for (let sidePoint of Point.adjacents(point)) {
+            if (this.#geotypeLayer.isWater(sidePoint)) {
+                this.#shorePoints.add(point)
+                break
+            }
+        }
     }
 
-    isWater(point) {
-        return this.#layer.get(point) === WATER
+    isShore(point) {
+        return this.#shorePoints.has(point)
     }
 }

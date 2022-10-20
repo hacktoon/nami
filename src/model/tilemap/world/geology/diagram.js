@@ -51,24 +51,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const geotype = this.tileMap.getGeotype(point)
+        if (this.params.get('showShoreline') && this.tileMap.isShore(point)) {
+            return geotype.color.darken(60)
+        }
         return geotype.color
-        // const nextPoints = this.tileMap.erosionLayer.nextPoints
-        // if (this.params.get('showNextPoints') && nextPoints.has(point)) {
-        //     return terrainColor.brighten(120)
-        // }
-        // if (this.params.get('showShoreline') && this.tileMap.isShore(point)) {
-        //     return terrainColor.darken(120)
-        // }
-        // if (this.params.get('showBasins')) {
-        //     if (this.tileMap.getBasin(point)) {
-        //         return this.colorMap.getByBasin(point)
-        //     }
-        //     if (this.tileMap.isOcean(point)) {
-        //         return terrainColor.grayscale().darken(40)
-        //     }
-        //     return terrainColor.grayscale().brighten(40)
-        // }
-        return terrainColor
     }
 
     getText(point) {

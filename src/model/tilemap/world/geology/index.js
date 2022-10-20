@@ -7,10 +7,10 @@ import { PointSet } from '/src/lib/point/set'
 
 import { NoiseMapSet } from './noise'
 
-import { Terrain, BASE_RATIO, BASE_NOISE } from './data'
+import { BASE_RATIO, BASE_NOISE } from './data'
 import { GeotypeLayer } from './geotype'
+import { TerrainLayer } from './terrain'
 // import { ErosionLayer } from './erosion'
-// import { TerrainLayer } from './terrain'
 
 import { GeologyTileMapDiagram } from './diagram'
 
@@ -34,29 +34,22 @@ export class GeologyTileMap extends TileMap {
         return new GeologyTileMap(params)
     }
 
-    #shorePoints
     #terrainLayer
     #geotypeLayer
 
     constructor(params) {
         super(params)
-        const props = {
-            noiseMapSet: new NoiseMapSet(this.rect, this.seed),
-            borderPoints: new PointSet(),
-            shorePoints: new PointSet(),
-            rect: this.rect,
-        }
-        // this.#shorePoints = props.shorePoints
-        const noiseMap = props.noiseMapSet.get(BASE_NOISE)
+        const noiseMapSet = new NoiseMapSet(this.rect, this.seed)
+        const noiseMap = noiseMapSet.get(BASE_NOISE)
         const geotypeLayer = new GeotypeLayer(noiseMap, BASE_RATIO)
-        // const layer = this.#buildLayer(noiseMap, BASE_RATIO)
-        this.#geotypeLayer = geotypeLayer
-        // this.#terrainLayer = layer
+        const terrainLayer = new TerrainLayer(noiseMapSet, geotypeLayer)
+
         // this.erosionLayer = new ErosionLayer(this.#terrainLayer, props)
+        this.#geotypeLayer = geotypeLayer
+        this.#terrainLayer = terrainLayer
     }
 
     get(point) {
-        // const basin = this.erosionLayer.getBasin(point)
         const geotype = this.#geotypeLayer.get(point)
         const geotypeArea = this.#geotypeLayer.getArea(point)
         return [
@@ -66,17 +59,18 @@ export class GeologyTileMap extends TileMap {
     }
 
     getGeotype(point) {
-        return this.#geotypeLayer.get(point)
+        const wrappedPoint = this.rect.wrap(point)
+        return this.#geotypeLayer.get(wrappedPoint)
+    }
+
+    isShore(point) {
+        const wrappedPoint = this.rect.wrap(point)
+        return this.#terrainLayer.isShore(wrappedPoint)
     }
 
     // getTerrain(point) {
     //     const id = this.#terrainLayer.get(point)
     //     return Terrain.fromId(id)
-    // }
-
-    // isShore(point) {
-    //     const wrappedPoint = this.rect.wrap(point)
-    //     return this.#shorePoints.has(wrappedPoint)
     // }
 
     // getBasin(point) {
