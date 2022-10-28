@@ -50,7 +50,7 @@ export class GeologyTileMap extends TileMap {
     }
 
     get(point) {
-        const geotype = this.#geotypeLayer.get(point)
+        const geotype = this.getGeotype(point)
         const geotypeArea = this.#geotypeLayer.getArea(point)
         return [
             `${Point.hash(point)}`,

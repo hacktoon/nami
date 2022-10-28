@@ -3,7 +3,7 @@ import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 
 import { LAYERS, BASE_RATIO, BASE_NOISE } from '../data'
-import { LAND, WATER } from '../data'
+import { LAKE } from '../data'
 
 
 const EMPTY = null
@@ -26,10 +26,14 @@ export class TerrainLayer {
     }
 
     #detectShorePoints(point) {
-        if (this.#geotypeLayer.isWater(point))
+        if (this.#geotypeLayer.isWater(point)) {
             return
+        }
         for (let sidePoint of Point.adjacents(point)) {
-            if (this.#geotypeLayer.isWater(sidePoint)) {
+            const geotype = this.#geotypeLayer.get(sidePoint)
+            // lakes aren't considered real shorePoints
+            // (where rivers begin)
+            if (geotype.water && geotype.id != LAKE) {
                 this.#shorePoints.add(point)
                 break
             }

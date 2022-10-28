@@ -12,7 +12,7 @@ export const CONTINENT = 3
 export const ISLAND = 4
 
 
-export const GEOMASS_SPEC = [
+export const GEOTYPE_SPEC = [
     {
         id: 0,
         name: 'Ocean',
@@ -99,12 +99,12 @@ export const TERRAIN_SPEC = [
 
 
 export const TYPE_MAP = new Map(TERRAIN_SPEC.map(spec => [spec.id, spec]))
-export const GEOMASS_MAP = new Map(GEOMASS_SPEC.map(spec => [spec.id, spec]))
+export const GEOTYPE_MAP = new Map(GEOTYPE_SPEC.map(spec => [spec.id, spec]))
 
 
 export class Geotype {
     static fromId(id) {
-        return new Geotype(GEOMASS_MAP.get(id))
+        return new Geotype(GEOTYPE_MAP.get(id))
     }
 
     constructor(spec) {
@@ -114,7 +114,7 @@ export class Geotype {
         this.color = spec.color
     }
 }
-GEOMASS_SPEC.forEach(spec => {
+GEOTYPE_SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
     Geotype[name] = spec.id
 })

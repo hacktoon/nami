@@ -25,23 +25,21 @@ export class GeotypeLayer {
         this.#noiseMap = noiseMap
         this.#rect = noiseMap.rect
         this.#idMatrix = Matrix.fromRect(this.#rect, () => EMPTY)
-        this.#idMatrix.forEach(point => {
-            const type = this.#getType(point, ratio)
-            this.#detectType(point, type, ratio)
-        })
+        this.#idMatrix.forEach(point => this.#detectType(point, ratio))
     }
 
-    #getType(point, ratio) {
+    #translateNoise(point, ratio) {
         const noise = this.#noiseMap.getNoise(point)
         return noise < ratio ? WATER : LAND
     }
 
-    #detectType(point, geotype, ratio) {
+    #detectType(point, ratio) {
         if (this.#idMatrix.get(point) !== EMPTY)
             return
+        const geotype = this.#translateNoise(point, ratio)
         let area = 0
         const canFill = pt => {
-            const sameType = geotype === this.#getType(pt, ratio)
+            const sameType = geotype === this.#translateNoise(pt, ratio)
             return sameType && this.#idMatrix.get(pt) === EMPTY
         }
         const onFill = pt => {
@@ -53,9 +51,9 @@ export class GeotypeLayer {
         new Fill(point, {canFill, wrapPoint, onFill}).fill()
 
         const massRatio = (area * 100) / this.#rect.area
-        const type = this.#buildType(geotype, massRatio)
+        const typeId = this.#buildType(geotype, massRatio)
         this.#areaMap.set(this.#idCount, area)
-        this.#typeMap.set(this.#idCount, type)
+        this.#typeMap.set(this.#idCount, typeId)
         this.#idCount++
     }
 
