@@ -1,8 +1,5 @@
 import { Color } from '/src/lib/color'
 
-// geotype
-export const WATER = 0
-export const LAND = 1
 
 // geomass
 export const OCEAN = 0
