@@ -86,9 +86,7 @@ TERRAIN_SPEC.forEach(spec => {
 })
 
 
-export const BASE_NOISE = 'outline'
-export const BASE_RATIO = .55
-export const LAYERS = [
+export const LAND_LAYERS = [
     {
         terrain: Terrain.PLAIN,
         noise: 'outline',
@@ -108,7 +106,11 @@ export const LAYERS = [
         terrain: Terrain.PEAK,
         noise: 'grained',
         ratio: .65
-    },
+    }
+]
+
+
+export const WATER_LAYERS = [
     {
         terrain: Terrain.OCEAN,
         noise: 'feature',

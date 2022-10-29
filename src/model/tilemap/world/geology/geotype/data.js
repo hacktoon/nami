@@ -1,41 +1,34 @@
 import { Color } from '/src/lib/color'
 
-
-// geomass
 export const OCEAN = 0
-export const SEA = 1
-export const LAKE = 2
-export const CONTINENT = 3
-export const ISLAND = 4
+export const LAKE = 1
+export const CONTINENT = 2
+export const ISLAND = 3
 
+export const BASE_RATIO = .55
+export const BASE_NOISE = 'outline'
 
 export const GEOTYPE_SPEC = [
     {
-        id: 0,
+        id: OCEAN,
         name: 'Ocean',
         water: true,
         color: Color.fromHex('#1d2255'),
     },
     {
-        id: 1,
-        name: 'Sea',
+        id: LAKE,
+        name: 'Lake',
         water: true,
         color: Color.fromHex('#216384'),
     },
     {
-        id: 2,
-        name: 'Lake',
-        water: true,
-        color: Color.fromHex('#87e0ed'),
-    },
-    {
-        id: 3,
+        id: CONTINENT,
         name: 'Continent',
         water: false,
         color: Color.fromHex('#71b13e'),
     },
     {
-        id: 4,
+        id: ISLAND,
         name: 'Island',
         water: false,
         color: Color.fromHex('#c5ed7d'),
@@ -48,18 +41,11 @@ export const GEOTYPE_MAP = new Map(GEOTYPE_SPEC.map(spec => [spec.id, spec]))
 
 export class Geotype {
     static fromId(id) {
-        return new Geotype(GEOTYPE_MAP.get(id))
+        return GEOTYPE_MAP.get(id)
     }
 
     static isWater(id) {
         return GEOTYPE_MAP.get(id).water
-    }
-
-    constructor(spec) {
-        this.id = spec.id
-        this.name = spec.name
-        this.water = spec.water
-        this.color = spec.color
     }
 }
 GEOTYPE_SPEC.forEach(spec => {

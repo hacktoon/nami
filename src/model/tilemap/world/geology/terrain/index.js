@@ -2,42 +2,55 @@ import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 
-import { LAYERS, BASE_RATIO, BASE_NOISE } from '../data'
-import { LAKE } from '../data'
+import { Terrain, LAND_LAYERS, BASE_NOISE } from '../data'
 
 
 const EMPTY = null
 
 
 export class TerrainLayer {
-    #matrix
     #geotypeLayer
     #landBorders
+    #waterBorders
+    #matrix
 
-    constructor(noiseMapSet, geotypeLayer) {
-        const noiseMap = noiseMapSet.get(BASE_NOISE)
+    constructor(rect, noiseMapSet, geotypeLayer) {
         this.#landBorders = new PointSet()
-        // todo: use PairMap
+        this.#waterBorders = new PointSet()
         this.#geotypeLayer = geotypeLayer
-        const matrix = Matrix.fromRect(noiseMap.rect, point => {
-            this.#detectShorePoints(point)
+        this.#matrix = Matrix.fromRect(rect, point => {
+            const isBorder = this.#detectBorder(point)
+            let noiseMap = noiseMapSet.get(BASE_NOISE)
+            LAND_LAYERS.forEach(point => {
+
+            })
             return EMPTY
         })
     }
 
-    #detectShorePoints(point) {
-        if (this.#geotypeLayer.isWater(point))
-            return
+    #detectBorder(point) {
         for (let sidePoint of Point.adjacents(point)) {
-            const geotype = this.#geotypeLayer.get(sidePoint)
-            if (geotype.water) {
-                this.#landBorders.add(point)
-                break
+            const sideGeotype = this.#geotypeLayer.get(sidePoint)
+            if (this.#geotypeLayer.isWater(point)) {
+                if (! sideGeotype.water) {
+                    this.#waterBorders.add(point)
+                    return true
+                }
+            } else {
+                if (sideGeotype.water) {
+                    this.#landBorders.add(point)
+                    return true
+                }
             }
         }
+        return false
     }
 
     isLandBorder(point) {
         return this.#landBorders.has(point)
+    }
+
+    isWaterBorder(point) {
+        return this.#waterBorders.has(point)
     }
 }

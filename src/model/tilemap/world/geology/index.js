@@ -7,7 +7,6 @@ import { PointSet } from '/src/lib/point/set'
 
 import { NoiseMapSet } from './noise'
 
-import { BASE_RATIO, BASE_NOISE } from './data'
 import { GeotypeLayer } from './geotype'
 import { TerrainLayer } from './terrain'
 // import { ErosionLayer } from './erosion'
@@ -40,9 +39,10 @@ export class GeologyTileMap extends TileMap {
     constructor(params) {
         super(params)
         const noiseMapSet = new NoiseMapSet(this.rect, this.seed)
-        const noiseMap = noiseMapSet.get(BASE_NOISE)
-        const geotypeLayer = new GeotypeLayer(noiseMap, BASE_RATIO)
-        const terrainLayer = new TerrainLayer(noiseMapSet, geotypeLayer)
+        const geotypeLayer = new GeotypeLayer(noiseMapSet)
+        const terrainLayer = new TerrainLayer(
+            this.rect, noiseMapSet, geotypeLayer
+        )
 
         // this.erosionLayer = new ErosionLayer(this.#terrainLayer, props)
         this.#geotypeLayer = geotypeLayer
@@ -66,6 +66,11 @@ export class GeologyTileMap extends TileMap {
     isLandBorder(point) {
         const wrappedPoint = this.rect.wrap(point)
         return this.#terrainLayer.isLandBorder(wrappedPoint)
+    }
+
+    isWaterBorder(point) {
+        const wrappedPoint = this.rect.wrap(point)
+        return this.#terrainLayer.isWaterBorder(wrappedPoint)
     }
 
     // getTerrain(point) {

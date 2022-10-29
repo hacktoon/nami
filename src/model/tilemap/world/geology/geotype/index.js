@@ -1,13 +1,11 @@
 import { Matrix } from '/src/lib/matrix'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
-import { Geotype } from './data'
+import { BASE_NOISE, BASE_RATIO, Geotype } from './data'
 
 
 const EMPTY = null
-// percentages
 const MINIMUN_OCEAN_RATIO = 2
-const MINIMUN_SEA_RATIO = 0.2
 const MINIMUN_CONTINENT_RATIO = 2
 
 
@@ -20,11 +18,11 @@ export class GeotypeLayer {
     #areaMap = new Map()
     #typeMap = new Map()
 
-    constructor(noiseMap, ratio) {
-        this.#noiseMap = noiseMap
-        this.#rect = noiseMap.rect
+    constructor(noiseMapSet) {
+        this.#noiseMap = noiseMapSet.get(BASE_NOISE)
+        this.#rect = this.#noiseMap.rect
         this.#bodyMatrix = Matrix.fromRect(this.#rect, () => EMPTY)
-        this.#bodyMatrix.forEach(point => this.#detectType(point, ratio))
+        this.#bodyMatrix.forEach(point => this.#detectType(point, BASE_RATIO))
     }
 
     #isWater(point, ratio) {
@@ -60,8 +58,6 @@ export class GeotypeLayer {
         if (isWater) {
             if (massRatio >= MINIMUN_OCEAN_RATIO)
                 return Geotype.OCEAN
-            if (massRatio >= MINIMUN_SEA_RATIO)
-                return Geotype.SEA
             return Geotype.LAKE
         }
         // land
