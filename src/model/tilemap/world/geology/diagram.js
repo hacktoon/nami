@@ -8,7 +8,7 @@ import { TileMapDiagram } from '/src/model/lib/tilemap'
 
 const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
-    Type.boolean('showShoreline', 'Shoreline', {default: false}),
+    Type.boolean('showLandBorder', 'Land border', {default: false}),
     // Type.boolean('showBasins', 'Basins', {default: false}),
     // Type.boolean('showErosion', 'Erosion flow', {default: false}),
     // Type.boolean('showNextPoints', 'Next points', {default: false}),
@@ -51,7 +51,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const geotype = this.tileMap.getGeotype(point)
-        if (this.params.get('showShoreline') && this.tileMap.isShore(point)) {
+        const showLandBorder = this.params.get('showLandBorder')
+        if (showLandBorder && this.tileMap.isLandBorder(point)) {
             return geotype.color.darken(60)
         }
         return geotype.color

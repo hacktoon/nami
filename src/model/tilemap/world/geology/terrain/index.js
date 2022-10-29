@@ -12,11 +12,11 @@ const EMPTY = null
 export class TerrainLayer {
     #matrix
     #geotypeLayer
-    #shorePoints
+    #landBorders
 
     constructor(noiseMapSet, geotypeLayer) {
         const noiseMap = noiseMapSet.get(BASE_NOISE)
-        this.#shorePoints = new PointSet()
+        this.#landBorders = new PointSet()
         // todo: use PairMap
         this.#geotypeLayer = geotypeLayer
         const matrix = Matrix.fromRect(noiseMap.rect, point => {
@@ -26,21 +26,18 @@ export class TerrainLayer {
     }
 
     #detectShorePoints(point) {
-        if (this.#geotypeLayer.isWater(point)) {
+        if (this.#geotypeLayer.isWater(point))
             return
-        }
         for (let sidePoint of Point.adjacents(point)) {
             const geotype = this.#geotypeLayer.get(sidePoint)
-            // lakes aren't considered real shorePoints
-            // (where rivers begin)
-            if (geotype.water && geotype.id != LAKE) {
-                this.#shorePoints.add(point)
+            if (geotype.water) {
+                this.#landBorders.add(point)
                 break
             }
         }
     }
 
-    isShore(point) {
-        return this.#shorePoints.has(point)
+    isLandBorder(point) {
+        return this.#landBorders.has(point)
     }
 }
