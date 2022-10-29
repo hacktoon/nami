@@ -1,5 +1,4 @@
 import { Matrix } from '/src/lib/matrix'
-import { PointMap } from '/src/lib/matrix'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { Geotype } from './data'
@@ -33,22 +32,22 @@ export class GeotypeLayer {
         return noise < ratio
     }
 
-    #detectType(point, ratio) {
-        if (this.#bodyMatrix.get(point) !== EMPTY)
+    #detectType(originPoint, ratio) {
+        if (this.#bodyMatrix.get(originPoint) !== EMPTY)
             return
         let area = 0
-        const isWater = this.#isWater(point, ratio)
-        const canFill = pt => {
-            const sameType = isWater === this.#isWater(pt, ratio)
-            return sameType && this.#bodyMatrix.get(pt) === EMPTY
+        const isWater = this.#isWater(originPoint, ratio)
+        const canFill = point => {
+            const sameType = isWater === this.#isWater(point, ratio)
+            return sameType && this.#bodyMatrix.get(point) === EMPTY
         }
-        const onFill = pt => {
-            this.#bodyMatrix.set(pt, this.#idCount)
+        const onFill = point => {
+            this.#bodyMatrix.set(point, this.#idCount)
             area++
         }
-        const wrapPoint = pt => this.#rect.wrap(pt)
+        const wrapPoint = point => this.#rect.wrap(point)
         const Fill = isWater ? ScanlineFill8 : ScanlineFill
-        new Fill(point, {canFill, wrapPoint, onFill}).fill()
+        new Fill(originPoint, {canFill, wrapPoint, onFill}).fill()
 
         const massRatio = (area * 100) / this.#rect.area
         const type = this.#buildType(isWater, massRatio)
@@ -77,7 +76,8 @@ export class GeotypeLayer {
     }
 
     isWater(point) {
-        return this.get(point).water
+        const body = this.#bodyMatrix.get(point)
+        return Geotype.isWater(this.#typeMap.get(body))
     }
 
     getArea(point) {

@@ -104,6 +104,10 @@ export class Geotype {
         return new Geotype(GEOTYPE_MAP.get(id))
     }
 
+    static isWater(id) {
+        return GEOTYPE_MAP.get(id).water
+    }
+
     constructor(spec) {
         this.id = spec.id
         this.name = spec.name
