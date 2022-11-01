@@ -47,6 +47,10 @@ export class Geotype {
     static isWater(id) {
         return GEOTYPE_MAP.get(id).water
     }
+
+    static isLand(id) {
+        return ! GEOTYPE_MAP.get(id).water
+    }
 }
 GEOTYPE_SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()

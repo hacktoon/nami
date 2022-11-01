@@ -10,6 +10,7 @@ const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
     Type.boolean('showLandBorder', 'Land border', {default: false}),
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
+    Type.boolean('showTerrain', 'Terrain', {default: false}),
     // Type.boolean('showBasins', 'Basins', {default: false}),
     // Type.boolean('showErosion', 'Erosion flow', {default: false}),
     // Type.boolean('showNextPoints', 'Next points', {default: false}),
@@ -52,8 +53,13 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     get(point) {
         const geotype = this.tileMap.getGeotype(point)
+        const terrain = this.tileMap.getTerrain(point)
         const showLandBorder = this.params.get('showLandBorder')
         const showWaterBorder = this.params.get('showWaterBorder')
+        const showTerrain = this.params.get('showTerrain')
+        if (showTerrain && terrain) {
+            return terrain.color
+        }
         if (showLandBorder && this.tileMap.isLandBorder(point)) {
             return geotype.color.darken(40)
         }

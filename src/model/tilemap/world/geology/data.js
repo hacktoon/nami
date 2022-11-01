@@ -57,19 +57,11 @@ export const TYPE_MAP = new Map(TERRAIN_SPEC.map(spec => [spec.id, spec]))
 
 export class Terrain {
     static fromId(id) {
-        return new Terrain(TYPE_MAP.get(id))
+        return TYPE_MAP.get(id)
     }
 
     static landTypes() {
         return TERRAIN_SPEC.filter(terrain => ! terrain.water)
-    }
-
-    static isLand(id) {
-        return ! TYPE_MAP.get(id).water
-    }
-
-    static isWater(id) {
-        return TYPE_MAP.get(id).water
     }
 
     constructor(spec) {
@@ -89,24 +81,24 @@ TERRAIN_SPEC.forEach(spec => {
 export const LAND_LAYERS = [
     {
         terrain: Terrain.PLAIN,
-        noise: 'outline',
-        ratio: .6
-    },
-    {
-        terrain: Terrain.PLATEAU,
-        noise: 'grained',
-        ratio: .42
-    },
-    {
-        terrain: Terrain.MOUNTAIN,
         noise: 'feature',
-        ratio: .45
+        ratio: .4
     },
-    {
-        terrain: Terrain.PEAK,
-        noise: 'grained',
-        ratio: .65
-    }
+    // {
+    //     terrain: Terrain.PLATEAU,
+    //     noise: 'grained',
+    //     ratio: .42
+    // },
+    // {
+    //     terrain: Terrain.MOUNTAIN,
+    //     noise: 'feature',
+    //     ratio: .45
+    // },
+    // {
+    //     terrain: Terrain.PEAK,
+    //     noise: 'grained',
+    //     ratio: .65
+    // }
 ]
 
 

@@ -76,6 +76,11 @@ export class GeotypeLayer {
         return Geotype.isWater(this.#typeMap.get(body))
     }
 
+    isLand(point) {
+        const body = this.#bodyMatrix.get(point)
+        return Geotype.isLand(this.#typeMap.get(body))
+    }
+
     getArea(point) {
         const body = this.#bodyMatrix.get(point)
         return (this.#areaMap.get(body) * 100) / this.#rect.area

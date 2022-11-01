@@ -18,13 +18,32 @@ export class TerrainLayer {
         this.#landBorders = new PointSet()
         this.#waterBorders = new PointSet()
         this.#geotypeLayer = geotypeLayer
+        const noiseOutlineMap = noiseMapSet.get('outline')
+        const noiseFeatureMap = noiseMapSet.get('feature')
+        const noiseGrainMap = noiseMapSet.get('grained')
         this.#matrix = Matrix.fromRect(rect, point => {
             const isBorder = this.#detectBorder(point)
-            let noiseMap = noiseMapSet.get(BASE_NOISE)
-            LAND_LAYERS.forEach(point => {
-
-            })
-            return EMPTY
+            const outlineNoise = noiseOutlineMap.getNoise(point)
+            const featureNoise = noiseFeatureMap.getNoise(point)
+            const grainNoise = noiseGrainMap.getNoise(point)
+            if (geotypeLayer.isLand(point)) {
+                let terrain = Terrain.BASIN
+                if(isBorder) return terrain
+                if (featureNoise > .35 && outlineNoise > .6) {
+                    terrain = Terrain.PLAIN
+                    if (grainNoise > .6) {
+                        terrain = Terrain.PLATEAU
+                        // if (featureNoise > .45) {
+                        //     terrain = Terrain.MOUNTAIN
+                        //     if (grainNoise > .6) {
+                        //         terrain = Terrain.PEAK
+                        //     }
+                        // }
+                    }
+                }
+                return terrain
+            }
+            return Terrain.OCEAN
         })
     }
 
@@ -44,6 +63,11 @@ export class TerrainLayer {
             }
         }
         return false
+    }
+
+    get(point) {
+        const id = this.#matrix.get(point)
+        return Terrain.fromId(id)
     }
 
     isLandBorder(point) {
