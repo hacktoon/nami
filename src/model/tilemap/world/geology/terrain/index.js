@@ -2,7 +2,7 @@ import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 
-import { Terrain, LAND_LAYERS, BASE_NOISE } from '../data'
+import { Terrain } from '../data'
 
 
 const EMPTY = null
@@ -26,11 +26,12 @@ export class TerrainLayer {
             this.#detectBorder(point)
             return EMPTY
         })
-        return matrix
+        return this.#buildTerrainByErosion(matrix)
     }
 
-    #buildTerrainByErosion(rect) {
+    #buildTerrainByErosion(matrix) {
 
+        return matrix
     }
 
     #detectBorder(point) {

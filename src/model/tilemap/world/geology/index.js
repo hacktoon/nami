@@ -3,16 +3,11 @@ import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
 import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
-import { PointSet } from '/src/lib/point/set'
 
 import { NoiseMapSet } from './noise'
-
 import { GeotypeLayer } from './geotype'
 import { TerrainLayer } from './terrain'
-// import { ErosionLayer } from './erosion'
-
 import { GeologyTileMapDiagram } from './diagram'
-
 
 
 const ID = 'GeologyTileMap'
@@ -43,8 +38,6 @@ export class GeologyTileMap extends TileMap {
         const terrainLayer = new TerrainLayer(
             this.rect, noiseMapSet, geotypeLayer
         )
-
-        // this.erosionLayer = new ErosionLayer(this.#terrainLayer, props)
         this.#geotypeLayer = geotypeLayer
         this.#terrainLayer = terrainLayer
     }
