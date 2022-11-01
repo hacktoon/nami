@@ -6,7 +6,7 @@ import { BASE_NOISE, BASE_RATIO, Geotype } from './data'
 
 const EMPTY = null
 const MINIMUN_OCEAN_RATIO = 2
-const MINIMUN_CONTINENT_RATIO = 2
+const MINIMUN_CONTINENT_RATIO = 1
 
 
 export class GeotypeLayer {

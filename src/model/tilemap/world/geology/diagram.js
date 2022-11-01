@@ -57,16 +57,17 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const showLandBorder = this.params.get('showLandBorder')
         const showWaterBorder = this.params.get('showWaterBorder')
         const showTerrain = this.params.get('showTerrain')
+        let color = geotype.color
         if (showTerrain && terrain) {
-            return terrain.color
+            color = terrain.color
         }
         if (showLandBorder && this.tileMap.isLandBorder(point)) {
-            return geotype.color.darken(40)
+            color = color.darken(40)
         }
         if (showWaterBorder && this.tileMap.isWaterBorder(point)) {
-            return geotype.color.brighten(40)
+            color = color.brighten(40)
         }
-        return geotype.color
+        return color
     }
 
     getText(point) {

@@ -9,42 +9,28 @@ const EMPTY = null
 
 
 export class TerrainLayer {
+    #landBorders = new PointSet()
+    #waterBorders = new PointSet()
     #geotypeLayer
-    #landBorders
-    #waterBorders
+    #noiseMapSet
     #matrix
 
     constructor(rect, noiseMapSet, geotypeLayer) {
-        this.#landBorders = new PointSet()
-        this.#waterBorders = new PointSet()
         this.#geotypeLayer = geotypeLayer
-        const noiseOutlineMap = noiseMapSet.get('outline')
-        const noiseFeatureMap = noiseMapSet.get('feature')
-        const noiseGrainMap = noiseMapSet.get('grained')
-        this.#matrix = Matrix.fromRect(rect, point => {
-            const isBorder = this.#detectBorder(point)
-            const outlineNoise = noiseOutlineMap.getNoise(point)
-            const featureNoise = noiseFeatureMap.getNoise(point)
-            const grainNoise = noiseGrainMap.getNoise(point)
-            if (geotypeLayer.isLand(point)) {
-                let terrain = Terrain.BASIN
-                if(isBorder) return terrain
-                if (featureNoise > .35 && outlineNoise > .6) {
-                    terrain = Terrain.PLAIN
-                    if (grainNoise > .6) {
-                        terrain = Terrain.PLATEAU
-                        // if (featureNoise > .45) {
-                        //     terrain = Terrain.MOUNTAIN
-                        //     if (grainNoise > .6) {
-                        //         terrain = Terrain.PEAK
-                        //     }
-                        // }
-                    }
-                }
-                return terrain
-            }
-            return Terrain.OCEAN
+        this.#noiseMapSet = noiseMapSet
+        this.#matrix = this.#buildLayer(rect)
+    }
+
+    #buildLayer(rect) {
+        const matrix = Matrix.fromRect(rect, point => {
+            this.#detectBorder(point)
+            return EMPTY
         })
+        return matrix
+    }
+
+    #buildTerrainByErosion(rect) {
+
     }
 
     #detectBorder(point) {
@@ -53,18 +39,39 @@ export class TerrainLayer {
             if (this.#geotypeLayer.isWater(point)) {
                 if (! sideGeotype.water) {
                     this.#waterBorders.add(point)
-                    return true
+                    return
                 }
             } else {
                 if (sideGeotype.water) {
                     this.#landBorders.add(point)
-                    return true
+                    return
                 }
             }
         }
-        return false
     }
 
+    // const noiseOutlineMap = noiseMapSet.get('outline')
+    // const noiseFeatureMap = noiseMapSet.get('feature')
+    // const noiseGrainMap = noiseMapSet.get('grained')
+    // const outlineNoise = noiseOutlineMap.getNoise(point)
+    // const featureNoise = noiseFeatureMap.getNoise(point)
+    // const grainNoise = noiseGrainMap.getNoise(point)
+    // if (this.#geotypeLayer.isLand(point)) {
+    //     let terrain = Terrain.BASIN
+    //     if (featureNoise > .35 && outlineNoise > .6) {
+    //         terrain = Terrain.PLAIN
+    //         if (grainNoise > .6) {
+    //             terrain = Terrain.PLATEAU
+    //             // if (featureNoise > .45) {
+    //             //     terrain = Terrain.MOUNTAIN
+    //             //     if (grainNoise > .6) {
+    //             //         terrain = Terrain.PEAK
+    //             //     }
+    //             // }
+    //         }
+    //     }
+    //     return terrain
+    // }
     get(point) {
         const id = this.#matrix.get(point)
         return Terrain.fromId(id)
