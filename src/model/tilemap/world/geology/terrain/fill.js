@@ -1,23 +1,32 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
-import { PairMap } from '/src/lib/map'
 import { Point } from '/src/lib/point'
-import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
 
 import { Terrain } from '../data'
 
 
-class ErosionFloodFill extends ConcurrentFillUnit {
+const PHASES = [
+    Terrain.BASIN,
+    Terrain.PLAIN,
+    // Terrain.PLATEAU,
+    // Terrain.MOUNTAIN,
+    // Terrain.PEAK,
+]
+
+
+class TerrainFloodFill extends ConcurrentFillUnit {
     setValue(ref, point, level) {
-        const wrappedPoint = ref.context.rect.wrap(point)
+        const terrain = ref.fill.phase
+        const wrappedPoint = ref.context.matrix.rect.wrap(point)
         ref.context.basinMap.set(...wrappedPoint, ref.id)
+        ref.context.matrix.set(wrappedPoint, terrain)
     }
 
     isEmpty(ref, sidePoint) {
-        const wSidePoint = ref.context.rect.wrap(sidePoint)
-        const sideTerrainId = ref.context.terrainLayer.get(wSidePoint)
+        const wSidePoint = ref.context.matrix.rect.wrap(sidePoint)
+        const sideTerrainId = ref.context.matrix.get(wSidePoint)
         const isValidTerrainLayer = sideTerrainId <= ref.fill.phase + 1
-        const isEmpty = ! ref.context.basinMap.has(...wSidePoint)
+        const isEmpty = ! ref.context.matrix.has(...wSidePoint)
         const isLand = Terrain.isLand(sideTerrainId)
         return isValidTerrainLayer && isEmpty && isLand
     }
@@ -31,13 +40,13 @@ class ErosionFloodFill extends ConcurrentFillUnit {
     }
 
     checkNeighbor(ref, sidePoint, centerPoint) {
-        const wSidePoint = ref.context.rect.wrap(sidePoint)
-        const wCenterPoint = ref.context.rect.wrap(centerPoint)
-        const sideTerrainId = ref.context.terrainLayer.get(sidePoint)
-        const shorePoints = ref.context.shorePoints
+        const wSidePoint = ref.context.matrix.rect.wrap(sidePoint)
+        const wCenterPoint = ref.context.matrix.rect.wrap(centerPoint)
+        const sideTerrainId = ref.context.matrix.get(sidePoint)
+        const landBorders = ref.context.landBorders
         const isSideWater = Terrain.isWater(sideTerrainId)
         // detect river mouth
-        if (shorePoints.has(wCenterPoint) && isSideWater) {
+        if (landBorders.has(wCenterPoint) && isSideWater) {
             const directionId = this.getDirectionId(centerPoint, sidePoint)
             ref.context.flowMap.set(...wCenterPoint, directionId)
             return
@@ -60,9 +69,9 @@ class ErosionFloodFill extends ConcurrentFillUnit {
 }
 
 
-class ErosionConcurrentFill extends ConcurrentFill {
-    constructor(origins, context, phases) {
-        super(origins, ErosionFloodFill, context, phases)
+export class TerrainConcurrentFill extends ConcurrentFill {
+    constructor(origins, context) {
+        super(origins, TerrainFloodFill, context, PHASES)
     }
 
     getChance(ref, origin) { return .2 }

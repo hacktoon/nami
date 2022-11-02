@@ -81,6 +81,7 @@ export class ConcurrentFillUnit {
 
     setValue(fill, origin, level) { }
     isEmpty(fill, origin) { return [] }
+    isPhaseEmpty(fill, origin) { return [] }
     getNeighbors(fill, origin) { return [] }
     checkNeighbor(fill, neighbor, origin) { }
     getArea(fill, origin) { return 1 }

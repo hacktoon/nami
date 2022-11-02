@@ -1,7 +1,9 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
+import { PairMap } from '/src/lib/map'
 import { PointSet } from '/src/lib/point/set'
 
+import { TerrainConcurrentFill } from './fill'
 import { Terrain } from '../data'
 
 
@@ -11,6 +13,8 @@ const EMPTY = null
 export class TerrainLayer {
     #landBorders = new PointSet()
     #waterBorders = new PointSet()
+    #basinMap = new PairMap()
+    #flowMap = new PairMap()
     #geotypeLayer
     #noiseMapSet
     #matrix
@@ -18,37 +22,39 @@ export class TerrainLayer {
     constructor(rect, noiseMapSet, geotypeLayer) {
         this.#geotypeLayer = geotypeLayer
         this.#noiseMapSet = noiseMapSet
-        this.#matrix = this.#buildLayer(rect)
+        const baseLayer = this.#buildBaseLayer(rect)
+        this.#matrix = this.#buildLayer(baseLayer)
     }
 
-    #buildLayer(rect) {
-        const matrix = Matrix.fromRect(rect, point => {
-            this.#detectBorder(point)
-            return EMPTY
-        })
-        return this.#buildTerrainByErosion(matrix)
-    }
-
-    #buildTerrainByErosion(matrix) {
-
-        return matrix
-    }
-
-    #detectBorder(point) {
-        for (let sidePoint of Point.adjacents(point)) {
-            const sideGeotype = this.#geotypeLayer.get(sidePoint)
-            if (this.#geotypeLayer.isWater(point)) {
-                if (! sideGeotype.water) {
-                    this.#waterBorders.add(point)
-                    return
-                }
-            } else {
-                if (sideGeotype.water) {
-                    this.#landBorders.add(point)
-                    return
+    #buildBaseLayer(rect) {
+        return Matrix.fromRect(rect, point => {
+            for (let sidePoint of Point.adjacents(point)) {
+                const sideGeotype = this.#geotypeLayer.get(sidePoint)
+                if (this.#geotypeLayer.isWater(point)) {
+                    if (! sideGeotype.water) {
+                        this.#waterBorders.add(point)
+                        return Terrain.SEA
+                    }
+                } else {
+                    if (sideGeotype.water) {
+                        this.#landBorders.add(point)
+                        return Terrain.SEA
+                    }
                 }
             }
+            return Terrain.BASIN
+        })
+    }
+
+    #buildLayer(baseLayer) {
+        const context = {
+            landBorders: this.#landBorders,
+            basinMap: this.#basinMap,
+            flowMap: this.#flowMap,
+            matrix: baseLayer,
         }
+        // new TerrainConcurrentFill(this.#landBorders.points, context).fill()
+        return baseLayer
     }
 
     // const noiseOutlineMap = noiseMapSet.get('outline')
