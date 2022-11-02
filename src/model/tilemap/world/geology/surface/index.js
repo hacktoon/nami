@@ -1,7 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
-import { BASE_NOISE, BASE_RATIO, Geotype } from './data'
+import { BASE_NOISE, BASE_RATIO, Surface } from './data'
 
 
 const EMPTY = null
@@ -9,8 +9,7 @@ const MINIMUN_OCEAN_RATIO = 2
 const MINIMUN_CONTINENT_RATIO = 1
 
 
-export class GeotypeLayer {
-    // Geotypes are islands, continents, oceans, seas and lakes
+export class SurfaceLayer {
     #rect
     #noiseMap
     #bodyMatrix
@@ -57,28 +56,28 @@ export class GeotypeLayer {
     #buildType(isWater, massRatio) {
         if (isWater) {
             if (massRatio >= MINIMUN_OCEAN_RATIO)
-                return Geotype.OCEAN
-            return Geotype.LAKE
+                return Surface.OCEAN
+            return Surface.LAKE
         }
         // land
         if (massRatio >= MINIMUN_CONTINENT_RATIO)
-            return Geotype.CONTINENT
-        return Geotype.ISLAND
+            return Surface.CONTINENT
+        return Surface.ISLAND
     }
 
     get(point) {
         const body = this.#bodyMatrix.get(point)
-        return Geotype.fromId(this.#typeMap.get(body))
+        return Surface.fromId(this.#typeMap.get(body))
     }
 
     isWater(point) {
         const body = this.#bodyMatrix.get(point)
-        return Geotype.isWater(this.#typeMap.get(body))
+        return Surface.isWater(this.#typeMap.get(body))
     }
 
     isLand(point) {
         const body = this.#bodyMatrix.get(point)
-        return Geotype.isLand(this.#typeMap.get(body))
+        return Surface.isLand(this.#typeMap.get(body))
     }
 
     getArea(point) {

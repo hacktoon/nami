@@ -5,7 +5,7 @@ import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { NoiseMapSet } from './noise'
-import { GeotypeLayer } from './geotype'
+import { SurfaceLayer } from './surface'
 import { TerrainLayer } from './terrain'
 import { GeologyTileMapDiagram } from './diagram'
 
@@ -29,31 +29,31 @@ export class GeologyTileMap extends TileMap {
     }
 
     #terrainLayer
-    #geotypeLayer
+    #surfaceLayer
 
     constructor(params) {
         super(params)
         const noiseMapSet = new NoiseMapSet(this.rect, this.seed)
-        const geotypeLayer = new GeotypeLayer(noiseMapSet)
+        const surfaceLayer = new SurfaceLayer(noiseMapSet)
         const terrainLayer = new TerrainLayer(
-            this.rect, noiseMapSet, geotypeLayer
+            this.rect, noiseMapSet, surfaceLayer
         )
-        this.#geotypeLayer = geotypeLayer
+        this.#surfaceLayer = surfaceLayer
         this.#terrainLayer = terrainLayer
     }
 
     get(point) {
-        const geotype = this.getGeotype(point)
-        const geotypeArea = this.#geotypeLayer.getArea(point)
+        const surface = this.getSurface(point)
+        const surfaceArea = this.#surfaceLayer.getArea(point)
         return [
             `${Point.hash(point)}`,
-            `${geotype.name}(area:${geotypeArea}%)`,
+            `${surface.name}(area:${surfaceArea}%)`,
         ].join(' | ')
     }
 
-    getGeotype(point) {
+    getSurface(point) {
         const wrappedPoint = this.rect.wrap(point)
-        return this.#geotypeLayer.get(wrappedPoint)
+        return this.#surfaceLayer.get(wrappedPoint)
     }
 
     getTerrain(point) {

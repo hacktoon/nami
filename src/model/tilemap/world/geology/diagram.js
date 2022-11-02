@@ -1,8 +1,5 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Color } from '/src/lib/color'
-import { Point } from '/src/lib/point'
-import { Direction } from '/src/lib/direction'
 import { TileMapDiagram } from '/src/model/lib/tilemap'
 
 
@@ -11,19 +8,12 @@ const SCHEMA = new Schema(
     Type.boolean('showLandBorder', 'Land border', {default: false}),
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
     Type.boolean('showTerrain', 'Terrain', {default: false}),
-    // Type.boolean('showBasins', 'Basins', {default: false}),
-    // Type.boolean('showErosion', 'Erosion flow', {default: false}),
-    // Type.boolean('showNextPoints', 'Next points', {default: false}),
 )
 
 
 class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
-        // this.basinColors = new Map()
-        // for(let i=0; i<= tileMap.getBasinCount(); i++) {
-        //     this.basinColors.set(i, new Color())
-        // }
     }
 
     getByBasin(point) {
@@ -52,12 +42,12 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const geotype = this.tileMap.getGeotype(point)
+        const surface = this.tileMap.getSurface(point)
         const terrain = this.tileMap.getTerrain(point)
         const showLandBorder = this.params.get('showLandBorder')
         const showWaterBorder = this.params.get('showWaterBorder')
         const showTerrain = this.params.get('showTerrain')
-        let color = geotype.color
+        let color = surface.color
         if (showTerrain && terrain) {
             color = terrain.color
         }

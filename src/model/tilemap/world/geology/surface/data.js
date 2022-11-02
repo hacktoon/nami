@@ -8,7 +8,7 @@ export const ISLAND = 3
 export const BASE_RATIO = .55
 export const BASE_NOISE = 'outline'
 
-export const GEOTYPE_SPEC = [
+export const SURFACE_SPEC = [
     {
         id: OCEAN,
         name: 'Ocean',
@@ -36,23 +36,23 @@ export const GEOTYPE_SPEC = [
 ]
 
 
-export const GEOTYPE_MAP = new Map(GEOTYPE_SPEC.map(spec => [spec.id, spec]))
+export const SURFACE_MAP = new Map(SURFACE_SPEC.map(spec => [spec.id, spec]))
 
 
-export class Geotype {
+export class Surface {
     static fromId(id) {
-        return GEOTYPE_MAP.get(id)
+        return SURFACE_MAP.get(id)
     }
 
     static isWater(id) {
-        return GEOTYPE_MAP.get(id).water
+        return SURFACE_MAP.get(id).water
     }
 
     static isLand(id) {
-        return ! GEOTYPE_MAP.get(id).water
+        return ! SURFACE_MAP.get(id).water
     }
 }
-GEOTYPE_SPEC.forEach(spec => {
+SURFACE_SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
-    Geotype[name] = spec.id
+    Surface[name] = spec.id
 })

@@ -15,12 +15,12 @@ export class TerrainLayer {
     #waterBorders = new PointSet()
     #basinMap = new PairMap()
     #flowMap = new PairMap()
-    #geotypeLayer
+    #surfaceLayer
     #noiseMapSet
     #matrix
 
-    constructor(rect, noiseMapSet, geotypeLayer) {
-        this.#geotypeLayer = geotypeLayer
+    constructor(rect, noiseMapSet, surfaceLayer) {
+        this.#surfaceLayer = surfaceLayer
         this.#noiseMapSet = noiseMapSet
         const baseLayer = this.#buildBaseLayer(rect)
         this.#matrix = this.#buildLayer(baseLayer)
@@ -29,14 +29,14 @@ export class TerrainLayer {
     #buildBaseLayer(rect) {
         return Matrix.fromRect(rect, point => {
             for (let sidePoint of Point.adjacents(point)) {
-                const sideGeotype = this.#geotypeLayer.get(sidePoint)
-                if (this.#geotypeLayer.isWater(point)) {
-                    if (! sideGeotype.water) {
+                const sideSurface = this.#surfaceLayer.get(sidePoint)
+                if (this.#surfaceLayer.isWater(point)) {
+                    if (! sideSurface.water) {
                         this.#waterBorders.add(point)
                         return Terrain.SEA
                     }
                 } else {
-                    if (sideGeotype.water) {
+                    if (sideSurface.water) {
                         this.#landBorders.add(point)
                         return Terrain.SEA
                     }
@@ -63,7 +63,7 @@ export class TerrainLayer {
     // const outlineNoise = noiseOutlineMap.getNoise(point)
     // const featureNoise = noiseFeatureMap.getNoise(point)
     // const grainNoise = noiseGrainMap.getNoise(point)
-    // if (this.#geotypeLayer.isLand(point)) {
+    // if (this.#surfaceLayer.isLand(point)) {
     //     let terrain = Terrain.BASIN
     //     if (featureNoise > .35 && outlineNoise > .6) {
     //         terrain = Terrain.PLAIN
