@@ -32,12 +32,14 @@ export class TerrainLayer {
             const isLand = this.#surfaceLayer.isLand(point)
             const steps = isLand ? LAND_LAYERS : WATER_LAYERS
             let terrain = isLand ? Terrain.BASIN : Terrain.SEA
+            let prevStep = steps[0]
             for(let i = 0; i < steps.length; i++) {
-                // detect base terrain based on noise
-                const step = steps[i]
+                let step = steps[i]
                 const noise = this.#noiseLayer.get(step.noise, point)
+                // const isHigher = step.height > prevStep.height
                 if (noise > step.ratio) {
                     terrain = step.terrain
+                    prevStep = step
                 }
             }
             return terrain
