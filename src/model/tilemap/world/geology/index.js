@@ -4,7 +4,7 @@ import { Point } from '/src/lib/point'
 import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
-import { NoiseMapSet } from './noise'
+import { NoiseLayer } from './noise'
 import { SurfaceLayer } from './surface'
 import { TerrainLayer } from './terrain'
 import { GeologyTileMapDiagram } from './diagram'
@@ -33,11 +33,9 @@ export class GeologyTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const noiseMapSet = new NoiseMapSet(this.rect, this.seed)
-        const surfaceLayer = new SurfaceLayer(this.rect, noiseMapSet)
-        const terrainLayer = new TerrainLayer(
-            this.rect, noiseMapSet, surfaceLayer
-        )
+        const noiseLayer = new NoiseLayer(this.rect, this.seed)
+        const surfaceLayer = new SurfaceLayer(noiseLayer)
+        const terrainLayer = new TerrainLayer(noiseLayer, surfaceLayer)
         this.#surfaceLayer = surfaceLayer
         this.#terrainLayer = terrainLayer
     }

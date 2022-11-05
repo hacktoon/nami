@@ -1,7 +1,7 @@
 import { Color } from '/src/lib/color'
 
 
-export const TERRAIN_SPEC = [
+const TERRAIN_SPEC = [
     {
         id: 0,
         name: 'Abyss',
@@ -56,12 +56,10 @@ export const TERRAIN_SPEC = [
 export const TYPE_MAP = new Map(TERRAIN_SPEC.map(spec => [spec.id, spec]))
 
 export class Terrain {
+    static types = TERRAIN_SPEC
+
     static fromId(id) {
         return TYPE_MAP.get(id)
-    }
-
-    static landTypes() {
-        return TERRAIN_SPEC.filter(terrain => ! terrain.water)
     }
 
     constructor(spec) {
@@ -84,11 +82,11 @@ export const LAND_LAYERS = [
         noise: 'feature',
         ratio: .4
     },
-    // {
-    //     terrain: Terrain.PLATEAU,
-    //     noise: 'grained',
-    //     ratio: .42
-    // },
+    {
+        terrain: Terrain.PLATEAU,
+        noise: 'grained',
+        ratio: .6
+    },
     // {
     //     terrain: Terrain.MOUNTAIN,
     //     noise: 'feature',

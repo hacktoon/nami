@@ -8,8 +8,9 @@ export const NOISE_SPEC = [
 ]
 
 
-export class NoiseMapSet {
+export class NoiseLayer {
     constructor(rect, seed) {
+        this.rect = rect
         this.map = new Map()
         for(let noiseSpec of Object.values(NOISE_SPEC)) {
             const noiseMap = NoiseTileMap.fromData({
@@ -23,7 +24,7 @@ export class NoiseMapSet {
         }
     }
 
-    get(id) {
-        return this.map.get(id)
+    get(id, point) {
+        return this.map.get(id).getNoise(point)
     }
 }

@@ -4,7 +4,7 @@ import { PairMap } from '/src/lib/map'
 import { PointSet } from '/src/lib/point/set'
 
 import { TerrainConcurrentFill } from './fill'
-import { Terrain } from '../data'
+import { LAND_LAYERS, WATER_LAYERS, Terrain } from '../data'
 
 
 const EMPTY = null
@@ -16,28 +16,31 @@ export class TerrainLayer {
     #basinMap = new PairMap()
     #flowMap = new PairMap()
     #surfaceLayer
-    #noiseMapSet
+    #noiseLayer
     #matrix
 
-    constructor(rect, noiseMapSet, surfaceLayer) {
+    constructor(noiseLayer, surfaceLayer) {
         this.#surfaceLayer = surfaceLayer
-        this.#noiseMapSet = noiseMapSet
-        const baseLayer = this.#buildBaseLayer(rect)
+        this.#noiseLayer = noiseLayer
+        const baseLayer = this.#buildBaseLayer(noiseLayer.rect)
         this.#matrix = this.#buildLayer(baseLayer)
     }
 
     #buildBaseLayer(rect) {
         return Matrix.fromRect(rect, point => {
             this.#detectBorders(point)
-            // detect base terrain based on noise
-            // const noiseOutlineMap = noiseMapSet.get('outline')
-            // const noiseFeatureMap = noiseMapSet.get('feature')
-            // const noiseGrainMap = noiseMapSet.get('grained')
-            // const outlineNoise = noiseOutlineMap.getNoise(point)
-            // const featureNoise = noiseFeatureMap.getNoise(point)
-            // const grainNoise = noiseGrainMap.getNoise(point)
-            // if (this.#surfaceLayer.isLand(point)) {
-            //     let terrain = Terrain.BASIN
+            const isLand = this.#surfaceLayer.isLand(point)
+            const steps = isLand ? LAND_LAYERS : WATER_LAYERS
+            let terrain = isLand ? Terrain.BASIN : Terrain.SEA
+            for(let i = 0; i < steps.length; i++) {
+                // detect base terrain based on noise
+                const step = steps[i]
+                const noise = this.#noiseLayer.get(step.noise, point)
+                if (noise > step.ratio) {
+                    terrain = step.terrain
+                }
+            }
+            return terrain
             //     if (featureNoise > .35 && outlineNoise > .6) {
             //         terrain = Terrain.PLAIN
             //         if (grainNoise > .6) {
@@ -50,11 +53,6 @@ export class TerrainLayer {
             //             // }
             //         }
             //     }
-            //     return terrain
-            // }
-            if (this.#surfaceLayer.isWater(point))
-                return Terrain.SEA
-            return Terrain.BASIN
         })
     }
 

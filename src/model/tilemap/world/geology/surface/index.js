@@ -10,26 +10,25 @@ const MINIMUN_CONTINENT_RATIO = 1
 
 
 export class SurfaceLayer {
-    #rect
-    #noiseMap
+    #noiseLayer
     #bodyMatrix
-    #idCount = 1
     #areaMap = new Map()
     #typeMap = new Map()
+    #idCount = 1
 
-    constructor(rect, noiseMapSet) {
-        this.#rect = rect
-        this.#noiseMap = noiseMapSet.get(BASE_NOISE)
-        this.#bodyMatrix = Matrix.fromRect(rect, () => EMPTY)
-        this.#bodyMatrix.forEach(point => this.#detectType(point, BASE_RATIO))
+    constructor(noiseLayer) {
+        this.rect = noiseLayer.rect
+        this.#noiseLayer = noiseLayer
+        this.#bodyMatrix = Matrix.fromRect(this.rect, () => EMPTY)
+        this.#bodyMatrix.forEach(point => this.#detectType(BASE_RATIO, point))
     }
 
     #isWater(point, ratio) {
-        const noise = this.#noiseMap.getNoise(point)
+        const noise = this.#noiseLayer.get(BASE_NOISE, point)
         return noise < ratio
     }
 
-    #detectType(originPoint, ratio) {
+    #detectType(ratio, originPoint) {
         if (this.#bodyMatrix.get(originPoint) !== EMPTY)
             return
         let area = 0
@@ -42,11 +41,11 @@ export class SurfaceLayer {
             this.#bodyMatrix.set(point, this.#idCount)
             area++
         }
-        const wrapPoint = point => this.#rect.wrap(point)
+        const wrapPoint = point => this.rect.wrap(point)
         const Fill = isWater ? ScanlineFill8 : ScanlineFill
         new Fill(originPoint, {canFill, wrapPoint, onFill}).fill()
 
-        const massRatio = (area * 100) / this.#rect.area
+        const massRatio = (area * 100) / this.rect.area
         const type = this.#buildType(isWater, massRatio)
         this.#areaMap.set(this.#idCount, area)
         this.#typeMap.set(this.#idCount, type)
@@ -82,6 +81,6 @@ export class SurfaceLayer {
 
     getArea(point) {
         const body = this.#bodyMatrix.get(point)
-        return (this.#areaMap.get(body) * 100) / this.#rect.area
+        return (this.#areaMap.get(body) * 100) / this.rect.area
     }
 }
