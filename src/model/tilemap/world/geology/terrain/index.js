@@ -28,22 +28,51 @@ export class TerrainLayer {
 
     #buildBaseLayer(rect) {
         return Matrix.fromRect(rect, point => {
-            for (let sidePoint of Point.adjacents(point)) {
-                const sideSurface = this.#surfaceLayer.get(sidePoint)
-                if (this.#surfaceLayer.isWater(point)) {
-                    if (! sideSurface.water) {
-                        this.#waterBorders.add(point)
-                        return Terrain.SEA
-                    }
-                } else {
-                    if (sideSurface.water) {
-                        this.#landBorders.add(point)
-                        return Terrain.SEA
-                    }
-                }
-            }
+            this.#detectBorders(point)
+            // detect base terrain based on noise
+            // const noiseOutlineMap = noiseMapSet.get('outline')
+            // const noiseFeatureMap = noiseMapSet.get('feature')
+            // const noiseGrainMap = noiseMapSet.get('grained')
+            // const outlineNoise = noiseOutlineMap.getNoise(point)
+            // const featureNoise = noiseFeatureMap.getNoise(point)
+            // const grainNoise = noiseGrainMap.getNoise(point)
+            // if (this.#surfaceLayer.isLand(point)) {
+            //     let terrain = Terrain.BASIN
+            //     if (featureNoise > .35 && outlineNoise > .6) {
+            //         terrain = Terrain.PLAIN
+            //         if (grainNoise > .6) {
+            //             terrain = Terrain.PLATEAU
+            //             // if (featureNoise > .45) {
+            //             //     terrain = Terrain.MOUNTAIN
+            //             //     if (grainNoise > .6) {
+            //             //         terrain = Terrain.PEAK
+            //             //     }
+            //             // }
+            //         }
+            //     }
+            //     return terrain
+            // }
+            if (this.#surfaceLayer.isWater(point))
+                return Terrain.SEA
             return Terrain.BASIN
         })
+    }
+
+    #detectBorders(point) {
+        for (let sidePoint of Point.adjacents(point)) {
+            const sideSurface = this.#surfaceLayer.get(sidePoint)
+            if (this.#surfaceLayer.isWater(point)) {
+                if (! sideSurface.water) {
+                    this.#waterBorders.add(point)
+                    break
+                }
+            } else {
+                if (sideSurface.water) {
+                    this.#landBorders.add(point)
+                    break
+                }
+            }
+        }
     }
 
     #buildLayer(baseLayer) {
@@ -57,28 +86,6 @@ export class TerrainLayer {
         return baseLayer
     }
 
-    // const noiseOutlineMap = noiseMapSet.get('outline')
-    // const noiseFeatureMap = noiseMapSet.get('feature')
-    // const noiseGrainMap = noiseMapSet.get('grained')
-    // const outlineNoise = noiseOutlineMap.getNoise(point)
-    // const featureNoise = noiseFeatureMap.getNoise(point)
-    // const grainNoise = noiseGrainMap.getNoise(point)
-    // if (this.#surfaceLayer.isLand(point)) {
-    //     let terrain = Terrain.BASIN
-    //     if (featureNoise > .35 && outlineNoise > .6) {
-    //         terrain = Terrain.PLAIN
-    //         if (grainNoise > .6) {
-    //             terrain = Terrain.PLATEAU
-    //             // if (featureNoise > .45) {
-    //             //     terrain = Terrain.MOUNTAIN
-    //             //     if (grainNoise > .6) {
-    //             //         terrain = Terrain.PEAK
-    //             //     }
-    //             // }
-    //         }
-    //     }
-    //     return terrain
-    // }
     get(point) {
         const id = this.#matrix.get(point)
         return Terrain.fromId(id)

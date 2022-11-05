@@ -1,34 +1,29 @@
 import { Color } from '/src/lib/color'
 
-export const OCEAN = 0
-export const LAKE = 1
-export const CONTINENT = 2
-export const ISLAND = 3
-
 export const BASE_RATIO = .55
 export const BASE_NOISE = 'outline'
 
 export const SURFACE_SPEC = [
     {
-        id: OCEAN,
+        id: 0,
         name: 'Ocean',
         water: true,
         color: Color.fromHex('#1d2255'),
     },
     {
-        id: LAKE,
+        id: 1,
         name: 'Lake',
         water: true,
         color: Color.fromHex('#216384'),
     },
     {
-        id: CONTINENT,
+        id: 2,
         name: 'Continent',
         water: false,
         color: Color.fromHex('#71b13e'),
     },
     {
-        id: ISLAND,
+        id: 3,
         name: 'Island',
         water: false,
         color: Color.fromHex('#c5ed7d'),

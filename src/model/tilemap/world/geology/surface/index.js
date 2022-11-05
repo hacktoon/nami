@@ -17,10 +17,10 @@ export class SurfaceLayer {
     #areaMap = new Map()
     #typeMap = new Map()
 
-    constructor(noiseMapSet) {
+    constructor(rect, noiseMapSet) {
+        this.#rect = rect
         this.#noiseMap = noiseMapSet.get(BASE_NOISE)
-        this.#rect = this.#noiseMap.rect
-        this.#bodyMatrix = Matrix.fromRect(this.#rect, () => EMPTY)
+        this.#bodyMatrix = Matrix.fromRect(rect, () => EMPTY)
         this.#bodyMatrix.forEach(point => this.#detectType(point, BASE_RATIO))
     }
 
