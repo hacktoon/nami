@@ -7,11 +7,21 @@ import { Terrain } from '../data'
 
 const PHASES = [
     Terrain.BASIN,
-    Terrain.PLAIN,
+    // Terrain.PLAIN,
     // Terrain.PLATEAU,
     // Terrain.MOUNTAIN,
     // Terrain.PEAK,
 ]
+
+
+export class TerrainConcurrentFill extends ConcurrentFill {
+    constructor(origins, context) {
+        super(origins, TerrainFloodFill, context, PHASES)
+    }
+
+    getChance(ref, origin) { return 1 }
+    getGrowth(ref, origin) { return 1 }
+}
 
 
 class TerrainFloodFill extends ConcurrentFillUnit {
@@ -66,14 +76,4 @@ class TerrainFloodFill extends ConcurrentFillUnit {
         const angle = Point.angle(sourcePoint, targetPoint)
         return Direction.fromAngle(angle).id
     }
-}
-
-
-export class TerrainConcurrentFill extends ConcurrentFill {
-    constructor(origins, context) {
-        super(origins, TerrainFloodFill, context, PHASES)
-    }
-
-    getChance(ref, origin) { return .2 }
-    getGrowth(ref, origin) { return 3 }
 }

@@ -22,40 +22,25 @@ export class TerrainLayer {
     constructor(noiseLayer, surfaceLayer) {
         this.#surfaceLayer = surfaceLayer
         this.#noiseLayer = noiseLayer
-        const baseLayer = this.#buildBaseLayer(noiseLayer.rect)
-        this.#matrix = this.#buildLayer(baseLayer)
+        this.#matrix = this.#buildLayer(noiseLayer.rect)
     }
 
-    #buildBaseLayer(rect) {
-        return Matrix.fromRect(rect, point => {
+    #buildLayer(rect) {
+        const matrix = Matrix.fromRect(rect, point => {
             this.#detectBorders(point)
-            const isLand = this.#surfaceLayer.isLand(point)
-            const steps = isLand ? LAND_LAYERS : WATER_LAYERS
-            let terrain = isLand ? Terrain.BASIN : Terrain.SEA
-            let prevStep = steps[0]
-            for(let i = 0; i < steps.length; i++) {
-                let step = steps[i]
-                const noise = this.#noiseLayer.get(step.noise, point)
-                // const isHigher = step.height > prevStep.height
-                if (noise > step.ratio) {
-                    terrain = step.terrain
-                    prevStep = step
-                }
-            }
-            return terrain
-            //     if (featureNoise > .35 && outlineNoise > .6) {
-            //         terrain = Terrain.PLAIN
-            //         if (grainNoise > .6) {
-            //             terrain = Terrain.PLATEAU
-            //             // if (featureNoise > .45) {
-            //             //     terrain = Terrain.MOUNTAIN
-            //             //     if (grainNoise > .6) {
-            //             //         terrain = Terrain.PEAK
-            //             //     }
-            //             // }
-            //         }
-            //     }
+            return EMPTY
         })
+        const context = {
+            noiseLayer: this.#noiseLayer,
+            surfaceLayer: this.#surfaceLayer,
+            waterBorders: this.#waterBorders,
+            landBorders: this.#landBorders,
+            basinMap: this.#basinMap,
+            flowMap: this.#flowMap,
+            matrix: matrix,
+        }
+        // new TerrainConcurrentFill(this.#landBorders.points, context).fill()
+        return matrix
     }
 
     #detectBorders(point) {
@@ -73,17 +58,6 @@ export class TerrainLayer {
                 }
             }
         }
-    }
-
-    #buildLayer(baseLayer) {
-        const context = {
-            landBorders: this.#landBorders,
-            basinMap: this.#basinMap,
-            flowMap: this.#flowMap,
-            matrix: baseLayer,
-        }
-        // new TerrainConcurrentFill(this.#landBorders.points, context).fill()
-        return baseLayer
     }
 
     get(point) {
