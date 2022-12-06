@@ -22,18 +22,13 @@ export class SurfaceLayer {
         this.#bodyMatrix.forEach(point => this.#detectType(BASE_RATIO, point))
     }
 
-    #isWater(point, ratio) {
-        const noise = this.#noiseLayer.get(BASE_NOISE, point)
-        return noise < ratio
-    }
-
     #detectType(ratio, originPoint) {
         if (this.#bodyMatrix.get(originPoint) !== EMPTY)
             return
         let area = 0
-        const isWater = this.#isWater(originPoint, ratio)
+        const isWater = this.isRatio(BASE_NOISE, originPoint, ratio)
         const canFill = point => {
-            const sameType = isWater === this.#isWater(point, ratio)
+            const sameType = isWater === this.isRatio(BASE_NOISE, point, ratio)
             return sameType && this.#bodyMatrix.get(point) === EMPTY
         }
         const onFill = point => {
@@ -66,6 +61,11 @@ export class SurfaceLayer {
     get(point) {
         const body = this.#bodyMatrix.get(point)
         return Surface.fromId(this.#typeMap.get(body))
+    }
+
+    isRatio(noiseId, point, ratio) {
+        const noise = this.#noiseLayer.get(noiseId, point)
+        return noise < ratio
     }
 
     isWater(point) {

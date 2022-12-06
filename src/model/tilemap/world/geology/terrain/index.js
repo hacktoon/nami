@@ -101,7 +101,7 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     isEmpty(ref, relativeSidePoint) {
         const terrainId = ref.fill.phase
         const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
-        const isLand = ref.context.surfaceLayer.isLand(sidePoint)
+        const isLand = ref.context.surfaceLayer.isLevel(sidePoint)
         const isBorder = ref.context.borders.has(sidePoint)
         const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
         return isLand && isBorder && isEmpty
