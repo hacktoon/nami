@@ -16,9 +16,9 @@ export class SurfaceLayer {
     #typeMap = new Map()
     #idCount = 1
 
-    constructor(rect, noiseLayer) {
+    constructor(noiseLayer) {
         this.#noiseLayer = noiseLayer
-        this.#bodyMatrix = Matrix.fromRect(rect, () => EMPTY)
+        this.#bodyMatrix = Matrix.fromRect(noiseLayer.rect, () => EMPTY)
         this.#bodyMatrix.forEach(point => this.#detectType(BASE_RATIO, point))
     }
 

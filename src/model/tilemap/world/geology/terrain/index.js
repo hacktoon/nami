@@ -23,12 +23,14 @@ export class TerrainLayer {
     #waterBorders = new PointSet()
     #basinMap = new PairMap()
     #flowMap = new PairMap()
+    #noiseLayer
     #surfaceLayer
     #matrix
 
-    constructor(rect, surfaceLayer) {
+    constructor(noiseLayer, surfaceLayer) {
+        this.#noiseLayer = noiseLayer
         this.#surfaceLayer = surfaceLayer
-        this.#matrix = this.#buildLayer(rect)
+        this.#matrix = this.#buildLayer(noiseLayer.rect)
     }
 
     #buildLayer(rect) {
@@ -38,6 +40,7 @@ export class TerrainLayer {
         })
         const context = {
             surfaceLayer: this.#surfaceLayer,
+            noiseLayer: this.#noiseLayer,
             borders: this.#landBorders,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
@@ -49,14 +52,13 @@ export class TerrainLayer {
 
     #detectBorders(point) {
         for (let sidePoint of Point.adjacents(point)) {
-            const sideSurface = this.#surfaceLayer.get(sidePoint)
             if (this.#surfaceLayer.isWater(point)) {
-                if (! sideSurface.water) {
+                if (this.#surfaceLayer.isLand(sidePoint)) {
                     this.#waterBorders.add(point)
                     break
                 }
             } else {
-                if (sideSurface.water) {
+                if (this.#surfaceLayer.isWater(sidePoint)) {
                     this.#landBorders.add(point)
                     break
                 }
@@ -101,7 +103,8 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     isEmpty(ref, relativeSidePoint) {
         const terrainId = ref.fill.phase
         const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
-        const isLand = ref.context.surfaceLayer.isLevel(sidePoint)
+        const noise = ref.context.noiseLayer.get(sidePoint)
+        const isTerrain = terrainId === noise
         const isBorder = ref.context.borders.has(sidePoint)
         const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
         return isLand && isBorder && isEmpty
