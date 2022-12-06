@@ -24,13 +24,11 @@ export class TerrainLayer {
     #basinMap = new PairMap()
     #flowMap = new PairMap()
     #surfaceLayer
-    #noiseLayer
     #matrix
 
-    constructor(noiseLayer, surfaceLayer) {
+    constructor(rect, surfaceLayer) {
         this.#surfaceLayer = surfaceLayer
-        this.#noiseLayer = noiseLayer
-        this.#matrix = this.#buildLayer(noiseLayer.rect)
+        this.#matrix = this.#buildLayer(rect)
     }
 
     #buildLayer(rect) {
@@ -39,14 +37,13 @@ export class TerrainLayer {
             return EMPTY
         })
         const context = {
-            noiseLayer: this.#noiseLayer,
             surfaceLayer: this.#surfaceLayer,
             borders: this.#landBorders,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
             matrix: matrix,
         }
-        new TerrainConcurrentFill(this.#landBorders.points, context).fill()
+        // new TerrainConcurrentFill(this.#landBorders.points, context).fill()
         return matrix
     }
 
@@ -96,14 +93,14 @@ export class TerrainConcurrentFill extends ConcurrentFill {
 class TerrainFloodFill extends ConcurrentFillUnit {
     setValue(ref, point, level) {
         const terrainId = ref.fill.phase
-        const wrappedPoint = ref.context.matrix.rect.wrap(point)
+        const wrappedPoint = ref.context.matrix.wrap(point)
         // ref.context.basinMap.set(...wrappedPoint, ref.id)
         ref.context.matrix.set(wrappedPoint, terrainId)
     }
 
     isEmpty(ref, relativeSidePoint) {
         const terrainId = ref.fill.phase
-        const sidePoint = ref.context.matrix.rect.wrap(relativeSidePoint)
+        const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
         const isLand = ref.context.surfaceLayer.isLand(sidePoint)
         const isBorder = ref.context.borders.has(sidePoint)
         const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
@@ -118,27 +115,27 @@ class TerrainFloodFill extends ConcurrentFillUnit {
         return Point.adjacents(originPoint)
     }
 
-    checkNeighbor(ref, sidePoint, centerPoint) {
-        const wSidePoint = ref.context.matrix.rect.wrap(sidePoint)
-        const wCenterPoint = ref.context.matrix.rect.wrap(centerPoint)
-        const sideTerrainId = ref.context.matrix.get(sidePoint)
-        const isSideWater = ref.context.surfaceLayer.isWater(wSidePoint)
-        // detect river mouth
-        if (ref.context.borders.has(wCenterPoint) && isSideWater) {
-            const directionId = this.getDirectionId(centerPoint, sidePoint)
-            ref.context.flowMap.set(...wCenterPoint, directionId)
-            return
-        }
-        if (ref.context.flowMap.has(...wSidePoint) || isSideWater) {
-            return
-        }
+    // checkNeighbor(ref, sidePoint, centerPoint) {
+    //     const wSidePoint = ref.context.matrix.wrap(sidePoint)
+    //     const wCenterPoint = ref.context.matrix.wrap(centerPoint)
+    //     const sideTerrainId = ref.context.matrix.get(sidePoint)
+    //     const isSideWater = ref.context.surfaceLayer.isWater(wSidePoint)
+    //     // detect river mouth
+    //     if (ref.context.borders.has(wCenterPoint) && isSideWater) {
+    //         const directionId = this.getDirectionId(centerPoint, sidePoint)
+    //         ref.context.flowMap.set(...wCenterPoint, directionId)
+    //         return
+    //     }
+    //     if (ref.context.flowMap.has(...wSidePoint) || isSideWater) {
+    //         return
+    //     }
 
-        // set flow only on current or lower terrain layer
-        if (sideTerrainId <= ref.fill.phase + 1) {
-            const directionId = this.getDirectionId(sidePoint, centerPoint)
-            ref.context.flowMap.set(...wSidePoint, directionId)
-        }
-    }
+    //     // set flow only on current or lower terrain layer
+    //     if (sideTerrainId <= ref.fill.phase + 1) {
+    //         const directionId = this.getDirectionId(sidePoint, centerPoint)
+    //         ref.context.flowMap.set(...wSidePoint, directionId)
+    //     }
+    // }
 
     getDirectionId(sourcePoint, targetPoint) {
         const angle = Point.angle(sourcePoint, targetPoint)

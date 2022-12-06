@@ -16,10 +16,9 @@ export class SurfaceLayer {
     #typeMap = new Map()
     #idCount = 1
 
-    constructor(noiseLayer) {
-        this.rect = noiseLayer.rect
+    constructor(rect, noiseLayer) {
         this.#noiseLayer = noiseLayer
-        this.#bodyMatrix = Matrix.fromRect(this.rect, () => EMPTY)
+        this.#bodyMatrix = Matrix.fromRect(rect, () => EMPTY)
         this.#bodyMatrix.forEach(point => this.#detectType(BASE_RATIO, point))
     }
 
@@ -41,11 +40,11 @@ export class SurfaceLayer {
             this.#bodyMatrix.set(point, this.#idCount)
             area++
         }
-        const wrapPoint = point => this.rect.wrap(point)
+        const wrapPoint = point => this.#bodyMatrix.wrap(point)
         const Fill = isWater ? ScanlineFill8 : ScanlineFill
         new Fill(originPoint, {canFill, wrapPoint, onFill}).fill()
 
-        const massRatio = (area * 100) / this.rect.area
+        const massRatio = (area * 100) / this.#bodyMatrix.area
         const type = this.#buildType(isWater, massRatio)
         this.#areaMap.set(this.#idCount, area)
         this.#typeMap.set(this.#idCount, type)
@@ -81,6 +80,6 @@ export class SurfaceLayer {
 
     getArea(point) {
         const body = this.#bodyMatrix.get(point)
-        return (this.#areaMap.get(body) * 100) / this.rect.area
+        return (this.#areaMap.get(body) * 100) / this.#bodyMatrix.area
     }
 }
