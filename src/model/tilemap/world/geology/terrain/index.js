@@ -46,7 +46,7 @@ export class TerrainLayer {
             flowMap: this.#flowMap,
             matrix: matrix,
         }
-        // new TerrainConcurrentFill(this.#landBorders.points, context).fill()
+        new TerrainConcurrentFill(this.#landBorders.points, context).fill()
         return matrix
     }
 
@@ -95,16 +95,16 @@ export class TerrainConcurrentFill extends ConcurrentFill {
 
 class TerrainFloodFill extends ConcurrentFillUnit {
     setValue(ref, point, level) {
-        const terrain = ref.fill.phase
+        const terrainId = ref.fill.phase
         const wrappedPoint = ref.context.matrix.rect.wrap(point)
         // ref.context.basinMap.set(...wrappedPoint, ref.id)
-        ref.context.matrix.set(wrappedPoint, terrain)
+        ref.context.matrix.set(wrappedPoint, terrainId)
     }
 
     isEmpty(ref, relativeSidePoint) {
+        const terrainId = ref.fill.phase
         const sidePoint = ref.context.matrix.rect.wrap(relativeSidePoint)
-        const noise = ref.noiseLayer.get(sidePoint)
-        const isLand = Terrain.isLand(sideTerrainId)
+        const isLand = ref.context.surfaceLayer.isLand(sidePoint)
         const isBorder = ref.context.borders.has(sidePoint)
         const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
         return isLand && isBorder && isEmpty
@@ -122,10 +122,9 @@ class TerrainFloodFill extends ConcurrentFillUnit {
         const wSidePoint = ref.context.matrix.rect.wrap(sidePoint)
         const wCenterPoint = ref.context.matrix.rect.wrap(centerPoint)
         const sideTerrainId = ref.context.matrix.get(sidePoint)
-        const landBorders = ref.context.landBorders
-        const isSideWater = Terrain.isWater(sideTerrainId)
+        const isSideWater = ref.context.surfaceLayer.isWater(wSidePoint)
         // detect river mouth
-        if (landBorders.has(wCenterPoint) && isSideWater) {
+        if (ref.context.borders.has(wCenterPoint) && isSideWater) {
             const directionId = this.getDirectionId(centerPoint, sidePoint)
             ref.context.flowMap.set(...wCenterPoint, directionId)
             return
