@@ -61,12 +61,12 @@ export class GeologyTileMap extends TileMap {
 
     isLandBorder(point) {
         const wrappedPoint = this.rect.wrap(point)
-        return this.#terrainLayer.isLandBorder(wrappedPoint)
+        return this.#surfaceLayer.isLandBorder(wrappedPoint)
     }
 
     isWaterBorder(point) {
         const wrappedPoint = this.rect.wrap(point)
-        return this.#terrainLayer.isWaterBorder(wrappedPoint)
+        return this.#surfaceLayer.isWaterBorder(wrappedPoint)
     }
 
     // getTerrain(point) {

@@ -60,7 +60,7 @@ export class Terrain {
 
     static fromId(id) {
         // TOFIX: magic number
-        return TYPE_MAP.get(id) ?? TYPE_MAP.get(4)
+        return TYPE_MAP.get(id) ?? TYPE_MAP.get(2)
     }
 
     constructor(spec) {

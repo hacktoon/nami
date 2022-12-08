@@ -19,8 +19,6 @@ const PHASES = [
 ]
 
 export class TerrainLayer {
-    #landBorders = new PointSet()
-    #waterBorders = new PointSet()
     #basinMap = new PairMap()
     #flowMap = new PairMap()
     #noiseLayer
@@ -34,49 +32,26 @@ export class TerrainLayer {
     }
 
     #buildLayer(rect) {
-        const matrix = Matrix.fromRect(rect, point => {
-            this.#detectBorders(point)
-            return EMPTY
-        })
+        const matrix = Matrix.fromRect(rect, () => EMPTY)
         const context = {
             surfaceLayer: this.#surfaceLayer,
             noiseLayer: this.#noiseLayer,
-            borders: this.#landBorders,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
             matrix: matrix,
         }
-        new TerrainConcurrentFill(this.#landBorders.points, context).fill()
-        return matrix
-    }
-
-    #detectBorders(point) {
-        for (let sidePoint of Point.adjacents(point)) {
-            if (this.#surfaceLayer.isWater(point)) {
-                if (this.#surfaceLayer.isLand(sidePoint)) {
-                    this.#waterBorders.add(point)
-                    break
-                }
-            } else {
-                if (this.#surfaceLayer.isWater(sidePoint)) {
-                    this.#landBorders.add(point)
-                    break
-                }
-            }
+        const landBorders = this.#surfaceLayer.landBorders
+        const landContext = {...context, borders: landBorders}
+        const waterContext = {
+            ...context, borders: this.#surfaceLayer.waterBorders
         }
+        new TerrainConcurrentFill(landBorders, landContext).fill()
+        return matrix
     }
 
     get(point) {
         const id = this.#matrix.get(point)
         return Terrain.fromId(id)
-    }
-
-    isLandBorder(point) {
-        return this.#landBorders.has(point)
-    }
-
-    isWaterBorder(point) {
-        return this.#waterBorders.has(point)
     }
 }
 
@@ -96,7 +71,7 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     setValue(ref, point, level) {
         const terrainId = ref.fill.phase
         const wrappedPoint = ref.context.matrix.wrap(point)
-        // ref.context.basinMap.set(...wrappedPoint, ref.id)
+        ref.context.basinMap.set(...wrappedPoint, ref.id)
         ref.context.matrix.set(wrappedPoint, terrainId)
     }
 
