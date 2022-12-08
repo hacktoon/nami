@@ -59,6 +59,7 @@ export class Terrain {
     static types = TERRAIN_SPEC
 
     static fromId(id) {
+        // TOFIX: magic number
         return TYPE_MAP.get(id) ?? TYPE_MAP.get(4)
     }
 

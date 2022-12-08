@@ -46,7 +46,7 @@ export class TerrainLayer {
             flowMap: this.#flowMap,
             matrix: matrix,
         }
-        // new TerrainConcurrentFill(this.#landBorders.points, context).fill()
+        new TerrainConcurrentFill(this.#landBorders.points, context).fill()
         return matrix
     }
 
@@ -101,12 +101,14 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     }
 
     isEmpty(ref, relativeSidePoint) {
+        return false
         const terrainId = ref.fill.phase
         const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
+        const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
+        const terrain = Terrain.fromId(terrainId)
         const noise = ref.context.noiseLayer.get(sidePoint)
         const isTerrain = terrainId === noise
         const isBorder = ref.context.borders.has(sidePoint)
-        const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
         return isLand && isBorder && isEmpty
     }
 
