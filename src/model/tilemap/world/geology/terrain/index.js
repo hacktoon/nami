@@ -5,7 +5,7 @@ import { Point } from '/src/lib/point'
 import { PairMap } from '/src/lib/map'
 import { PointSet } from '/src/lib/point/set'
 
-import { LAND_LAYERS, WATER_LAYERS, Terrain } from '../data'
+import { Terrain } from '../data'
 
 
 const EMPTY = null
@@ -38,14 +38,10 @@ export class TerrainLayer {
             noiseLayer: this.#noiseLayer,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
-            matrix: matrix,
+            matrix: matrix
         }
-        const landBorders = this.#surfaceLayer.landBorders
-        const landContext = {...context, borders: landBorders}
-        const waterContext = {
-            ...context, borders: this.#surfaceLayer.waterBorders
-        }
-        new TerrainConcurrentFill(landBorders, landContext).fill()
+        const origins = this.#surfaceLayer.landBorders.points
+        new TerrainConcurrentFill(origins, context).fill()
         return matrix
     }
 
@@ -76,15 +72,13 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     }
 
     isEmpty(ref, relativeSidePoint) {
-        return false
         const terrainId = ref.fill.phase
         const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
-        const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
         const terrain = Terrain.fromId(terrainId)
-        const noise = ref.context.noiseLayer.get(sidePoint)
-        const isTerrain = terrainId === noise
-        const isBorder = ref.context.borders.has(sidePoint)
-        return isLand && isBorder && isEmpty
+        const noise = ref.context.noiseLayer.get(terrain.noise, sidePoint)
+        const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
+        const notBorder = ! ref.context.surfaceLayer.isBorder(sidePoint)
+        return terrain.ratio > noise && isEmpty && notBorder
     }
 
     isPhaseEmpty(ref, sidePoint) {

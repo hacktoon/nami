@@ -7,48 +7,64 @@ const TERRAIN_SPEC = [
         name: 'Abyss',
         water: true,
         color: Color.fromHex('#1d5674'),
+        noise: 'grained',
+        ratio: .60
     },
     {
         id: 1,
         name: 'Ocean',
         water: true,
         color: Color.fromHex('#216384'),
+        noise: 'feature',
+        ratio: .35
     },
     {
         id: 2,
         name: 'Sea',
         water: true,
         color: Color.fromHex('#2878a0'),
+        noise: '',
+        ratio: 1
     },
     {
         id: 3,
         name: 'Basin',
         water: false,
         color: Color.fromHex('#71b13e'),
+        noise: 'feature',
+        ratio: .4
     },
     {
         id: 4,
         name: 'Plain',
         water: false,
         color: Color.fromHex('#99d966'),
+        noise: 'feature',
+        ratio: .4
     },
     {
         id: 5,
         name: 'Plateau',
         water: false,
         color: Color.fromHex('#c7d996'),
+        noise: 'grained',
+        ratio: .6
     },
     {
         id: 6,
         name: 'Mountain',
         water: false,
         color: Color.fromHex('#c0b896'),
+        noise: 'feature',
+        ratio: .45
     },
     {
         id: 7,
         name: 'Peak',
         water: false,
         color: Color.fromHex('#DDD'),
+        noise: 'grained',
+        ratio: .65
     }
 ]
 
@@ -75,41 +91,3 @@ TERRAIN_SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
     Terrain[name] = spec.id
 })
-
-
-export const LAND_LAYERS = [
-    {
-        terrain: Terrain.PLAIN,
-        noise: 'feature',
-        ratio: .4
-    },
-    {
-        terrain: Terrain.PLATEAU,
-        noise: 'grained',
-        ratio: .6
-    },
-    // {
-    //     terrain: Terrain.MOUNTAIN,
-    //     noise: 'feature',
-    //     ratio: .45
-    // },
-    // {
-    //     terrain: Terrain.PEAK,
-    //     noise: 'grained',
-    //     ratio: .65
-    // }
-]
-
-
-export const WATER_LAYERS = [
-    {
-        terrain: Terrain.OCEAN,
-        noise: 'feature',
-        ratio: .35
-    },
-    {
-        terrain: Terrain.ABYSS,
-        noise: 'grained',
-        ratio: .60
-    },
-]

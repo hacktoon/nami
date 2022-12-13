@@ -90,11 +90,11 @@ export class SurfaceLayer {
     }
 
     get landBorders() {
-        return this.#landBorders.points
+        return this.#landBorders
     }
 
     get waterBorders() {
-        return this.#waterBorders.points
+        return this.#waterBorders
     }
 
     get(point) {
@@ -118,6 +118,10 @@ export class SurfaceLayer {
 
     isWaterBorder(point) {
         return this.#waterBorders.has(point)
+    }
+
+    isBorder(point) {
+        return this.#waterBorders.has(point) || this.#landBorders.has(point)
     }
 
     getArea(point) {
