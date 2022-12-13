@@ -3,7 +3,6 @@ import { Direction } from '/src/lib/direction'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PairMap } from '/src/lib/map'
-import { PointSet } from '/src/lib/point/set'
 
 import { Terrain } from '../data'
 
@@ -12,7 +11,7 @@ const EMPTY = null
 
 const PHASES = [
     Terrain.BASIN,
-    // Terrain.PLAIN,
+    Terrain.PLAIN,
     // Terrain.PLATEAU,
     // Terrain.MOUNTAIN,
     // Terrain.PEAK,
@@ -72,9 +71,8 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     }
 
     isEmpty(ref, relativeSidePoint) {
-        const terrainId = ref.fill.phase
         const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
-        const terrain = Terrain.fromId(terrainId)
+        const terrain = Terrain.fromId(ref.fill.phase)
         const noise = ref.context.noiseLayer.get(terrain.noise, sidePoint)
         const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
         const notBorder = ! ref.context.surfaceLayer.isBorder(sidePoint)
@@ -82,6 +80,7 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     }
 
     isPhaseEmpty(ref, sidePoint) {
+        const terrainId = ref.fill.phase
         return this.isEmpty(ref, sidePoint)
     }
 
