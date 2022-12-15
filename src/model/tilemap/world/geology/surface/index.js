@@ -3,11 +3,12 @@ import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 
-import { BASE_NOISE, LAND_RATIO, Surface } from './data'
+import { BASE_NOISE, SURFACE_RATIO, Surface } from './data'
 
 
 const EMPTY = null
 const MINIMUN_OCEAN_RATIO = 2
+const MINIMUN_SEA_RATIO = .12
 const MINIMUN_CONTINENT_RATIO = 1
 
 
@@ -30,13 +31,12 @@ export class SurfaceLayer {
     }
 
     #detectSurfaceType(originPoint) {
-        //
         if (this.#bodyMatrix.get(originPoint) !== EMPTY)
             return
         let area = 0
-        const isWater = this.#isPointWater(originPoint, LAND_RATIO)
+        const isWater = this.#isBelowRatio(originPoint)
         const canFill = point => {
-            const sameType = isWater === this.#isPointWater(point, LAND_RATIO)
+            const sameType = isWater === this.#isBelowRatio(point)
             return sameType && this.#bodyMatrix.get(point) === EMPTY
         }
         const onFill = point => {
@@ -54,22 +54,22 @@ export class SurfaceLayer {
         this.#idCount++
     }
 
-    #isPointWater(point) {
+    #isBelowRatio(point) {
         const noise = this.#noiseLayer.get(BASE_NOISE, point)
-        return noise < LAND_RATIO
+        return SURFACE_RATIO >= noise
     }
 
     #detectBorders(point) {
-        const isWater = this.#isPointWater(point)
+        const isWater = this.#isBelowRatio(point)
         for (let sidePoint of Point.adjacents(point)) {
-            const isPointWater = this.#isPointWater(sidePoint)
+            const isSideWater = this.#isBelowRatio(sidePoint)
             if (isWater) {
-                if (! isPointWater) {
+                if (! isSideWater) {
                     this.#waterBorders.add(point)
                     break
                 }
             } else {
-                if (isPointWater) {
+                if (isSideWater) {
                     this.#landBorders.add(point)
                     break
                 }
@@ -77,16 +77,15 @@ export class SurfaceLayer {
         }
     }
 
-    #buildType(isWater, massRatio) {
-        if (isWater) {
+    #buildType(belowRatio, massRatio) {
+        if (belowRatio) {
             if (massRatio >= MINIMUN_OCEAN_RATIO)
                 return Surface.OCEAN
-            return Surface.LAKE
+            if (massRatio >= MINIMUN_SEA_RATIO)
+                return Surface.SEA
         }
-        // land
-        if (massRatio >= MINIMUN_CONTINENT_RATIO)
-            return Surface.CONTINENT
-        return Surface.ISLAND
+        // above ratio
+        return Surface.CONTINENT
     }
 
     get landBorders() {
@@ -103,13 +102,13 @@ export class SurfaceLayer {
     }
 
     isWater(point) {
-        const body = this.#bodyMatrix.get(point)
-        return Surface.isWater(this.#typeMap.get(body))
+        const surface = this.get(point)
+        return Surface.isWater(surface.id)
     }
 
     isLand(point) {
-        const body = this.#bodyMatrix.get(point)
-        return Surface.isLand(this.#typeMap.get(body))
+        const surface = this.get(point)
+        return Surface.isLand(surface.id)
     }
 
     isLandBorder(point) {

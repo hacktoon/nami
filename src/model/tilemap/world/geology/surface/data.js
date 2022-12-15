@@ -1,6 +1,6 @@
 import { Color } from '/src/lib/color'
 
-export const LAND_RATIO = .55
+export const SURFACE_RATIO = .55
 export const BASE_NOISE = 'outline'
 
 export const SURFACE_SPEC = [
@@ -12,7 +12,7 @@ export const SURFACE_SPEC = [
     },
     {
         id: 1,
-        name: 'Lake',
+        name: 'Sea',
         water: true,
         color: Color.fromHex('#216384'),
     },

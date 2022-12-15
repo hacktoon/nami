@@ -90,11 +90,12 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     }
 
     _isCurrentTerrain(ref, sidePoint) {
+        const OFFSET = 10 * ref.fill.phase
         const phaseTerrain = Terrain.fromId(ref.fill.phase)
-        const x = ref.fill.phase
-        const point = Point.plus(sidePoint, [x, x])
+        const offsetPoint = Point.plus(sidePoint, [OFFSET, OFFSET])
+        const point = ref.context.matrix.wrap(offsetPoint)
         const noise = ref.context.noiseLayer.get(phaseTerrain.noise, point)
-        return phaseTerrain.ratio > noise
+        return phaseTerrain.ratio >= noise
     }
 
     getNeighbors(ref, originPoint) {
