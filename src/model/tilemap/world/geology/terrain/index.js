@@ -13,8 +13,7 @@ const PHASES = [
     Terrain.BASIN,
     Terrain.PLAIN,
     Terrain.PLATEAU,
-    Terrain.MOUNTAIN,
-    Terrain.PEAK,
+    Terrain.MOUNTAIN
 ]
 
 export class TerrainLayer {
@@ -92,7 +91,9 @@ class TerrainFloodFill extends ConcurrentFillUnit {
 
     _isCurrentTerrain(ref, sidePoint) {
         const phaseTerrain = Terrain.fromId(ref.fill.phase)
-        const noise = ref.context.noiseLayer.get(phaseTerrain.noise, sidePoint)
+        const x = ref.fill.phase
+        const point = Point.plus(sidePoint, [x, x])
+        const noise = ref.context.noiseLayer.get(phaseTerrain.noise, point)
         return phaseTerrain.ratio > noise
     }
 

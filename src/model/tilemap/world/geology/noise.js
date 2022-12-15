@@ -4,7 +4,7 @@ import { NoiseTileMap } from '/src/model/tilemap/noise'
 export const NOISE_SPEC = [
     {id: 'outline', octaves: 6, resolution: .8, scale: .02},
     {id: 'feature', octaves: 6, resolution: .8, scale: .04},
-    {id: 'grained', octaves: 6, resolution: .8, scale: .06},
+    {id: 'grained', octaves: 6, resolution: .8, scale: .08},
 ]
 
 

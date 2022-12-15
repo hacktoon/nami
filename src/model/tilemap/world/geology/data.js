@@ -39,7 +39,7 @@ const TERRAIN_SPEC = [
         name: 'Plain',
         water: false,
         color: Color.fromHex('#99d966'),
-        noise: 'feature',
+        noise: 'grained',
         ratio: .5
     },
     {
@@ -47,8 +47,8 @@ const TERRAIN_SPEC = [
         name: 'Plateau',
         water: false,
         color: Color.fromHex('#c7d996'),
-        noise: 'outline',
-        ratio: .4
+        noise: 'feature',
+        ratio: .5
     },
     {
         id: 6,
@@ -56,14 +56,6 @@ const TERRAIN_SPEC = [
         water: false,
         color: Color.fromHex('#c0b896'),
         noise: 'feature',
-        ratio: .7
-    },
-    {
-        id: 7,
-        name: 'Peak',
-        water: false,
-        color: Color.fromHex('#DDD'),
-        noise: 'grained',
         ratio: 1
     }
 ]
