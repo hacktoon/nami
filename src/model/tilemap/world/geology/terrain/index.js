@@ -12,9 +12,9 @@ const EMPTY = null
 const PHASES = [
     Terrain.BASIN,
     Terrain.PLAIN,
-    // Terrain.PLATEAU,
-    // Terrain.MOUNTAIN,
-    // Terrain.PEAK,
+    Terrain.PLATEAU,
+    Terrain.MOUNTAIN,
+    Terrain.PEAK,
 ]
 
 export class TerrainLayer {
@@ -71,17 +71,29 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     }
 
     isEmpty(ref, relativeSidePoint) {
-        const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
-        const terrain = Terrain.fromId(ref.fill.phase)
-        const noise = ref.context.noiseLayer.get(terrain.noise, sidePoint)
-        const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
-        const notBorder = ! ref.context.surfaceLayer.isBorder(sidePoint)
-        return terrain.ratio > noise && isEmpty && notBorder
+        const isCurrentTerrain = this._isCurrentTerrain(ref, relativeSidePoint)
+        const isEmpty = this._checkIsEmpty(ref, relativeSidePoint)
+        return isEmpty && isCurrentTerrain
     }
 
-    isPhaseEmpty(ref, sidePoint) {
-        const terrainId = ref.fill.phase
-        return this.isEmpty(ref, sidePoint)
+    isPhaseEmpty(ref, relativeSidePoint) {
+        const isDifferentTerrain = ! this._isCurrentTerrain(ref, relativeSidePoint)
+        const isEmpty = this._checkIsEmpty(ref, relativeSidePoint)
+        return isEmpty && isDifferentTerrain
+    }
+
+    _checkIsEmpty(ref, relativeSidePoint) {
+        const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
+        const notBorder = ! ref.context.surfaceLayer.isBorder(sidePoint)
+        const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
+        const isLand = ref.context.surfaceLayer.isLand(sidePoint)
+        return isEmpty && isLand && notBorder
+    }
+
+    _isCurrentTerrain(ref, sidePoint) {
+        const phaseTerrain = Terrain.fromId(ref.fill.phase)
+        const noise = ref.context.noiseLayer.get(phaseTerrain.noise, sidePoint)
+        return phaseTerrain.ratio > noise
     }
 
     getNeighbors(ref, originPoint) {
