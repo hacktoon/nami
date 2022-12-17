@@ -3,7 +3,7 @@ import { Point } from '/src/lib/point'
 import { PairMap } from '/src/lib/map'
 import { PointSet } from '/src/lib/point/set'
 
-import { Terrain } from '../data'
+import { Terrain } from './data'
 import { TerrainConcurrentFill } from './fill'
 
 

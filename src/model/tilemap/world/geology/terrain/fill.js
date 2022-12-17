@@ -3,7 +3,7 @@ import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 import { clamp } from '/src/lib/number'
 
-import { Terrain } from '../data'
+import { Terrain } from './data'
 
 const PHASES = [
     Terrain.BASIN,
