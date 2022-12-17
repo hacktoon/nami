@@ -32,7 +32,7 @@ const TERRAIN_SPEC = [
         water: false,
         color: Color.fromHex('#71b13e'),
         noise: 'feature',
-        ratio: .3
+        ratio: .32
     },
     {
         id: 4,
@@ -40,7 +40,7 @@ const TERRAIN_SPEC = [
         water: false,
         color: Color.fromHex('#99d966'),
         noise: 'feature',
-        ratio: .4
+        ratio: .42
     },
     {
         id: 5,
@@ -48,7 +48,7 @@ const TERRAIN_SPEC = [
         water: false,
         color: Color.fromHex('#c7d996'),
         noise: 'grained',
-        ratio: .5
+        ratio: .52
     },
     {
         id: 6,

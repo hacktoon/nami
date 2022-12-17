@@ -39,8 +39,8 @@ export class TerrainLayer {
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
         }
-        const origins = this.#landBorders.points
-        new TerrainConcurrentFill(origins, context).fill()
+        const landOrigins = this.#landBorders.points
+        new TerrainConcurrentFill(landOrigins, context).fill()
         return matrix
     }
 
