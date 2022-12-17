@@ -3,6 +3,7 @@ import { Direction } from '/src/lib/direction'
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PairMap } from '/src/lib/map'
+import { PointSet } from '/src/lib/point/set'
 
 import { Terrain } from '../data'
 
@@ -17,6 +18,8 @@ const PHASES = [
 ]
 
 export class TerrainLayer {
+    #landBorders = new PointSet()
+    #waterBorders = new PointSet()
     #basinMap = new PairMap()
     #flowMap = new PairMap()
     #noiseLayer
@@ -30,22 +33,53 @@ export class TerrainLayer {
     }
 
     #buildLayer(rect) {
-        const matrix = Matrix.fromRect(rect, () => EMPTY)
+        const matrix = Matrix.fromRect(rect, point => {
+            this.#detectBorders(point)
+            return EMPTY
+        })
         const context = {
             surfaceLayer: this.#surfaceLayer,
+            landBorders: this.#landBorders,
+            waterBorders: this.#waterBorders,
             noiseLayer: this.#noiseLayer,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
             matrix: matrix
         }
-        const origins = this.#surfaceLayer.landBorders.points
+        const origins = this.#landBorders.points
         new TerrainConcurrentFill(origins, context).fill()
         return matrix
+    }
+
+    #detectBorders(point) {
+        const isWater = this.#surfaceLayer.isWater(point)
+        for (let sidePoint of Point.adjacents(point)) {
+            const isSideWater = this.#surfaceLayer.isWater(sidePoint)
+            if (isWater) {
+                if (! isSideWater) {
+                    this.#waterBorders.add(point)
+                    break
+                }
+            } else {
+                if (isSideWater) {
+                    this.#landBorders.add(point)
+                    break
+                }
+            }
+        }
     }
 
     get(point) {
         const id = this.#matrix.get(point)
         return Terrain.fromId(id)
+    }
+
+    isLandBorder(point) {
+        return this.#landBorders.has(point)
+    }
+
+    isWaterBorder(point) {
+        return this.#waterBorders.has(point)
     }
 }
 
@@ -83,10 +117,15 @@ class TerrainFloodFill extends ConcurrentFillUnit {
 
     _checkIsEmpty(ref, relativeSidePoint) {
         const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
-        const notBorder = ! ref.context.surfaceLayer.isBorder(sidePoint)
+        const notBorder = ! this._isBorder(ref, sidePoint)
         const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
         const isLand = ref.context.surfaceLayer.isLand(sidePoint)
         return isEmpty && isLand && notBorder
+    }
+
+    _isBorder(ref, point) {
+        return ref.context.waterBorders.has(point)
+            || ref.context.landBorders.has(point)
     }
 
     _isCurrentTerrain(ref, sidePoint) {

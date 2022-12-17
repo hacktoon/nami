@@ -1,7 +1,5 @@
 import { Matrix } from '/src/lib/matrix'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
-import { Point } from '/src/lib/point'
-import { PointSet } from '/src/lib/point/set'
 
 import { BASE_NOISE, SURFACE_RATIO, Surface } from './data'
 
@@ -17,8 +15,6 @@ const MINIMUN_CONTINENT_RATIO = 1
 export class SurfaceLayer {
     #noiseLayer
     #bodyIdMatrix
-    #landBorders = new PointSet()
-    #waterBorders = new PointSet()
     #areaMap = new Map()
     #surfaceIdMap = new Map()
     #bodyIdCount = 1
@@ -28,15 +24,10 @@ export class SurfaceLayer {
         // init matrix with empty cells
         this.#bodyIdMatrix = Matrix.fromRect(noiseLayer.rect, () => EMPTY)
         // detect surface regions and area
-        this.#bodyIdMatrix.forEach(point => {
-            this.#detectSurface(point)
-        })
-        this.#bodyIdMatrix.forEach(point => {
-            this.#detectBorders(point)
-        })
+        this.#bodyIdMatrix.forEach(point => this.#detectBody(point))
     }
 
-    #detectSurface(originPoint) {
+    #detectBody(originPoint) {
         if (this.#bodyIdMatrix.get(originPoint) !== EMPTY)
             return
         let area = 0
@@ -81,32 +72,6 @@ export class SurfaceLayer {
         return Surface.ISLAND
     }
 
-    #detectBorders(point) {
-        const isWater = this.isWater(point)
-        for (let sidePoint of Point.adjacents(point)) {
-            const isSideWater = this.isWater(sidePoint)
-            if (isWater) {
-                if (! isSideWater) {
-                    this.#waterBorders.add(point)
-                    break
-                }
-            } else {
-                if (isSideWater) {
-                    this.#landBorders.add(point)
-                    break
-                }
-            }
-        }
-    }
-
-    get landBorders() {
-        return this.#landBorders
-    }
-
-    get waterBorders() {
-        return this.#waterBorders
-    }
-
     get(point) {
         const bodyId = this.#bodyIdMatrix.get(point)
         return Surface.fromId(this.#surfaceIdMap.get(bodyId))
@@ -120,18 +85,6 @@ export class SurfaceLayer {
 
     isLand(point) {
         return ! this.isWater(point)
-    }
-
-    isLandBorder(point) {
-        return this.#landBorders.has(point)
-    }
-
-    isWaterBorder(point) {
-        return this.#waterBorders.has(point)
-    }
-
-    isBorder(point) {
-        return this.#waterBorders.has(point) || this.#landBorders.has(point)
     }
 
     getArea(point) {
