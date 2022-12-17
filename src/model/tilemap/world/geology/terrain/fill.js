@@ -1,6 +1,7 @@
 import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
 import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
+import { clamp } from '/src/lib/number'
 
 import { Terrain } from '../data'
 
@@ -12,22 +13,23 @@ const PHASES = [
 ]
 const EMPTY = null
 
+
 export class TerrainConcurrentFill extends ConcurrentFill {
     constructor(origins, context) {
         super(origins, TerrainFloodFill, context, PHASES)
     }
-
-    getChance(ref, origin) { return 0 }
-    getGrowth(ref, origin) { return 1 }
 }
 
 
 class TerrainFloodFill extends ConcurrentFillUnit {
     setValue(ref, point, level) {
-        const terrainId = ref.fill.phase
         const wrappedPoint = ref.context.matrix.wrap(point)
+        const isDepression = ref.context.surfaceLayer.isDepression(wrappedPoint)
+        const terrainId = isDepression ? ref.fill.phase-1 : ref.fill.phase
+        const normTerrainId = clamp(terrainId, Terrain.BASIN, Terrain.MOUNTAIN)
+        ref.context.matrix.set(wrappedPoint, normTerrainId)
+        // set erosion
         ref.context.basinMap.set(...wrappedPoint, ref.id)
-        ref.context.matrix.set(wrappedPoint, terrainId)
     }
 
     isEmpty(ref, relativeSidePoint) {

@@ -87,6 +87,10 @@ export class SurfaceLayer {
         return ! this.isWater(point)
     }
 
+    isDepression(point) {
+        return this.get(point).id === Surface.DEPRESSION
+    }
+
     getArea(point) {
         const bodyId = this.#bodyIdMatrix.get(point)
         return (this.#areaMap.get(bodyId) * 100) / this.#bodyIdMatrix.area
