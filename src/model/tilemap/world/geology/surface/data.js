@@ -27,6 +27,12 @@ export const SURFACE_SPEC = [
         name: 'Island',
         water: false,
         color: Color.fromHex('#c5ed7d'),
+    },
+    {
+        id: 4,
+        name: 'Depression',
+        water: false,
+        color: Color.fromHex('#adb07d'),
     }
 ]
 
