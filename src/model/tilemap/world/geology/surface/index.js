@@ -14,7 +14,7 @@ const MINIMUN_CONTINENT_RATIO = 1
 
 export class SurfaceLayer {
     #noiseLayer
-    #bodyMatrix
+    #surfaceIdMatrix
     #landBorders = new PointSet()
     #waterBorders = new PointSet()
     #areaMap = new Map()
@@ -23,35 +23,38 @@ export class SurfaceLayer {
 
     constructor(noiseLayer) {
         this.#noiseLayer = noiseLayer
-        this.#bodyMatrix = Matrix.fromRect(noiseLayer.rect, () => EMPTY)
-        this.#bodyMatrix.forEach(point => {
-            this.#detectSurfaceType(point)
-            this.#detectBorders(point)
+        this.#surfaceIdMatrix = Matrix.fromRect(noiseLayer.rect, () => EMPTY)
+        this.#surfaceIdMatrix.forEach(point => {
+            const type = this.#detectSurfaceType(point)
+            this.#detectBorders(type, point)
         })
     }
 
     #detectSurfaceType(originPoint) {
-        if (this.#bodyMatrix.get(originPoint) !== EMPTY)
+        if (this.#surfaceIdMatrix.get(originPoint) !== EMPTY)
             return
         let area = 0
-        const isWater = this.#isBelowRatio(originPoint)
+        const isBelowRatio = this.#isBelowRatio(originPoint)
         const canFill = point => {
-            const sameType = isWater === this.#isBelowRatio(point)
-            return sameType && this.#bodyMatrix.get(point) === EMPTY
+            const sameType = isBelowRatio === this.#isBelowRatio(point)
+            return sameType && this.#surfaceIdMatrix.get(point) === EMPTY
         }
         const onFill = point => {
-            this.#bodyMatrix.set(point, this.#idCount)
+            this.#surfaceIdMatrix.set(point, this.#idCount)
             area++
         }
-        const wrapPoint = point => this.#bodyMatrix.wrap(point)
-        const Fill = isWater ? ScanlineFill8 : ScanlineFill
+        const wrapPoint = point => this.#surfaceIdMatrix.wrap(point)
+        // belowRation is water; search all sidepoints (water fills)
+        const Fill = isBelowRatio ? ScanlineFill8 : ScanlineFill
         new Fill(originPoint, {canFill, wrapPoint, onFill}).fill()
 
-        const massRatio = (area * 100) / this.#bodyMatrix.area
-        const type = this.#buildType(isWater, massRatio)
+        const massRatio = (area * 100) / this.#surfaceIdMatrix.area
+        // area is filled; decide type
+        const type = this.#buildType(isBelowRatio, massRatio)
         this.#areaMap.set(this.#idCount, area)
         this.#typeMap.set(this.#idCount, type)
         this.#idCount++
+        return type
     }
 
     #isBelowRatio(point) {
@@ -59,7 +62,18 @@ export class SurfaceLayer {
         return SURFACE_RATIO >= noise
     }
 
-    #detectBorders(point) {
+    #buildType(belowRatio, massRatio) {
+        if (belowRatio) {
+            if (massRatio >= MINIMUN_OCEAN_RATIO)
+                return Surface.OCEAN
+            if (massRatio >= MINIMUN_SEA_RATIO)
+                return Surface.SEA
+        }
+        // above ratio
+        return Surface.CONTINENT
+    }
+
+    #detectBorders(type, point) {
         const isWater = this.#isBelowRatio(point)
         for (let sidePoint of Point.adjacents(point)) {
             const isSideWater = this.#isBelowRatio(sidePoint)
@@ -77,17 +91,6 @@ export class SurfaceLayer {
         }
     }
 
-    #buildType(belowRatio, massRatio) {
-        if (belowRatio) {
-            if (massRatio >= MINIMUN_OCEAN_RATIO)
-                return Surface.OCEAN
-            if (massRatio >= MINIMUN_SEA_RATIO)
-                return Surface.SEA
-        }
-        // above ratio
-        return Surface.CONTINENT
-    }
-
     get landBorders() {
         return this.#landBorders
     }
@@ -97,8 +100,8 @@ export class SurfaceLayer {
     }
 
     get(point) {
-        const body = this.#bodyMatrix.get(point)
-        return Surface.fromId(this.#typeMap.get(body))
+        const bodyId = this.#surfaceIdMatrix.get(point)
+        return Surface.fromId(this.#typeMap.get(bodyId))
     }
 
     isWater(point) {
@@ -124,7 +127,7 @@ export class SurfaceLayer {
     }
 
     getArea(point) {
-        const body = this.#bodyMatrix.get(point)
-        return (this.#areaMap.get(body) * 100) / this.#bodyMatrix.area
+        const body = this.#surfaceIdMatrix.get(point)
+        return (this.#areaMap.get(body) * 100) / this.#surfaceIdMatrix.area
     }
 }
