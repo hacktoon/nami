@@ -34,8 +34,6 @@ export class TerrainLayer {
             noiseLayer: this.#noiseLayer,
             surfaceLayer: this.#surfaceLayer,
             matrix: matrix,
-            landBorders: this.#landBorders,
-            waterBorders: this.#waterBorders,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
         }
@@ -48,6 +46,7 @@ export class TerrainLayer {
         const isWater = this.#surfaceLayer.isWater(point)
         for (let sidePoint of Point.adjacents(point)) {
             const isSideWater = this.#surfaceLayer.isWater(sidePoint)
+            const isSideDepression = this.#surfaceLayer.isDepression(sidePoint)
             if (isWater) {
                 if (! isSideWater) {
                     this.#waterBorders.add(point)

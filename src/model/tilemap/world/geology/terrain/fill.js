@@ -22,52 +22,50 @@ export class TerrainConcurrentFill extends ConcurrentFill {
 
 
 class TerrainFloodFill extends ConcurrentFillUnit {
+    getNeighbors(ref, originPoint) {
+        return Point.adjacents(originPoint)
+    }
+
     setValue(ref, point, level) {
         const wrappedPoint = ref.context.matrix.wrap(point)
-        const isDepression = ref.context.surfaceLayer.isDepression(wrappedPoint)
-        const terrainId = isDepression ? ref.fill.phase-1 : ref.fill.phase
-        const normTerrainId = clamp(terrainId, Terrain.BASIN, Terrain.MOUNTAIN)
-        ref.context.matrix.set(wrappedPoint, normTerrainId)
+        const terrainId = this._getTerrainId(ref, wrappedPoint)
+        ref.context.matrix.set(wrappedPoint, terrainId)
         // set erosion
         ref.context.basinMap.set(...wrappedPoint, ref.id)
     }
 
-    isEmpty(ref, relativeSidePoint) {
-        const isCurrentTerrain = this._isCurrentTerrain(ref, relativeSidePoint)
-        const isEmpty = this._checkIsEmpty(ref, relativeSidePoint)
-        return isEmpty && isCurrentTerrain
+    isEmpty(ref, relSidePoint) {
+        const samePhase = this._isNoiseOnCurrentPhase(ref, relSidePoint)
+        const isEmpty = this._isCellEmpty(ref, relSidePoint)
+        return isEmpty && samePhase
     }
 
-    isPhaseEmpty(ref, relativeSidePoint) {
-        const isDifferentTerrain = ! this._isCurrentTerrain(ref, relativeSidePoint)
-        const isEmpty = this._checkIsEmpty(ref, relativeSidePoint)
-        return isEmpty && isDifferentTerrain
+    isPhaseEmpty(ref, relSidePoint) {
+        const notSamePhase = ! this._isNoiseOnCurrentPhase(ref, relSidePoint)
+        const isEmpty = this._isCellEmpty(ref, relSidePoint)
+        return isEmpty && notSamePhase
     }
 
-    _checkIsEmpty(ref, relativeSidePoint) {
-        const sidePoint = ref.context.matrix.wrap(relativeSidePoint)
-        const notBorder = ! this._isBorder(ref, sidePoint)
-        const isEmpty = ref.context.matrix.get(sidePoint) === EMPTY
-        const isLand = ref.context.surfaceLayer.isLand(sidePoint)
-        return isEmpty && isLand && notBorder
+    _isCellEmpty(ref, relSidePoint) {
+        // isStateEqual(p1, p2)
+        const isLand = ref.context.surfaceLayer.isLand(relSidePoint)
+        const isEmpty = ref.context.matrix.get(relSidePoint) === EMPTY
+        const isTerrainType = isLand
+        return isEmpty && isTerrainType
     }
 
-    _isBorder(ref, point) {
-        return ref.context.waterBorders.has(point)
-            || ref.context.landBorders.has(point)
-    }
-
-    _isCurrentTerrain(ref, sidePoint) {
-        const OFFSET = 10 * ref.fill.phase
+    _isNoiseOnCurrentPhase(ref, sidePoint) {
         const phaseTerrain = Terrain.fromId(ref.fill.phase)
-        const offsetPoint = Point.plus(sidePoint, [OFFSET, OFFSET])
-        const point = ref.context.matrix.wrap(offsetPoint)
+        const OFFSET = 10 * ref.fill.phase
+        const point = Point.plus(sidePoint, [OFFSET, OFFSET])
         const noise = ref.context.noiseLayer.get(phaseTerrain.noise, point)
         return phaseTerrain.ratio >= noise
     }
 
-    getNeighbors(ref, originPoint) {
-        return Point.adjacents(originPoint)
+    _getTerrainId(ref, point) {
+        const isDepression = ref.context.surfaceLayer.isDepression(point)
+        const terrainId = isDepression ? ref.fill.phase - 1 : ref.fill.phase
+        return clamp(terrainId, Terrain.BASIN, Terrain.MOUNTAIN)
     }
 
     // checkNeighbor(ref, sidePoint, centerPoint) {
@@ -77,7 +75,7 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     //     const isSideWater = ref.context.surfaceLayer.isWater(wSidePoint)
     //     // detect river mouth
     //     if (ref.context.borders.has(wCenterPoint) && isSideWater) {
-    //         const directionId = this.getDirectionId(centerPoint, sidePoint)
+    //         const directionId = this._getDirectionId(centerPoint, sidePoint)
     //         ref.context.flowMap.set(...wCenterPoint, directionId)
     //         return
     //     }
@@ -87,12 +85,12 @@ class TerrainFloodFill extends ConcurrentFillUnit {
 
     //     // set flow only on current or lower terrain layer
     //     if (sideTerrainId <= ref.fill.phase + 1) {
-    //         const directionId = this.getDirectionId(sidePoint, centerPoint)
+    //         const directionId = this._getDirectionId(sidePoint, centerPoint)
     //         ref.context.flowMap.set(...wSidePoint, directionId)
     //     }
     // }
 
-    getDirectionId(sourcePoint, targetPoint) {
+    _getDirectionId(sourcePoint, targetPoint) {
         const angle = Point.angle(sourcePoint, targetPoint)
         return Direction.fromAngle(angle).id
     }
