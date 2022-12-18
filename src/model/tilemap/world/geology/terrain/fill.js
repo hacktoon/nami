@@ -5,6 +5,7 @@ import { clamp } from '/src/lib/number'
 
 import { Terrain } from './data'
 
+
 const PHASES = [
     Terrain.BASIN,
     Terrain.PLAIN,
@@ -63,6 +64,9 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     }
 
     _getTerrainId(ref, point) {
+        const isLand = ref.context.surfaceLayer.isLand(point)
+        if (! isLand) return ref.fill.phase
+
         const isDepression = ref.context.surfaceLayer.isDepression(point)
         const terrainId = isDepression ? ref.fill.phase - 1 : ref.fill.phase
         return clamp(terrainId, Terrain.BASIN, Terrain.MOUNTAIN)
