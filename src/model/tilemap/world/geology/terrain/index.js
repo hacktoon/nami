@@ -52,11 +52,9 @@ export class TerrainLayer {
                     this.#waterBorders.add(point)
                     break
                 }
-            } else {
-                if (isSideWater) {
-                    this.#landBorders.add(point)
-                    break
-                }
+            } else if (isSideWater) {
+                this.#landBorders.add(point)
+                break
             }
         }
     }
