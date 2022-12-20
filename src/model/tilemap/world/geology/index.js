@@ -43,12 +43,18 @@ export class GeologyTileMap extends TileMap {
     get(point) {
         const surface = this.getSurface(point)
         const terrain = this.getTerrain(point)
+        const basin = this.getBasin(point)
         const surfaceArea = this.#surfaceLayer.getArea(point)
         return [
             `${Point.hash(point)}`,
             `${surface.name}(area:${surfaceArea}%)`,
             `${terrain.name}`,
+            `Basin: ${basin}`,
         ].join(' | ')
+    }
+
+    get basinCount() {
+        return this.#terrainLayer.basinCount
     }
 
     getSurface(point) {
@@ -72,10 +78,12 @@ export class GeologyTileMap extends TileMap {
     }
 
     getBasin(point) {
-        return this.#terrainLayer.getBasin(point)
+        const wrappedPoint = this.rect.wrap(point)
+        return this.#terrainLayer.getBasin(wrappedPoint)
     }
 
     getFlow(point) {
-        return this.#terrainLayer.getFlow(point)
+        const wrappedPoint = this.rect.wrap(point)
+        return this.#terrainLayer.getFlow(wrappedPoint)
     }
 }

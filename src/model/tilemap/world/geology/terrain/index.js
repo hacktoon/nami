@@ -65,6 +65,10 @@ export class TerrainLayer {
         }
     }
 
+    get basinCount() {
+        return this.#basinMap.size
+    }
+
     get(point) {
         const id = this.#matrix.get(point)
         return Terrain.fromId(id)

@@ -47,7 +47,8 @@ class TerrainFloodFill extends ConcurrentFillUnit {
         const terrainId = this._getTerrainId(ref, wrappedPoint)
         ref.context.matrix.set(wrappedPoint, terrainId)
         // set erosion
-        ref.context.basinMap.set(...wrappedPoint, ref.id)
+        if (ref.context.surfaceLayer.isLand(wrappedPoint))
+            ref.context.basinMap.set(...wrappedPoint, ref.id)
     }
 
     isEmpty(ref, relSidePoint) {
