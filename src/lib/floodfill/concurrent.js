@@ -27,24 +27,19 @@ export class ConcurrentFillUnit {
             this.levelTable[id] += 1
         }
         for(let seed of seeds) {
-            const filledNeighbors = this._fillSides(id, seed)
-            newSeeds.push(...filledNeighbors)
+            const filledSides = this._fillSides(id, seed)
+            newSeeds.push(...filledSides)
         }
         return newSeeds
-    }
-
-    _fillValue(id, centerPoint, level) {
-        const refs = {id, fill: this.fill, context: this.context}
-        this.setValue(refs, centerPoint, level)
-        this.areaTable[id] += this.getArea(refs, centerPoint)
     }
 
     _fillSides(id, centerPoint) {
         const refs = {id, fill: this.fill, context: this.context}
         const filledSides = []
-        const sidesPoints = this.getNeighbors(refs, centerPoint)
-        sidesPoints.forEach(sidePoint => {
+        const sidePoints = this.getNeighbors(refs, centerPoint)
+        sidePoints.forEach(sidePoint => {
             // visit each side
+            // TODO: send centerPoint to methods
             this.checkNeighbor(refs, sidePoint, centerPoint)
             // fill only empty sides
             if (this.isEmpty(refs, sidePoint)) {
@@ -56,6 +51,12 @@ export class ConcurrentFillUnit {
             }
         })
         return filledSides
+    }
+
+    _fillValue(id, centerPoint, level) {
+        const refs = {id, fill: this.fill, context: this.context}
+        this.setValue(refs, centerPoint, level)
+        this.areaTable[id] += this.getArea(refs, centerPoint)
     }
 
     _growRandomLayers(id) {

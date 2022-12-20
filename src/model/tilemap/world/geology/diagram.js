@@ -61,7 +61,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             color = color.brighten(40)
         }
         if (! surface.water && this.params.get('showBasins')) {
-            return this.colorMap.getByBasin(point).average(color)
+            return this.colorMap.getByBasin(point)
         }
         return color
     }
