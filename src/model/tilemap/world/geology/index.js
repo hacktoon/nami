@@ -71,16 +71,11 @@ export class GeologyTileMap extends TileMap {
         return this.#terrainLayer.isWaterBorder(wrappedPoint)
     }
 
-    // getTerrain(point) {
-    //     const id = this.#terrainLayer.get(point)
-    //     return Terrain.fromId(id)
-    // }
+    getBasin(point) {
+        return this.#terrainLayer.getBasin(point)
+    }
 
-    // getBasin(point) {
-    //     return this.erosionLayer.getBasin(point)
-    // }
-
-    // getErosionDirection(point) {
-    //     return this.erosionLayer.getErosionDirection(point)
-    // }
+    getFlow(point) {
+        return this.#terrainLayer.getFlow(point)
+    }
 }

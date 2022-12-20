@@ -5,9 +5,10 @@ import { TileMapDiagram } from '/src/model/lib/tilemap'
 
 const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
+    Type.boolean('showTerrain', 'Terrain', {default: false}),
     Type.boolean('showLandBorder', 'Land border', {default: false}),
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
-    Type.boolean('showTerrain', 'Terrain', {default: false}),
+    Type.boolean('showFlow', 'Flow', {default: false}),
 )
 
 
@@ -16,14 +17,10 @@ class ColorMap {
         this.tileMap = tileMap
     }
 
-    getByBasin(point) {
-        const basin = this.tileMap.getBasin(point)
-        return this.basinColors.get(basin)
-    }
-
-    isWater(point) {
-        return this.tileMap.isWater(point)
-    }
+    // getByBasin(point) {
+    //     const basin = this.tileMap.getBasin(point)
+    //     return this.basinColors.get(basin)
+    // }
 }
 
 
@@ -61,8 +58,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     getText(point) {
-        if (this.params.get('showErosion')) {
-            const direction = this.tileMap.getErosionDirection(point)
+        if (this.params.get('showFlow')) {
+            const direction = this.tileMap.getFlow(point)
             if (direction) {
                 return direction.symbol
             }

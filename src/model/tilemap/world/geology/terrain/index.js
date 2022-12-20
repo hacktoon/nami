@@ -1,6 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PairMap } from '/src/lib/map'
+import { Direction } from '/src/lib/direction'
 import { PointSet } from '/src/lib/point/set'
 
 import { Terrain } from './data'
@@ -75,5 +76,14 @@ export class TerrainLayer {
 
     isWaterBorder(point) {
         return this.#waterBorders.has(point)
+    }
+
+    getBasin(point) {
+        return this.#basinMap.get(...point)
+    }
+
+    getFlow(point) {
+        const id = this.#flowMap.get(...point)
+        return Direction.fromId(id)
     }
 }
