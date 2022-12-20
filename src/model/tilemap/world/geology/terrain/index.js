@@ -4,7 +4,10 @@ import { PairMap } from '/src/lib/map'
 import { PointSet } from '/src/lib/point/set'
 
 import { Terrain } from './data'
-import { TerrainConcurrentFill } from './fill'
+import {
+    LandTerrainConcurrentFill,
+    WaterTerrainConcurrentFill
+} from './fill'
 
 
 const EMPTY = null
@@ -33,12 +36,14 @@ export class TerrainLayer {
         const context = {
             noiseLayer: this.#noiseLayer,
             surfaceLayer: this.#surfaceLayer,
+            landBorders: this.#landBorders,
+            waterBorders: this.#waterBorders,
             matrix: matrix,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
         }
-        const landOrigins = this.#landBorders.points
-        new TerrainConcurrentFill(landOrigins, context).fill()
+        new WaterTerrainConcurrentFill(context).fill()
+        new LandTerrainConcurrentFill(context).fill()
         return matrix
     }
 

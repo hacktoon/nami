@@ -42,10 +42,12 @@ export class GeologyTileMap extends TileMap {
 
     get(point) {
         const surface = this.getSurface(point)
+        const terrain = this.getTerrain(point)
         const surfaceArea = this.#surfaceLayer.getArea(point)
         return [
             `${Point.hash(point)}`,
             `${surface.name}(area:${surfaceArea}%)`,
+            `${terrain.name}`,
         ].join(' | ')
     }
 

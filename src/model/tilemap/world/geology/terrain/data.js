@@ -8,7 +8,7 @@ const TERRAIN_SPEC = [
         water: true,
         color: Color.fromHex('#1d5674'),
         noise: 'grained',
-        ratio: .60
+        ratio: 1
     },
     {
         id: 1,
@@ -16,15 +16,15 @@ const TERRAIN_SPEC = [
         water: true,
         color: Color.fromHex('#216384'),
         noise: 'feature',
-        ratio: .35
+        ratio: .7
     },
     {
         id: 2,
         name: 'Sea',
         water: true,
         color: Color.fromHex('#2878a0'),
-        noise: '',
-        ratio: 1
+        noise: 'grained',
+        ratio: .42
     },
     {
         id: 3,
@@ -67,14 +67,11 @@ export class Terrain {
     static types = TERRAIN_SPEC
 
     static fromId(id) {
-        // TOFIX: magic number
-        return TYPE_MAP.get(id) ?? TYPE_MAP.get(2)
+        return TYPE_MAP.get(id) ?? TERRAIN_SPEC[0]
     }
 
-    constructor(spec) {
-        this.id = spec.id
-        this.name = spec.name
-        this.color = spec.color
+    static isLand(id) {
+        return TYPE_MAP.has(id) && ! TYPE_MAP.get(id).water
     }
 }
 

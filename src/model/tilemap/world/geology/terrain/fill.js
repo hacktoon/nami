@@ -6,18 +6,36 @@ import { clamp } from '/src/lib/number'
 import { Terrain } from './data'
 
 
-const PHASES = [
+const LAND_PHASES = [
     Terrain.BASIN,
     Terrain.PLAIN,
     Terrain.PLATEAU,
     Terrain.MOUNTAIN
 ]
+
+const WATER_PHASES = [
+    Terrain.SEA,
+    Terrain.OCEAN,
+    Terrain.ABYSS
+]
+
+const LAND_RANGE = [Terrain.BASIN, Terrain.MOUNTAIN]
+const WATER_RANGE = [Terrain.SEA, Terrain.ABYSS]
 const EMPTY = null
 
 
-export class TerrainConcurrentFill extends ConcurrentFill {
-    constructor(origins, context) {
-        super(origins, TerrainFloodFill, context, PHASES)
+export class LandTerrainConcurrentFill extends ConcurrentFill {
+    constructor(context) {
+        const origins = context.landBorders.points
+        super(origins, TerrainFloodFill, context, LAND_PHASES)
+    }
+}
+
+
+export class WaterTerrainConcurrentFill extends ConcurrentFill {
+    constructor(context) {
+        const origins = context.waterBorders.points
+        super(origins, TerrainFloodFill, context, WATER_PHASES)
     }
 }
 
@@ -32,30 +50,30 @@ class TerrainFloodFill extends ConcurrentFillUnit {
         const terrainId = this._getTerrainId(ref, wrappedPoint)
         ref.context.matrix.set(wrappedPoint, terrainId)
         // set erosion
-        ref.context.basinMap.set(...wrappedPoint, ref.id)
+        // ref.context.basinMap.set(...wrappedPoint, ref.id)
     }
 
     isEmpty(ref, relSidePoint) {
-        const samePhase = this._isNoiseOnCurrentPhase(ref, relSidePoint)
+        const validNoise = this._isValidNoiseThreshold(ref, relSidePoint)
         const isEmpty = this._isCellEmpty(ref, relSidePoint)
-        return isEmpty && samePhase
+        return isEmpty && validNoise
     }
 
     isPhaseEmpty(ref, relSidePoint) {
-        const notSamePhase = ! this._isNoiseOnCurrentPhase(ref, relSidePoint)
+        const invalidNoise = ! this._isValidNoiseThreshold(ref, relSidePoint)
         const isEmpty = this._isCellEmpty(ref, relSidePoint)
-        return isEmpty && notSamePhase
+        return isEmpty && invalidNoise
     }
 
     _isCellEmpty(ref, relSidePoint) {
-        // isStateEqual(p1, p2)
-        const isLand = ref.context.surfaceLayer.isLand(relSidePoint)
+        const sidePoint = ref.context.matrix.wrap(relSidePoint)
+        const notWaterBorder = ! ref.context.waterBorders.has(sidePoint)
+        const notLandBorder = ! ref.context.landBorders.has(sidePoint)
         const isEmpty = ref.context.matrix.get(relSidePoint) === EMPTY
-        const isTerrainType = isLand
-        return isEmpty && isTerrainType
+        return isEmpty && notWaterBorder && notLandBorder
     }
 
-    _isNoiseOnCurrentPhase(ref, sidePoint) {
+    _isValidNoiseThreshold(ref, sidePoint) {
         const phaseTerrain = Terrain.fromId(ref.fill.phase)
         const OFFSET = 10 * ref.fill.phase
         const point = Point.plus(sidePoint, [OFFSET, OFFSET])
@@ -65,11 +83,14 @@ class TerrainFloodFill extends ConcurrentFillUnit {
 
     _getTerrainId(ref, point) {
         const isLand = ref.context.surfaceLayer.isLand(point)
-        if (! isLand) return ref.fill.phase
-
-        const isDepression = ref.context.surfaceLayer.isDepression(point)
-        const terrainId = isDepression ? ref.fill.phase - 1 : ref.fill.phase
-        return clamp(terrainId, Terrain.BASIN, Terrain.MOUNTAIN)
+        let terrainId = ref.fill.phase
+        if (isLand) {
+            if (ref.context.surfaceLayer.isDepression(point)) {
+                const isLowerTerrainLand = Terrain.isLand(terrainId - 1)
+                return isLowerTerrainLand ? terrainId - 1 : terrainId
+            }
+        }
+        return terrainId
     }
 
     // checkNeighbor(ref, sidePoint, centerPoint) {
