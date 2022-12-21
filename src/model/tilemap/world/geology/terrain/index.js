@@ -30,7 +30,7 @@ export class TerrainLayer {
     }
 
     #buildLayer(rect) {
-        const matrix = Matrix.fromRect(rect, point => {
+        const terrainMatrix = Matrix.fromRect(rect, point => {
             this.#detectBorders(point)
             return EMPTY
         })
@@ -39,13 +39,13 @@ export class TerrainLayer {
             surfaceLayer: this.#surfaceLayer,
             landBorders: this.#landBorders,
             waterBorders: this.#waterBorders,
-            matrix: matrix,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
+            matrix: terrainMatrix,
         }
-        new WaterTerrainConcurrentFill(context).fill()
-        new LandTerrainConcurrentFill(context).fill()
-        return matrix
+        new WaterTerrainConcurrentFill(context)
+        new LandTerrainConcurrentFill(context)
+        return terrainMatrix
     }
 
     #detectBorders(point) {
