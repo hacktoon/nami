@@ -3,35 +3,34 @@ import { Random } from '/src/lib/random'
 
 export class ConcurrentFill {
     #phases
-    #fillUnit
     #origins
     #phaseIndex = 0
+    #areaTable = []
 
-    constructor(origins, FillUnit, context={}, phases=[]) {
+    constructor(origins, context={}, phases=[]) {
         let loopCount = 2000
-        this.#fillUnit = new FillUnit(this, context)
         this.#origins = origins
         this.#phases = phases.length > 0 ? phases : []
 
+        this.context = context
         this.levelTable = []
         this.seedTable = []
         this.phaseSeedTable = []
-        this.areaTable = []
         this.growthTable = []
         this.chanceTable = []
         this.phase = this.#phases[this.#phaseIndex]
 
         // fill a layer for each fill based on initial seeds
-        for(let id = 0; id < this.#origins.length; id ++) {
-            const refs = {id, fill: this, context}
-            const origin = this.#origins[id]
-            this.areaTable.push(0)
+        for(let fillId = 0; fillId < this.#origins.length; fillId ++) {
+            const refs = {id: fillId, fill: this, context}
+            const origin = this.#origins[fillId]
+            this.#areaTable.push(0)
             this.levelTable.push(0)
             this.seedTable.push([origin])
             this.phaseSeedTable.push([])
             this.growthTable.push(this.getGrowth(refs, origin))
             this.chanceTable.push(this.getChance(refs, origin))
-            this.#fillUnit.fillSeed(id, origin, 0)
+            this.fillSeed(fillId, origin, 0)
         }
         // run while has next phases or loop limit ends
         while(this.#fillPhase() && loopCount > 0) {
@@ -44,7 +43,7 @@ export class ConcurrentFill {
         let completedFills = 0
         for(let id = 0; id < this.#origins.length; id ++) {
             // call unit fill for this layer
-            const filledPoints = this.#fillUnit.fillLayer(id)
+            const filledPoints = this.fillLayer(id)
             if (filledPoints.length === 0) {
                 completedFills++
             }
@@ -66,7 +65,7 @@ export class ConcurrentFill {
                     const level = this.levelTable[id]
                     this.seedTable[id].push(point)
                     // set seeds for next phase
-                    this.#fillUnit.fillSeed(id, point, level)
+                    this.fillSeed(id, point, level)
                 })
             }
             completedFills = 0  // reset to start new phase
@@ -74,8 +73,9 @@ export class ConcurrentFill {
         return true
     }
 
+    // reading methods
     getArea(fillId) {
-        return this.areaTable[fillId]
+        return this.#areaTable[fillId]
     }
 
     getChance(fillId, origin) {
@@ -85,28 +85,20 @@ export class ConcurrentFill {
     getGrowth(fillId, origin) {
         return 0  // default value
     }
-}
 
-
-export class ConcurrentFillUnit {
-    constructor(fill, context) {
-        this.fill = fill
-        this.context = context
-    }
-
+    // fill a seed layer, composed by (base + optional random) layers
     fillLayer(fillId) {
-        // fill a seed layer, composed by (base + optional random) layers
-        const seeds = this.#fillBaseLayer(fillId, this.fill.seedTable[fillId])
+        const seeds = this.#fillBaseLayer(fillId, this.seedTable[fillId])
         // optional depending on growth and chance inputs
         this.#fillRandomLayers(fillId, seeds)
-        this.fill.seedTable[fillId] = seeds
+        this.seedTable[fillId] = seeds
         return seeds
     }
 
     fillSeed(fillId, cell, level) {
-        const refs = {id: fillId, fill: this.fill, context: this.context}
+        const refs = {id: fillId, fill: this, context: this.context}
         this.setValue(refs, cell, level)
-        this.fill.areaTable[fillId] += this.getArea(refs, cell)
+        this.#areaTable[fillId] += this.getArea(refs, cell)
     }
 
     #fillBaseLayer(fillId, seeds) {
@@ -114,7 +106,7 @@ export class ConcurrentFillUnit {
         const newSeeds = []
         // if has seeds to fill, advance fill level
         if (newSeeds.length >= 0) {
-            this.fill.levelTable[fillId] += 1
+            this.levelTable[fillId] += 1
         }
         for(let seed of seeds) {
             const filledNeighbors = this.#fillSeeds(fillId, seed)
@@ -125,16 +117,16 @@ export class ConcurrentFillUnit {
 
     #fillRandomLayers(fillId, seeds) {
         // run zero or more fill steps of random seeds
-        const growth = this.fill.growthTable[fillId]
+        const growth = this.growthTable[fillId]
         for(let i = 0; i < growth; i++) {
             const [extra, other] = this.#splitSeeds(fillId, seeds)
             let extraSeeds = this.#fillBaseLayer(fillId, extra)
-            this.fill.seedTable[fillId] = other.concat(extraSeeds)
+            this.seedTable[fillId] = other.concat(extraSeeds)
         }
     }
 
     #fillSeeds(fillId, center) {
-        const refs = {id: fillId, fill: this.fill, context: this.context}
+        const refs = {id: fillId, fill: this, context: this.context}
         const filledSides = []
         const neighbors = this.getNeighbors(refs, center)
         neighbors.forEach(neighbor => {
@@ -143,12 +135,12 @@ export class ConcurrentFillUnit {
             this.checkNeighbor(refs, neighbor, center)
             // fill only empty sides
             if (this.isEmpty(refs, neighbor)) {
-                const level = this.fill.levelTable[fillId]
+                const level = this.levelTable[fillId]
                 this.fillSeed(fillId, neighbor, level)
                 filledSides.push(neighbor)
             }
             if (this.isPhaseEmpty(refs, neighbor)) {
-                this.fill.phaseSeedTable[fillId].push(neighbor)
+                this.phaseSeedTable[fillId].push(neighbor)
             }
         })
         return filledSides
@@ -156,7 +148,7 @@ export class ConcurrentFillUnit {
 
     #splitSeeds(fillId, seeds) {
         const first = [], second = []
-        const chance = this.fill.chanceTable[fillId]
+        const chance = this.chanceTable[fillId]
         for(let seed of seeds) {
             const outputArray = Random.chance(chance) ? first : second
             outputArray.push(seed)
@@ -166,10 +158,12 @@ export class ConcurrentFillUnit {
 
     // EXTENSIBLE METHODS ==========================
 
-    setValue(fill, origin, level) { }
-    isEmpty(fill, origin) { return [] }
-    isPhaseEmpty(fill, origin) { return [] }
-    getNeighbors(fill, origin) { return [] }
-    checkNeighbor(fill, neighbor, origin) { }
-    getArea(fill, origin) { return 1 }
+    setValue(refs, center, level) { }
+    isEmpty(refs, center) { return [] }
+    isPhaseEmpty(refs, center) { return [] }
+    getNeighbors(refs, center) { return [] }
+    checkNeighbor(refs, neighbor, center) { }
+    getArea(refs, center) { return 1 }
 }
+
+export class ConcurrentFillUnit {}

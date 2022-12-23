@@ -5,10 +5,7 @@ import { Direction } from '/src/lib/direction'
 import { PointSet } from '/src/lib/point/set'
 
 import { Terrain } from './data'
-import {
-    LandTerrainConcurrentFill,
-    WaterTerrainConcurrentFill
-} from './fill'
+import { LandTerrainFill, WaterTerrainFill } from './fill'
 
 
 const EMPTY = null
@@ -43,8 +40,8 @@ export class TerrainLayer {
             flowMap: this.#flowMap,
             matrix: terrainMatrix,
         }
-        new WaterTerrainConcurrentFill(context)
-        new LandTerrainConcurrentFill(context)
+        new WaterTerrainFill(context)
+        new LandTerrainFill(context)
         return terrainMatrix
     }
 

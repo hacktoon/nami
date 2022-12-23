@@ -1,4 +1,4 @@
-import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
@@ -21,27 +21,13 @@ const WATER_PHASES = [
 const EMPTY = null
 
 
-export class LandTerrainConcurrentFill extends ConcurrentFill {
-    constructor(context) {
-        const origins = context.landBorders.points
-        super(origins, TerrainFloodFill, context, LAND_PHASES)
-    }
-}
-
-
-export class WaterTerrainConcurrentFill extends ConcurrentFill {
-    constructor(context) {
-        const origins = context.waterBorders.points
-        super(origins, TerrainFloodFill, context, WATER_PHASES)
-    }
-}
-
-
-class TerrainFloodFill extends ConcurrentFillUnit {
+class TerrainFloodFill extends ConcurrentFill {
+    // override method
     getNeighbors(ref, originPoint) {
         return Point.adjacents(originPoint)
     }
 
+    // override method
     setValue(ref, point, level) {
         const wrappedPoint = ref.context.matrix.wrap(point)
         const terrainId = this._getTerrainId(ref, wrappedPoint)
@@ -53,12 +39,14 @@ class TerrainFloodFill extends ConcurrentFillUnit {
             ref.context.basinMap.set(...wrappedPoint, ref.id)
     }
 
+    // override method
     isEmpty(ref, relSidePoint) {
         const validNoise = this._isValidNoiseThreshold(ref, relSidePoint)
         const isEmpty = this._isCellEmpty(ref, relSidePoint)
         return isEmpty && validNoise
     }
 
+    // override method
     isPhaseEmpty(ref, relSidePoint) {
         const invalidNoise = ! this._isValidNoiseThreshold(ref, relSidePoint)
         const isEmpty = this._isCellEmpty(ref, relSidePoint)
@@ -94,6 +82,7 @@ class TerrainFloodFill extends ConcurrentFillUnit {
         return terrainId
     }
 
+    // override method
     // check each neighbor to draw water flow map
     checkNeighbor(ref, relSidePoint, relCenterPoint) {
         const centerPoint = ref.context.matrix.wrap(relCenterPoint)
@@ -128,5 +117,21 @@ class TerrainFloodFill extends ConcurrentFillUnit {
     _getDirectionId(sourcePoint, targetPoint) {
         const angle = Point.angle(sourcePoint, targetPoint)
         return Direction.fromAngle(angle).id
+    }
+}
+
+
+export class LandTerrainFill extends TerrainFloodFill {
+    constructor(context) {
+        const origins = context.landBorders.points
+        super(origins, context, LAND_PHASES)
+    }
+}
+
+
+export class WaterTerrainFill extends TerrainFloodFill {
+    constructor(context) {
+        const origins = context.waterBorders.points
+        super(origins, context, WATER_PHASES)
     }
 }
