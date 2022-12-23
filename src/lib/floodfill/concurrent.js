@@ -11,19 +11,19 @@ export class ConcurrentFill {
         let loopCount = 2000
         this.#fillUnit = new FillUnit(this, context)
         this.#origins = origins
-        this.context = context
+        this.#phases = phases.length > 0 ? phases : []
+
+        this.levelTable = []
         this.seedTable = []
         this.phaseSeedTable = []
-        this.levelTable = []
         this.areaTable = []
         this.growthTable = []
         this.chanceTable = []
-        this.#phases = phases.length > 0 ? phases : []
         this.phase = this.#phases[this.#phaseIndex]
 
         // fill a layer for each fill based on initial seeds
         for(let id = 0; id < this.#origins.length; id ++) {
-            const refs = {id, fill: this, context: this.context}
+            const refs = {id, fill: this, context}
             const origin = this.#origins[id]
             this.areaTable.push(0)
             this.levelTable.push(0)
