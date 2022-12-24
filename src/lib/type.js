@@ -83,7 +83,7 @@ class RectType extends BaseType {
     static type = 'rect'
 
     parse(hash) {
-        return Rect.fromHash(hash ?? '150x100')
+        return Rect.fromHash(hash ?? '100x100')
     }
 
     toString(hash) {

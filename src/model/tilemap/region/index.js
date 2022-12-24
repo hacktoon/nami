@@ -10,14 +10,14 @@ import { PairMap } from '/src/lib/map'
 import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
-import { RegionMultiFill } from './fill'
+import { RegionFloodFill } from './fill'
 import { RegionTileMapDiagram } from './diagram'
 
 
-const NO_REGION = null
+const EMPTY = null
 const SCHEMA = new Schema(
     'RegionTileMap',
-    Type.rect('rect', 'Size', {default: '150x150'}),
+    Type.rect('rect', 'Size', {default: '100x100'}),
     Type.number('scale', 'Scale', {default: 10, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),
@@ -54,17 +54,19 @@ export class RegionTileMap extends TileMap {
         super(params)
         const scale = params.get('scale')
         this.#origins = EvenPointSampling.create(this.rect, scale)
-        this.#regionMatrix = Matrix.fromRect(this.rect, () => NO_REGION)
+        this.#regionMatrix = Matrix.fromRect(this.rect, () => EMPTY)
         this.#centerPoints = new PointSet(this.#origins)
         this.#regions = this.#origins.map((_, id) => id)
-        this.#mapFill = new RegionMultiFill(this.#origins, {
+        this.#mapFill = new RegionFloodFill(this.#origins, {
             regionMatrix: this.#regionMatrix,
             borderMap: this.#borderMap,
             graph: this.#graph,
             chance: params.get('chance'),
             growth: params.get('growth'),
         })
-        this.#mapFill.fill()
+        // this.#regionMatrix.forEach((point, value) => {
+        //     if (value === EMPTY) console.log(`Empty ${point}, ${value}`);
+        // })
     }
 
     get size() {

@@ -29,14 +29,14 @@ class TerrainFloodFill extends ConcurrentFill {
 
     // override method
     setValue(ref, point, level) {
-        const wrappedPoint = ref.context.matrix.wrap(point)
+        const wrappedPoint = this.context.matrix.wrap(point)
         const terrainId = this._getTerrainId(ref, wrappedPoint)
-        ref.context.matrix.set(wrappedPoint, terrainId)
+        this.context.matrix.set(wrappedPoint, terrainId)
         // set erosion
-        const isBasinSet = ref.context.basinMap.has(...wrappedPoint)
-        const isLand = ref.context.surfaceLayer.isLand(wrappedPoint)
+        const isBasinSet = this.context.basinMap.has(...wrappedPoint)
+        const isLand = this.context.surfaceLayer.isLand(wrappedPoint)
         if (! isBasinSet && isLand)
-            ref.context.basinMap.set(...wrappedPoint, ref.id)
+            this.context.basinMap.set(...wrappedPoint, ref.id)
     }
 
     // override method
@@ -54,10 +54,10 @@ class TerrainFloodFill extends ConcurrentFill {
     }
 
     _isCellEmpty(ref, relSidePoint) {
-        const sidePoint = ref.context.matrix.wrap(relSidePoint)
-        const notWaterBorder = ! ref.context.waterBorders.has(sidePoint)
-        const notLandBorder = ! ref.context.landBorders.has(sidePoint)
-        const isEmpty = ref.context.matrix.get(relSidePoint) === EMPTY
+        const sidePoint = this.context.matrix.wrap(relSidePoint)
+        const notWaterBorder = ! this.context.waterBorders.has(sidePoint)
+        const notLandBorder = ! this.context.landBorders.has(sidePoint)
+        const isEmpty = this.context.matrix.get(relSidePoint) === EMPTY
         return isEmpty && notWaterBorder && notLandBorder
     }
 
@@ -65,19 +65,18 @@ class TerrainFloodFill extends ConcurrentFill {
         const phaseTerrain = Terrain.fromId(ref.fill.phase)
         const OFFSET = 10 * ref.fill.phase
         const point = Point.plus(sidePoint, [OFFSET, OFFSET])
-        const noise = ref.context.noiseLayer.get(phaseTerrain.noise, point)
+        const noise = this.context.noiseLayer.get(phaseTerrain.noise, point)
         return phaseTerrain.ratio >= noise
     }
 
     _getTerrainId(ref, point) {
-        const isLand = ref.context.surfaceLayer.isLand(point)
+        const isLand = this.context.surfaceLayer.isLand(point)
         let terrainId = ref.fill.phase
-        if (isLand) {
-            if (ref.context.surfaceLayer.isDepression(point)) {
-                // TODO: .lowerTerrain
-                const isLowerTerrainLand = Terrain.isLand(terrainId - 1)
-                return isLowerTerrainLand ? terrainId - 1 : terrainId
-            }
+        let isDepression = this.context.surfaceLayer.isDepression(point)
+        if (isLand && isDepression) {
+            // TODO: .lowerTerrain
+            const isLowerTerrainLand = Terrain.isLand(terrainId - 1)
+            return isLowerTerrainLand ? terrainId - 1 : terrainId
         }
         return terrainId
     }
@@ -85,32 +84,32 @@ class TerrainFloodFill extends ConcurrentFill {
     // override method
     // check each neighbor to draw water flow map
     checkNeighbor(ref, relSidePoint, relCenterPoint) {
-        const centerPoint = ref.context.matrix.wrap(relCenterPoint)
-        const sidePoint = ref.context.matrix.wrap(relSidePoint)
+        const centerPoint = this.context.matrix.wrap(relCenterPoint)
+        const sidePoint = this.context.matrix.wrap(relSidePoint)
         // only land tiles allowed
-        if (ref.context.surfaceLayer.isWater(centerPoint)) return
+        if (this.context.surfaceLayer.isWater(centerPoint)) return
 
-        const isSideWater = ref.context.surfaceLayer.isWater(sidePoint)
-        const isLandBorder = ref.context.landBorders.has(centerPoint)
+        const isSideWater = this.context.surfaceLayer.isWater(sidePoint)
+        const isLandBorder = this.context.landBorders.has(centerPoint)
         // detect river mouth: land border with side water
         if (isLandBorder && isSideWater) {
             const directionId = this._getDirectionId(relCenterPoint, relSidePoint)
-            // if (ref.context.flowMap.has(...centerPoint)) return
-            ref.context.flowMap.set(...centerPoint, directionId)
+            // if (this.context.flowMap.has(...centerPoint)) return
+            this.context.flowMap.set(...centerPoint, directionId)
         }
 
-        const isSideLandBorder = ref.context.landBorders.has(sidePoint)
-        const isFlowSet = ref.context.flowMap.has(...sidePoint)
+        const isSideLandBorder = this.context.landBorders.has(sidePoint)
+        const isFlowSet = this.context.flowMap.has(...sidePoint)
         const directionId = this._getDirectionId(relSidePoint, relCenterPoint)
 
         // if (centerPoint[0] === 85 && centerPoint[1] === 70) {
         //     console.log(sidePoint, Direction.fromId(directionId));
-        //     console.log(ref.context.basinMap.get(...sidePoint));
+        //     console.log(this.context.basinMap.get(...sidePoint));
         //     console.log(isFlowSet, isSideWater, isSideLandBorder);
         // }
         if (isFlowSet || isSideWater || isSideLandBorder) return
 
-        ref.context.flowMap.set(...sidePoint, directionId)
+        this.context.flowMap.set(...sidePoint, directionId)
 
     }
 

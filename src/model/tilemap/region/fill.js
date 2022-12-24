@@ -1,24 +1,32 @@
-import { ConcurrentFill, ConcurrentFillUnit } from '/src/lib/floodfill/concurrent'
+import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Point } from '/src/lib/point'
 
 
-const NO_REGION = null
+const EMPTY = null
 
 
-class RegionFloodFill extends ConcurrentFillUnit {
-    setValue(fill, point, level) {
-        fill.context.regionMatrix.set(point, fill.id)
+export class RegionFloodFill extends ConcurrentFill {
+    getChance(ref, origin) {
+        return this.context.chance
     }
 
-    isEmpty(fill, point) {
-        return fill.context.regionMatrix.get(point) === NO_REGION
+    getGrowth(ref, origin) {
+        return this.context.growth
     }
 
-    checkNeighbor(fill, neighborPoint, centerPoint) {
-        if (this.isEmpty(fill, neighborPoint)) return
-        const {borderMap, regionMatrix} = fill.context
+    setValue(ref, point, level) {
+        this.context.regionMatrix.set(point, ref.id)
+    }
+
+    isEmpty(ref, point) {
+        return this.context.regionMatrix.get(point) === EMPTY
+    }
+
+    checkNeighbor(ref, neighborPoint, centerPoint) {
+        if (this.isEmpty(ref, neighborPoint)) return
+        const {borderMap, regionMatrix} = this.context
         const neighborId = regionMatrix.get(neighborPoint)
-        if (fill.id === neighborId) return
+        if (ref.id === neighborId) return
         const [x, y] = regionMatrix.rect.wrap(centerPoint)
         if (! borderMap.has(x, y)) {
             borderMap.set(x, y, new Set())
@@ -26,25 +34,10 @@ class RegionFloodFill extends ConcurrentFillUnit {
         // mark region when neighbor point belongs to another region
         // these operations are idempotent
         borderMap.get(x, y).add(neighborId)
-        fill.context.graph.setEdge(fill.id, neighborId)
+        this.context.graph.setEdge(ref.id, neighborId)
     }
 
-    getNeighbors(fill, originPoint) {
+    getNeighbors(ref, originPoint) {
         return Point.adjacents(originPoint)
-    }
-}
-
-
-export class RegionMultiFill extends ConcurrentFill {
-    constructor(origins, context) {
-        super(origins, RegionFloodFill, context)
-    }
-
-    getChance(fill, origin) {
-        return this.context.chance
-    }
-
-    getGrowth(fill, origin) {
-        return this.context.growth
     }
 }
