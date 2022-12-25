@@ -64,9 +64,6 @@ export class RegionTileMap extends TileMap {
             chance: params.get('chance'),
             growth: params.get('growth'),
         })
-        // this.#regionMatrix.forEach((point, value) => {
-        //     if (value === EMPTY) console.log(`Empty ${point}, ${value}`);
-        // })
     }
 
     get size() {
@@ -80,12 +77,10 @@ export class RegionTileMap extends TileMap {
     get(point) {
         const region = this.getRegion(point)
         const regionArea = this.getArea(region)
-        const regionOrigin = this.getRegionOrigin(point)
         return [
             `clicked: ${Point.hash(point)}`,
             `id: ${region}`,
-            `area: ${regionArea}`,
-            `origin: ${Point.hash(regionOrigin)}`,
+            `area: ${regionArea}`
         ].join(', ')
     }
 
@@ -95,11 +90,6 @@ export class RegionTileMap extends TileMap {
 
     getRegions() {
         return this.#regions
-    }
-
-    getRegionOrigin(point) {
-        const id = this.#regionMatrix.get(point)
-        return this.#origins[id]
     }
 
     getOriginById(id) {

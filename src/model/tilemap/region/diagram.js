@@ -60,10 +60,9 @@ export class RegionTileMapDiagram extends TileMapDiagram {
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
         const regionId = this.tileMap.getRegion(point)
-        const regionOrigin = this.tileMap.getRegionOrigin(point)
         const color = this.colorMap.get(regionId)
 
-        if (this.showOrigins && Point.equals(regionOrigin, point)) {
+        if (this.showOrigins && this.tileMap.isOrigin(point)) {
             return color.invert()
         }
         if (this.showBorders && this.tileMap.isBorder(point)) {
