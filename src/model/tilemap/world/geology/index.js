@@ -28,23 +28,19 @@ export class GeologyTileMap extends TileMap {
         return new GeologyTileMap(params)
     }
 
-    #terrainLayer
-    #surfaceLayer
-
     constructor(params) {
         super(params)
         const noiseLayer = new NoiseLayer(this.rect, this.seed)
-        const surfaceLayer = new SurfaceLayer(noiseLayer)
-        const terrainLayer = new TerrainLayer(noiseLayer, surfaceLayer)
-        this.#surfaceLayer = surfaceLayer
-        this.#terrainLayer = terrainLayer
+        this.surface = new SurfaceLayer(noiseLayer)
+        this.terrain = new TerrainLayer(noiseLayer, this.surface)
     }
 
     get(point) {
-        const surface = this.getSurface(point)
-        const terrain = this.getTerrain(point)
-        const basin = this.getBasin(point)
-        const surfaceArea = this.#surfaceLayer.getArea(point)
+        const surface = this.surface.get(point)
+        const terrain = this.terrain.get(point)
+        // Change to erosion.getBasin(point)
+        const basin = this.terrain.getBasin(point)
+        const surfaceArea = this.surface.getArea(point)
         return [
             `${Point.hash(point)}`,
             `${surface.name}(area:${surfaceArea}%)`,
@@ -54,36 +50,6 @@ export class GeologyTileMap extends TileMap {
     }
 
     get basinCount() {
-        return this.#terrainLayer.basinCount
-    }
-
-    getSurface(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        return this.#surfaceLayer.get(wrappedPoint)
-    }
-
-    getTerrain(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        return this.#terrainLayer.get(wrappedPoint)
-    }
-
-    isLandBorder(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        return this.#terrainLayer.isLandBorder(wrappedPoint)
-    }
-
-    isWaterBorder(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        return this.#terrainLayer.isWaterBorder(wrappedPoint)
-    }
-
-    getBasin(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        return this.#terrainLayer.getBasin(wrappedPoint)
-    }
-
-    getFlow(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        return this.#terrainLayer.getFlow(wrappedPoint)
+        return this.terrain.basinCount
     }
 }
