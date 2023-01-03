@@ -5,6 +5,13 @@ import { PointSet } from '/src/lib/point/set'
 import { Relief } from './data'
 
 
+const ABYSS_RATIO = 0.35
+const OCEAN_RATIO = 0.47
+const PLAIN_RATIO = 0.4
+const PLATEAU_RATIO = .55
+const MOUNTAIN_RATIO = 0.5
+
+
 export class ReliefLayer {
     #noiseLayer
     #surfaceLayer
@@ -29,8 +36,8 @@ export class ReliefLayer {
 
         // water -----------------------------------
         if (isWater) {
-            if (outlineNoise < Relief.OCEAN.ratio) {
-                if (grainedNoise < Relief.ABYSS.ratio)
+            if (outlineNoise < OCEAN_RATIO) {
+                if (grainedNoise < ABYSS_RATIO)
                     return Relief.ABYSS.id
                 return Relief.OCEAN.id
             }
@@ -40,9 +47,9 @@ export class ReliefLayer {
         // land -----------------------------------
         if (isBorder) return Relief.BASIN.id
         if (isDepression) return Relief.BASIN.id
-        if (featureNoise > Relief.PLAIN.ratio) {
-            if (featureNoise > Relief.PLATEAU.ratio) {
-                if (grainedNoise > Relief.MOUNTAIN.ratio)
+        if (featureNoise > PLAIN_RATIO) {
+            if (featureNoise > PLATEAU_RATIO) {
+                if (grainedNoise > MOUNTAIN_RATIO)
                     return Relief.MOUNTAIN.id
                 return Relief.PLATEAU.id
             }
