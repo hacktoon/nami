@@ -5,12 +5,16 @@ import { SURFACE_RATIO, Surface } from './data'
 
 
 const EMPTY = null
+
+// Area ratios
 const MINIMUN_OCEAN_RATIO = 2
 const MINIMUN_SEA_RATIO = .12
 const MINIMUN_CONTINENT_RATIO = 1
 
 
 export class SurfaceLayer {
+    // Major world bodies with area and type
+
     #noiseLayer
     #bodyIdMatrix
     #areaMap = new Map()
