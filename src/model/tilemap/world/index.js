@@ -5,12 +5,12 @@ import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { NoiseLayer } from './noise'
-import { SurfaceLayer } from './surface'
-import { TerrainLayer } from './terrain'
+import { SurfaceLayer } from './geology/surface'
+import { TerrainLayer } from './geology/terrain'
 import { GeologyTileMapDiagram } from './diagram'
 
 
-const ID = 'GeologyTileMap'
+const ID = 'WorldTileMap'
 const SCHEMA = new Schema(
     ID,
     Type.rect('rect', 'Size', {default: '100x100'}),
@@ -18,14 +18,14 @@ const SCHEMA = new Schema(
 )
 
 
-export class GeologyTileMap extends TileMap {
+export class WorldTileMap extends TileMap {
     static id = ID
     static diagram = GeologyTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
 
     static create(params) {
-        return new GeologyTileMap(params)
+        return new WorldTileMap(params)
     }
 
     constructor(params) {

@@ -35,14 +35,14 @@ const TERRAIN_SPEC = [
         name: 'Plain',
         water: false,
         color: Color.fromHex('#99d966'),
-        ratio: 0.45
+        ratio: 0.4
     },
     {
         id: 5,
         name: 'Plateau',
         water: false,
         color: Color.fromHex('#c7d996'),
-        ratio: .6
+        ratio: .55
     },
     {
         id: 6,

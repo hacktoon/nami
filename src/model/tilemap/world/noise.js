@@ -1,7 +1,7 @@
 import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
-export const NOISE_SPEC = [
+const NOISE_SPEC = [
     {id: 'outline', octaves: 6, resolution: .8, scale: .02},
     {id: 'feature', octaves: 6, resolution: .8, scale: .04},
     {id: 'grained', octaves: 6, resolution: .8, scale: .08},
@@ -24,7 +24,19 @@ export class NoiseLayer {
         }
     }
 
-    get(id, point) {
+    #get(id, point) {
         return this.map.get(id).getNoise(point)
+    }
+
+    getOutline(point) {
+        return this.#get('outline', point)
+    }
+
+    getFeature(point) {
+        return this.#get('feature', point)
+    }
+
+    getGrained(point) {
+        return this.#get('grained', point)
     }
 }

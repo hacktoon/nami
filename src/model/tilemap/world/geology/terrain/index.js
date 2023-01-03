@@ -24,9 +24,9 @@ export class TerrainLayer {
     }
 
     #detectType(point, isBorder) {
-        const outlineNoise = this.#noiseLayer.get('outline', point)
-        const featureNoise = this.#noiseLayer.get('feature', point)
-        const grainedNoise = this.#noiseLayer.get('grained', point)
+        const outlineNoise = this.#noiseLayer.getOutline(point)
+        const featureNoise = this.#noiseLayer.getFeature(point)
+        const grainedNoise = this.#noiseLayer.getGrained(point)
         const isWater = this.#surfaceLayer.isWater(point)
         const isDepression = this.#surfaceLayer.isDepression(point)
 

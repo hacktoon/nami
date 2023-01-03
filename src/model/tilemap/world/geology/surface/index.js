@@ -1,7 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
-import { BASE_NOISE, SURFACE_RATIO, Surface } from './data'
+import { SURFACE_RATIO, Surface } from './data'
 
 
 const EMPTY = null
@@ -50,7 +50,7 @@ export class SurfaceLayer {
     }
 
     #isBelowRatio(point) {
-        const noise = this.#noiseLayer.get(BASE_NOISE, point)
+        const noise = this.#noiseLayer.getOutline(point)
         return SURFACE_RATIO >= noise
     }
 

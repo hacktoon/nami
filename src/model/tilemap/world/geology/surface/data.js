@@ -1,7 +1,7 @@
 import { Color } from '/src/lib/color'
 
+
 export const SURFACE_RATIO = .55
-export const BASE_NOISE = 'outline'
 
 export const SURFACE_SPEC = [
     {
