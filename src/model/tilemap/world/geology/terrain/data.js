@@ -7,23 +7,20 @@ const TERRAIN_SPEC = [
         name: 'Abyss',
         water: true,
         color: Color.fromHex('#1d5674'),
-        noise: 'grained',
-        ratio: 1
+        ratio: 0.35
     },
     {
         id: 1,
         name: 'Ocean',
         water: true,
         color: Color.fromHex('#216384'),
-        noise: 'feature',
-        ratio: .7
+        ratio: 0.47
     },
     {
         id: 2,
         name: 'Sea',
         water: true,
         color: Color.fromHex('#2878a0'),
-        noise: 'grained',
         ratio: .42
     },
     {
@@ -31,32 +28,28 @@ const TERRAIN_SPEC = [
         name: 'Basin',
         water: false,
         color: Color.fromHex('#71b13e'),
-        noise: 'feature',
-        ratio: .32
+        ratio: 0
     },
     {
         id: 4,
         name: 'Plain',
         water: false,
         color: Color.fromHex('#99d966'),
-        noise: 'feature',
-        ratio: .42
+        ratio: 0.45
     },
     {
         id: 5,
         name: 'Plateau',
         water: false,
         color: Color.fromHex('#c7d996'),
-        noise: 'grained',
-        ratio: .52
+        ratio: .6
     },
     {
         id: 6,
         name: 'Mountain',
         water: false,
         color: Color.fromHex('#c0b896'),
-        noise: 'grained',
-        ratio: 1
+        ratio: 0.5
     }
 ]
 
@@ -78,5 +71,5 @@ export class Terrain {
 
 TERRAIN_SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
-    Terrain[name] = spec.id
+    Terrain[name] = spec
 })

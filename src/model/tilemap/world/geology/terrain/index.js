@@ -32,32 +32,26 @@ export class TerrainLayer {
 
         // water -----------------------------------
         if (isWater) {
-            if (outlineNoise < 0.47) {
-                if (grainedNoise < 0.35) {
-                    return Terrain.ABYSS
-                }
-                return Terrain.OCEAN
+            if (outlineNoise < Terrain.OCEAN.ratio) {
+                if (grainedNoise < Terrain.ABYSS.ratio)
+                    return Terrain.ABYSS.id
+                return Terrain.OCEAN.id
             }
-            return Terrain.SEA
+            return Terrain.SEA.id
         }
 
         // land -----------------------------------
-        if (isBorder) {
-            return Terrain.BASIN
-        }
-        if (featureNoise > 0.45) {
-            if (featureNoise > 0.6) {
-                if (grainedNoise > 0.5) {
-                    return Terrain.MOUNTAIN
-                }
-                return Terrain.PLATEAU
+        if (isBorder) return Terrain.BASIN.id
+        if (isDepression) return Terrain.BASIN.id
+        if (featureNoise > Terrain.PLAIN.ratio) {
+            if (featureNoise > Terrain.PLATEAU.ratio) {
+                if (grainedNoise > Terrain.MOUNTAIN.ratio)
+                    return Terrain.MOUNTAIN.id
+                return Terrain.PLATEAU.id
             }
-            return Terrain.PLAIN
+            return Terrain.PLAIN.id
         }
-        // if (isDepression) {
-        //     return Terrain.OCEAN
-        // }
-        return Terrain.BASIN
+        return Terrain.BASIN.id
     }
 
     #detectBorders(point) {
