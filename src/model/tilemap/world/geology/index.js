@@ -31,8 +31,9 @@ export class GeologyTileMap extends TileMap {
     constructor(params) {
         super(params)
         const noiseLayer = new NoiseLayer(this.rect, this.seed)
-        this.surface = new SurfaceLayer(noiseLayer)
+        this.surface = new SurfaceLayer(this.rect, noiseLayer)
         this.terrain = new TerrainLayer(noiseLayer, this.surface)
+        // this.erosion = new ErosionLayer(this.rect, this.surface, this.terrain)
     }
 
     get(point) {

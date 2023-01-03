@@ -5,8 +5,6 @@ import { BASE_NOISE, SURFACE_RATIO, Surface } from './data'
 
 
 const EMPTY = null
-const WATER = 0
-const LAND = 1
 const MINIMUN_OCEAN_RATIO = 2
 const MINIMUN_SEA_RATIO = .12
 const MINIMUN_CONTINENT_RATIO = 1
@@ -19,15 +17,15 @@ export class SurfaceLayer {
     #surfaceIdMap = new Map()
     #bodyIdCount = 1
 
-    constructor(noiseLayer) {
+    constructor(rect, noiseLayer) {
         this.#noiseLayer = noiseLayer
         // init matrix with empty cells
-        this.#bodyIdMatrix = Matrix.fromRect(noiseLayer.rect, () => EMPTY)
+        this.#bodyIdMatrix = Matrix.fromRect(rect, () => EMPTY)
         // detect surface regions and area
-        this.#bodyIdMatrix.forEach(point => this.#detectBody(point))
+        this.#bodyIdMatrix.forEach(point => this.#fillBody(point))
     }
 
-    #detectBody(originPoint) {
+    #fillBody(originPoint) {
         if (this.#bodyIdMatrix.get(originPoint) !== EMPTY)
             return
         let area = 0

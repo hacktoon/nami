@@ -1,69 +1,49 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
-import { PairMap } from '/src/lib/map'
-import { Direction } from '/src/lib/direction'
 import { PointSet } from '/src/lib/point/set'
 
 import { Terrain } from './data'
-import { LandTerrainFill, WaterTerrainFill } from './fill'
 
 
 const EMPTY = null
 
 
 export class TerrainLayer {
-    #landBorders = new PointSet()
-    #waterBorders = new PointSet()
-    #basinMap = new PairMap()
-    #flowMap = new PairMap()
-    #noiseLayer
     #surfaceLayer
+    #borders = new PointSet()
     #matrix
 
     constructor(noiseLayer, surfaceLayer) {
-        this.#noiseLayer = noiseLayer
         this.#surfaceLayer = surfaceLayer
-        this.#matrix = this.#buildLayer(noiseLayer.rect)
-    }
+        this.#matrix = Matrix.fromRect(noiseLayer.rect, point => {
 
-    #buildLayer(rect) {
-        const terrainMatrix = Matrix.fromRect(rect, point => {
+            let terrain = EMPTY
+            const isWater = surfaceLayer.isWater(point)
             this.#detectBorders(point)
-            return EMPTY
+            if (isWater) {
+                return Terrain.OCEAN
+            } else {
+                return Terrain.PLAIN
+            }
         })
-        const context = {
-            noiseLayer: this.#noiseLayer,
-            surfaceLayer: this.#surfaceLayer,
-            landBorders: this.#landBorders,
-            waterBorders: this.#waterBorders,
-            basinMap: this.#basinMap,
-            flowMap: this.#flowMap,
-            matrix: terrainMatrix,
-        }
-        new WaterTerrainFill(context)
-        new LandTerrainFill(context)
-        return terrainMatrix
     }
 
     #detectBorders(point) {
         const isWater = this.#surfaceLayer.isWater(point)
         for (let sidePoint of Point.adjacents(point)) {
             const isSideWater = this.#surfaceLayer.isWater(sidePoint)
-            const isSideDepression = this.#surfaceLayer.isDepression(sidePoint)
+            // TODO: refactor
             if (isWater) {
                 if (! isSideWater) {
-                    this.#waterBorders.add(point)
+                    this.#borders.add(point)
                     break
                 }
             } else if (isSideWater) {
-                this.#landBorders.add(point)
+                this.#borders.add(point)
                 break
             }
-        }
-    }
 
-    get basinCount() {
-        return this.#basinMap.size
+        }
     }
 
     get(point) {
@@ -72,19 +52,13 @@ export class TerrainLayer {
     }
 
     isLandBorder(point) {
-        return this.#landBorders.has(point)
+        const isLand = this.#surfaceLayer.isLand(point)
+        return this.#borders.has(point) && isLand
     }
 
     isWaterBorder(point) {
-        return this.#waterBorders.has(point)
+        const isWater = this.#surfaceLayer.isWater(point)
+        return this.#borders.has(point) && isWater
     }
 
-    getBasin(point) {
-        return this.#basinMap.get(...point)
-    }
-
-    getFlow(point) {
-        const id = this.#flowMap.get(...point)
-        return Direction.fromId(id)
-    }
 }

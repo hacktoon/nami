@@ -70,7 +70,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     getText(point) {
         if (this.params.get('showFlow')) {
-            const direction = this.tileMap.terrain.getFlow(point)
+            const direction = this.tileMap.erosion.getFlow(point)
             if (direction) {
                 return direction.symbol
             }
