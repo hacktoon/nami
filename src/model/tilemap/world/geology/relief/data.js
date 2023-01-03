@@ -1,7 +1,7 @@
 import { Color } from '/src/lib/color'
 
 
-const TERRAIN_SPEC = [
+const SPEC = [
     {
         id: 0,
         name: 'Abyss',
@@ -53,14 +53,13 @@ const TERRAIN_SPEC = [
     }
 ]
 
+const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
 
-export const TYPE_MAP = new Map(TERRAIN_SPEC.map(spec => [spec.id, spec]))
-
-export class Terrain {
-    static types = TERRAIN_SPEC
+export class Relief {
+    static types = SPEC
 
     static fromId(id) {
-        return TYPE_MAP.get(id) ?? TERRAIN_SPEC[0]
+        return TYPE_MAP.get(id) ?? SPEC[0]
     }
 
     static isLand(id) {
@@ -68,8 +67,8 @@ export class Terrain {
     }
 }
 
-
-TERRAIN_SPEC.forEach(spec => {
+// add object ref to class as an attribute
+SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
-    Terrain[name] = spec
+    Relief[name] = spec
 })

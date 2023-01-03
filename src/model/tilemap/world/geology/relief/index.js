@@ -2,13 +2,10 @@ import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 
-import { Terrain } from './data'
+import { Relief } from './data'
 
 
-const EMPTY = null
-
-
-export class TerrainLayer {
+export class ReliefLayer {
     #noiseLayer
     #surfaceLayer
     #borders = new PointSet()
@@ -32,26 +29,26 @@ export class TerrainLayer {
 
         // water -----------------------------------
         if (isWater) {
-            if (outlineNoise < Terrain.OCEAN.ratio) {
-                if (grainedNoise < Terrain.ABYSS.ratio)
-                    return Terrain.ABYSS.id
-                return Terrain.OCEAN.id
+            if (outlineNoise < Relief.OCEAN.ratio) {
+                if (grainedNoise < Relief.ABYSS.ratio)
+                    return Relief.ABYSS.id
+                return Relief.OCEAN.id
             }
-            return Terrain.SEA.id
+            return Relief.SEA.id
         }
 
         // land -----------------------------------
-        if (isBorder) return Terrain.BASIN.id
-        if (isDepression) return Terrain.BASIN.id
-        if (featureNoise > Terrain.PLAIN.ratio) {
-            if (featureNoise > Terrain.PLATEAU.ratio) {
-                if (grainedNoise > Terrain.MOUNTAIN.ratio)
-                    return Terrain.MOUNTAIN.id
-                return Terrain.PLATEAU.id
+        if (isBorder) return Relief.BASIN.id
+        if (isDepression) return Relief.BASIN.id
+        if (featureNoise > Relief.PLAIN.ratio) {
+            if (featureNoise > Relief.PLATEAU.ratio) {
+                if (grainedNoise > Relief.MOUNTAIN.ratio)
+                    return Relief.MOUNTAIN.id
+                return Relief.PLATEAU.id
             }
-            return Terrain.PLAIN.id
+            return Relief.PLAIN.id
         }
-        return Terrain.BASIN.id
+        return Relief.BASIN.id
     }
 
     #detectBorders(point) {
@@ -68,7 +65,7 @@ export class TerrainLayer {
 
     get(point) {
         const id = this.#matrix.get(point)
-        return Terrain.fromId(id)
+        return Relief.fromId(id)
     }
 
     isLandBorder(point) {
