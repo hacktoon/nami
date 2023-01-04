@@ -6,11 +6,11 @@ const EMPTY = null
 
 
 export class RegionFloodFill extends ConcurrentFill {
-    getChance(ref, origin) {
+    getChance(ref) {
         return ref.context.chance
     }
 
-    getGrowth(ref, origin) {
+    getGrowth(ref) {
         return ref.context.growth
     }
 

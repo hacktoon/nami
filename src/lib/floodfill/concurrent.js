@@ -7,20 +7,14 @@ export class ConcurrentFill {
         this.context = context
         this.seedTable = []
         this.levelTable = []
-        this.areaTable = []
-        this.growthTable = []
-        this.chanceTable = []
         this.canGrow = true
 
         for(let fillId = 0; fillId < this.origins.length; fillId ++) {
-            const fill = {id: fillId, context: this.context}
+            const fill = {id: fillId, context: context}
             const origin = this.origins[fillId]
-            this.areaTable.push(0)
             this.levelTable.push(0)
             this.seedTable.push([origin])
-            this.growthTable.push(this.getGrowth(fill, origin))
-            this.chanceTable.push(this.getChance(fill, origin))
-            this._fillValue(fillId, origin, 0)
+            this.setValue(fill, origin, 0)
         }
         while(this.canGrow) {
             this.#runSteps()
@@ -31,7 +25,8 @@ export class ConcurrentFill {
         let completedFills = 0
 
         for(let fillId = 0; fillId < this.origins.length; fillId ++) {
-            const filledPoints = this.#runStep(fillId)
+            const fill = {id: fillId, context: this.context}
+            const filledPoints = this.#runStep(fill)
             if (filledPoints.length === 0) {
                 completedFills++
             }
@@ -44,27 +39,26 @@ export class ConcurrentFill {
 
     // methods for each concurrent fill
 
-    #runStep(id) {
-        const seeds = this._growSeeds(id, this.seedTable[id])
-        this.seedTable[id] = seeds
-        this._growRandomLayers(id)
+    #runStep(fill) {
+        const seeds = this._growSeeds(fill, this.seedTable[fill.id])
+        this.seedTable[fill.id] = seeds
+        this._growRandomLayers(fill)
         return seeds
     }
 
-    _growSeeds(id, seeds) {
+    _growSeeds(fill, seeds) {
         let newSeeds = []
         if (newSeeds.length >= 0) {
-            this.levelTable[id] += 1
+            this.levelTable[fill.id] += 1
         }
         for(let seed of seeds) {
-            const filledNeighbors = this._fillNeighbors(id, seed)
+            const filledNeighbors = this._fillNeighbors(fill, seed)
             newSeeds.push(...filledNeighbors)
         }
         return newSeeds
     }
 
-    _fillNeighbors(id, origin) {
-        const fill = {id, context: this.context}
+    _fillNeighbors(fill, origin) {
         const filledNeighbors = []
         const allNeighbors = this.getNeighbors(fill, origin)
         const emptyNeighbors = allNeighbors.filter(neighbor => {
@@ -73,29 +67,24 @@ export class ConcurrentFill {
         })
         emptyNeighbors.forEach(neighbor => {
             filledNeighbors.push(neighbor)
-            this._fillValue(id, neighbor, this.levelTable[id])
+            this.setValue(fill, neighbor, this.levelTable[fill.id])
         })
         return filledNeighbors
     }
 
-    _fillValue(id, origin, level) {
-        const fill = {id, context: this.context}
-        this.setValue(fill, origin, level)
-        this.areaTable[id] += this.getArea(fill, origin)
-    }
-
-    _growRandomLayers(id) {
-        const growth = this.growthTable[id]
+    _growRandomLayers(fill) {
+        const growth = this.getGrowth(fill)
         for(let i = 0; i < growth; i++) {
-            const [extra, other] = this._splitSeeds(id, this.seedTable[id])
-            let extraSeeds = this._growSeeds(id, extra)
-            this.seedTable[id] = other.concat(extraSeeds)
+            const seeds = this.seedTable[fill.id]
+            const [extra, other] = this._splitSeeds(fill, seeds)
+            let extraSeeds = this._growSeeds(fill, extra)
+            this.seedTable[fill.id] = other.concat(extraSeeds)
         }
     }
 
-    _splitSeeds(id, seeds) {
+    _splitSeeds(fill, seeds) {
         const first = [], second = []
-        const chance = this.chanceTable[id]
+        const chance = this.getChance(fill)
         for(let seed of seeds) {
             const outputArray = Random.chance(chance) ? first : second
             outputArray.push(seed)
@@ -109,16 +98,6 @@ export class ConcurrentFill {
     isEmpty(fill, origin) { return [] }
     getNeighbors(fill, origin) { return [] }
     checkNeighbor(fill, neighbor, origin) { }
-
-    getArea(fillId) {
-        return this.areaTable[fillId]
-    }
-
-    getChance(fill, origin) {
-        return 0  // default value
-    }
-
-    getGrowth(fill, origin) {
-        return 0  // default value
-    }
+    getChance(fill) { return 0 }
+    getGrowth(fill) { return 0 }
 }
