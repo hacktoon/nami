@@ -1,3 +1,5 @@
+import { Point } from '/src/lib/point'
+
 import { Temperature } from './data'
 
 
@@ -9,16 +11,22 @@ const TROPICAL_RATIO = .7
 // TODO: temp is dynamic, make noise offset and loop
 
 export class TemperatureLayer {
+    #offset
     #noiseLayer
     #surfaceLayer
 
-    constructor(noiseLayer, surfaceLayer) {
+    constructor(rect, noiseLayer, surfaceLayer) {
         this.#noiseLayer = noiseLayer
         this.#surfaceLayer = surfaceLayer
+        this.#offset = [
+            Math.floor(rect.width / 4),
+            Math.floor(rect.height / 4)
+        ]
     }
 
     #detectType(point) {
-        const featureNoise = this.#noiseLayer.getFeature(point)
+        const offsetPoint = Point.plus(point, this.#offset)
+        const featureNoise = this.#noiseLayer.getOutline(offsetPoint)
 
         if (featureNoise > TEMPERATE_RATIO) {
             if (featureNoise > SUBTROPICAL_RATIO) {
