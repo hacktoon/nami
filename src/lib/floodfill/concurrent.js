@@ -1,88 +1,95 @@
 import { Random } from '/src/lib/random'
 
 
+const MAX_LOOP_COUNT = 2000
+
+
 export class ConcurrentFill {
+    #seedTable = []
+    #levelTable = []
+
     constructor(origins, context={}) {
         this.origins = origins
         this.context = context
-        this.seedTable = []
-        this.levelTable = []
-        this.canGrow = true
 
+        // Initialize data and fill origins
         for(let fillId = 0; fillId < this.origins.length; fillId ++) {
             const fill = {id: fillId, context: context}
             const origin = this.origins[fillId]
-            this.levelTable.push(0)
-            this.seedTable.push([origin])
+            this.#levelTable.push(0)
+            this.#seedTable.push([origin])
             this.setValue(fill, origin, 0)
         }
-        while(this.canGrow) {
-            this.#runSteps()
+        // Use loop count to avoid infinite loops
+        let loopCount = MAX_LOOP_COUNT
+        while(this.#executeFills() && loopCount > 0) {
+            loopCount--
         }
     }
 
-    #runSteps() {
-        let completedFills = 0
+    // Extensible methods ====================================
+    setValue(fill, origin, level) { }
+    isEmpty(fill, origin) { return [] }
+    getNeighbors(fill, origin) { return [] }
+    checkNeighbor(fill, neighbor, origin) { }
+    getChance(fill) { return 0 }
+    getGrowth(fill) { return 0 }
 
+    // Private methods =======================================
+    #executeFills() {
+        let completedFills = 0
         for(let fillId = 0; fillId < this.origins.length; fillId ++) {
             const fill = {id: fillId, context: this.context}
-            const filledPoints = this.#runStep(fill)
-            if (filledPoints.length === 0) {
-                completedFills++
-            }
+            const nextSeeds = this.#fillLayer(fill, this.#seedTable[fill.id])
+            this.#seedTable[fill.id] = this.#fillRandomLayers(fill, nextSeeds)
+            // Increase the num of completed fills by total of seeds
+            completedFills += nextSeeds.length === 0 ? 1 : 0
         }
-        if (completedFills === this.origins.length) {
-            // completedFills = 0  // reset to start new phase
-            this.canGrow = false
-        }
+        // are all fills complete?
+        return completedFills < this.origins.length
     }
 
-    // methods for each concurrent fill
-
-    #runStep(fill) {
-        const seeds = this._growSeeds(fill, this.seedTable[fill.id])
-        this.seedTable[fill.id] = seeds
-        this._growRandomLayers(fill)
-        return seeds
-    }
-
-    _growSeeds(fill, seeds) {
-        let newSeeds = []
-        if (newSeeds.length >= 0) {
-            this.levelTable[fill.id] += 1
+    #fillLayer(fill, seeds) {
+        let nextSeeds = []
+        if (nextSeeds.length >= 0) {
+            this.#levelTable[fill.id] += 1
         }
         for(let seed of seeds) {
-            const filledNeighbors = this._fillNeighbors(fill, seed)
-            newSeeds.push(...filledNeighbors)
+            const filled = this.#fillSeedNeighbors(fill, seed)
+            nextSeeds.push(...filled)
         }
-        return newSeeds
+        return nextSeeds
     }
 
-    _fillNeighbors(fill, origin) {
-        const filledNeighbors = []
-        const allNeighbors = this.getNeighbors(fill, origin)
-        const emptyNeighbors = allNeighbors.filter(neighbor => {
-            this.checkNeighbor(fill, neighbor, origin)
-            return this.isEmpty(fill, neighbor)
-        })
-        emptyNeighbors.forEach(neighbor => {
-            filledNeighbors.push(neighbor)
-            this.setValue(fill, neighbor, this.levelTable[fill.id])
-        })
-        return filledNeighbors
+    #fillSeedNeighbors(fill, center) {
+        const nextSeeds = []
+        const neighbors = this.getNeighbors(fill, center)
+        for(let neighbor of neighbors) {
+            this.checkNeighbor(fill, neighbor, center)
+            if (this.isEmpty(fill, neighbor)) {
+                const level = this.#levelTable[fill.id]
+                this.setValue(fill, neighbor, level)
+                nextSeeds.push(neighbor)
+            }
+        }
+        return nextSeeds
     }
 
-    _growRandomLayers(fill) {
+    #fillRandomLayers(fill, seeds) {
         const growth = this.getGrowth(fill)
+        let extraSeeds = seeds
         for(let i = 0; i < growth; i++) {
-            const seeds = this.seedTable[fill.id]
-            const [extra, other] = this._splitSeeds(fill, seeds)
-            let extraSeeds = this._growSeeds(fill, extra)
-            this.seedTable[fill.id] = other.concat(extraSeeds)
+            // split given seeds by chance
+            const [nextSeeds, deferredSeeds] = this.#splitSeeds(fill, extraSeeds)
+            // fill an extra layer using a fraction of given seeds
+            let newExtraSeeds = this.#fillLayer(fill, nextSeeds)
+            // sum up extra & deferred seeds for next iteration
+            extraSeeds = deferredSeeds.concat(newExtraSeeds)
         }
+        return extraSeeds
     }
 
-    _splitSeeds(fill, seeds) {
+    #splitSeeds(fill, seeds) {
         const first = [], second = []
         const chance = this.getChance(fill)
         for(let seed of seeds) {
@@ -91,13 +98,4 @@ export class ConcurrentFill {
         }
         return [first, second]
     }
-
-    // EXTENSIBLE METHODS ==========================
-
-    setValue(fill, origin, level) { }
-    isEmpty(fill, origin) { return [] }
-    getNeighbors(fill, origin) { return [] }
-    checkNeighbor(fill, neighbor, origin) { }
-    getChance(fill) { return 0 }
-    getGrowth(fill) { return 0 }
 }
