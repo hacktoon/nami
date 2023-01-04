@@ -1,8 +1,8 @@
 import { Temperature } from './data'
 
 
-const TEMPERATE_RATIO = .3
-const SUBTROPICAL_RATIO = .5
+const TEMPERATE_RATIO = .2
+const SUBTROPICAL_RATIO = .4
 const TROPICAL_RATIO = .7
 
 
@@ -34,7 +34,7 @@ export class TemperatureLayer {
         const baseType = this.#detectBaseType(point)
         // TODO: decrease one temp if its a mountain
         if (this.#reliefLayer.isMountain(point)) {
-            return Temperature.POLAR
+            return Temperature.lower(baseType)
         }
         return baseType
     }
