@@ -47,8 +47,6 @@ export class RegionTileMap extends TileMap {
     #regionMatrix
     #regions
     #origins
-    #mapFill
-
 
     constructor(params) {
         super(params)
@@ -57,7 +55,7 @@ export class RegionTileMap extends TileMap {
         this.#regionMatrix = Matrix.fromRect(this.rect, () => EMPTY)
         this.#centerPoints = new PointSet(this.#origins)
         this.#regions = this.#origins.map((_, id) => id)
-        this.#mapFill = new RegionFloodFill(this.#origins, {
+        new RegionFloodFill(this.#origins, {
             regionMatrix: this.#regionMatrix,
             borderMap: this.#borderMap,
             graph: this.#graph,
@@ -76,11 +74,9 @@ export class RegionTileMap extends TileMap {
 
     get(point) {
         const region = this.getRegion(point)
-        const regionArea = this.getArea(region)
         return [
             `clicked: ${Point.hash(point)}`,
-            `id: ${region}`,
-            `area: ${regionArea}`
+            `id: ${region}`
         ].join(', ')
     }
 
@@ -94,10 +90,6 @@ export class RegionTileMap extends TileMap {
 
     getOriginById(id) {
         return this.#origins[id]
-    }
-
-    getArea(id) {
-        return this.#mapFill.getArea(id)
     }
 
     getBorderRegions(point) {
