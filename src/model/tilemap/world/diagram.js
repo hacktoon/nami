@@ -9,8 +9,9 @@ const SCHEMA = new Schema(
     Type.boolean('showRelief', 'Relief', {default: false}),
     Type.boolean('showLandBorder', 'Land border', {default: false}),
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
-    Type.boolean('showBasins', 'Basins', {default: false}),
-    Type.boolean('showFlow', 'Flow', {default: false}),
+    Type.boolean('showTemperature', 'Temperature', {default: false}),
+    // Type.boolean('showBasins', 'Basins', {default: false}),
+    // Type.boolean('showFlow', 'Flow', {default: false}),
 )
 
 
@@ -48,13 +49,18 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const point = this.rect.wrap(relativePoint)
         const surface = this.tileMap.surface.get(point)
         const relief = this.tileMap.relief.get(point)
+        const temperature = this.tileMap.temperature.get(point)
         const showLandBorder = this.params.get('showLandBorder')
         const showWaterBorder = this.params.get('showWaterBorder')
         const showRelief = this.params.get('showRelief')
+        const showTemperature = this.params.get('showTemperature')
         let color = surface.color
 
         if (showRelief) {
             color = relief.color
+        }
+        if (showTemperature && ! surface.water) {
+            color = temperature.color
         }
         if (showLandBorder && this.tileMap.relief.isLandBorder(point)) {
             color = color.darken(40)

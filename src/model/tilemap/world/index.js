@@ -7,6 +7,7 @@ import { UITileMap } from '/src/ui/tilemap'
 import { NoiseLayer } from './noise'
 import { SurfaceLayer } from './geology/surface'
 import { ReliefLayer } from './geology/relief'
+import { TemperatureLayer } from './climatology/temperature'
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -33,20 +34,22 @@ export class WorldTileMap extends TileMap {
         const noiseLayer = new NoiseLayer(this.rect, this.seed)
         this.surface = new SurfaceLayer(this.rect, noiseLayer)
         this.relief = new ReliefLayer(this.rect, noiseLayer, this.surface)
+        this.temperature = new TemperatureLayer(noiseLayer, this.surface)
         // this.erosion = new ErosionLayer(this.rect, this.surface, this.relief)
     }
 
     get(point) {
         const surface = this.surface.get(point)
         const relief = this.relief.get(point)
+        const temperature = this.temperature.get(point)
         // Change to erosion.getBasin(point)
-        const basin = this.relief.getBasin(point)
+        // const basin = this.relief.getBasin(point)
         const surfaceArea = this.surface.getArea(point)
         return [
             `${Point.hash(point)}`,
             `${surface.name}(area:${surfaceArea}%)`,
             `${relief.name}`,
-            `Basin: ${basin}`,
+            `${temperature.name}`,
         ].join(' | ')
     }
 

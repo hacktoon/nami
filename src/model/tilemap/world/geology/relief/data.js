@@ -49,8 +49,6 @@ const SPEC = [
 const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
 
 export class Relief {
-    static types = SPEC
-
     static fromId(id) {
         return TYPE_MAP.get(id) ?? SPEC[0]
     }
