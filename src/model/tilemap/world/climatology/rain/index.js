@@ -1,3 +1,5 @@
+import { Point } from '/src/lib/point'
+
 import { Rain } from './data'
 
 
@@ -15,8 +17,10 @@ export class RainLayer {
         this.#noiseLayer = noiseLayer
     }
 
-    #detectBaseType(point) {
-        const noise = this.#noiseLayer.getFeature(point)
+    get(point) {
+        const offset = 10
+        const offsetPoint = Point.plus(point, [offset, offset])
+        const noise = this.#noiseLayer.getOutline(offsetPoint)
         if (noise > SEASONAL_RATIO) {
             if (noise > DRY_RATIO) {
                 if (noise > ARID_RATIO)
@@ -26,10 +30,5 @@ export class RainLayer {
             return Rain.SEASONAL
         }
         return Rain.HUMID
-    }
-
-    get(point) {
-        const baseType = this.#detectBaseType(point)
-        return baseType
     }
 }

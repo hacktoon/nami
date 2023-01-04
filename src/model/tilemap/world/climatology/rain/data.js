@@ -5,22 +5,22 @@ const SPEC = [
     {
         id: 4,
         name: 'Humid',
-        color: Color.fromHex('#c4fdff'),
+        color: Color.fromHex('#b067ff'),
     },
     {
         id: 3,
         name: 'Seasonal',
-        color: Color.fromHex('#7be47f'),
+        color: Color.fromHex('#89abff'),
     },
     {
         id: 2,
         name: 'Dry',
-        color: Color.fromHex('#ffe500'),
+        color: Color.fromHex('#c8ffc9'),
     },
     {
         id: 1,
         name: 'Arid',
-        color: Color.fromHex('#ff5922'),
+        color: Color.fromHex('#ffce64'),
     }
 ]
 
