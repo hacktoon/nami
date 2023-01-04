@@ -16,6 +16,7 @@ export class RegionFloodFill extends ConcurrentFill {
 
     setValue(ref, point, level) {
         ref.context.regionMatrix.set(point, ref.id)
+        ref.context.levelMatrix.set(point, level)
     }
 
     isEmpty(ref, point) {

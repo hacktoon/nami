@@ -9,6 +9,7 @@ const SCHEMA = new Schema(
     'RegionTileMapDiagram',
     Type.boolean('showBorders', 'Show borders', {default: true}),
     Type.boolean('showOrigins', 'Show origins', {default: true}),
+    Type.boolean('showLevels', 'Show levels', {default: true}),
     Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
     Type.boolean('showSelectedRegion', 'Show selected region', {default: false}),
     Type.number('selectedRegionId', 'Select region', {default: 0, min: 0, step: 1}),
@@ -50,7 +51,7 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         this.colorMap = colorMap
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
-        this.showLevel = params.get('showLevel')
+        this.showLevels = params.get('showLevels')
         this.showNeighborBorder = params.get('showNeighborBorder')
         this.showSelectedRegion = params.get('showSelectedRegion')
         this.selectedRegionId = params.get('selectedRegionId')
@@ -72,6 +73,10 @@ export class RegionTileMapDiagram extends TileMapDiagram {
                 return borderColor
             }
             return color.darken(50)
+        }
+        if (this.showLevels) {
+            const level = this.tileMap.getLevel(point)
+            return color.darken(level * 1.5)
         }
         if (this.showSelectedRegion) {
             const toggle = (point[0] + point[1]) % 2 === 0
