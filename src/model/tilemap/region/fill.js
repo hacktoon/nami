@@ -7,24 +7,24 @@ const EMPTY = null
 
 export class RegionFloodFill extends ConcurrentFill {
     getChance(ref, origin) {
-        return this.context.chance
+        return ref.context.chance
     }
 
     getGrowth(ref, origin) {
-        return this.context.growth
+        return ref.context.growth
     }
 
     setValue(ref, point, level) {
-        this.context.regionMatrix.set(point, ref.id)
+        ref.context.regionMatrix.set(point, ref.id)
     }
 
     isEmpty(ref, point) {
-        return this.context.regionMatrix.get(point) === EMPTY
+        return ref.context.regionMatrix.get(point) === EMPTY
     }
 
     checkNeighbor(ref, neighborPoint, centerPoint) {
         if (this.isEmpty(ref, neighborPoint)) return
-        const {borderMap, regionMatrix} = this.context
+        const {borderMap, regionMatrix} = ref.context
         const neighborId = regionMatrix.get(neighborPoint)
         if (ref.id === neighborId) return
         const [x, y] = regionMatrix.rect.wrap(centerPoint)
@@ -34,7 +34,7 @@ export class RegionFloodFill extends ConcurrentFill {
         // mark region when neighbor point belongs to another region
         // these operations are idempotent
         borderMap.get(x, y).add(neighborId)
-        this.context.graph.setEdge(ref.id, neighborId)
+        ref.context.graph.setEdge(ref.id, neighborId)
     }
 
     getNeighbors(ref, originPoint) {

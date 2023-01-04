@@ -31,39 +31,12 @@ export class ErosionFill extends ConcurrentFill {
         return isEmpty && validTerrain
     }
 
-    // override method
-    isPhaseEmpty(ref, relSidePoint) {
-        const invalidNoise = ! this._isValidTerrain(ref, relSidePoint)
-        const isEmpty = this._isCellEmpty(ref, relSidePoint)
-        return isEmpty && invalidNoise
-    }
-
     _isCellEmpty(ref, relSidePoint) {
         const sidePoint = this.context.matrix.wrap(relSidePoint)
         const notWaterBorder = ! this.context.waterBorders.has(sidePoint)
         const notLandBorder = ! this.context.landBorders.has(sidePoint)
         const isEmpty = this.context.matrix.get(relSidePoint) === EMPTY
         return isEmpty && notWaterBorder && notLandBorder
-    }
-
-    _isValidTerrain(ref, sidePoint) {
-        const phaseTerrain = Terrain.fromId(ref.fill.phase)
-        const OFFSET = 10 * ref.fill.phase
-        const point = Point.plus(sidePoint, [OFFSET, OFFSET])
-        const noise = this.context.noiseLayer.get(phaseTerrain.noise, point)
-        return phaseTerrain.ratio >= noise
-    }
-
-    _getTerrainId(ref, point) {
-        const isLand = this.context.surfaceLayer.isLand(point)
-        let terrainId = ref.fill.phase
-        let isDepression = this.context.surfaceLayer.isDepression(point)
-        if (isLand && isDepression) {
-            // TODO: .lowerTerrain
-            const isLowerTerrainLand = Terrain.isLand(terrainId - 1)
-            return isLowerTerrainLand ? terrainId - 1 : terrainId
-        }
-        return terrainId
     }
 
     // override method
