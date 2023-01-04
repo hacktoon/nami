@@ -35,7 +35,7 @@ export class WorldTileMap extends TileMap {
         this.surface = new SurfaceLayer(this.rect, noiseLayer)
         this.relief = new ReliefLayer(this.rect, noiseLayer, this.surface)
         this.temperature = new TemperatureLayer(
-            this.rect, noiseLayer, this.surface
+            this.rect, noiseLayer, this.relief
         )
         // this.erosion = new ErosionLayer(this.rect, this.surface, this.relief)
     }

@@ -75,6 +75,11 @@ export class ReliefLayer {
         return Relief.fromId(id)
     }
 
+    isMountain(point) {
+        const id = this.#matrix.get(point)
+        return id === Relief.MOUNTAIN.id
+    }
+
     isLandBorder(point) {
         const isLand = this.#surfaceLayer.isLand(point)
         return this.#borders.has(point) && isLand

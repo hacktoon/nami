@@ -1,5 +1,3 @@
-import { Point } from '/src/lib/point'
-
 import { Temperature } from './data'
 
 
@@ -13,11 +11,11 @@ const TROPICAL_RATIO = .7
 export class TemperatureLayer {
     #offset
     #noiseLayer
-    #surfaceLayer
+    #reliefLayer
 
-    constructor(rect, noiseLayer, surfaceLayer) {
+    constructor(rect, noiseLayer, reliefLayer) {
         this.#noiseLayer = noiseLayer
-        this.#surfaceLayer = surfaceLayer
+        this.#reliefLayer = reliefLayer
         this.#offset = [
             Math.floor(rect.width / 4),
             Math.floor(rect.height / 4)
@@ -25,8 +23,12 @@ export class TemperatureLayer {
     }
 
     #detectType(point) {
-        const offsetPoint = Point.plus(point, this.#offset)
-        const featureNoise = this.#noiseLayer.getOutline(offsetPoint)
+        const featureNoise = this.#noiseLayer.getAtmos(point)
+
+        // TODO: decrease one temp if its a mountain
+        if (this.#reliefLayer.isMountain(point)) {
+            return Temperature.POLAR
+        }
 
         if (featureNoise > TEMPERATE_RATIO) {
             if (featureNoise > SUBTROPICAL_RATIO) {
