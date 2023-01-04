@@ -8,6 +8,7 @@ import { NoiseLayer } from './noise'
 import { SurfaceLayer } from './geology/surface'
 import { ReliefLayer } from './geology/relief'
 import { TemperatureLayer } from './climatology/temperature'
+import { RainLayer } from './climatology/rain'
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -37,6 +38,7 @@ export class WorldTileMap extends TileMap {
         this.temperature = new TemperatureLayer(
             this.rect, noiseLayer, this.relief
         )
+        this.rain = new RainLayer(noiseLayer)
         // this.erosion = new ErosionLayer(this.rect, this.surface, this.relief)
     }
 
