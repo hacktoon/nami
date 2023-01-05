@@ -18,7 +18,7 @@ export class ConcurrentFill {
             const origin = this.origins[fillId]
             this.#levelTable.push(0)
             this.#seedTable.push([origin])
-            this.setValue(fill, origin, 0)
+            this.onFill(fill, origin, null, 0)
         }
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
@@ -28,9 +28,10 @@ export class ConcurrentFill {
     }
 
     // Extensible methods ====================================
-    setValue(fill, origin, level) { }
-    isEmpty(fill, origin) { return [] }
-    getNeighbors(fill, origin) { return [] }
+    onFill(fill, cell, center, level) { }
+    onBlockedFill(fill, cell, center, level) { }
+    canFill(fill, cell, center, level) { return false }
+    getNeighbors(fill, cell) { return [] }
     checkNeighbor(fill, neighbor, origin) { }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }
@@ -64,12 +65,17 @@ export class ConcurrentFill {
     #fillSeedNeighbors(fill, center) {
         const nextSeeds = []
         const neighbors = this.getNeighbors(fill, center)
+        const level = this.#levelTable[fill.id]
         for(let neighbor of neighbors) {
             this.checkNeighbor(fill, neighbor, center)
-            if (this.isEmpty(fill, neighbor)) {
-                const level = this.#levelTable[fill.id]
-                this.setValue(fill, neighbor, level)
+            if (this.canFill(fill, neighbor, center, level)) {
+                // do something to fill that cell
+                this.onFill(fill, neighbor, center, level)
+                // make it a seed for next iteration
                 nextSeeds.push(neighbor)
+            } else {
+                // can't fill, do something about that blocked cell
+                this.onBlockedFill(fill, neighbor, center, level)
             }
         }
         return nextSeeds

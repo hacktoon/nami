@@ -3,9 +3,6 @@ import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
 
-const EMPTY = null
-
-
 export class ErosionFill extends ConcurrentFill {
     // override method
     getNeighbors(ref, originPoint) {
@@ -33,8 +30,7 @@ export class ErosionFill extends ConcurrentFill {
         const sidePoint = this.context.matrix.wrap(relSidePoint)
         const notWaterBorder = ! this.context.waterBorders.has(sidePoint)
         const notLandBorder = ! this.context.landBorders.has(sidePoint)
-        const isEmpty = this.context.matrix.get(relSidePoint) === EMPTY
-        return isEmpty && notWaterBorder && notLandBorder
+        return notWaterBorder && notLandBorder
     }
 
     // override method

@@ -14,13 +14,16 @@ import { ErosionFill } from './fill'
 export class ErosionLayer {
     #basinMap = new PairMap()
     #flowMap = new PairMap()
+    #nextBorders
 
     constructor(rect, reliefLayer) {
+        this.#nextBorders = []
         const context = {
             rect,
             reliefLayer,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
+            nextBorders: this.#nextBorders
         }
         // new ErosionFill(reliefLayer.landBorders, context)
     }
