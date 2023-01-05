@@ -2,8 +2,6 @@ import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
-import { Terrain } from './data'
-
 
 const EMPTY = null
 

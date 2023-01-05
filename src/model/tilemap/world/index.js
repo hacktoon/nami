@@ -7,6 +7,7 @@ import { UITileMap } from '/src/ui/tilemap'
 import { NoiseLayer } from './noise'
 import { SurfaceLayer } from './geology/surface'
 import { ReliefLayer } from './geology/relief'
+import { ErosionLayer } from './geology/erosion'
 import { TemperatureLayer } from './climatology/temperature'
 import { RainLayer } from './climatology/rain'
 import { GeologyTileMapDiagram } from './diagram'
@@ -39,7 +40,7 @@ export class WorldTileMap extends TileMap {
             this.rect, noiseLayer, this.relief
         )
         this.rain = new RainLayer(noiseLayer)
-        // this.erosion = new ErosionLayer(this.rect, this.surface, this.relief)
+        this.erosion = new ErosionLayer(this.rect, this.relief)
     }
 
     get(point) {

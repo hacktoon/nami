@@ -70,6 +70,15 @@ export class ReliefLayer {
         return false
     }
 
+    get landBorders() {
+        const points = []
+        this.#borders.forEach(point => {
+            if (this.#surfaceLayer.isLand(point))
+                points.push(point)
+        })
+        return points
+    }
+
     get(point) {
         const id = this.#matrix.get(point)
         return Relief.fromId(id)
