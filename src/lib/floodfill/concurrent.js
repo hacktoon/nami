@@ -32,7 +32,6 @@ export class ConcurrentFill {
     onBlockedFill(fill, cell, center, level) { }
     canFill(fill, cell, center, level) { return false }
     getNeighbors(fill, cell) { return [] }
-    checkNeighbor(fill, neighbor, origin) { }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }
 
@@ -67,7 +66,6 @@ export class ConcurrentFill {
         const neighbors = this.getNeighbors(fill, center)
         const level = this.#levelTable[fill.id]
         for(let neighbor of neighbors) {
-            this.checkNeighbor(fill, neighbor, center)
             if (this.canFill(fill, neighbor, center, level)) {
                 // do something to fill that cell
                 this.onFill(fill, neighbor, center, level)

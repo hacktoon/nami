@@ -47,8 +47,7 @@ export class WorldTileMap extends TileMap {
         const surface = this.surface.get(point)
         const relief = this.relief.get(point)
         const temperature = this.temperature.get(point)
-        // Change to erosion.getBasin(point)
-        // const basin = this.relief.getBasin(point)
+        // const basin = this.erosion.getBasin(point)
         const surfaceArea = this.surface.getArea(point)
         return [
             `${Point.hash(point)}`,

@@ -4,65 +4,42 @@ import { Point } from '/src/lib/point'
 
 
 export class ErosionFill extends ConcurrentFill {
-    // override method
     getNeighbors(ref, originPoint) {
         return Point.adjacents(originPoint)
     }
 
-    // override method
-    setValue(ref, point, level) {
-        const wrappedPoint = this.context.rect.wrap(point)
-        // set erosion
-        const isBasinSet = this.context.basinMap.has(...wrappedPoint)
-        const isLand = this.context.surfaceLayer.isLand(wrappedPoint)
-        if (! isBasinSet && isLand)
-            this.context.basinMap.set(...wrappedPoint, ref.id)
+    canFill(fill, relSidePoint, centerPoint, level) {
+        const sidePoint = fill.context.rect.wrap(relSidePoint)
+        const reliefId = fill.context.reliefLayer.get(sidePoint)
+        const requiredReliefId = fill.context.requiredReliefId
+        const isValidRelief = reliefId === requiredReliefId
+        const isLand = fill.context.surfaceLayer.isLand(sidePoint)
+        const hasNoBasin = ! fill.context.basinMap.has(...sidePoint)
+        return isLand && hasNoBasin && isValidRelief
     }
 
-    // override method
-    isEmpty(ref, relSidePoint) {
-        const validTerrain = this._isValidTerrain(ref, relSidePoint)
-        const isEmpty = this._isCellEmpty(ref, relSidePoint)
-        return isEmpty && validTerrain
-    }
+    onFill(fill, relSidePoint, relCenterPoint, level) {
+        const sidePoint = fill.context.rect.wrap(relSidePoint)
+        fill.context.basinMap.set(...sidePoint, fill.id)
+        if (relCenterPoint) {
+            const directionId = this._getDirectionId(relSidePoint, relCenterPoint)
+            fill.context.flowMap.set(...sidePoint, directionId)
+        } else {
+            // there's no center, this is the erosion fill origin
+            // get nearer water neighbor
+            // const directionId = this._getDirectionId(relCenterPoint, relSidePoint)
+            if (sidePoint == 'water') {
+                fill.context.flowMap.set(...sidePoint, directionId)
 
-    _isCellEmpty(ref, relSidePoint) {
-        const sidePoint = this.context.matrix.wrap(relSidePoint)
-        const notWaterBorder = ! this.context.waterBorders.has(sidePoint)
-        const notLandBorder = ! this.context.landBorders.has(sidePoint)
-        return notWaterBorder && notLandBorder
-    }
-
-    // override method
-    // check each neighbor to draw water flow map
-    checkNeighbor(ref, relSidePoint, relCenterPoint) {
-        const centerPoint = this.context.matrix.wrap(relCenterPoint)
-        const sidePoint = this.context.matrix.wrap(relSidePoint)
-        // only land tiles allowed
-        if (this.context.surfaceLayer.isWater(centerPoint)) return
-
-        const isSideWater = this.context.surfaceLayer.isWater(sidePoint)
-        const isLandBorder = this.context.landBorders.has(centerPoint)
-        // detect river mouth: land border with side water
-        if (isLandBorder && isSideWater) {
-            const directionId = this._getDirectionId(relCenterPoint, relSidePoint)
-            // if (this.context.flowMap.has(...centerPoint)) return
-            this.context.flowMap.set(...centerPoint, directionId)
+            }
         }
+        // console.log(relCenterPoint, relSidePoint);
+    }
 
-        const isSideLandBorder = this.context.landBorders.has(sidePoint)
-        const isFlowSet = this.context.flowMap.has(...sidePoint)
-        const directionId = this._getDirectionId(relSidePoint, relCenterPoint)
-
-        // if (centerPoint[0] === 85 && centerPoint[1] === 70) {
-        //     console.log(sidePoint, Direction.fromId(directionId));
-        //     console.log(this.context.basinMap.get(...sidePoint));
-        //     console.log(isFlowSet, isSideWater, isSideLandBorder);
-        // }
-        if (isFlowSet || isSideWater || isSideLandBorder) return
-
-        this.context.flowMap.set(...sidePoint, directionId)
-
+    // check each neighbor to draw water flow map
+    onBlockedFill(ref, relSidePoint, relCenterPoint, level) {
+        const point = fill.context.rect.wrap(relSidePoint)
+        ref.context.nextBorders.push(point)
     }
 
     _getDirectionId(sourcePoint, targetPoint) {

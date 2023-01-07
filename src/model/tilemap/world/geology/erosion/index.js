@@ -4,28 +4,36 @@ import { Direction } from '/src/lib/direction'
 import { ErosionFill } from './fill'
 
 // const FILL_PHASES = [
-//     Terrain.BASIN,
-//     Terrain.PLAIN,
-//     Terrain.PLATEAU,
-//     Terrain.MOUNTAIN
+//     Relief.BASIN,
+//     Relief.PLAIN,
+//     Relief.PLATEAU,
+//     Relief.MOUNTAIN
 // ]
 
 
 export class ErosionLayer {
+    #reliefLayer
     #basinMap = new PairMap()
     #flowMap = new PairMap()
     #nextBorders
 
     constructor(rect, reliefLayer) {
+        this.#reliefLayer = reliefLayer
+        const reliefId = 3  // basin
+        this.#fillRelief(rect, reliefId)
+    }
+
+    #fillRelief(rect, requiredReliefId) {
         this.#nextBorders = []
         const context = {
             rect,
-            reliefLayer,
+            requiredReliefId,
+            reliefLayer: this.#reliefLayer,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
-            nextBorders: this.#nextBorders
+            nextBorders: this.#nextBorders,
         }
-        // new ErosionFill(reliefLayer.landBorders, context)
+        new ErosionFill(this.#reliefLayer.landBorders, context)
     }
 
     get basinCount() {
