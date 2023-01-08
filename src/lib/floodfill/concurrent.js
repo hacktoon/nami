@@ -28,9 +28,9 @@ export class ConcurrentFill {
     }
 
     // Extensible methods ====================================
-    onFill(fill, cell, center, level) { }
-    onBlockedFill(fill, cell, center, level) { }
-    canFill(fill, cell, center, level) { return false }
+    onFill(fill, cell, source, level) { }
+    onBlockedFill(fill, cell, source, level) { }
+    canFill(fill, cell, source, level) { return false }
     getNeighbors(fill, cell) { return [] }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }
@@ -43,7 +43,7 @@ export class ConcurrentFill {
             const nextSeeds = this.#fillLayer(fill, this.#seedTable[fill.id])
             this.#seedTable[fill.id] = this.#fillRandomLayers(fill, nextSeeds)
             // Increase the num of completed fills by total of seeds
-            completedFills += nextSeeds.length === 0 ? 1 : 0
+            completedFills += this.#seedTable[fill.id].length === 0 ? 1 : 0
         }
         // are all fills complete?
         return completedFills < this.origins.length
@@ -61,19 +61,19 @@ export class ConcurrentFill {
         return nextSeeds
     }
 
-    #fillSeedNeighbors(fill, center) {
+    #fillSeedNeighbors(fill, source) {
         const nextSeeds = []
-        const neighbors = this.getNeighbors(fill, center)
+        const neighbors = this.getNeighbors(fill, source)
         const level = this.#levelTable[fill.id]
         for(let neighbor of neighbors) {
-            if (this.canFill(fill, neighbor, center, level)) {
+            if (this.canFill(fill, neighbor, source, level)) {
                 // do something to fill that cell
-                this.onFill(fill, neighbor, center, level)
+                this.onFill(fill, neighbor, source, level)
                 // make it a seed for next iteration
                 nextSeeds.push(neighbor)
             } else {
                 // can't fill, do something about that blocked cell
-                this.onBlockedFill(fill, neighbor, center, level)
+                this.onBlockedFill(fill, neighbor, source, level)
             }
         }
         return nextSeeds

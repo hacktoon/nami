@@ -43,12 +43,11 @@ export class ErosionLayer {
         return this.#basinMap.size
     }
 
-    getBasin(point) {
-        return this.#basinMap.get(...point)
-    }
-
-    getFlow(point) {
+    get(point) {
         const id = this.#flowMap.get(...point)
-        return Direction.fromId(id)
+        return {
+            basin: this.#basinMap.get(...point),
+            flow: Direction.fromId(id),
+        }
     }
 }

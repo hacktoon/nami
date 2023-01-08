@@ -18,25 +18,26 @@ export class ErosionFill extends ConcurrentFill {
         return notVisited && isLand && isRequiredRelief
     }
 
-    // TODO: create onInitFill to avoid 'if (relPreviousPoint)'
+    // TODO: create onInitFill
     onFill(fill, relFillPoint, relPreviousPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
         fill.context.basinMap.set(...fillPoint, fill.id)
         if (relPreviousPoint) {
             const directionId = this._getDirectionId(relFillPoint, relPreviousPoint)
             fill.context.flowMap.set(...fillPoint, directionId)
+        } else {
+            for(let neighbor of Point.adjacents(relFillPoint)) {
+
+            }
         }
     }
 
     // check each neighbor to draw water flow map
     onBlockedFill(fill, relFillPoint, relPreviousPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
-        const isFillWater = fill.context.surfaceLayer.isWater(fillPoint)
-        if (isFillWater) {
-            const directionId = this._getDirectionId(relFillPoint, relPreviousPoint)
-            fill.context.flowMap.set(...fillPoint, directionId)
-        } else {
-            // point is blocked, mark as next border (origin) to start fill
+        const isBorder = fill.context.reliefLayer.isBorder(fillPoint)
+        const isLand = fill.context.surfaceLayer.isLand(fillPoint)
+        if (isLand && ! isBorder) {
             fill.context.nextBorders.push(fillPoint)
         }
     }

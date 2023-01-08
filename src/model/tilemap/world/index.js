@@ -47,18 +47,14 @@ export class WorldTileMap extends TileMap {
         const surface = this.surface.get(point)
         const relief = this.relief.get(point)
         const temperature = this.temperature.get(point)
-        const basin = this.erosion.getBasin(point)
+        const erosion = this.erosion.get(point)
         const surfaceArea = this.surface.getArea(point)
         return [
             `${Point.hash(point)}`,
-            `${surface.name}(area:${surfaceArea}%)`,
-            `${relief.name}`,
-            `basin: ${basin}`,
-            `${temperature.name}`,
-        ].join(' | ')
-    }
-
-    get basinCount() {
-        return this.relief.basinCount
+            `Surface(name:${surface.name}, area:${surfaceArea}%)`,
+            `Relief(${relief.name})`,
+            `Erosion(basin:${erosion.basin}, flow: ${erosion.flow.name})`,
+            `Temperature(${temperature.name})`,
+        ].join('\n')
     }
 }

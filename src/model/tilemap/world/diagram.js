@@ -11,23 +11,22 @@ const SCHEMA = new Schema(
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
     Type.boolean('showTemperature', 'Temperature', {default: false}),
     Type.boolean('showRain', 'Rain', {default: false}),
-    Type.boolean('showBasins', 'Basins', {default: false}),
-    Type.boolean('showFlow', 'Flow', {default: false}),
+    Type.boolean('showErosion', 'Erosion', {default: false}),
 )
 
 
 class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
-        this.basinColors = new Map()
+        this.erosionColors = new Map()
         for (let i = 0; i < tileMap.erosion.basinCount; i ++) {
-            this.basinColors.set(i, new Color())
+            this.erosionColors.set(i, new Color())
         }
     }
 
-    getByBasin(point) {
-        const basin = this.tileMap.erosion.getBasin(point)
-        return this.basinColors.get(basin)
+    getByErosion(point) {
+        const erosion = this.tileMap.erosion.get(point)
+        return this.erosionColors.get(erosion.basin)
     }
 }
 
@@ -76,18 +75,18 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (showWaterBorder && isBorder && surface.water) {
             color = color.brighten(40)
         }
-        if (! surface.water && this.params.get('showBasins')) {
-            const basin = this.tileMap.erosion.getBasin(point)
-            return basin ? this.colorMap.getByBasin(point) : color
+        if (! surface.water && this.params.get('showErosion')) {
+            const erosion = this.tileMap.erosion.get(point)
+            return erosion.basin ? this.colorMap.getByErosion(point) : color
         }
         return color
     }
 
     getText(point) {
         if (this.params.get('showFlow')) {
-            const direction = this.tileMap.erosion.getFlow(point)
-            if (direction) {
-                return direction.symbol
+            const erosion = this.tileMap.erosion.get(point)
+            if (erosion.flow) {
+                return direction.flow.symbol
             }
         }
         return ''
