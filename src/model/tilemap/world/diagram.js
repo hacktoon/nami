@@ -11,8 +11,8 @@ const SCHEMA = new Schema(
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
     Type.boolean('showTemperature', 'Temperature', {default: false}),
     Type.boolean('showRain', 'Rain', {default: false}),
-    // Type.boolean('showBasins', 'Basins', {default: false}),
-    // Type.boolean('showFlow', 'Flow', {default: false}),
+    Type.boolean('showBasins', 'Basins', {default: false}),
+    Type.boolean('showFlow', 'Flow', {default: false}),
 )
 
 
@@ -20,13 +20,13 @@ class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
         this.basinColors = new Map()
-        for (let i = 0; i < tileMap.relief.basinCount; i ++) {
+        for (let i = 0; i < tileMap.erosion.basinCount; i ++) {
             this.basinColors.set(i, new Color())
         }
     }
 
     getByBasin(point) {
-        const basin = this.tileMap.relief.getBasin(point)
+        const basin = this.tileMap.erosion.getBasin(point)
         return this.basinColors.get(basin)
     }
 }
@@ -52,8 +52,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const relief = this.tileMap.relief.get(point)
         const temperature = this.tileMap.temperature.get(point)
         const rain = this.tileMap.rain.get(point)
+
         const showLandBorder = this.params.get('showLandBorder')
         const showWaterBorder = this.params.get('showWaterBorder')
+        const isBorder = this.tileMap.relief.isBorder(point)
         const showRelief = this.params.get('showRelief')
         const showTemperature = this.params.get('showTemperature')
         const showRain = this.params.get('showRain')
@@ -68,15 +70,15 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (showRain && ! surface.water) {
             color = rain.color
         }
-        if (showLandBorder && this.tileMap.relief.isLandBorder(point)) {
+        if (showLandBorder && isBorder && !surface.water) {
             color = color.darken(40)
         }
-        const isWaterBorder = this.tileMap.relief.isWaterBorder(point)
-        if (showWaterBorder && isWaterBorder) {
+        if (showWaterBorder && isBorder && surface.water) {
             color = color.brighten(40)
         }
         if (! surface.water && this.params.get('showBasins')) {
-            return this.colorMap.getByBasin(point)
+            const basin = this.tileMap.erosion.getBasin(point)
+            return basin ? this.colorMap.getByBasin(point) : color
         }
         return color
     }

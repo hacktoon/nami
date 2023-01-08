@@ -8,38 +8,37 @@ export class ErosionFill extends ConcurrentFill {
         return Point.adjacents(originPoint)
     }
 
-    canFill(fill, relSidePoint, centerPoint, level) {
-        const sidePoint = fill.context.rect.wrap(relSidePoint)
-        const reliefId = fill.context.reliefLayer.get(sidePoint)
-        const requiredReliefId = fill.context.requiredReliefId
-        const isValidRelief = reliefId === requiredReliefId
-        const isLand = fill.context.surfaceLayer.isLand(sidePoint)
-        const hasNoBasin = ! fill.context.basinMap.has(...sidePoint)
-        return isLand && hasNoBasin && isValidRelief
+    canFill(fill, relFillPoint, relPreviousPoint, level) {
+        const fillPoint = fill.context.rect.wrap(relFillPoint)
+        const relief = fill.context.reliefLayer.get(fillPoint)
+        const isRequiredRelief = relief.id === fill.context.requiredReliefId
+        const isLand = fill.context.surfaceLayer.isLand(fillPoint)
+        // use basin map to track which points were already visited
+        const notVisited = ! fill.context.basinMap.has(...fillPoint)
+        return notVisited && isLand && isRequiredRelief
     }
 
-    onFill(fill, relSidePoint, relCenterPoint, level) {
-        const sidePoint = fill.context.rect.wrap(relSidePoint)
-        fill.context.basinMap.set(...sidePoint, fill.id)
-        if (relCenterPoint) {
-            const directionId = this._getDirectionId(relSidePoint, relCenterPoint)
-            fill.context.flowMap.set(...sidePoint, directionId)
-        } else {
-            // there's no center, this is the erosion fill origin
-            // get nearer water neighbor
-            // const directionId = this._getDirectionId(relCenterPoint, relSidePoint)
-            if (sidePoint == 'water') {
-                fill.context.flowMap.set(...sidePoint, directionId)
-
-            }
+    // TODO: create onInitFill to avoid 'if (relPreviousPoint)'
+    onFill(fill, relFillPoint, relPreviousPoint, level) {
+        const fillPoint = fill.context.rect.wrap(relFillPoint)
+        fill.context.basinMap.set(...fillPoint, fill.id)
+        if (relPreviousPoint) {
+            const directionId = this._getDirectionId(relFillPoint, relPreviousPoint)
+            fill.context.flowMap.set(...fillPoint, directionId)
         }
-        // console.log(relCenterPoint, relSidePoint);
     }
 
     // check each neighbor to draw water flow map
-    onBlockedFill(ref, relSidePoint, relCenterPoint, level) {
-        const point = fill.context.rect.wrap(relSidePoint)
-        ref.context.nextBorders.push(point)
+    onBlockedFill(fill, relFillPoint, relPreviousPoint, level) {
+        const fillPoint = fill.context.rect.wrap(relFillPoint)
+        const isFillWater = fill.context.surfaceLayer.isWater(fillPoint)
+        if (isFillWater) {
+            const directionId = this._getDirectionId(relFillPoint, relPreviousPoint)
+            fill.context.flowMap.set(...fillPoint, directionId)
+        } else {
+            // point is blocked, mark as next border (origin) to start fill
+            fill.context.nextBorders.push(fillPoint)
+        }
     }
 
     _getDirectionId(sourcePoint, targetPoint) {

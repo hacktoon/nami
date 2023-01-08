@@ -40,19 +40,20 @@ export class WorldTileMap extends TileMap {
             this.rect, noiseLayer, this.relief
         )
         this.rain = new RainLayer(noiseLayer)
-        this.erosion = new ErosionLayer(this.rect, this.relief)
+        this.erosion = new ErosionLayer(this.rect, this.surface, this.relief)
     }
 
     get(point) {
         const surface = this.surface.get(point)
         const relief = this.relief.get(point)
         const temperature = this.temperature.get(point)
-        // const basin = this.erosion.getBasin(point)
+        const basin = this.erosion.getBasin(point)
         const surfaceArea = this.surface.getArea(point)
         return [
             `${Point.hash(point)}`,
             `${surface.name}(area:${surfaceArea}%)`,
             `${relief.name}`,
+            `basin: ${basin}`,
             `${temperature.name}`,
         ].join(' | ')
     }

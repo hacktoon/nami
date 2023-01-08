@@ -12,12 +12,14 @@ import { ErosionFill } from './fill'
 
 
 export class ErosionLayer {
+    #surfaceLayer
     #reliefLayer
     #basinMap = new PairMap()
     #flowMap = new PairMap()
     #nextBorders
 
-    constructor(rect, reliefLayer) {
+    constructor(rect, surfaceLayer, reliefLayer) {
+        this.#surfaceLayer = surfaceLayer
         this.#reliefLayer = reliefLayer
         const reliefId = 3  // basin
         this.#fillRelief(rect, reliefId)
@@ -28,6 +30,7 @@ export class ErosionLayer {
         const context = {
             rect,
             requiredReliefId,
+            surfaceLayer: this.#surfaceLayer,
             reliefLayer: this.#reliefLayer,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,

@@ -89,14 +89,7 @@ export class ReliefLayer {
         return id === Relief.MOUNTAIN.id
     }
 
-    isLandBorder(point) {
-        const isLand = this.#surfaceLayer.isLand(point)
-        return this.#borders.has(point) && isLand
+    isBorder(point) {
+        return this.#borders.has(point)
     }
-
-    isWaterBorder(point) {
-        const isWater = this.#surfaceLayer.isWater(point)
-        return this.#borders.has(point) && isWater
-    }
-
 }
