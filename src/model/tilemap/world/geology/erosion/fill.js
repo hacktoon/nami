@@ -14,20 +14,19 @@ export class ErosionFill extends ConcurrentFill {
     canFill(fill, relFillPoint, relPreviousPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
         const relief = fill.context.reliefLayer.get(fillPoint)
-        const hasRequiredRelief = fill.context.requiredReliefIds.has(relief.id)
+        const isValidRelief = fill.context.validReliefIds.has(relief.id)
         const isLand = fill.context.surfaceLayer.isLand(fillPoint)
         // use basin map to track which points were already visited
         const notVisited = ! fill.context.basinMap.has(...fillPoint)
-        return notVisited && isLand && hasRequiredRelief
+        return notVisited && isLand && isValidRelief
     }
 
     onInitFill(fill, relFillPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
         fill.context.basinMap.set(...fillPoint, fill.id)
-        for(let relNeighbor of Point.adjacents(relFillPoint)) {
+        for(let relNeighbor of Point.adjacents(fillPoint)) {
             const neighbor = fill.context.rect.wrap(relNeighbor)
-            const isSideWater = fill.context.surfaceLayer.isWater(neighbor)
-            if (isSideWater) {
+            if (fill.context.surfaceLayer.isWater(neighbor)) {
                 const directionId = this._getDirectionId(relFillPoint, relNeighbor)
                 fill.context.flowMap.set(...fillPoint, directionId)
                 break
@@ -37,18 +36,18 @@ export class ErosionFill extends ConcurrentFill {
 
     onFill(fill, relFillPoint, relPreviousPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
-        fill.context.basinMap.set(...fillPoint, fill.id)
         const directionId = this._getDirectionId(relFillPoint, relPreviousPoint)
         fill.context.flowMap.set(...fillPoint, directionId)
+        fill.context.basinMap.set(...fillPoint, fill.id)
     }
 
     onBlockedFill(fill, relFillPoint, relPreviousPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
         const relief = fill.context.reliefLayer.get(fillPoint)
-        const isNotRequiredRelief = ! fill.context.requiredReliefIds.has(relief.id)
+        const isNotValidRelief = ! fill.context.validReliefIds.has(relief.id)
         const notVisited = ! fill.context.basinMap.has(...fillPoint)
         const isLand = fill.context.surfaceLayer.isLand(fillPoint)
-        if (isLand && notVisited && isNotRequiredRelief) {
+        if (isLand && notVisited && isNotValidRelief) {
             fill.context.nextBorders.add(fillPoint)
         }
     }

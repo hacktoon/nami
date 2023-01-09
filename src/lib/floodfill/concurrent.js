@@ -8,23 +8,24 @@ export class ConcurrentFill {
     #seedTable = []
     #levelTable = []
 
-    constructor(origins, context={}) {
-        this.origins = origins
-        this.context = context
-
+    start(origins, context={}) {
         // Initialize data and fill origins
-        for(let fillId = 0; fillId < this.origins.length; fillId ++) {
-            const fill = {id: fillId, context: context}
-            const origin = this.origins[fillId]
+        for(let fillId = 0; fillId < origins.length; fillId ++) {
+            const fill = {id: fillId, context}
+            const origin = origins[fillId]
             this.#levelTable.push(0)
             this.#seedTable.push([origin])
             this.onInitFill(fill, origin, 0)
         }
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
-        while(this.#executeFills() && loopCount > 0) {
+        while(this.#executeFills(origins, context) && loopCount > 0) {
             loopCount--
         }
+    }
+
+    restart(origins, context={}) {
+
     }
 
     // Extensible methods ====================================
@@ -39,17 +40,17 @@ export class ConcurrentFill {
     getGrowth(fill) { return 0 }
 
     // Private methods =======================================
-    #executeFills() {
+    #executeFills(origins, context) {
         let completedFills = 0
-        for(let fillId = 0; fillId < this.origins.length; fillId ++) {
-            const fill = {id: fillId, context: this.context}
-            const nextSeeds = this.#fillLayer(fill, this.#seedTable[fill.id])
-            this.#seedTable[fill.id] = this.#fillRandomLayers(fill, nextSeeds)
+        for(let fillId = 0; fillId < origins.length; fillId ++) {
+            const fill = {id: fillId, context}
+            const nextSeeds = this.#fillLayer(fill, this.#seedTable[fillId])
+            this.#seedTable[fillId] = this.#fillRandomLayers(fill, nextSeeds)
             // Increase the num of completed fills by total of seeds
-            completedFills += this.#seedTable[fill.id].length === 0 ? 1 : 0
+            completedFills += this.#seedTable[fillId].length === 0 ? 1 : 0
         }
         // are all fills complete?
-        return completedFills < this.origins.length
+        return completedFills < origins.length
     }
 
     #fillLayer(fill, seeds) {

@@ -57,7 +57,7 @@ export class RegionTileMap extends TileMap {
         this.#levelMatrix = Matrix.fromRect(this.rect, () => 0)
         this.#centerPoints = new PointSet(this.#origins)
         this.#regions = this.#origins.map((_, id) => id)
-        new RegionFloodFill(this.#origins, {
+        new RegionFloodFill().start(this.#origins, {
             regionMatrix: this.#regionMatrix,
             levelMatrix: this.#levelMatrix,
             borderMap: this.#borderMap,
