@@ -14,13 +14,12 @@ export class ErosionFill extends ConcurrentFill {
     canFill(fill, relFillPoint, relPreviousPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
         const relief = fill.context.reliefLayer.get(fillPoint)
-        const isRequiredRelief = relief.id === fill.context.requiredReliefId
+        const hasRequiredRelief = fill.context.requiredReliefIds.has(relief.id)
         const isLand = fill.context.surfaceLayer.isLand(fillPoint)
         // use basin map to track which points were already visited
         const notVisited = ! fill.context.basinMap.has(...fillPoint)
-        return notVisited && isLand && isRequiredRelief
+        return notVisited && isLand && hasRequiredRelief
     }
-
 
     onInitFill(fill, relFillPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
@@ -43,13 +42,14 @@ export class ErosionFill extends ConcurrentFill {
         fill.context.flowMap.set(...fillPoint, directionId)
     }
 
-    // check each neighbor to draw water flow map
     onBlockedFill(fill, relFillPoint, relPreviousPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
-        const isBorder = fill.context.reliefLayer.isBorder(fillPoint)
+        const relief = fill.context.reliefLayer.get(fillPoint)
+        const isNotRequiredRelief = ! fill.context.requiredReliefIds.has(relief.id)
+        const notVisited = ! fill.context.basinMap.has(...fillPoint)
         const isLand = fill.context.surfaceLayer.isLand(fillPoint)
-        if (isLand && ! isBorder) {
-            fill.context.nextBorders.push(fillPoint)
+        if (isLand && notVisited && isNotRequiredRelief) {
+            fill.context.nextBorders.add(fillPoint)
         }
     }
 

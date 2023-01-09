@@ -46,27 +46,26 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(relativePoint) {
-        const point = this.rect.wrap(relativePoint)
-        const surface = this.tileMap.surface.get(point)
-        const relief = this.tileMap.relief.get(point)
-        const temperature = this.tileMap.temperature.get(point)
-        const rain = this.tileMap.rain.get(point)
-
         const showLandBorder = this.params.get('showLandBorder')
         const showWaterBorder = this.params.get('showWaterBorder')
-        const isBorder = this.tileMap.relief.isBorder(point)
         const showRelief = this.params.get('showRelief')
         const showTemperature = this.params.get('showTemperature')
         const showRain = this.params.get('showRain')
+        const point = this.rect.wrap(relativePoint)
+        const surface = this.tileMap.surface.get(point)
+        const isBorder = this.tileMap.relief.isBorder(point)
         let color = surface.color
 
         if (showRelief) {
+            const relief = this.tileMap.relief.get(point)
             color = relief.color
         }
         if (showTemperature && ! surface.water) {
+            const temperature = this.tileMap.temperature.get(point)
             color = temperature.color
         }
         if (showRain && ! surface.water) {
+            const rain = this.tileMap.rain.get(point)
             color = rain.color
         }
         if (showLandBorder && isBorder && !surface.water) {
@@ -75,16 +74,25 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (showWaterBorder && isBorder && surface.water) {
             color = color.brighten(40)
         }
-        if (! surface.water && this.params.get('showErosion')) {
-            const erosion = this.tileMap.erosion.get(point)
-            return erosion.basin ? this.colorMap.getByErosion(point) : color
+        if (this.params.get('showErosion')) {
+            if (this.tileMap.erosion.hasNextBorder(point)) {
+                return Color.RED
+            }
+            if (surface.water) {
+                return color.darken(100)
+            } else {
+                const erosion = this.tileMap.erosion.get(point)
+                return erosion
+                    ? this.colorMap.getByErosion(point)
+                    : color.darken(100)
+            }
         }
         return color
     }
 
     getText(point) {
         const erosion = this.tileMap.erosion.get(point)
-        const hasText = this.params.get('showErosion') && erosion.flow
-        return hasText ? erosion.flow.symbol : ''
+        const hasText = erosion && this.params.get('showErosion')
+        return hasText && erosion.flow ? erosion.flow.symbol : ''
     }
 }

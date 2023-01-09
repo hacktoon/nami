@@ -42,7 +42,7 @@ const SPEC = [
         id: 6,
         name: 'Mountain',
         water: false,
-        color: Color.fromHex('#c0b896'),
+        color: Color.fromHex('#a79f7f'),
     }
 ]
 

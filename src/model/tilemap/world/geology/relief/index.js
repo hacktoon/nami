@@ -5,11 +5,11 @@ import { PointSet } from '/src/lib/point/set'
 import { Relief } from './data'
 
 
-const ABYSS_RATIO = 0.35
-const OCEAN_RATIO = 0.47
-const PLAIN_RATIO = 0.4
+const ABYSS_RATIO = .35
+const OCEAN_RATIO = .47
+const PLAIN_RATIO = .4
 const PLATEAU_RATIO = .55
-const MOUNTAIN_RATIO = 0.5
+const MOUNTAIN_RATIO = .5
 
 
 export class ReliefLayer {
