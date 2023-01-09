@@ -4,6 +4,9 @@ import { Point } from '/src/lib/point'
 
 
 export class ErosionFill extends ConcurrentFill {
+    getChance(fill) { return .1 }
+    getGrowth(fill) { return 5 }
+
     getNeighbors(ref, originPoint) {
         return Point.adjacents(originPoint)
     }
@@ -18,18 +21,26 @@ export class ErosionFill extends ConcurrentFill {
         return notVisited && isLand && isRequiredRelief
     }
 
-    // TODO: create onInitFill
+
+    onInitFill(fill, relFillPoint, level) {
+        const fillPoint = fill.context.rect.wrap(relFillPoint)
+        fill.context.basinMap.set(...fillPoint, fill.id)
+        for(let relNeighbor of Point.adjacents(relFillPoint)) {
+            const neighbor = fill.context.rect.wrap(relNeighbor)
+            const isSideWater = fill.context.surfaceLayer.isWater(neighbor)
+            if (isSideWater) {
+                const directionId = this._getDirectionId(relFillPoint, relNeighbor)
+                fill.context.flowMap.set(...fillPoint, directionId)
+                break
+            }
+        }
+    }
+
     onFill(fill, relFillPoint, relPreviousPoint, level) {
         const fillPoint = fill.context.rect.wrap(relFillPoint)
         fill.context.basinMap.set(...fillPoint, fill.id)
-        if (relPreviousPoint) {
-            const directionId = this._getDirectionId(relFillPoint, relPreviousPoint)
-            fill.context.flowMap.set(...fillPoint, directionId)
-        } else {
-            for(let neighbor of Point.adjacents(relFillPoint)) {
-
-            }
-        }
+        const directionId = this._getDirectionId(relFillPoint, relPreviousPoint)
+        fill.context.flowMap.set(...fillPoint, directionId)
     }
 
     // check each neighbor to draw water flow map

@@ -83,12 +83,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     getText(point) {
-        if (this.params.get('showFlow')) {
-            const erosion = this.tileMap.erosion.get(point)
-            if (erosion.flow) {
-                return direction.flow.symbol
-            }
-        }
-        return ''
+        const erosion = this.tileMap.erosion.get(point)
+        const hasText = this.params.get('showErosion') && erosion.flow
+        return hasText ? erosion.flow.symbol : ''
     }
 }

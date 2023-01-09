@@ -53,7 +53,7 @@ export class WorldTileMap extends TileMap {
             `${Point.hash(point)}`,
             `Surface(name:${surface.name}, area:${surfaceArea}%)`,
             `Relief(${relief.name})`,
-            `Erosion(basin:${erosion.basin}, flow: ${erosion.flow.name})`,
+            `Erosion(basin:${erosion.basin}, flow: ${erosion.flow?.name})`,
             `Temperature(${temperature.name})`,
         ].join('\n')
     }
