@@ -11,30 +11,18 @@ export class ErosionLayer {
     #basinMap = new PairMap()
     #flowMap = new PairMap()
     #validReliefIds = new Set()
-    #nextBorders
+
 
     constructor(rect, surfaceLayer, reliefLayer) {
         this.#surfaceLayer = surfaceLayer
         this.#reliefLayer = reliefLayer
-        this.#nextBorders = new PointSet(reliefLayer.landBorders)
-        this.#fillRelief(rect, 3)
+        this.#fillRelief(rect, reliefLayer.landBorders, 3)
         // this.#fillRelief(rect, 4)
     }
 
-    #fillRelief(rect, validReliefId) {
-        const origins = []
+    #fillRelief(rect, origins, validReliefId) {
         this.#validReliefIds.add(validReliefId)
         // filter and return actual next borders (ignore +1 higher reliefs)
-        const nextBorders = new PointSet()
-        this.#nextBorders.forEach(point => {
-            const relief = this.#reliefLayer.get(point)
-            if (relief.id === validReliefId) {
-                origins.push(point)
-            } else {
-                nextBorders.add(point)
-            }
-        })
-        this.#nextBorders = nextBorders
         const context = {
             rect,
             validReliefIds: this.#validReliefIds,
@@ -42,7 +30,6 @@ export class ErosionLayer {
             reliefLayer: this.#reliefLayer,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
-            nextBorders: this.#nextBorders,
         }
         const fill = new ErosionFill()
         fill.start(origins, context)
@@ -63,6 +50,6 @@ export class ErosionLayer {
     }
 
     hasNextBorder(point) {
-        return this.#nextBorders.has(point)
+        // return this.#nextBorders.has(point)
     }
 }

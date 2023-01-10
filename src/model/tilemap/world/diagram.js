@@ -75,13 +75,13 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             color = color.brighten(40)
         }
         if (this.params.get('showErosion')) {
-            if (this.tileMap.erosion.hasNextBorder(point)) {
-                return Color.RED
-            }
+            const erosion = this.tileMap.erosion.get(point)
+            // if (this.tileMap.erosion.hasNextBorder(point)) {
+            //     return Color.RED
+            // }
             if (surface.water) {
                 return color.darken(100)
             } else {
-                const erosion = this.tileMap.erosion.get(point)
                 return erosion
                     ? this.colorMap.getByErosion(point)
                     : color.darken(100)
