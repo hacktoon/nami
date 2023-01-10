@@ -21,14 +21,21 @@ export class ErosionFill extends ConcurrentFill {
         return notVisited && isLand && isValidRelief
     }
 
+    canDeferFill(fill, relFillPoint, relPreviousPoint, level) {
+        return false
+    }
+
     onInitFill(fill, relFillPoint, level) {
-        const fillPoint = fill.context.rect.wrap(relFillPoint)
-        fill.context.basinMap.set(...fillPoint, fill.id)
+        const {rect, surfaceLayer, flowMap, basinMap} = fill.context
+        const fillPoint = rect.wrap(relFillPoint)
         for(let relNeighbor of Point.adjacents(fillPoint)) {
-            const neighbor = fill.context.rect.wrap(relNeighbor)
-            if (fill.context.surfaceLayer.isWater(neighbor)) {
-                const directionId = this._getDirectionId(relFillPoint, relNeighbor)
-                fill.context.flowMap.set(...fillPoint, directionId)
+            const neighbor = rect.wrap(relNeighbor)
+            const isNeighborWater = surfaceLayer.isWater(neighbor)
+            // neighbor is water, set the flow to it
+            const directionId = this._getDirectionId(relFillPoint, relNeighbor)
+            if (isNeighborWater) {
+                flowMap.set(...fillPoint, directionId)
+                basinMap.set(...fillPoint, fill.id)
                 break
             }
         }
@@ -41,16 +48,16 @@ export class ErosionFill extends ConcurrentFill {
         fill.context.basinMap.set(...fillPoint, fill.id)
     }
 
-    // onBlockedFill(fill, relFillPoint, relPreviousPoint, level) {
-    //     const fillPoint = fill.context.rect.wrap(relFillPoint)
-    //     const relief = fill.context.reliefLayer.get(fillPoint)
-    //     const isNotValidRelief = ! fill.context.validReliefIds.has(relief.id)
-    //     const notVisited = ! fill.context.basinMap.has(...fillPoint)
-    //     const isLand = fill.context.surfaceLayer.isLand(fillPoint)
-    //     if (isLand && notVisited && isNotValidRelief) {
-    //         fill.context.nextBorders.add(fillPoint)
-    //     }
-    // }
+    onBlockedFill(fill, relFillPoint, relPreviousPoint, level) {
+        const fillPoint = fill.context.rect.wrap(relFillPoint)
+        const relief = fill.context.reliefLayer.get(fillPoint)
+        const isNotValidRelief = ! fill.context.validReliefIds.has(relief.id)
+        const isLand = fill.context.surfaceLayer.isLand(fillPoint)
+        const notVisited = ! fill.context.basinMap.has(...fillPoint)
+        if (isLand && notVisited && isNotValidRelief) {
+            fill.context.nextCells.add(fillPoint)
+        }
+    }
 
     _getDirectionId(sourcePoint, targetPoint) {
         const angle = Point.angle(sourcePoint, targetPoint)

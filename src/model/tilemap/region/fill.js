@@ -6,30 +6,30 @@ const EMPTY = null
 
 
 export class RegionFloodFill extends ConcurrentFill {
-    getChance(ref) {
-        return ref.context.chance
+    getChance(fill) {
+        return fill.context.chance
     }
 
-    getGrowth(ref) {
-        return ref.context.growth
+    getGrowth(fill) {
+        return fill.context.growth
     }
 
-    canFill(ref, point, center, level) {
-        return ref.context.regionMatrix.get(point) === EMPTY
+    canFill(fill, point, center, level) {
+        return fill.context.regionMatrix.get(point) === EMPTY
     }
 
-    onFill(ref, point, center, level) {
+    onFill(fill, point, center, level) {
         // center is the seed at center
         // point is neighbor being filled
-        ref.context.regionMatrix.set(point, ref.id)
-        ref.context.levelMatrix.set(point, level)
+        fill.context.regionMatrix.set(point, fill.id)
+        fill.context.levelMatrix.set(point, level)
     }
 
-    onBlockedFill(ref, neighbor, center, level) {
-        const {borderMap, regionMatrix, graph} = ref.context
+    onBlockedFill(fill, neighbor, center, level) {
+        const {borderMap, regionMatrix, graph} = fill.context
         const neighborRegionId = regionMatrix.get(neighbor)
         // it's same fill, do nothing
-        if (ref.id === neighborRegionId) { return }
+        if (fill.id === neighborRegionId) { return }
         const [x, y] = regionMatrix.rect.wrap(center)
         // create new set of neighbor regions by id
         // set the center as border since the neighbor isn't same fill
@@ -39,10 +39,10 @@ export class RegionFloodFill extends ConcurrentFill {
         // mark region when neighbor point belongs to another region
         // these operations are idempotent
         borderMap.get(x, y).add(neighborRegionId)
-        graph.setEdge(ref.id, neighborRegionId)
+        graph.setEdge(fill.id, neighborRegionId)
     }
 
-    getNeighbors(ref, point) {
+    getNeighbors(fill, point) {
         return Point.adjacents(point)
     }
 }

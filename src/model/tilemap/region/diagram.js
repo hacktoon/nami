@@ -1,18 +1,18 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
 import { TileMapDiagram } from '/src/model/lib/tilemap'
 
 
 const SCHEMA = new Schema(
     'RegionTileMapDiagram',
-    Type.boolean('showBorders', 'Show borders', {default: true}),
-    Type.boolean('showOrigins', 'Show origins', {default: true}),
-    Type.boolean('showLevels', 'Show levels', {default: true}),
-    Type.boolean('showNeighborBorder', 'Show neighbor border', {default: false}),
-    Type.boolean('showSelectedRegion', 'Show selected region', {default: false}),
-    Type.number('selectedRegionId', 'Select region', {default: 0, min: 0, step: 1}),
+    Type.boolean('showOrigins', 'Origins', {default: true}),
+    Type.boolean('showLevels', 'Levels', {default: true}),
+    Type.boolean('showBorders', 'Borders', {default: true}),
+    Type.boolean('showNeighborBorder', 'Neighbor borders', {default: false}),
+    Type.boolean('selectRegion', 'Select region', {default: false}),
+    Type.number('selectedRegion', 'Region', {default: 0, min: 0, step: 1}),
+    Type.number('selectedLevel', 'Level', {default: 1, min: 0}),
 )
 
 
@@ -48,21 +48,24 @@ export class RegionTileMapDiagram extends TileMapDiagram {
 
     constructor(tileMap, colorMap, params) {
         super(tileMap)
+        this.params = params
         this.colorMap = colorMap
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
         this.showLevels = params.get('showLevels')
         this.showNeighborBorder = params.get('showNeighborBorder')
-        this.showSelectedRegion = params.get('showSelectedRegion')
-        this.selectedRegionId = params.get('selectedRegionId')
+        this.selectedLevel = params.get('selectedLevel')
         this.level = params.get('level')
     }
 
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
         const regionId = this.tileMap.getRegion(point)
+        const level = this.tileMap.getLevel(point)
         const color = this.colorMap.get(regionId)
-
+        if (level >= this.selectedLevel) {
+            return Color.WHITE
+        }
         if (this.showOrigins && this.tileMap.isOrigin(point)) {
             return color.invert()
         }
@@ -78,11 +81,12 @@ export class RegionTileMapDiagram extends TileMapDiagram {
             const level = this.tileMap.getLevel(point)
             return color.darken(level * 1.5)
         }
-        if (this.showSelectedRegion) {
+        if (this.params.get('selectRegion')) {
             const toggle = (point[0] + point[1]) % 2 === 0
-            if (this.selectedRegionId === regionId) {
+            const selectedRegion = this.params.get('selectedRegion')
+            if (selectedRegion === regionId) {
                 return Color.WHITE
-            } else if (this.tileMap.isNeighbor(this.selectedRegionId, regionId)) {
+            } else if (this.tileMap.isNeighbor(selectedRegion, regionId)) {
                 return toggle ? color.darken(40) : color
             }
         }

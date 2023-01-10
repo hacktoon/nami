@@ -76,9 +76,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
         if (this.params.get('showErosion')) {
             const erosion = this.tileMap.erosion.get(point)
-            // if (this.tileMap.erosion.hasNextBorder(point)) {
-            //     return Color.RED
-            // }
+            if (this.tileMap.erosion.debug(point)) {
+                return Color.RED
+            }
             if (surface.water) {
                 return color.darken(100)
             } else {
