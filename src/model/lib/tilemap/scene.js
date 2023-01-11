@@ -37,7 +37,7 @@ export class TileMapScene {
                 let text = this.diagram.getText(tilePoint)
                 canvas.rect(canvasPoint, this.zoom, color.toHex())
                 if (text) {
-                    const txtColor = color.invert().toHex()
+                    const txtColor = '#000'
                     canvas.text(canvasPoint, this.zoom, text, txtColor)
                 }
             } else {

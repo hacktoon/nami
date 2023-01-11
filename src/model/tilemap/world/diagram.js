@@ -76,23 +76,20 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
         if (this.params.get('showErosion')) {
             const erosion = this.tileMap.erosion.get(point)
-            if (this.tileMap.erosion.debug(point)) {
-                return Color.RED
-            }
-            if (surface.water) {
-                return color.darken(100)
-            } else {
-                return erosion
-                    ? this.colorMap.getByErosion(point)
-                    : color.darken(100)
+            if (!surface.water && erosion) {
+                return color.average(this.colorMap.getByErosion(point))
             }
         }
         return color
     }
 
-    getText(point) {
+    getText(relativePoint) {
+        const point = this.rect.wrap(relativePoint)
         const erosion = this.tileMap.erosion.get(point)
         const hasText = erosion && this.params.get('showErosion')
+        if (this.tileMap.erosion.debug(point)) {
+            return 'd'
+        }
         return hasText && erosion.flow ? erosion.flow.symbol : ''
     }
 }

@@ -26,6 +26,8 @@ export class ErosionFill extends ConcurrentFill {
         // set the initial basin point to search water neighbor
         const {rect, surfaceLayer, flowMap, basinMap} = fill.context
         const target = rect.wrap(relTarget)
+        let hasWaterNeighbor = false
+        let relLandNeighbor = null
         for(let relNeighbor of Point.adjacents(target)) {
             const neighbor = rect.wrap(relNeighbor)
             const isNeighborWater = surfaceLayer.isWater(neighbor)
@@ -33,17 +35,28 @@ export class ErosionFill extends ConcurrentFill {
             if (isNeighborWater) {
                 const direction = this.#getDirection(relTarget, relNeighbor)
                 flowMap.set(...target, direction.id)
+                // it's next to water, use original fill.id
                 basinMap.set(...target, fill.id)
+                hasWaterNeighbor = true
                 break
+            } else if (flowMap.has(...neighbor)) {
+                relLandNeighbor = relNeighbor
             }
+        }
+        if (! hasWaterNeighbor && relLandNeighbor) {
+            const direction = this.#getDirection(relTarget, relLandNeighbor)
+            flowMap.set(...target, direction.id)
+            basinMap.set(...target, basinMap.get(...rect.wrap(relLandNeighbor)))
         }
     }
 
     onFill(fill, relTarget, relSource) {
-        const target = fill.context.rect.wrap(relTarget)
+        const {rect, flowMap, basinMap} = fill.context
+        const target = rect.wrap(relTarget)
         const direction = this.#getDirection(relTarget, relSource)
-        fill.context.flowMap.set(...target, direction.id)
-        fill.context.basinMap.set(...target, fill.id)
+        flowMap.set(...target, direction.id)
+        const neighborBasinId = basinMap.get(...rect.wrap(relSource))
+        basinMap.set(...target, neighborBasinId)
     }
 
     onBlockedFill(fill, relTarget, relSource) {
@@ -52,7 +65,7 @@ export class ErosionFill extends ConcurrentFill {
         const isInvalidRelief = ! fill.context.validReliefIds.has(relief.id)
         const isLand = fill.context.surfaceLayer.isLand(target)
         if (isLand && isInvalidRelief) {
-            fill.context.detectedBorders.add(target)
+            fill.context.fillQueue.add(target)
         }
     }
 
