@@ -6,6 +6,10 @@ const EMPTY = null
 
 
 export class RegionFloodFill extends ConcurrentFill {
+    getNeighbors(fill, point) {
+        return Point.adjacents(point)
+    }
+
     getChance(fill) {
         return fill.context.chance
     }
@@ -14,18 +18,18 @@ export class RegionFloodFill extends ConcurrentFill {
         return fill.context.growth
     }
 
-    canFill(fill, point, center, level) {
+    canFill(fill, point, center) {
         return fill.context.regionMatrix.get(point) === EMPTY
     }
 
-    onFill(fill, point, center, level) {
+    onFill(fill, point, center) {
         // center is the seed at center
         // point is neighbor being filled
         fill.context.regionMatrix.set(point, fill.id)
-        fill.context.levelMatrix.set(point, level)
+        fill.context.levelMatrix.set(point, fill.level)
     }
 
-    onBlockedFill(fill, neighbor, center, level) {
+    onBlockedFill(fill, neighbor, center) {
         const {borderMap, regionMatrix, graph} = fill.context
         const neighborRegionId = regionMatrix.get(neighbor)
         // it's same fill, do nothing
@@ -40,9 +44,5 @@ export class RegionFloodFill extends ConcurrentFill {
         // these operations are idempotent
         borderMap.get(x, y).add(neighborRegionId)
         graph.setEdge(fill.id, neighborRegionId)
-    }
-
-    getNeighbors(fill, point) {
-        return Point.adjacents(point)
     }
 }
