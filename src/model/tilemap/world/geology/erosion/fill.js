@@ -12,9 +12,10 @@ export class ErosionFill extends ConcurrentFill {
     }
 
     canFill(fill, relTarget, relSource) {
-        const {rect, surfaceLayer, reliefLayer, basinMap} = fill.context
+        const {rect, surfaceLayer, basinMap} = fill.context
         const target = rect.wrap(relTarget)
-        const isValidRelief = this.#isTargetValidRelief(fill, target)
+        const relief = fill.context.reliefLayer.get(target)
+        const isValidRelief = fill.context.validReliefIds.has(relief.id)
         const isLand = surfaceLayer.isLand(target)
         // use basin map to track which points were already visited
         const notVisited = ! basinMap.has(...target)
@@ -45,9 +46,14 @@ export class ErosionFill extends ConcurrentFill {
         fill.context.basinMap.set(...target, fill.id)
     }
 
-    #isTargetValidRelief(fill, target) {
+    onBlockedFill(fill, relTarget, relSource) {
+        const target = fill.context.rect.wrap(relTarget)
         const relief = fill.context.reliefLayer.get(target)
-        return fill.context.validReliefIds.has(relief.id)
+        const isInvalidRelief = ! fill.context.validReliefIds.has(relief.id)
+        const isLand = fill.context.surfaceLayer.isLand(target)
+        if (isLand && isInvalidRelief) {
+            fill.context.detectedBorders.add(target)
+        }
     }
 
     #getDirection(sourcePoint, targetPoint) {

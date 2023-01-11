@@ -48,23 +48,23 @@ export class ConcurrentFill {
 
     #fillLayer(fill) {
         const nextSeeds = this.#fillSingleLayer(fill, this.#seedTable[fill.id])
-        return this.#fillExtraRandomLayers(fill, nextSeeds)
+        this.#fillExtraRandomLayers(fill, nextSeeds)
     }
 
     #fillSingleLayer(fill, seeds) {
         let nextSeeds = []
-        for(let seed of seeds) {
+        for(let source of seeds) {
             // for each seed, try to fill its neighbors
-            for(let neighbor of this.getNeighbors(fill, seed)) {
+            for(let target of this.getNeighbors(fill, source)) {
                 // I'm seed, can I fill my neighbor?
-                if (this.canFill(fill, neighbor, seed)) {
+                if (this.canFill(fill, target, source)) {
                     // fill this neighbor
-                    this.onFill(fill, neighbor, seed)
+                    this.onFill(fill, target, source)
                     // make the filled neighbor a seed for next iteration
-                    nextSeeds.push(neighbor)
+                    nextSeeds.push(target)
                 } else {
                     // can't fill, do something about that cell
-                    this.onBlockedFill(fill, neighbor, seed)
+                    this.onBlockedFill(fill, target, source)
                 }
             }
         }
@@ -96,11 +96,11 @@ export class ConcurrentFill {
     }
 
     // Extensible methods ====================================
-    onInitFill(fill, cell) { this.onFill(fill, cell, null) }
-    canFill(fill, cell, source) { return false }
-    onFill(fill, cell, source) { }
-    onBlockedFill(fill, cell, source) { }
-    getNeighbors(fill, cell) { return [] }
+    onInitFill(fill, target) { this.onFill(fill, target, null) }
+    canFill(fill, target, source) { return false }
+    onFill(fill, target, source) { }
+    onBlockedFill(fill, target, source) { }
+    getNeighbors(fill, target) { return [] }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }
 }

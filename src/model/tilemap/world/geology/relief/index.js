@@ -22,12 +22,12 @@ export class ReliefLayer {
         this.#noiseLayer = noiseLayer
         this.#surfaceLayer = surfaceLayer
         this.#matrix = Matrix.fromRect(rect, point => {
-            const isBorder = this.#detectBorders(point)
-            return this.#detectType(point, isBorder)
+            this.#detectBorders(point)
+            return this.#detectType(point)
         })
     }
 
-    #detectType(point, isBorder) {
+    #detectType(point) {
         const outlineNoise = this.#noiseLayer.getOutline(point)
         const featureNoise = this.#noiseLayer.getFeature(point)
         const grainedNoise = this.#noiseLayer.getGrained(point)
@@ -45,7 +45,6 @@ export class ReliefLayer {
         }
 
         // land -----------------------------------
-        if (isBorder) return Relief.BASIN.id
         if (isDepression) return Relief.BASIN.id
         if (featureNoise > PLAIN_RATIO) {
             if (featureNoise > PLATEAU_RATIO) {
