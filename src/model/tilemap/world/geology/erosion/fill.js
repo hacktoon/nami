@@ -39,11 +39,11 @@ export class ErosionFill extends ConcurrentFill {
                 basinMap.set(...target, fill.id)
                 hasWaterNeighbor = true
                 break
-            } else if (flowMap.has(...neighbor)) {
+            } else if (basinMap.has(...neighbor)) {
                 relLandNeighbor = relNeighbor
             }
         }
-        if (! hasWaterNeighbor && relLandNeighbor) {
+        if (! hasWaterNeighbor && relLandNeighbor && ! basinMap.has(...target)) {
             const direction = this.#getDirection(relTarget, relLandNeighbor)
             flowMap.set(...target, direction.id)
             basinMap.set(...target, basinMap.get(...rect.wrap(relLandNeighbor)))
@@ -55,8 +55,7 @@ export class ErosionFill extends ConcurrentFill {
         const target = rect.wrap(relTarget)
         const direction = this.#getDirection(relTarget, relSource)
         flowMap.set(...target, direction.id)
-        const neighborBasinId = basinMap.get(...rect.wrap(relSource))
-        basinMap.set(...target, neighborBasinId)
+        basinMap.set(...target, basinMap.get(...rect.wrap(relSource)))
     }
 
     onBlockedFill(fill, relTarget, relSource) {

@@ -48,7 +48,7 @@ export class ConcurrentFill {
 
     #fillLayer(fill) {
         const nextSeeds = this.#fillSingleLayer(fill, this.#seedTable[fill.id])
-        this.#fillExtraRandomLayers(fill, nextSeeds)
+        return this.#fillExtraRandomLayers(fill, nextSeeds)
     }
 
     #fillSingleLayer(fill, seeds) {

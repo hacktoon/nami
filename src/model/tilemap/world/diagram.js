@@ -11,7 +11,8 @@ const SCHEMA = new Schema(
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
     Type.boolean('showTemperature', 'Temperature', {default: false}),
     Type.boolean('showRain', 'Rain', {default: false}),
-    Type.boolean('showErosion', 'Erosion', {default: false}),
+    Type.boolean('showErosionFlow', 'Erosion flow', {default: false}),
+    Type.boolean('showErosionBasin', 'Erosion basin', {default: false}),
 )
 
 
@@ -74,10 +75,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (showWaterBorder && isBorder && surface.water) {
             color = color.brighten(40)
         }
-        if (this.params.get('showErosion')) {
+        if (this.params.get('showErosionBasin')) {
             const erosion = this.tileMap.erosion.get(point)
             if (!surface.water && erosion) {
-                return color.average(this.colorMap.getByErosion(point))
+                return this.colorMap.getByErosion(point)
             }
         }
         return color
@@ -86,7 +87,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     getText(relativePoint) {
         const point = this.rect.wrap(relativePoint)
         const erosion = this.tileMap.erosion.get(point)
-        const hasText = erosion && this.params.get('showErosion')
+        const hasText = erosion && this.params.get('showErosionFlow')
         if (this.tileMap.erosion.debug(point)) {
             return 'd'
         }
