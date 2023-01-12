@@ -10,7 +10,6 @@ export class ErosionLayer {
     #reliefLayer
     #basinMap = new PairMap()
     #flowMap = new PairMap()
-    #fillQueue = new PointSet()
     #validReliefIds = new Set()
 
     constructor(rect, surfaceLayer, reliefLayer) {
@@ -20,32 +19,33 @@ export class ErosionLayer {
     }
 
     #build(rect) {
+        const fillQueue = new PointSet()
         const context = {
             rect,
+            fillQueue,
             validReliefIds: this.#validReliefIds,
             surfaceLayer: this.#surfaceLayer,
             reliefLayer: this.#reliefLayer,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
-            fillQueue: this.#fillQueue,
         }
         let origins = this.#reliefLayer.landBorders
         for(let reliefId of this.#reliefLayer.getIdsByErosionStep()) {
             this.#validReliefIds.add(reliefId)
-            origins = this.#fillRelief(origins, context)
+            origins = this.#fillRelief(origins, fillQueue, context)
         }
     }
 
-    #fillRelief(origins, context) {
+    #fillRelief(origins, fillQueue, context) {
         const nextOrigins = []
         // filter and return actual origins
-        origins.concat(this.#fillQueue.points).forEach(point => {
+        origins.concat(fillQueue.points).forEach(point => {
             const relief = this.#reliefLayer.get(point)
             if (this.#validReliefIds.has(relief.id)) {
                 nextOrigins.push(point)
-                this.#fillQueue.delete(point)
+                fillQueue.delete(point)
             } else {
-                this.#fillQueue.add(point)
+                fillQueue.add(point)
             }
         })
         const fill = new ErosionFill()
@@ -64,9 +64,5 @@ export class ErosionLayer {
             basin: this.#basinMap.get(...point),
             flow: Direction.fromId(directionId),
         } : undefined
-    }
-
-    debug(point) {
-        return this.#fillQueue.has(point)
     }
 }
