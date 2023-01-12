@@ -29,9 +29,8 @@ export class ErosionLayer {
             flowMap: this.#flowMap,
             fillQueue: this.#fillQueue,
         }
-        const reliefIds = [3, 4, 5, 6]
         let origins = this.#reliefLayer.landBorders
-        for(let reliefId of reliefIds) {
+        for(let reliefId of this.#reliefLayer.getIdsByErosionStep()) {
             this.#validReliefIds.add(reliefId)
             origins = this.#fillRelief(origins, context)
         }

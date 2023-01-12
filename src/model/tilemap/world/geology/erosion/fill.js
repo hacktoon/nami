@@ -43,7 +43,8 @@ export class ErosionFill extends ConcurrentFill {
                 relLandNeighbor = relNeighbor
             }
         }
-        if (! hasWaterNeighbor && relLandNeighbor && ! basinMap.has(...target)) {
+        // has no water neighbor and is empty, set flow
+        if (! hasWaterNeighbor && ! basinMap.has(...target)) {
             const direction = this.#getDirection(relTarget, relLandNeighbor)
             flowMap.set(...target, direction.id)
             basinMap.set(...target, basinMap.get(...rect.wrap(relLandNeighbor)))

@@ -83,6 +83,15 @@ export class ReliefLayer {
         return Relief.fromId(id)
     }
 
+    getIdsByErosionStep() {
+        return [
+            Relief.BASIN.id,
+            Relief.PLAIN.id,
+            Relief.PLATEAU.id,
+            Relief.MOUNTAIN.id,
+        ]
+    }
+
     isMountain(point) {
         const id = this.#matrix.get(point)
         return id === Relief.MOUNTAIN.id
