@@ -10,6 +10,7 @@ import { ReliefLayer } from './geology/relief'
 import { ErosionLayer } from './geology/erosion'
 import { TemperatureLayer } from './climatology/temperature'
 import { RainLayer } from './climatology/rain'
+import { HydroLayer } from './geology/hydro'
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -36,11 +37,10 @@ export class WorldTileMap extends TileMap {
         const noiseLayer = new NoiseLayer(this.rect, this.seed)
         this.surface = new SurfaceLayer(this.rect, noiseLayer)
         this.relief = new ReliefLayer(this.rect, noiseLayer, this.surface)
-        this.temperature = new TemperatureLayer(
-            this.rect, noiseLayer, this.relief
-        )
+        this.temperature = new TemperatureLayer(this.rect, noiseLayer, this.relief)
         this.rain = new RainLayer(noiseLayer)
         this.erosion = new ErosionLayer(this.rect, this.surface, this.relief)
+        this.hydro = new HydroLayer(this.rect, this.relief, this.rain, this.erosion)
     }
 
     get(point) {

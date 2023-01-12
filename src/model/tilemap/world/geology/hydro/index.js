@@ -6,13 +6,14 @@ export class HydroLayer {
     #reliefLayer
     #rainLayer
     #erosionLayer
+    #rivers = new Map()
+    #lakes = new Map()
     #riverPoints = new PointSet()
 
-    constructor(rect, reliefLayer, erosionLayer) {
+    constructor(rect, reliefLayer, rainLayer, erosionLayer) {
         this.#reliefLayer = reliefLayer
         this.#rainLayer = rainLayer
         this.#erosionLayer = erosionLayer
-
     }
 
     get(point) {
