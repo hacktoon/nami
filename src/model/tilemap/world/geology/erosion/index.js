@@ -6,29 +6,31 @@ import { ErosionFill } from './fill'
 
 
 export class ErosionLayer {
-    #surfaceLayer
     #reliefLayer
+    #rainLayer
     #basinMap = new PairMap()
     #flowMap = new PairMap()
+    #flowOrigins = new PointSet()
     #validReliefIds = new Set()
 
-    constructor(rect, surfaceLayer, reliefLayer) {
-        this.#surfaceLayer = surfaceLayer
+    constructor(rect, reliefLayer, rainLayer) {
         this.#reliefLayer = reliefLayer
-        this.#build(rect)
+        this.#rainLayer = rainLayer
+        this.#buildFlowMap(rect)
     }
 
-    #build(rect) {
+    #buildFlowMap(rect) {
         const fillQueue = new PointSet()
         const context = {
             rect,
             fillQueue,
             validReliefIds: this.#validReliefIds,
-            surfaceLayer: this.#surfaceLayer,
             reliefLayer: this.#reliefLayer,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
+            flowOrigins: this.#flowOrigins,
         }
+        // start filling from land borders
         let origins = this.#reliefLayer.landBorders
         for(let reliefId of this.#reliefLayer.getIdsByErosionStep()) {
             this.#validReliefIds.add(reliefId)
@@ -63,6 +65,7 @@ export class ErosionLayer {
         return basin ? {
             basin: this.#basinMap.get(...point),
             flow: Direction.fromId(directionId),
+            origin: this.#flowOrigins.has(point)
         } : undefined
     }
 }

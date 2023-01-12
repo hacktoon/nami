@@ -88,6 +88,11 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const point = this.rect.wrap(relativePoint)
         const erosion = this.tileMap.erosion.get(point)
         const hasText = erosion && this.params.get('showErosionFlow')
-        return hasText && erosion.flow ? erosion.flow.symbol : ''
+        if (! hasText)
+            return ''
+        if (erosion.origin)
+            return `[${erosion.flow.symbol}]`
+        if (erosion.flow)
+            return erosion.flow.symbol
     }
 }

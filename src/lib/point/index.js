@@ -62,24 +62,22 @@ export class Point {
         return Math.round((result < 0) ? (360 + result) : result)
     }
 
-    static adjacents(center, predicate=()=>true) {
+    static adjacents(center, callback=()=>{}) {
         const points = []
         for (let [x, y, direction] of ADJACENT_NEIGHBORHOOD) {
             const point = [center[0] + x, center[1] + y]
-            if (predicate(point, direction)) {
-                points.push(point)
-            }
+            callback(point, direction)
+            points.push(point)
         }
         return points
     }
 
-    static around(center, predicate=()=>true) {
+    static around(center, callback=()=>{}) {
         const points = []
         for (let [x, y, direction] of AROUND_NEIGHBORHOOD) {
             const point = [center[0] + x, center[1] + y]
-            if (predicate(point, direction)) {
-                points.push(point)
-            }
+            callback(point, direction)
+            points.push(point)
         }
         return points
     }

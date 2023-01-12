@@ -7,32 +7,31 @@ export class ErosionFill extends ConcurrentFill {
     getChance(fill) { return .1 }
     getGrowth(fill) { return 5 }
 
-    getNeighbors(ref, relTarget) {
-        return Point.adjacents(relTarget)
+    getNeighbors(fill, relSource) {
+        return Point.adjacents(relSource)
     }
 
     canFill(fill, relTarget, relSource) {
-        const {rect, surfaceLayer, basinMap} = fill.context
+        const {rect, reliefLayer, validReliefIds, basinMap} = fill.context
         const target = rect.wrap(relTarget)
-        const relief = fill.context.reliefLayer.get(target)
-        const isValidRelief = fill.context.validReliefIds.has(relief.id)
-        const isLand = surfaceLayer.isLand(target)
+        const relief = reliefLayer.get(target)
+        const isValidRelief = validReliefIds.has(relief.id)
         // use basin map to track which points were already visited
         const notVisited = ! basinMap.has(...target)
-        return notVisited && isLand && isValidRelief
+        return ! relief.water && notVisited && isValidRelief
     }
 
     onInitFill(fill, relTarget) {
         // set the initial basin point to search water neighbor
-        const {rect, surfaceLayer, flowMap, basinMap} = fill.context
+        const {rect, reliefLayer, flowMap, basinMap} = fill.context
         const target = rect.wrap(relTarget)
         let hasWaterNeighbor = false
         let relLandNeighbor = null
         for(let relNeighbor of Point.adjacents(target)) {
             const neighbor = rect.wrap(relNeighbor)
-            const isNeighborWater = surfaceLayer.isWater(neighbor)
+            const neighborRelief = reliefLayer.get(neighbor)
             // set flow to nearest water neighbor
-            if (isNeighborWater) {
+            if (neighborRelief.water) {
                 const direction = this.#getDirection(relTarget, relNeighbor)
                 flowMap.set(...target, direction.id)
                 // it's next to water, use original fill.id
@@ -60,12 +59,12 @@ export class ErosionFill extends ConcurrentFill {
     }
 
     onBlockedFill(fill, relTarget, relSource) {
-        const target = fill.context.rect.wrap(relTarget)
-        const relief = fill.context.reliefLayer.get(target)
-        const isInvalidRelief = ! fill.context.validReliefIds.has(relief.id)
-        const isLand = fill.context.surfaceLayer.isLand(target)
-        if (isLand && isInvalidRelief) {
-            fill.context.fillQueue.add(target)
+        const {rect, reliefLayer, validReliefIds, fillQueue} = fill.context
+        const target = rect.wrap(relTarget)
+        const relief = reliefLayer.get(target)
+        const isInvalidRelief = ! validReliefIds.has(relief.id)
+        if (! relief.water && isInvalidRelief) {
+            fillQueue.add(target)
         }
     }
 

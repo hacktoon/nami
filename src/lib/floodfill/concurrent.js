@@ -52,6 +52,7 @@ export class ConcurrentFill {
     }
 
     #fillSingleLayer(fill, seeds) {
+        // for each seed, get its neighbors and try to fill
         let nextSeeds = []
         for(let source of seeds) {
             // for each seed, try to fill its neighbors
