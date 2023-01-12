@@ -10,16 +10,12 @@
 - Rename IndexMap to RandomQueue
 
 #### GeologyTileMap
-  - ContinentLayer
-    - composed by 1 or 2 subcontinents
-  - terrain
-  - SubContinentLayer
-    - if land, connected to another land by bridge
+  - separate basin from flow fill
   - Height of terrain often make waterfalls|rapids
   - Add canyons where rivers meet a higher terrain
   - a mountain can be adjacent to sea, make each world tile render itself based on neighbors
 
-#### CivilTileMap
+#### CityMap
 - Determine capitals and villages
 - Start a fill to determine realm area
   - define routes

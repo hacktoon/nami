@@ -2,7 +2,7 @@ import { PairMap } from '/src/lib/map'
 import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
 
-import { ErosionFill } from './fill'
+import { ErosionFlowFill } from './fill'
 
 
 export class ErosionLayer {
@@ -50,7 +50,7 @@ export class ErosionLayer {
                 fillQueue.add(point)
             }
         })
-        const fill = new ErosionFill()
+        const fill = new ErosionFlowFill()
         fill.start(nextOrigins, context)
         return nextOrigins
     }

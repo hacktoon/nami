@@ -3,7 +3,7 @@ import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
 
-export class ErosionFill extends ConcurrentFill {
+export class ErosionFlowFill extends ConcurrentFill {
     getChance(fill) { return .1 }
     getGrowth(fill) { return 5 }
 
@@ -12,12 +12,12 @@ export class ErosionFill extends ConcurrentFill {
     }
 
     canFill(fill, relTarget, relSource) {
-        const {rect, reliefLayer, validReliefIds, basinMap} = fill.context
+        const {rect, reliefLayer, validReliefIds, flowMap} = fill.context
         const target = rect.wrap(relTarget)
         const relief = reliefLayer.get(target)
         const isValidRelief = validReliefIds.has(relief.id)
         // use basin map to track which points were already visited
-        const notVisited = ! basinMap.has(...target)
+        const notVisited = ! flowMap.has(...target)
         return ! relief.water && notVisited && isValidRelief
     }
 
@@ -38,12 +38,12 @@ export class ErosionFill extends ConcurrentFill {
                 basinMap.set(...target, fill.id)
                 hasWaterNeighbor = true
                 break
-            } else if (basinMap.has(...neighbor)) {
+            } else if (flowMap.has(...neighbor)) {
                 relLandNeighbor = relNeighbor
             }
         }
         // has no water neighbor and is empty, set flow
-        if (! hasWaterNeighbor && ! basinMap.has(...target)) {
+        if (! hasWaterNeighbor && ! flowMap.has(...target)) {
             const direction = this.#getDirection(relTarget, relLandNeighbor)
             flowMap.set(...target, direction.id)
             basinMap.set(...target, basinMap.get(...rect.wrap(relLandNeighbor)))
@@ -71,5 +71,26 @@ export class ErosionFill extends ConcurrentFill {
     #getDirection(sourcePoint, targetPoint) {
         const angle = Point.angle(sourcePoint, targetPoint)
         return Direction.fromAngle(angle)
+    }
+}
+
+
+export class ErosionBasinFill extends ConcurrentFill {
+    getNeighbors(fill, relSource) {
+        return Point.adjacents(relSource)
+    }
+
+    canFill(fill, relTarget, relSource) {
+
+    }
+
+    onFill(fill, relTarget, relSource) {
+        const {rect, flowMap, basinMap} = fill.context
+        const target = rect.wrap(relTarget)
+        basinMap.set(...target, basinMap.get(...rect.wrap(relSource)))
+    }
+
+    onBlockedFill(fill, relTarget, relSource) {
+
     }
 }
