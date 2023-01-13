@@ -3,7 +3,7 @@ import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
 
-export class ErosionFlowFill extends ConcurrentFill {
+export class ErosionFill extends ConcurrentFill {
     getChance(fill) { return .1 }
     getGrowth(fill) { return 5 }
 
@@ -38,7 +38,8 @@ export class ErosionFlowFill extends ConcurrentFill {
                 basinMap.set(...target, fill.id)
                 hasWaterNeighbor = true
                 break
-            } else if (flowMap.has(...neighbor)) {
+            }
+            if (flowMap.has(...neighbor)) {
                 relLandNeighbor = relNeighbor
             }
         }
@@ -71,26 +72,5 @@ export class ErosionFlowFill extends ConcurrentFill {
     #getDirection(sourcePoint, targetPoint) {
         const angle = Point.angle(sourcePoint, targetPoint)
         return Direction.fromAngle(angle)
-    }
-}
-
-
-export class ErosionBasinFill extends ConcurrentFill {
-    getNeighbors(fill, relSource) {
-        return Point.adjacents(relSource)
-    }
-
-    canFill(fill, relTarget, relSource) {
-
-    }
-
-    onFill(fill, relTarget, relSource) {
-        const {rect, flowMap, basinMap} = fill.context
-        const target = rect.wrap(relTarget)
-        basinMap.set(...target, basinMap.get(...rect.wrap(relSource)))
-    }
-
-    onBlockedFill(fill, relTarget, relSource) {
-
     }
 }

@@ -54,11 +54,11 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const showRain = this.params.get('showRain')
         const point = this.rect.wrap(relativePoint)
         const surface = this.tileMap.surface.get(point)
+        const relief = this.tileMap.relief.get(point)
         const isBorder = this.tileMap.relief.isBorder(point)
         let color = surface.color
 
         if (showRelief) {
-            const relief = this.tileMap.relief.get(point)
             color = relief.color
         }
         if (showTemperature && ! surface.water) {
@@ -78,7 +78,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (this.params.get('showErosionBasin')) {
             const erosion = this.tileMap.erosion.get(point)
             if (!surface.water && erosion) {
-                return this.colorMap.getByErosion(point)
+                const erosionColor = this.colorMap.getByErosion(point)
+                return erosionColor.brighten(relief.id * 10)
             }
         }
         return color
