@@ -94,6 +94,13 @@ it("PairMap can set values", () => {
     expect(pairMap.get(2, 2)).toBe('third')
 })
 
+it("PairMap can delete values", () => {
+    const pairMap = new PairMap()
+    pairMap.set(0, 0, 'first')
+    pairMap.delete(0, 0)
+    expect(pairMap.get(0, 0)).toBe(undefined)
+})
+
 
 it("PairMap forEach", () => {
     const pairMap = new PairMap()

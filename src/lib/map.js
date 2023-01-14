@@ -86,12 +86,13 @@ export class PairMap {
         return this.#sources.get(source).has(target)
     }
 
-    delete([source, target]) {
-        if (! this.has(source)) return false
-        const yMap = this.map.get(source)
-        yMap.delete(target)
-        if (yMap.size === 0) {
-            this.map.delete(source)
+    delete(source, target) {
+        if (! this.has(source, target)) return false
+        const targetMap = this.#sources.get(source)
+        targetMap.delete(target)
+        // delete internal Map if there's no source
+        if (targetMap.size === 0) {
+            this.#sources.delete(source)
         }
         this.#size--
         return true
