@@ -34,15 +34,15 @@ export class RegionFloodFill extends ConcurrentFill {
         const neighborRegionId = regionMatrix.get(neighbor)
         // it's same fill, do nothing
         if (fill.id === neighborRegionId) { return }
-        const [x, y] = regionMatrix.rect.wrap(center)
+        const point = regionMatrix.rect.wrap(center)
         // create new set of neighbor regions by id
         // set the center as border since the neighbor isn't same fill
-        if (! borderMap.has(x, y)) {
-            borderMap.set(x, y, new Set())
+        if (! borderMap.has(point)) {
+            borderMap.set(point, new Set())
         }
         // mark region when neighbor point belongs to another region
         // these operations are idempotent
-        borderMap.get(x, y).add(neighborRegionId)
+        borderMap.get(point).add(neighborRegionId)
         graph.setEdge(fill.id, neighborRegionId)
     }
 }

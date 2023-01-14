@@ -8,7 +8,6 @@
 ## ROADMAP
 
 #### General
-- Create PointMap class
 - Rename Diagram to PixelMap
 - Rename IndexMap to RandomQueue
 

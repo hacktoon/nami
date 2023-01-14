@@ -1,4 +1,4 @@
-import { PairMap } from '/src/lib/map'
+import { PointMap } from '/src/lib/point/map'
 import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
 
@@ -8,8 +8,8 @@ import { ErosionFill } from './fill'
 export class ErosionLayer {
     #reliefLayer
     #rainLayer
-    #basinMap = new PairMap()
-    #flowMap = new PairMap()
+    #basinMap = new PointMap()
+    #flowMap = new PointMap()
     #flowOrigins = new PointSet()
     #validReliefIds = new Set()
 
@@ -28,7 +28,6 @@ export class ErosionLayer {
             reliefLayer: this.#reliefLayer,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
-            flowOrigins: this.#flowOrigins,
         }
         // start filling from land borders
         let origins = this.#reliefLayer.landBorders
@@ -60,12 +59,11 @@ export class ErosionLayer {
     }
 
     get(point) {
-        const directionId = this.#flowMap.get(...point)
-        const basin = this.#basinMap.get(...point)
+        const directionId = this.#flowMap.get(point)
+        const basin = this.#basinMap.get(point)
         return basin ? {
-            basin: this.#basinMap.get(...point),
+            basin: this.#basinMap.get(point),
             flow: Direction.fromId(directionId),
-            origin: this.#flowOrigins.has(point)
         } : undefined
     }
 }

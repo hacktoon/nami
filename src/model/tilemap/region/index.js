@@ -5,7 +5,7 @@ import { PointSet } from '/src/lib/point/set'
 import { Matrix } from '/src/lib/matrix'
 import { Graph } from '/src/lib/graph'
 import { EvenPointSampling } from '/src/lib/point/sampling'
-import { PairMap } from '/src/lib/map'
+import { PointMap } from '/src/lib/point/map'
 
 import { TileMap } from '/src/model/lib/tilemap'
 import { UITileMap } from '/src/ui/tilemap'
@@ -42,7 +42,7 @@ export class RegionTileMap extends TileMap {
     }
 
     #graph = new Graph()
-    #borderMap = new PairMap()
+    #borderMap = new PointMap()
     #centerPoints
     #regionMatrix
     #levelMatrix
@@ -101,7 +101,7 @@ export class RegionTileMap extends TileMap {
 
     getBorderRegions(point) {
         // a single tile can have two different region neighbors
-        return Array.from(this.#borderMap.get(...point) ?? [])
+        return Array.from(this.#borderMap.get(point) ?? [])
     }
 
     getSideRegions(regionId) {
@@ -124,7 +124,7 @@ export class RegionTileMap extends TileMap {
     }
 
     isBorder(point) {
-        return this.#borderMap.has(...point)
+        return this.#borderMap.has(point)
     }
 
     map(callback) {

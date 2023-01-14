@@ -17,7 +17,7 @@ export class ErosionFill extends ConcurrentFill {
         const relief = reliefLayer.get(target)
         const isValidRelief = validReliefIds.has(relief.id)
         // use basin map to track which points were already visited
-        const notVisited = ! flowMap.has(...target)
+        const notVisited = ! flowMap.has(target)
         return ! relief.water && notVisited && isValidRelief
     }
 
@@ -33,21 +33,21 @@ export class ErosionFill extends ConcurrentFill {
             // set flow to nearest water neighbor
             if (neighborRelief.water) {
                 const direction = this.#getDirection(relTarget, relNeighbor)
-                flowMap.set(...target, direction.id)
+                flowMap.set(target, direction.id)
                 // it's next to water, use original fill.id
-                basinMap.set(...target, fill.id)
+                basinMap.set(target, fill.id)
                 hasWaterNeighbor = true
                 break
             }
-            if (flowMap.has(...neighbor)) {
+            if (flowMap.has(neighbor)) {
                 relLandNeighbor = relNeighbor
             }
         }
         // has no water neighbor and is empty, set flow
-        if (! hasWaterNeighbor && ! flowMap.has(...target)) {
+        if (! hasWaterNeighbor && ! flowMap.has(target)) {
             const direction = this.#getDirection(relTarget, relLandNeighbor)
-            flowMap.set(...target, direction.id)
-            basinMap.set(...target, basinMap.get(...rect.wrap(relLandNeighbor)))
+            flowMap.set(target, direction.id)
+            basinMap.set(target, basinMap.get(rect.wrap(relLandNeighbor)))
         }
     }
 
@@ -55,8 +55,8 @@ export class ErosionFill extends ConcurrentFill {
         const {rect, flowMap, basinMap} = fill.context
         const target = rect.wrap(relTarget)
         const direction = this.#getDirection(relTarget, relSource)
-        flowMap.set(...target, direction.id)
-        basinMap.set(...target, basinMap.get(...rect.wrap(relSource)))
+        flowMap.set(target, direction.id)
+        basinMap.set(target, basinMap.get(rect.wrap(relSource)))
     }
 
     onBlockedFill(fill, relTarget, relSource) {
@@ -64,6 +64,7 @@ export class ErosionFill extends ConcurrentFill {
         const target = rect.wrap(relTarget)
         const relief = reliefLayer.get(target)
         const isInvalidRelief = ! validReliefIds.has(relief.id)
+        // add point to next relief fill
         if (! relief.water && isInvalidRelief) {
             fillQueue.add(target)
         }
