@@ -1,7 +1,8 @@
+import { assert, describe, expect, it } from 'vitest'
 import { Graph } from '/src/lib/graph'
 
 
-test('Add graph node', () => {
+it('Add graph node', () => {
     const graph = new Graph()
     graph.addNode(1)
     expect(graph.hasNode(1)).toBe(true)
@@ -9,7 +10,7 @@ test('Add graph node', () => {
 })
 
 
-test('Check graph edge nodes', () => {
+it('Check graph edge nodes', () => {
     const graph = new Graph()
     graph.setEdge(1, 2)
     expect(graph.hasNode(1)).toBe(true)
@@ -17,7 +18,7 @@ test('Check graph edge nodes', () => {
 })
 
 
-test('Test graph edges', () => {
+it('Test graph edges', () => {
     const graph = new Graph()
     graph.setEdge(1, 2)
     graph.setEdge(4, 3)
@@ -29,7 +30,7 @@ test('Test graph edges', () => {
 })
 
 
-test('Test graph node removal', () => {
+it('Test graph node removal', () => {
     const graph = new Graph()
     graph.setEdge(1, 2)
     graph.setEdge(1, 3)

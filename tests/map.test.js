@@ -1,10 +1,11 @@
+import { expect, it } from 'vitest'
 import { IndexMap, PairMap } from '/src/lib/map'
 
 
 //////////////////////////////////////////////////////
 // IndexMap
 //////////////////////////////////////////////////////
-test("indexMap initialization", () => {
+it("indexMap initialization", () => {
     const indexMap = new IndexMap(['a', 'b', 'c'])
     expect(indexMap.getIndex('a')).toBe(0)
     expect(indexMap.getIndex('b')).toBe(1)
@@ -12,7 +13,7 @@ test("indexMap initialization", () => {
 })
 
 
-test("indexMap delete item", () => {
+it("indexMap delete item", () => {
     const indexMap = new IndexMap(['a', 'b', 'c'])
     expect(indexMap.has('b')).toBe(true)
     indexMap.delete('b')
@@ -22,7 +23,7 @@ test("indexMap delete item", () => {
 })
 
 
-test("indexMap item size after delete", () => {
+it("indexMap item size after delete", () => {
     const indexMap = new IndexMap(['a', 'b', 'c'])
     expect(indexMap.size).toBe(3)
     indexMap.delete('b')
@@ -30,7 +31,7 @@ test("indexMap item size after delete", () => {
 })
 
 
-test("indexMap index changes after delete", () => {
+it("indexMap index changes after delete", () => {
     const indexMap = new IndexMap(['a', 'b', 'c'])
     expect(indexMap.getIndex('c')).toBe(2)
     indexMap.delete('b')
@@ -38,7 +39,7 @@ test("indexMap index changes after delete", () => {
 })
 
 
-test("indexMap add item", () => {
+it("indexMap add item", () => {
     const indexMap = new IndexMap(['a', 'b'])
     indexMap.add('c')
     expect(indexMap.getIndex('c')).toBe(2)
@@ -46,7 +47,7 @@ test("indexMap add item", () => {
 })
 
 
-test("indexMap add item and delete another", () => {
+it("indexMap add item and delete another", () => {
     const indexMap = new IndexMap(['a', 'b'])
     indexMap.add('c')
     indexMap.delete('b')
@@ -55,7 +56,7 @@ test("indexMap add item and delete another", () => {
 })
 
 
-test("IndexMap forEach", () => {
+it("IndexMap forEach", () => {
     const values = ['a', 'b', 'c']
     const indexMap = new IndexMap(values)
     let index = 0
@@ -76,13 +77,13 @@ const POINT_MAP = [
 ]
 
 
-test("Empty PairMap has size zero", () => {
+it("Empty PairMap has size zero", () => {
     const pairMap = new PairMap()
     expect(pairMap.size).toBe(0)
 })
 
 
-test("PairMap can set values", () => {
+it("PairMap can set values", () => {
     const pairMap = new PairMap()
     pairMap.set(0, 0, 'first')
     pairMap.set(1, 1, 'second')
@@ -94,7 +95,7 @@ test("PairMap can set values", () => {
 })
 
 
-test("PairMap forEach", () => {
+it("PairMap forEach", () => {
     const pairMap = new PairMap()
     pairMap.set(0, 0, 'first')
     pairMap.set(1, 1, 'second')
