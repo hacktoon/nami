@@ -1,5 +1,4 @@
 import { Matrix } from '/src/lib/matrix'
-import { Point } from '/src/lib/point'
 
 
 test('Matrix position null value', () => {

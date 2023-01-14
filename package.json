@@ -1,5 +1,6 @@
 {
   "name": "nami",
+  "type": "module",
   "version": "0.1.0",
   "description": "Nami: world generator",
   "author": "Karlisson Bezerra",
@@ -11,21 +12,21 @@
   "scripts": {
     "dev": "PARCEL_WORKERS=0 parcel serve src/index.html --dist-dir build",
     "build": "PARCEL_WORKERS=0 parcel build src/index.html --dist-dir build --public-url ./ --no-source-maps",
-    "test": "npm jest --watchAll --verbose --maxWorkers=4"
+    "test": "npx jest --watchAll --verbose --maxWorkers=4"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hacktoon/nami.git"
   },
   "dependencies": {
-    "@babel/cli": "^7.15.7",
-    "@babel/core": "^7.15.8",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.12",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "jest": "^26.6",
-    "parcel": "^2.3.1",
+    "jest": "^29.3.1",
+    "parcel": "^2.8.2",
     "process": "^0.11.10"
   },
   "jest": {
