@@ -39,7 +39,7 @@ export class WorldTileMap extends TileMap {
         this.relief = new ReliefLayer(this.rect, noiseLayer, this.surface)
         this.temperature = new TemperatureLayer(this.rect, noiseLayer, this.relief)
         this.rain = new RainLayer(noiseLayer)
-        this.erosion = new ErosionLayer(this.rect, this.relief, this.rain)
+        this.erosion = new ErosionLayer(this.rect, this.relief)
         this.hydro = new HydroLayer(this.rect, this.relief, this.rain, this.erosion)
     }
 

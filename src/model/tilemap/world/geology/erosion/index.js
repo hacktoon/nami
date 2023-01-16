@@ -7,15 +7,13 @@ import { ErosionFill } from './fill'
 
 export class ErosionLayer {
     #reliefLayer
-    #rainLayer
     #basinMap = new PointMap()
     #flowMap = new PointMap()
     #flowOrigins = new PointSet()
     #validReliefIds = new Set()
 
-    constructor(rect, reliefLayer, rainLayer) {
+    constructor(rect, reliefLayer) {
         this.#reliefLayer = reliefLayer
-        this.#rainLayer = rainLayer
         this.#buildFlowMap(rect)
     }
 
