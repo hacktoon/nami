@@ -1,14 +1,16 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Direction } from '/src/lib/direction'
+import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
 
 
 export function buildFlowMap(context) {
     // start filling from land borders
+    const flowContext = {...context, flowOriginSet: new PointSet()}
     let origins = context.reliefLayer.landBorders
     for(let reliefId of context.reliefLayer.getIdsByErosionStep()) {
         context.validReliefIds.add(reliefId)
-        origins = fillFlowMap(origins, context)
+        origins = fillFlowMap(origins, flowContext)
     }
 }
 
