@@ -3,6 +3,35 @@ import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
 
+export function buildFlowMap(context) {
+    // start filling from land borders
+    let origins = context.reliefLayer.landBorders
+    for(let reliefId of context.reliefLayer.getIdsByErosionStep()) {
+        context.validReliefIds.add(reliefId)
+        origins = fillFlowMap(origins, context)
+    }
+}
+
+
+function fillFlowMap(origins, context) {
+    const nextOrigins = []
+    // filter and return origins
+    const queue = origins.concat(context.flowOriginSet.points)
+    queue.forEach(point => {
+        const relief = context.reliefLayer.get(point)
+        if (context.validReliefIds.has(relief.id)) {
+            nextOrigins.push(point)
+            context.flowOriginSet.delete(point)
+        } else {
+            context.flowOriginSet.add(point)
+        }
+    })
+    const fill = new ErosionFill()
+    fill.start(nextOrigins, context)
+    return nextOrigins
+}
+
+
 export class ErosionFill extends ConcurrentFill {
     getChance(fill) { return .1 }
     getGrowth(fill) { return 5 }
@@ -60,13 +89,13 @@ export class ErosionFill extends ConcurrentFill {
     }
 
     onBlockedFill(fill, relTarget, relSource) {
-        const {rect, reliefLayer, validReliefIds, fillQueue} = fill.context
+        const {rect, reliefLayer, validReliefIds, flowOriginSet} = fill.context
         const target = rect.wrap(relTarget)
         const relief = reliefLayer.get(target)
         const isInvalidRelief = ! validReliefIds.has(relief.id)
         // add point to next relief fill
         if (! relief.water && isInvalidRelief) {
-            fillQueue.add(target)
+            flowOriginSet.add(target)
         }
     }
 
