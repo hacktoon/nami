@@ -2,7 +2,7 @@ import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Color } from '/src/lib/color'
 import { clamp } from '/src/lib/number'
-import { TileMapDiagram } from '/src/model/lib/tilemap'
+import { TileMapDiagram } from '/src/model/tilemap/lib'
 
 
 class NoiseColorMap {

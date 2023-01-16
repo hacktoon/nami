@@ -7,7 +7,7 @@ import { Graph } from '/src/lib/graph'
 import { EvenPointSampling } from '/src/lib/point/sampling'
 import { PointMap } from '/src/lib/point/map'
 
-import { TileMap } from '/src/model/lib/tilemap'
+import { TileMap } from '/src/model/tilemap/lib'
 import { UITileMap } from '/src/ui/tilemap'
 
 import { RegionFloodFill } from './fill'

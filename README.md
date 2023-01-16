@@ -9,8 +9,7 @@
 
 ### Interface
 - Rename Diagram to PixelMap
-- Create WorldMap component forking from TileMap
-  - Formalize layers and introduce a chunk map viewer
+- Introduce a chunk map viewer on sidebar
 - Optimize canvas rendering
   - Use offscreen canvas
   - When map fills screen entirely, snap canvas to viewport,
