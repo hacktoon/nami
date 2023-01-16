@@ -11,7 +11,7 @@
   "homepage": "https://github.com/hacktoon/nami",
   "scripts": {
     "dev": "PARCEL_WORKERS=0 parcel serve src/index.html --dist-dir build",
-    "build": "PARCEL_WORKERS=0 parcel build src/index.html --dist-dir build --public-url ./ --no-source-maps",
+    "build": "parcel build src/index.html --dist-dir build --public-url ./ --no-source-maps",
     "test": "npx vitest"
   },
   "repository": {

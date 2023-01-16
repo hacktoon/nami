@@ -1,8 +1,8 @@
-import { expect, it } from 'vitest'
+import { expect, test } from 'vitest'
 import { PointMap } from '/src/lib/point/map'
 
 
-it("Creates a PointMap", () => {
+test("Creates a PointMap", () => {
     const pointMap = new PointMap()
     expect(pointMap.get([1, 2])).toBe(undefined)
     pointMap.set([1, 2], 4)
@@ -10,7 +10,7 @@ it("Creates a PointMap", () => {
 })
 
 
-it("Delete a PointMap", () => {
+test("Delete a PointMap", () => {
     const pointMap = new PointMap()
     pointMap.set([1, 2], 4)
     console.log(pointMap.delete([1, 2]))
