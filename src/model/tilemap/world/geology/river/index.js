@@ -6,9 +6,9 @@ import { Direction } from '/src/lib/direction'
 import { buildSurveyFlowMap } from './survey.fill'
 
 
-export class HydroLayer {
+export class RiverLayer {
     #rivers = new Map()
-    #lakes = new Map()
+    #riverMap = new PointMap()
     #riverPoints = new PointSet()
     #riverSources = new PointSet()
 
@@ -18,7 +18,8 @@ export class HydroLayer {
             reliefLayer,
             erosionLayer,
             rainLayer,
-            riverSources: this.#riverSources
+            riverSources: this.#riverSources,
+            riverMap: this.#riverMap
         }
         buildSurveyFlowMap(context)
     }

@@ -15,10 +15,11 @@ export class ConcurrentFill {
         for(let id = 0; id < originsCount; id ++) {
             const fill = {id, context, level: 0}
             const origin = origins[id]
+            const neighbors = this.getNeighbors(fill, origin)
             this.#levelTable.push(0)
             this.#seedTable.push([origin])
             this.#deferredSeedTable.push([])
-            this.onInitFill(fill, origin)
+            this.onInitFill(fill, origin, neighbors)
         }
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
@@ -56,16 +57,17 @@ export class ConcurrentFill {
         let nextSeeds = []
         for(let source of seeds) {
             // for each seed, try to fill its neighbors
-            for(let target of this.getNeighbors(fill, source)) {
+            const neighbors = this.getNeighbors(fill, source)
+            for(let target of neighbors) {
                 // I'm seed, can I fill my neighbor?
-                if (this.canFill(fill, target, source)) {
+                if (this.canFill(fill, target, source, neighbors)) {
                     // fill this neighbor
-                    this.onFill(fill, target, source)
+                    this.onFill(fill, target, source, neighbors)
                     // make the filled neighbor a seed for next iteration
                     nextSeeds.push(target)
                 } else {
                     // can't fill, do something about that cell
-                    this.onBlockedFill(fill, target, source)
+                    this.onBlockedFill(fill, target, source, neighbors)
                 }
             }
         }
@@ -97,10 +99,12 @@ export class ConcurrentFill {
     }
 
     // Extensible methods ====================================
-    onInitFill(fill, target) { this.onFill(fill, target, null) }
-    canFill(fill, target, source) { return false }
-    onFill(fill, target, source) { }
-    onBlockedFill(fill, target, source) { }
+    onInitFill(fill, target, neighbors) {
+        this.onFill(fill, target, null, neighbors)
+    }
+    canFill(fill, target, source, neighbors) { return false }
+    onFill(fill, target, source, neighbors) { }
+    onBlockedFill(fill, target, source, neighbors) { }
     getNeighbors(fill, target) { return [] }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }

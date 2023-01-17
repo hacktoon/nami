@@ -10,7 +10,7 @@ import { ReliefLayer } from './geology/relief'
 import { ErosionLayer } from './geology/erosion'
 import { TemperatureLayer } from './climatology/temperature'
 import { RainLayer } from './climatology/rain'
-import { HydroLayer } from './geology/hydro'
+import { RiverLayer } from './geology/river'
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -40,7 +40,7 @@ export class WorldTileMap extends TileMap {
         this.temperature = new TemperatureLayer(this.rect, noiseLayer, this.relief)
         this.rain = new RainLayer(noiseLayer)
         this.erosion = new ErosionLayer(this.rect, this.relief)
-        this.hydro = new HydroLayer(this.rect, this.relief, this.rain, this.erosion)
+        this.hydro = new RiverLayer(this.rect, this.relief, this.rain, this.erosion)
     }
 
     get(point) {

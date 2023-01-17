@@ -17,16 +17,27 @@ export class SurveyFill extends ConcurrentFill {
         return Point.adjacents(relSource)
     }
 
-    canFill(fill, relTarget, relSource) {
+    canFill(fill, relTarget) {
         const {rect, fillMap, reliefLayer} = fill.context
         const target = rect.wrap(relTarget)
         const relief = reliefLayer.get(target)
         return ! relief.water && ! fillMap.has(target)
     }
 
-    onFill(fill, relTarget, relSource) {
-        const {rect, fillMap} = fill.context
+    // onInitFill(fill, relTarget, relSource, neighbors) {
+
+    // }
+
+    onFill(fill, relTarget, relSource, neighbors) {
+        const {rect, fillMap, riverSources, rainLayer} = fill.context
         const target = rect.wrap(relTarget)
+        const rain = rainLayer.get(relTarget)
+        for(let neighbor of neighbors) {
+            // source direction is == neighbor?
+            // break, not a source
+        }
+        riverSources.add(target)
+
         fillMap.add(target)
     }
 }
