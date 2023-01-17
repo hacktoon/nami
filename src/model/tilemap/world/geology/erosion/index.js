@@ -2,11 +2,13 @@ import { PointMap } from '/src/lib/point/map'
 import { Direction } from '/src/lib/direction'
 
 import { buildFlowMap } from './flow.fill'
+import { buildTypeMap } from './type.fill'
 
 
 export class ErosionLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
+    #typeMap = new PointMap()
     #validReliefIds = new Set()
 
     constructor(rect, reliefLayer) {
@@ -16,8 +18,11 @@ export class ErosionLayer {
             validReliefIds: this.#validReliefIds,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
+            typeMap: this.#typeMap,
         }
         buildFlowMap(context)
+        buildTypeMap(context)
+        console.log(this.#typeMap);
     }
 
     get basinCount() {
