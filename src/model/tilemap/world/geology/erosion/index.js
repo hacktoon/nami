@@ -21,8 +21,7 @@ export class ErosionLayer {
             typeMap: this.#typeMap,
         }
         buildFlowMap(context)
-        buildTypeMap(context)
-        console.log(this.#typeMap);
+        // buildTypeMap(context)
     }
 
     get basinCount() {

@@ -18,6 +18,7 @@
 
 
 ### ErosionLayer
+  - Flow can be used also for creating paths and A*star pathfinding
   - Mark flow start/end points
     - Use bitmasking to represent erosion path/shape
     - Pseudocode

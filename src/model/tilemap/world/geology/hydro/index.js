@@ -1,19 +1,26 @@
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
+import { PointMap } from '/src/lib/point/map'
+import { Direction } from '/src/lib/direction'
+
+import { buildSurveyFlowMap } from './survey.fill'
 
 
 export class HydroLayer {
-    #reliefLayer
-    #rainLayer
-    #erosionLayer
     #rivers = new Map()
     #lakes = new Map()
     #riverPoints = new PointSet()
+    #riverSources = new PointSet()
 
     constructor(rect, reliefLayer, rainLayer, erosionLayer) {
-        this.#reliefLayer = reliefLayer
-        this.#rainLayer = rainLayer
-        this.#erosionLayer = erosionLayer
+        const context = {
+            rect,
+            reliefLayer,
+            erosionLayer,
+            rainLayer,
+            riverSources: this.#riverSources
+        }
+        buildSurveyFlowMap(context)
     }
 
     get(point) {
