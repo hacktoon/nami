@@ -19,14 +19,18 @@ export class SurveyFill extends ConcurrentFill {
         const source = rect.wrap(relSource)
         const neighbors = Point.adjacents(relSource)
         let totalFlowsReceived = 0
+
+        // test if neighbors flows points to source
         for(let relNeighbor of neighbors) {
             const neighborRelief = reliefLayer.get(relNeighbor)
+            // if neighbor is water, this is a river mouth
             if (neighborRelief.water) {
                 riverMouths.add(source)
             } else if (flowsTo(fill, relNeighbor, relSource)) {
                 totalFlowsReceived++
             }
         }
+        // this point receives no flows, then it's a river source
         if (totalFlowsReceived == 0) {
             riverSources.add(source)
         }
