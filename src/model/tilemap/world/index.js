@@ -7,10 +7,10 @@ import { UITileMap } from '/src/ui/tilemap'
 import { NoiseLayer } from './noise'
 import { SurfaceLayer } from './geology/surface'
 import { ReliefLayer } from './geology/relief'
-import { ErosionLayer } from './geology/erosion'
 import { TemperatureLayer } from './climatology/temperature'
 import { RainLayer } from './climatology/rain'
 import { RiverLayer } from './geology/river'
+
 import { GeologyTileMapDiagram } from './diagram'
 
 
@@ -39,24 +39,22 @@ export class WorldTileMap extends TileMap {
         this.relief = new ReliefLayer(this.rect, noiseLayer, this.surface)
         this.temperature = new TemperatureLayer(this.rect, noiseLayer, this.relief)
         this.rain = new RainLayer(noiseLayer)
-        this.erosion = new ErosionLayer(this.rect, this.relief)
-        this.river = new RiverLayer(this.rect, this.relief, this.rain, this.erosion)
+        this.river = new RiverLayer(this.rect, this.relief, this.rain)
     }
 
     get(point) {
         const surface = this.surface.get(point)
         const relief = this.relief.get(point)
         const temperature = this.temperature.get(point)
-        const erosion = this.erosion.get(point)
         const surfaceArea = this.surface.getArea(point)
+        const river = this.river.get(point)
         const isSource = this.river.isSource(point)
         return [
             `${Point.hash(point)}`,
             `Surface(name:${surface.name}, area:${surfaceArea}%)`,
             `Relief(${relief.name})`,
-            `Erosion(basin:${erosion?.basin}, flow: ${erosion?.flow.name})`,
             `Temperature(${temperature.name})`,
-            `River(source=${isSource})`,
+            `Erosion(source=${isSource}, basin:${river?.basin}, flow: ${river?.flow.name})`,
         ].join('\n')
     }
 }

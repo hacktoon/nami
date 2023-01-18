@@ -40,7 +40,7 @@ class CanvasContext {
         const offset = Math.floor(size / 2)
         this.context.fillStyle = color
         this.context.textAlign = "center"
-        this.context.font = "25px monospace"
+        this.context.font = `${offset}px monospace`
         this.context.fillText(text, point[0] + offset, point[1] + offset)
     }
 

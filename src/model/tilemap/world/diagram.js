@@ -11,8 +11,8 @@ const SCHEMA = new Schema(
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
     Type.boolean('showTemperature', 'Temperature', {default: false}),
     Type.boolean('showRain', 'Rain', {default: false}),
-    Type.boolean('showErosionFlow', 'Erosion flow', {default: false}),
-    Type.boolean('showErosionBasin', 'Erosion basin', {default: false}),
+    Type.boolean('showErosion', 'Erosion', {default: false}),
+    Type.boolean('showBasins', 'Basins', {default: false}),
     Type.boolean('showRiverSources', 'River sources', {default: false}),
 )
 
@@ -21,14 +21,14 @@ class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
         this.erosionColors = new Map()
-        for (let i = 0; i < tileMap.erosion.basinCount; i ++) {
+        for (let i = 0; i < tileMap.river.basinCount; i ++) {
             this.erosionColors.set(i, new Color())
         }
     }
 
-    getByErosion(point) {
-        const erosion = this.tileMap.erosion.get(point)
-        return this.erosionColors.get(erosion.basin)
+    getByBasin(point) {
+        const river = this.tileMap.river.get(point)
+        return this.erosionColors.get(river.basin)
     }
 }
 
@@ -76,10 +76,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (showWaterBorder && isBorder && surface.water) {
             color = color.brighten(40)
         }
-        if (this.params.get('showErosionBasin')) {
-            const erosion = this.tileMap.erosion.get(point)
-            if (!surface.water && erosion) {
-                const erosionColor = this.colorMap.getByErosion(point)
+        if (this.params.get('showBasins')) {
+            const river = this.tileMap.river.get(point)
+            if (!surface.water && river) {
+                const erosionColor = this.colorMap.getByBasin(point)
                 color = erosionColor.brighten(relief.id * 10)
             }
         }
@@ -89,14 +89,14 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     getText(relativePoint) {
         const point = this.rect.wrap(relativePoint)
-        const erosion = this.tileMap.erosion.get(point)
-        const hasText = erosion && this.params.get('showErosionFlow')
+        const river = this.tileMap.river.get(point)
+        const hasText = river && this.params.get('showErosion')
         if (! hasText)
             return ''
-        if (erosion.origin)
-            return `[${erosion.flow.symbol}]`
-        if (erosion.flow)
-            return erosion.flow.symbol
+        if (river.origin)
+            return `[${river.flow.symbol}]`
+        if (river.flow)
+            return river.flow.symbol
     }
 
     getOutline(relativePoint) {

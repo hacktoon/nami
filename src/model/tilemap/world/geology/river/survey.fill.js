@@ -1,6 +1,7 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
+import { Direction } from '/src/lib/direction'
 
 
 export function buildSurveyFlowMap(context) {
@@ -14,10 +15,7 @@ export function buildSurveyFlowMap(context) {
 
 export class SurveyFill extends ConcurrentFill {
     getNeighbors(fill, relSource) {
-        const {
-            rect, riverSources, riverMouths,
-            reliefLayer, erosionLayer
-        } = fill.context
+        const {rect, riverSources, riverMouths, reliefLayer} = fill.context
         const source = rect.wrap(relSource)
         const neighbors = Point.adjacents(relSource)
         let totalFlowsReceived = 0
@@ -25,7 +23,7 @@ export class SurveyFill extends ConcurrentFill {
             const neighborRelief = reliefLayer.get(relNeighbor)
             if (neighborRelief.water) {
                 riverMouths.add(source)
-            } else if (erosionLayer.flowsTo(relNeighbor, relSource)) {
+            } else if (flowsTo(fill, relNeighbor, relSource)) {
                 totalFlowsReceived++
             }
         }
@@ -42,13 +40,19 @@ export class SurveyFill extends ConcurrentFill {
         return ! relief.water && ! fillMap.has(target)
     }
 
-    // onInitFill(fill, relTarget, relSource, neighbors) {
-
-    // }
-
     onFill(fill, relTarget, relSource, neighbors) {
         const {rect, fillMap} = fill.context
         const target = rect.wrap(relTarget)
         fillMap.add(target)
     }
+}
+
+
+function flowsTo(fill, originPoint, targetPoint) {
+    // checks if originPoint flow points to targetPoint
+    const origin = fill.context.rect.wrap(originPoint)
+    const directionId = fill.context.flowMap.get(origin)
+    const direction = Direction.fromId(directionId)
+    const pointAtDirection = Point.atDirection(originPoint, direction)
+    return Point.equals(targetPoint, pointAtDirection)
 }
