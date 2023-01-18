@@ -1,3 +1,4 @@
+import { Point } from '/src/lib/point'
 import { PointMap } from '/src/lib/point/map'
 import { Direction } from '/src/lib/direction'
 
@@ -10,8 +11,10 @@ export class ErosionLayer {
     #flowMap = new PointMap()
     #typeMap = new PointMap()
     #validReliefIds = new Set()
+    #rect
 
     constructor(rect, reliefLayer) {
+        this.#rect = rect
         const context = {
             rect,
             reliefLayer,
@@ -35,5 +38,14 @@ export class ErosionLayer {
             basin: this.#basinMap.get(point),
             flow: Direction.fromId(directionId),
         } : undefined
+    }
+
+    flowsTo(originPoint, targetPoint) {
+        // checks if originPoint flow points to targetPoint
+        const origin = this.#rect.wrap(originPoint)
+        const directionId = this.#flowMap.get(origin)
+        const direction = Direction.fromId(directionId)
+        const pointAtDirection = Point.atDirection(originPoint, direction)
+        return Point.equals(targetPoint, pointAtDirection)
     }
 }

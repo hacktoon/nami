@@ -14,7 +14,25 @@ export function buildSurveyFlowMap(context) {
 
 export class SurveyFill extends ConcurrentFill {
     getNeighbors(fill, relSource) {
-        return Point.adjacents(relSource)
+        const {
+            rect, riverSources, riverMouths,
+            reliefLayer, erosionLayer
+        } = fill.context
+        const source = rect.wrap(relSource)
+        const neighbors = Point.adjacents(relSource)
+        let totalFlowsReceived = 0
+        for(let relNeighbor of neighbors) {
+            const neighborRelief = reliefLayer.get(relNeighbor)
+            if (neighborRelief.water) {
+                riverMouths.add(source)
+            } else if (erosionLayer.flowsTo(relNeighbor, relSource)) {
+                totalFlowsReceived++
+            }
+        }
+        if (totalFlowsReceived == 0) {
+            riverSources.add(source)
+        }
+        return neighbors
     }
 
     canFill(fill, relTarget) {
@@ -29,15 +47,8 @@ export class SurveyFill extends ConcurrentFill {
     // }
 
     onFill(fill, relTarget, relSource, neighbors) {
-        const {rect, fillMap, riverSources, rainLayer} = fill.context
+        const {rect, fillMap} = fill.context
         const target = rect.wrap(relTarget)
-        const rain = rainLayer.get(relTarget)
-        for(let neighbor of neighbors) {
-            // source direction is == neighbor?
-            // break, not a source
-        }
-        riverSources.add(target)
-
         fillMap.add(target)
     }
 }

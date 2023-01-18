@@ -35,24 +35,24 @@ const CARDINAL_DIRECTIONS = new Set([
 ])
 
 export class Direction {
-    static get NORTH () { return DIRECTIONS.NORTH.id }
-    static get EAST () { return DIRECTIONS.EAST.id }
-    static get SOUTH () { return DIRECTIONS.SOUTH.id }
-    static get WEST () { return DIRECTIONS.WEST.id }
-    static get NORTHEAST () { return DIRECTIONS.NORTHEAST.id }
-    static get NORTHWEST () { return DIRECTIONS.NORTHWEST.id }
-    static get SOUTHEAST () { return DIRECTIONS.SOUTHEAST.id }
-    static get SOUTHWEST () { return DIRECTIONS.SOUTHWEST.id }
+    static get NORTH () { return DIRECTIONS.NORTH }
+    static get EAST () { return DIRECTIONS.EAST }
+    static get SOUTH () { return DIRECTIONS.SOUTH }
+    static get WEST () { return DIRECTIONS.WEST }
+    static get NORTHEAST () { return DIRECTIONS.NORTHEAST }
+    static get NORTHWEST () { return DIRECTIONS.NORTHWEST }
+    static get SOUTHEAST () { return DIRECTIONS.SOUTHEAST }
+    static get SOUTHWEST () { return DIRECTIONS.SOUTHWEST }
 
     static fromId(id) {
         return DIRECTION_MAP[id]
     }
 
-    static getName (direction) {
+    static getName(direction) {
         return DIRECTION_MAP[direction.id].name
     }
 
-    static getSymbol (direction) {
+    static getSymbol(direction) {
         return DIRECTION_MAP[direction.id].symbol
     }
 
@@ -75,7 +75,7 @@ export class Direction {
     }
 
     static random () {
-        const id = Random.choice(
+        return Random.choice(
             Direction.NORTH,
             Direction.EAST,
             Direction.SOUTH,
@@ -85,7 +85,6 @@ export class Direction {
             Direction.SOUTHEAST,
             Direction.SOUTHWEST,
         )
-        return DIRECTION_MAP[id]
     }
 
     static randomCardinal () {

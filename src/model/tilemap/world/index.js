@@ -40,7 +40,7 @@ export class WorldTileMap extends TileMap {
         this.temperature = new TemperatureLayer(this.rect, noiseLayer, this.relief)
         this.rain = new RainLayer(noiseLayer)
         this.erosion = new ErosionLayer(this.rect, this.relief)
-        this.hydro = new RiverLayer(this.rect, this.relief, this.rain, this.erosion)
+        this.river = new RiverLayer(this.rect, this.relief, this.rain, this.erosion)
     }
 
     get(point) {
@@ -49,12 +49,14 @@ export class WorldTileMap extends TileMap {
         const temperature = this.temperature.get(point)
         const erosion = this.erosion.get(point)
         const surfaceArea = this.surface.getArea(point)
+        const isSource = this.river.isSource(point)
         return [
             `${Point.hash(point)}`,
             `Surface(name:${surface.name}, area:${surfaceArea}%)`,
             `Relief(${relief.name})`,
             `Erosion(basin:${erosion?.basin}, flow: ${erosion?.flow.name})`,
             `Temperature(${temperature.name})`,
+            `River(source=${isSource})`,
         ].join('\n')
     }
 }

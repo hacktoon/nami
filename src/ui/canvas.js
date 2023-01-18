@@ -27,10 +27,13 @@ class CanvasContext {
         this.context.fillRect(x, y, size, size)
     }
 
-    mark(point, size, color='#000') {
+    outline(point, size, color='#00F') {
         const [x, y] = point
-        this.context.fillStyle = color
-        this.context.fillRect(x, y, size, size)
+        const lineSize = Math.ceil(size / 10)
+        this.context.strokeStyle = color
+        this.context.lineWidth = lineSize
+        const offsetSize = size - lineSize * 2
+        this.context.strokeRect(x+lineSize, y+lineSize, offsetSize, offsetSize)
     }
 
     text(point, size, text, color='#000') {

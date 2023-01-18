@@ -7,28 +7,39 @@ import { buildSurveyFlowMap } from './survey.fill'
 
 
 export class RiverLayer {
+    #rect
     #rivers = new Map()
     #riverMap = new PointMap()
     #riverPoints = new PointSet()
     #riverSources = new PointSet()
+    #riverMouths = new PointSet()
 
     constructor(rect, reliefLayer, rainLayer, erosionLayer) {
+        this.#rect = rect
         const context = {
             rect,
             reliefLayer,
             erosionLayer,
             rainLayer,
             riverSources: this.#riverSources,
+            riverMouths: this.#riverMouths,
             riverMap: this.#riverMap
         }
         buildSurveyFlowMap(context)
     }
 
     get(point) {
-
+        return {
+            source: this.#riverSources.has(point),
+            mouth: this.#riverMouths.has(point),
+        }
     }
 
-    isRiver(point) {
-        return this.#riverPoints.has(point)
+    isSource(point) {
+        return this.#riverSources.has(point)
+    }
+
+    isMouth(point) {
+        return this.#riverMouths.has(point)
     }
 }

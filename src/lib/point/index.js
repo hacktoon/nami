@@ -88,6 +88,10 @@ export class Point {
         return Math.sqrt(deltaX + deltaY)
     }
 
+    static atDirection(point, direction) {
+        return Point.plus(point, direction.axis)
+    }
+
     static atNorth(p) { return [p[0], p[1] - 1] }
     static atSouth(p) { return [p[0], p[1] + 1] }
     static atEast(p) { return [p[0] + 1, p[1]] }

@@ -6,20 +6,18 @@ const MAX_LOOP_COUNT = 2000
 
 export class ConcurrentFill {
     #seedTable = []
-    #deferredSeedTable = []
     #levelTable = []
 
     start(origins, context={}) {
         // Initialize data and fill origins
-        const originsCount = origins.length
-        for(let id = 0; id < originsCount; id ++) {
-            const fill = {id, context, level: 0}
-            const origin = origins[id]
-            const neighbors = this.getNeighbors(fill, origin)
-            this.#levelTable.push(0)
-            this.#seedTable.push([origin])
-            this.#deferredSeedTable.push([])
-            this.onInitFill(fill, origin, neighbors)
+        const level = 0
+        for(let id = 0; id < origins.length; id ++) {
+            const fill = {id, context, level}
+            const target = origins[id]
+            const neighbors = this.getNeighbors(fill, target)
+            this.#levelTable.push(level)
+            this.#seedTable.push([target])
+            this.onInitFill(fill, target, neighbors)
         }
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
@@ -32,7 +30,6 @@ export class ConcurrentFill {
 
     #fillLayers(origins, context) {
         let completedFills = 0
-        let deferredSeeds = 0
         for(let id = 0; id < origins.length; id ++) {
             // fill one or many layers for each id
             const fill = {id, context, level: this.#levelTable[id]}

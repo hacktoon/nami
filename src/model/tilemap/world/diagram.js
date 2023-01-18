@@ -13,6 +13,7 @@ const SCHEMA = new Schema(
     Type.boolean('showRain', 'Rain', {default: false}),
     Type.boolean('showErosionFlow', 'Erosion flow', {default: false}),
     Type.boolean('showErosionBasin', 'Erosion basin', {default: false}),
+    Type.boolean('showRiverSources', 'River sources', {default: false}),
 )
 
 
@@ -79,9 +80,10 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             const erosion = this.tileMap.erosion.get(point)
             if (!surface.water && erosion) {
                 const erosionColor = this.colorMap.getByErosion(point)
-                return erosionColor.brighten(relief.id * 10)
+                color = erosionColor.brighten(relief.id * 10)
             }
         }
+
         return color
     }
 
@@ -95,5 +97,14 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             return `[${erosion.flow.symbol}]`
         if (erosion.flow)
             return erosion.flow.symbol
+    }
+
+    getOutline(relativePoint) {
+        const point = this.rect.wrap(relativePoint)
+        if (this.params.get('showRiverSources')) {
+            if (this.tileMap.river.isSource(point))
+                return true
+        }
+        return false
     }
 }

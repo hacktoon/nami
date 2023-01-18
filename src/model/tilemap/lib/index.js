@@ -43,7 +43,7 @@ export class TileMapDiagram {
         return
     }
 
-    getMark(point) {
-        return
+    getOutline(point) {
+        return false
     }
 }

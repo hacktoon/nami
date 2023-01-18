@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest'
 import { Point } from '/src/lib/point'
+import { Direction } from '/src/lib/direction'
 import { Rect } from '/src/lib/number'
 import { IndexedPointSet } from '/src/lib/point/set'
 
@@ -102,3 +103,16 @@ test("IndexedPointSet forEach", () => {
     })
     expect(index).toBe(POINT_SET.length)
 })
+
+
+test("Point at a direction relative to another on north", () => {
+    const point = Point.atDirection([0, 0], Direction.NORTH)
+    expect(point).toStrictEqual([0, -1])
+})
+
+
+test("Point at a direction relative to another on west", () => {
+    const point = Point.atDirection([-2, 0], Direction.WEST)
+    expect(point).toStrictEqual([-3, 0])
+})
+
