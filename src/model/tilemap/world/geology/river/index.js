@@ -5,6 +5,7 @@ import { Direction } from '/src/lib/direction'
 
 import { buildFlowMap } from './flow.fill'
 import { buildSurveyFlowMap } from './survey.fill'
+import { buildStructMap } from './struct'
 
 
 export class RiverLayer {
@@ -14,7 +15,6 @@ export class RiverLayer {
 
     #rivers = new Map()
     #riverMap = new PointMap()
-    #riverPoints = new PointSet()
     #riverSources = new PointSet()
     #riverMouths = new PointSet()
 
@@ -23,6 +23,7 @@ export class RiverLayer {
             rect,
             reliefLayer,
             rainLayer,
+            rivers: this.#rivers,
             validReliefIds: this.#validReliefIds,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
@@ -32,6 +33,7 @@ export class RiverLayer {
         }
         buildFlowMap(context)
         buildSurveyFlowMap(context)
+        buildStructMap(context)
     }
 
     get basinCount() {

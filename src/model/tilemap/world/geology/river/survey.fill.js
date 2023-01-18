@@ -4,6 +4,11 @@ import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 
 
+/*
+    The survey fill starts from land borders and detects
+    if a point is a river source or river mouth.
+    It can be used to detect lakes or other features
+*/
 export function buildSurveyFlowMap(context) {
     const fillMap = new PointSet()
     const fill = new SurveyFill()
