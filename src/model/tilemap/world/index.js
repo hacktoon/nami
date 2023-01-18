@@ -57,4 +57,8 @@ export class WorldTileMap extends TileMap {
             `Erosion(source=${isSource}, basin:${river?.basin}, flow: ${river?.flow.name})`,
         ].join('\n')
     }
+
+    getDescription() {
+        return `Rivers: ${this.river.riverCount}`
+    }
 }

@@ -11,9 +11,8 @@ import { buildStructMap } from './struct'
 export class RiverLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
-
     #rivers = new Map()
-    #riverMap = new PointMap()
+    #riverPoints = new PointMap()
     #riverSources = new PointSet()
     #riverMouths = new PointSet()
 
@@ -27,7 +26,7 @@ export class RiverLayer {
             flowMap: this.#flowMap,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,
-            riverMap: this.#riverMap
+            riverPoints: this.#riverPoints
         }
         buildFlowMap(context)
         buildSurveyFlowMap(context)
@@ -36,6 +35,10 @@ export class RiverLayer {
 
     get basinCount() {
         return this.#basinMap.size
+    }
+
+    get riverCount() {
+        return this.#rivers.size
     }
 
     get(point) {
