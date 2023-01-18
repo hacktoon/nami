@@ -4,39 +4,44 @@ import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
 
 
-export function buildFlowMap(context) {
-    // start filling from land borders
-    const flowOriginSet = new PointSet()
+export function buildFlowMap(baseContext) {
+    // stores points that must be filled on higher reliefs
+    const deferredOrigins = new PointSet()
+    // cumulative set of reliefs that can be filled in this iteration
     const validReliefIds = new Set()
-    const flowContext = {...context, flowOriginSet, validReliefIds}
-    let origins = context.reliefLayer.landBorders
-    for(let reliefId of context.reliefLayer.getIdsByErosionStep()) {
-        validReliefIds.add(reliefId)
-        origins = fillFlowMap(origins, flowContext)
+    // start filling from land borders
+    let origins = baseContext.reliefLayer.landBorders
+    const context = {...baseContext, deferredOrigins, validReliefIds}
+    // start from lower to higher land reliefs, filling each layer
+    for(let relief of context.reliefLayer.getLandReliefs()) {
+        // add current relief for next fill
+        validReliefIds.add(relief.id)
+        origins = fillReliefFlowMap(origins, context)
     }
 }
 
 
-function fillFlowMap(origins, context) {
+function fillReliefFlowMap(origins, context) {
     const nextOrigins = []
-    // filter and return origins
-    const queue = origins.concat(context.flowOriginSet.points)
-    queue.forEach(point => {
+    // add received origins to deferred to next relief
+    // and filter which one are allowed in this relief
+    const pointQueue = origins.concat(context.deferredOrigins.points)
+    pointQueue.forEach(point => {
         const relief = context.reliefLayer.get(point)
         if (context.validReliefIds.has(relief.id)) {
             nextOrigins.push(point)
-            context.flowOriginSet.delete(point)
+            context.deferredOrigins.delete(point)
         } else {
-            context.flowOriginSet.add(point)
+            context.deferredOrigins.add(point)
         }
     })
-    const fill = new ErosionFill()
+    const fill = new RiverFlowFill()
     fill.start(nextOrigins, context)
     return nextOrigins
 }
 
 
-export class ErosionFill extends ConcurrentFill {
+class RiverFlowFill extends ConcurrentFill {
     getChance(fill) { return .1 }
     getGrowth(fill) { return 5 }
 
@@ -54,32 +59,42 @@ export class ErosionFill extends ConcurrentFill {
         return ! relief.water && notVisited && isValidRelief
     }
 
-    onInitFill(fill, relTarget) {
+    onInitFill(fill, relTarget, neighbors) {
         // set the initial basin point to search water neighbor
-        const {rect, reliefLayer, flowMap, basinMap} = fill.context
+        const {
+            rect, reliefLayer, flowMap, basinMap, riverMouths
+        } = fill.context
         const target = rect.wrap(relTarget)
-        let hasWaterNeighbor = false
         let relLandNeighbor = null
-        for(let relNeighbor of Point.adjacents(target)) {
-            const neighbor = rect.wrap(relNeighbor)
-            const neighborRelief = reliefLayer.get(neighbor)
+        for(let relNeighbor of neighbors) {
+            const neighborRelief = reliefLayer.get(relNeighbor)
             // set flow to nearest water neighbor
             if (neighborRelief.water) {
                 const direction = this.#getDirection(relTarget, relNeighbor)
                 flowMap.set(target, direction.id)
                 // it's next to water, use original fill.id
                 basinMap.set(target, fill.id)
-                hasWaterNeighbor = true
+                // if neighbor is water, this is a river mouth
+                riverMouths.add(target)
                 break
-            }
-            if (flowMap.has(neighbor)) {
-                relLandNeighbor = relNeighbor
+            } else {
+                // neighbor is land
+                const neighbor = rect.wrap(relNeighbor)
+                if (flowMap.has(neighbor)) {
+                    // choose any land neighbor
+                    // only if it hasn't been set yet by another fill
+                    relLandNeighbor = relNeighbor
+                }
             }
         }
-        // has no water neighbor and is empty, set flow
-        if (! hasWaterNeighbor && ! flowMap.has(target)) {
+        // has no water neighbor (not a river mouth) and is empty
+        // then set flow
+        const notRiverMouth = ! riverMouths.has(target)
+        const hasNoFlow = ! flowMap.has(target)
+        if (notRiverMouth && hasNoFlow) {
             const direction = this.#getDirection(relTarget, relLandNeighbor)
             flowMap.set(target, direction.id)
+            // use neighbor basin
             basinMap.set(target, basinMap.get(rect.wrap(relLandNeighbor)))
         }
     }
@@ -93,13 +108,13 @@ export class ErosionFill extends ConcurrentFill {
     }
 
     onBlockedFill(fill, relTarget, relSource) {
-        const {rect, reliefLayer, validReliefIds, flowOriginSet} = fill.context
+        const {rect, reliefLayer, validReliefIds, deferredOrigins} = fill.context
         const target = rect.wrap(relTarget)
         const relief = reliefLayer.get(target)
         const isInvalidRelief = ! validReliefIds.has(relief.id)
         // add point to next relief fill
         if (! relief.water && isInvalidRelief) {
-            flowOriginSet.add(target)
+            deferredOrigins.add(target)
         }
     }
 

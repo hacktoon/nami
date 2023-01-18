@@ -20,7 +20,7 @@ export function buildSurveyFlowMap(context) {
 
 export class SurveyFill extends ConcurrentFill {
     getNeighbors(fill, relSource) {
-        const {rect, riverSources, riverMouths, reliefLayer} = fill.context
+        const {rect, riverSources, reliefLayer} = fill.context
         const source = rect.wrap(relSource)
         const neighbors = Point.adjacents(relSource)
         let totalFlowsReceived = 0
@@ -28,11 +28,9 @@ export class SurveyFill extends ConcurrentFill {
         // test if neighbors flows points to source
         for(let relNeighbor of neighbors) {
             const neighborRelief = reliefLayer.get(relNeighbor)
-            // if neighbor is water, this is a river mouth
-            if (neighborRelief.water) {
-                riverMouths.add(source)
-            } else if (flowsTo(fill, relNeighbor, relSource)) {
-                totalFlowsReceived++
+            if (!neighborRelief.water) {
+                if (flowsTo(fill, relNeighbor, relSource))
+                    totalFlowsReceived++
             }
         }
         // this point receives no flows, then it's a river source

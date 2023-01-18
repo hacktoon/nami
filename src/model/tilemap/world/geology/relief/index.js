@@ -83,12 +83,12 @@ export class ReliefLayer {
         return Relief.fromId(id)
     }
 
-    getIdsByErosionStep() {
+    getLandReliefs() {
         return [
-            Relief.BASIN.id,
-            Relief.PLAIN.id,
-            Relief.PLATEAU.id,
-            Relief.MOUNTAIN.id,
+            Relief.BASIN,
+            Relief.PLAIN,
+            Relief.PLATEAU,
+            Relief.MOUNTAIN,
         ]
     }
 
