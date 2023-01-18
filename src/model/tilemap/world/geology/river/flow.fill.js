@@ -6,10 +6,12 @@ import { Point } from '/src/lib/point'
 
 export function buildFlowMap(context) {
     // start filling from land borders
-    const flowContext = {...context, flowOriginSet: new PointSet()}
+    const flowOriginSet = new PointSet()
+    const validReliefIds = new Set()
+    const flowContext = {...context, flowOriginSet, validReliefIds}
     let origins = context.reliefLayer.landBorders
     for(let reliefId of context.reliefLayer.getIdsByErosionStep()) {
-        context.validReliefIds.add(reliefId)
+        validReliefIds.add(reliefId)
         origins = fillFlowMap(origins, flowContext)
     }
 }

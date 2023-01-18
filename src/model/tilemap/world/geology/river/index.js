@@ -11,7 +11,6 @@ import { buildStructMap } from './struct'
 export class RiverLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
-    #validReliefIds = new Set()
 
     #rivers = new Map()
     #riverMap = new PointMap()
@@ -24,7 +23,6 @@ export class RiverLayer {
             reliefLayer,
             rainLayer,
             rivers: this.#rivers,
-            validReliefIds: this.#validReliefIds,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
             riverSources: this.#riverSources,
