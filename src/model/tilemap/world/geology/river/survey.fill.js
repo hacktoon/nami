@@ -19,47 +19,47 @@ export function buildSurveyFlowMap(context) {
 
 
 export class SurveyFill extends ConcurrentFill {
-    getNeighbors(fill, relSource) {
+    getNeighbors(fill, parentPoint) {
         const {rect, riverSources, reliefLayer} = fill.context
-        const source = rect.wrap(relSource)
-        const neighbors = Point.adjacents(relSource)
+        const _parentPoint = rect.wrap(parentPoint)
+        const neighbors = Point.adjacents(parentPoint)
         let totalFlowsReceived = 0
 
-        // test if neighbors flows points to source
+        // test if neighbors flows points to _parentPoint
         for(let relNeighbor of neighbors) {
             const neighborRelief = reliefLayer.get(relNeighbor)
             if (!neighborRelief.water) {
-                if (flowsTo(fill, relNeighbor, relSource))
+                if (flowsTo(fill, relNeighbor, parentPoint))
                     totalFlowsReceived++
             }
         }
         // this point receives no flows, then it's a river source
         if (totalFlowsReceived == 0) {
-            riverSources.add(source)
+            riverSources.add(_parentPoint)
         }
         return neighbors
     }
 
-    canFill(fill, relTarget) {
+    canFill(fill, fillPoint) {
         const {rect, fillMap, reliefLayer} = fill.context
-        const target = rect.wrap(relTarget)
-        const relief = reliefLayer.get(target)
-        return ! relief.water && ! fillMap.has(target)
+        const _fillPoint = rect.wrap(fillPoint)
+        const relief = reliefLayer.get(_fillPoint)
+        return ! relief.water && ! fillMap.has(_fillPoint)
     }
 
-    onFill(fill, relTarget, relSource, neighbors) {
+    onFill(fill, fillPoint, parentPoint, neighbors) {
         const {rect, fillMap} = fill.context
-        const target = rect.wrap(relTarget)
-        fillMap.add(target)
+        const _fillPoint = rect.wrap(fillPoint)
+        fillMap.add(_fillPoint)
     }
 }
 
 
-function flowsTo(fill, originPoint, targetPoint) {
-    // checks if originPoint flow points to targetPoint
+function flowsTo(fill, originPoint, fillPoint) {
+    // checks if originPoint flow points to fillPoint
     const origin = fill.context.rect.wrap(originPoint)
     const directionId = fill.context.flowMap.get(origin)
     const direction = Direction.fromId(directionId)
     const pointAtDirection = Point.atDirection(originPoint, direction)
-    return Point.equals(targetPoint, pointAtDirection)
+    return Point.equals(fillPoint, pointAtDirection)
 }
