@@ -16,12 +16,14 @@ export function buildFlowMap(baseContext) {
     for(let relief of context.reliefLayer.getLandReliefs()) {
         // add current relief for next fill
         validReliefIds.add(relief.id)
+        // update origins (points)
         origins = fillReliefFlowMap(origins, context)
     }
 }
 
 
 function fillReliefFlowMap(origins, context) {
+    // run a fill for allowed reliefs in validReliefIds
     const nextOrigins = []
     // add received origins to deferred to next relief
     // and filter which one are allowed in this relief
@@ -49,67 +51,81 @@ class RiverFlowFill extends ConcurrentFill {
         return Point.adjacents(parentPoint)
     }
 
-    canFill(fill, fillPoint, parentPoint) {
+    canFill(fill, fillPoint) {
         const {rect, reliefLayer, validReliefIds, flowMap} = fill.context
-        const _fillPoint = rect.wrap(fillPoint)
-        const relief = reliefLayer.get(_fillPoint)
+        const wrappedFillPoint = rect.wrap(fillPoint)
+        const relief = reliefLayer.get(wrappedFillPoint)
         const isValidRelief = validReliefIds.has(relief.id)
         // use basin map to track which points were already visited
-        const notVisited = ! flowMap.has(_fillPoint)
-        return ! relief.water && notVisited && isValidRelief
+        const isEmpty = ! flowMap.has(wrappedFillPoint)
+        return ! relief.water && isEmpty && isValidRelief
     }
 
     onInitFill(fill, fillPoint, neighbors) {
-        // set the initial basin point to search water neighbor
-        const {
-            rect, reliefLayer, flowMap, basinMap, riverMouths
-        } = fill.context
-        const _fillPoint = rect.wrap(fillPoint)
-        let relLandNeighbor = null
-        for(let relNeighbor of neighbors) {
-            const neighborRelief = reliefLayer.get(relNeighbor)
-            // set flow to nearest water neighbor
-            if (neighborRelief.water) {
-                const direction = this.#getDirection(fillPoint, relNeighbor)
-                flowMap.set(_fillPoint, direction.id)
-                // it's next to water, use original fill.id
-                basinMap.set(_fillPoint, fill.id)
-                // if neighbor is water, this is a river mouth
-                riverMouths.add(_fillPoint)
-                break
-            } else {
-                // neighbor is land - for fills on second iteration and above
-                const neighbor = rect.wrap(relNeighbor)
-                if (flowMap.has(neighbor)) {
-                    // choose any land neighbor
-                    // only if it hasn't been set yet by another fill
-                    relLandNeighbor = relNeighbor
-                }
+        // set the initial fill point to search water neighbor
+        // considers if it's basin (has water neighbor) or inland
+        const {rect, flowMap, basinMap, riverMouths} = fill.context
+        const wrappedFillPoint = rect.wrap(fillPoint)
+        // already filled, exit
+        if (flowMap.has(wrappedFillPoint)) {
+            return
+        }
+        const waterNeighbor = this.#getWaterNeighbor(fill, neighbors)
+        // set flow if has no water neighbor (not a river mouth) and is empty
+        if (waterNeighbor) {
+            const direction = getDirection(fillPoint, waterNeighbor)
+            flowMap.set(wrappedFillPoint, direction.id)
+            // it's next to water, use original fill.id
+            basinMap.set(wrappedFillPoint, fill.id)
+            // if neighbor is water, this is a river mouth
+            riverMouths.add(wrappedFillPoint)
+        } else {
+            const landNeighbor = this.#getLandNeighbor(fill, neighbors)
+            if (landNeighbor) {
+                const direction = getDirection(fillPoint, landNeighbor)
+                flowMap.set(wrappedFillPoint, direction.id)
+                // set land neighbor basin
+                const wrappedNeighbor = rect.wrap(landNeighbor)
+                basinMap.set(wrappedFillPoint, basinMap.get(wrappedNeighbor))
             }
         }
-        // has no water neighbor (not a river mouth) and is empty
-        // then set flow
-        const notRiverMouth = ! riverMouths.has(_fillPoint)
-        const hasNoFlow = ! flowMap.has(_fillPoint)
-        if (notRiverMouth && hasNoFlow) {
-            const direction = this.#getDirection(fillPoint, relLandNeighbor)
-            flowMap.set(_fillPoint, direction.id)
-            // use neighbor basin
-            basinMap.set(_fillPoint, basinMap.get(rect.wrap(relLandNeighbor)))
+    }
+
+    #getWaterNeighbor(fill, neighbors) {
+        for(let neighbor of neighbors) {
+            const neighborRelief = fill.context.reliefLayer.get(neighbor)
+            // set flow to nearest water neighbor
+            if (neighborRelief.water) {
+                return neighbor
+            }
+        }
+    }
+
+    #getLandNeighbor(fill, neighbors) {
+        // need to read neighbors on start fill to get parent flow
+        const {rect, reliefLayer, flowMap} = fill.context
+        for(let neighbor of neighbors) {
+            const wrappedNeighbor = rect.wrap(neighbor)
+            const neighborRelief = reliefLayer.get(wrappedNeighbor)
+            // is land, check if has a flow already
+            if (! neighborRelief.water && flowMap.has(wrappedNeighbor)) {
+                return neighbor
+            }
         }
     }
 
     onFill(fill, fillPoint, parentPoint) {
         const {rect, flowMap, basinMap} = fill.context
-        const _fillPoint = rect.wrap(fillPoint)
-        const directionToSource = this.#getDirection(fillPoint, parentPoint)
+        const wrappedFillPoint = rect.wrap(fillPoint)
+        const _parentPoint = rect.wrap(parentPoint)
+        const directionToSource = getDirection(fillPoint, parentPoint)
         // set direction to source
-        flowMap.set(_fillPoint, directionToSource.id)
-        // use basin value from source point
-        basinMap.set(_fillPoint, basinMap.get(rect.wrap(parentPoint)))
+        flowMap.set(wrappedFillPoint, directionToSource.id)
+        // use basin value from parent point
+        basinMap.set(wrappedFillPoint, basinMap.get(_parentPoint))
     }
 
-    onBlockedFill(fill, fillPoint, parentPoint) {
+    onBlockedFill(fill, fillPoint) {
         const {rect, reliefLayer, validReliefIds, deferredOrigins} = fill.context
         const target = rect.wrap(fillPoint)
         const relief = reliefLayer.get(target)
@@ -119,9 +135,10 @@ class RiverFlowFill extends ConcurrentFill {
             deferredOrigins.add(target)
         }
     }
+}
 
-    #getDirection(sourcePoint, targetPoint) {
-        const angle = Point.angle(sourcePoint, targetPoint)
-        return Direction.fromAngle(angle)
-    }
+
+function getDirection(sourcePoint, targetPoint) {
+    const angle = Point.angle(sourcePoint, targetPoint)
+    return Direction.fromAngle(angle)
 }
