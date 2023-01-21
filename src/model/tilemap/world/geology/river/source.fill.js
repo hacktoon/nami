@@ -9,7 +9,7 @@ import { Direction } from '/src/lib/direction'
     if a point is a river source or river mouth.
     It can be used to detect lakes or other features
 */
-export function buildSurveyFlowMap(context) {
+export function buildRiverSourceMap(context) {
     const fillMap = new PointSet()
     const fill = new SurveyFill()
     const origins = context.reliefLayer.landBorders

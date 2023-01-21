@@ -37,9 +37,13 @@ export class WorldTileMap extends TileMap {
         const noiseLayer = new NoiseLayer(this.rect, this.seed)
         this.surface = new SurfaceLayer(this.rect, noiseLayer)
         this.relief = new ReliefLayer(this.rect, noiseLayer, this.surface)
-        this.temperature = new TemperatureLayer(this.rect, noiseLayer, this.relief)
+        this.temperature = new TemperatureLayer(
+            this.rect, noiseLayer, this.relief
+        )
         this.rain = new RainLayer(noiseLayer)
-        this.river = new RiverLayer(this.rect, this.relief, this.rain)
+        this.river = new RiverLayer(
+            this.rect, this.surface, this.relief, this.rain
+        )
     }
 
     get(point) {

@@ -4,21 +4,22 @@ import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 
 import { buildFlowMap } from './flow.fill'
-import { buildSurveyFlowMap } from './survey.fill'
-import { buildStructMap } from './struct'
+import { buildRiverSourceMap } from './source.fill'
+import { buildStructMap } from './tile.matrix'
 
 
 export class RiverLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
-    #rivers = new Map()
     #riverPoints = new PointMap()
     #riverSources = new PointSet()
     #riverMouths = new PointSet()
+    #rivers = new Map()
 
-    constructor(rect, reliefLayer, rainLayer) {
+    constructor(rect, surfaceLayer, reliefLayer, rainLayer) {
         const context = {
             rect,
+            surfaceLayer,
             reliefLayer,
             rainLayer,
             rivers: this.#rivers,
@@ -29,8 +30,8 @@ export class RiverLayer {
             riverPoints: this.#riverPoints
         }
         buildFlowMap(context)
-        buildSurveyFlowMap(context)
-        buildStructMap(context)
+        // buildRiverSourceMap(context)
+        // buildStructMap(context)
     }
 
     get basinCount() {
