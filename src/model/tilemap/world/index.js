@@ -51,14 +51,13 @@ export class WorldTileMap extends TileMap {
         const relief = this.relief.get(point)
         const temperature = this.temperature.get(point)
         const surfaceArea = this.surface.getArea(point)
-        const river = this.river.get(point)
-        const isSource = this.river.isSource(point)
+        // const river = this.river.get(point)
+        // const isSource = this.river.isSource(point)
         return [
             `${Point.hash(point)}`,
             `Surface(name:${surface.name}, area:${surfaceArea}%)`,
             `Relief(${relief.name})`,
             `Temperature(${temperature.name})`,
-            `Erosion(source=${isSource}, basin:${river?.basin}, flow: ${river?.flow.name})`,
         ].join('\n')
     }
 

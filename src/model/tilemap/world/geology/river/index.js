@@ -30,7 +30,7 @@ export class RiverLayer {
             riverPoints: this.#riverPoints
         }
         buildFlowMap(context)
-        // buildRiverSourceMap(context)
+        buildRiverSourceMap(context)
         // buildStructMap(context)
     }
 
@@ -44,13 +44,14 @@ export class RiverLayer {
 
     get(point) {
         const directionId = this.#flowMap.get(point)
-        const basin = this.#basinMap.get(point)
-        return basin ? {
+        const basin = this.#basinMap.get(point) ?? null
+        if (basin === null) return {}
+        return {
             basin: this.#basinMap.get(point),
             flow: Direction.fromId(directionId),
             source: this.#riverSources.has(point),
             mouth: this.#riverMouths.has(point),
-        } : undefined
+        }
     }
 
     isSource(point) {

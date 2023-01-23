@@ -48,12 +48,12 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(relativePoint) {
+        const point = this.rect.wrap(relativePoint)
         const showLandBorder = this.params.get('showLandBorder')
         const showWaterBorder = this.params.get('showWaterBorder')
         const showRelief = this.params.get('showRelief')
         const showTemperature = this.params.get('showTemperature')
         const showRain = this.params.get('showRain')
-        const point = this.rect.wrap(relativePoint)
         const surface = this.tileMap.surface.get(point)
         const relief = this.tileMap.relief.get(point)
         const isBorder = this.tileMap.relief.isBorder(point)
@@ -78,7 +78,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
         if (this.params.get('showBasins')) {
             const river = this.tileMap.river.get(point)
-            if (!surface.water && river) {
+            if (river && !surface.water) {
                 const erosionColor = this.colorMap.getByBasin(point)
                 color = erosionColor.brighten(relief.id * 10)
             }
