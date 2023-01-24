@@ -11,7 +11,7 @@ import { RIVER_NAMES } from './names'
     following the direction and marking how much strong a
     river gets.
 */
-export function buildStructMap(context) {
+export function buildRiverShapeMap(context) {
     let riverId = 0
     for(let source of context.riverSources.points) {
         const river = {id: riverId, name: Random.choice(RIVER_NAMES)}
