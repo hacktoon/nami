@@ -31,7 +31,7 @@ export class RiverLayer {
         }
         buildFlowMap(context)
         buildRiverSourceMap(context)
-        // buildRiverShapeMap(context)
+        buildRiverShapeMap(context)
     }
 
     get basinCount() {
