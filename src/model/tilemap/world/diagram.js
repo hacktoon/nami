@@ -1,6 +1,7 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Color } from '/src/lib/color'
+
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 
 
@@ -13,6 +14,7 @@ const SCHEMA = new Schema(
     Type.boolean('showRain', 'Rain', {default: false}),
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showBasins', 'Basins', {default: false}),
+    Type.boolean('showRivers', 'Rivers', {default: false}),
     Type.boolean('showRiverSources', 'River sources', {default: false}),
 )
 
@@ -83,20 +85,24 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
                 color = erosionColor.brighten(relief.id * 10)
             }
         }
-
         return color
     }
 
     getText(relativePoint) {
         const point = this.rect.wrap(relativePoint)
-        const river = this.tileMap.river.get(point)
-        const hasText = river && this.params.get('showErosion')
-        if (! hasText)
-            return ''
-        if (river.origin)
-            return `[${river.flow.symbol}]`
-        if (river.flow)
+        const showErosion = this.params.get('showErosion')
+        const hasRiver = this.tileMap.river.has(point)
+        if (showErosion && hasRiver) {
+            const river = this.tileMap.river.get(point)
             return river.flow.symbol
+        }
+        return ''
+    }
+
+    getLinePoints(relativePoint) {
+        if (! this.params.get('showRivers')) return
+        const point = this.rect.wrap(relativePoint)
+        return this.tileMap.river.getPattern(point)
     }
 
     getOutline(relativePoint) {

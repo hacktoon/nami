@@ -14,12 +14,12 @@ import { RIVER_NAMES } from './names'
 */
 // detect matrix in source file
 const CENTER_CODE = 4
-const DIRECTION_CODE_MAP = {
-    [Direction.NORTH.id]: 1,
-    [Direction.WEST.id]: 2,
-    [Direction.EAST.id]: 8,
-    [Direction.SOUTH.i]: 16
-}
+export const PATTERN_MAP = new Map([
+    [Direction.NORTH.id, 1],
+    [Direction.WEST.id, 2],
+    [Direction.EAST.id, 8],
+    [Direction.SOUTH.id, 16],
+])
 
 
 /*
@@ -39,11 +39,12 @@ export function buildRiverMap(context) {
 
 function buildRiver(context, riverId, source) {
     const path = []
-    let next = source
-    while (context.surfaceLayer.isLand(next)) {
-        const code = buildPatternCode(context, next)
-        path.push(next)
-        next = getNextRiverPoint(context, next)
+    let point = source
+    while (context.surfaceLayer.isLand(point)) {
+        const code = buildPatternCode(context, point)
+        context.riverPatternCodes.set(point, code)
+        path.push(point)
+        point = getNextRiverPoint(context, point)
     }
     return {
         id: riverId,
@@ -66,14 +67,14 @@ function buildPatternCode(context, point) {
     // non river sources must fill the center tile
     const centerCode = isRiverSource ? 0 : CENTER_CODE
     // set the tile according to which direction is flowing
-    const flowCode = DIRECTION_CODE_MAP[directionId]
+    const flowCode = PATTERN_MAP.get(directionId)
     let code = flowCode + centerCode
     // add code for each neighbor that flows to this point
     Point.adjacents(wrappedPoint, (sidePoint, direction) => {
         // ignore adjacent water tiles
         if (context.surfaceLayer.isWater(sidePoint)) return
         if (flowsTo(context, sidePoint, wrappedPoint)) {
-            code += DIRECTION_CODE_MAP[direction.id]
+            code += PATTERN_MAP.get(direction.id)
         }
     })
     return code

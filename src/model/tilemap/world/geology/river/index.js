@@ -1,17 +1,17 @@
 import { PointSet } from '/src/lib/point/set'
 import { PointMap } from '/src/lib/point/map'
-import { Point } from '/src/lib/point'
+import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
 import { buildFlowMap } from './flow.fill'
 import { buildRiverSourceMap } from './source.fill'
-import { buildRiverMap } from './shape'
+import { buildRiverMap, PATTERN_MAP } from './pattern'
 
 
 export class RiverLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
-    #riverPoints = new PointMap()
+    #riverPatternCodes = new PointMap()
     #riverSources = new PointSet()
     #riverMouths = new PointSet()
     #rivers = new Map()
@@ -27,7 +27,7 @@ export class RiverLayer {
             flowMap: this.#flowMap,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,
-            riverPoints: this.#riverPoints
+            riverPatternCodes: this.#riverPatternCodes
         }
         buildFlowMap(context)
         buildRiverSourceMap(context)
@@ -42,16 +42,50 @@ export class RiverLayer {
         return this.#rivers.size
     }
 
+    has(point) {
+        return this.#basinMap.has(point)
+    }
+
     get(point) {
         const directionId = this.#flowMap.get(point)
-        const basin = this.#basinMap.get(point) ?? null
-        if (basin === null) return {}
+        const direction = Direction.fromId(directionId)
         return {
             basin: this.#basinMap.get(point),
-            flow: Direction.fromId(directionId),
+            flow: direction,
             source: this.#riverSources.has(point),
             mouth: this.#riverMouths.has(point),
+            pattern: this.#riverPatternCodes.get(point),
         }
+    }
+
+    getText(point) {
+        if (! this.has(point))
+            return ''
+        const river = this.get(point)
+        const attrs = [
+             `basin=${river.basin}`,
+             `flow=${river.flow.name}`,
+             `source=${river.source}`,
+             `mouth=${river.mouth}`,
+             `pattern=${river.pattern}`,
+        ].join(',')
+        return `River(${attrs})`
+    }
+
+    getPattern(point) {
+        /*
+        return a list of directions
+        for each direction, draw a point to the center
+        */
+       const directions = []
+       const code = this.#riverPatternCodes.get(point)
+       const patternBitmask = new BitMask(code)
+        for(let [direction, code] of PATTERN_MAP.entries()) {
+            if (patternBitmask.has(code)) {
+                directions.push(direction)
+            }
+        }
+        return directions
     }
 
     isSource(point) {
