@@ -5,7 +5,7 @@ import { Direction } from '/src/lib/direction'
 
 import { buildFlowMap } from './flow.fill'
 import { buildRiverSourceMap } from './source.fill'
-import { buildRiverShapeMap } from './shape'
+import { buildRiverMap } from './shape'
 
 
 export class RiverLayer {
@@ -31,7 +31,7 @@ export class RiverLayer {
         }
         buildFlowMap(context)
         buildRiverSourceMap(context)
-        buildRiverShapeMap(context)
+        buildRiverMap(context)
     }
 
     get basinCount() {

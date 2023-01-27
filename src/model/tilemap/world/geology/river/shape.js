@@ -1,25 +1,25 @@
-import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
-import { Matrix } from '/src/lib/matrix'
 
 
 import { RIVER_NAMES } from './names'
 
 
 // bitmask value => point in matrix 3x3
-const CODE_POINTS = [
-    [1, [0, 0]],
-    [2, [0, 1]],
-    [4, [0, 2]],
-    [8, [1, 0]],
-    [16, [1, 1]],
-    [32, [1, 2]],
-    [64, [2, 0]],
-    [128, [2, 1]],
-    [256, [2, 2]],
-]
+/*
+       1(N)
+ 2(W)    4     8 (E)
+       16(S)
+*/
+// detect matrix in source file
+const CENTER_CODE = 4
+const DIRECTION_CODE_MAP = {
+    [Direction.NORTH.id]: 1,
+    [Direction.WEST.id]: 2,
+    [Direction.EAST.id]: 8,
+    [Direction.SOUTH.i]: 16
+}
 
 
 /*
@@ -27,7 +27,7 @@ const CODE_POINTS = [
     following the direction and marking how much strong a
     river gets.
 */
-export function buildRiverShapeMap(context) {
+export function buildRiverMap(context) {
     let riverId = 0
     for(let source of context.riverSources.points) {
         const river = buildRiver(context, riverId, source)
@@ -38,22 +38,53 @@ export function buildRiverShapeMap(context) {
 
 
 function buildRiver(context, riverId, source) {
-    const river = {id: riverId, name: Random.choice(...RIVER_NAMES)}
-    const path = followPath(context, source)
-    // console.log(path);
-    return river
-}
-
-
-function followPath(context, source) {
     const path = []
     let next = source
     while (context.surfaceLayer.isLand(next)) {
-        const directionId = context.flowMap.get(context.rect.wrap(next))
-        const direction = Direction.fromId(directionId)
+        const code = buildPatternCode(context, next)
         path.push(next)
-        next = Point.atDirection(next, direction)
+        next = getNextRiverPoint(context, next)
     }
-    return path
+    return {
+        id: riverId,
+        name: Random.choice(...RIVER_NAMES)
+    }
 }
 
+
+function getNextRiverPoint(context, source) {
+    const directionId = context.flowMap.get(context.rect.wrap(source))
+    const direction = Direction.fromId(directionId)
+    return Point.atDirection(source, direction)
+}
+
+
+function buildPatternCode(context, point) {
+    const wrappedPoint = context.rect.wrap(point)
+    const directionId = context.flowMap.get(wrappedPoint)
+    const isRiverSource = context.riverSources.has(wrappedPoint)
+    // non river sources must fill the center tile
+    const centerCode = isRiverSource ? 0 : CENTER_CODE
+    // set the tile according to which direction is flowing
+    const flowCode = DIRECTION_CODE_MAP[directionId]
+    let code = flowCode + centerCode
+    // add code for each neighbor that flows to this point
+    Point.adjacents(wrappedPoint, (sidePoint, direction) => {
+        // ignore adjacent water tiles
+        if (context.surfaceLayer.isWater(sidePoint)) return
+        if (flowsTo(context, sidePoint, wrappedPoint)) {
+            code += DIRECTION_CODE_MAP[direction.id]
+        }
+    })
+    return code
+}
+
+
+function flowsTo(context, sourcePoint, targetPoint) {
+    // checks if sourcePoint flow points to targetPoint
+    const origin = context.rect.wrap(sourcePoint)
+    const directionId = context.flowMap.get(origin)
+    const direction = Direction.fromId(directionId)
+    const pointAtDirection = Point.atDirection(sourcePoint, direction)
+    return Point.equals(targetPoint, pointAtDirection)
+}

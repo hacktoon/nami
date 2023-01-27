@@ -11,14 +11,14 @@ import { Direction } from '/src/lib/direction'
 */
 export function buildRiverSourceMap(context) {
     const fillMap = new PointSet()
-    const fill = new SurveyFill()
+    const fill = new SourceFill()
     const origins = context.reliefLayer.landBorders
     fill.start(origins, {...context, fillMap})
     return origins
 }
 
 
-export class SurveyFill extends ConcurrentFill {
+export class SourceFill extends ConcurrentFill {
     getNeighbors(fill, parentPoint) {
         const {rect, riverSources, reliefLayer} = fill.context
         const _parentPoint = rect.wrap(parentPoint)
