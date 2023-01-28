@@ -61,34 +61,39 @@ function getNextRiverPoint(context, source) {
 
 
 function buildPatternCode(context, point) {
-    const wrappedPoint = context.rect.wrap(point)
+    const {rect, surfaceLayer, rainLayer, riverPatternCodes} = context
+    const wrappedPoint = rect.wrap(point)
     const directionId = context.flowMap.get(wrappedPoint)
     const isRiverSource = context.riverSources.has(wrappedPoint)
     // non river sources must fill the center tile
-    const centerCode = isRiverSource ? 0 : CENTER_CODE
+    let centerCode = isRiverSource ? CENTER_CODE : 0
     // set the tile according to which direction is flowing
     const flowCode = DIRECTION_PATTERN_MAP.get(directionId)
     let code = flowCode + centerCode
     // add code for each neighbor that flows to this point
-    Point.adjacents(wrappedPoint, (sidePoint, direction) => {
-        if (context.surfaceLayer.isWater(sidePoint)) { return }
-        const wrappedSidePoint = context.rect.wrap(sidePoint)
+    Point.adjacents(wrappedPoint, (sidePoint, sideDirection) => {
+        // ignore water neighbors
+        const wrappedSidePoint = rect.wrap(sidePoint)
+        if (surfaceLayer.isWater(sidePoint)) { return }
         // neighbor erosion flows here
-        const hasErosion = hasFlow(context, sidePoint, wrappedPoint)
+        const receivesErosion = receivesFlow(context, sidePoint, point)
+        if (receivesErosion && Point.hash(wrappedPoint) == '94,99') {
+            console.log(wrappedSidePoint, sideDirection);
+        }
         // it's a river source only if it receives enough rain
-        const isRiverSource = context.rainLayer.isRiverSource(wrappedSidePoint)
+        const isSideRiverSource = rainLayer.isRiverSource(sidePoint)
         // if it has a pattern, it's already a river point
-        const hasPattern = context.riverPatternCodes.has(wrappedSidePoint)
+        const hasPattern = riverPatternCodes.has(wrappedSidePoint)
         // ignore adjacent water tiles
-        if ((isRiverSource || hasPattern) && hasErosion) {
-            code += DIRECTION_PATTERN_MAP.get(direction.id)
+        if ((isSideRiverSource || hasPattern) && receivesErosion) {
+            code += DIRECTION_PATTERN_MAP.get(sideDirection.id)
         }
     })
     return code
 }
 
 
-function hasFlow(context, sourcePoint, targetPoint) {
+function receivesFlow(context, sourcePoint, targetPoint) {
     // checks if sourcePoint flow points to targetPoint
     const origin = context.rect.wrap(sourcePoint)
     const directionId = context.flowMap.get(origin)
