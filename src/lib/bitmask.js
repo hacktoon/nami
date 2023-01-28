@@ -22,6 +22,6 @@ export class BitMask {
     }
 
     has(flag) {
-        return this.#value === (this.#value & flag)
+        return flag === (this.#value & flag)
     }
 }

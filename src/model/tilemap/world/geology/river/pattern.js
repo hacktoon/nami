@@ -14,7 +14,7 @@ import { RIVER_NAMES } from './names'
 */
 // detect matrix in source file
 const CENTER_CODE = 4
-export const PATTERN_MAP = new Map([
+export const DIRECTION_PATTERN_MAP = new Map([
     [Direction.NORTH.id, 1],
     [Direction.WEST.id, 2],
     [Direction.EAST.id, 8],
@@ -67,21 +67,28 @@ function buildPatternCode(context, point) {
     // non river sources must fill the center tile
     const centerCode = isRiverSource ? 0 : CENTER_CODE
     // set the tile according to which direction is flowing
-    const flowCode = PATTERN_MAP.get(directionId)
+    const flowCode = DIRECTION_PATTERN_MAP.get(directionId)
     let code = flowCode + centerCode
     // add code for each neighbor that flows to this point
     Point.adjacents(wrappedPoint, (sidePoint, direction) => {
+        if (context.surfaceLayer.isWater(sidePoint)) { return }
+        const wrappedSidePoint = context.rect.wrap(sidePoint)
+        // neighbor erosion flows here
+        const hasErosion = hasFlow(context, sidePoint, wrappedPoint)
+        // it's a river source only if it receives enough rain
+        const isRiverSource = context.rainLayer.isRiverSource(wrappedSidePoint)
+        // if it has a pattern, it's already a river point
+        const hasPattern = context.riverPatternCodes.has(wrappedSidePoint)
         // ignore adjacent water tiles
-        if (context.surfaceLayer.isWater(sidePoint)) return
-        if (flowsTo(context, sidePoint, wrappedPoint)) {
-            code += PATTERN_MAP.get(direction.id)
+        if ((isRiverSource || hasPattern) && hasErosion) {
+            code += DIRECTION_PATTERN_MAP.get(direction.id)
         }
     })
     return code
 }
 
 
-function flowsTo(context, sourcePoint, targetPoint) {
+function hasFlow(context, sourcePoint, targetPoint) {
     // checks if sourcePoint flow points to targetPoint
     const origin = context.rect.wrap(sourcePoint)
     const directionId = context.flowMap.get(origin)

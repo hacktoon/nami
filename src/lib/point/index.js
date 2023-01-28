@@ -47,6 +47,10 @@ export class Point {
         return [p1[0] - p2[0], p1[1] - p2[1]]
     }
 
+    static plusScalar(point, value) {
+        return [point[0] + value, point[1] + value]
+    }
+
     static multiplyScalar(point, x, y) {
         return [point[0] * x, point[1] * (y ?? x)]
     }

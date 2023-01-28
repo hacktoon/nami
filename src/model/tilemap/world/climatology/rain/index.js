@@ -31,4 +31,9 @@ export class RainLayer {
         }
         return Rain.HUMID
     }
+
+    isRiverSource(point) {
+        const rain = this.get(point)
+        return rain === Rain.HUMID || rain === Rain.SEASONAL
+    }
 }

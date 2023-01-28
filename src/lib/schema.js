@@ -25,7 +25,7 @@ export class Schema {
 
     build() {
         const valueMap = new Map()
-        const cacheValueMap = this._getCache(this.name)
+        const cacheValueMap = this.#getCache(this.name)
         for(let typedef of this.types) {
             const name = typedef.name
             const rawValue = cacheValueMap.get(name)
@@ -34,7 +34,7 @@ export class Schema {
         return new SchemaInstance(this, valueMap)
     }
 
-    _getCache(name) {
+    #getCache(name) {
         const stringEntries = Storage.getItem(name)
         try {
             const entries = JSON.parse(String(stringEntries))

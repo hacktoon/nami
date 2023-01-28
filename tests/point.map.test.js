@@ -13,6 +13,6 @@ test("Creates a PointMap", () => {
 test("Delete a PointMap", () => {
     const pointMap = new PointMap()
     pointMap.set([1, 2], 4)
-    console.log(pointMap.delete([1, 2]))
+    pointMap.delete([1, 2])
     expect(pointMap.get([1, 2])).toBe(undefined)
 })

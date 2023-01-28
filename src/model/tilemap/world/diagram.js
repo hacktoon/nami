@@ -1,8 +1,10 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
+import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
+import { listenerCount } from 'process'
 
 
 const SCHEMA = new Schema(
@@ -47,6 +49,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         super(tileMap)
         this.colorMap = colorMap
         this.params = params
+        this.riverColor = Color.BLUE
     }
 
     get(relativePoint) {
@@ -99,12 +102,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         return ''
     }
 
-    getLinePoints(relativePoint) {
-        if (! this.params.get('showRivers')) return
-        const point = this.rect.wrap(relativePoint)
-        return this.tileMap.river.getPattern(point)
-    }
-
     getOutline(relativePoint) {
         const point = this.rect.wrap(relativePoint)
         if (this.params.get('showRiverSources')) {
@@ -112,5 +109,24 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
                 return true
         }
         return false
+    }
+
+    draw({canvas, tilePoint, canvasPoint, size}) {
+        const point = this.rect.wrap(tilePoint)
+        const showRivers = this.params.get('showRivers')
+        const isLand = this.tileMap.surface.isLand(point)
+        if (showRivers && isLand) {
+            const color = this.riverColor.toHex()
+            const patternAxis = this.tileMap.river.getPattern(point)
+            const midSize = Math.round(size / 2)
+            const midPoint = Point.plusScalar(canvasPoint, midSize)
+            for(let offset of patternAxis) {
+                const axisPoint = [
+                    midPoint[0] + offset[0] * midSize,
+                    midPoint[1] + offset[1] * midSize
+                ]
+                canvas.line(axisPoint, midPoint, 2, color)
+            }
+        }
     }
 }

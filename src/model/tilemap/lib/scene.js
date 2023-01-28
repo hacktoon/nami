@@ -36,6 +36,12 @@ export class TileMapScene {
                 let color = this.diagram.get(tilePoint)
                 let text = this.diagram.getText(tilePoint)
                 let hasOutline = this.diagram.getOutline(tilePoint)
+                const context = {
+                    canvas,
+                    tilePoint,
+                    canvasPoint,
+                    size: this.zoom,
+                }
                 canvas.rect(canvasPoint, this.zoom, color.toHex())
                 if (text) {
                     const txtColor = '#000'
@@ -44,6 +50,7 @@ export class TileMapScene {
                 if (hasOutline) {
                     canvas.outline(canvasPoint, this.zoom)
                 }
+                this.diagram.draw(context)
             } else {
                 canvas.clear(this.zoom, canvasPoint)
             }

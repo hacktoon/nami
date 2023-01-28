@@ -20,37 +20,40 @@ export function buildRiverSourceMap(context) {
 
 export class SourceFill extends ConcurrentFill {
     getNeighbors(fill, parentPoint) {
-        const {rect, riverSources, reliefLayer} = fill.context
-        const _parentPoint = rect.wrap(parentPoint)
+        const {rect, riverSources, surfaceLayer, rainLayer} = fill.context
         const neighbors = Point.adjacents(parentPoint)
         let totalFlowsReceived = 0
 
-        // test if neighbors flows points to _parentPoint
+        // test if neighbors flows points to parentPoint
         for(let relNeighbor of neighbors) {
-            const neighborRelief = reliefLayer.get(relNeighbor)
-            if (!neighborRelief.water) {
+            const isNeighborLand = surfaceLayer.isLand(relNeighbor)
+            if (isNeighborLand) {
                 if (flowsTo(fill, relNeighbor, parentPoint))
                     totalFlowsReceived++
             }
         }
-        // this point receives no flows, then it's a river source
+        // this point receives no flows, maybe it's a river source
         if (totalFlowsReceived == 0) {
-            riverSources.add(_parentPoint)
+            const wrappedPoint = rect.wrap(parentPoint)
+            // it's a river source only if it receives enough rain
+            if (rainLayer.isRiverSource(wrappedPoint)) {
+                riverSources.add(wrappedPoint)
+            }
         }
         return neighbors
     }
 
     canFill(fill, fillPoint) {
-        const {rect, fillMap, reliefLayer} = fill.context
-        const _fillPoint = rect.wrap(fillPoint)
-        const relief = reliefLayer.get(_fillPoint)
-        return ! relief.water && ! fillMap.has(_fillPoint)
+        const {rect, fillMap, surfaceLayer} = fill.context
+        const wrappedFillPoint = rect.wrap(fillPoint)
+        const isLand = surfaceLayer.isLand(wrappedFillPoint)
+        return isLand && ! fillMap.has(wrappedFillPoint)
     }
 
     onFill(fill, fillPoint, parentPoint, neighbors) {
         const {rect, fillMap} = fill.context
-        const _fillPoint = rect.wrap(fillPoint)
-        fillMap.add(_fillPoint)
+        const wrappedFillPoint = rect.wrap(fillPoint)
+        fillMap.add(wrappedFillPoint)
     }
 }
 

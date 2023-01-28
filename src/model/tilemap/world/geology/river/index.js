@@ -4,8 +4,8 @@ import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
 import { buildFlowMap } from './flow.fill'
-import { buildRiverSourceMap } from './source.fill'
-import { buildRiverMap, PATTERN_MAP } from './pattern'
+import { buildRiverSourceMap } from './source'
+import { buildRiverMap, DIRECTION_PATTERN_MAP } from './pattern'
 
 
 export class RiverLayer {
@@ -74,15 +74,16 @@ export class RiverLayer {
 
     getPattern(point) {
         /*
-        return a list of directions
+        return a list of direction axis
         for each direction, draw a point to the center
         */
        const directions = []
        const code = this.#riverPatternCodes.get(point)
        const patternBitmask = new BitMask(code)
-        for(let [direction, code] of PATTERN_MAP.entries()) {
+        for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
             if (patternBitmask.has(code)) {
-                directions.push(direction)
+                const direction = Direction.fromId(directionId)
+                directions.push(direction.axis)
             }
         }
         return directions
