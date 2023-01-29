@@ -11,7 +11,9 @@ import { buildRiverMap, DIRECTION_PATTERN_MAP } from './pattern'
 export class RiverLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
-    #riverPatternCodes = new PointMap()
+    #riverPatterns = new PointMap()
+    #riverMeanders = new PointMap()
+    #riverFlowRate = new PointMap()
     #riverSources = new PointSet()
     #riverMouths = new PointSet()
     #rivers = new Map()
@@ -27,7 +29,10 @@ export class RiverLayer {
             flowMap: this.#flowMap,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,
-            riverPatternCodes: this.#riverPatternCodes
+            riverPatterns: this.#riverPatterns,
+            riverFlowRate: this.#riverFlowRate,
+            // TODO
+            riverMeanders: this.#riverMeanders,
         }
         buildFlowMap(context)
         buildRiverSourceMap(context)
@@ -54,7 +59,7 @@ export class RiverLayer {
             flow: direction,
             source: this.#riverSources.has(point),
             mouth: this.#riverMouths.has(point),
-            pattern: this.#riverPatternCodes.get(point),
+            pattern: this.#riverPatterns.get(point),
         }
     }
 
@@ -78,7 +83,7 @@ export class RiverLayer {
         for each direction, draw a point to the center
         */
        const directions = []
-       const code = this.#riverPatternCodes.get(point)
+       const code = this.#riverPatterns.get(point)
        const patternBitmask = new BitMask(code)
         for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
             if (patternBitmask.has(code)) {

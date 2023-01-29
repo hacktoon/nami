@@ -2,9 +2,9 @@ import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
+import { Random } from '/src/lib/random'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
-import { listenerCount } from 'process'
 
 
 const SCHEMA = new Schema(
@@ -111,22 +111,32 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         return false
     }
 
-    draw({canvas, tilePoint, canvasPoint, size}) {
+    draw(props) {
+        if (this.params.get('showRivers')) {
+            this.#drawRiver(props)
+        }
+    }
+
+    #drawRiver({canvas, tilePoint, canvasPoint, size}) {
         const point = this.rect.wrap(tilePoint)
-        const showRivers = this.params.get('showRivers')
-        const isLand = this.tileMap.surface.isLand(point)
-        if (showRivers && isLand) {
-            const color = this.riverColor.toHex()
-            const patternAxis = this.tileMap.river.getPattern(point)
-            const midSize = Math.round(size / 2)
-            const midPoint = Point.plusScalar(canvasPoint, midSize)
-            for(let offset of patternAxis) {
-                const axisPoint = [
-                    midPoint[0] + offset[0] * midSize,
-                    midPoint[1] + offset[1] * midSize
-                ]
-                canvas.line(axisPoint, midPoint, 2, color)
-            }
+        if (this.tileMap.surface.isWater(point)) { return }
+        const riverWidth = Math.floor(size / 10)
+        const color = this.riverColor.toHex()
+        const midSize = Math.round(size / 2)
+        const mod2 = Math.floor(midSize / 2)
+        const mod3 = Math.floor(midSize / 3)
+        const x = Random.choice(-mod2, -mod3, 0, mod3, mod2)
+        const y = Random.choice(-mod2, -mod3, 0, mod3, mod2)
+        const midPoint = Point.plusScalar(canvasPoint, midSize)
+        // offset river midpoint by random value and create a new point
+        const midPoint2 = Point.plus(canvasPoint, [midSize + x, midSize + y])
+        const patternAxis = this.tileMap.river.getPattern(point)
+        for(let axisOffset of patternAxis) {
+            const axisPoint = [
+                midPoint[0] + axisOffset[0] * midSize,
+                midPoint[1] + axisOffset[1] * midSize
+            ]
+            canvas.line(axisPoint, midPoint2, riverWidth, color)
         }
     }
 }

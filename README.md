@@ -18,12 +18,12 @@
 
 
 ### ErosionLayer
+  - Recreate
+  - Used for rivers and roads
+
+### RiverLayer
   - Flow can be used also for creating paths and A*star pathfinding
-  - Mark flow start/end points
-    - Use bitmasking to represent erosion path/shape
-    - Pseudocode
-      - If it receives flow, mark center
-      -
+  - Move mouth detection to where rain influences river creation
   - Add carving where flows meet a higher terrain
 
 

@@ -44,8 +44,8 @@ function fillReliefFlowMap(origins, context) {
 
 
 class RiverFlowFill extends ConcurrentFill {
-    getChance(fill) { return .1 }
-    getGrowth(fill) { return 5 }
+    getChance(fill) { return .3 }
+    getGrowth(fill) { return 3 }
 
     getNeighbors(fill, parentPoint) {
         return Point.adjacents(parentPoint)

@@ -47,16 +47,17 @@ export class WorldTileMap extends TileMap {
     }
 
     get(point) {
-        const surface = this.surface.get(point)
-        const relief = this.relief.get(point)
-        const temperature = this.temperature.get(point)
-        const surfaceArea = this.surface.getArea(point)
+        const wrappedPoint = this.rect.wrap(point)
+        const surface = this.surface.get(wrappedPoint)
+        const relief = this.relief.get(wrappedPoint)
+        const temperature = this.temperature.get(wrappedPoint)
+        const surfaceArea = this.surface.getArea(wrappedPoint)
         return [
-            `${Point.hash(point)}`,
+            `${Point.hash(wrappedPoint)}`,
             `Surface(name:${surface.name}, area:${surfaceArea}%)`,
             `Relief(${relief.name})`,
             `Temperature(${temperature.name})`,
-            this.river.getText(point),
+            this.river.getText(wrappedPoint),
         ].join('\n')
     }
 

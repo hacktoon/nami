@@ -30,6 +30,9 @@ export const DIRECTION_PATTERN_MAP = new Map([
 export function buildRiverMap(context) {
     let riverId = 0
     for(let source of context.riverSources.points) {
+        // if (riverId == 0) {
+        //     console.log(source);
+        // }
         const river = buildRiver(context, riverId, source)
         context.rivers.set(riverId, river)
         riverId++
@@ -38,13 +41,16 @@ export function buildRiverMap(context) {
 
 
 function buildRiver(context, riverId, source) {
+    const {riverFlowRate, rect, surfaceLayer, riverPatterns} = context
     const path = []
     let point = source
-    while (context.surfaceLayer.isLand(point)) {
-        const code = buildPatternCode(context, point)
-        context.riverPatternCodes.set(point, code)
-        path.push(point)
-        point = getNextRiverPoint(context, point)
+    riverFlowRate.set(rect.wrap(point), 0)
+    while (surfaceLayer.isLand(point)) {
+        let wrappedPoint = rect.wrap(point)
+        const code = buildPatternCode(context, wrappedPoint)
+        riverPatterns.set(wrappedPoint, code)
+        point = getNextRiverPoint(context, wrappedPoint)
+        path.push(wrappedPoint)
     }
     return {
         id: riverId,
@@ -53,15 +59,15 @@ function buildRiver(context, riverId, source) {
 }
 
 
-function getNextRiverPoint(context, source) {
-    const directionId = context.flowMap.get(context.rect.wrap(source))
+function getNextRiverPoint(context, currentPoint) {
+    const directionId = context.flowMap.get(context.rect.wrap(currentPoint))
     const direction = Direction.fromId(directionId)
-    return Point.atDirection(source, direction)
+    return Point.atDirection(currentPoint, direction)
 }
 
 
 function buildPatternCode(context, point) {
-    const {rect, surfaceLayer, rainLayer, riverPatternCodes} = context
+    const {rect, surfaceLayer, riverPatterns} = context
     const wrappedPoint = rect.wrap(point)
     const directionId = context.flowMap.get(wrappedPoint)
     const isRiverSource = context.riverSources.has(wrappedPoint)
@@ -71,21 +77,15 @@ function buildPatternCode(context, point) {
     const flowCode = DIRECTION_PATTERN_MAP.get(directionId)
     let code = flowCode + centerCode
     // add code for each neighbor that flows to this point
-    Point.adjacents(wrappedPoint, (sidePoint, sideDirection) => {
+    Point.adjacents(point, (sidePoint, sideDirection) => {
         // ignore water neighbors
         const wrappedSidePoint = rect.wrap(sidePoint)
-        if (surfaceLayer.isWater(sidePoint)) { return }
-        // neighbor erosion flows here
-        const receivesErosion = receivesFlow(context, sidePoint, point)
-        if (receivesErosion && Point.hash(wrappedPoint) == '94,99') {
-            console.log(wrappedSidePoint, sideDirection);
-        }
-        // it's a river source only if it receives enough rain
-        const isSideRiverSource = rainLayer.isRiverSource(sidePoint)
-        // if it has a pattern, it's already a river point
-        const hasPattern = riverPatternCodes.has(wrappedSidePoint)
         // ignore adjacent water tiles
-        if ((isSideRiverSource || hasPattern) && receivesErosion) {
+        if (surfaceLayer.isWater(sidePoint)) { return }
+        // neighbor erosion flows here?
+        if (! receivesFlow(context, sidePoint, point)) { return }
+        // if it has a pattern, it's already a river point
+        if (riverPatterns.has(wrappedSidePoint)) {
             code += DIRECTION_PATTERN_MAP.get(sideDirection.id)
         }
     })
