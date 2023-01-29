@@ -11,12 +11,13 @@ import { buildRiverMap, DIRECTION_PATTERN_MAP } from './pattern'
 export class RiverLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
+    #riverPoints = new PointMap()
     #riverPatterns = new PointMap()
     #riverMeanders = new PointMap()
     #flowRate = new PointMap()
     #riverSources = new PointSet()
     #riverMouths = new PointSet()
-    #riverMaxFlowRate = new Map()
+    #maxFlowRate = new Map()
 
     constructor(rect, surfaceLayer, reliefLayer, erosionLayer, rainLayer) {
         const context = {
@@ -25,13 +26,14 @@ export class RiverLayer {
             reliefLayer,
             erosionLayer,
             rainLayer,
-            riverMaxFlowRate: this.#riverMaxFlowRate,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
+            riverPoints: this.#riverPoints,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,
             riverPatterns: this.#riverPatterns,
             flowRate: this.#flowRate,
+            maxFlowRate: this.#maxFlowRate,
             // TODO
             riverMeanders: this.#riverMeanders,
         }
@@ -102,7 +104,8 @@ export class RiverLayer {
     }
 
     getMaxFlowRate(point) {
-        return this.#riverMaxFlowRate.get(point)
+        const riverId = this.#riverPoints.get(point)
+        return this.#maxFlowRate.get(riverId)
     }
 
     isSource(point) {

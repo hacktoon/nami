@@ -122,7 +122,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const point = this.rect.wrap(tilePoint)
         const flowRate = this.tileMap.river.getFlowRate(point)
         const maxFlowRate = this.tileMap.river.getMaxFlowRate(point)
-        const riverWidth = Math.floor(size / 10)
+        const riverWidth = this.#buildRiverWidth(size, maxFlowRate, flowRate)
         const color = this.riverColor.toHex()
         const midSize = Math.round(size / 2)
         const mod2 = Math.floor(midSize / 2)
@@ -142,7 +142,12 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    #buildRiverWidth() {
-
+    #buildRiverWidth(size, maxFlowRate, flowRate) {
+        const maxWidth = Math.floor(size / 10)
+        // creeks
+        if (flowRate < maxFlowRate/4) return Math.floor(maxWidth / 2)
+        // medium rivers
+        if (flowRate < maxFlowRate/2) return Math.floor(maxWidth / 3)
+        return maxWidth
     }
 }

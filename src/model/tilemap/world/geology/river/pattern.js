@@ -33,15 +33,15 @@ export function buildRiverMap(context) {
         // if (riverId == 0) {
         //     console.log(source);
         // }
-        const maxFlowRate = buildRiver(context, source)
-        context.riverMaxFlowRate.set(riverId, maxFlowRate)
+        const maxFlowRate = buildRiver(context, riverId, source)
+        context.maxFlowRate.set(riverId, maxFlowRate)
         riverId++
     }
 }
 
 
-function buildRiver(context, source) {
-    const {flowRate, rect, surfaceLayer, riverPatterns} = context
+function buildRiver(context, riverId, source) {
+    const {flowRate, rect, surfaceLayer, riverPatterns, riverPoints} = context
     let point = source
     let wrappedPoint = rect.wrap(point)
     // init this river with current flow rate or zero if it's empty
@@ -49,6 +49,7 @@ function buildRiver(context, source) {
     while (surfaceLayer.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
         const code = buildPatternCode(context, wrappedPoint)
+        riverPoints.set(wrappedPoint, riverId)
         riverPatterns.set(wrappedPoint, code)
         flowRate.set(wrappedPoint, ++riverFlowRate)
         point = getNextRiverPoint(context, wrappedPoint)
