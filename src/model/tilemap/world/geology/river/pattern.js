@@ -33,29 +33,27 @@ export function buildRiverMap(context) {
         // if (riverId == 0) {
         //     console.log(source);
         // }
-        const river = buildRiver(context, riverId, source)
-        context.rivers.set(riverId, river)
+        const maxFlowRate = buildRiver(context, source)
+        context.riverMaxFlowRate.set(riverId, maxFlowRate)
         riverId++
     }
 }
 
 
-function buildRiver(context, riverId, source) {
-    const {riverFlowRate, rect, surfaceLayer, riverPatterns} = context
-    const path = []
+function buildRiver(context, source) {
+    const {flowRate, rect, surfaceLayer, riverPatterns} = context
     let point = source
-    riverFlowRate.set(rect.wrap(point), 0)
+    let wrappedPoint = rect.wrap(point)
+    // init this river with current flow rate or zero if it's empty
+    let riverFlowRate = flowRate.get(wrappedPoint) ?? 0
     while (surfaceLayer.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
         const code = buildPatternCode(context, wrappedPoint)
         riverPatterns.set(wrappedPoint, code)
+        flowRate.set(wrappedPoint, ++riverFlowRate)
         point = getNextRiverPoint(context, wrappedPoint)
-        path.push(wrappedPoint)
     }
-    return {
-        id: riverId,
-        name: Random.choice(...RIVER_NAMES)
-    }
+    return riverFlowRate
 }
 
 

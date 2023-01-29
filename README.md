@@ -22,6 +22,7 @@
   - Used for rivers and roads
 
 ### RiverLayer
+  - Stop flow on first mountain if it has only one mountain neighbor
   - Flow can be used also for creating paths and A*star pathfinding
   - Move mouth detection to where rain influences river creation
   - Add carving where flows meet a higher terrain

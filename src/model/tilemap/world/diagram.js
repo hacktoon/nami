@@ -94,8 +94,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     getText(relativePoint) {
         const point = this.rect.wrap(relativePoint)
         const showErosion = this.params.get('showErosion')
-        const hasRiver = this.tileMap.river.has(point)
-        if (showErosion && hasRiver) {
+        const isLand = this.tileMap.surface.isLand(point)
+        if (showErosion && isLand) {
             const river = this.tileMap.river.get(point)
             return river.flow.symbol
         }
@@ -112,21 +112,23 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     draw(props) {
-        if (this.params.get('showRivers')) {
+        const isLand = this.tileMap.surface.isLand(props.tilePoint)
+        if (isLand && this.params.get('showRivers')) {
             this.#drawRiver(props)
         }
     }
 
     #drawRiver({canvas, tilePoint, canvasPoint, size}) {
         const point = this.rect.wrap(tilePoint)
-        if (this.tileMap.surface.isWater(point)) { return }
+        const flowRate = this.tileMap.river.getFlowRate(point)
+        const maxFlowRate = this.tileMap.river.getMaxFlowRate(point)
         const riverWidth = Math.floor(size / 10)
         const color = this.riverColor.toHex()
         const midSize = Math.round(size / 2)
         const mod2 = Math.floor(midSize / 2)
         const mod3 = Math.floor(midSize / 3)
-        const x = Random.choice(-mod2, -mod3, 0, mod3, mod2)
-        const y = Random.choice(-mod2, -mod3, 0, mod3, mod2)
+        const x = Random.choice(-mod2, -mod3, mod3, mod2)
+        const y = Random.choice(-mod2, -mod3, mod3, mod2)
         const midPoint = Point.plusScalar(canvasPoint, midSize)
         // offset river midpoint by random value and create a new point
         const midPoint2 = Point.plus(canvasPoint, [midSize + x, midSize + y])
@@ -138,5 +140,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             ]
             canvas.line(axisPoint, midPoint2, riverWidth, color)
         }
+    }
+
+    #buildRiverWidth() {
+
     }
 }

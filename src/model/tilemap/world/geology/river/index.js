@@ -13,24 +13,25 @@ export class RiverLayer {
     #flowMap = new PointMap()
     #riverPatterns = new PointMap()
     #riverMeanders = new PointMap()
-    #riverFlowRate = new PointMap()
+    #flowRate = new PointMap()
     #riverSources = new PointSet()
     #riverMouths = new PointSet()
-    #rivers = new Map()
+    #riverMaxFlowRate = new Map()
 
-    constructor(rect, surfaceLayer, reliefLayer, rainLayer) {
+    constructor(rect, surfaceLayer, reliefLayer, erosionLayer, rainLayer) {
         const context = {
             rect,
             surfaceLayer,
             reliefLayer,
+            erosionLayer,
             rainLayer,
-            rivers: this.#rivers,
+            riverMaxFlowRate: this.#riverMaxFlowRate,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,
             riverPatterns: this.#riverPatterns,
-            riverFlowRate: this.#riverFlowRate,
+            flowRate: this.#flowRate,
             // TODO
             riverMeanders: this.#riverMeanders,
         }
@@ -44,11 +45,11 @@ export class RiverLayer {
     }
 
     get riverCount() {
-        return this.#rivers.size
+        return this.#riverSources.size
     }
 
     has(point) {
-        return this.#basinMap.has(point)
+        return this.#flowRate.has(point)
     }
 
     get(point) {
@@ -60,6 +61,7 @@ export class RiverLayer {
             source: this.#riverSources.has(point),
             mouth: this.#riverMouths.has(point),
             pattern: this.#riverPatterns.get(point),
+            flowRate: this.#flowRate.get(point),
         }
     }
 
@@ -73,6 +75,7 @@ export class RiverLayer {
              `source=${river.source}`,
              `mouth=${river.mouth}`,
              `pattern=${river.pattern}`,
+             `flowRate=${river.flowRate}`,
         ].join(',')
         return `River(${attrs})`
     }
@@ -92,6 +95,14 @@ export class RiverLayer {
             }
         }
         return directions
+    }
+
+    getFlowRate(point) {
+        return this.#flowRate.get(point)
+    }
+
+    getMaxFlowRate(point) {
+        return this.#riverMaxFlowRate.get(point)
     }
 
     isSource(point) {
