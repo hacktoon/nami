@@ -31,6 +31,7 @@ class CanvasContext {
 
     line(sourcePoint, targetPoint, size, color) {
         this.#ctx.strokeStyle = color
+        this.#ctx.lineCap = "round"
         this.#ctx.lineWidth = size
         this.#ctx.beginPath()
         this.#ctx.moveTo(sourcePoint[0], sourcePoint[1])

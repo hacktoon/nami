@@ -43,15 +43,18 @@ export function buildRiverMap(context) {
 function buildRiver(context, riverId, source) {
     const {flowRate, rect, surfaceLayer, riverPatterns, riverPoints} = context
     let point = source
-    let wrappedPoint = rect.wrap(point)
     // init this river with current flow rate or zero if it's empty
-    let riverFlowRate = flowRate.get(wrappedPoint) ?? 0
+    let riverFlowRate = 0
     while (surfaceLayer.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
         const code = buildPatternCode(context, wrappedPoint)
         riverPoints.set(wrappedPoint, riverId)
         riverPatterns.set(wrappedPoint, code)
-        flowRate.set(wrappedPoint, ++riverFlowRate)
+        if (flowRate.has(wrappedPoint)) {
+            riverFlowRate = flowRate.get(wrappedPoint) + 1
+        }
+        riverFlowRate ++
+        flowRate.set(wrappedPoint, riverFlowRate)
         point = getNextRiverPoint(context, wrappedPoint)
     }
     return riverFlowRate

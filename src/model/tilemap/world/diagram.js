@@ -3,6 +3,7 @@ import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
+import { clamp } from '/src/lib/number'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 
@@ -143,11 +144,14 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     #buildRiverWidth(size, maxFlowRate, flowRate) {
-        const maxWidth = Math.floor(size / 10)
-        // creeks
-        if (flowRate < maxFlowRate/4) return Math.floor(maxWidth / 2)
-        // medium rivers
-        if (flowRate < maxFlowRate/2) return Math.floor(maxWidth / 3)
-        return maxWidth
+        const maxWidth = Math.floor(size / 6)
+        let width = 2
+        if (flowRate < 4) {  // creeks
+            width = 20
+        }
+        else if (flowRate < 20) { // medium rivers
+            width = 10
+        }
+        return clamp(Math.floor(size / width), 1, maxWidth)
     }
 }
