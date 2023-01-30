@@ -8,6 +8,9 @@ import { clamp } from '/src/lib/number'
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 
 
+const RIVER_SOUCE_COLOR = '#44F'
+const RIVER_COLOR = '#00F'
+
 const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
     Type.boolean('showRelief', 'Relief', {default: false}),
@@ -50,7 +53,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         super(tileMap)
         this.colorMap = colorMap
         this.params = params
-        this.riverColor = Color.BLUE
     }
 
     get(relativePoint) {
@@ -103,20 +105,23 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         return ''
     }
 
-    getOutline(relativePoint) {
-        const point = this.rect.wrap(relativePoint)
-        if (this.params.get('showRiverSources')) {
-            if (this.tileMap.river.isSource(point))
-                return true
-        }
-        return false
-    }
-
     draw(props) {
-        const isLand = this.tileMap.surface.isLand(props.tilePoint)
+        const point = this.rect.wrap(props.tilePoint)
+        const isLand = this.tileMap.surface.isLand(point)
+        const isRiverSource = this.tileMap.river.isSource(point)
         if (isLand && this.params.get('showRivers')) {
             this.#drawRiver(props)
         }
+        if (isRiverSource && this.params.get('showRiverSources')) {
+            this.#drawRiverSource(props)
+        }
+    }
+
+    #drawRiverSource({canvas, tilePoint, canvasPoint, size}) {
+        const midSize = Math.round(size / 2)
+        const offset = midSize - Math.round(midSize / 2)
+        const point = Point.plusScalar(canvasPoint, offset)
+        canvas.rect(point, midSize, RIVER_SOUCE_COLOR)
     }
 
     #drawRiver({canvas, tilePoint, canvasPoint, size}) {
@@ -124,22 +129,21 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const flowRate = this.tileMap.river.getFlowRate(point)
         const maxFlowRate = this.tileMap.river.getMaxFlowRate(point)
         const riverWidth = this.#buildRiverWidth(size, maxFlowRate, flowRate)
-        const color = this.riverColor.toHex()
         const midSize = Math.round(size / 2)
         const mod2 = Math.floor(midSize / 2)
         const mod3 = Math.floor(midSize / 3)
         const x = Random.choice(-mod2, -mod3, mod3, mod2)
         const y = Random.choice(-mod2, -mod3, mod3, mod2)
-        const midPoint = Point.plusScalar(canvasPoint, midSize)
+        const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // offset river midpoint by random value and create a new point
-        const midPoint2 = Point.plus(canvasPoint, [midSize + x, midSize + y])
+        const midRiverPoint = Point.plus(canvasPoint, [midSize + x, midSize + y])
         const patternAxis = this.tileMap.river.getPattern(point)
         for(let axisOffset of patternAxis) {
             const axisPoint = [
-                midPoint[0] + axisOffset[0] * midSize,
-                midPoint[1] + axisOffset[1] * midSize
+                midCanvasPoint[0] + axisOffset[0] * midSize,
+                midCanvasPoint[1] + axisOffset[1] * midSize
             ]
-            canvas.line(axisPoint, midPoint2, riverWidth, color)
+            canvas.line(axisPoint, midRiverPoint, riverWidth, RIVER_COLOR)
         }
     }
 
