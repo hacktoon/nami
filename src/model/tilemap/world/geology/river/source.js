@@ -9,7 +9,7 @@ import { Direction } from '/src/lib/direction'
     if a point is a river source or river mouth.
     It can be used to detect lakes or other features
 */
-export function buildRiverSourceMap(context) {
+export function buildSourceMap(context) {
     const fillMap = new PointSet()
     const fill = new SourceFill()
     const origins = context.reliefLayer.landBorders
@@ -61,8 +61,7 @@ export class SourceFill extends ConcurrentFill {
 function flowsTo(fill, originPoint, fillPoint) {
     // checks if originPoint flow points to fillPoint
     const origin = fill.context.rect.wrap(originPoint)
-    const directionId = fill.context.flowMap.get(origin)
-    const direction = Direction.fromId(directionId)
-    const pointAtDirection = Point.atDirection(originPoint, direction)
+    const erosion = fill.context.erosionLayer.get(origin)
+    const pointAtDirection = Point.atDirection(originPoint, erosion.flow)
     return Point.equals(fillPoint, pointAtDirection)
 }

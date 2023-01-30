@@ -1,7 +1,5 @@
 import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
-import { Random } from '/src/lib/random'
-
 
 import { RIVER_NAMES } from './names'
 
@@ -27,12 +25,9 @@ export const DIRECTION_PATTERN_MAP = new Map([
     following the direction and marking how much strong a
     river gets.
 */
-export function buildRiverMap(context) {
+export function buildFlowMap(context) {
     let riverId = 0
     for(let source of context.riverSources.points) {
-        // if (riverId == 0) {
-        //     console.log(source);
-        // }
         const maxFlowRate = buildRiver(context, riverId, source)
         context.maxFlowRate.set(riverId, maxFlowRate)
         riverId++
@@ -62,21 +57,20 @@ function buildRiver(context, riverId, source) {
 
 
 function getNextRiverPoint(context, currentPoint) {
-    const directionId = context.flowMap.get(context.rect.wrap(currentPoint))
-    const direction = Direction.fromId(directionId)
-    return Point.atDirection(currentPoint, direction)
+    const erosion = context.erosionLayer.get(context.rect.wrap(currentPoint))
+    return Point.atDirection(currentPoint, erosion.flow)
 }
 
 
 function buildPatternCode(context, point) {
     const {rect, surfaceLayer, riverPatterns} = context
     const wrappedPoint = rect.wrap(point)
-    const directionId = context.flowMap.get(wrappedPoint)
+    const erosion = context.erosionLayer.get(wrappedPoint)
     const isRiverSource = context.riverSources.has(wrappedPoint)
     // non river sources must fill the center tile
     let centerCode = isRiverSource ? CENTER_CODE : 0
     // set the tile according to which direction is flowing
-    const flowCode = DIRECTION_PATTERN_MAP.get(directionId)
+    const flowCode = DIRECTION_PATTERN_MAP.get(erosion.flow.id)
     let code = flowCode + centerCode
     // add code for each neighbor that flows to this point
     Point.adjacents(point, (sidePoint, sideDirection) => {
@@ -98,8 +92,7 @@ function buildPatternCode(context, point) {
 function receivesFlow(context, sourcePoint, targetPoint) {
     // checks if sourcePoint flow points to targetPoint
     const origin = context.rect.wrap(sourcePoint)
-    const directionId = context.flowMap.get(origin)
-    const direction = Direction.fromId(directionId)
-    const pointAtDirection = Point.atDirection(sourcePoint, direction)
+    const erosion = context.erosionLayer.get(origin)
+    const pointAtDirection = Point.atDirection(sourcePoint, erosion.flow)
     return Point.equals(targetPoint, pointAtDirection)
 }

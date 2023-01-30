@@ -3,9 +3,8 @@ import { PointMap } from '/src/lib/point/map'
 import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
-import { buildFlowMap } from './flow.fill'
-import { buildRiverSourceMap } from './source'
-import { buildRiverMap, DIRECTION_PATTERN_MAP } from './pattern'
+import { buildSourceMap } from './source'
+import { buildFlowMap, DIRECTION_PATTERN_MAP } from './flow'
 
 
 export class RiverLayer {
@@ -37,13 +36,8 @@ export class RiverLayer {
             // TODO
             riverMeanders: this.#riverMeanders,
         }
+        buildSourceMap(context)
         buildFlowMap(context)
-        buildRiverSourceMap(context)
-        buildRiverMap(context)
-    }
-
-    get basinCount() {
-        return this.#basinMap.size
     }
 
     get riverCount() {
@@ -58,7 +52,6 @@ export class RiverLayer {
         const directionId = this.#flowMap.get(point)
         const direction = Direction.fromId(directionId)
         return {
-            basin: this.#basinMap.get(point),
             flow: direction,
             source: this.#riverSources.has(point),
             mouth: this.#riverMouths.has(point),
@@ -72,8 +65,6 @@ export class RiverLayer {
             return ''
         const river = this.get(point)
         const attrs = [
-             `basin=${river.basin}`,
-             `flow=${river.flow.name}`,
              `source=${river.source}`,
              `mouth=${river.mouth}`,
              `pattern=${river.pattern}`,
@@ -88,9 +79,9 @@ export class RiverLayer {
         for each direction, draw a point to the center
         */
        const directions = []
-       const code = this.#riverPatterns.get(point)
-       const patternBitmask = new BitMask(code)
-        for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
+       const pattern = this.#riverPatterns.get(point)
+       const patternBitmask = new BitMask(pattern)
+       for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
             if (patternBitmask.has(code)) {
                 const direction = Direction.fromId(directionId)
                 directions.push(direction.axis)

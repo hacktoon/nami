@@ -4,6 +4,10 @@ import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
 
 
+const CHANCE = .1
+const GROWTH = 1
+
+
 export function buildErosionMap(baseContext) {
     // stores points that must be filled on higher reliefs
     const deferredOrigins = new PointSet()
@@ -44,8 +48,8 @@ function fillReliefFlowMap(origins, context) {
 
 
 class ErosionFill extends ConcurrentFill {
-    getChance(fill) { return .3 }
-    getGrowth(fill) { return 3 }
+    getChance(fill) { return CHANCE }
+    getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
         return Point.adjacents(parentPoint)

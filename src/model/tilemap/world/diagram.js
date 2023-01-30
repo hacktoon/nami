@@ -29,14 +29,14 @@ class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
         this.erosionColors = new Map()
-        for (let i = 0; i < tileMap.river.basinCount; i ++) {
+        for (let i = 0; i < tileMap.erosion.basinCount; i ++) {
             this.erosionColors.set(i, new Color())
         }
     }
 
     getByBasin(point) {
-        const river = this.tileMap.river.get(point)
-        return this.erosionColors.get(river.basin)
+        const erosion = this.tileMap.erosion.get(point)
+        return this.erosionColors.get(erosion.basin)
     }
 }
 
@@ -99,8 +99,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const showErosion = this.params.get('showErosion')
         const isLand = this.tileMap.surface.isLand(point)
         if (showErosion && isLand) {
-            const river = this.tileMap.river.get(point)
-            return river.flow.symbol
+            const erosion = this.tileMap.erosion.get(point)
+            return erosion.flow.symbol
         }
         return ''
     }
