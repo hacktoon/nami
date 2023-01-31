@@ -85,11 +85,9 @@ export class RiverLayer {
     }
 
     #getRiverDirections(point) {
-        /*
-        return a list of direction axis
-        for each direction, draw a point to the center
-        */
-       const axisOffsets = []
+        // return a list of direction axis
+        // for each direction, draw a point to the center
+        const axisOffsets = []
         const flowCode = this.#riverFlow.get(point)
         const patternBitmask = new BitMask(flowCode)
         for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {

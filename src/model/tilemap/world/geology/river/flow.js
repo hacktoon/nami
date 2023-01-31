@@ -7,11 +7,10 @@ import { RIVER_NAMES } from './names'
 // bitmask value => point in matrix 3x3
 /*
        1(N)
- 2(W)    4     8 (E)
+ 2(W)         8 (E)
        16(S)
 */
 // detect matrix in source file
-const CENTER_CODE = 4
 export const DIRECTION_PATTERN_MAP = new Map([
     [Direction.NORTH.id, 1],
     [Direction.WEST.id, 2],
@@ -62,17 +61,19 @@ function getNextRiverPoint(context, currentPoint) {
 }
 
 
+function buildMeander(context, point) {
+    const wrappedPoint = context.rect.wrap(point)
+    context.riverMeanders.set(wrappedPoint, 0)
+}
+
+
 function buildPatternCode(context, point) {
     const {rect, surfaceLayer, riverFlow} = context
     const wrappedPoint = rect.wrap(point)
     const erosion = context.erosionLayer.get(wrappedPoint)
-    const isRiverSource = context.riverSources.has(wrappedPoint)
-    // non river sources must fill the center tile
-    let centerCode = isRiverSource ? CENTER_CODE : 0
     // set the tile according to which direction is flowing
-    const flowCode = DIRECTION_PATTERN_MAP.get(erosion.flow.id)
-    let code = flowCode + centerCode
-    // add code for each neighbor that flows to this point
+    let flowCode = DIRECTION_PATTERN_MAP.get(erosion.flow.id)
+    // add flowCode for each neighbor that flows to this point
     Point.adjacents(point, (sidePoint, sideDirection) => {
         // ignore water neighbors
         const wrappedSidePoint = rect.wrap(sidePoint)
@@ -82,10 +83,10 @@ function buildPatternCode(context, point) {
         if (! receivesFlow(context, sidePoint, point)) { return }
         // if it has a pattern, it's already a river point
         if (riverFlow.has(wrappedSidePoint)) {
-            code += DIRECTION_PATTERN_MAP.get(sideDirection.id)
+            flowCode += DIRECTION_PATTERN_MAP.get(sideDirection.id)
         }
     })
-    return code
+    return flowCode
 }
 
 
