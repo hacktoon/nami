@@ -60,7 +60,7 @@ export class WorldTileMap extends TileMap {
             `Surface(name:${surface.name}, area:${surfaceArea}%)`,
             `Relief(${relief.name})`,
             `Temperature(${temperature.name})`,
-            `Erosion(basin=${erosion.basin??''})`,
+            this.erosion.getText(wrappedPoint),
             this.river.getText(wrappedPoint),
         ].join('\n')
     }

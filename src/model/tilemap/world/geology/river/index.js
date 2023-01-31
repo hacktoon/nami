@@ -8,10 +8,8 @@ import { buildFlowMap, DIRECTION_PATTERN_MAP } from './flow'
 
 
 export class RiverLayer {
-    #basinMap = new PointMap()
-    #flowMap = new PointMap()
     #riverPoints = new PointMap()
-    #riverPatterns = new PointMap()
+    #riverFlow = new PointMap()
     #riverMeanders = new PointMap()
     #flowRate = new PointMap()
     #riverSources = new PointSet()
@@ -25,12 +23,10 @@ export class RiverLayer {
             reliefLayer,
             erosionLayer,
             rainLayer,
-            basinMap: this.#basinMap,
-            flowMap: this.#flowMap,
             riverPoints: this.#riverPoints,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,
-            riverPatterns: this.#riverPatterns,
+            riverFlow: this.#riverFlow,
             flowRate: this.#flowRate,
             maxFlowRate: this.#maxFlowRate,
             // TODO
@@ -49,13 +45,11 @@ export class RiverLayer {
     }
 
     get(point) {
-        const directionId = this.#flowMap.get(point)
-        const direction = Direction.fromId(directionId)
         return {
-            flow: direction,
+            flow: this.#riverFlow.get(point),
+            flowDirections: this.#getRiverDirections(point),
             source: this.#riverSources.has(point),
             mouth: this.#riverMouths.has(point),
-            pattern: this.#riverPatterns.get(point),
             flowRate: this.#flowRate.get(point),
         }
     }
@@ -67,27 +61,10 @@ export class RiverLayer {
         const attrs = [
              `source=${river.source}`,
              `mouth=${river.mouth}`,
-             `pattern=${river.pattern}`,
+             `pattern=${river.flow}`,
              `flowRate=${river.flowRate}`,
         ].join(',')
         return `River(${attrs})`
-    }
-
-    getPattern(point) {
-        /*
-        return a list of direction axis
-        for each direction, draw a point to the center
-        */
-       const directions = []
-       const pattern = this.#riverPatterns.get(point)
-       const patternBitmask = new BitMask(pattern)
-       for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
-            if (patternBitmask.has(code)) {
-                const direction = Direction.fromId(directionId)
-                directions.push(direction.axis)
-            }
-        }
-        return directions
     }
 
     getFlowRate(point) {
@@ -105,5 +82,22 @@ export class RiverLayer {
 
     isMouth(point) {
         return this.#riverMouths.has(point)
+    }
+
+    #getRiverDirections(point) {
+        /*
+        return a list of direction axis
+        for each direction, draw a point to the center
+        */
+       const axisOffsets = []
+        const flowCode = this.#riverFlow.get(point)
+        const patternBitmask = new BitMask(flowCode)
+        for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
+            if (patternBitmask.has(code)) {
+                const direction = Direction.fromId(directionId)
+                axisOffsets.push(direction.axis)
+            }
+        }
+        return axisOffsets
     }
 }

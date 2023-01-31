@@ -36,7 +36,7 @@ export function buildFlowMap(context) {
 
 
 function buildRiver(context, riverId, source) {
-    const {flowRate, rect, surfaceLayer, riverPatterns, riverPoints} = context
+    const {flowRate, rect, surfaceLayer, riverFlow, riverPoints} = context
     let point = source
     // init this river with current flow rate or zero if it's empty
     let riverFlowRate = 0
@@ -44,7 +44,7 @@ function buildRiver(context, riverId, source) {
         let wrappedPoint = rect.wrap(point)
         const code = buildPatternCode(context, wrappedPoint)
         riverPoints.set(wrappedPoint, riverId)
-        riverPatterns.set(wrappedPoint, code)
+        riverFlow.set(wrappedPoint, code)
         if (flowRate.has(wrappedPoint)) {
             riverFlowRate = flowRate.get(wrappedPoint) + 1
         }
@@ -63,7 +63,7 @@ function getNextRiverPoint(context, currentPoint) {
 
 
 function buildPatternCode(context, point) {
-    const {rect, surfaceLayer, riverPatterns} = context
+    const {rect, surfaceLayer, riverFlow} = context
     const wrappedPoint = rect.wrap(point)
     const erosion = context.erosionLayer.get(wrappedPoint)
     const isRiverSource = context.riverSources.has(wrappedPoint)
@@ -81,7 +81,7 @@ function buildPatternCode(context, point) {
         // neighbor erosion flows here?
         if (! receivesFlow(context, sidePoint, point)) { return }
         // if it has a pattern, it's already a river point
-        if (riverPatterns.has(wrappedSidePoint)) {
+        if (riverFlow.has(wrappedSidePoint)) {
             code += DIRECTION_PATTERN_MAP.get(sideDirection.id)
         }
     })

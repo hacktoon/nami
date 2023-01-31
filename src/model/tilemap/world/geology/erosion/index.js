@@ -38,13 +38,13 @@ export class ErosionLayer {
     }
 
     getText(point) {
-        if (! this.has(point))
+        if (! this.#flowMap.has(point))
             return ''
         const erosion = this.get(point)
         const attrs = [
              `basin=${erosion.basin}`,
              `flow=${erosion.flow.name}`,
         ].join(',')
-        return `River(${attrs})`
+        return `Erosion(${attrs})`
     }
 }

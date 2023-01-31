@@ -137,8 +137,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // offset river midpoint by random value and create a new point
         const midRiverPoint = Point.plus(canvasPoint, [midSize + x, midSize + y])
-        const patternAxis = this.tileMap.river.getPattern(point)
-        for(let axisOffset of patternAxis) {
+        const river = this.tileMap.river.get(point)
+        for(let axisOffset of river.flowDirections) {
             const axisPoint = [
                 midCanvasPoint[0] + axisOffset[0] * midSize,
                 midCanvasPoint[1] + axisOffset[1] * midSize
