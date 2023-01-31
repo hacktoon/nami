@@ -17,11 +17,8 @@
 - Solve `[Violation] 'input' handler` message by storing commands
 
 
-### ErosionLayer
-  - Recreate
-  - Used for rivers and roads
-
 ### RiverLayer
+  - adjust meander point to the direction of erosion flow
   - Stop flow on first mountain if it has only one mountain neighbor
   - Flow can be used also for creating paths and A*star pathfinding
   - Move mouth detection to where rain influences river creation

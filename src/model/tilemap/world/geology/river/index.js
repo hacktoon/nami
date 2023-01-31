@@ -29,7 +29,6 @@ export class RiverLayer {
             riverFlow: this.#riverFlow,
             flowRate: this.#flowRate,
             maxFlowRate: this.#maxFlowRate,
-            // TODO
             riverMeanders: this.#riverMeanders,
         }
         buildSourceMap(context)
@@ -51,7 +50,23 @@ export class RiverLayer {
             source: this.#riverSources.has(point),
             mouth: this.#riverMouths.has(point),
             flowRate: this.#flowRate.get(point),
+            meander: this.#riverMeanders.get(point),
         }
+    }
+
+    #getRiverDirections(point) {
+        // return a list of direction axis
+        // for each direction, draw a point to the center
+        const axisOffsets = []
+        const flowCode = this.#riverFlow.get(point)
+        const patternBitmask = new BitMask(flowCode)
+        for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
+            if (patternBitmask.has(code)) {
+                const direction = Direction.fromId(directionId)
+                axisOffsets.push(direction.axis)
+            }
+        }
+        return axisOffsets
     }
 
     getText(point) {
@@ -61,7 +76,7 @@ export class RiverLayer {
         const attrs = [
              `source=${river.source}`,
              `mouth=${river.mouth}`,
-             `pattern=${river.flow}`,
+             `flow=${river.flow}`,
              `flowRate=${river.flowRate}`,
         ].join(',')
         return `River(${attrs})`
@@ -82,20 +97,5 @@ export class RiverLayer {
 
     isMouth(point) {
         return this.#riverMouths.has(point)
-    }
-
-    #getRiverDirections(point) {
-        // return a list of direction axis
-        // for each direction, draw a point to the center
-        const axisOffsets = []
-        const flowCode = this.#riverFlow.get(point)
-        const patternBitmask = new BitMask(flowCode)
-        for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
-            if (patternBitmask.has(code)) {
-                const direction = Direction.fromId(directionId)
-                axisOffsets.push(direction.axis)
-            }
-        }
-        return axisOffsets
     }
 }

@@ -126,9 +126,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     #drawRiver({canvas, tilePoint, canvasPoint, size}) {
         const point = this.rect.wrap(tilePoint)
-        const flowRate = this.tileMap.river.getFlowRate(point)
-        const maxFlowRate = this.tileMap.river.getMaxFlowRate(point)
-        const riverWidth = this.#buildRiverWidth(size, maxFlowRate, flowRate)
+        const river = this.tileMap.river.get(point)
+        const riverWidth = this.#buildRiverWidth(size, river)
         const midSize = Math.round(size / 2)
         const mod2 = Math.floor(midSize / 2)
         const mod3 = Math.floor(midSize / 3)
@@ -136,24 +135,29 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const y = Random.choice(-mod2, -mod3, mod3, mod2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // offset river midpoint by random value and create a new point
-        const midRiverPoint = Point.plus(canvasPoint, [midSize + x, midSize + y])
-        const river = this.tileMap.river.get(point)
+        const meanderPoint2 = this.#buildMeanderPoint(river, size, canvasPoint)
+        const meanderPoint = Point.plus(canvasPoint, [midSize + x, midSize + y])
         for(let axisOffset of river.flowDirections) {
-            const axisPoint = [
+            // build a point for each present edge midpoint of a tile square
+            const edgeMidPoint = [
                 midCanvasPoint[0] + axisOffset[0] * midSize,
                 midCanvasPoint[1] + axisOffset[1] * midSize
             ]
-            canvas.line(axisPoint, midRiverPoint, riverWidth, RIVER_COLOR)
+            canvas.line(edgeMidPoint, meanderPoint, riverWidth, RIVER_COLOR)
         }
     }
 
-    #buildRiverWidth(size, maxFlowRate, flowRate) {
+    #buildMeanderPoint(meander) {
+        return [0, 0]
+    }
+
+    #buildRiverWidth(size, river) {
         const maxWidth = Math.floor(size / 6)
         let width = 2
-        if (flowRate < 4) {  // creeks
+        if (river.flowRate < 4) {  // creeks
             width = 20
         }
-        else if (flowRate < 20) { // medium rivers
+        else if (river.flowRate < 20) { // medium rivers
             width = 10
         }
         return clamp(Math.floor(size / width), 1, maxWidth)

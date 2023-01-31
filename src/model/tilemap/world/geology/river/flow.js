@@ -1,5 +1,6 @@
 import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
+import { Random } from '/src/lib/random'
 
 import { RIVER_NAMES } from './names'
 
@@ -35,15 +36,21 @@ export function buildFlowMap(context) {
 
 
 function buildRiver(context, riverId, source) {
-    const {flowRate, rect, surfaceLayer, riverFlow, riverPoints} = context
+    // start from river source point. Follows the points
+    // according to erosion flow and builds a river.
+    const {
+        flowRate, rect, surfaceLayer, riverFlow,
+        riverPoints, riverMeanders
+    } = context
     let point = source
     // init this river with current flow rate or zero if it's empty
     let riverFlowRate = 0
     while (surfaceLayer.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
-        const code = buildPatternCode(context, wrappedPoint)
-        riverPoints.set(wrappedPoint, riverId)
+        const code = buildFlowCode(context, wrappedPoint)
         riverFlow.set(wrappedPoint, code)
+        riverPoints.set(wrappedPoint, riverId)
+        riverMeanders.set(wrappedPoint, buildMeander())
         if (flowRate.has(wrappedPoint)) {
             riverFlowRate = flowRate.get(wrappedPoint) + 1
         }
@@ -61,13 +68,20 @@ function getNextRiverPoint(context, currentPoint) {
 }
 
 
-function buildMeander(context, point) {
-    const wrappedPoint = context.rect.wrap(point)
-    context.riverMeanders.set(wrappedPoint, 0)
+function buildMeander() {
+    // choose a relative point around the middle of a square [.5, .5]
+    const MIDDLE = .5
+    const coord = () => {
+        const offset = Random.floatRange(.1, .4)
+        const percent = (MIDDLE + offset * Random.choice(-1, 1))
+        // no need of a higher precision, return one decimal float
+        return percent.toFixed(1)
+    }
+    return [coord(), coord()]
 }
 
 
-function buildPatternCode(context, point) {
+function buildFlowCode(context, point) {
     const {rect, surfaceLayer, riverFlow} = context
     const wrappedPoint = rect.wrap(point)
     const erosion = context.erosionLayer.get(wrappedPoint)
