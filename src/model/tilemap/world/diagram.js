@@ -108,11 +108,11 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     draw(props) {
         const point = this.rect.wrap(props.tilePoint)
         const isLand = this.tileMap.surface.isLand(point)
-        const isRiverSource = this.tileMap.river.isSource(point)
-        if (isLand && this.params.get('showRivers')) {
+        const isRiver = this.tileMap.river.has(point)
+        if (isLand && isRiver && this.params.get('showRivers')) {
             this.#drawRiver(props)
         }
-        if (isRiverSource && this.params.get('showRiverSources')) {
+        if (isRiver && this.params.get('showRiverSources')) {
             this.#drawRiverSource(props)
         }
     }
@@ -127,16 +127,11 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     #drawRiver({canvas, tilePoint, canvasPoint, size}) {
         const point = this.rect.wrap(tilePoint)
         const river = this.tileMap.river.get(point)
-        const riverWidth = this.#buildRiverWidth(size, river)
+        const riverWidth = this.#buildRiverWidth(river, size)
         const midSize = Math.round(size / 2)
-        const mod2 = Math.floor(midSize / 2)
-        const mod3 = Math.floor(midSize / 3)
-        const x = Random.choice(-mod2, -mod3, mod3, mod2)
-        const y = Random.choice(-mod2, -mod3, mod3, mod2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-        // offset river midpoint by random value and create a new point
-        const meanderPoint2 = this.#buildMeanderPoint(river, size, canvasPoint)
-        const meanderPoint = Point.plus(canvasPoint, [midSize + x, midSize + y])
+        const meanderOffsetPoint = this.#buildMeanderOffsetPoint(river, size)
+        const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         for(let axisOffset of river.flowDirections) {
             // build a point for each present edge midpoint of a tile square
             const edgeMidPoint = [
@@ -147,11 +142,12 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    #buildMeanderPoint(meander) {
-        return [0, 0]
+    #buildMeanderOffsetPoint(river, size) {
+        const percentage = river.meander
+        return Point.multiplyScalar(percentage, size)
     }
 
-    #buildRiverWidth(size, river) {
+    #buildRiverWidth(river, size) {
         const maxWidth = Math.floor(size / 6)
         let width = 2
         if (river.flowRate < 4) {  // creeks

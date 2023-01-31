@@ -20,17 +20,10 @@
 ### RiverLayer
   - adjust meander point to the direction of erosion flow
   - Stop flow on first mountain if it has only one mountain neighbor
-  - Flow can be used also for creating paths and A*star pathfinding
-  - Move mouth detection to where rain influences river creation
-  - Add carving where flows meet a higher terrain
+  - Height of terrain often make waterfalls or rapids
 
-
-### RiverLayer
-  - Height of terrain often make waterfalls|rapids
-  - River data:
-    4 neighbors and its directions
-  - get neighbors, follow
-  -
+### BiomeLayer
+- Vegetation/wildlife density: function of rain x temperature
 
 ### CityMap
 - Determine capitals and villages
@@ -42,7 +35,5 @@
 - Start a fill to determine realm area
   - define routes
 
-### Other
-- Vegetation/wildlife density: function of rain x temperature
-- Roads
+### RoadLayer
   - create junction points between two route points to set midpath detours

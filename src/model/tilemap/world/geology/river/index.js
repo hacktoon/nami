@@ -10,7 +10,9 @@ import { buildFlowMap, DIRECTION_PATTERN_MAP } from './flow'
 export class RiverLayer {
     #riverPoints = new PointMap()
     #riverFlow = new PointMap()
+    // map a point to a fraction point [.2, .2]
     #riverMeanders = new PointMap()
+    // the amount of water in a point
     #flowRate = new PointMap()
     #riverSources = new PointSet()
     #riverMouths = new PointSet()
