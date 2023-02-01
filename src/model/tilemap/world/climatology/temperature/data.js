@@ -48,7 +48,7 @@ export class Temperature {
     }
 }
 
-// add object ref to class as an attribute
+
 SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
     const methodName = `is${spec.name}`

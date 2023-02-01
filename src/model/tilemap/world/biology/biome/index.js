@@ -8,19 +8,18 @@ export class BiomeLayer {
 
     constructor(rect, layers) {
         this.#matrix = Matrix.fromRect(rect, point => {
-            return this.#detectBiome(layers, point)
+            const biome = this.#detectBiome(layers, point)
+            return biome.id
         })
     }
 
     #detectBiome(layers, point) {
-        const {relief, rain} = layers
-
         const temperature = layers.temperature.get(point)
         // water biomes
         if (layers.surface.isWater(point)) {
-            if (relief.isTrench(point)) return Biome.TRENCH.id
-            if (relief.isSea(point)) return Biome.SEA.id
-            return Biome.OCEAN.id
+            if (layers.relief.isTrench(point)) return Biome.TRENCH
+            if (layers.relief.isSea(point)) return Biome.SEA
+            return Biome.OCEAN
         }
 
         // land biomes
@@ -68,6 +67,7 @@ export class BiomeLayer {
         //     if (moisture.isDry) return SHRUBLAND
         //     if (moisture.isLowest) return DESERT
         // }
+        return Biome.GRASSLANDS
     }
 
     get(point) {

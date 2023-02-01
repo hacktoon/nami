@@ -1,35 +1,35 @@
+import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 
 import { Rain } from './data'
 
 
+const WET_RATIO = .3
 const SEASONAL_RATIO = .4
-const DRY_RATIO = .6
-const ARID_RATIO = .7
+const DRY_RATIO = .55
+const ARID_RATIO = .65
 
 
 // TODO: rain is dynamic, make noise offset and loop
 
 export class RainLayer {
-    #noiseLayer
+    #matrix
 
     constructor(rect, layers) {
-        this.#noiseLayer = layers.noise
+        this.#matrix = Matrix.fromRect(rect, point => {
+            let rain = Rain.HUMID
+            const noise = layers.noise.getOutline(point)
+            if (noise > WET_RATIO) rain = Rain.WET
+            if (noise > SEASONAL_RATIO) rain = Rain.SEASONAL
+            if (noise > DRY_RATIO) rain = Rain.DRY
+            if (noise > ARID_RATIO) rain = Rain.ARID
+            return rain
+        })
     }
 
-    get(point) {
-        const offset = 10
+    get(point, offset=10) {
         const offsetPoint = Point.plus(point, [offset, offset])
-        const noise = this.#noiseLayer.getOutline(offsetPoint)
-        if (noise > SEASONAL_RATIO) {
-            if (noise > DRY_RATIO) {
-                if (noise > ARID_RATIO)
-                    return Rain.ARID
-                return Rain.DRY
-            }
-            return Rain.SEASONAL
-        }
-        return Rain.HUMID
+        return this.#matrix.get(offsetPoint)
     }
 
     isRiverSource(point) {

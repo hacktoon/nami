@@ -58,7 +58,7 @@ export class Relief {
     }
 }
 
-// add object ref to class as an attribute
+
 SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
     Relief[name] = spec

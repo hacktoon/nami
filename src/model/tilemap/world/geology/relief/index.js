@@ -78,18 +78,18 @@ export class ReliefLayer {
         return points
     }
 
-    get(point) {
-        const id = this.#matrix.get(point)
-        return Relief.fromId(id)
-    }
-
-    getLandReliefs() {
+    get landReliefs() {
         return [
             Relief.BASIN,
             Relief.PLAIN,
             Relief.PLATEAU,
             Relief.MOUNTAIN,
         ]
+    }
+
+    get(point) {
+        const id = this.#matrix.get(point)
+        return Relief.fromId(id)
     }
 
     isMountain(point) {

@@ -3,9 +3,14 @@ import { Color } from '/src/lib/color'
 
 const SPEC = [
     {
-        id: 4,
+        id: 5,
         name: 'Humid',
         color: Color.fromHex('#b067ff'),
+    },
+    {
+        id: 4,
+        name: 'Wet',
+        color: Color.fromHex('#8567ff'),
     },
     {
         id: 3,
@@ -25,17 +30,22 @@ const SPEC = [
 ]
 
 
-const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
-
-
 export class Rain {
-    static fromId(id) {
-        return TYPE_MAP.get(id) ?? SPEC[0]
+    constructor(spec) {
+        this.id = spec.id
+        this.name = spec.name
+        this.color = spec.color
     }
 }
 
-// add object ref to class as an attribute
+
 SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
-    Rain[name] = spec
+    const methodName = `is${spec.name}`
+    // add object as constant
+    Rain[name] = new Rain(spec)
+    // add method for comparison
+    Rain.prototype[methodName] = function() {
+        return this.id === spec.id
+    }
 })

@@ -20,16 +20,20 @@ export const BIOME_SPEC = [
 ]
 
 
-const BIOME_MAP = new Map(BIOME_SPEC.map(spec => [spec.id, spec]))
-
-
 export class Biome {
-    static fromId(id) {
-        return BIOME_MAP.get(id)
+    constructor(spec) {
+        this.id = spec.id
+        this.name = spec.name
+        this.color = spec.color
     }
 }
 
 BIOME_SPEC.forEach(spec => {
     const name = spec.name.toUpperCase().replace(/\s+/, '_')
+    const methodName = `is${spec.name}`
     Biome[name] = spec
+    // add method for comparison
+    Biome.prototype[methodName] = function() {
+        return this.id === spec.id
+    }
 })

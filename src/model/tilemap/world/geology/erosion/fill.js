@@ -17,7 +17,7 @@ export function buildErosionMap(baseContext) {
     let origins = baseContext.reliefLayer.landBorders
     const context = {...baseContext, deferredOrigins, validReliefIds}
     // start from lower to higher land reliefs, filling each layer
-    for(let relief of context.reliefLayer.getLandReliefs()) {
+    for(let relief of baseContext.reliefLayer.landReliefs) {
         // add current relief for next fill
         validReliefIds.add(relief.id)
         // update origins (points)
