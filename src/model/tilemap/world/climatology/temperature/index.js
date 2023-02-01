@@ -1,6 +1,7 @@
 import { Temperature } from './data'
 
 
+const COLD_RATIO = .03
 const TEMPERATE_RATIO = .2
 const SUBTROPICAL_RATIO = .4
 const TROPICAL_RATIO = .7
@@ -19,13 +20,16 @@ export class TemperatureLayer {
 
     #detectBaseType(point) {
         const featureNoise = this.#noiseLayer.getAtmos(point)
-        if (featureNoise > TEMPERATE_RATIO) {
-            if (featureNoise > SUBTROPICAL_RATIO) {
-                if (featureNoise > TROPICAL_RATIO)
-                    return Temperature.TROPICAL
-                return Temperature.SUBTROPICAL
+        if (featureNoise > COLD_RATIO) {
+            if (featureNoise > TEMPERATE_RATIO) {
+                if (featureNoise > SUBTROPICAL_RATIO) {
+                    if (featureNoise > TROPICAL_RATIO)
+                        return Temperature.TROPICAL
+                    return Temperature.SUBTROPICAL
+                }
+                return Temperature.TEMPERATE
             }
-            return Temperature.TEMPERATE
+            return Temperature.COLD
         }
         return Temperature.FROZEN
     }
@@ -57,5 +61,10 @@ export class TemperatureLayer {
     isFrozen(point) {
         const temp = this.get(point)
         return temp.id == Temperature.FROZEN.id
+    }
+
+    isCold(point) {
+        const temp = this.get(point)
+        return temp.id == Temperature.COLD.id
     }
 }
