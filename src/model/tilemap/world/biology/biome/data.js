@@ -1,9 +1,7 @@
 import { Color } from '/src/lib/color'
 
 
-export const SURFACE_RATIO = .55
-
-export const SURFACE_SPEC = [
+export const BIOME_SPEC = [
     {
         id: 0,
         name: 'Ocean',
@@ -37,7 +35,7 @@ export const SURFACE_SPEC = [
 ]
 
 
-export const SURFACE_MAP = new Map(SURFACE_SPEC.map(spec => [spec.id, spec]))
+export const SURFACE_MAP = new Map(BIOME_SPEC.map(spec => [spec.id, spec]))
 
 
 export class Surface {
@@ -53,7 +51,7 @@ export class Surface {
         return ! SURFACE_MAP.get(id).water
     }
 }
-SURFACE_SPEC.forEach(spec => {
+BIOME_SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
     Surface[name] = spec.id
 })
