@@ -6,11 +6,11 @@ export class BiomeLayer {
 
     constructor(rect, layers) {
         this.#matrix = Matrix.fromRect(rect, point => {
-            return this.#detectBiome(point)
+            return this.#detectBiome(layers, point)
         })
     }
 
-    #detectBiome(point) {
+    #detectBiome(layers, point) {
 
     }
 

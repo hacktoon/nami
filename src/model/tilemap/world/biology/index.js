@@ -1,7 +1,3 @@
-import { Random } from '/src/lib/random'
-
-const VOLCANO_CHANCE = .007
-
 const ICE = 0
 const TUNDRA = 1
 const BOREAL_FOREST = 2
@@ -73,10 +69,6 @@ export class BiomeMap {
             }
             if (water.isRiver) return RIVER
             return OCEAN
-        }
-
-        if (relief.isMountain && Random.chance(VOLCANO_CHANCE)) {
-            return VOLCANO
         }
 
         if (heat.isArctic) {
