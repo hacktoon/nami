@@ -30,7 +30,14 @@ const SPEC = [
 ]
 
 
+const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
+
+
 export class Rain {
+    static fromId(id) {
+        return new Rain(TYPE_MAP.get(id))
+    }
+
     constructor(spec) {
         this.id = spec.id
         this.name = spec.name

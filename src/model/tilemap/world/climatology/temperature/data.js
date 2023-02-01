@@ -34,6 +34,10 @@ const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
 
 
 export class Temperature {
+    static fromId(id) {
+        return new Temperature(TYPE_MAP.get(id))
+    }
+
     static lower(spec) {
         const lower = SPEC[0].id
         const higher = SPEC[SPEC.length-1].id

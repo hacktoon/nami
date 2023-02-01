@@ -23,17 +23,18 @@ export class RainLayer {
             if (noise > SEASONAL_RATIO) rain = Rain.SEASONAL
             if (noise > DRY_RATIO) rain = Rain.DRY
             if (noise > ARID_RATIO) rain = Rain.ARID
-            return rain
+            return rain.id
         })
     }
 
     get(point, offset=10) {
         const offsetPoint = Point.plus(point, [offset, offset])
-        return this.#matrix.get(offsetPoint)
+        const rain = this.#matrix.get(offsetPoint)
+        return Rain.fromId(rain)
     }
 
     isRiverSource(point) {
         const rain = this.get(point)
-        return rain === Rain.HUMID || rain === Rain.SEASONAL
+        return rain.id === Rain.HUMID.id || rain.id === Rain.SEASONAL.id
     }
 }

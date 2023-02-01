@@ -13,7 +13,7 @@ export const BIOME_SPEC = [
     {id: 11, color: "#000080", name: "Ocean" },
     {id: 12, color: "#0033AA", name: "Sea" },
     {id: 13, color: "#1166d4", name: "Lake" },
-    {id: 14, color: "#5cffc4", name: "Coral reef" },
+    {id: 14, color: "#5cffc4", name: "Reef" },
     {id: 15, color: "#000080", name: "Creek" },
     {id: 16, color: "#000080", name: "River" },
     {id: 17, color: "#876729", name: "Mangrove" },
