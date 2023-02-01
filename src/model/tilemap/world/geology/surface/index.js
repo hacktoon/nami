@@ -21,8 +21,8 @@ export class SurfaceLayer {
     #surfaceIdMap = new Map()
     #bodyIdCount = 1
 
-    constructor(rect, noiseLayer) {
-        this.#noiseLayer = noiseLayer
+    constructor(rect, layers) {
+        this.#noiseLayer = layers.noise
         // init matrix with empty cells
         this.#bodyIdMatrix = Matrix.fromRect(rect, () => EMPTY)
         // detect surface regions and area

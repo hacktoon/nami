@@ -18,13 +18,13 @@ export class RiverLayer {
     #riverMouths = new PointSet()
     #maxFlowRate = new Map()
 
-    constructor(rect, surfaceLayer, reliefLayer, erosionLayer, rainLayer) {
+    constructor(rect, layers) {
         const context = {
             rect,
-            surfaceLayer,
-            reliefLayer,
-            erosionLayer,
-            rainLayer,
+            surfaceLayer: layers.surface,
+            reliefLayer: layers.relief,
+            erosionLayer: layers.erosion,
+            rainLayer: layers.rain,
             riverPoints: this.#riverPoints,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,
@@ -37,7 +37,7 @@ export class RiverLayer {
         buildFlowMap(context)
     }
 
-    get riverCount() {
+    get count() {
         return this.#riverSources.size
     }
 

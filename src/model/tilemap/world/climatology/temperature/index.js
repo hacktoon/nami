@@ -12,9 +12,9 @@ export class TemperatureLayer {
     #noiseLayer
     #reliefLayer
 
-    constructor(rect, noiseLayer, reliefLayer) {
-        this.#noiseLayer = noiseLayer
-        this.#reliefLayer = reliefLayer
+    constructor(rect, layers) {
+        this.#noiseLayer = layers.noise
+        this.#reliefLayer = layers.relief
     }
 
     #detectBaseType(point) {

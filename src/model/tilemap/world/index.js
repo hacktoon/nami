@@ -35,37 +35,35 @@ export class WorldTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const noiseLayer = new NoiseLayer(this.rect, this.seed)
-        this.surface = new SurfaceLayer(this.rect, noiseLayer)
-        this.relief = new ReliefLayer(this.rect, noiseLayer, this.surface)
-        this.temperature = new TemperatureLayer(
-            this.rect, noiseLayer, this.relief
-        )
-        this.rain = new RainLayer(noiseLayer)
-        this.erosion = new ErosionLayer(this.rect, this.surface, this.relief)
-        this.river = new RiverLayer(
-            this.rect, this.surface, this.relief, this.erosion, this.rain
-        )
+        const layers = {}
+        const rect = this.rect
+        layers.noise = new NoiseLayer(rect, this.seed)
+        layers.surface = new SurfaceLayer(rect, layers)
+        layers.relief = new ReliefLayer(rect, layers)
+        layers.temperature = new TemperatureLayer(rect, layers)
+        layers.rain = new RainLayer(rect, layers)
+        layers.erosion = new ErosionLayer(rect, layers)
+        layers.river = new RiverLayer(rect, layers)
+        this.layer = layers
     }
 
     get(point) {
         const wrappedPoint = this.rect.wrap(point)
-        const surface = this.surface.get(wrappedPoint)
-        const relief = this.relief.get(wrappedPoint)
-        const temperature = this.temperature.get(wrappedPoint)
-        const erosion = this.erosion.get(wrappedPoint)
-        const surfaceArea = this.surface.getArea(wrappedPoint)
+        const surface = this.layer.surface.get(wrappedPoint)
+        const relief = this.layer.relief.get(wrappedPoint)
+        const temperature = this.layer.temperature.get(wrappedPoint)
+        const surfaceArea = this.layer.surface.getArea(wrappedPoint)
         return [
             `${Point.hash(wrappedPoint)}`,
             `Surface(name:${surface.name}, area:${surfaceArea}%)`,
             `Relief(${relief.name})`,
             `Temperature(${temperature.name})`,
-            this.erosion.getText(wrappedPoint),
-            this.river.getText(wrappedPoint),
+            this.layer.erosion.getText(wrappedPoint),
+            this.layer.river.getText(wrappedPoint),
         ].join('\n')
     }
 
     getDescription() {
-        return `Rivers: ${this.river.riverCount}`
+        return `Rivers: ${this.layer.river.count}`
     }
 }

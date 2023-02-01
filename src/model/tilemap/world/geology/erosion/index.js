@@ -1,5 +1,4 @@
 import { PointMap } from '/src/lib/point/map'
-import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
 import { buildErosionMap } from './fill'
@@ -9,11 +8,11 @@ export class ErosionLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
 
-    constructor(rect, surfaceLayer, reliefLayer) {
+    constructor(rect, layers) {
         const context = {
             rect,
-            surfaceLayer,
-            reliefLayer,
+            surfaceLayer: layers.surface,
+            reliefLayer: layers.relief,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
         }
@@ -25,7 +24,7 @@ export class ErosionLayer {
     }
 
     has(point) {
-        return this.#basinMap.has(point)
+        return this.#flowMap.has(point)
     }
 
     get(point) {

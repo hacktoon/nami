@@ -18,9 +18,9 @@ export class ReliefLayer {
     #borders = new PointSet()
     #matrix
 
-    constructor(rect, noiseLayer, surfaceLayer) {
-        this.#noiseLayer = noiseLayer
-        this.#surfaceLayer = surfaceLayer
+    constructor(rect, layers) {
+        this.#noiseLayer = layers.noise
+        this.#surfaceLayer = layers.surface
         this.#matrix = Matrix.fromRect(rect, point => {
             this.#detectBorders(point)
             return this.#detectType(point)

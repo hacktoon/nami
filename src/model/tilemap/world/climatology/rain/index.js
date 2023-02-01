@@ -13,8 +13,8 @@ const ARID_RATIO = .7
 export class RainLayer {
     #noiseLayer
 
-    constructor(noiseLayer) {
-        this.#noiseLayer = noiseLayer
+    constructor(rect, layers) {
+        this.#noiseLayer = layers.noise
     }
 
     get(point) {
