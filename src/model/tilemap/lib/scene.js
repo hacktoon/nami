@@ -8,7 +8,7 @@ export class TileMapScene {
         'TileMapScene',
         Type.point('focus', "Focus", {default: '95,98'}),
         Type.boolean('wrap', "Wrap", {default: false}),
-        Type.number('zoom', "Zoom", {default: 4, step: 1, min: 1, max: 100}),
+        Type.number('zoom', "Zoom", {default: 4, step: 1, min: 5, max: 100}),
     )
 
     static create(diagram, viewport, params) {

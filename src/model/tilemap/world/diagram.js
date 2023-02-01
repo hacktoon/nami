@@ -21,6 +21,7 @@ const SCHEMA = new Schema(
     Type.boolean('showBasins', 'Basins', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: false}),
     Type.boolean('showRiverSources', 'River sources', {default: false}),
+    Type.boolean('showBiomes', 'Biomes', {default: false}),
 )
 
 
@@ -95,9 +96,8 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     getText(relativePoint) {
         const point = this.rect.wrap(relativePoint)
-        const showErosion = this.params.get('showErosion')
         const isLand = this.tileMap.layer.surface.isLand(point)
-        if (showErosion && isLand) {
+        if (isLand && this.params.get('showErosion')) {
             const erosion = this.tileMap.layer.erosion.get(point)
             return erosion.flow.symbol
         }

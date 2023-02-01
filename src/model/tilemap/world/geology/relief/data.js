@@ -4,7 +4,7 @@ import { Color } from '/src/lib/color'
 const SPEC = [
     {
         id: 0,
-        name: 'Abyss',
+        name: 'Trench',
         water: true,
         color: Color.fromHex('#1d5674'),
     },

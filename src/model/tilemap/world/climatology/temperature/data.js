@@ -7,7 +7,7 @@ const HIGHER = 4
 const SPEC = [
     {
         id: 1,
-        name: 'Polar',
+        name: 'Frozen',
         color: Color.fromHex('#c4fdff'),
     },
     {

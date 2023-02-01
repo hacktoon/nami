@@ -1,6 +1,6 @@
 import { Matrix } from '/src/lib/matrix'
 
-import { BIOME_SPEC } from './data'
+import { Biome } from './data'
 
 
 export class BiomeLayer {
@@ -13,24 +13,31 @@ export class BiomeLayer {
     }
 
     #detectBiome(layers, point) {
-        const relief = layers.relief.get(point)
+        const {relief, rain, temperature} = layers
 
-        // if (water) {
-        //     const isWater = relief.isAbyss || relief.isShallow || relief.isBanks
-        //     if (heat.isArctic && isWater) return ICE
-        //     if (water.isSwamp) return SWAMP
-        //     if (water.isLake || water.isSea || water.isPond) return LAKE
-        //     if ((heat.isTropical || heat.isSubtropical) && relief.isBanks) {
-        //         return CORAL_REEF
-        //     }
-        //     if (water.isRiver) return RIVER
-        //     return OCEAN
-        // }
+        // water biomes
+        if (layers.surface.isWater(point)) {
+            if (relief.isTrench(point)) return Biome.TRENCH.id
+            if (relief.isSea(point)) return Biome.SEA.id
+            return Biome.OCEAN.id
+        }
 
-        // if (heat.isArctic) {
-        //     if (moisture.isHighest || moisture.isWet) return ICE
-        //     return TUNDRA
-        // }
+        // land biomes
+        if (temperature.isFrozen(point)) {
+
+        }
+
+        if (temperature.isTemperate(point)) {
+
+        }
+
+        if (temperature.isSubtropical(point)) {
+
+        }
+
+        if (temperature.isTropical(point)) {
+
+        }
 
         // if (heat.isSubarctic) {
         //     if (moisture.isHighest || moisture.isWet) return BOREAL_FOREST

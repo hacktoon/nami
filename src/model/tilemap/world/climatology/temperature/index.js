@@ -27,7 +27,7 @@ export class TemperatureLayer {
             }
             return Temperature.TEMPERATE
         }
-        return Temperature.POLAR
+        return Temperature.FROZEN
     }
 
     get(point) {
@@ -37,5 +37,25 @@ export class TemperatureLayer {
             return Temperature.lower(baseType)
         }
         return baseType
+    }
+
+    isTropical(point) {
+        const temp = this.get(point)
+        return temp.id == Temperature.TROPICAL.id
+    }
+
+    isSubtropical(point) {
+        const temp = this.get(point)
+        return temp.id == Temperature.SUBTROPICAL.id
+    }
+
+    isTemperate(point) {
+        const temp = this.get(point)
+        return temp.id == Temperature.TEMPERATE.id
+    }
+
+    isFrozen(point) {
+        const temp = this.get(point)
+        return temp.id == Temperature.FROZEN.id
     }
 }
