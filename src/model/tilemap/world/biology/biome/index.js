@@ -13,8 +13,9 @@ export class BiomeLayer {
     }
 
     #detectBiome(layers, point) {
-        const {relief, rain, temperature} = layers
+        const {relief, rain} = layers
 
+        const temperature = layers.temperature.get(point)
         // water biomes
         if (layers.surface.isWater(point)) {
             if (relief.isTrench(point)) return Biome.TRENCH.id
@@ -23,19 +24,19 @@ export class BiomeLayer {
         }
 
         // land biomes
-        if (temperature.isFrozen(point)) {
+        if (temperature.isFrozen()) {
 
         }
 
-        if (temperature.isTemperate(point)) {
+        if (temperature.isTemperate()) {
 
         }
 
-        if (temperature.isSubtropical(point)) {
+        if (temperature.isWarm()) {
 
         }
 
-        if (temperature.isTropical(point)) {
+        if (temperature.isHot()) {
 
         }
 

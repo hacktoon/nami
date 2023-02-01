@@ -20,12 +20,12 @@ const SPEC = [
     },
     {
         id: 4,
-        name: 'SubTropical',
+        name: 'Warm',
         color: Color.fromHex('#ffe500'),
     },
     {
         id: 5,
-        name: 'Tropical',
+        name: 'Hot',
         color: Color.fromHex('#ff5922'),
     }
 ]
@@ -34,20 +34,28 @@ const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
 
 
 export class Temperature {
-    static fromId(id) {
-        return TYPE_MAP.get(id)
-    }
-
     static lower(spec) {
         const lower = SPEC[0].id
         const higher = SPEC[SPEC.length-1].id
         const id = clamp(spec.id - 1, lower, higher)
-        return TYPE_MAP.get(id)
+        return new Temperature(TYPE_MAP.get(id))
+    }
+
+    constructor(spec) {
+        this.id = spec.id
+        this.name = spec.name
+        this.color = spec.color
     }
 }
 
 // add object ref to class as an attribute
 SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
-    Temperature[name] = spec
+    const methodName = `is${spec.name}`
+    // add object as constant
+    Temperature[name] = new Temperature(spec)
+    // add method for comparison
+    Temperature.prototype[methodName] = function() {
+        return this.id === spec.id
+    }
 })
