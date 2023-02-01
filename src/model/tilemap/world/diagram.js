@@ -149,13 +149,13 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     #buildRiverWidth(river, size) {
         const maxWidth = Math.floor(size / 6)
-        let width = 2
+        let width = Math.floor(size / 2)
         if (river.flowRate < 4) {  // creeks
-            width = 20
+            width = 1
         }
         else if (river.flowRate < 20) { // medium rivers
-            width = 10
+            width = Math.floor(size / 15)
         }
-        return clamp(Math.floor(size / width), 1, maxWidth)
+        return clamp(width, 1, maxWidth)
     }
 }
