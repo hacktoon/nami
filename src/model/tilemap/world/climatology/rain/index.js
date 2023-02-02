@@ -35,6 +35,12 @@ export class RainLayer {
 
     isRiverSource(point) {
         const rain = this.get(point)
-        return rain.id === Rain.HUMID.id || rain.id === Rain.SEASONAL.id
+        const riverSourceOpts = [Rain.HUMID.id, Rain.WET.id, Rain.SEASONAL.id]
+        return riverSourceOpts.includes(rain.id)
+    }
+
+    getText(point) {
+        const rain = this.get(point)
+        return `Rain(${rain.name})`
     }
 }

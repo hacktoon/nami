@@ -1,4 +1,5 @@
 import { Matrix } from '/src/lib/matrix'
+import { Random } from '/src/lib/random'
 
 import { Biome } from './data'
 
@@ -24,6 +25,10 @@ export class BiomeLayer {
 
         // land biomes
         if (temperature.isFrozen()) {
+
+        }
+
+        if (temperature.isCold()) {
 
         }
 
