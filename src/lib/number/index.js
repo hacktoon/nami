@@ -21,8 +21,6 @@ export const sum = arr => arr.reduce((a,b) => a + b, 0)
 
 
 export class Rect {
-    #area
-
     static fromHash(hash) {
         const [w, h] = hash.split('x').map(c => parseInt(c, 10))
         return new Rect(w, h)
@@ -31,11 +29,10 @@ export class Rect {
     constructor(width, height) {
         this.width = width
         this.height = height ?? width
-        this.#area = width * height
     }
 
     get area() {
-        return this.#area
+        return this.width * this.height
     }
 
     isInside(point) {

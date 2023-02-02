@@ -19,7 +19,7 @@ import { GeologyTileMapDiagram } from './diagram'
 const ID = 'WorldTileMap'
 const SCHEMA = new Schema(
     ID,
-    Type.rect('rect', 'Size', {default: '100x100'}),
+    Type.rect('rect', 'Size', {default: '100x100', min:'10x10', max:'200x200'}),
     Type.text('seed', 'Seed', {default: ''}),
 )
 

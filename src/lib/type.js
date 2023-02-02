@@ -83,14 +83,18 @@ class RectType extends BaseType {
     static type = 'rect'
 
     parse(hash) {
-        return Rect.fromHash(hash ?? '100x100')
+        const rect = Rect.fromHash(hash ?? '100x100')
+        const min = Rect.fromHash(this.props.min ?? '100x100')
+        const max = Rect.fromHash(this.props.max ?? '100x100')
+        const width = clamp(rect.width, min.width, max.width)
+        const height = clamp(rect.height, min.height, max.height)
+        return new Rect(width, height)
     }
 
     toString(hash) {
         return hash.hash()
     }
 }
-
 
 class BooleanType extends BaseType {
     static type = 'boolean'
