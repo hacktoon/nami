@@ -62,6 +62,12 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         const isBorder = this.tileMap.layers.relief.isBorder(point)
         let color = surface.color
 
+        if (params.get('showLandBorder') && isBorder && !surface.water) {
+            return Color.RED
+        }
+        if (params.get('showWaterBorder') && isBorder && surface.water) {
+            return Color.BLUE
+        }
         if (params.get('showRelief')) {
             const relief = this.tileMap.layers.relief.get(point)
             color = relief.color
@@ -73,12 +79,6 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (params.get('showRain') && ! surface.water) {
             const rain = this.tileMap.layers.rain.get(point)
             color = rain.color
-        }
-        if (params.get('showLandBorder') && isBorder && !surface.water) {
-            color = color.darken(40)
-        }
-        if (params.get('showWaterBorder') && isBorder && surface.water) {
-            color = color.brighten(40)
         }
         if (params.get('showBasins')) {
             const river = this.tileMap.layers.river.get(point)

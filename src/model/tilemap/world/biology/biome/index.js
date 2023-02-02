@@ -21,6 +21,9 @@ export class BiomeLayer {
 
         // water biomes
         if (layers.surface.isWater(point)) {
+            if (temperature.isFrozen()) {
+                return Biome.ICE_PLAIN
+            }
             if (layers.relief.isTrench(point)) return Biome.TRENCH
             if (layers.relief.isSea(point)) return Biome.SEA
             return Biome.OCEAN
@@ -28,16 +31,16 @@ export class BiomeLayer {
 
         // land biomes
         if (temperature.isFrozen()) {
-            if (rain.isHumid()) return Biome.TUNDRA
-            if (rain.isWet()) return Biome.TUNDRA
-            if (rain.isSeasonal()) return Biome.ICE_PLAIN
-            if (rain.isDry()) return Biome.ICE_PLAIN
-            if (rain.isArid()) return Biome.ICE_PLAIN
+            if (rain.isHumid()) return Biome.ICE_PLAIN
+            if (rain.isWet()) return Biome.ICE_PLAIN
+            if (rain.isSeasonal()) return Biome.TUNDRA
+            if (rain.isDry()) return Biome.TUNDRA
+            if (rain.isArid()) return Biome.TUNDRA
         }
 
         if (temperature.isCold()) {
             if (rain.isHumid()) return Biome.TUNDRA
-            if (rain.isWet()) return Biome.TAIGA
+            if (rain.isWet()) return Biome.TUNDRA
             if (rain.isSeasonal()) return Biome.TAIGA
             if (rain.isDry()) return Biome.WOODLANDS
             if (rain.isArid()) return Biome.GRASSLANDS
