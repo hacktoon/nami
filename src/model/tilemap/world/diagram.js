@@ -28,15 +28,15 @@ const SCHEMA = new Schema(
 class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
-        this.erosionColors = new Map()
-        for (let i = 0; i < tileMap.layer.erosion.basinCount; i ++) {
-            this.erosionColors.set(i, new Color())
+        this.basinColors = new Map()
+        for (let i = 0; i < tileMap.layers.erosion.basinCount; i ++) {
+            this.basinColors.set(i, new Color())
         }
     }
 
     getByBasin(point) {
-        const erosion = this.tileMap.layer.erosion.get(point)
-        return this.erosionColors.get(erosion.basin)
+        const erosion = this.tileMap.layers.erosion.get(point)
+        return this.basinColors.get(erosion.basin)
     }
 }
 
@@ -56,49 +56,48 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     }
 
     get(relativePoint) {
+        const params = this.params
         const point = this.rect.wrap(relativePoint)
-        const showLandBorder = this.params.get('showLandBorder')
-        const showWaterBorder = this.params.get('showWaterBorder')
-        const showRelief = this.params.get('showRelief')
-        const showTemperature = this.params.get('showTemperature')
-        const showRain = this.params.get('showRain')
-        const surface = this.tileMap.layer.surface.get(point)
-        const relief = this.tileMap.layer.relief.get(point)
-        const isBorder = this.tileMap.layer.relief.isBorder(point)
+        const surface = this.tileMap.layers.surface.get(point)
+        const isBorder = this.tileMap.layers.relief.isBorder(point)
         let color = surface.color
 
-        if (showRelief) {
+        if (params.get('showRelief')) {
+            const relief = this.tileMap.layers.relief.get(point)
             color = relief.color
         }
-        if (showTemperature && ! surface.water) {
-            const temperature = this.tileMap.layer.temperature.get(point)
+        if (params.get('showTemperature') && ! surface.water) {
+            const temperature = this.tileMap.layers.temperature.get(point)
             color = temperature.color
         }
-        if (showRain && ! surface.water) {
-            const rain = this.tileMap.layer.rain.get(point)
+        if (params.get('showRain') && ! surface.water) {
+            const rain = this.tileMap.layers.rain.get(point)
             color = rain.color
         }
-        if (showLandBorder && isBorder && !surface.water) {
+        if (params.get('showLandBorder') && isBorder && !surface.water) {
             color = color.darken(40)
         }
-        if (showWaterBorder && isBorder && surface.water) {
+        if (params.get('showWaterBorder') && isBorder && surface.water) {
             color = color.brighten(40)
         }
-        if (this.params.get('showBasins')) {
-            const river = this.tileMap.layer.river.get(point)
+        if (params.get('showBasins')) {
+            const river = this.tileMap.layers.river.get(point)
             if (river && !surface.water) {
-                const erosionColor = this.colorMap.getByBasin(point)
-                color = erosionColor.brighten(relief.id * 10)
+                color = this.colorMap.getByBasin(point)
             }
+        }
+        if (params.get('showBiomes')) {
+            const biome = this.tileMap.layers.biome.get(point)
+            color = biome.color
         }
         return color
     }
 
     getText(relativePoint) {
         const point = this.rect.wrap(relativePoint)
-        const isLand = this.tileMap.layer.surface.isLand(point)
+        const isLand = this.tileMap.layers.surface.isLand(point)
         if (isLand && this.params.get('showErosion')) {
-            const erosion = this.tileMap.layer.erosion.get(point)
+            const erosion = this.tileMap.layers.erosion.get(point)
             return erosion.flow.symbol
         }
         return ''
@@ -106,9 +105,9 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     draw(props) {
         const point = this.rect.wrap(props.tilePoint)
-        const isLand = this.tileMap.layer.surface.isLand(point)
-        const isRiver = this.tileMap.layer.river.has(point)
-        const isRiverSource = this.tileMap.layer.river.isSource(point)
+        const isLand = this.tileMap.layers.surface.isLand(point)
+        const isRiver = this.tileMap.layers.river.has(point)
+        const isRiverSource = this.tileMap.layers.river.isSource(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
             this.#drawRiver(props)
         }
@@ -126,7 +125,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
 
     #drawRiver({canvas, tilePoint, canvasPoint, size}) {
         const point = this.rect.wrap(tilePoint)
-        const river = this.tileMap.layer.river.get(point)
+        const river = this.tileMap.layers.river.get(point)
         const riverWidth = this.#buildRiverWidth(river, size)
         const midSize = Math.round(size / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)

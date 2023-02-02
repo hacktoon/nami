@@ -9,13 +9,16 @@ export class BiomeLayer {
 
     constructor(rect, layers) {
         this.#matrix = Matrix.fromRect(rect, point => {
-            const biome = this.#detectBiome(layers, point)
+            const biome = this.#buildBiome(layers, point)
             return biome.id
         })
     }
 
-    #detectBiome(layers, point) {
+    #buildBiome(layers, point) {
         const temperature = layers.temperature.get(point)
+        const rain = layers.rain.get(point)
+        const river = layers.river.get(point)
+
         // water biomes
         if (layers.surface.isWater(point)) {
             if (layers.relief.isTrench(point)) return Biome.TRENCH
@@ -25,57 +28,54 @@ export class BiomeLayer {
 
         // land biomes
         if (temperature.isFrozen()) {
-
+            if (rain.isHumid()) return Biome.TUNDRA
+            if (rain.isWet()) return Biome.TUNDRA
+            if (rain.isSeasonal()) return Biome.ICE_PLAIN
+            if (rain.isDry()) return Biome.ICE_PLAIN
+            if (rain.isArid()) return Biome.ICE_PLAIN
         }
 
         if (temperature.isCold()) {
-
+            if (rain.isHumid()) return Biome.TUNDRA
+            if (rain.isWet()) return Biome.TAIGA
+            if (rain.isSeasonal()) return Biome.TAIGA
+            if (rain.isDry()) return Biome.WOODLANDS
+            if (rain.isArid()) return Biome.GRASSLANDS
         }
 
         if (temperature.isTemperate()) {
-
+            if (rain.isHumid()) return Biome.WOODLANDS
+            if (rain.isWet()) return Biome.WOODLANDS
+            if (rain.isSeasonal()) return Biome.GRASSLANDS
+            if (rain.isDry()) return Biome.GRASSLANDS
+            if (rain.isArid()) return Biome.SAVANNA
         }
 
         if (temperature.isWarm()) {
-
+            if (rain.isHumid()) return Biome.JUNGLE
+            if (rain.isWet()) return Biome.WOODLANDS
+            if (rain.isSeasonal()) return Biome.SAVANNA
+            if (rain.isDry()) return Biome.SAVANNA
+            if (rain.isArid()) return Biome.DESERT
         }
 
         if (temperature.isHot()) {
-
+            if (rain.isHumid()) return Biome.JUNGLE
+            if (rain.isWet()) return Biome.JUNGLE
+            if (rain.isSeasonal()) return Biome.SAVANNA
+            if (rain.isDry()) return Biome.DESERT
+            if (rain.isArid()) return Biome.DESERT
         }
-
-        // if (heat.isSubarctic) {
-        //     if (moisture.isHighest || moisture.isWet) return BOREAL_FOREST
-        //     return TUNDRA
-        // }
-
-        // if (heat.isTemperate) {
-        //     if (moisture.isHighest || moisture.isWet) return TEMPERATE_FOREST
-        //     if (moisture.isSeasonal) return WOODLANDS
-        //     return GRASSLANDS
-        // }
-
-        // if (heat.isSubtropical) {
-        //     if (relief.isRiverBank) return MANGROVE
-        //     if (moisture.isHighest) return RAINFOREST
-        //     if (moisture.isWet) return SAVANNA
-        //     if (moisture.isSeasonal) return SHRUBLAND
-        //     if (moisture.isDry) return SHRUBLAND
-        //     if (moisture.isLowest) return DESERT
-        // }
-
-        // if (heat.isTropical) {
-        //     if (relief.isRiverBank) return MANGROVE
-        //     if (moisture.isHighest) return JUNGLE
-        //     if (moisture.isWet) return RAINFOREST
-        //     if (moisture.isSeasonal) return SAVANNA
-        //     if (moisture.isDry) return SHRUBLAND
-        //     if (moisture.isLowest) return DESERT
-        // }
         return Biome.GRASSLANDS
     }
 
     get(point) {
-        return this.#matrix.get(point)
+        const id = this.#matrix.get(point)
+        return Biome.fromId(id)
+    }
+
+    getText(point) {
+        const biome = this.get(point)
+        return `Biome(${biome.name})`
     }
 }

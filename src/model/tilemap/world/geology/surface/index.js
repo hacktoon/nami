@@ -79,6 +79,12 @@ export class SurfaceLayer {
         return Surface.fromId(this.#surfaceIdMap.get(bodyId))
     }
 
+    getText(point) {
+        const surface = this.get(point)
+        const surfaceArea = this.getArea(point)
+        return `Surface(name=${surface.name}, area=${surfaceArea}%)`
+    }
+
     isWater(point) {
         const bodyId = this.#bodyIdMatrix.get(point)
         const surfaceId = this.#surfaceIdMap.get(bodyId)

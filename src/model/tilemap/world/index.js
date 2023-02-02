@@ -36,8 +36,8 @@ export class WorldTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const layers = {}
         const rect = this.rect
+        const layers = {}
         layers.noise = new NoiseLayer(rect, this.seed)
         layers.surface = new SurfaceLayer(rect, layers)
         layers.relief = new ReliefLayer(rect, layers)
@@ -46,27 +46,24 @@ export class WorldTileMap extends TileMap {
         layers.erosion = new ErosionLayer(rect, layers)
         layers.river = new RiverLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
-        this.layer = layers
+        this.layers = layers
     }
 
     get(point) {
         const wrappedPoint = this.rect.wrap(point)
-        const surface = this.layer.surface.get(wrappedPoint)
-        const relief = this.layer.relief.get(wrappedPoint)
-        const temperature = this.layer.temperature.get(wrappedPoint)
-        const surfaceArea = this.layer.surface.getArea(wrappedPoint)
         return [
-            `(${Point.hash(wrappedPoint)})`,
-            `Surface(name:${surface.name}, area:${surfaceArea}%)`,
-            `Relief(${relief.name})`,
-            `Temperature(${temperature.name})`,
-            this.layer.rain.getText(wrappedPoint),
-            this.layer.erosion.getText(wrappedPoint),
-            this.layer.river.getText(wrappedPoint),
+            `(${Point.hash(point)})`,
+            this.layers.surface.getText(wrappedPoint),
+            this.layers.relief.getText(wrappedPoint),
+            this.layers.temperature.getText(wrappedPoint),
+            this.layers.rain.getText(wrappedPoint),
+            this.layers.biome.getText(wrappedPoint),
+            this.layers.erosion.getText(wrappedPoint),
+            this.layers.river.getText(wrappedPoint),
         ].join('\n').trim()
     }
 
     getDescription() {
-        return `Rivers: ${this.layer.river.count}`
+        return `Rivers: ${this.layers.river.count}`
     }
 }

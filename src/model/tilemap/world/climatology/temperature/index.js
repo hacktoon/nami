@@ -31,4 +31,9 @@ export class TemperatureLayer {
         const temperature = this.#matrix.get(point)
         return Temperature.fromId(temperature)
     }
+
+    getText(point) {
+        const temperature = this.get(point)
+        return `Temperature(${temperature.name})`
+    }
 }

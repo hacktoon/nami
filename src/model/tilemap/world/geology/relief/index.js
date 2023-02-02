@@ -92,6 +92,11 @@ export class ReliefLayer {
         return Relief.fromId(id)
     }
 
+    getText(point) {
+        const relief = this.get(point)
+        return `Relief(${relief.name})`
+    }
+
     isMountain(point) {
         const id = this.#matrix.get(point)
         return id === Relief.MOUNTAIN.id
