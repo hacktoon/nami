@@ -84,8 +84,8 @@ class RectType extends BaseType {
 
     parse(hash) {
         const rect = Rect.fromHash(hash ?? '100x100')
-        const min = Rect.fromHash(this.props.min ?? '100x100')
-        const max = Rect.fromHash(this.props.max ?? '100x100')
+        const min = Rect.fromHash(this.props.min ?? '10x10')
+        const max = Rect.fromHash(this.props.max ?? '200x200')
         const width = clamp(rect.width, min.width, max.width)
         const height = clamp(rect.height, min.height, max.height)
         return new Rect(width, height)
@@ -100,7 +100,7 @@ class BooleanType extends BaseType {
     static type = 'boolean'
 
     parse(text) {
-        const value = String(text)
+        const value = String(text) ?? 'false'
         if (value === 'true') return true
         if (value === 'false') return false
         return this.defaultValue
@@ -108,7 +108,7 @@ class BooleanType extends BaseType {
 }
 
 
-class EnumType extends BaseType {
+class SelectionType extends BaseType {
     static type = 'selection'
 
     parse(text) {
@@ -124,6 +124,6 @@ export class Type {
     static boolean = BaseType.define(BooleanType)
     static color = BaseType.define(ColorType)
     static point = BaseType.define(PointType)
-    static selection = BaseType.define(EnumType)
+    static selection = BaseType.define(SelectionType)
     static rect = BaseType.define(RectType)
 }
