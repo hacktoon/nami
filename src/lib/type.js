@@ -111,9 +111,11 @@ class BooleanType extends BaseType {
 class SelectionType extends BaseType {
     static type = 'selection'
 
-    parse(text) {
-        const options = new Set(this.props.options.map(opt => opt.id))
-        return options.has(text) ? text : this.defaultValue
+    parse(value) {
+        for (let option of this.props.options) {
+            if (option.value === value) return value
+        }
+        return this.defaultValue
     }
 }
 

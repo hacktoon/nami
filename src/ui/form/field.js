@@ -68,12 +68,8 @@ function SelectField({name, label, value, onChange, ...props}) {
     const [selected, setSelected] = useState(value)
 
     const buildSelectOptions = () => {
-        const _options = props.options.map(model => [model.id, model.id])
-        return _options.map((option, index) => {
-            const [value, label] = option
-            return <option key={index} value={value}>
-                {label}
-            </option>
+        return props.options.map(({value, label}) => {
+            return <option key={value} value={value}>{label}</option>
         })
     }
 

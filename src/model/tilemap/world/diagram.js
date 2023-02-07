@@ -9,6 +9,9 @@ import { TileMapDiagram } from '/src/model/tilemap/lib'
 
 const RIVER_SOUCE_COLOR = '#44F'
 const RIVER_COLOR = '#00F'
+const LAYERS = [
+    {value: 'relief', label: 'Relief'},
+]
 
 const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
@@ -22,6 +25,7 @@ const SCHEMA = new Schema(
     Type.boolean('showRivers', 'Rivers', {default: false}),
     Type.boolean('showRiverSources', 'River sources', {default: false}),
     Type.boolean('showBiomes', 'Biomes', {default: false}),
+    Type.selection('showLayer', 'Layer', {default: LAYERS[0].id, options: LAYERS}),
 )
 
 
