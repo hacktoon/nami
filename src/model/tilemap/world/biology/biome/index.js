@@ -19,27 +19,17 @@ export class BiomeLayer {
     }
 
     #buildBiome(layers, point) {
-        const temperature = layers.temperature.get(point)
+        if (layers.surface.isWater(point)) {
+            return this.#buildWaterBiome(layers, point)
+        }
+        return this.#buildLandBiome(layers, point)
+    }
+
+    #buildLandBiome(layers, point) {
         const rain = layers.rain.get(point)
         const grainedNoise = layers.noise.getGrained(point)
+        const temperature = layers.temperature.get(point)
 
-        // water biomes
-        if (layers.surface.isWater(point)) {
-            if (temperature.isFrozen() && grainedNoise > ICECAP_NOISE) {
-                return Biome.ICECAP
-            }
-            if (layers.relief.isTrench(point)) return Biome.TRENCH
-            if (layers.relief.isSea(point)) {
-                const isReefTemp = temperature.isWarm() || temperature.isHot()
-                const isBorder = layers.relief.isBorder(point)
-                if (!isBorder && isReefTemp && grainedNoise > CORAL_REEF_NOISE)
-                    return Biome.REEF
-                return Biome.SEA
-            }
-            return Biome.OCEAN
-        }
-
-        // land biomes
         if (temperature.isFrozen()) {
             if (rain.isDry() || rain.isArid() && grainedNoise > ICECAP_NOISE)
                 return Biome.ICECAP
@@ -56,8 +46,7 @@ export class BiomeLayer {
             if (rain.isHumid()) return Biome.TAIGA
             if (rain.isWet()) return Biome.WOODLANDS
             if (rain.isSeasonal()) return Biome.WOODLANDS
-            if (rain.isDry() || rain.isArid())
-                return Biome.GRASSLANDS
+            if (rain.isDry() || rain.isArid()) return Biome.GRASSLANDS
         }
 
         if (temperature.isWarm()) {
@@ -82,6 +71,27 @@ export class BiomeLayer {
             }
         }
     }
+
+
+    #buildWaterBiome(layers, point) {
+        const grainedNoise = layers.noise.getGrained(point)
+        const temperature = layers.temperature.get(point)
+        if (temperature.isFrozen() && grainedNoise > ICECAP_NOISE) {
+            return Biome.ICECAP
+        }
+        if (layers.relief.isTrench(point)) return Biome.TRENCH
+        if (layers.relief.isSea(point)) {
+            const isReefTemp = temperature.isWarm() || temperature.isHot()
+            const isBorder = layers.relief.isBorder(point)
+            const isOcean = layers.surface.isOcean(point)
+            const isNoise = grainedNoise > CORAL_REEF_NOISE
+            if (!isBorder && isReefTemp && isOcean && isNoise)
+                return Biome.REEF
+            return Biome.SEA
+        }
+        return Biome.OCEAN
+    }
+
 
     get(point) {
         const id = this.#matrix.get(point)
