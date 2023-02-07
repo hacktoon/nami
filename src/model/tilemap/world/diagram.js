@@ -9,23 +9,24 @@ import { TileMapDiagram } from '/src/model/tilemap/lib'
 
 const RIVER_SOUCE_COLOR = '#44F'
 const RIVER_COLOR = '#00F'
+const DEFAULT_LAYER = 'biome'
 const LAYERS = [
+    {value: 'surface', label: 'Surface'},
+    {value: 'biome', label: 'Biome'},
     {value: 'relief', label: 'Relief'},
+    {value: 'temperature', label: 'Temperature'},
+    {value: 'rain', label: 'Rain'},
+    {value: 'basin', label: 'Basin'},
 ]
 
 const SCHEMA = new Schema(
     'GeologyTileMapDiagram',
-    Type.boolean('showRelief', 'Relief', {default: false}),
+    Type.selection('showLayer', 'Layer', {default: DEFAULT_LAYER, options: LAYERS}),
     Type.boolean('showLandBorder', 'Land border', {default: false}),
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
-    Type.boolean('showTemperature', 'Temperature', {default: false}),
-    Type.boolean('showRain', 'Rain', {default: false}),
-    Type.boolean('showErosion', 'Erosion', {default: false}),
-    Type.boolean('showBasins', 'Basins', {default: false}),
-    Type.boolean('showRivers', 'Rivers', {default: false}),
     Type.boolean('showRiverSources', 'River sources', {default: false}),
-    Type.boolean('showBiomes', 'Biomes', {default: false}),
-    Type.selection('showLayer', 'Layer', {default: LAYERS[0].id, options: LAYERS}),
+    Type.boolean('showErosion', 'Erosion', {default: false}),
+    Type.boolean('showRivers', 'Rivers', {default: true}),
 )
 
 
@@ -62,6 +63,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     get(relativePoint) {
         const params = this.params
         const point = this.rect.wrap(relativePoint)
+        const layer = params.get('showLayer')
         const surface = this.tileMap.layers.surface.get(point)
         const isBorder = this.tileMap.layers.relief.isBorder(point)
         let color = surface.color
@@ -72,25 +74,26 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         if (params.get('showWaterBorder') && isBorder && surface.water) {
             return Color.BLUE
         }
-        if (params.get('showRelief')) {
+        if (layer === 'surface') return color
+        if (layer === 'relief') {
             const relief = this.tileMap.layers.relief.get(point)
             color = relief.color
         }
-        if (params.get('showTemperature') && ! surface.water) {
+        if (layer === 'temperature' && ! surface.water) {
             const temperature = this.tileMap.layers.temperature.get(point)
             color = temperature.color
         }
-        if (params.get('showRain') && ! surface.water) {
+        if (layer === 'rain' && ! surface.water) {
             const rain = this.tileMap.layers.rain.get(point)
             color = rain.color
         }
-        if (params.get('showBasins')) {
+        if (layer === 'basin') {
             const river = this.tileMap.layers.river.get(point)
             if (river && !surface.water) {
                 color = this.colorMap.getByBasin(point)
             }
         }
-        if (params.get('showBiomes')) {
+        if (layer === 'biome') {
             const biome = this.tileMap.layers.biome.get(point)
             color = biome.color
         }

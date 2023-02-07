@@ -15,17 +15,14 @@ import { BiomeLayer } from './biology/biome'
 
 import { GeologyTileMapDiagram } from './diagram'
 
-
-const ID = 'WorldTileMap'
 const SCHEMA = new Schema(
-    ID,
+    'WorldTileMap',
     Type.rect('rect', 'Size', {default: '100x100', min:'10x10', max:'200x200'}),
     Type.text('seed', 'Seed', {default: ''}),
 )
 
 
 export class WorldTileMap extends TileMap {
-    static id = ID
     static diagram = GeologyTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap

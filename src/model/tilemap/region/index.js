@@ -26,7 +26,6 @@ const SCHEMA = new Schema(
 
 
 export class RegionTileMap extends TileMap {
-    static id = 'RegionTileMap'
     static diagram = RegionTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap

@@ -1,10 +1,11 @@
 
 const Storage = window.localStorage
+const CACHE_VERSION = 1
 
 
 export class Schema {
     constructor(name, ...types) {
-        this.name = name
+        this.name = `${name}${CACHE_VERSION}`
         this.types = types
         this.typeMap = new Map(types.map(type => [type.name, type]))
     }

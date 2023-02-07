@@ -21,7 +21,6 @@ const SCHEMA = new Schema(
 
 export class NoiseTileMap extends TileMap {
     static diagram = NoiseTileMapDiagram
-    static id = 'NoiseTileMap'
     static schema = SCHEMA
     static ui = UITileMap
 
