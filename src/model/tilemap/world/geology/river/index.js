@@ -78,7 +78,6 @@ export class RiverLayer {
         const attrs = [
              `source=${river.source}`,
              `mouth=${river.mouth}`,
-             `flow=${river.flow}`,
              `flowRate=${river.flowRate}`,
         ].join(',')
         return `River(${attrs})`

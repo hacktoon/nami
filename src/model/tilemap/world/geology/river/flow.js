@@ -40,9 +40,11 @@ function buildRiver(context, riverId, source) {
     // according to erosion flow and builds a river.
     const {
         flowRate, rect, surfaceLayer, riverFlow,
-        riverPoints, riverMeanders
+        riverPoints, riverMeanders, riverMouths
     } = context
     let point = source
+    // save previous point for mouth detection
+    let prevPoint = source
     // init this river with current flow rate or zero if it's empty
     let riverFlowRate = 0
     while (surfaceLayer.isLand(point)) {
@@ -56,8 +58,10 @@ function buildRiver(context, riverId, source) {
         }
         riverFlowRate ++
         flowRate.set(wrappedPoint, riverFlowRate)
+        prevPoint = wrappedPoint
         point = getNextRiverPoint(context, wrappedPoint)
     }
+    riverMouths.add(prevPoint)
     return riverFlowRate
 }
 

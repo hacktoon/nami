@@ -49,7 +49,7 @@ export class WorldTileMap extends TileMap {
     get(point) {
         const wrappedPoint = this.rect.wrap(point)
         return [
-            `(${Point.hash(point)})`,
+            `Point(${Point.hash(point)})`,
             this.layers.surface.getText(wrappedPoint),
             this.layers.relief.getText(wrappedPoint),
             this.layers.temperature.getText(wrappedPoint),

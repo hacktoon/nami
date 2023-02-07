@@ -21,7 +21,6 @@ export class BiomeLayer {
     #buildBiome(layers, point) {
         const temperature = layers.temperature.get(point)
         const rain = layers.rain.get(point)
-        const river = layers.river.get(point)
         const grainedNoise = layers.noise.getGrained(point)
 
         // water biomes
@@ -62,7 +61,10 @@ export class BiomeLayer {
         }
 
         if (temperature.isWarm()) {
-            if (rain.isHumid()) return Biome.JUNGLE
+            if (rain.isHumid()) {
+                if (layers.river.isMouth(point)) return Biome.MANGROVE
+                return Biome.JUNGLE
+            }
             if (rain.isWet()) return Biome.WOODLANDS
             if (rain.isSeasonal()) return Biome.GRASSLANDS
             if (rain.isDry()) return Biome.SAVANNA
@@ -70,6 +72,7 @@ export class BiomeLayer {
         }
 
         if (temperature.isHot()) {
+            if (layers.river.isMouth(point)) return Biome.MANGROVE
             if (rain.isHumid() || rain.isWet()) return Biome.JUNGLE
             if (rain.isSeasonal()) return Biome.SAVANNA
             if (rain.isDry()) return Biome.DESERT

@@ -23,17 +23,19 @@
   - Height of terrain often make waterfalls or rapids
 
 ### BiomeLayer
-- Vegetation/wildlife density: function of rain x temperature
+-
 
-### CityMap
+### SiteLayer
 - Determine capitals and villages
 - Start a fill to determine realm area
-  - define routes
+
+### RoadLayer
+  - connect sites inside a radius
+  - create junction points between two route points to set midpath detours
+    - follow road and calc nearest junction start
+
 
 ### HistoryMap
 - Determine capitals and villages
 - Start a fill to determine realm area
-  - define routes
 
-### RoadLayer
-  - create junction points between two route points to set midpath detours
