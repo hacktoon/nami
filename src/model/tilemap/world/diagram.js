@@ -12,10 +12,10 @@ const RIVER_COLOR = '#00F'
 const DEFAULT_LAYER = 'biome'
 const LAYERS = [
     {value: 'surface', label: 'Surface'},
-    {value: 'biome', label: 'Biome'},
     {value: 'relief', label: 'Relief'},
     {value: 'temperature', label: 'Temperature'},
     {value: 'rain', label: 'Rain'},
+    {value: 'biome', label: 'Biome'},
     {value: 'basin', label: 'Basin'},
 ]
 
@@ -79,13 +79,13 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             const relief = this.tileMap.layers.relief.get(point)
             color = relief.color
         }
-        if (layer === 'temperature' && ! surface.water) {
+        if (layer === 'temperature') {
             const temperature = this.tileMap.layers.temperature.get(point)
-            color = temperature.color
+            color = surface.water ? temperature.color : temperature.color
         }
-        if (layer === 'rain' && ! surface.water) {
+        if (layer === 'rain') {
             const rain = this.tileMap.layers.rain.get(point)
-            color = rain.color
+            color = surface.water ? rain.color : rain.color
         }
         if (layer === 'basin') {
             const river = this.tileMap.layers.river.get(point)

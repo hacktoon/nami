@@ -1,7 +1,11 @@
 import { Matrix } from '/src/lib/matrix'
-import { Random } from '/src/lib/random'
 
 import { Biome } from './data'
+
+
+const CORAL_REEF_NOISE = .6
+const ICECAP_NOISE = .6
+const WASTELAND_NOISE = .4
 
 
 export class BiomeLayer {
@@ -18,15 +22,19 @@ export class BiomeLayer {
         const temperature = layers.temperature.get(point)
         const rain = layers.rain.get(point)
         const river = layers.river.get(point)
+        const grainedNoise = layers.noise.getGrained(point)
 
         // water biomes
         if (layers.surface.isWater(point)) {
-            if (temperature.isFrozen()) {
-                return Biome.ICE_PLAIN
+            if (temperature.isFrozen() && grainedNoise > ICECAP_NOISE) {
+                return Biome.ICECAP
             }
             if (layers.relief.isTrench(point)) return Biome.TRENCH
             if (layers.relief.isSea(point)) {
-                // TODO: add coral reef
+                const isReefTemp = temperature.isWarm() || temperature.isHot()
+                const isBorder = layers.relief.isBorder(point)
+                if (!isBorder && isReefTemp && grainedNoise > CORAL_REEF_NOISE)
+                    return Biome.REEF
                 return Biome.SEA
             }
             return Biome.OCEAN
@@ -34,27 +42,23 @@ export class BiomeLayer {
 
         // land biomes
         if (temperature.isFrozen()) {
-            if (rain.isHumid()) return Biome.ICE_PLAIN
-            if (rain.isWet()) return Biome.ICE_PLAIN
-            if (rain.isSeasonal()) return Biome.TUNDRA
-            if (rain.isDry()) return Biome.TUNDRA
-            if (rain.isArid()) return Biome.TUNDRA
+            if (rain.isDry() || rain.isArid() && grainedNoise > ICECAP_NOISE)
+                return Biome.ICECAP
+            return Biome.TUNDRA
         }
 
         if (temperature.isCold()) {
             if (rain.isHumid()) return Biome.TUNDRA
-            if (rain.isWet()) return Biome.TAIGA
-            if (rain.isSeasonal()) return Biome.TAIGA
-            if (rain.isDry()) return Biome.WOODLANDS
             if (rain.isArid()) return Biome.GRASSLANDS
+            return Biome.TAIGA
         }
 
         if (temperature.isTemperate()) {
             if (rain.isHumid()) return Biome.TAIGA
             if (rain.isWet()) return Biome.WOODLANDS
             if (rain.isSeasonal()) return Biome.WOODLANDS
-            if (rain.isDry()) return Biome.GRASSLANDS
-            if (rain.isArid()) return Biome.GRASSLANDS
+            if (rain.isDry() || rain.isArid())
+                return Biome.GRASSLANDS
         }
 
         if (temperature.isWarm()) {
@@ -66,11 +70,13 @@ export class BiomeLayer {
         }
 
         if (temperature.isHot()) {
-            if (rain.isHumid()) return Biome.JUNGLE
-            if (rain.isWet()) return Biome.JUNGLE
+            if (rain.isHumid() || rain.isWet()) return Biome.JUNGLE
             if (rain.isSeasonal()) return Biome.SAVANNA
             if (rain.isDry()) return Biome.DESERT
-            if (rain.isArid()) return Biome.WASTELAND
+            if (rain.isArid()) {
+                if (grainedNoise > WASTELAND_NOISE) return Biome.WASTELAND
+                return Biome.DESERT
+            }
         }
     }
 
