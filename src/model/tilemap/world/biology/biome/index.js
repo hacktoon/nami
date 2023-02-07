@@ -6,6 +6,7 @@ import { Biome } from './data'
 const CORAL_REEF_NOISE = .6
 const ICECAP_NOISE = .6
 const WASTELAND_NOISE = .4
+const MANGROVE_NOISE = .6
 
 
 export class BiomeLayer {
@@ -50,10 +51,9 @@ export class BiomeLayer {
         }
 
         if (temperature.isWarm()) {
-            if (rain.isHumid()) {
-                if (layers.river.isMouth(point)) return Biome.MANGROVE
-                return Biome.JUNGLE
-            }
+            const isRiverMouth = layers.river.isMouth(point)
+            if (isRiverMouth && grainedNoise > MANGROVE_NOISE) return Biome.MANGROVE
+            if (rain.isHumid()) return Biome.JUNGLE
             if (rain.isWet()) return Biome.WOODLANDS
             if (rain.isSeasonal()) return Biome.GRASSLANDS
             if (rain.isDry()) return Biome.SAVANNA
@@ -63,8 +63,8 @@ export class BiomeLayer {
         if (temperature.isHot()) {
             if (layers.river.isMouth(point)) return Biome.MANGROVE
             if (rain.isHumid() || rain.isWet()) return Biome.JUNGLE
-            if (rain.isSeasonal()) return Biome.SAVANNA
-            if (rain.isDry()) return Biome.DESERT
+            if (rain.isSeasonal()) return Biome.JUNGLE
+            if (rain.isDry()) return Biome.SAVANNA
             if (rain.isArid()) {
                 if (grainedNoise > WASTELAND_NOISE) return Biome.WASTELAND
                 return Biome.DESERT

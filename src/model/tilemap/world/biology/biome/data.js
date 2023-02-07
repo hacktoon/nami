@@ -4,9 +4,9 @@ import { Color } from '/src/lib/color'
 export const SPEC = [
     {id: 1,  color: "#f2f2f2", name: "Icecap"},
     {id: 2,  color: "#afe7da", name: "Tundra"},
-    {id: 3,  color: "#61ac7e", name: "Taiga"},
-    {id: 4,  color: "#009e3f", name: "Woodlands"},
-    {id: 5,  color: "#4f8b27", name: "Jungle"},
+    {id: 3,  color: "#56c472", name: "Taiga"},
+    {id: 4,  color: "#57aa13", name: "Woodlands"},
+    {id: 5,  color: "#00680e", name: "Jungle"},
     {id: 6,  color: "#a1df6e", name: "Grasslands"},
     {id: 7,  color: "#9fc23f", name: "Savanna"},
     {id: 8,  color: "#ffeeaa", name: "Desert"},
@@ -17,7 +17,7 @@ export const SPEC = [
     {id: 13, color: "#2878a0", name: "Lake"},
     {id: 14, color: "#a8a2ff", name: "Reef"},
     {id: 15, color: "#a3358c", name: "Swamp"},
-    {id: 16, color: "#50613b", name: "Mangrove"},
+    {id: 16, color: "#55683e", name: "Mangrove"},
 ]
 
 const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))

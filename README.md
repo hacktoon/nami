@@ -23,7 +23,7 @@
   - Height of terrain often make waterfalls or rapids
 
 ### BiomeLayer
--
+- Snow Mountain biome?
 
 ### SiteLayer
 - Determine capitals and villages
