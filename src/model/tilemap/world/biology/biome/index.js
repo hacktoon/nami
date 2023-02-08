@@ -5,7 +5,6 @@ import { Biome } from './data'
 
 const CORAL_REEF_NOISE = .6
 const ICECAP_NOISE = .6
-const WASTELAND_NOISE = .4
 const MANGROVE_NOISE = .6
 
 
@@ -65,10 +64,7 @@ export class BiomeLayer {
             if (rain.isHumid() || rain.isWet()) return Biome.JUNGLE
             if (rain.isSeasonal()) return Biome.JUNGLE
             if (rain.isDry()) return Biome.SAVANNA
-            if (rain.isArid()) {
-                if (grainedNoise > WASTELAND_NOISE) return Biome.WASTELAND
-                return Biome.DESERT
-            }
+            return Biome.DESERT
         }
     }
 

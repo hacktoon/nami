@@ -10,14 +10,13 @@ export const SPEC = [
     {id: 6,  color: "#a1df6e", name: "Grasslands"},
     {id: 7,  color: "#9fc23f", name: "Savanna"},
     {id: 8,  color: "#ffeeaa", name: "Desert"},
-    {id: 9,  color: "#ecdc9a", name: "Wasteland"},
-    {id: 10, color: "#1d5674", name: "Trench"},
-    {id: 11, color: "#216384", name: "Ocean"},
-    {id: 12, color: "#2878a0", name: "Sea"},
-    {id: 13, color: "#2878a0", name: "Lake"},
-    {id: 14, color: "#a8a2ff", name: "Reef"},
-    {id: 15, color: "#a3358c", name: "Swamp"},
-    {id: 16, color: "#55683e", name: "Mangrove"},
+    {id: 9, color: "#1d5674", name: "Trench"},
+    {id: 10, color: "#216384", name: "Ocean"},
+    {id: 11, color: "#2878a0", name: "Sea"},
+    {id: 12, color: "#2878a0", name: "Lake"},
+    {id: 13, color: "#a8a2ff", name: "Reef"},
+    {id: 14, color: "#a3358c", name: "Swamp"},
+    {id: 15, color: "#55683e", name: "Mangrove"},
 ]
 
 const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
