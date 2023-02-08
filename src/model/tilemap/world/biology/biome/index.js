@@ -80,7 +80,7 @@ export class BiomeLayer {
             return Biome.ICECAP
         }
         if (layers.relief.isTrench(point)) return Biome.TRENCH
-        if (layers.relief.isSea(point)) {
+        if (layers.relief.isPlatform(point)) {
             const isReefTemp = temperature.isWarm() || temperature.isHot()
             const isBorder = layers.relief.isBorder(point)
             const isOcean = layers.surface.isOcean(point)

@@ -16,7 +16,6 @@ export const interpolateNumbers = (from, to, totalItems) => {
 
 export const clamp = (value, min, max) => Math.max(min, Math.min(value, max))
 
-
 export const sum = arr => arr.reduce((a,b) => a + b, 0)
 
 

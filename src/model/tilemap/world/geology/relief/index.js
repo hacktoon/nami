@@ -5,14 +5,16 @@ import { PointSet } from '/src/lib/point/set'
 import { Relief } from './data'
 
 
-const TRENCH_RATIO = .35
+const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
+const PLATFORM_RATIO = .47
 const PLAIN_RATIO = .4
 const PLATEAU_RATIO = .55
 const MOUNTAIN_RATIO = .5
 
 
 export class ReliefLayer {
+    // Relief is related to large geologic features
     #noiseLayer
     #surfaceLayer
     #borders = new PointSet()
@@ -36,12 +38,10 @@ export class ReliefLayer {
 
         // water -----------------------------------
         if (isWater) {
-            if (outlineNoise < OCEAN_RATIO) {
-                if (grainedNoise < TRENCH_RATIO)
-                    return Relief.TRENCH.id
-                return Relief.OCEAN.id
-            }
-            return Relief.SEA.id
+            if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM.id
+            if (featureNoise > OCEAN_RATIO) return Relief.OCEAN.id
+            if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH.id
+            return Relief.ABYSS.id
         }
 
         // land -----------------------------------
@@ -102,9 +102,9 @@ export class ReliefLayer {
         return id === Relief.MOUNTAIN.id
     }
 
-    isSea(point) {
+    isPlatform(point) {
         const id = this.#matrix.get(point)
-        return id === Relief.SEA.id
+        return id === Relief.PLATFORM.id
     }
 
     isTrench(point) {
