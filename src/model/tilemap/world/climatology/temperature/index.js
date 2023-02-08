@@ -16,13 +16,11 @@ export class TemperatureLayer {
     constructor(rect, layers) {
         this.#matrix = Matrix.fromRect(rect, point => {
             const noise = layers.noise.getAtmos(point)
-            const isMountain = layers.relief.isMountain(point)
             let temp = Temperature.FROZEN
             if (noise > COLD_RATIO) temp = Temperature.COLD
             if (noise > TEMPERATE_RATIO) temp = Temperature.TEMPERATE
             if (noise > WARM_RATIO) temp = Temperature.WARM
             if (noise > HOT_RATIO) temp = Temperature.HOT
-            if (isMountain) return Temperature.lower(temp).id
             return temp.id
         })
     }

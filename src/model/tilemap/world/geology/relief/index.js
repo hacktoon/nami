@@ -8,16 +8,19 @@ import { Relief } from './data'
 const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
+const BASIN_RATIO = .6
+const BASIN_FEAT_RATIO = .3
 const PLAIN_RATIO = .4
 const PLATEAU_RATIO = .55
-const MOUNTAIN_RATIO = .5
+const MOUNTAIN_RATIO = .55
+const PEAK_RATIO = .75
 
 
 export class ReliefLayer {
     // Relief is related to large geologic features
+    #borders = new PointSet()
     #noiseLayer
     #surfaceLayer
-    #borders = new PointSet()
     #matrix
 
     constructor(rect, layers) {
@@ -46,14 +49,16 @@ export class ReliefLayer {
 
         // land -----------------------------------
         if (isDepression) return Relief.BASIN.id
-        if (featureNoise > PLAIN_RATIO) {
-            if (featureNoise > PLATEAU_RATIO) {
-                if (grainedNoise > MOUNTAIN_RATIO)
-                    return Relief.MOUNTAIN.id
-                return Relief.PLATEAU.id
-            }
-            return Relief.PLAIN.id
+        if (outlineNoise < BASIN_RATIO || featureNoise < BASIN_FEAT_RATIO) {
+            // basins on borders and in large intra basins
+            return Relief.BASIN.id
         }
+        if (grainedNoise > MOUNTAIN_RATIO) {
+            if (grainedNoise > PEAK_RATIO) return Relief.PEAK.id
+            return Relief.MOUNTAIN.id
+        }
+        if (featureNoise > PLATEAU_RATIO) return Relief.PLATEAU.id
+        if (outlineNoise > PLAIN_RATIO) return Relief.PLAIN.id
         return Relief.BASIN.id
     }
 
@@ -84,6 +89,7 @@ export class ReliefLayer {
             Relief.PLAIN,
             Relief.PLATEAU,
             Relief.MOUNTAIN,
+            Relief.PEAK,
         ]
     }
 

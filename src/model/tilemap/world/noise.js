@@ -2,7 +2,7 @@ import { NoiseTileMap } from '/src/model/tilemap/noise'
 
 
 const NOISE_SPEC = [
-    {id: 'atmos', octaves: 3, resolution: .7, scale: .024},
+    {id: 'atmos', octaves: 6, resolution: .6, scale: .02},
     {id: 'outline', octaves: 6, resolution: .8, scale: .02},
     {id: 'feature', octaves: 6, resolution: .8, scale: .04},
     {id: 'grained', octaves: 6, resolution: .8, scale: .08},

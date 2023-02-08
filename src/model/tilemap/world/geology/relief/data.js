@@ -42,13 +42,19 @@ const SPEC = [
         id: 6,
         name: 'Plateau',
         water: false,
-        color: Color.fromHex('#c7d996'),
+        color: Color.fromHex('#d3e27e'),
     },
     {
         id: 7,
         name: 'Mountain',
         water: false,
-        color: Color.fromHex('#a79f7f'),
+        color: Color.fromHex('#b8ad82'),
+    },
+    {
+        id: 8,
+        name: 'Peak',
+        water: false,
+        color: Color.fromHex('#dbd9cd'),
     }
 ]
 
