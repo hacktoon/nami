@@ -20,6 +20,13 @@ export const DIRECTION_PATTERN_MAP = new Map([
 ])
 
 
+const MEANDER_DIRECTION_MAP = new Map([
+    [Direction.NORTH.id, []],
+    [Direction.WEST.id, 2],
+    [Direction.EAST.id, 8],
+    [Direction.SOUTH.id, 16],
+])
+
 /*
     The shape fill starts from river sources
     following the direction and marking how much strong a
@@ -39,7 +46,7 @@ function buildRiver(context, riverId, source) {
     // start from river source point. Follows the points
     // according to erosion flow and builds a river.
     const {
-        flowRate, rect, surfaceLayer, riverFlow,
+        flowRate, rect, surfaceLayer, erosionLayer, riverFlow,
         riverPoints, riverMeanders, riverMouths
     } = context
     let point = source
@@ -50,9 +57,10 @@ function buildRiver(context, riverId, source) {
     while (surfaceLayer.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
         const code = buildFlowCode(context, wrappedPoint)
+        const erosion = erosionLayer.get(wrappedPoint)
         riverFlow.set(wrappedPoint, code)
         riverPoints.set(wrappedPoint, riverId)
-        riverMeanders.set(wrappedPoint, buildMeander())
+        riverMeanders.set(wrappedPoint, buildMeander(erosion))
         if (flowRate.has(wrappedPoint)) {
             riverFlowRate = flowRate.get(wrappedPoint) + 1
         }
@@ -72,16 +80,17 @@ function getNextRiverPoint(context, currentPoint) {
 }
 
 
-function buildMeander() {
+function buildMeander(erosion) {
     // choose a relative point around the middle of a square [.5, .5]
     const MIDDLE = .5
-    const coord = () => {
+    const axis = erosion.flow.axis
+    const coord = axis => {
         const offset = Random.floatRange(.1, .4)
-        const percent = (MIDDLE + offset * Random.choice(-1, 1))
+        const axisOffset = axis === 0 ? Random.choice(1, -1) : axis
         // no need of a higher precision, return one decimal float
-        return percent.toFixed(1)
+        return (MIDDLE + offset * axisOffset).toFixed(1)
     }
-    return [coord(), coord()]
+    return [coord(axis[0]), coord(axis[1])]
 }
 
 

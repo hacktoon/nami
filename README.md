@@ -19,7 +19,6 @@
 
 ### RiverLayer
   - lakes
-  - adjust meander point to the direction of erosion flow
   - Stop flow on first mountain if it has only one mountain neighbor
   - Height of terrain often make waterfalls or rapids
 
