@@ -10,10 +10,11 @@ import { ReliefLayer } from './geology/relief'
 import { TemperatureLayer } from './climatology/temperature'
 import { ErosionLayer } from './geology/erosion'
 import { RainLayer } from './climatology/rain'
-import { RiverLayer } from './geology/river'
+import { HydrologyLayer } from './hydrology'
 import { BiomeLayer } from './biology/biome'
 
-import { GeologyTileMapDiagram } from './diagram'
+import { WorldTileMapDiagram } from './diagram'
+
 
 const SCHEMA = new Schema(
     'WorldTileMap',
@@ -23,7 +24,7 @@ const SCHEMA = new Schema(
 
 
 export class WorldTileMap extends TileMap {
-    static diagram = GeologyTileMapDiagram
+    static diagram = WorldTileMapDiagram
     static schema = SCHEMA
     static ui = UITileMap
 
@@ -41,7 +42,7 @@ export class WorldTileMap extends TileMap {
         layers.temperature = new TemperatureLayer(rect, layers)
         layers.rain = new RainLayer(rect, layers)
         layers.erosion = new ErosionLayer(rect, layers)
-        layers.river = new RiverLayer(rect, layers)
+        layers.hydro = new HydrologyLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
         this.layers = layers
     }
@@ -56,11 +57,11 @@ export class WorldTileMap extends TileMap {
             this.layers.rain.getText(wrappedPoint),
             this.layers.biome.getText(wrappedPoint),
             this.layers.erosion.getText(wrappedPoint),
-            this.layers.river.getText(wrappedPoint),
+            this.layers.hydro.getText(wrappedPoint),
         ].join('\n').trim()
     }
 
     getDescription() {
-        return `Rivers: ${this.layers.river.count}`
+        return `Rivers: ${this.layers.hydro.count}`
     }
 }

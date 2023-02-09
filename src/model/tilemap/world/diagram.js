@@ -20,7 +20,7 @@ const LAYERS = [
 ]
 
 const SCHEMA = new Schema(
-    'GeologyTileMapDiagram',
+    'WorldTileMapDiagram',
     Type.selection('showLayer', 'Layer', {default: DEFAULT_LAYER, options: LAYERS}),
     Type.boolean('showLandBorder', 'Land border', {default: false}),
     Type.boolean('showWaterBorder', 'Water border', {default: false}),
@@ -46,12 +46,12 @@ class ColorMap {
 }
 
 
-export class GeologyTileMapDiagram extends TileMapDiagram {
+export class WorldTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
     static colorMap = ColorMap
 
     static create(tileMap, colorMap, params) {
-        return new GeologyTileMapDiagram(tileMap, colorMap, params)
+        return new WorldTileMapDiagram(tileMap, colorMap, params)
     }
 
     constructor(tileMap, colorMap, params) {
@@ -88,7 +88,7 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
             color = surface.water ? rain.color : rain.color
         }
         if (layer === 'basin') {
-            const river = this.tileMap.layers.river.get(point)
+            const river = this.tileMap.layers.hydro.get(point)
             if (river && !surface.water) {
                 color = this.colorMap.getByBasin(point)
             }
@@ -113,13 +113,18 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
     draw(props) {
         const point = this.rect.wrap(props.tilePoint)
         const isLand = this.tileMap.layers.surface.isLand(point)
-        const isRiver = this.tileMap.layers.river.has(point)
-        const isRiverSource = this.tileMap.layers.river.isSource(point)
+        const isRiver = this.tileMap.layers.hydro.has(point)
+        const isRiverSource = this.tileMap.layers.hydro.isSource(point)
+        const isLake = this.tileMap.layers.hydro.isLake(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
             this.#drawRiver(props)
         }
         if (isRiverSource && this.params.get('showRiverSources')) {
             this.#drawRiverSource(props)
+        }
+        if (isLake && this.params.get('showRivers')) {
+            console.log(isLake);
+            this.#drawLake(props)
         }
     }
 
@@ -130,9 +135,16 @@ export class GeologyTileMapDiagram extends TileMapDiagram {
         canvas.rect(point, midSize, RIVER_SOUCE_COLOR)
     }
 
+    #drawLake({canvas, tilePoint, canvasPoint, size}) {
+        const midSize = Math.round(size / 2)
+        const radius = Math.round(size / 3)
+        const midPoint = Point.plusScalar(canvasPoint, midSize)
+        canvas.circle(midPoint, radius, RIVER_SOUCE_COLOR)
+    }
+
     #drawRiver({canvas, tilePoint, canvasPoint, size}) {
         const point = this.rect.wrap(tilePoint)
-        const river = this.tileMap.layers.river.get(point)
+        const river = this.tileMap.layers.hydro.get(point)
         const riverWidth = this.#buildRiverWidth(river, size)
         const midSize = Math.round(size / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)

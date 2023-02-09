@@ -50,7 +50,7 @@ export class BiomeLayer {
         }
 
         if (temperature.isWarm()) {
-            const isRiverMouth = layers.river.isMouth(point)
+            const isRiverMouth = layers.hydro.isMouth(point)
             if (isRiverMouth && grainedNoise > MANGROVE_NOISE) return Biome.MANGROVE
             if (rain.isHumid()) return Biome.JUNGLE
             if (rain.isWet()) return Biome.WOODLANDS
@@ -60,7 +60,7 @@ export class BiomeLayer {
         }
 
         if (temperature.isHot()) {
-            if (layers.river.isMouth(point)) return Biome.MANGROVE
+            if (layers.hydro.isMouth(point)) return Biome.MANGROVE
             if (rain.isHumid() || rain.isWet()) return Biome.JUNGLE
             if (rain.isSeasonal()) return Biome.JUNGLE
             if (rain.isDry()) return Biome.SAVANNA

@@ -17,7 +17,16 @@
 - Solve `[Violation] 'input' handler` message by storing commands
 
 
-### RiverLayer
+### Grid
+  - Convert to single array
+  - PointSet turns to GridPointSet to use just its index in the array
+  - [x, y] -> idx
+  - create a wrappedAdjacents similar to
+      Point.adjacents(parentPoint)
+    that receives a rect
+
+
+### HydroLayer
   - lakes
   - Stop flow on first mountain if it has only one mountain neighbor
   - Height of terrain often make waterfalls or rapids

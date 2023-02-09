@@ -1,43 +1,47 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
-import { Direction } from '/src/lib/direction'
+import { Random } from '/src/lib/random'
 
 
+const LAKE_CHANCE = .001
 /*
-    The survey fill starts from land borders and detects
-    if a point is a river source or river mouth.
-    It can be used to detect lakes or other features
+    The water source fill starts from land borders and detects
+    if a point is a river source or a lake.
 */
-export function buildSourceMap(context) {
+export function buildWaterSourceMap(context) {
     const fillMap = new PointSet()
-    const fill = new SourceFill()
+    const fill = new WaterSourceFill()
     const origins = context.reliefLayer.landBorders
     fill.start(origins, {...context, fillMap})
     return origins
 }
 
 
-export class SourceFill extends ConcurrentFill {
+export class WaterSourceFill extends ConcurrentFill {
     getNeighbors(fill, parentPoint) {
-        const {rect, riverSources, surfaceLayer, rainLayer} = fill.context
+        const {
+            rect, riverSources, surfaceLayer, rainLayer, lakePoints
+        } = fill.context
         const neighbors = Point.adjacents(parentPoint)
         let totalFlowsReceived = 0
-
-        // test if neighbors flows points to parentPoint
-        for(let relNeighbor of neighbors) {
-            const isNeighborLand = surfaceLayer.isLand(relNeighbor)
-            if (isNeighborLand) {
-                if (flowsTo(fill, relNeighbor, parentPoint))
-                    totalFlowsReceived++
+        for(let neighbor of neighbors) {
+            const isNeighborLand = surfaceLayer.isLand(neighbor)
+            // test if neighbors flows points to parentPoint
+            if (isNeighborLand && flowsTo(fill, neighbor, parentPoint)) {
+                totalFlowsReceived++
             }
         }
         // this point receives no flows, maybe it's a river source
-        if (totalFlowsReceived == 0) {
-            const wrappedPoint = rect.wrap(parentPoint)
-            // it's a river source only if it receives enough rain
-            if (rainLayer.isRiverSource(wrappedPoint)) {
+        const wrappedPoint = rect.wrap(parentPoint)
+        const rainsForms = rainLayer.isRiverSource(wrappedPoint)
+        // it's a river source only if it receives enough rain
+        if (rainsForms) {
+            if (totalFlowsReceived == 0) {
                 riverSources.add(wrappedPoint)
+            }
+            if (Random.chance(LAKE_CHANCE)) {
+                lakePoints.set(wrappedPoint)
             }
         }
         return neighbors
@@ -50,7 +54,7 @@ export class SourceFill extends ConcurrentFill {
         return isLand && ! fillMap.has(wrappedFillPoint)
     }
 
-    onFill(fill, fillPoint, parentPoint, neighbors) {
+    onFill(fill, fillPoint) {
         const {rect, fillMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         fillMap.add(wrappedFillPoint)

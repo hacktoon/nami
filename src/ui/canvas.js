@@ -48,6 +48,15 @@ class CanvasContext {
         this.#ctx.strokeRect(x+lineSize, y+lineSize, offsetSize, offsetSize)
     }
 
+    circle(point, radius, color='#00F') {
+        const [x, y] = point
+        this.#ctx.fillStyle = color
+        this.#ctx.beginPath()
+        // 0º to 360º = 0 to 2*PI
+        this.#ctx.arc(x, y, radius, 0, 2 * Math.PI)
+        this.#ctx.fill()
+    }
+
     text(point, size, text, color='#000') {
         const offset = Math.floor(size / 2)
         this.#ctx.fillStyle = color

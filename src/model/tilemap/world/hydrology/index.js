@@ -3,12 +3,13 @@ import { PointMap } from '/src/lib/point/map'
 import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
-import { buildSourceMap } from './source'
+import { buildWaterSourceMap } from './sources'
 import { buildFlowMap, DIRECTION_PATTERN_MAP } from './flow'
 
 
-export class RiverLayer {
+export class HydrologyLayer {
     #riverPoints = new PointMap()
+    #lakePoints = new PointMap()
     #riverFlow = new PointMap()
     // map a point to a fraction point [.2, .2]
     #riverMeanders = new PointMap()
@@ -26,6 +27,7 @@ export class RiverLayer {
             erosionLayer: layers.erosion,
             rainLayer: layers.rain,
             riverPoints: this.#riverPoints,
+            lakePoints: this.#lakePoints,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,
             riverFlow: this.#riverFlow,
@@ -33,7 +35,7 @@ export class RiverLayer {
             maxFlowRate: this.#maxFlowRate,
             riverMeanders: this.#riverMeanders,
         }
-        buildSourceMap(context)
+        buildWaterSourceMap(context)
         buildFlowMap(context)
     }
 
@@ -98,5 +100,9 @@ export class RiverLayer {
 
     isMouth(point) {
         return this.#riverMouths.has(point)
+    }
+
+    isLake(point) {
+        return this.#lakePoints.has(point)
     }
 }
