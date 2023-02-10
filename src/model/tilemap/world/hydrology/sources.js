@@ -4,7 +4,7 @@ import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
 
 
-const LAKE_CHANCE = .001
+const LAKE_CHANCE = .05
 /*
     The water source fill starts from land borders and detects
     if a point is a river source or a lake.

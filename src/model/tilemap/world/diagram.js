@@ -123,23 +123,20 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             this.#drawRiverSource(props)
         }
         if (isLake && this.params.get('showRivers')) {
-            console.log(isLake);
             this.#drawLake(props)
         }
     }
 
-    #drawRiverSource({canvas, tilePoint, canvasPoint, size}) {
-        const midSize = Math.round(size / 2)
-        const offset = midSize - Math.round(midSize / 2)
-        const point = Point.plusScalar(canvasPoint, offset)
-        canvas.rect(point, midSize, RIVER_SOUCE_COLOR)
+    #drawRiverSource({canvas, canvasPoint, size}) {
+        const midSize = Math.round(size / 4)
+        canvas.rect(canvasPoint, midSize, RIVER_SOUCE_COLOR)
     }
 
-    #drawLake({canvas, tilePoint, canvasPoint, size}) {
+    #drawLake({canvas, canvasPoint, size}) {
         const midSize = Math.round(size / 2)
         const radius = Math.round(size / 3)
         const midPoint = Point.plusScalar(canvasPoint, midSize)
-        canvas.circle(midPoint, radius, RIVER_SOUCE_COLOR)
+        canvas.circle(midPoint, radius, RIVER_COLOR)
     }
 
     #drawRiver({canvas, tilePoint, canvasPoint, size}) {
