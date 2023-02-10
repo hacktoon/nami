@@ -22,11 +22,11 @@ const LAYERS = [
 const SCHEMA = new Schema(
     'WorldTileMapDiagram',
     Type.selection('showLayer', 'Layer', {default: DEFAULT_LAYER, options: LAYERS}),
-    Type.boolean('showLandBorder', 'Land border', {default: false}),
-    Type.boolean('showWaterBorder', 'Water border', {default: false}),
+    Type.boolean('showBorders', 'Borders', {default: false}),
     Type.boolean('showRiverSources', 'River sources', {default: false}),
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
+    Type.boolean('showLakes', 'Lakes', {default: true}),
 )
 
 
@@ -68,11 +68,8 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const isBorder = this.tileMap.layers.relief.isBorder(point)
         let color = surface.color
 
-        if (params.get('showLandBorder') && isBorder && !surface.water) {
-            return Color.RED
-        }
-        if (params.get('showWaterBorder') && isBorder && surface.water) {
-            return Color.BLUE
+        if (isBorder && params.get('showBorders')) {
+            return surface.water ? Color.BLUE : Color.PURPLE
         }
         if (layer === 'surface') return color
         if (layer === 'relief') {
@@ -122,7 +119,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (isRiverSource && this.params.get('showRiverSources')) {
             this.#drawRiverSource(props)
         }
-        if (isLake && this.params.get('showRivers')) {
+        if (isLake && this.params.get('showLakes')) {
             this.#drawLake(props)
         }
     }

@@ -4,7 +4,7 @@ import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
 
 
-const LAKE_CHANCE = .05
+const LAKE_CHANCE = .1
 /*
     The water source fill starts from land borders and detects
     if a point is a river source or a lake.
@@ -25,12 +25,15 @@ export class WaterSourceFill extends ConcurrentFill {
         } = fill.context
         const neighbors = Point.adjacents(parentPoint)
         let totalFlowsReceived = 0
+        let totalLakeNeighbors = 0
         for(let neighbor of neighbors) {
             const isNeighborLand = surfaceLayer.isLand(neighbor)
+            const wrappedNeighbor = rect.wrap(neighbor)
             // test if neighbors flows points to parentPoint
             if (isNeighborLand && flowsTo(fill, neighbor, parentPoint)) {
                 totalFlowsReceived++
             }
+            if (lakePoints.has(wrappedNeighbor)) totalLakeNeighbors++
         }
         // this point receives no flows, maybe it's a river source
         const wrappedPoint = rect.wrap(parentPoint)
@@ -40,7 +43,7 @@ export class WaterSourceFill extends ConcurrentFill {
             if (totalFlowsReceived == 0) {
                 riverSources.add(wrappedPoint)
             }
-            if (Random.chance(LAKE_CHANCE)) {
+            if (totalLakeNeighbors == 0 && Random.chance(LAKE_CHANCE)) {
                 lakePoints.set(wrappedPoint)
             }
         }

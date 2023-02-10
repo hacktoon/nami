@@ -38,6 +38,7 @@ export class Color {
     static YELLOW = Color.fromHex('FF0')
     static RED = Color.fromHex('F00')
     static GREEN = Color.fromHex('0F0')
+    static PURPLE = Color.fromHex('808')
     static BLUE = Color.fromHex('00F')
     static BLACK = Color.fromHex('000')
     static GRAY = Color.fromHex('666')
