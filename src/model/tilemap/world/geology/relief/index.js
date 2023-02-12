@@ -37,7 +37,6 @@ export class ReliefLayer {
         const featureNoise = this.#noiseLayer.getFeature(point)
         const grainedNoise = this.#noiseLayer.getGrained(point)
         const isWater = this.#surfaceLayer.isWater(point)
-        const isDepression = this.#surfaceLayer.isDepression(point)
 
         // water -----------------------------------
         if (isWater) {
@@ -48,7 +47,6 @@ export class ReliefLayer {
         }
 
         // land -----------------------------------
-        if (isDepression) return Relief.BASIN.id
         if (outlineNoise < BASIN_RATIO || featureNoise < BASIN_FEAT_RATIO) {
             // basins on borders and in large intra basins
             return Relief.BASIN.id

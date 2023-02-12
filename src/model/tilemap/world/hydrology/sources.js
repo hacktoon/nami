@@ -5,70 +5,79 @@ import { Random } from '/src/lib/random'
 
 
 const LAKE_CHANCE = .05
+
+
 /*
     The water source fill starts from land borders and detects
     if a point is a river source or a lake.
 */
 export function buildWaterSourceMap(context) {
-    const fillMap = new PointSet()
+    const visitedPoints = new PointSet()
     const fill = new WaterSourceFill()
     const origins = context.reliefLayer.landBorders
-    fill.start(origins, {...context, fillMap})
-    return origins
+    fill.start(origins, {
+        ...context,
+        lakeId: 0,
+        visitedPoints
+    })
 }
 
 
-export class WaterSourceFill extends ConcurrentFill {
+class WaterSourceFill extends ConcurrentFill {
     getNeighbors(fill, parentPoint) {
-        const {
-            rect, riverSources, surfaceLayer, rainLayer, lakePoints
-        } = fill.context
-        const neighbors = Point.adjacents(parentPoint)
-        let totalFlowsReceived = 0
-        let totalLakeNeighbors = 0
-        for(let neighbor of neighbors) {
-            const isNeighborLand = surfaceLayer.isLand(neighbor)
-            const wrappedNeighbor = rect.wrap(neighbor)
-            // test if neighbors flows points to parentPoint
-            if (isNeighborLand && flowsTo(fill, neighbor, parentPoint)) {
-                totalFlowsReceived++
-            }
-            if (lakePoints.has(wrappedNeighbor)) totalLakeNeighbors++
+        const context = fill.context
+        const wrappedPoint = context.rect.wrap(parentPoint)
+        const adjacents = Point.adjacents(wrappedPoint)
+        const around = Point.around(wrappedPoint)
+        if (isRiverSource(context, wrappedPoint)) {
+            context.riverSources.add(wrappedPoint)
         }
-        // this point receives no flows, maybe it's a river source
-        const wrappedPoint = rect.wrap(parentPoint)
-        // it's a river source only if it receives enough rain
-        if (rainLayer.isRiverSource(wrappedPoint)) {
-            if (totalFlowsReceived == 0) {
-                riverSources.add(wrappedPoint)
-            }
+        if (isLake(context, wrappedPoint)) {
+            context.lakePoints.set(wrappedPoint, context.lakeId++)
         }
-        if (Random.chance(LAKE_CHANCE)) {
-            // check lake types by temperatue
-            lakePoints.set(wrappedPoint)
-        }
-        return neighbors
+        return adjacents
     }
 
     canFill(fill, fillPoint) {
-        const {rect, fillMap, surfaceLayer} = fill.context
+        const {rect, visitedPoints, surfaceLayer} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const isLand = surfaceLayer.isLand(wrappedFillPoint)
-        return isLand && ! fillMap.has(wrappedFillPoint)
+        return isLand && ! visitedPoints.has(wrappedFillPoint)
     }
 
     onFill(fill, fillPoint) {
-        const {rect, fillMap} = fill.context
+        const {rect, visitedPoints} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
-        fillMap.add(wrappedFillPoint)
+        visitedPoints.add(wrappedFillPoint)
     }
 }
 
 
-function flowsTo(fill, originPoint, fillPoint) {
+function isRiverSource(context, point) {
+    let totalFlowsReceived = 0
+    for(let neighbor of Point.adjacents(point)) {
+        const isNeighborLand = context.surfaceLayer.isLand(neighbor)
+        // test if any land neighbors flows to point
+        if (isNeighborLand && flowsTo(context, neighbor, point)) {
+            totalFlowsReceived++
+        }
+    }
+    // it's a river source if receives enough rain and no erosion flows
+    const hasEnoughRain = context.rainLayer.canFormRivers(point)
+    return hasEnoughRain && totalFlowsReceived == 0
+}
+
+
+function isLake(context, point) {
+    // if (lakePoints.has(point)) totalLakeNeighbors++
+    return Random.chance(LAKE_CHANCE)
+}
+
+
+function flowsTo(context, originPoint, fillPoint) {
     // checks if originPoint flow points to fillPoint
-    const origin = fill.context.rect.wrap(originPoint)
-    const erosion = fill.context.erosionLayer.get(origin)
+    const origin = context.rect.wrap(originPoint)
+    const erosion = context.erosionLayer.get(origin)
     const pointAtDirection = Point.atDirection(originPoint, erosion.flow)
     return Point.equals(fillPoint, pointAtDirection)
 }

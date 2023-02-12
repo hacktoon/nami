@@ -7,6 +7,9 @@
 
 ## ROADMAP
 
+### Inspirations
+- https://twitter.com/datassette/status/1624394179185938432
+
 ### Interface
 - Rename Diagram to PixelMap
 - Introduce a chunk map viewer on sidebar
@@ -25,9 +28,10 @@
       Point.adjacents(parentPoint)
     that receives a rect
 
+### ReliefLayer
+  - Move border detection back to surface layer
 
 ### HydroLayer
-  - lakes
   - Stop flow on first mountain if it has only one mountain neighbor
   - Height of terrain often make waterfalls or rapids
 
