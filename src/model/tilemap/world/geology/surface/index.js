@@ -16,24 +16,28 @@ const MINIMUN_CONTINENT_RATIO = 1
 export class SurfaceLayer {
     // Major world bodies with area and type
 
+    // stores surface id for each point
     #surfaceMatrix
-    #areaMap = new Map()
+    // maps a surface id to its object reference
     #surfaceMap = new Map()
-    #surfaceId = 1
+    #areaMap = new Map()
 
     constructor(rect, layers) {
-        // init matrix with empty cells
         const waterPoints = new PointSet()
+        let surfaceId = 0
         this.#surfaceMatrix = Matrix.fromRect(rect, point => {
+            // detect water points with "outline" noise map
             if (SURFACE_RATIO >= layers.noise.getOutline(point)) {
                 waterPoints.add(point)
             }
+            // init matrix with empty cells
             return EMPTY
         })
         // detect surface regions and area
         this.#surfaceMatrix.forEach(point => {
+            // start a fill for each empty point in matrix
             if (this.#isPointEmpty(point)) {
-                this.#buildSurface(waterPoints, point)
+                this.#buildSurface(waterPoints, surfaceId++, point)
             }
         })
     }
@@ -42,8 +46,8 @@ export class SurfaceLayer {
         return this.#surfaceMatrix.get(point) === EMPTY
     }
 
-    #buildSurface(waterPoints, originPoint) {
-        const area = this.#fillSurface(waterPoints, originPoint)
+    #buildSurface(waterPoints, surfaceId, originPoint) {
+        const area = this.#fillSurface(waterPoints, surfaceId, originPoint)
         const surfaceAreaRatio = (area * 100) / this.#surfaceMatrix.area
         let type = Surface.CONTINENT
         // area is filled; decide type
@@ -55,12 +59,12 @@ export class SurfaceLayer {
         } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
             type = Surface.ISLAND
         }
-        this.#surfaceMap.set(this.#surfaceId, type)
-        this.#areaMap.set(this.#surfaceId, area)
-        this.#surfaceId++
+        this.#surfaceMap.set(surfaceId, type)
+        this.#areaMap.set(surfaceId, area)
+
     }
 
-    #fillSurface(waterPoints, originPoint) {
+    #fillSurface(waterPoints, surfaceId, originPoint) {
         let area = 0
         const isOriginWater = waterPoints.has(originPoint)
         const canFill = point => {
@@ -68,7 +72,7 @@ export class SurfaceLayer {
             return sameType && this.#isPointEmpty(point)
         }
         const onFill = point => {
-            this.#surfaceMatrix.set(point, this.#surfaceId)
+            this.#surfaceMatrix.set(point, surfaceId)
             area++
         }
         const wrapPoint = point => this.#surfaceMatrix.wrap(point)

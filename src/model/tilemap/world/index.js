@@ -44,6 +44,7 @@ export class WorldTileMap extends TileMap {
         layers.erosion = new ErosionLayer(rect, layers)
         layers.hydro = new HydrologyLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
+        // layers.terrain = new TerrainLayer(rect, layers)
         this.layers = layers
     }
 
