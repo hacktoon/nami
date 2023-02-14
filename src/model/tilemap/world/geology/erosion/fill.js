@@ -56,13 +56,16 @@ class ErosionFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {rect, reliefLayer, validReliefIds, flowMap} = fill.context
+        const {
+            rect, reliefLayer, surfaceLayer, validReliefIds, flowMap
+        } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
+        const surface = surfaceLayer.get(wrappedFillPoint)
         const relief = reliefLayer.get(wrappedFillPoint)
         const isValidRelief = validReliefIds.has(relief.id)
-        // use basin map to track which points were already visited
+        // use flow map to track already visited points
         const isEmpty = ! flowMap.has(wrappedFillPoint)
-        return ! relief.water && isEmpty && isValidRelief
+        return ! surface.water && isEmpty && isValidRelief
     }
 
     onInitFill(fill, fillPoint, neighbors) {
@@ -95,9 +98,9 @@ class ErosionFill extends ConcurrentFill {
 
     #getWaterNeighbor(fill, neighbors) {
         for(let neighbor of neighbors) {
-            const neighborRelief = fill.context.reliefLayer.get(neighbor)
+            const neighborSurface = fill.context.surfaceLayer.get(neighbor)
             // set flow to nearest water neighbor
-            if (neighborRelief.water) {
+            if (neighborSurface.water) {
                 return neighbor
             }
         }
@@ -105,12 +108,12 @@ class ErosionFill extends ConcurrentFill {
 
     #getLandNeighbor(fill, neighbors) {
         // need to read neighbors on start fill to get parent flow
-        const {rect, reliefLayer, flowMap} = fill.context
+        const {rect, surfaceLayer, flowMap} = fill.context
         for(let neighbor of neighbors) {
             const wrappedNeighbor = rect.wrap(neighbor)
-            const neighborRelief = reliefLayer.get(wrappedNeighbor)
+            const neighborSurface = surfaceLayer.get(wrappedNeighbor)
             // is land, check if has a flow already
-            if (! neighborRelief.water && flowMap.has(wrappedNeighbor)) {
+            if (! neighborSurface.water && flowMap.has(wrappedNeighbor)) {
                 return neighbor
             }
         }
@@ -128,12 +131,15 @@ class ErosionFill extends ConcurrentFill {
     }
 
     onBlockedFill(fill, fillPoint) {
-        const {rect, reliefLayer, validReliefIds, deferredOrigins} = fill.context
+        const {
+            rect, reliefLayer, surfaceLayer, validReliefIds, deferredOrigins
+        } = fill.context
         const target = rect.wrap(fillPoint)
+        const surface = surfaceLayer.get(target)
         const relief = reliefLayer.get(target)
         const isInvalidRelief = ! validReliefIds.has(relief.id)
         // add point to next relief fill
-        if (! relief.water && isInvalidRelief) {
+        if (! surface.water && isInvalidRelief) {
             deferredOrigins.add(target)
         }
     }

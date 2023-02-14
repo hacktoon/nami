@@ -18,7 +18,7 @@ export class SurfaceLayer {
 
     #surfaceMatrix
     #areaMap = new Map()
-    #surfaceIdMap = new Map()
+    #surfaceMap = new Map()
     #surfaceId = 1
 
     constructor(rect, layers) {
@@ -44,18 +44,19 @@ export class SurfaceLayer {
 
     #buildSurface(waterPoints, originPoint) {
         const area = this.#fillSurface(waterPoints, originPoint)
-        const massRatio = (area * 100) / this.#surfaceMatrix.area
+        const surfaceAreaRatio = (area * 100) / this.#surfaceMatrix.area
         let type = Surface.CONTINENT
         // area is filled; decide type
         if (waterPoints.has(originPoint)) {
-            if (massRatio >= MINIMUN_OCEAN_RATIO)
+            if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
                 type = Surface.OCEAN
-            else if (massRatio >= MINIMUN_SEA_RATIO)
+            else if (surfaceAreaRatio >= MINIMUN_SEA_RATIO)
                 type = Surface.SEA
-        } else if (massRatio < MINIMUN_CONTINENT_RATIO)
+        } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
             type = Surface.ISLAND
+        }
+        this.#surfaceMap.set(this.#surfaceId, type)
         this.#areaMap.set(this.#surfaceId, area)
-        this.#surfaceIdMap.set(this.#surfaceId, type)
         this.#surfaceId++
     }
 
@@ -78,8 +79,8 @@ export class SurfaceLayer {
     }
 
     get(point) {
-        const bodyId = this.#surfaceMatrix.get(point)
-        return Surface.fromId(this.#surfaceIdMap.get(bodyId))
+        const surfaceId = this.#surfaceMatrix.get(point)
+        return Surface.fromId(this.#surfaceMap.get(surfaceId))
     }
 
     getText(point) {
@@ -89,9 +90,7 @@ export class SurfaceLayer {
     }
 
     isWater(point) {
-        const bodyId = this.#surfaceMatrix.get(point)
-        const surfaceId = this.#surfaceIdMap.get(bodyId)
-        return Surface.isWater(surfaceId)
+        return this.get(point).water
     }
 
     isLand(point) {
@@ -103,7 +102,7 @@ export class SurfaceLayer {
     }
 
     getArea(point) {
-        const bodyId = this.#surfaceMatrix.get(point)
-        return (this.#areaMap.get(bodyId) * 100) / this.#surfaceMatrix.area
+        const surfaceId = this.#surfaceMatrix.get(point)
+        return (this.#areaMap.get(surfaceId) * 100) / this.#surfaceMatrix.area
     }
 }
