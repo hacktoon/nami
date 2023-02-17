@@ -48,7 +48,6 @@ export class ReliefLayer {
 
         // land -----------------------------------
         if (outlineNoise < BASIN_RATIO || featureNoise < BASIN_FEAT_RATIO) {
-            // basins on borders and in large intra basins
             return Relief.BASIN.id
         }
         if (grainedNoise > MOUNTAIN_RATIO) {

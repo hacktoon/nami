@@ -1,5 +1,6 @@
 import { Matrix } from '/src/lib/matrix'
 import { PointSet } from '/src/lib/point/set'
+import { Point } from '/src/lib/point'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { SURFACE_RATIO, Surface } from './data'
@@ -36,9 +37,13 @@ export class SurfaceLayer {
         // detect surface regions and area
         this.#surfaceMatrix.forEach(point => {
             // start a fill for each empty point in matrix
-            if (this.#isPointEmpty(point)) {
-                this.#buildSurface(waterPoints, surfaceId++, point)
-            }
+            if (!this.#isPointEmpty(point)) return
+            const {type, area} = this.#buildSurface(
+                waterPoints, surfaceId, point
+            )
+            this.#surfaceMap.set(surfaceId, type.id)
+            this.#areaMap.set(surfaceId, area)
+            surfaceId++
         })
     }
 
@@ -59,12 +64,11 @@ export class SurfaceLayer {
         } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
             type = Surface.ISLAND
         }
-        this.#surfaceMap.set(surfaceId, type)
-        this.#areaMap.set(surfaceId, area)
-
+        return {type, area}
     }
 
     #fillSurface(waterPoints, surfaceId, originPoint) {
+        // discover all points of same type ( water | land )
         let area = 0
         const isOriginWater = waterPoints.has(originPoint)
         const canFill = point => {
@@ -93,6 +97,11 @@ export class SurfaceLayer {
         return `Surface(${surface.name}, area=${surfaceArea}%)`
     }
 
+    getArea(point) {
+        const surfaceId = this.#surfaceMatrix.get(point)
+        return (this.#areaMap.get(surfaceId) * 100) / this.#surfaceMatrix.area
+    }
+
     isWater(point) {
         return this.get(point).water
     }
@@ -103,10 +112,5 @@ export class SurfaceLayer {
 
     isOcean(point) {
         return this.get(point).id === Surface.OCEAN
-    }
-
-    getArea(point) {
-        const surfaceId = this.#surfaceMatrix.get(point)
-        return (this.#areaMap.get(surfaceId) * 100) / this.#surfaceMatrix.area
     }
 }

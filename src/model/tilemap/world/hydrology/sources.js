@@ -28,7 +28,6 @@ class WaterSourceFill extends ConcurrentFill {
         const context = fill.context
         const wrappedPoint = context.rect.wrap(parentPoint)
         const adjacents = Point.adjacents(wrappedPoint)
-        const around = Point.around(wrappedPoint)
         if (isRiverSource(context, wrappedPoint)) {
             context.riverSources.add(wrappedPoint)
         }
@@ -63,13 +62,12 @@ function isRiverSource(context, point) {
         }
     }
     // it's a river source if receives enough rain and no erosion flows
-    const hasEnoughRain = context.rainLayer.canFormRivers(point)
+    const hasEnoughRain = context.rainLayer.createsRivers(point)
     return hasEnoughRain && totalFlowsReceived == 0
 }
 
 
 function isLake(context, point) {
-    // if (lakePoints.has(point)) totalLakeNeighbors++
     return Random.chance(LAKE_CHANCE)
 }
 

@@ -27,6 +27,8 @@ const MEANDER_DIRECTION_MAP = new Map([
     [Direction.SOUTH.id, 16],
 ])
 
+const RIVER_MEANDER_MIDDLE = .5
+
 /*
     The shape fill starts from river sources
     following the direction and marking how much strong a
@@ -60,7 +62,7 @@ function buildRiver(context, riverId, source) {
         const erosion = erosionLayer.get(wrappedPoint)
         riverFlow.set(wrappedPoint, code)
         riverPoints.set(wrappedPoint, riverId)
-        riverMeanders.set(wrappedPoint, buildMeander(erosion))
+        riverMeanders.set(wrappedPoint, buildMeanderPoint(erosion))
         if (flowRate.has(wrappedPoint)) {
             riverFlowRate = flowRate.get(wrappedPoint) + 1
         }
@@ -80,15 +82,14 @@ function getNextRiverPoint(context, currentPoint) {
 }
 
 
-function buildMeander(erosion) {
-    // choose a relative point around the middle of a square [.5, .5]
-    const MIDDLE = .5
+function buildMeanderPoint(erosion) {
+    // choose a relative point around the middle of a square at [.5, .5]
     const axis = erosion.flow.axis
     const coord = axis => {
         const offset = Random.floatRange(.1, .4)
         const axisOffset = axis === 0 ? Random.choice(1, -1) : axis
         // no need of a higher precision, return one decimal float
-        return (MIDDLE + offset * axisOffset).toFixed(1)
+        return (RIVER_MEANDER_MIDDLE + offset * axisOffset).toFixed(1)
     }
     return [coord(axis[0]), coord(axis[1])]
 }

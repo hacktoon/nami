@@ -31,7 +31,7 @@ export const SURFACE_SPEC = [
 ]
 
 
-export const SURFACE_MAP = new Map(SURFACE_SPEC.map(spec => [spec.id, spec]))
+const SURFACE_MAP = new Map(SURFACE_SPEC.map(spec => [spec.id, spec]))
 
 
 export class Surface {
@@ -49,5 +49,5 @@ export class Surface {
 }
 SURFACE_SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
-    Surface[name] = spec.id
+    Surface[name] = spec
 })

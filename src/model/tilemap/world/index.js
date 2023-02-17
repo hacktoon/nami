@@ -18,7 +18,7 @@ import { WorldTileMapDiagram } from './diagram'
 
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.rect('rect', 'Size', {default: '100x100', min:'2x2', max:'500x500'}),
+    Type.rect('rect', 'Size', {default: '64x64', min:'2x2', max:'100x100'}),
     Type.text('seed', 'Seed', {default: ''}),
 )
 
