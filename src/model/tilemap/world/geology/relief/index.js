@@ -22,6 +22,7 @@ export class ReliefLayer {
     #noiseLayer
     #surfaceLayer
     #matrix
+    #waterArea = 0
 
     constructor(rect, layers) {
         this.#noiseLayer = layers.noise
@@ -40,6 +41,7 @@ export class ReliefLayer {
 
         // water -----------------------------------
         if (isWater) {
+            this.#waterArea++
             if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM.id
             if (featureNoise > OCEAN_RATIO) return Relief.OCEAN.id
             if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH.id
@@ -88,6 +90,11 @@ export class ReliefLayer {
             Relief.MOUNTAIN,
             Relief.PEAK,
         ]
+    }
+
+    getWaterArea() {
+        const area = (this.#waterArea * 100) / this.#matrix.area
+        return area.toFixed(1)
     }
 
     get(point) {

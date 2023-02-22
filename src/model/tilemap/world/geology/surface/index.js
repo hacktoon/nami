@@ -94,12 +94,14 @@ export class SurfaceLayer {
     getText(point) {
         const surface = this.get(point)
         const surfaceArea = this.getArea(point)
-        return `Surface(${surface.name}, area=${surfaceArea}%)`
+        const type = surface.water ? 'W' : 'L'
+        return `Surface(${surface.name}(${type}), area=${surfaceArea}%)`
     }
 
     getArea(point) {
         const surfaceId = this.#surfaceMatrix.get(point)
-        return (this.#areaMap.get(surfaceId) * 100) / this.#surfaceMatrix.area
+        const area = (this.#areaMap.get(surfaceId) * 100) / this.#surfaceMatrix.area
+        return area.toFixed(1)
     }
 
     isWater(point) {

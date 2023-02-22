@@ -15,11 +15,7 @@ export function buildWaterSourceMap(context) {
     const visitedPoints = new PointSet()
     const fill = new WaterSourceFill()
     const origins = context.reliefLayer.landBorders
-    fill.start(origins, {
-        ...context,
-        lakeId: 0,
-        visitedPoints
-    })
+    fill.start(origins, {...context, lakeId: 0, visitedPoints})
 }
 
 
