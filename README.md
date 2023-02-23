@@ -22,7 +22,6 @@
 ### WorldTileMap
   - Use 64x64
 
-
 ### Matrix/Grid
   - Convert to single array
   - Rename PointSet to GridPointSet to abstract Rect in adjancents
@@ -31,9 +30,8 @@
       Point.adjacents(parentPoint)
     that receives a rect
 
-
-
 ### HydroLayer
+  - River that start on small seas can't go much further
   - Height of terrain often make waterfalls or rapids
 
 ### BiomeLayer
