@@ -11,7 +11,9 @@ export class TopologyLayer {
 
     constructor(rect, layers) {
         this.#matrix = Matrix.fromRect(rect, point => {
+            Point.adjacents(point, (sidePoint) => {
 
+            })
         })
     }
 

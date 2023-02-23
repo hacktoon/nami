@@ -4,7 +4,7 @@ import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
 import { buildWaterSourceMap } from './sources'
-import { buildFlowMap, DIRECTION_PATTERN_MAP } from './flow'
+import { buildRiverFlowMap, DIRECTION_PATTERN_MAP } from './flow'
 
 
 export class HydrologyLayer {
@@ -14,7 +14,7 @@ export class HydrologyLayer {
     // map a point to a fraction point [.2, .2]
     #riverMeanders = new PointMap()
     // the amount of water in a point
-    #flowRate = new PointMap()
+    #riverFlowRate = new PointMap()
     #riverSources = new PointSet()
     #riverMouths = new PointSet()
     #maxFlowRate = new Map()
@@ -26,17 +26,19 @@ export class HydrologyLayer {
             reliefLayer: layers.relief,
             erosionLayer: layers.erosion,
             rainLayer: layers.rain,
-            riverPoints: this.#riverPoints,
+            // which lake exists in this point?
             lakePoints: this.#lakePoints,
+            // which river exists in this point?
+            riverPoints: this.#riverPoints,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,
             riverFlow: this.#riverFlow,
-            flowRate: this.#flowRate,
+            flowRate: this.#riverFlowRate,
             maxFlowRate: this.#maxFlowRate,
             riverMeanders: this.#riverMeanders,
         }
         buildWaterSourceMap(context)
-        buildFlowMap(context)
+        buildRiverFlowMap(context)
     }
 
     get count() {
@@ -44,7 +46,7 @@ export class HydrologyLayer {
     }
 
     has(point) {
-        return this.#flowRate.has(point)
+        return this.#riverFlowRate.has(point)
     }
 
     get(point) {
@@ -53,7 +55,7 @@ export class HydrologyLayer {
             flowDirections: this.#getRiverDirections(point),
             source: this.#riverSources.has(point),
             mouth: this.#riverMouths.has(point),
-            flowRate: this.#flowRate.get(point),
+            flowRate: this.#riverFlowRate.get(point),
             meander: this.#riverMeanders.get(point),
         }
     }
@@ -76,17 +78,17 @@ export class HydrologyLayer {
     getText(point) {
         if (! this.has(point))
             return ''
-        const river = this.get(point)
+        const hydro = this.get(point)
         const attrs = [
-             `source=${river.source}`,
-             `mouth=${river.mouth}`,
-             `flowRate=${river.flowRate}`,
+             `source=${hydro.source}`,
+             `mouth=${hydro.mouth}`,
+             `flowRate=${hydro.flowRate}`,
         ].join(',')
-        return `River(${attrs})`
+        return `Hydro(${attrs})`
     }
 
     getFlowRate(point) {
-        return this.#flowRate.get(point)
+        return this.#riverFlowRate.get(point)
     }
 
     getMaxFlowRate(point) {

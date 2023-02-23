@@ -34,7 +34,7 @@ const RIVER_MEANDER_MIDDLE = .5
     following the direction and marking how much strong a
     river gets.
 */
-export function buildFlowMap(context) {
+export function buildRiverFlowMap(context) {
     let riverId = 0
     for(let source of context.riverSources.points) {
         const maxFlowRate = buildRiver(context, riverId, source)
@@ -55,7 +55,7 @@ function buildRiver(context, riverId, source) {
     // save previous point for mouth detection
     let prevPoint = source
     // init this river with current flow rate or zero if it's empty
-    let riverFlowRate = 0
+    let rate = 0
     while (surfaceLayer.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
         const code = buildFlowCode(context, wrappedPoint)
@@ -64,15 +64,15 @@ function buildRiver(context, riverId, source) {
         riverPoints.set(wrappedPoint, riverId)
         riverMeanders.set(wrappedPoint, buildMeanderPoint(erosion))
         if (flowRate.has(wrappedPoint)) {
-            riverFlowRate = flowRate.get(wrappedPoint) + 1
+            rate = flowRate.get(wrappedPoint) + 1
         }
-        riverFlowRate ++
-        flowRate.set(wrappedPoint, riverFlowRate)
+        rate ++
+        flowRate.set(wrappedPoint, rate)
         prevPoint = wrappedPoint
         point = getNextRiverPoint(context, wrappedPoint)
     }
     riverMouths.add(prevPoint)
-    return riverFlowRate
+    return rate
 }
 
 
