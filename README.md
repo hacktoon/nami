@@ -5,12 +5,9 @@
 [https://hacktoon.github.io/nami/](https://hacktoon.github.io/nami/)
 
 
-## ROADMAP
+## PLANNING
 
-### Inspirations
-- https://twitter.com/datassette/status/1624394179185938432
-
-### Interface
+### General
 - Rename Diagram to PixelMap
 - Introduce a chunk map viewer on sidebar
 - Optimize canvas rendering
@@ -19,10 +16,7 @@
     otherwise translate canvas element
 - Solve `[Violation] 'input' handler` message by storing commands
 
-### WorldTileMap
-  - Use 64x64
-
-### Matrix/Grid
+- Matrix/Grid
   - Convert to single array
   - Rename PointSet to GridPointSet to abstract Rect in adjancents
   - [x, y] -> idx
@@ -30,14 +24,20 @@
       Point.adjacents(parentPoint)
     that receives a rect
 
-### HydroLayer
+
+### WorldTileMap
+  - Create ContinentLayer (maybe)
+    - Use 32x32 tilemap with regionMap borders for separating landmasses
+    - border points get a grained island noise
+
+### HydrologyLayer
   - River that start on small seas can't go much further
   - Height of terrain often make waterfalls or rapids
 
 ### BiomeLayer
 - Snow Mountain biome?
 
-### SiteLayer
+### TopologyLayer
 - Determine capitals and villages
 - Start a fill to determine realm area
 
@@ -50,4 +50,8 @@
 ### HistoryMap
 - Determine capitals and villages
 - Start a fill to determine realm area
+
+
+## INSPIRATIONS
+- https://twitter.com/datassette/status/1624394179185938432
 

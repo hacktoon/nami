@@ -6,7 +6,7 @@ import { Topology } from './data'
 
 export class TopologyLayer {
     // Define locations and features and their relation
-    // cities, caves,
+    // cities, caves, ruins, dungeons
     #matrix
 
     constructor(rect, layers) {
