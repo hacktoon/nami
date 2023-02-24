@@ -96,7 +96,11 @@ export class HydrologyLayer {
         return this.#maxFlowRate.get(riverId)
     }
 
-    isSource(point) {
+    isRiver(point) {
+        return this.#riverPoints.has(point)
+    }
+
+    isRiverSource(point) {
         return this.#riverSources.has(point)
     }
 
