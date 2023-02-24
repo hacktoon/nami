@@ -12,6 +12,7 @@ import { ErosionLayer } from './geology/erosion'
 import { RainLayer } from './climatology/rain'
 import { HydrologyLayer } from './hydrology'
 import { BiomeLayer } from './biology/biome'
+import { TopologyLayer } from './topology'
 
 import { WorldTileMapDiagram } from './diagram'
 
@@ -44,6 +45,7 @@ export class WorldTileMap extends TileMap {
         layers.erosion = new ErosionLayer(rect, layers)
         layers.hydro = new HydrologyLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
+        layers.topo = new TopologyLayer(rect, layers)
         // layers.terrain = new TerrainLayer(rect, layers)
         this.layers = layers
     }

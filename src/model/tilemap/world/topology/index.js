@@ -2,6 +2,7 @@ import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { PointMap } from '/src/lib/point/map'
 
+import { Temperature } from '../climatology/temperature/data'
 import { Place } from './data'
 
 
@@ -23,13 +24,14 @@ export class TopologyLayer {
     #buildMatrix(rect, layers) {
         return Matrix.fromRect(rect, point => {
             // detect early features
+            const isBorder = layers.relief.isBorder(point)
             const isLand = layers.surface.isLand(point)
             const isRiver = layers.hydro.isRiver(point)
             const isLake = layers.hydro.isLake(point)
-            // const temperature = layers.temperature.get(point)
-            // const isFrozen = temperature.isFrozen(point)
+            const temperature = layers.temperature.get(point)
             if (isLand) {
-                if (isRiver || isLake) {
+                const isFrozen = temperature.is(Temperature.FROZEN)
+                if (isRiver || isLake ) {
                     this.#cityCandidatePoints.push(point)
                 }
             } else {
@@ -43,8 +45,6 @@ export class TopologyLayer {
     #buildType(layers, point) {
 
     }
-
-    #
 
     has(point) {
         return this.#matrix.get(point) !== EMPTY

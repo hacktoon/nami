@@ -1,6 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 
 import { Temperature } from '../../climatology/temperature/data'
+import { Rain } from '../../climatology/rain/data'
 import { Biome } from './data'
 
 
@@ -33,41 +34,43 @@ export class BiomeLayer {
         const temperature = layers.temperature.get(point)
 
         if (temperature.is(Temperature.FROZEN)) {
-            if (rain.isDry() || rain.isArid() && grainedNoise > ICECAP_NOISE)
+            const isIcecap = grainedNoise > ICECAP_NOISE
+            if (rain.is(Rain.DRY) || rain.is(Rain.ARID) && isIcecap)
                 return Biome.ICECAP
             return Biome.TUNDRA
         }
 
         if (temperature.is(Temperature.COLD)) {
-            if (rain.isHumid()) return Biome.TUNDRA
-            if (rain.isArid()) return Biome.GRASSLANDS
+            if (rain.is(Rain.HUMID)) return Biome.TUNDRA
+            if (rain.is(Rain.ARID)) return Biome.GRASSLANDS
             return Biome.TAIGA
         }
 
         if (temperature.is(Temperature.TEMPERATE)) {
-            if (rain.isHumid()) return Biome.TAIGA
-            if (rain.isWet()) return Biome.WOODLANDS
-            if (rain.isSeasonal()) return Biome.WOODLANDS
-            if (rain.isDry() || rain.isArid()) return Biome.GRASSLANDS
+            if (rain.is(Rain.HUMID)) return Biome.TAIGA
+            if (rain.is(Rain.WET)) return Biome.WOODLANDS
+            if (rain.is(Rain.SEASONAL)) return Biome.WOODLANDS
+            if (rain.is(Rain.DRY)) return Biome.GRASSLANDS
+            if (rain.is(Rain.ARID)) return Biome.SAVANNA
         }
 
         if (temperature.is(Temperature.WARM)) {
             const isRiverMouth = layers.hydro.isMouth(point)
             if (isRiverMouth && grainedNoise > MANGROVE_NOISE) return Biome.MANGROVE
-            if (rain.isHumid()) return Biome.JUNGLE
-            if (rain.isWet()) return Biome.WOODLANDS
-            if (rain.isSeasonal()) return Biome.GRASSLANDS
-            if (rain.isDry()) return Biome.SAVANNA
-            if (rain.isArid()) return Biome.DESERT
+            if (rain.is(Rain.HUMID)) return Biome.JUNGLE
+            if (rain.is(Rain.WET)) return Biome.WOODLANDS
+            if (rain.is(Rain.SEASONAL)) return Biome.GRASSLANDS
+            if (rain.is(Rain.DRY)) return Biome.SAVANNA
         }
 
         if (temperature.is(Temperature.HOT)) {
             if (layers.hydro.isMouth(point)) return Biome.MANGROVE
-            if (rain.isHumid() || rain.isWet()) return Biome.JUNGLE
-            if (rain.isSeasonal()) return Biome.JUNGLE
-            if (rain.isDry()) return Biome.SAVANNA
-            return Biome.DESERT
+            if (rain.is(Rain.HUMID) || rain.is(Rain.WET)) return Biome.JUNGLE
+            if (rain.is(Rain.SEASONAL)) return Biome.JUNGLE
+            if (rain.is(Rain.DRY)) return Biome.SAVANNA
         }
+
+        return Biome.DESERT
     }
 
     #buildWaterBiome(layers, point) {

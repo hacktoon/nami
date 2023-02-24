@@ -3,27 +3,27 @@ import { Color } from '/src/lib/color'
 
 const SPEC = [
     {
-        id: 5,
+        id: 0,
         name: 'Humid',
         color: Color.fromHex('#b067ff'),
     },
     {
-        id: 4,
+        id: 1,
         name: 'Wet',
         color: Color.fromHex('#8567ff'),
     },
     {
-        id: 3,
+        id: 2,
         name: 'Seasonal',
         color: Color.fromHex('#89abff'),
     },
     {
-        id: 2,
+        id: 3,
         name: 'Dry',
         color: Color.fromHex('#c8ffc9'),
     },
     {
-        id: 1,
+        id: 4,
         name: 'Arid',
         color: Color.fromHex('#ffce64'),
     }
@@ -43,16 +43,15 @@ export class Rain {
         this.name = spec.name
         this.color = spec.color
     }
+
+    is(type) {
+        return this.id === type.id
+    }
 }
 
 
 SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
-    const methodName = `is${spec.name}`
     // add object as constant
     Rain[name] = new Rain(spec)
-    // add method for comparison
-    Rain.prototype[methodName] = function() {
-        return this.id === spec.id
-    }
 })
