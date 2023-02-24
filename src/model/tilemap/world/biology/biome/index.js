@@ -1,6 +1,8 @@
 import { Matrix } from '/src/lib/matrix'
 
+import { Temperature } from '../../climatology/temperature/data'
 import { Biome } from './data'
+
 
 
 const CORAL_REEF_NOISE = .6
@@ -26,30 +28,30 @@ export class BiomeLayer {
     }
 
     #buildLandBiome(layers, point) {
-        const rain = layers.rain.get(point)
         const grainedNoise = layers.noise.getGrained(point)
+        const rain = layers.rain.get(point)
         const temperature = layers.temperature.get(point)
 
-        if (temperature.isFrozen()) {
+        if (temperature.is(Temperature.FROZEN)) {
             if (rain.isDry() || rain.isArid() && grainedNoise > ICECAP_NOISE)
                 return Biome.ICECAP
             return Biome.TUNDRA
         }
 
-        if (temperature.isCold()) {
+        if (temperature.is(Temperature.COLD)) {
             if (rain.isHumid()) return Biome.TUNDRA
             if (rain.isArid()) return Biome.GRASSLANDS
             return Biome.TAIGA
         }
 
-        if (temperature.isTemperate()) {
+        if (temperature.is(Temperature.TEMPERATE)) {
             if (rain.isHumid()) return Biome.TAIGA
             if (rain.isWet()) return Biome.WOODLANDS
             if (rain.isSeasonal()) return Biome.WOODLANDS
             if (rain.isDry() || rain.isArid()) return Biome.GRASSLANDS
         }
 
-        if (temperature.isWarm()) {
+        if (temperature.is(Temperature.WARM)) {
             const isRiverMouth = layers.hydro.isMouth(point)
             if (isRiverMouth && grainedNoise > MANGROVE_NOISE) return Biome.MANGROVE
             if (rain.isHumid()) return Biome.JUNGLE
@@ -59,7 +61,7 @@ export class BiomeLayer {
             if (rain.isArid()) return Biome.DESERT
         }
 
-        if (temperature.isHot()) {
+        if (temperature.is(Temperature.HOT)) {
             if (layers.hydro.isMouth(point)) return Biome.MANGROVE
             if (rain.isHumid() || rain.isWet()) return Biome.JUNGLE
             if (rain.isSeasonal()) return Biome.JUNGLE
@@ -68,16 +70,16 @@ export class BiomeLayer {
         }
     }
 
-
     #buildWaterBiome(layers, point) {
         const grainedNoise = layers.noise.getGrained(point)
         const temperature = layers.temperature.get(point)
-        if (temperature.isFrozen() && grainedNoise > ICECAP_NOISE) {
+        if (temperature.is(Temperature.FROZEN) && grainedNoise > ICECAP_NOISE) {
             return Biome.ICECAP
         }
         if (layers.relief.isTrench(point)) return Biome.TRENCH
         if (layers.relief.isPlatform(point)) {
-            const isReefTemp = temperature.isWarm() || temperature.isHot()
+            const isReefTemp = temperature.is(Temperature.WARM)
+                               || temperature.is(Temperature.HOT)
             const isBorder = layers.relief.isBorder(point)
             const isOcean = layers.surface.isOcean(point)
             const isNoise = grainedNoise > CORAL_REEF_NOISE
@@ -87,7 +89,6 @@ export class BiomeLayer {
         }
         return Biome.OCEAN
     }
-
 
     get(point) {
         const id = this.#matrix.get(point)

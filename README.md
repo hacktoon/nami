@@ -26,6 +26,7 @@
 
 
 ### WorldTileMap
+  - Make temperature dynamic using noise offset and season `temp.get(point, season)`
   - Create ContinentLayer (maybe)
     - Use 32x32 tilemap with regionMap borders for separating landmasses
     - border points get a grained island noise

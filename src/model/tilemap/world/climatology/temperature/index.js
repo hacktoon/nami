@@ -8,20 +8,18 @@ const WARM_RATIO = .5
 const HOT_RATIO = .75
 
 
-// TODO: temp is dynamic, make noise offset and loop
-
 export class TemperatureLayer {
     #matrix
 
     constructor(rect, layers) {
         this.#matrix = Matrix.fromRect(rect, point => {
             const noise = layers.noise.getAtmos(point)
-            let temp = Temperature.FROZEN
-            if (noise > COLD_RATIO) temp = Temperature.COLD
-            if (noise > TEMPERATE_RATIO) temp = Temperature.TEMPERATE
-            if (noise > WARM_RATIO) temp = Temperature.WARM
-            if (noise > HOT_RATIO) temp = Temperature.HOT
-            return temp.id
+            let temperature = Temperature.FROZEN
+            if (noise > COLD_RATIO)      temperature = Temperature.COLD
+            if (noise > TEMPERATE_RATIO) temperature = Temperature.TEMPERATE
+            if (noise > WARM_RATIO)      temperature = Temperature.WARM
+            if (noise > HOT_RATIO)       temperature = Temperature.HOT
+            return temperature.id
         })
     }
 

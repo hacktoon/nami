@@ -50,16 +50,15 @@ export class Temperature {
         this.name = spec.name
         this.color = spec.color
     }
+
+    is(type) {
+        return this.id === type.id
+    }
 }
 
 
 SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
-    const methodName = `is${spec.name}`
     // add object as constant
     Temperature[name] = new Temperature(spec)
-    // add method for comparison
-    Temperature.prototype[methodName] = function() {
-        return this.id === spec.id
-    }
 })
