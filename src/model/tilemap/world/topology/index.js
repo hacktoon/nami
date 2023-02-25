@@ -9,7 +9,7 @@ import { Place } from './data'
 
 const EMPTY = null
 const WATER_CITY_CHANCE = .005
-const MIN_DISTANCE_RATIO = .1
+const CITY_MIN_DISTANCE = 2
 
 
 export class TopologyLayer {
@@ -51,7 +51,7 @@ export class TopologyLayer {
     }
 
     #buildCity(rect, center, candidateCityPoints) {
-        const radius = 2
+        const radius = CITY_MIN_DISTANCE
         Point.insideCircle(center, radius, point => {
             candidateCityPoints.delete(rect.wrap(point))
         })
