@@ -9,6 +9,7 @@ import { TileMapDiagram } from '/src/model/tilemap/lib'
 
 const RIVER_SOUCE_COLOR = '#44F'
 const RIVER_COLOR = '#00F'
+const CITY_COLOR = '#000'
 const DEFAULT_LAYER = 'biome'
 const LAYERS = [
     {value: 'surface', label: 'Surface'},
@@ -27,6 +28,7 @@ const SCHEMA = new Schema(
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showLakes', 'Lakes', {default: true}),
+    Type.boolean('showCities', 'Cities', {default: false}),
 )
 
 
@@ -114,8 +116,12 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const isRiver = layers.hydro.has(point)
         const isRiverSource = layers.hydro.isRiverSource(point)
         const isLake = layers.hydro.isLake(point)
+        const isCity = layers.topo.has(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
             this.#drawRiver(props)
+        }
+        if (isCity && this.params.get('showCities')) {
+            this.#drawCity(props)
         }
         if (isRiverSource && this.params.get('showRiverSources')) {
             this.#drawRiverSource(props)
@@ -123,6 +129,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (isLake && this.params.get('showLakes')) {
             this.#drawLake(props)
         }
+    }
+
+    #drawCity({canvas, canvasPoint, size}) {
+        const midSize = Math.round(size / 2)
+        canvas.rect(canvasPoint, midSize, CITY_COLOR)
     }
 
     #drawRiverSource({canvas, canvasPoint, size}) {
