@@ -121,7 +121,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             this.#drawRiver(props)
         }
         if (isCity && this.params.get('showCities')) {
-            this.#drawCity(props)
+            drawCity(props)
         }
         if (isRiverSource && this.params.get('showRiverSources')) {
             this.#drawRiverSource(props)
@@ -131,19 +131,14 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    #drawCity({canvas, canvasPoint, size}) {
-        const midSize = Math.round(size / 2)
-        canvas.rect(canvasPoint, midSize, CITY_COLOR)
-    }
-
     #drawRiverSource({canvas, canvasPoint, size}) {
         const midSize = Math.round(size / 4)
         canvas.rect(canvasPoint, midSize, RIVER_SOUCE_COLOR)
     }
 
     #drawLake({canvas, canvasPoint, size}) {
-        const midSize = Math.round(size / 2)
-        const radius = Math.round(size / 3)
+        const midSize = Math.round(size / 1.5)
+        const radius = Math.round(size / 4)
         const midPoint = Point.plusScalar(canvasPoint, midSize)
         canvas.circle(midPoint, radius, RIVER_COLOR)
     }
@@ -181,5 +176,26 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             width = Math.floor(size / 15)
         }
         return clamp(width, 1, maxWidth)
+    }
+}
+
+
+function drawCity({canvas, canvasPoint, size}) {
+    const template = [
+        [0, 0, 1, 0, 0],
+        [0, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 0],
+        [0, 1, 1, 1, 0],
+    ]
+    const pixelSize = Math.round(size / 2 / template.length)
+    for (let y = 0; y < template.length; y++) {
+        for (let x = 0; x < template[y].length; x++) {
+            const hasPixel = Boolean(template[y][x])
+            if (! hasPixel) continue
+            const offsetPoint = [pixelSize * x, pixelSize * y]
+            const point = Point.plus(canvasPoint, offsetPoint)
+            canvas.rect(point, pixelSize, CITY_COLOR)
+        }
     }
 }

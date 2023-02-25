@@ -9,7 +9,7 @@ import { Place } from './data'
 
 const EMPTY = null
 const WATER_CITY_CHANCE = .005
-const CITY_MIN_DISTANCE = 2
+const CITY_MIN_DISTANCE = 3
 
 
 export class TopologyLayer {
