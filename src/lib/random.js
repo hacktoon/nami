@@ -26,6 +26,8 @@ export class Random {
     }
 
     static int(lower=1, upper) {
+        // return a number in close bounds
+        // includes lower and upper values in results
         let num = Random.float()
 
         lower = parseInt(lower, 10)
@@ -61,7 +63,6 @@ export class Random {
         return ((t ^ t >>> 14) >>> 0) / 2 ** 32
     }
 }
-
 
 function _hash(seed) {
     let h = 61 ^ seed ^ seed >>> 16
