@@ -1,5 +1,6 @@
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
+import { PointArraySet } from './set'
 
 
 const ADJACENT_NEIGHBORHOOD = [
@@ -86,6 +87,22 @@ export class Point {
         return points
     }
 
+    static insideCircle(center, radius, callback) {
+        // Bounding circle algorithm
+        // https://www.redblobgames.com/grids/circle-drawing/
+        const top    = center[1] - radius
+        const bottom = center[1] + radius
+        for (let y = top; y <= bottom; y++) {
+            const dy    = y - center[1]
+            const dx    = Math.sqrt(radius * radius - dy * dy)
+            const left  = Math.ceil(center[0] - dx)
+            const right = Math.floor(center[0] + dx)
+            for (let x = left; x <= right; x++) {
+                callback([x, y])
+            }
+        }
+    }
+
     static distance(p1, p2) {
         let deltaX = Math.pow(p1[0] - p2[0], 2),
             deltaY = Math.pow(p1[1] - p2[1], 2)
@@ -104,4 +121,28 @@ export class Point {
     static atSoutheast(p) { return [p[0] + 1, p[1] + 1] }
     static atNorthwest(p) { return [p[0] - 1, p[1] - 1] }
     static atSouthwest(p) { return [p[0] - 1, p[1] + 1] }
+}
+
+
+
+export class EvenPointSampling {
+    static create(rect, radius) {
+        const samples = []
+        const pointSet = PointArraySet.fromRect(rect)
+
+        while(pointSet.size > 0) {
+            const center = pointSet.random()
+            Point.insideCircle(center, radius, point => {
+                pointSet.delete(rect.wrap(point))
+            })
+            samples.push(center)
+        }
+        if (samples.length === 1) {
+            const point = samples[0]
+            const x = point[0] + Math.round(rect.width / 2)
+            const y = point[1] + Math.round(rect.height / 2)
+            samples.push(rect.wrap([x, y]))
+        }
+        return samples
+    }
 }

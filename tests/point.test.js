@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 import { Rect } from '/src/lib/number'
-import { IndexedPointSet } from '/src/lib/point/set'
+import { PointArraySet } from '/src/lib/point/set'
 
 
 test("point multiplication", () => {
@@ -22,7 +22,7 @@ test("point multiplication second parameter", () => {
 
 
 //////////////////////////////////////////////////////
-// IndexedPointSet
+// PointArraySet
 //////////////////////////////////////////////////////
 
 const POINT_SET = [
@@ -30,20 +30,20 @@ const POINT_SET = [
 ]
 
 
-test("Empty IndexedPointSet has size zero", () => {
-    const ptIndexSet = new IndexedPointSet()
+test("Empty PointArraySet has size zero", () => {
+    const ptIndexSet = new PointArraySet()
     expect(ptIndexSet.size).toBe(0)
 })
 
 
-test("IndexedPointSet with points has size x", () => {
-    const ptIndexSet = new IndexedPointSet(POINT_SET)
+test("PointArraySet with points has size x", () => {
+    const ptIndexSet = new PointArraySet(POINT_SET)
     expect(ptIndexSet.size).toBe(POINT_SET.length)
 })
 
 
-test("IndexedPointSet add same item", () => {
-    const ptIndexSet = new IndexedPointSet()
+test("PointArraySet add same item", () => {
+    const ptIndexSet = new PointArraySet()
     ptIndexSet.add([0, 0])
     ptIndexSet.add([0, 0])
     expect(ptIndexSet.has([0, 0])).toBe(true)
@@ -51,8 +51,8 @@ test("IndexedPointSet add same item", () => {
 })
 
 
-test("IndexedPointSet has a point", () => {
-    const ptIndexSet = new IndexedPointSet(POINT_SET)
+test("PointArraySet has a point", () => {
+    const ptIndexSet = new PointArraySet(POINT_SET)
     expect(ptIndexSet.has([0, 0])).toBe(true)
     expect(ptIndexSet.has([0, 1])).toBe(true)
     expect(ptIndexSet.has([0, 2])).toBe(true)
@@ -60,22 +60,22 @@ test("IndexedPointSet has a point", () => {
 })
 
 
-test("IndexedPointSet delete", () => {
-    const ptIndexSet = new IndexedPointSet(POINT_SET)
+test("PointArraySet delete", () => {
+    const ptIndexSet = new PointArraySet(POINT_SET)
     ptIndexSet.delete([0, 0])
     expect(ptIndexSet.has([0, 0])).toBe(false)
 })
 
-test("IndexedPointSet delete same item", () => {
-    const ptIndexSet = new IndexedPointSet(POINT_SET)
+test("PointArraySet delete same item", () => {
+    const ptIndexSet = new PointArraySet(POINT_SET)
     ptIndexSet.delete([0, 0])
     ptIndexSet.delete([0, 0])
     expect(ptIndexSet.size).toBe(POINT_SET.length - 1)
 })
 
 
-test("IndexedPointSet random", () => {
-    const ptIndexSet = new IndexedPointSet(POINT_SET)
+test("PointArraySet random", () => {
+    const ptIndexSet = new PointArraySet(POINT_SET)
     const rndPoint = ptIndexSet.random()
     expect(ptIndexSet.has(rndPoint)).toBe(true)
     ptIndexSet.delete(rndPoint)
@@ -83,9 +83,9 @@ test("IndexedPointSet random", () => {
 })
 
 
-test("IndexedPointSet build from Rect", () => {
+test("PointArraySet build from Rect", () => {
     const rect = new Rect(2, 2)
-    const ptIndexSet = IndexedPointSet.fromRect(rect)
+    const ptIndexSet = PointArraySet.fromRect(rect)
     expect(ptIndexSet.has([0, 0])).toBe(true)
     expect(ptIndexSet.has([0, 1])).toBe(true)
     expect(ptIndexSet.has([1, 0])).toBe(true)
@@ -94,8 +94,8 @@ test("IndexedPointSet build from Rect", () => {
 })
 
 
-test("IndexedPointSet forEach", () => {
-    const ptIndexSet = new IndexedPointSet(POINT_SET)
+test("PointArraySet forEach", () => {
+    const ptIndexSet = new PointArraySet(POINT_SET)
     let index = 0
     ptIndexSet.forEach(point => {
         expect(point).toStrictEqual(POINT_SET[index])

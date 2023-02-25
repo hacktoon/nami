@@ -1,7 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
-import { PointSet } from '/src/lib/point/set'
+import { PointSet, PointArraySet } from '/src/lib/point/set'
 
 import { Temperature } from '../climatology/temperature/data'
 import { Place } from './data'
@@ -16,19 +16,18 @@ export class TopologyLayer {
     // Define locations and features and their relation
     // cities, caves, ruins, dungeons
     #matrix
-    // there may be cities on these points
     #cityPoints
 
     constructor(rect, layers) {
-        const candidateCityPoints = []
+        const candidateCityPoints = new PointArraySet()
         this.#matrix = Matrix.fromRect(rect, point => {
             if (this.#isCandidateCity(layers, point)) {
-                candidateCityPoints.push(point)
+                candidateCityPoints.add(point)
             }
             // set matrix init value
             return EMPTY
         })
-        this.#cityPoints = this.#buildCities(candidateCityPoints)
+        this.#cityPoints = this.#buildCities(rect, candidateCityPoints)
     }
 
     #isCandidateCity(layers, point) {
@@ -41,13 +40,21 @@ export class TopologyLayer {
         return isWaterCity || isLandCity
     }
 
-    #buildCities(candidateCityPoints) {
+    #buildCities(rect, candidateCityPoints) {
         const cities = new PointSet()
-        while (candidateCityPoints.length > 0) {
-            const point = dequeueRandomItem(candidateCityPoints)
+        while (candidateCityPoints.size > 0) {
+            const point = candidateCityPoints.random()
+            const city = this.#buildCity(rect, point, candidateCityPoints)
             cities.add(point)
         }
         return cities
+    }
+
+    #buildCity(rect, center, candidateCityPoints) {
+        const radius = 2
+        Point.insideCircle(center, radius, point => {
+            candidateCityPoints.delete(rect.wrap(point))
+        })
     }
 
     has(point) {
@@ -65,16 +72,4 @@ export class TopologyLayer {
     getText(point) {
 
     }
-}
-
-
-function dequeueRandomItem(arr) {
-    const lastIndex = arr.length - 1
-    const randomIndex = Random.int(0, lastIndex)
-    const value = arr[randomIndex]
-    // copy last item to chosen index
-    arr[randomIndex] = arr[lastIndex]
-    // remove last item (faster operation)
-    arr.pop()
-    return value
 }

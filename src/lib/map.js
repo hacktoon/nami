@@ -2,6 +2,8 @@ import { Random } from "/src/lib/random"
 
 
 export class IndexMap {
+    // This structure allows searching in a Map
+    // allows getting a random item without converting Map to Array
     #items = []
     #indexMap = new Map()
 

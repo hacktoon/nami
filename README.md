@@ -8,8 +8,8 @@
 ## PLANNING
 
 ### General
-- Rename Diagram to PixelMap
-- Introduce a chunk map viewer on sidebar
+- Get zoom on draw methods of Diagram
+  - Make it a parameter for detailed rendering
 - Optimize canvas rendering
   - Use offscreen canvas
   - When map fills screen entirely, snap canvas to viewport,

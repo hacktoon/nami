@@ -3,7 +3,7 @@ import { IndexMap } from '/src/lib/map'
 /**
  * This class represents zero ou many points [x, y] in an infinite space.
  */
-export class IndexedPointSet {
+export class PointArraySet {
     #size = 0
     #xIndexMap = new IndexMap()
     #xValueMap = new Map()
@@ -15,7 +15,7 @@ export class IndexedPointSet {
     }
 
     static fromRect(rect) {
-        const pointSet = new IndexedPointSet()
+        const pointSet = new PointArraySet()
         for(let x = 0; x < rect.width; x++) {
             for(let y = 0; y < rect.height; y++) {
                 pointSet.add([x, y])

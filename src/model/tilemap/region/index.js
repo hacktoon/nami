@@ -4,7 +4,7 @@ import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 import { Matrix } from '/src/lib/matrix'
 import { Graph } from '/src/lib/graph'
-import { EvenPointSampling } from '/src/lib/point/sampling'
+import { EvenPointSampling } from '/src/lib/point'
 import { PointMap } from '/src/lib/point/map'
 
 import { TileMap } from '/src/model/tilemap/lib'
