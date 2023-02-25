@@ -164,7 +164,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (river.flowRate < 4) {  // creeks
             width = 1
         }
-        else if (river.flowRate < 20) { // medium rivers
+        else if (river.flowRate < 24) { // medium rivers
             width = Math.floor(size / 15)
         }
         return clamp(width, 1, maxWidth)

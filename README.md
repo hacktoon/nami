@@ -27,6 +27,7 @@
     - border points get a grained island noise
 
 ### HydrologyLayer
+  - Set river type on flow to avoid `#buildRiverWidth` function on Diagram
   - River that start on small seas can't go much further
   - Height of terrain often make waterfalls or rapids
 
