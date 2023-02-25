@@ -20,6 +20,7 @@
 
 
 ### WorldTileMap
+  - Each chunk has 4 spawn points and a default (e.g. when player uses teleport)
   - Cities start more often on outer borders of land
   - Make temperature dynamic using noise offset and season `temp.get(point, season)`
   - Create ContinentLayer (maybe)

@@ -7,27 +7,28 @@ import { Temperature } from '../climatology/temperature/data'
 import { Place } from './data'
 
 
-const EMPTY = null
 const WATER_CITY_CHANCE = .005
-const CITY_MIN_DISTANCE = 3
+const CITY_RADIUS = 3
 
 
 export class TopologyLayer {
     // Define locations and features and their relation
     // cities, caves, ruins, dungeons
-    #matrix
+    #placeMap = new Map()
     #cityPoints
+    #realmCount
 
-    constructor(rect, layers) {
+    constructor(rect, layers, realmCount) {
         const candidateCityPoints = new PointArraySet()
-        this.#matrix = Matrix.fromRect(rect, point => {
+        Matrix.fromRect(rect, point => {
             if (this.#isCandidateCity(layers, point)) {
                 candidateCityPoints.add(point)
             }
             // set matrix init value
-            return EMPTY
+            this.#placeMap.set(point, 1)
         })
         this.#cityPoints = this.#buildCities(rect, candidateCityPoints)
+        this.#realmCount = realmCount
     }
 
     #isCandidateCity(layers, point) {
@@ -41,20 +42,25 @@ export class TopologyLayer {
     }
 
     #buildCities(rect, candidateCityPoints) {
-        const cities = new PointSet()
+        const cityPoints = new PointSet()
+        let realmId = this.#realmCount
         while (candidateCityPoints.size > 0) {
-            const point = candidateCityPoints.random()
-            const city = this.#buildCity(rect, point, candidateCityPoints)
-            cities.add(point)
+            const center = candidateCityPoints.random()
+            let isCapital = false
+            // remove candidate points around a city center
+            Point.insideCircle(center, CITY_RADIUS, point => {
+                candidateCityPoints.delete(rect.wrap(point))
+            })
+            isCapital = realmId > 0
+            cityPoints.add(center)
+            realmId--
         }
-        return cities
+        return cityPoints
     }
 
-    #buildCity(rect, center, candidateCityPoints) {
-        const radius = CITY_MIN_DISTANCE
-        Point.insideCircle(center, radius, point => {
-            candidateCityPoints.delete(rect.wrap(point))
-        })
+    #buildCity(rect, candidateCityPoints) {
+
+        return {}
     }
 
     has(point) {
@@ -62,7 +68,7 @@ export class TopologyLayer {
     }
 
     get(point) {
-        return this.#matrix.get(point)
+        return this.#placeMap.get(point)
     }
 
     getTotalCities() {

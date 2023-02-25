@@ -21,6 +21,7 @@ const SCHEMA = new Schema(
     'WorldTileMap',
     Type.rect('rect', 'Size', {default: '64x64', min:'2x2', max:'100x100'}),
     Type.text('seed', 'Seed', {default: ''}),
+    Type.number('realms', 'Realms', {default: 6, min: 2, max: 10}),
 )
 
 
@@ -37,6 +38,7 @@ export class WorldTileMap extends TileMap {
         super(params)
         const rect = this.rect
         const layers = {}
+        const realmCount = params.get('realms')
         layers.noise = new NoiseLayer(rect, this.seed)
         layers.surface = new SurfaceLayer(rect, layers)
         layers.relief = new ReliefLayer(rect, layers)
@@ -45,7 +47,7 @@ export class WorldTileMap extends TileMap {
         layers.erosion = new ErosionLayer(rect, layers)
         layers.hydro = new HydrologyLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
-        layers.topo = new TopologyLayer(rect, layers)
+        layers.topo = new TopologyLayer(rect, layers, realmCount)
         // layers.terrain = new TerrainLayer(rect, layers)
         this.layers = layers
     }
