@@ -17,19 +17,18 @@ export class TopologyLayer {
     // cities, caves, ruins, dungeons
     #matrix
     // there may be cities on these points
-    #cityPoints = new PointSet()
+    #cityPoints
 
     constructor(rect, layers) {
-        const candidateCityPoints = new PointSet()
+        const candidateCityPoints = []
         this.#matrix = Matrix.fromRect(rect, point => {
             if (this.#isCandidateCity(layers, point)) {
-                candidateCityPoints.add(point)
-                this.#cityPoints.add(point)
+                candidateCityPoints.push(point)
             }
             // set matrix init value
             return EMPTY
         })
-        this.#buildCities(candidateCityPoints)
+        this.#cityPoints = this.#buildCities(candidateCityPoints)
     }
 
     #isCandidateCity(layers, point) {
@@ -43,9 +42,12 @@ export class TopologyLayer {
     }
 
     #buildCities(candidateCityPoints) {
-        // while (candidateCityPoints.size > 0) {
-        //     candidateCityPoints.
-        // }
+        const cities = new PointSet()
+        while (candidateCityPoints.length > 0) {
+            const point = dequeueRandomItem(candidateCityPoints)
+            cities.add(point)
+        }
+        return cities
     }
 
     has(point) {
@@ -63,4 +65,16 @@ export class TopologyLayer {
     getText(point) {
 
     }
+}
+
+
+function dequeueRandomItem(arr) {
+    const lastIndex = arr.length - 1
+    const randomIndex = Random.int(0, lastIndex)
+    const value = arr[randomIndex]
+    // copy last item to chosen index
+    arr[randomIndex] = arr[lastIndex]
+    // remove last item (faster operation)
+    arr.pop()
+    return value
 }
