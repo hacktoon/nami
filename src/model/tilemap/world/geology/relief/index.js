@@ -122,6 +122,11 @@ export class ReliefLayer {
         return id === Relief.TRENCH.id
     }
 
+    isPeak(point) {
+        const id = this.#matrix.get(point)
+        return id === Relief.PEAK.id
+    }
+
     isBorder(point) {
         return this.#borders.has(point)
     }
