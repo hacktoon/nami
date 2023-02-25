@@ -8,7 +8,6 @@ import { Place } from './data'
 
 
 const EMPTY = null
-const LAND_CITY_RATIO = .4
 const WATER_CITY_RATIO = .005
 const MIN_DISTANCE_RATIO = .1
 
@@ -22,25 +21,25 @@ export class TopologyLayer {
     #cityPoints = new PointMap()
 
     constructor(rect, layers) {
-        this.#matrix = this.#buildMatrix(rect, layers)
-    }
-
-    #buildMatrix(rect, layers) {
-        return Matrix.fromRect(rect, point => {
-            // detect early features
-            const isBorder = layers.relief.isBorder(point)
-            const isLand = layers.surface.isLand(point)
-            const isRiver = layers.hydro.isRiver(point)
-            const isLake = layers.hydro.isLake(point)
-            const isWaterCity = !isLand && Random.chance(WATER_CITY_RATIO)
-            const isLandCity = isLand && (isRiver || isLake || isBorder)
-            if (isWaterCity || isLandCity) {
-                this.#citySeedPoints.push(point)
-                return 1
-            }
+        this.#matrix = Matrix.fromRect(rect, point => {
+            this.#buildCitySeeds(layers, point)
             // set matrix init value
             return EMPTY
         })
+    }
+
+    #buildCitySeeds(layers, point) {
+        // detect early features
+        const isLand = layers.surface.isLand(point)
+        const isBorder = layers.relief.isBorder(point)
+        const isRiver = layers.hydro.isRiver(point)
+        const isLake = layers.hydro.isLake(point)
+        const isWaterCity = !isLand && Random.chance(WATER_CITY_RATIO)
+        const isLandCity = isLand && (isRiver || isLake || isBorder)
+        if (isWaterCity || isLandCity) {
+            this.#citySeedPoints.push(point)
+            this.#cityPoints.set(point, 1)
+        }
     }
 
     #buildType(layers, point) {
@@ -48,7 +47,7 @@ export class TopologyLayer {
     }
 
     has(point) {
-        return this.#matrix.get(point) !== EMPTY
+        return this.#cityPoints.has(point)
     }
 
     get(point) {

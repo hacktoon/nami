@@ -15,17 +15,12 @@
   - When map fills screen entirely, snap canvas to viewport,
     otherwise translate canvas element
 - Solve `[Violation] 'input' handler` message by storing commands
-
-- Matrix/Grid
-  - Convert to single array
-  - Rename PointSet to GridPointSet to abstract Rect in adjancents
-  - [x, y] -> idx
-  - create a wrappedAdjacents similar to
-      Point.adjacents(parentPoint)
-    that receives a rect
+- Point
+  - create a wrappedAdjacents similar to `Point.adjacents(parentPoint)` that receives a rect
 
 
 ### WorldTileMap
+  - Cities start more often on outer borders of land
   - Make temperature dynamic using noise offset and season `temp.get(point, season)`
   - Create ContinentLayer (maybe)
     - Use 32x32 tilemap with regionMap borders for separating landmasses
