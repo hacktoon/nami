@@ -66,7 +66,7 @@ export class TopologyLayer {
     }
 
     getTotalCities() {
-        return this.#cityPoints.length
+        return this.#cityPoints.size
     }
 
     getText(point) {

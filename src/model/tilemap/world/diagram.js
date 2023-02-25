@@ -176,9 +176,9 @@ function drawLake(baseProps) {
     const template = [
         [0, 0, 0, 0, 0],
         [0, 0, 1, 1, 0],
-        [1, 1, 1, 1, 1],
-        [0, 1, 1, 1, 0],
-        [0, 0, 1, 0, 0],
+        [0, 1, 1, 1, 1],
+        [0, 0, 1, 1, 0],
+        [0, 0, 0, 0, 0],
     ]
     const colorMap = {1: Color.BLUE}
     const midSize = Math.round(baseProps.size / 2)
