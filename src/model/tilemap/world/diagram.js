@@ -9,7 +9,6 @@ import { TileMapDiagram } from '/src/model/tilemap/lib'
 
 const RIVER_SOUCE_COLOR = '#44F'
 const RIVER_COLOR = '#00F'
-const CITY_COLOR = '#000'
 const DEFAULT_LAYER = 'biome'
 const LAYERS = [
     {value: 'surface', label: 'Surface'},
@@ -127,20 +126,13 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             this.#drawRiverSource(props)
         }
         if (isLake && this.params.get('showLakes')) {
-            this.#drawLake(props)
+            drawLake(props)
         }
     }
 
     #drawRiverSource({canvas, canvasPoint, size}) {
         const midSize = Math.round(size / 4)
         canvas.rect(canvasPoint, midSize, RIVER_SOUCE_COLOR)
-    }
-
-    #drawLake({canvas, canvasPoint, size}) {
-        const midSize = Math.round(size / 1.5)
-        const radius = Math.round(size / 4)
-        const midPoint = Point.plusScalar(canvasPoint, midSize)
-        canvas.circle(midPoint, radius, RIVER_COLOR)
     }
 
     #drawRiver({canvas, tilePoint, canvasPoint, size}) {
@@ -180,22 +172,50 @@ export class WorldTileMapDiagram extends TileMapDiagram {
 }
 
 
-function drawCity({canvas, canvasPoint, size}) {
+function drawLake(baseProps) {
+    const template = [
+        [0, 0, 0, 0, 0],
+        [0, 0, 1, 1, 0],
+        [1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 0],
+        [0, 0, 1, 0, 0],
+    ]
+    const colorMap = {1: Color.BLUE}
+    const midSize = Math.round(baseProps.size / 2)
+    const midPoint = Point.plusScalar(baseProps.canvasPoint, midSize)
+    const props = {...baseProps, canvasPoint: midPoint}
+    drawTemplate(props, template, colorMap)
+}
+
+
+function drawCity(props) {
     const template = [
         [0, 0, 1, 0, 0],
         [0, 1, 1, 1, 0],
         [1, 1, 1, 1, 1],
-        [0, 1, 1, 1, 0],
-        [0, 1, 1, 1, 0],
+        [0, 2, 2, 2, 0],
+        [0, 2, 3, 2, 0],
     ]
-    const pixelSize = Math.round(size / 2 / template.length)
+    const colorMap = {
+        1: Color.DARKRED,
+        2: Color.LIGHTGRAY,
+        3: Color.BLACK,
+    }
+    drawTemplate(props, template, colorMap)
+}
+
+
+function drawTemplate(props, template, colorMap) {
+    const {canvas, canvasPoint, size} = props
+    const pixelSize = Math.floor(size / 2 / template.length)
     for (let y = 0; y < template.length; y++) {
         for (let x = 0; x < template[y].length; x++) {
-            const hasPixel = Boolean(template[y][x])
-            if (! hasPixel) continue
+            const pixel = template[y][x]
+            if (pixel === 0) continue
+            const color = colorMap[pixel]
             const offsetPoint = [pixelSize * x, pixelSize * y]
             const point = Point.plus(canvasPoint, offsetPoint)
-            canvas.rect(point, pixelSize, CITY_COLOR)
+            canvas.rect(point, pixelSize, color.toHex())
         }
     }
 }

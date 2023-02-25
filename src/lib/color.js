@@ -34,14 +34,17 @@ const expandShorthand = hex => {
 
 
 export class Color {
+    static TRANSPARENT = null
     static WHITE = Color.fromHex('FFF')
     static YELLOW = Color.fromHex('FF0')
     static RED = Color.fromHex('F00')
+    static DARKRED = Color.fromHex('8b0000')
     static GREEN = Color.fromHex('0F0')
     static PURPLE = Color.fromHex('808')
     static BLUE = Color.fromHex('00F')
     static BLACK = Color.fromHex('000')
     static GRAY = Color.fromHex('666')
+    static LIGHTGRAY = Color.fromHex('d3d3d3')
 
     static fromHex(value) {
         let hex = String(value).trim().replace('#', '')
