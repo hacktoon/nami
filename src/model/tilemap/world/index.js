@@ -21,7 +21,7 @@ const SCHEMA = new Schema(
     'WorldTileMap',
     Type.rect('rect', 'Size', {default: '64x64', min:'2x2', max:'100x100'}),
     Type.text('seed', 'Seed', {default: ''}),
-    Type.number('realms', 'Realms', {default: 6, min: 2, max: 10}),
+    Type.number('realms', 'Realms', {default: 10, min: 3, max: 16}),
 )
 
 

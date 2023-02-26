@@ -115,12 +115,15 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const isRiver = layers.hydro.has(point)
         const isRiverSource = layers.hydro.isRiverSource(point)
         const isLake = layers.hydro.isLake(point)
-        const isCity = layers.topo.has(point)
+        const isCity = layers.topo.isCity(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
             this.#drawRiver(props)
         }
         if (isCity && this.params.get('showCities')) {
-            drawCity(props)
+            if (layers.topo.isCapital(point)) {
+                drawCapital(props)
+            } else
+                drawCity(props)
         }
         if (isRiverSource && this.params.get('showRiverSources')) {
             this.#drawRiverSource(props)
@@ -174,10 +177,10 @@ export class WorldTileMapDiagram extends TileMapDiagram {
 
 function drawLake(baseProps) {
     const template = [
-        [0, 0, 0, 0, 0],
-        [0, 0, 1, 1, 0],
-        [0, 1, 1, 1, 1],
-        [0, 0, 1, 1, 0],
+        [0, 1, 1, 0, 0],
+        [1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 0],
         [0, 0, 0, 0, 0],
     ]
     const colorMap = {1: Color.BLUE}
@@ -203,6 +206,23 @@ function drawCity(props) {
     }
     drawTemplate(props, template, colorMap)
 }
+
+
+function drawCapital(props) {
+    const template = [
+        [1, 0, 1, 0, 1],
+        [1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1],
+        [1, 2, 2, 2, 1],
+        [1, 2, 2, 2, 1],
+    ]
+    const colorMap = {
+        1: Color.GRAY,
+        2: Color.BLACK,
+    }
+    drawTemplate(props, template, colorMap)
+}
+
 
 
 function drawTemplate(props, template, colorMap) {

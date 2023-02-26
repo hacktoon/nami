@@ -16,10 +16,12 @@ export class TopologyLayer {
     // cities, caves, ruins, dungeons
     #placeMap = new Map()
     #cityPoints
+    #capitals = new PointSet()
     #realmCount
 
     constructor(rect, layers, realmCount) {
         const candidateCityPoints = new PointArraySet()
+        this.#realmCount = realmCount
         Matrix.fromRect(rect, point => {
             if (this.#isCandidateCity(layers, point)) {
                 candidateCityPoints.add(point)
@@ -28,7 +30,6 @@ export class TopologyLayer {
             this.#placeMap.set(point, 1)
         })
         this.#cityPoints = this.#buildCities(rect, candidateCityPoints)
-        this.#realmCount = realmCount
     }
 
     #isCandidateCity(layers, point) {
@@ -47,13 +48,13 @@ export class TopologyLayer {
         let realmId = this.#realmCount
         while (candidateCityPoints.size > 0) {
             const center = candidateCityPoints.random()
-            let isCapital = false
-            // remove candidate points around a city center
+            // remove candidate points around a city circle
             Point.insideCircle(center, CITY_RADIUS, point => {
                 candidateCityPoints.delete(rect.wrap(point))
             })
-            isCapital = realmId > 0
             cityPoints.add(center)
+            if (realmId > 0)
+                this.#capitals.add(center)
             realmId--
         }
         return cityPoints
@@ -64,8 +65,12 @@ export class TopologyLayer {
         return {}
     }
 
-    has(point) {
+    isCity(point) {
         return this.#cityPoints.has(point)
+    }
+
+    isCapital(point) {
+        return this.#capitals.has(point)
     }
 
     get(point) {
