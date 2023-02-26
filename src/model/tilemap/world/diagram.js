@@ -117,7 +117,8 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const isLake = layers.hydro.isLake(point)
         const isCity = layers.topo.isCity(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
-            this.#drawRiver(props)
+            const river = this.tileMap.layers.hydro.get(point)
+            drawRiver(river, props)
         }
         if (isCity && this.params.get('showCities')) {
             if (layers.topo.isCapital(point)) {
@@ -136,41 +137,6 @@ export class WorldTileMapDiagram extends TileMapDiagram {
     #drawRiverSource({canvas, canvasPoint, size}) {
         const midSize = Math.round(size / 4)
         canvas.rect(canvasPoint, midSize, RIVER_SOUCE_COLOR)
-    }
-
-    #drawRiver({canvas, tilePoint, canvasPoint, size}) {
-        const point = this.rect.wrap(tilePoint)
-        const river = this.tileMap.layers.hydro.get(point)
-        const riverWidth = this.#buildRiverWidth(river, size)
-        const midSize = Math.round(size / 2)
-        const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-        const meanderOffsetPoint = this.#buildMeanderOffsetPoint(river, size)
-        const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-        for(let axisOffset of river.flowDirections) {
-            // build a point for each present edge midpoint of a tile square
-            const edgeMidPoint = [
-                midCanvasPoint[0] + axisOffset[0] * midSize,
-                midCanvasPoint[1] + axisOffset[1] * midSize
-            ]
-            canvas.line(edgeMidPoint, meanderPoint, riverWidth, RIVER_COLOR)
-        }
-    }
-
-    #buildMeanderOffsetPoint(river, size) {
-        const percentage = river.meander
-        return Point.multiplyScalar(percentage, size)
-    }
-
-    #buildRiverWidth(river, size) {
-        const maxWidth = Math.floor(size / 6)
-        let width = Math.floor(size / 2)
-        if (river.flowRate < 4) {  // creeks
-            width = 1
-        }
-        else if (river.flowRate < 24) { // medium rivers
-            width = Math.floor(size / 15)
-        }
-        return clamp(width, 1, maxWidth)
     }
 }
 
@@ -217,12 +183,11 @@ function drawCapital(props) {
         [1, 2, 2, 2, 1],
     ]
     const colorMap = {
-        1: Color.GRAY,
+        1: Color.fromHex('888'),
         2: Color.BLACK,
     }
     drawTemplate(props, template, colorMap)
 }
-
 
 
 function drawTemplate(props, template, colorMap) {
@@ -238,4 +203,38 @@ function drawTemplate(props, template, colorMap) {
             canvas.rect(point, pixelSize, color.toHex())
         }
     }
+}
+
+
+function drawRiver(river, {canvas, tilePoint, canvasPoint, size}) {
+    const riverWidth = buildRiverWidth(river, size)
+    const midSize = Math.round(size / 2)
+    const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
+    const meanderOffsetPoint = buildMeanderOffsetPoint(river, size)
+    const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
+    for(let axisOffset of river.flowDirections) {
+        // build a point for each present edge midpoint of a tile square
+        const edgeMidPoint = [
+            midCanvasPoint[0] + axisOffset[0] * midSize,
+            midCanvasPoint[1] + axisOffset[1] * midSize
+        ]
+        canvas.line(edgeMidPoint, meanderPoint, riverWidth, RIVER_COLOR)
+    }
+}
+
+function buildMeanderOffsetPoint(river, size) {
+    const percentage = river.meander
+    return Point.multiplyScalar(percentage, size)
+}
+
+function buildRiverWidth(river, size) {
+    const maxWidth = Math.floor(size / 6)
+    let width = Math.floor(size / 2)
+    if (river.flowRate < 4) {  // creeks
+        width = 1
+    }
+    else if (river.flowRate < 24) { // medium rivers
+        width = Math.floor(size / 15)
+    }
+    return clamp(width, 1, maxWidth)
 }
