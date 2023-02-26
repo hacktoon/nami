@@ -4,7 +4,8 @@ import { Color } from '/src/lib/color'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 import {
-    drawCity, drawCapital, drawLake, drawRiver
+    drawCity, drawCapital, drawLake, drawRiver,
+    drawDungeon
 } from '/src/model/tilemap/lib/icon'
 
 
@@ -28,6 +29,7 @@ const SCHEMA = new Schema(
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showLakes', 'Lakes', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
+    Type.boolean('showDungeons', 'Dungeons', {default: false}),
 )
 
 
@@ -115,6 +117,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const isRiver = layers.hydro.has(point)
         const isRiverSource = layers.hydro.isRiverSource(point)
         const isLake = layers.hydro.isLake(point)
+        const isDungeon = layers.topo.isDungeon(point)
         const isCity = layers.topo.isCity(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
             const river = this.tileMap.layers.hydro.get(point)
@@ -131,6 +134,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
         if (isLake && this.params.get('showLakes')) {
             drawLake(props)
+        }
+        if (isDungeon && this.params.get('showDungeons')) {
+            drawDungeon(props)
         }
     }
 

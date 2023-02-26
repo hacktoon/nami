@@ -6,6 +6,8 @@ import { PointSet, PointArraySet } from '/src/lib/point/set'
 
 const WATER_CITY_CHANCE = .005
 const CITY_RADIUS = 3
+const WATER_DUNGEON_CHANCE = .005
+const LAND_DUNGEON_CHANCE = .07
 
 
 export class TopologyLayer {
@@ -13,6 +15,7 @@ export class TopologyLayer {
     // cities, caves, ruins, dungeons
     #placeMap = new Map()
     #cityPoints
+    #dungeonPoints = new PointSet()
     #capitals = new PointSet()
     #realmCount
 
@@ -20,9 +23,11 @@ export class TopologyLayer {
         const possibleCityPoints = new PointArraySet()
         this.#realmCount = realmCount
         Matrix.fromRect(rect, point => {
-            const isPossibleCity = this.#isPossibleCity(layers, point)
-            if (isPossibleCity) {
+            if (this.#isPossibleCity(layers, point)) {
                 possibleCityPoints.add(point)
+            }
+            if (this.#isDungeon(layers, point)) {
+                this.#dungeonPoints.add(point)
             }
             // set matrix init value
             this.#placeMap.set(point, 1)
@@ -39,6 +44,13 @@ export class TopologyLayer {
         const isWaterCity = !isLand && Random.chance(WATER_CITY_CHANCE)
         const isLandCity = isLand && !isPeak && (isRiver || isLake || isBorder)
         return isWaterCity || isLandCity
+    }
+
+    #isDungeon(layers, point) {
+        const isLand = layers.surface.isLand(point)
+        const isWaterDungeon = !isLand && Random.chance(WATER_DUNGEON_CHANCE)
+        const isLandDungeon = isLand && Random.chance(LAND_DUNGEON_CHANCE)
+        return isWaterDungeon || isLandDungeon
     }
 
     #buildCities(rect, possibleCityPoints) {
@@ -64,6 +76,10 @@ export class TopologyLayer {
 
     isCapital(point) {
         return this.#capitals.has(point)
+    }
+
+    isDungeon(point) {
+        return this.#dungeonPoints.has(point)
     }
 
     get(point) {
