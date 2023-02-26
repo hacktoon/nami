@@ -1,14 +1,14 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
-import { clamp } from '/src/lib/number'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
+import {
+    drawCity, drawCapital, drawLake, drawRiver
+} from '/src/model/tilemap/lib/icon'
 
 
 const RIVER_SOUCE_COLOR = '#44F'
-const RIVER_COLOR = '#00F'
 const DEFAULT_LAYER = 'biome'
 const LAYERS = [
     {value: 'surface', label: 'Surface'},
@@ -138,103 +138,4 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const midSize = Math.round(size / 4)
         canvas.rect(canvasPoint, midSize, RIVER_SOUCE_COLOR)
     }
-}
-
-
-function drawLake(baseProps) {
-    const template = [
-        [0, 1, 1, 0, 0],
-        [1, 1, 1, 1, 0],
-        [1, 1, 1, 1, 1],
-        [0, 1, 1, 1, 0],
-        [0, 0, 0, 0, 0],
-    ]
-    const colorMap = {1: Color.BLUE}
-    const midSize = Math.round(baseProps.size / 2)
-    const midPoint = Point.plusScalar(baseProps.canvasPoint, midSize)
-    const props = {...baseProps, canvasPoint: midPoint}
-    drawTemplate(props, template, colorMap)
-}
-
-
-function drawCity(props) {
-    const template = [
-        [0, 0, 1, 0, 0],
-        [0, 1, 1, 1, 0],
-        [1, 1, 1, 1, 1],
-        [0, 2, 2, 2, 0],
-        [0, 2, 3, 2, 0],
-    ]
-    const colorMap = {
-        1: Color.DARKRED,
-        2: Color.LIGHTGRAY,
-        3: Color.BLACK,
-    }
-    drawTemplate(props, template, colorMap)
-}
-
-
-function drawCapital(props) {
-    const template = [
-        [1, 0, 1, 0, 1],
-        [1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1],
-        [1, 2, 2, 2, 1],
-        [1, 2, 2, 2, 1],
-    ]
-    const colorMap = {
-        1: Color.fromHex('888'),
-        2: Color.BLACK,
-    }
-    drawTemplate(props, template, colorMap)
-}
-
-
-function drawTemplate(props, template, colorMap) {
-    const {canvas, canvasPoint, size} = props
-    const pixelSize = Math.floor(size / 2 / template.length)
-    for (let y = 0; y < template.length; y++) {
-        for (let x = 0; x < template[y].length; x++) {
-            const pixel = template[y][x]
-            if (pixel === 0) continue
-            const color = colorMap[pixel]
-            const offsetPoint = [pixelSize * x, pixelSize * y]
-            const point = Point.plus(canvasPoint, offsetPoint)
-            canvas.rect(point, pixelSize, color.toHex())
-        }
-    }
-}
-
-
-function drawRiver(river, {canvas, tilePoint, canvasPoint, size}) {
-    const riverWidth = buildRiverWidth(river, size)
-    const midSize = Math.round(size / 2)
-    const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-    const meanderOffsetPoint = buildMeanderOffsetPoint(river, size)
-    const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-    for(let axisOffset of river.flowDirections) {
-        // build a point for each present edge midpoint of a tile square
-        const edgeMidPoint = [
-            midCanvasPoint[0] + axisOffset[0] * midSize,
-            midCanvasPoint[1] + axisOffset[1] * midSize
-        ]
-        canvas.line(edgeMidPoint, meanderPoint, riverWidth, RIVER_COLOR)
-    }
-}
-
-function buildMeanderOffsetPoint(river, size) {
-    const percentage = river.meander
-    return Point.multiplyScalar(percentage, size)
-}
-
-function buildRiverWidth(river, size) {
-    const maxWidth = Math.floor(size / 6)
-    let width = Math.floor(size / 2)
-    if (river.flowRate < 4) {  // creeks
-        width = 1
-    }
-    else if (river.flowRate < 24) { // medium rivers
-        width = Math.floor(size / 15)
-    }
-    return clamp(width, 1, maxWidth)
 }
