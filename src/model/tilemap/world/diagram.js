@@ -28,8 +28,8 @@ const SCHEMA = new Schema(
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showLakes', 'Lakes', {default: true}),
-    Type.boolean('showCities', 'Cities', {default: false}),
-    Type.boolean('showDungeons', 'Dungeons', {default: false}),
+    Type.boolean('showCities', 'Cities', {default: true}),
+    Type.boolean('showDungeons', 'Dungeons', {default: true}),
 )
 
 
