@@ -4,10 +4,10 @@ import { Point } from '/src/lib/point'
 import { PointSet, PointArraySet } from '/src/lib/point/set'
 
 
-const WATER_CITY_CHANCE = .005
 const CITY_RADIUS = 3
-const WATER_DUNGEON_CHANCE = .005
-const LAND_DUNGEON_CHANCE = .07
+const WATER_CITY_CHANCE = .005
+const WATER_DUNGEON_CHANCE = .02
+const LAND_DUNGEON_CHANCE = .08
 
 
 export class TopologyLayer {
