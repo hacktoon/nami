@@ -25,27 +25,27 @@ const SPEC = [
     {
         id: 4,
         name: 'Basin',
-        color: Color.fromHex('#71b13e'),
+        color: Color.fromHex('#7A7'),
     },
     {
         id: 5,
         name: 'Plain',
-        color: Color.fromHex('#99d966'),
+        color: Color.fromHex('#8B8'),
     },
     {
         id: 6,
         name: 'Plateau',
-        color: Color.fromHex('#d3e27e'),
+        color: Color.fromHex('#9C9'),
     },
     {
         id: 7,
         name: 'Mountain',
-        color: Color.fromHex('#b8ad82'),
+        color: Color.fromHex('#ADA'),
     },
     {
         id: 8,
         name: 'Peak',
-        color: Color.fromHex('#dbd9cd'),
+        color: Color.fromHex('#BFB'),
     }
 ]
 

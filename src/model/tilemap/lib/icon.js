@@ -3,7 +3,7 @@ import { Color } from '/src/lib/color'
 import { clamp } from '/src/lib/number'
 
 
-const RIVER_COLOR = '#00F'
+const RIVER_COLOR = '#2878a0'
 
 
 export function drawLake(baseProps) {
@@ -14,7 +14,7 @@ export function drawLake(baseProps) {
         [0, 1, 1, 1, 0],
         [0, 0, 0, 0, 0],
     ]
-    const colorMap = {1: Color.BLUE}
+    const colorMap = {1: Color.fromHex(RIVER_COLOR)}
     const midSize = Math.round(baseProps.size / 2)
     const midPoint = Point.plusScalar(baseProps.canvasPoint, midSize)
     const props = {...baseProps, canvasPoint: midPoint}
