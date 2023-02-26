@@ -83,12 +83,8 @@ export class BiomeLayer {
         if (layers.relief.isPlatform(point)) {
             const isReefTemp = temperature.is(Temperature.WARM)
                                || temperature.is(Temperature.HOT)
-            const isBorder = layers.relief.isBorder(point)
-            const isOcean = layers.surface.isOcean(point)
-            const isNoise = grainedNoise > CORAL_REEF_NOISE
-            if (!isBorder && isReefTemp && isOcean && isNoise)
-                return Biome.REEF
-            return Biome.SEA
+            const isReefNoise = grainedNoise > CORAL_REEF_NOISE
+            return isReefTemp && isReefNoise ? Biome.REEF : Biome.SEA
         }
         return Biome.OCEAN
     }
