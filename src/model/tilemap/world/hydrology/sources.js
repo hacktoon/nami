@@ -27,9 +27,9 @@ class WaterSourceFill extends ConcurrentFill {
         if (isRiverSource(context, wrappedPoint)) {
             context.riverSources.add(wrappedPoint)
         }
-        if (isLake(context, wrappedPoint)) {
-            context.lakePoints.set(wrappedPoint, context.lakeId++)
-        }
+        // if (isLake(context, wrappedPoint)) {
+        //     context.lakePoints.set(wrappedPoint, context.lakeId++)
+        // }
         return adjacents
     }
 
@@ -49,17 +49,14 @@ class WaterSourceFill extends ConcurrentFill {
 
 
 function isRiverSource(context, point) {
-    let totalFlowsReceived = 0
     for(let neighbor of Point.adjacents(point)) {
         const isNeighborLand = context.surfaceLayer.isLand(neighbor)
         // test if any land neighbors flows to point
         if (isNeighborLand && flowsTo(context, neighbor, point)) {
-            totalFlowsReceived++
+            return false
         }
     }
-    // it's a river source if receives enough rain and no erosion flows
-    const hasEnoughRain = context.rainLayer.createsRivers(point)
-    return hasEnoughRain && totalFlowsReceived == 0
+    return true
 }
 
 
