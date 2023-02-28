@@ -80,15 +80,6 @@ export class ReliefLayer {
         return points
     }
 
-    get landReliefs() {
-        return [
-            Relief.BASIN,
-            Relief.PLAIN,
-            Relief.PLATEAU,
-            Relief.MOUNTAIN,
-        ]
-    }
-
     getWaterArea() {
         const area = (this.#waterArea * 100) / this.#matrix.area
         return area.toFixed(1)

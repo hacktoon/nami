@@ -4,46 +4,15 @@ import { PointSet } from '/src/lib/point/set'
 import { Point } from '/src/lib/point'
 
 
-const CHANCE = .1
-const GROWTH = 1
+const CHANCE = .1  // chance of growing
+const GROWTH = 10  // make basins grow bigger than others
 
 
-export function buildErosionMap(baseContext) {
-    // stores points that must be filled on higher reliefs
-    const deferredOrigins = new PointSet()
-    // cumulative set of reliefs that can be filled in this iteration
-    const validReliefIds = new Set()
+export function buildErosionMap(context) {
     // start filling from land borders
-    let origins = baseContext.reliefLayer.landBorders
-    const context = {...baseContext, deferredOrigins, validReliefIds}
-    // start from lower to higher land reliefs, filling each layer
-    for(let relief of baseContext.reliefLayer.landReliefs) {
-        // add current relief for next fill
-        validReliefIds.add(relief.id)
-        // update origins (points)
-        origins = fillReliefFlowMap(origins, context)
-    }
-}
-
-
-function fillReliefFlowMap(origins, context) {
-    // run a fill for allowed reliefs in validReliefIds
-    const nextOrigins = []
-    // add received origins to deferred to next relief
-    // and filter which one are allowed in this relief
-    const pointQueue = origins.concat(context.deferredOrigins.points)
-    pointQueue.forEach(point => {
-        const relief = context.reliefLayer.get(point)
-        if (context.validReliefIds.has(relief.id)) {
-            nextOrigins.push(point)
-            context.deferredOrigins.delete(point)
-        } else {
-            context.deferredOrigins.add(point)
-        }
-    })
+    let origins = context.reliefLayer.landBorders
     const fill = new ErosionFill()
-    fill.start(nextOrigins, context)
-    return nextOrigins
+    fill.start(origins, context)
 }
 
 
@@ -56,16 +25,12 @@ class ErosionFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {
-            rect, reliefLayer, surfaceLayer, validReliefIds, flowMap
-        } = fill.context
+        const {rect, surfaceLayer, flowMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const surface = surfaceLayer.get(wrappedFillPoint)
-        const relief = reliefLayer.get(wrappedFillPoint)
-        const isValidRelief = validReliefIds.has(relief.id)
         // use flow map to track already visited points
         const isEmpty = ! flowMap.has(wrappedFillPoint)
-        return ! surface.water && isEmpty && isValidRelief
+        return ! surface.water && isEmpty
     }
 
     onInitFill(fill, fillPoint, neighbors) {
@@ -78,7 +43,6 @@ class ErosionFill extends ConcurrentFill {
             return
         }
         const waterNeighbor = this.#getWaterNeighbor(fill, neighbors)
-        // set flow if has no water neighbor (not a river mouth) and is empty
         if (waterNeighbor) {
             const direction = getDirection(fillPoint, waterNeighbor)
             flowMap.set(wrappedFillPoint, direction.id)
@@ -128,20 +92,6 @@ class ErosionFill extends ConcurrentFill {
         flowMap.set(wrappedFillPoint, directionToSource.id)
         // use basin value from parent point
         basinMap.set(wrappedFillPoint, basinMap.get(_parentPoint))
-    }
-
-    onBlockedFill(fill, fillPoint) {
-        const {
-            rect, reliefLayer, surfaceLayer, validReliefIds, deferredOrigins
-        } = fill.context
-        const target = rect.wrap(fillPoint)
-        const surface = surfaceLayer.get(target)
-        const relief = reliefLayer.get(target)
-        const isInvalidRelief = ! validReliefIds.has(relief.id)
-        // add point to next relief fill
-        if (! surface.water && isInvalidRelief) {
-            deferredOrigins.add(target)
-        }
     }
 }
 
