@@ -8,7 +8,7 @@ import { NoiseLayer } from './noise'
 import { SurfaceLayer } from './geology/surface'
 import { ReliefLayer } from './geology/relief'
 import { TemperatureLayer } from './climatology/temperature'
-import { ErosionLayer } from './geology/erosion'
+import { BasinLayer } from './geology/basin'
 import { RainLayer } from './climatology/rain'
 import { HydrologyLayer } from './hydrology'
 import { BiomeLayer } from './biology/biome'
@@ -44,7 +44,7 @@ export class WorldTileMap extends TileMap {
         layers.relief = new ReliefLayer(rect, layers)
         layers.temperature = new TemperatureLayer(rect, layers)
         layers.rain = new RainLayer(rect, layers)
-        layers.erosion = new ErosionLayer(rect, layers)
+        layers.basin = new BasinLayer(rect, layers)
         layers.hydro = new HydrologyLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
         layers.topo = new TopologyLayer(rect, layers, realmCount)
@@ -61,7 +61,7 @@ export class WorldTileMap extends TileMap {
             this.layers.temperature.getText(wrappedPoint),
             this.layers.rain.getText(wrappedPoint),
             this.layers.biome.getText(wrappedPoint),
-            this.layers.erosion.getText(wrappedPoint),
+            this.layers.basin.getText(wrappedPoint),
             this.layers.hydro.getText(wrappedPoint),
         ].join('\n').trim()
     }

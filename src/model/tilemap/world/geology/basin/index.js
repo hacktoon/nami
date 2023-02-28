@@ -4,7 +4,7 @@ import { Direction } from '/src/lib/direction'
 import { buildErosionMap } from './fill'
 
 
-export class ErosionLayer {
+export class BasinLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
 
@@ -39,10 +39,10 @@ export class ErosionLayer {
     getText(point) {
         if (! this.#flowMap.has(point))
             return ''
-        const erosion = this.get(point)
+        const basin = this.get(point)
         const attrs = [
-             `basin=${erosion.basin}`,
-             `flow=${erosion.flow.name}`,
+             `basin=${basin.basin}`,
+             `flow=${basin.flow.name}`,
         ].join(',')
         return `Erosion(${attrs})`
     }

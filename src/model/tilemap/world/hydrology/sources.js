@@ -68,7 +68,7 @@ function isLake(context, point) {
 function flowsTo(context, originPoint, fillPoint) {
     // checks if originPoint flow points to fillPoint
     const origin = context.rect.wrap(originPoint)
-    const erosion = context.erosionLayer.get(origin)
-    const pointAtDirection = Point.atDirection(originPoint, erosion.flow)
+    const basin = context.basinLayer.get(origin)
+    const pointAtDirection = Point.atDirection(originPoint, basin.flow)
     return Point.equals(fillPoint, pointAtDirection)
 }

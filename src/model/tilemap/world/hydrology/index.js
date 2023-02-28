@@ -24,7 +24,7 @@ export class HydrologyLayer {
             rect,
             surfaceLayer: layers.surface,
             reliefLayer: layers.relief,
-            erosionLayer: layers.erosion,
+            basinLayer: layers.basin,
             rainLayer: layers.rain,
             // which lake exists in this point?
             lakePoints: this.#lakePoints,
