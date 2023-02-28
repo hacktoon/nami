@@ -28,6 +28,7 @@
     - border points get a grained island noise
 
 ### HydrologyLayer
+  - Create types of lakes (swamp, pond, well)
   - Set river type on flow to avoid `#buildRiverWidth` function on Diagram
   - River that start on small seas can't go much further
   - Height of terrain often make waterfalls or rapids
