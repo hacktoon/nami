@@ -41,11 +41,6 @@ const SPEC = [
         id: 7,
         name: 'Mountain',
         color: Color.fromHex('#ADA'),
-    },
-    {
-        id: 8,
-        name: 'Peak',
-        color: Color.fromHex('#BFB'),
     }
 ]
 

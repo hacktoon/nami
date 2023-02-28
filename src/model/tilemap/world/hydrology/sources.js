@@ -4,7 +4,7 @@ import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
 
 
-const LAKE_CHANCE = .05
+const LAKE_CHANCE = .06
 
 
 /*

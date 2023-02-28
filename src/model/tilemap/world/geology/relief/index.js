@@ -13,7 +13,6 @@ const BASIN_FEAT_RATIO = .3
 const PLAIN_RATIO = .4
 const PLATEAU_RATIO = .55
 const MOUNTAIN_RATIO = .55
-const PEAK_RATIO = .75
 
 
 export class ReliefLayer {
@@ -53,7 +52,6 @@ export class ReliefLayer {
             return Relief.BASIN.id
         }
         if (grainedNoise > MOUNTAIN_RATIO) {
-            if (grainedNoise > PEAK_RATIO) return Relief.PEAK.id
             return Relief.MOUNTAIN.id
         }
         if (featureNoise > PLATEAU_RATIO) return Relief.PLATEAU.id
@@ -88,7 +86,6 @@ export class ReliefLayer {
             Relief.PLAIN,
             Relief.PLATEAU,
             Relief.MOUNTAIN,
-            Relief.PEAK,
         ]
     }
 
@@ -120,11 +117,6 @@ export class ReliefLayer {
     isTrench(point) {
         const id = this.#matrix.get(point)
         return id === Relief.TRENCH.id
-    }
-
-    isPeak(point) {
-        const id = this.#matrix.get(point)
-        return id === Relief.PEAK.id
     }
 
     isBorder(point) {
