@@ -18,7 +18,7 @@ export class BasinLayer {
         buildErosionMap(context)
     }
 
-    get basinCount() {
+    get count() {
         return this.#basinMap.size
     }
 

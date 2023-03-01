@@ -37,7 +37,7 @@ class ColorMap {
     constructor(tileMap) {
         this.tileMap = tileMap
         this.basinColors = new Map()
-        for (let i = 0; i < tileMap.layers.basin.basinCount; i ++) {
+        for (let i = 0; i < tileMap.layers.basin.count; i ++) {
             this.basinColors.set(i, new Color())
         }
     }

@@ -20,13 +20,12 @@ export class SurfaceLayer {
     // stores surface id for each point
     #surfaceMatrix
     // maps a surface id to its object reference
-    #surfaceMap = new Map()
-    #areaMap = new Map()
+    #bodyTypeMap = new Map()
+    #bodyAreaMap = new Map()
     #borders = new PointSet()
 
     constructor(rect, layers) {
         const waterPoints = new PointSet()
-        let surfaceId = 0
         this.#surfaceMatrix = Matrix.fromRect(rect, point => {
             // detect water points with "outline" noise map
             if (SURFACE_RATIO >= layers.noise.getOutline(point)) {
@@ -36,21 +35,26 @@ export class SurfaceLayer {
             return EMPTY
         })
 
-        // detect surface regions and area
+        // detect surface body id and area
+        let bodyId = 0
         this.#surfaceMatrix.forEach(point => {
             // start a fill for each empty point in matrix
             if (!this.#isPointEmpty(point)) return
-            const {type, area} = this.#buildSurface(
-                waterPoints, surfaceId, point
-            )
-            this.#surfaceMap.set(surfaceId, type.id)
-            this.#areaMap.set(surfaceId, area)
-            surfaceId++
+            const body = this.#buildSurface(point, waterPoints, bodyId)
+            this.#bodyTypeMap.set(bodyId, body.type.id)
+            this.#bodyAreaMap.set(bodyId, body.area)
+            bodyId++
         })
 
         // detect the water/land borders
         this.#surfaceMatrix.forEach(point => {
-            this.#detectBorders(point)
+            const isWater = this.isWater(point)
+            for (let sidePoint of Point.adjacents(point)) {
+                const isSideWater = this.isWater(sidePoint)
+                if (isWater && ! isSideWater || ! isWater && isSideWater) {
+                    this.#borders.add(point)
+                }
+            }
         })
     }
 
@@ -59,7 +63,7 @@ export class SurfaceLayer {
         return this.#surfaceMatrix.get(point) === EMPTY
     }
 
-    #buildSurface(waterPoints, surfaceId, originPoint) {
+    #buildSurface(originPoint, waterPoints, surfaceId) {
         const area = this.#fillSurface(waterPoints, surfaceId, originPoint)
         const surfaceAreaRatio = (area * 100) / this.#surfaceMatrix.area
         let type = Surface.CONTINENT
@@ -94,16 +98,6 @@ export class SurfaceLayer {
         return area
     }
 
-    #detectBorders(point) {
-        const isWater = this.isWater(point)
-        for (let sidePoint of Point.adjacents(point)) {
-            const isSideWater = this.isWater(sidePoint)
-            if (isWater && ! isSideWater || ! isWater && isSideWater) {
-                this.#borders.add(point)
-            }
-        }
-    }
-
     get landBorders() {
         const points = []
         this.#borders.forEach(point => {
@@ -114,7 +108,7 @@ export class SurfaceLayer {
 
     get(point) {
         const surfaceId = this.#surfaceMatrix.get(point)
-        return Surface.fromId(this.#surfaceMap.get(surfaceId))
+        return Surface.fromId(this.#bodyTypeMap.get(surfaceId))
     }
 
     getText(point) {
@@ -126,7 +120,7 @@ export class SurfaceLayer {
 
     getArea(point) {
         const surfaceId = this.#surfaceMatrix.get(point)
-        const area = (this.#areaMap.get(surfaceId) * 100) / this.#surfaceMatrix.area
+        const area = (this.#bodyAreaMap.get(surfaceId) * 100) / this.#surfaceMatrix.area
         return area.toFixed(1)
     }
 
