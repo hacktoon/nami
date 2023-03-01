@@ -23,12 +23,9 @@ export class HydrologyLayer {
         const context = {
             rect,
             surfaceLayer: layers.surface,
-            reliefLayer: layers.relief,
             basinLayer: layers.basin,
             rainLayer: layers.rain,
-            // which lake exists in this point?
             lakePoints: this.#lakePoints,
-            // which river exists in this point?
             riverPoints: this.#riverPoints,
             riverSources: this.#riverSources,
             riverMouths: this.#riverMouths,

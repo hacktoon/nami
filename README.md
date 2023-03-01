@@ -18,7 +18,6 @@
 - Point
   - create a wrappedAdjacents similar to `Point.adjacents(parentPoint)` that receives a rect
 
-
 ### WorldTileMap
   - Each chunk has 4 spawn points and a default (e.g. when player uses teleport)
   - Cities start more often on outer borders of land

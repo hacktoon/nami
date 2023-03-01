@@ -12,7 +12,6 @@ export class BasinLayer {
         const context = {
             rect,
             surfaceLayer: layers.surface,
-            reliefLayer: layers.relief,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
         }

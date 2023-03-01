@@ -22,6 +22,7 @@ export class SurfaceLayer {
     // maps a surface id to its object reference
     #surfaceMap = new Map()
     #areaMap = new Map()
+    #borders = new PointSet()
 
     constructor(rect, layers) {
         const waterPoints = new PointSet()
@@ -34,6 +35,7 @@ export class SurfaceLayer {
             // init matrix with empty cells
             return EMPTY
         })
+
         // detect surface regions and area
         this.#surfaceMatrix.forEach(point => {
             // start a fill for each empty point in matrix
@@ -45,7 +47,13 @@ export class SurfaceLayer {
             this.#areaMap.set(surfaceId, area)
             surfaceId++
         })
+
+        // detect the water/land borders
+        this.#surfaceMatrix.forEach(point => {
+            this.#detectBorders(point)
+        })
     }
+
 
     #isPointEmpty(point) {
         return this.#surfaceMatrix.get(point) === EMPTY
@@ -86,6 +94,24 @@ export class SurfaceLayer {
         return area
     }
 
+    #detectBorders(point) {
+        const isWater = this.isWater(point)
+        for (let sidePoint of Point.adjacents(point)) {
+            const isSideWater = this.isWater(sidePoint)
+            if (isWater && ! isSideWater || ! isWater && isSideWater) {
+                this.#borders.add(point)
+            }
+        }
+    }
+
+    get landBorders() {
+        const points = []
+        this.#borders.forEach(point => {
+            if (this.isLand(point)) points.push(point)
+        })
+        return points
+    }
+
     get(point) {
         const surfaceId = this.#surfaceMatrix.get(point)
         return Surface.fromId(this.#surfaceMap.get(surfaceId))
@@ -114,5 +140,9 @@ export class SurfaceLayer {
 
     isOcean(point) {
         return this.get(point).id === Surface.OCEAN
+    }
+
+    isBorder(point) {
+        return this.#borders.has(point)
     }
 }

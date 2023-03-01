@@ -10,7 +10,7 @@ const GROWTH = 10  // make basins grow bigger than others
 
 export function buildErosionMap(context) {
     // start filling from land borders
-    let origins = context.reliefLayer.landBorders
+    let origins = context.surfaceLayer.landBorders
     const fill = new ErosionFill()
     fill.start(origins, context)
 }

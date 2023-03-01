@@ -14,7 +14,7 @@ const LAKE_CHANCE = .06
 export function buildWaterSourceMap(context) {
     const visitedPoints = new PointSet()
     const fill = new WaterSourceFill()
-    const origins = context.reliefLayer.landBorders
+    const origins = context.surfaceLayer.landBorders
     fill.start(origins, {...context, lakeId: 0, visitedPoints})
 }
 

@@ -68,7 +68,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const point = this.rect.wrap(relativePoint)
         const layer = params.get('showLayer')
         const surface = this.tileMap.layers.surface.get(point)
-        const isBorder = this.tileMap.layers.relief.isBorder(point)
+        const isBorder = this.tileMap.layers.surface.isBorder(point)
         let color = surface.color
 
         if (isBorder && params.get('showBorders')) {
