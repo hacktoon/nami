@@ -13,15 +13,21 @@ export function buildErosionMap(context) {
     let origins = context.surfaceLayer.landBorders
     const fill = new ErosionFill()
     fill.start(origins, context)
+    console.log(context.riverSources.size);
 }
-
 
 class ErosionFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
+        const context = fill.context
+        const adjacents = Point.adjacents(parentPoint)
+        const wrappedPoint = context.rect.wrap(parentPoint)
+        if (isRiverSource(context, adjacents, wrappedPoint)) {
+            context.riverSources.add(wrappedPoint)
+        }
+        return adjacents
     }
 
     canFill(fill, fillPoint) {
@@ -45,6 +51,7 @@ class ErosionFill extends ConcurrentFill {
         const waterNeighbor = this.#getWaterNeighbor(fill, neighbors)
         if (waterNeighbor) {
             const direction = getDirection(fillPoint, waterNeighbor)
+            fill.context.riverSources.add(wrappedFillPoint)
             flowMap.set(wrappedFillPoint, direction.id)
             // it's next to water, use original fill.id
             basinMap.set(wrappedFillPoint, fill.id)
@@ -52,9 +59,9 @@ class ErosionFill extends ConcurrentFill {
             const landNeighbor = this.#getLandNeighbor(fill, neighbors)
             if (landNeighbor) {
                 const direction = getDirection(fillPoint, landNeighbor)
+                const wrappedNeighbor = rect.wrap(landNeighbor)
                 flowMap.set(wrappedFillPoint, direction.id)
                 // set land neighbor basin
-                const wrappedNeighbor = rect.wrap(landNeighbor)
                 basinMap.set(wrappedFillPoint, basinMap.get(wrappedNeighbor))
             }
         }
@@ -93,6 +100,11 @@ class ErosionFill extends ConcurrentFill {
         // use basin value from parent point
         basinMap.set(wrappedFillPoint, basinMap.get(_parentPoint))
     }
+
+    onBlockedFill(fill, fillPoint, parentPoint) {
+        const wrappedParentPoint = fill.context.rect.wrap(parentPoint)
+        fill.context.riverSources.add(wrappedParentPoint)
+    }
 }
 
 
@@ -102,22 +114,14 @@ function getDirection(sourcePoint, targetPoint) {
 }
 
 
-function isRiverSource(context, point) {
-    for(let neighbor of Point.adjacents(point)) {
+function isRiverSource(context, adjacents, point) {
+    for(let neighbor of adjacents) {
         const isNeighborLand = context.surfaceLayer.isLand(neighbor)
         // test if any land neighbors flows to point
-        if (isNeighborLand && flowsTo(context, neighbor, point)) {
+        if (isNeighborLand) {
             return false
         }
     }
     return true
 }
 
-
-function flowsTo(context, originPoint, fillPoint) {
-    // checks if originPoint flow points to fillPoint
-    const origin = context.rect.wrap(originPoint)
-    const basin = context.basinLayer.get(origin)
-    const pointAtDirection = Point.atDirection(originPoint, basin.flow)
-    return Point.equals(fillPoint, pointAtDirection)
-}

@@ -16,6 +16,7 @@ export function buildWaterSourceMap(context) {
     const fill = new WaterSourceFill()
     const origins = context.surfaceLayer.landBorders
     fill.start(origins, {...context, lakeId: 0, visitedPoints})
+    console.log(context.riverSources.size);
 }
 
 
