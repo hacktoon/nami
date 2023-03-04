@@ -1,4 +1,5 @@
 import { PointMap } from '/src/lib/point/map'
+import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
 
 import { buildErosionMap } from './fill'
@@ -7,11 +8,13 @@ import { buildErosionMap } from './fill'
 export class BasinLayer {
     #basinMap = new PointMap()
     #flowMap = new PointMap()
+    #riverSources = new PointSet()
 
     constructor(rect, layers) {
         const context = {
             rect,
             surfaceLayer: layers.surface,
+            riverSources: this.#riverSources,
             basinMap: this.#basinMap,
             flowMap: this.#flowMap,
         }
@@ -44,5 +47,9 @@ export class BasinLayer {
              `flow=${basin.flow.name}`,
         ].join(',')
         return `Erosion(${attrs})`
+    }
+
+    isRiverSource(point) {
+        return this.#riverSources.has(point)
     }
 }

@@ -100,3 +100,24 @@ function getDirection(sourcePoint, targetPoint) {
     const angle = Point.angle(sourcePoint, targetPoint)
     return Direction.fromAngle(angle)
 }
+
+
+function isRiverSource(context, point) {
+    for(let neighbor of Point.adjacents(point)) {
+        const isNeighborLand = context.surfaceLayer.isLand(neighbor)
+        // test if any land neighbors flows to point
+        if (isNeighborLand && flowsTo(context, neighbor, point)) {
+            return false
+        }
+    }
+    return true
+}
+
+
+function flowsTo(context, originPoint, fillPoint) {
+    // checks if originPoint flow points to fillPoint
+    const origin = context.rect.wrap(originPoint)
+    const basin = context.basinLayer.get(origin)
+    const pointAtDirection = Point.atDirection(originPoint, basin.flow)
+    return Point.equals(fillPoint, pointAtDirection)
+}
