@@ -25,6 +25,10 @@ export class BasinLayer {
         return this.#basinMap.size
     }
 
+    get riverSources() {
+        return this.#riverSources
+    }
+
     has(point) {
         return this.#flowMap.has(point)
     }

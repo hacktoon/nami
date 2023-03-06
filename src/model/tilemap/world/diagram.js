@@ -115,7 +115,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const point = this.rect.wrap(props.tilePoint)
         const isLand = layers.surface.isLand(point)
         const isRiver = layers.hydro.has(point)
-        const isRiverSource = layers.hydro.isRiverSource(point)
+        const isRiverSource = layers.basin.isRiverSource(point)
         const isLake = layers.hydro.isLake(point)
         const isDungeon = layers.topo.isDungeon(point)
         const isCity = layers.topo.isCity(point)

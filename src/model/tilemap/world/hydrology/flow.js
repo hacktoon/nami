@@ -36,7 +36,7 @@ const RIVER_MEANDER_MIDDLE = .5
 */
 export function buildRiverFlowMap(context) {
     let riverId = 0
-    for(let source of context.riverSources.points) {
+    for(let source of context.basinLayer.riverSources.points) {
         const maxFlowRate = buildRiver(context, riverId, source)
         context.maxFlowRate.set(riverId, maxFlowRate)
         riverId++
