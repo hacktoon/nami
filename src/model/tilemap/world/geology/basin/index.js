@@ -7,7 +7,7 @@ import { buildErosionMap } from './fill'
 
 export class BasinLayer {
     #basinMap = new PointMap()
-    #flowMap = new PointMap()
+    #erosionMap = new PointMap()
     #riverSources = new PointSet()
 
     constructor(rect, layers) {
@@ -16,7 +16,7 @@ export class BasinLayer {
             surfaceLayer: layers.surface,
             riverSources: this.#riverSources,
             basinMap: this.#basinMap,
-            flowMap: this.#flowMap,
+            erosionMap: this.#erosionMap,
         }
         buildErosionMap(context)
     }
@@ -29,26 +29,22 @@ export class BasinLayer {
         return this.#riverSources
     }
 
-    has(point) {
-        return this.#flowMap.has(point)
-    }
-
     get(point) {
-        const directionId = this.#flowMap.get(point)
+        const directionId = this.#erosionMap.get(point)
         const direction = Direction.fromId(directionId)
         return {
             basin: this.#basinMap.get(point),
-            flow: direction,
+            erosion: direction,
         }
     }
 
     getText(point) {
-        if (! this.#flowMap.has(point))
+        if (! this.#erosionMap.has(point))
             return ''
         const basin = this.get(point)
         const attrs = [
              `basin=${basin.basin}`,
-             `flow=${basin.flow.name}`,
+             `erosion=${basin.erosion.name}`,
         ].join(',')
         return `Erosion(${attrs})`
     }

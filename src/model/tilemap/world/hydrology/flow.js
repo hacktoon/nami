@@ -78,13 +78,13 @@ function buildRiver(context, riverId, source) {
 
 function getNextRiverPoint(context, currentPoint) {
     const basin = context.basinLayer.get(context.rect.wrap(currentPoint))
-    return Point.atDirection(currentPoint, basin.flow)
+    return Point.atDirection(currentPoint, basin.erosion)
 }
 
 
 function buildMeanderPoint(basin) {
     // choose a relative point around the middle of a square at [.5, .5]
-    const axis = basin.flow.axis
+    const axis = basin.erosion.axis
     const coord = axis => {
         const offset = Random.floatRange(.1, .4)
         const axisOffset = axis === 0 ? Random.choice(1, -1) : axis
@@ -100,7 +100,7 @@ function buildFlowCode(context, point) {
     const wrappedPoint = rect.wrap(point)
     const basin = context.basinLayer.get(wrappedPoint)
     // set the tile according to which direction is flowing
-    let flowCode = DIRECTION_PATTERN_MAP.get(basin.flow.id)
+    let flowCode = DIRECTION_PATTERN_MAP.get(basin.erosion.id)
     // add flowCode for each neighbor that flows to this point
     Point.adjacents(point, (sidePoint, sideDirection) => {
         // ignore water neighbors
@@ -119,9 +119,9 @@ function buildFlowCode(context, point) {
 
 
 function receivesFlow(context, sourcePoint, targetPoint) {
-    // checks if sourcePoint flow points to targetPoint
+    // checks if sourcePoint erosion points to targetPoint
     const origin = context.rect.wrap(sourcePoint)
     const basin = context.basinLayer.get(origin)
-    const pointAtDirection = Point.atDirection(sourcePoint, basin.flow)
+    const pointAtDirection = Point.atDirection(sourcePoint, basin.erosion)
     return Point.equals(targetPoint, pointAtDirection)
 }

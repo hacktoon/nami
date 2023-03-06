@@ -29,27 +29,27 @@ class ErosionFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {rect, surfaceLayer, flowMap} = fill.context
+        const {rect, surfaceLayer, erosionMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const surface = surfaceLayer.get(wrappedFillPoint)
         // use flow map to track already visited points
-        const isEmpty = ! flowMap.has(wrappedFillPoint)
+        const isEmpty = ! erosionMap.has(wrappedFillPoint)
         return ! surface.water && isEmpty
     }
 
     onInitFill(fill, fillPoint, neighbors) {
         // set the initial fill point to search water neighbor
         // considers if it's basin (has water neighbor) or inland
-        const {rect, flowMap, basinMap} = fill.context
+        const {rect, erosionMap, basinMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // already filled, exit
-        if (flowMap.has(wrappedFillPoint)) {
+        if (erosionMap.has(wrappedFillPoint)) {
             return
         }
         const waterNeighbor = this.#getWaterNeighbor(fill, neighbors)
         if (waterNeighbor) {
             const direction = getDirection(fillPoint, waterNeighbor)
-            flowMap.set(wrappedFillPoint, direction.id)
+            erosionMap.set(wrappedFillPoint, direction.id)
             // it's next to water, use original fill.id
             basinMap.set(wrappedFillPoint, fill.id)
         } else {
@@ -57,7 +57,7 @@ class ErosionFill extends ConcurrentFill {
             if (landNeighbor) {
                 const direction = getDirection(fillPoint, landNeighbor)
                 const wrappedNeighbor = rect.wrap(landNeighbor)
-                flowMap.set(wrappedFillPoint, direction.id)
+                erosionMap.set(wrappedFillPoint, direction.id)
                 // set land neighbor basin
                 basinMap.set(wrappedFillPoint, basinMap.get(wrappedNeighbor))
             }
@@ -76,24 +76,24 @@ class ErosionFill extends ConcurrentFill {
 
     #getLandNeighbor(fill, neighbors) {
         // need to read neighbors on start fill to get parent flow
-        const {rect, surfaceLayer, flowMap} = fill.context
+        const {rect, surfaceLayer, erosionMap} = fill.context
         for(let neighbor of neighbors) {
             const wrappedNeighbor = rect.wrap(neighbor)
             const neighborSurface = surfaceLayer.get(wrappedNeighbor)
             // is land, check if has a flow already
-            if (! neighborSurface.water && flowMap.has(wrappedNeighbor)) {
+            if (! neighborSurface.water && erosionMap.has(wrappedNeighbor)) {
                 return neighbor
             }
         }
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {rect, flowMap, basinMap} = fill.context
+        const {rect, erosionMap, basinMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         const directionToSource = getDirection(fillPoint, parentPoint)
         // set direction to source
-        flowMap.set(wrappedFillPoint, directionToSource.id)
+        erosionMap.set(wrappedFillPoint, directionToSource.id)
         // use basin value from parent point
         basinMap.set(wrappedFillPoint, basinMap.get(wrappedParentPoint))
     }
@@ -107,13 +107,13 @@ function getDirection(sourcePoint, targetPoint) {
 
 
 function isRiverSource(context, neighbors) {
-    const {rect, flowMap, surfaceLayer} = context
+    const {rect, erosionMap, surfaceLayer} = context
     // it's a river source if every neighbor is water
     let waterNeighborCount = 0
     let blockedCount = 0
     for(let neighbor of neighbors) {
         const isNeighborWater = surfaceLayer.isWater(neighbor)
-        const isOccupied = flowMap.has(rect.wrap(neighbor))
+        const isOccupied = erosionMap.has(rect.wrap(neighbor))
         waterNeighborCount += isNeighborWater ? 1 : 0
         blockedCount += (isNeighborWater || isOccupied) ? 1 : 0
     }

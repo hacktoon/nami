@@ -5,11 +5,10 @@ import { Color } from '/src/lib/color'
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 import {
     drawCity, drawCapital, drawLake, drawRiver,
-    drawDungeon
+    drawDungeon, drawRiverSource
 } from '/src/model/tilemap/lib/icon'
 
 
-const RIVER_SOUCE_COLOR = '#44F'
 const DEFAULT_LAYER = 'biome'
 const LAYERS = [
     {value: 'surface', label: 'Surface'},
@@ -100,37 +99,29 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         return color
     }
 
-    getText(relativePoint) {
-        const point = this.rect.wrap(relativePoint)
-        const isLand = this.tileMap.layers.surface.isLand(point)
-        if (isLand && this.params.get('showErosion')) {
-            const basin = this.tileMap.layers.basin.get(point)
-            return basin.flow.symbol
-        }
-        return ''
-    }
-
     draw(props) {
         const layers = this.tileMap.layers
         const point = this.rect.wrap(props.tilePoint)
         const isLand = layers.surface.isLand(point)
         const isRiver = layers.hydro.has(point)
-        const isRiverSource = layers.basin.isRiverSource(point)
         const isLake = layers.hydro.isLake(point)
         const isDungeon = layers.topo.isDungeon(point)
         const isCity = layers.topo.isCity(point)
+        const river = this.tileMap.layers.hydro.get(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
-            const river = this.tileMap.layers.hydro.get(point)
             drawRiver(river, props)
+        }
+        if (this.params.get('showRiverSources')) {
+            if (layers.basin.isRiverSource(point)) {
+                drawRiverSource(river, props)
+            }
         }
         if (isCity && this.params.get('showCities')) {
             if (layers.topo.isCapital(point)) {
                 drawCapital(props)
-            } else
+            } else {
                 drawCity(props)
-        }
-        if (isRiverSource && this.params.get('showRiverSources')) {
-            this.#drawRiverSource(props)
+            }
         }
         if (isLake && this.params.get('showLakes')) {
             drawLake(props)
@@ -140,8 +131,13 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    #drawRiverSource({canvas, canvasPoint, size}) {
-        const midSize = Math.round(size / 4)
-        canvas.rect(canvasPoint, midSize, RIVER_SOUCE_COLOR)
+    getText(relativePoint) {
+        const point = this.rect.wrap(relativePoint)
+        const isLand = this.tileMap.layers.surface.isLand(point)
+        if (isLand && this.params.get('showErosion')) {
+            const basin = this.tileMap.layers.basin.get(point)
+            return basin.erosion.symbol
+        }
+        return ''
     }
 }

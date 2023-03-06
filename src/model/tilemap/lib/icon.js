@@ -4,6 +4,7 @@ import { clamp } from '/src/lib/number'
 
 
 const RIVER_COLOR = '#2878a0'
+const RIVER_SOUCE_COLOR = '#44F'
 
 
 export function drawLake(baseProps) {
@@ -90,10 +91,20 @@ export function drawRiver(river, {canvas, canvasPoint, size}) {
     }
 }
 
+
+export function drawRiverSource(river, {canvas, canvasPoint, size}) {
+    const midSize = Math.round(size / 4)
+    const meanderOffsetPoint = buildMeanderOffsetPoint(river, size)
+    const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
+    canvas.rect(meanderPoint, midSize, RIVER_SOUCE_COLOR)
+}
+
+
 function buildMeanderOffsetPoint(river, size) {
     const percentage = river.meander
     return Point.multiplyScalar(percentage, size)
 }
+
 
 function buildRiverWidth(river, size) {
     const maxWidth = Math.floor(size / 6)
