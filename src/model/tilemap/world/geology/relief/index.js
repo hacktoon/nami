@@ -47,9 +47,7 @@ export class ReliefLayer {
         if (outlineNoise < BASIN_RATIO || featureNoise < BASIN_FEAT_RATIO) {
             return Relief.BASIN.id
         }
-        if (grainedNoise > MOUNTAIN_RATIO) {
-            return Relief.MOUNTAIN.id
-        }
+        if (grainedNoise > MOUNTAIN_RATIO) { return Relief.MOUNTAIN.id }
         if (featureNoise > PLATEAU_RATIO) return Relief.PLATEAU.id
         if (outlineNoise > PLAIN_RATIO) return Relief.PLAIN.id
         return Relief.BASIN.id

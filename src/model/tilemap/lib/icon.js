@@ -93,10 +93,14 @@ export function drawRiver(river, {canvas, canvasPoint, size}) {
 
 
 export function drawRiverSource(river, {canvas, canvasPoint, size}) {
-    const midSize = Math.round(size / 5)
+    const pixelSize = Math.round(size / 6)
     const meanderOffsetPoint = buildMeanderOffsetPoint(river, size)
     const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-    canvas.rect(meanderPoint, midSize, RIVER_SOUCE_COLOR)
+    const wrappedMeanderPoint = [
+        clamp(meanderPoint[0], 0, canvasPoint[0] + size - pixelSize),
+        clamp(meanderPoint[1], 0, canvasPoint[1] + size - pixelSize),
+    ]
+    canvas.rect(wrappedMeanderPoint, pixelSize, RIVER_SOUCE_COLOR)
 }
 
 
@@ -112,7 +116,7 @@ function buildRiverWidth(river, size) {
     if (river.flowRate < 4) {  // creeks
         width = 1
     }
-    else if (river.flowRate < 24) { // medium rivers
+    else if (river.flowRate < 10) { // medium rivers
         width = Math.floor(size / 15)
     }
     return clamp(width, 1, maxWidth)

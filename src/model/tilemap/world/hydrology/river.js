@@ -19,14 +19,6 @@ export const DIRECTION_PATTERN_MAP = new Map([
     [Direction.SOUTH.id, 16],
 ])
 
-
-const MEANDER_DIRECTION_MAP = new Map([
-    [Direction.NORTH.id, []],
-    [Direction.WEST.id, 2],
-    [Direction.EAST.id, 8],
-    [Direction.SOUTH.id, 16],
-])
-
 const RIVER_MEANDER_MIDDLE = .5
 
 /*
@@ -58,7 +50,7 @@ function buildRiver(context, riverId, source) {
     let rate = 0
     while (surfaceLayer.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
-        const code = buildFlowCode(context, wrappedPoint)
+        const code = buildErosionDirectionCode(context, wrappedPoint)
         const basin = basinLayer.get(wrappedPoint)
         riverFlow.set(wrappedPoint, code)
         riverPoints.set(wrappedPoint, riverId)
@@ -66,7 +58,6 @@ function buildRiver(context, riverId, source) {
         if (flowRate.has(wrappedPoint)) {
             rate = flowRate.get(wrappedPoint) + 1
         }
-        rate ++
         flowRate.set(wrappedPoint, rate)
         prevPoint = wrappedPoint
         point = getNextRiverPoint(context, wrappedPoint)
@@ -88,8 +79,8 @@ function buildMeanderPoint(basin) {
     const axis = basin.erosion.axis  // direction axis ([-1, 0], [1, 1], etc)
     const coord = axis => {
         const offset = Random.floatRange(.2, .4)
-        const axisOffset = axis === 0 ? Random.choice(1, -1) : axis
-        const newCoord = (offset * axisOffset) + RIVER_MEANDER_MIDDLE
+        const axisToggle = axis === 0 ? Random.choice(1, -1) : axis
+        const newCoord = (offset * axisToggle) + RIVER_MEANDER_MIDDLE
         // no need of a higher precision, return one decimal float
         return newCoord.toFixed(1)
     }
@@ -97,7 +88,7 @@ function buildMeanderPoint(basin) {
 }
 
 
-function buildFlowCode(context, point) {
+function buildErosionDirectionCode(context, point) {
     const {rect, surfaceLayer, riverFlow} = context
     const wrappedPoint = rect.wrap(point)
     const basin = context.basinLayer.get(wrappedPoint)
