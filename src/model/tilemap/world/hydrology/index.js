@@ -3,7 +3,7 @@ import { PointMap } from '/src/lib/point/map'
 import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
-import { buildRiverFlowMap, DIRECTION_PATTERN_MAP } from './flow'
+import { buildRiverFlowMap, DIRECTION_PATTERN_MAP } from './river'
 
 
 export class HydrologyLayer {

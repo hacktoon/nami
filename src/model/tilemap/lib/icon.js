@@ -93,7 +93,7 @@ export function drawRiver(river, {canvas, canvasPoint, size}) {
 
 
 export function drawRiverSource(river, {canvas, canvasPoint, size}) {
-    const midSize = Math.round(size / 4)
+    const midSize = Math.round(size / 5)
     const meanderOffsetPoint = buildMeanderOffsetPoint(river, size)
     const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
     canvas.rect(meanderPoint, midSize, RIVER_SOUCE_COLOR)

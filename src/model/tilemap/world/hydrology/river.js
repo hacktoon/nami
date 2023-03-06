@@ -84,12 +84,14 @@ function getNextRiverPoint(context, currentPoint) {
 
 function buildMeanderPoint(basin) {
     // choose a relative point around the middle of a square at [.5, .5]
-    const axis = basin.erosion.axis
+    // use erosion direction to steer point
+    const axis = basin.erosion.axis  // direction axis ([-1, 0], [1, 1], etc)
     const coord = axis => {
-        const offset = Random.floatRange(.1, .4)
+        const offset = Random.floatRange(.2, .4)
         const axisOffset = axis === 0 ? Random.choice(1, -1) : axis
+        const newCoord = (offset * axisOffset) + RIVER_MEANDER_MIDDLE
         // no need of a higher precision, return one decimal float
-        return (RIVER_MEANDER_MIDDLE + offset * axisOffset).toFixed(1)
+        return newCoord.toFixed(1)
     }
     return [coord(axis[0]), coord(axis[1])]
 }
