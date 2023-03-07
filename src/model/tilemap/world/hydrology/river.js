@@ -47,7 +47,7 @@ function buildRiver(context, riverId, source) {
     // save previous point for mouth detection
     let prevPoint = source
     // init this river with current flow rate or zero if it's empty
-    let rate = 0
+    let rate = 1
     while (surfaceLayer.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
         const code = buildErosionDirectionCode(context, wrappedPoint)
