@@ -6,49 +6,46 @@ import { Relief } from './data'
 const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
-const BASIN_RATIO = .6
-const BASIN_FEAT_RATIO = .3
 const PLAIN_RATIO = .4
-const PLATEAU_RATIO = .55
-const MOUNTAIN_RATIO = .55
+const PLATEAU_RATIO = .3
+const MOUNTAIN_RATIO = .5
 
 
 export class ReliefLayer {
     // Relief is related to large geologic features
-    #noiseLayer
-    #surfaceLayer
     #matrix
 
     constructor(rect, layers) {
-        this.#noiseLayer = layers.noise
-        this.#surfaceLayer = layers.surface
         this.#matrix = Matrix.fromRect(rect, point => {
-            const isWater = this.#surfaceLayer.isWater(point)
-            return this.#detectType(point, isWater)
+            const isWater = layers.surface.isWater(point)
+            const reliefType = isWater ? this.#detectWaterType(layers, point)
+                                       : this.#detectLandType(layers, point)
+            return reliefType.id
         })
     }
 
-    #detectType(point, isWater) {
-        const outlineNoise = this.#noiseLayer.getOutline(point)
-        const featureNoise = this.#noiseLayer.getFeature(point)
-        const grainedNoise = this.#noiseLayer.getGrained(point)
+    #detectWaterType(layers, point) {
+        // use noise to create water relief
+        const outlineNoise = layers.noise.getOutline(point)
+        const featureNoise = layers.noise.getFeature(point)
+        const grainedNoise = layers.noise.getGrained(point)
+        if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM
+        if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
+        if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH
+        return Relief.ABYSS
+    }
 
-        // water -----------------------------------
-        if (isWater) {
-            if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM.id
-            if (featureNoise > OCEAN_RATIO) return Relief.OCEAN.id
-            if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH.id
-            return Relief.ABYSS.id
+    #detectLandType(layers, point) {
+        const featureNoise = layers.noise.getFeature(point)
+        const river = layers.hydro.isRiver(point)
+        const isRiverSource = layers.basin.isRiverSource(point)
+        if (isRiverSource) {
+            if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
+            if (featureNoise > PLATEAU_RATIO) return Relief.PLATEAU
+            // if (featureNoise > PLAIN_RATIO) return Relief.PLAIN
+            // return Relief.BASIN
         }
-
-        // land -----------------------------------
-        if (outlineNoise < BASIN_RATIO || featureNoise < BASIN_FEAT_RATIO) {
-            return Relief.BASIN.id
-        }
-        if (grainedNoise > MOUNTAIN_RATIO) { return Relief.MOUNTAIN.id }
-        if (featureNoise > PLATEAU_RATIO) return Relief.PLATEAU.id
-        if (outlineNoise > PLAIN_RATIO) return Relief.PLAIN.id
-        return Relief.BASIN.id
+        return Relief.BASIN
     }
 
     get(point) {
