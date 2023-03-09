@@ -18,12 +18,11 @@ export class HydrologyLayer {
     #riverMouths = new PointSet()
     #maxFlowRate = new Map()
 
+    // TODO: create point map and id map
     constructor(rect, layers) {
         const context = {
             rect,
-            surfaceLayer: layers.surface,
-            basinLayer: layers.basin,
-            rainLayer: layers.rain,
+            layers,
             lakePoints: this.#lakePoints,
             riverPoints: this.#riverPoints,
             riverMouths: this.#riverMouths,

@@ -35,12 +35,12 @@ const SPEC = [
     {
         id: 6,
         name: 'Plateau',
-        color: Color.fromHex('#9C9'),
+        color: Color.fromHex('#99b98b'),
     },
     {
         id: 7,
         name: 'Mountain',
-        color: Color.fromHex('#ADA'),
+        color: Color.fromHex('#badfba'),
     }
 ]
 

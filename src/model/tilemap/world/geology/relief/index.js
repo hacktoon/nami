@@ -6,7 +6,7 @@ import { Relief } from './data'
 const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
-const PLAIN_RATIO = .4
+const PLAIN_RATIO = .55
 const PLATEAU_RATIO = .3
 const MOUNTAIN_RATIO = .5
 
@@ -42,8 +42,9 @@ export class ReliefLayer {
         if (isRiverSource) {
             if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
             if (featureNoise > PLATEAU_RATIO) return Relief.PLATEAU
-            // if (featureNoise > PLAIN_RATIO) return Relief.PLAIN
-            // return Relief.BASIN
+            return Relief.PLAIN
+        } else {
+            if (featureNoise > PLAIN_RATIO) return Relief.PLAIN
         }
         return Relief.BASIN
     }
