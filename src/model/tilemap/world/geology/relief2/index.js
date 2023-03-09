@@ -16,7 +16,6 @@ const MOUNTAIN_RATIO = .55
 export class ReliefLayer {
     // Relief is related to large geologic features
     #matrix
-    #waterArea = 0
 
     constructor(rect, layers) {
         this.#matrix = Matrix.fromRect(rect, point => {
@@ -31,7 +30,6 @@ export class ReliefLayer {
         const outlineNoise = layers.noise.getOutline(point)
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
-        this.#waterArea++  // TODO: Move to surface
         if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM.id
         if (featureNoise > OCEAN_RATIO) return Relief.OCEAN.id
         if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH.id
@@ -43,11 +41,6 @@ export class ReliefLayer {
 
 
         return Relief.BASIN.id
-    }
-
-    getWaterArea() {
-        const area = (this.#waterArea * 100) / this.#matrix.area
-        return area.toFixed(1)
     }
 
     get(point) {

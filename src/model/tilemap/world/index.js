@@ -67,7 +67,7 @@ export class WorldTileMap extends TileMap {
 
     getDescription() {
         return [
-            `Water: ${this.layers.relief.getWaterArea()}%`,
+            `Water: ${this.layers.surface.getWaterArea()}%`,
             `Rivers: ${this.layers.hydro.count}`,
             `Cities: ${this.layers.topo.getTotalCities()}`,
         ].join(', ').trim()

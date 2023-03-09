@@ -22,6 +22,7 @@ export class SurfaceLayer {
     // maps a body id to its surface type
     #bodyTypeMap = new Map()
     #bodyAreaMap = new Map()
+    #waterArea = 0
 
     constructor(rect, layers) {
         this.#bodyMatrix = Matrix.fromRect(rect, point => {
@@ -53,7 +54,9 @@ export class SurfaceLayer {
             // negative bodyId's are surface borders
             this.#bodyMatrix.set(point, -bodyId)
             // store land borders for other layers to use
-            if (! isWater) {
+            if (isWater) {
+                this.#waterArea++
+            } else {
                 this.landBorders.push(point)
             }
         })
@@ -132,6 +135,11 @@ export class SurfaceLayer {
     getArea(point) {
         const bodyId = Math.abs(this.#bodyMatrix.get(point))
         const area = (this.#bodyAreaMap.get(bodyId) * 100) / this.#bodyMatrix.area
+        return area.toFixed(1)
+    }
+
+    getWaterArea() {
+        const area = (this.#waterArea * 100) / this.#bodyMatrix.area
         return area.toFixed(1)
     }
 
