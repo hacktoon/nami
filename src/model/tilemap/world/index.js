@@ -10,7 +10,7 @@ import { BasinLayer } from './geology/basin'
 import { ReliefLayer } from './geology/relief'
 import { TemperatureLayer } from './climatology/temperature'
 import { RainLayer } from './climatology/rain'
-import { HydrologyLayer } from './hydrology'
+import { RiverLayer } from './hydrology/river'
 import { BiomeLayer } from './biology/biome'
 import { TopologyLayer } from './topology'
 
@@ -44,7 +44,7 @@ export class WorldTileMap extends TileMap {
         layers.temperature = new TemperatureLayer(rect, layers)
         layers.rain = new RainLayer(rect, layers)
         layers.basin = new BasinLayer(rect, layers)
-        layers.hydro = new HydrologyLayer(rect, layers)
+        layers.river = new RiverLayer(rect, layers)
         layers.relief = new ReliefLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
         layers.topo = new TopologyLayer(rect, layers, realmCount)
@@ -61,14 +61,14 @@ export class WorldTileMap extends TileMap {
             this.layers.rain.getText(wrappedPoint),
             this.layers.biome.getText(wrappedPoint),
             this.layers.basin.getText(wrappedPoint),
-            this.layers.hydro.getText(wrappedPoint),
+            this.layers.river.getText(wrappedPoint),
         ].join('\n').trim()
     }
 
     getDescription() {
         return [
             `Water: ${this.layers.surface.getWaterArea()}%`,
-            `Rivers: ${this.layers.hydro.count}`,
+            `Rivers: ${this.layers.river.count}`,
             `Cities: ${this.layers.topo.getTotalCities()}`,
         ].join(', ').trim()
     }

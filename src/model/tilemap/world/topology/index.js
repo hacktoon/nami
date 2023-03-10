@@ -38,8 +38,8 @@ export class TopologyLayer {
     #isPossibleCity(layers, point) {
         const isLand = layers.surface.isLand(point)
         const isBorder = layers.surface.isBorder(point)
-        const isRiver = layers.hydro.isRiver(point)
-        const isLake = layers.hydro.isLake(point)
+        const isRiver = layers.river.isRiver(point)
+        const isLake = false //layers.river.isLake(point)
         const isWaterCity = !isLand && Random.chance(WATER_CITY_CHANCE)
         const isLandCity = isLand && (isRiver || isLake || isBorder)
         return isWaterCity || isLandCity

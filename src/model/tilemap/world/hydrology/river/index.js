@@ -3,12 +3,11 @@ import { PointMap } from '/src/lib/point/map'
 import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
-import { buildRiverFlowMap, DIRECTION_PATTERN_MAP } from './river'
+import { buildRiverFlowMap, DIRECTION_PATTERN_MAP } from './fill'
 
 
-export class HydrologyLayer {
+export class RiverLayer {
     #riverPoints = new PointMap()
-    #lakePoints = new PointMap()
     #riverFlow = new PointMap()
     // map a point to a fraction point [.2, .2]
     #riverMeanders = new PointMap()
@@ -23,7 +22,6 @@ export class HydrologyLayer {
         const context = {
             rect,
             layers,
-            lakePoints: this.#lakePoints,
             riverPoints: this.#riverPoints,
             riverMouths: this.#riverMouths,
             riverFlow: this.#riverFlow,
@@ -54,7 +52,8 @@ export class HydrologyLayer {
     }
 
     #getRiverDirections(point) {
-        // return a list of direction axis
+        // return a list of direction axis representing a river branch
+        // at given direction on a 3x3 bitmask grid (cross)
         // for each direction, draw a point to the center
         const axisOffsets = []
         const flowCode = this.#riverFlow.get(point)
@@ -86,9 +85,5 @@ export class HydrologyLayer {
 
     isMouth(point) {
         return this.#riverMouths.has(point)
-    }
-
-    isLake(point) {
-        return this.#lakePoints.has(point)
     }
 }

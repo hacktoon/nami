@@ -87,7 +87,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             color = surface.water ? rain.color : rain.color
         }
         if (layer === 'basin') {
-            const river = this.tileMap.layers.hydro.get(point)
+            const river = this.tileMap.layers.river.get(point)
             if (river && !surface.water) {
                 color = this.colorMap.getByBasin(point)
             }
@@ -103,11 +103,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layers = this.tileMap.layers
         const point = this.rect.wrap(props.tilePoint)
         const isLand = layers.surface.isLand(point)
-        const isRiver = layers.hydro.has(point)
-        const isLake = layers.hydro.isLake(point)
+        const isRiver = layers.river.has(point)
+        const isLake = false //layers.river.isLake(point)
         const isDungeon = layers.topo.isDungeon(point)
         const isCity = layers.topo.isCity(point)
-        const river = this.tileMap.layers.hydro.get(point)
+        const river = this.tileMap.layers.river.get(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
             drawRiver(river, props)
         }

@@ -37,7 +37,7 @@ export class ReliefLayer {
 
     #detectLandType(layers, point) {
         const featureNoise = layers.noise.getFeature(point)
-        const river = layers.hydro.isRiver(point)
+        const river = layers.river.isRiver(point)
         const isRiverSource = layers.basin.isRiverSource(point)
         if (isRiverSource) {
             if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
