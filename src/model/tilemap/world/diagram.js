@@ -112,7 +112,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             drawRiver(river, props)
         }
         if (this.params.get('showRiverSources')) {
-            if (layers.basin.isRiverSource(point)) {
+            if (isRiver && layers.basin.isRiverSource(point)) {
                 drawRiverSource(river, props)
             }
         }

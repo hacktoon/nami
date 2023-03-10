@@ -28,24 +28,30 @@ const RIVER_MEANDER_MIDDLE = .5
 */
 export function buildRiverFlowMap(context) {
     let riverId = 0
-    for(let source of context.layers.basin.riverSources.points) {
-        const maxFlowRate = buildRiver(context, riverId, source)
-        context.maxFlowRate.set(riverId, maxFlowRate)
+    const {layers, maxFlowRate} = context
+    const basinSources = layers.basin.riverSources.points
+    // get basin sources where rains enough to form rivers
+    const riverSources = basinSources.filter(sourcePoint => {
+        return layers.rain.createsRivers(sourcePoint)
+    })
+    for(let sourcePoint of riverSources) {
+        const flowRate = buildRiver(context, riverId, sourcePoint)
+        maxFlowRate.set(riverId, flowRate)
         riverId++
     }
 }
 
 
-function buildRiver(context, riverId, source) {
+function buildRiver(context, riverId, sourcePoint) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const {
         layers, flowRate, rect, riverFlow,
         riverPoints, riverMeanders, riverMouths
     } = context
-    let point = source
+    let point = sourcePoint
     // save previous point for mouth detection
-    let prevPoint = source
+    let prevPoint = sourcePoint
     // init this river with current flow rate or zero if it's empty
     let rate = 1
     while (layers.surface.isLand(point)) {

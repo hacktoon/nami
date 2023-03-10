@@ -37,7 +37,7 @@ export class RiverLayer {
     }
 
     has(point) {
-        return this.#riverFlowRate.has(point)
+        return this.#riverPoints.has(point)
     }
 
     get(point) {
