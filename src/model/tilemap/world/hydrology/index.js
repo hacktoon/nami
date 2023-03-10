@@ -80,15 +80,6 @@ export class HydrologyLayer {
         return `Hydro(${attrs})`
     }
 
-    getFlowRate(point) {
-        return this.#riverFlowRate.get(point)
-    }
-
-    getMaxFlowRate(point) {
-        const riverId = this.#riverPoints.get(point)
-        return this.#maxFlowRate.get(riverId)
-    }
-
     isRiver(point) {
         return this.#riverPoints.has(point)
     }

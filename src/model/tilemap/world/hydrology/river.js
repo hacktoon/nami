@@ -78,9 +78,9 @@ function buildMeanderPoint(basin) {
     // use erosion direction to steer point
     const axis = basin.erosion.axis  // direction axis ([-1, 0], [1, 1], etc)
     const coord = axis => {
-        const offset = Random.floatRange(.2, .4)
+        const offset = Random.floatRange(.1, .3)
         const axisToggle = axis === 0 ? Random.choice(1, -1) : axis
-        const newCoord = (offset * axisToggle) + RIVER_MEANDER_MIDDLE
+        const newCoord = RIVER_MEANDER_MIDDLE + (offset * axisToggle)
         // no need of a higher precision, return one decimal float
         return newCoord.toFixed(1)
     }
