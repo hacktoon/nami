@@ -72,11 +72,10 @@ export class RiverLayer {
             return ''
         const hydro = this.get(point)
         const attrs = [
-             `source=${hydro.source}`,
-             `mouth=${hydro.mouth}`,
-             `flowRate=${hydro.flowRate}`,
+             `source=${hydro.source ? 1 : 0}`,
+             `mouth=${hydro.mouth ? 1 : 0}`,
         ].join(',')
-        return `Hydro(${attrs})`
+        return `River(${attrs})`
     }
 
     isRiver(point) {

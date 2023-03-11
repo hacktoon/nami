@@ -6,7 +6,7 @@ import { Relief } from './data'
 const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
-const PLAIN_RATIO = .55
+const HILL_RATIO = .55
 const PLATEAU_RATIO = .4
 const MOUNTAIN_RATIO = .4
 
@@ -38,19 +38,15 @@ export class ReliefLayer {
     #detectLandType(layers, point) {
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
-        if (layers.river.isRiver(point)) {
-            const river = layers.river.isRiver(point)
-            if (layers.basin.isRiverSource(point)) {
+        if (layers.basin.isRiverSource(point)) {
+            if (layers.river.isRiver(point)) {
                 if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
-                if (grainedNoise > PLATEAU_RATIO) return Relief.PLATEAU
-                return Relief.PLAIN
+                return Relief.PLATEAU
             }
-        } else {
-            // there's no river, add random plateaus and plains
             if (grainedNoise < PLATEAU_RATIO) return Relief.PLATEAU
-            if (featureNoise > PLAIN_RATIO) return Relief.PLAIN
+            return Relief.HILL
         }
-        return Relief.BASIN
+        return Relief.PLAIN
     }
 
     get(point) {

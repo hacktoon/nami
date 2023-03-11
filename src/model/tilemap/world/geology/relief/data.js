@@ -24,12 +24,12 @@ const SPEC = [
     },
     {
         id: 4,
-        name: 'Basin',
+        name: 'Plain',
         color: Color.fromHex('#7A7'),
     },
     {
         id: 5,
-        name: 'Plain',
+        name: 'Hill',
         color: Color.fromHex('#8B8'),
     },
     {
