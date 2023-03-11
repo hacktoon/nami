@@ -19,11 +19,12 @@ class ErosionFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        const {rect, riverSources} = fill.context
+        const {rect, dividePoints} = fill.context
         const adjacents = Point.adjacents(parentPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
-        if (isRiverSource(fill.context, adjacents)) {
-            riverSources.add(wrappedParentPoint)
+        // is basin divide (is fill border)?
+        if (isDivide(fill.context, adjacents)) {
+            dividePoints.add(wrappedParentPoint)
         }
         return adjacents
     }
@@ -106,7 +107,7 @@ function getDirection(sourcePoint, targetPoint) {
 }
 
 
-function isRiverSource(context, neighbors) {
+function isDivide(context, neighbors) {
     const {rect, erosionMap, surfaceLayer} = context
     // it's a river source if every neighbor is water
     let waterNeighborCount = 0

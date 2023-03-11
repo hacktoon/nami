@@ -26,15 +26,15 @@ const RIVER_MEANDER_MIDDLE = .5
     following the direction and marking how much strong a
     river gets.
 */
-export function buildRiverFlowMap(context) {
+export function buildRiverMap(context) {
     let riverId = 0
     const {layers, maxFlowRate} = context
-    const basinSources = layers.basin.riverSources.points
-    // get basin sources where rains enough to form rivers
-    const riverSources = basinSources.filter(sourcePoint => {
+    const basinDivides = layers.basin.dividePoints.points
+    // get basin divides where rains enough to form rivers
+    const sourcePoints = basinDivides.filter(sourcePoint => {
         return layers.rain.createsRivers(sourcePoint)
     })
-    for(let sourcePoint of riverSources) {
+    for(let sourcePoint of sourcePoints) {
         const flowRate = buildRiver(context, riverId, sourcePoint)
         maxFlowRate.set(riverId, flowRate)
         riverId++

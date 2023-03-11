@@ -3,7 +3,7 @@ import { PointMap } from '/src/lib/point/map'
 import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
-import { buildRiverFlowMap, DIRECTION_PATTERN_MAP } from './fill'
+import { buildRiverMap, DIRECTION_PATTERN_MAP } from './fill'
 
 
 export class RiverLayer {
@@ -13,7 +13,6 @@ export class RiverLayer {
     #riverMeanders = new PointMap()
     // the amount of water in a point
     #riverFlowRate = new PointMap()
-    #riverSources = new PointSet()
     #riverMouths = new PointSet()
     #maxFlowRate = new Map()
 
@@ -29,11 +28,11 @@ export class RiverLayer {
             maxFlowRate: this.#maxFlowRate,
             riverMeanders: this.#riverMeanders,
         }
-        buildRiverFlowMap(context)
+        buildRiverMap(context)
     }
 
     get count() {
-        return this.#riverSources.size
+        return this.#riverMouths.size
     }
 
     has(point) {
@@ -44,7 +43,6 @@ export class RiverLayer {
         return {
             flow: this.#riverFlow.get(point),
             flowDirections: this.#getRiverDirections(point),
-            source: this.#riverSources.has(point),
             mouth: this.#riverMouths.has(point),
             flowRate: this.#riverFlowRate.get(point),
             meander: this.#riverMeanders.get(point),
@@ -70,16 +68,13 @@ export class RiverLayer {
     getText(point) {
         if (! this.has(point))
             return ''
-        const hydro = this.get(point)
+        const river = this.get(point)
         const attrs = [
-             `source=${hydro.source ? 1 : 0}`,
-             `mouth=${hydro.mouth ? 1 : 0}`,
+             `source=${river.source ? 1 : 0}`,
+             `mouth=${river.mouth ? 1 : 0}`,
+             `flowRate=${river.flowRate}`,
         ].join(',')
         return `River(${attrs})`
-    }
-
-    isRiver(point) {
-        return this.#riverPoints.has(point)
     }
 
     isMouth(point) {

@@ -8,13 +8,13 @@ import { buildErosionMap } from './fill'
 export class BasinLayer {
     #basinMap = new PointMap()
     #erosionMap = new PointMap()
-    #riverSources = new PointSet()
+    #dividePoints = new PointSet()
 
     constructor(rect, layers) {
         const context = {
             rect,
             surfaceLayer: layers.surface,
-            riverSources: this.#riverSources,
+            dividePoints: this.#dividePoints,
             basinMap: this.#basinMap,
             erosionMap: this.#erosionMap,
         }
@@ -25,8 +25,8 @@ export class BasinLayer {
         return this.#basinMap.size
     }
 
-    get riverSources() {
-        return this.#riverSources
+    get dividePoints() {
+        return this.#dividePoints
     }
 
     get(point) {
@@ -49,7 +49,7 @@ export class BasinLayer {
         return `Erosion(${attrs})`
     }
 
-    isRiverSource(point) {
-        return this.#riverSources.has(point)
+    isDivide(point) {
+        return this.#dividePoints.has(point)
     }
 }
