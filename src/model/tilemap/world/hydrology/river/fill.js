@@ -35,18 +35,16 @@ export function buildRiverMap(context) {
         return layers.rain.createsRivers(sourcePoint)
     })
     for(let sourcePoint of sourcePoints) {
-        const flowRate = buildRiver(context, riverId, sourcePoint)
-        maxFlowRate.set(riverId, flowRate)
-        riverId++
+        buildRiver(context, sourcePoint, riverId++)
     }
 }
 
 
-function buildRiver(context, riverId, sourcePoint) {
+function buildRiver(context, sourcePoint, riverId) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const {
-        layers, flowRate, rect, riverFlow,
+        layers, flowRate, rect, riverFlow, maxFlowRate,
         riverPoints, riverMeanders, riverMouths
     } = context
     let point = sourcePoint
@@ -56,11 +54,12 @@ function buildRiver(context, riverId, sourcePoint) {
     let rate = 1
     while (layers.surface.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
-        const code = buildErosionDirectionCode(context, wrappedPoint)
         const basin = layers.basin.get(wrappedPoint)
-        riverFlow.set(wrappedPoint, code)
+        const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
+        riverFlow.set(wrappedPoint, directionBitmask)
         riverPoints.set(wrappedPoint, riverId)
         riverMeanders.set(wrappedPoint, buildMeanderPoint(basin))
+        // has a rate, increase by one
         if (flowRate.has(wrappedPoint)) {
             rate = flowRate.get(wrappedPoint) + 1
         }
@@ -68,8 +67,9 @@ function buildRiver(context, riverId, sourcePoint) {
         prevPoint = wrappedPoint
         point = getNextRiverPoint(context, wrappedPoint)
     }
+    // current point is water, add previous as river mouth
     riverMouths.add(prevPoint)
-    return rate
+    maxFlowRate.set(riverId, rate)
 }
 
 
@@ -94,7 +94,7 @@ function buildMeanderPoint(basin) {
 }
 
 
-function buildErosionDirectionCode(context, point) {
+function buildDirectionBitmask(context, point) {
     const {rect, layers, riverFlow} = context
     const wrappedPoint = rect.wrap(point)
     const basin = layers.basin.get(wrappedPoint)

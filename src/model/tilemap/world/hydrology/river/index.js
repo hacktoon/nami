@@ -7,7 +7,9 @@ import { buildRiverMap, DIRECTION_PATTERN_MAP } from './fill'
 
 
 export class RiverLayer {
+    // map a point to an id
     #riverPoints = new PointMap()
+    // map a point to a river layout code
     #riverFlow = new PointMap()
     // map a point to a fraction point [.2, .2]
     #riverMeanders = new PointMap()
