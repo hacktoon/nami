@@ -7,6 +7,8 @@ import { buildRiverMap, DIRECTION_PATTERN_MAP } from './fill'
 
 
 export class RiverLayer {
+    // maps an id to a name
+    #riverNames = new Map()
     // map a point to an id
     #riverPoints = new PointMap()
     // map a point to a river layout code
@@ -15,6 +17,8 @@ export class RiverLayer {
     #riverMeanders = new PointMap()
     // the amount of water in a point
     #riverFlowRate = new PointMap()
+    // map a river point to its river type
+    #stretchType = new PointMap()
     #riverMouths = new PointSet()
     #maxFlowRate = new Map()
 
@@ -23,12 +27,13 @@ export class RiverLayer {
         const context = {
             rect,
             layers,
+            riverNames: this.#riverNames,
             riverPoints: this.#riverPoints,
             riverMouths: this.#riverMouths,
             riverFlow: this.#riverFlow,
+            riverMeanders: this.#riverMeanders,
             flowRate: this.#riverFlowRate,
             maxFlowRate: this.#maxFlowRate,
-            riverMeanders: this.#riverMeanders,
         }
         buildRiverMap(context)
     }
@@ -42,9 +47,12 @@ export class RiverLayer {
     }
 
     get(point) {
+        const id = this.#riverPoints.get(point)
         return {
+            id,
             flow: this.#riverFlow.get(point),
             flowDirections: this.#getRiverDirections(point),
+            name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
             flowRate: this.#riverFlowRate.get(point),
             meander: this.#riverMeanders.get(point),
@@ -72,6 +80,7 @@ export class RiverLayer {
             return ''
         const river = this.get(point)
         const attrs = [
+             `name=${river.name}`,
              `source=${river.source ? 1 : 0}`,
              `mouth=${river.mouth ? 1 : 0}`,
              `flowRate=${river.flowRate}`,
