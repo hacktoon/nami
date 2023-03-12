@@ -44,8 +44,8 @@ function buildRiver(context, sourcePoint, riverId) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const {
-        layers, flowRate, rect, riverNames, riverFlow, maxFlowRate,
-        riverPoints, riverMeanders, riverMouths
+        layers, flowRate, rect, riverPoints, riverNames,
+        maxFlowRate, riverMouths
     } = context
     let point = sourcePoint
     // save previous point for source detection
@@ -53,23 +53,29 @@ function buildRiver(context, sourcePoint, riverId) {
     let rate = 1
     while (layers.surface.isLand(point)) {
         let wrappedPoint = rect.wrap(point)
-        const basin = layers.basin.get(wrappedPoint)
-        const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
-        riverFlow.set(wrappedPoint, directionBitmask)
-        riverPoints.set(wrappedPoint, riverId)
-        riverMeanders.set(wrappedPoint, buildMeanderPoint(basin))
+        buildRiverPoint(context, wrappedPoint)
         // has a rate, increase by one
         if (flowRate.has(wrappedPoint)) {
             rate = flowRate.get(wrappedPoint) + 1
         }
         flowRate.set(wrappedPoint, rate)
-        prevPoint = wrappedPoint
+        riverPoints.set(wrappedPoint, riverId)
         point = getNextRiverPoint(context, wrappedPoint)
+        prevPoint = wrappedPoint
     }
     // current point is water, add previous as river mouth
     riverMouths.add(prevPoint)
     riverNames.set(riverId, Random.choiceFrom(RIVER_NAMES))
     maxFlowRate.set(riverId, rate)
+}
+
+
+function buildRiverPoint(context, wrappedPoint) {
+    const {layers, riverFlow, riverMeanders} = context
+    const basin = layers.basin.get(wrappedPoint)
+    const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
+    riverFlow.set(wrappedPoint, directionBitmask)
+    riverMeanders.set(wrappedPoint, buildMeanderPoint(basin))
 }
 
 
