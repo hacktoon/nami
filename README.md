@@ -9,22 +9,22 @@
 
 ### General
 - Get zoom on draw methods of Diagram
-	- Make it a parameter for detailed rendering
+	- Make it a parameter for detailed rendering (world, block)
 - Optimize canvas rendering
 	- Use offscreen canvas
 	- When map fills screen entirely, snap canvas to viewport,
     	otherwise translate canvas element
-- Solve `[Violation] 'input' handler` message by lazy evaluating commands
 - Point
   - create a wrappedAdjacents similar to `Point.adjacents(parentPoint)` that receives a rect
-
-### WorldTileMap
-- Each chunk has 4 spawn points and a default (e.g. when player uses teleport)
-- Cities start more often on outer borders of land
-- Make temperature dynamic using noise offset and season `temp.get(point, season)`
 - Create ContinentLayer (maybe)
   - Use 32x32 tilemap with regionMap borders for separating landmasses
   - border points get a grained island noise
+- Solve `[Violation] 'input' handler` message by lazy evaluating commands
+
+### WorldRegionMap
+- Each region has 4 spawn points
+- Each city in region map can occupy tiles as zones
+- Make temperature dynamic using noise offset and season `temp.get(point, season)`
 
 ### HydrologyLayer
 - Create types of lakes (swamp, pond, well)
@@ -33,8 +33,8 @@
 - Height of terrain often make waterfalls or rapids
 
 ### TopologyLayer
-- Determine capitals and villages
-- Start a fill to determine realm area
+- Add city ruins on dry rivers or dry land
+- Start a fill to determine city area
 - connect sites inside a radius
 - create junction points between two route points to set midpath detours
   - follow road and calc nearest junction start
