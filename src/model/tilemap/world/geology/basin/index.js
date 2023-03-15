@@ -8,7 +8,7 @@ import { buildBasinMap } from './fill'
 export class BasinLayer {
     #basinMap = new PointMap()
     #erosionMap = new PointMap()
-    #dividePoints = new PointSet() // change to point map
+    #dividePoints = new PointMap()
 
     constructor(rect, layers) {
         const context = {
@@ -26,7 +26,15 @@ export class BasinLayer {
     }
 
     get dividePoints() {
-        return this.#dividePoints.points
+        const points = []
+        let maxLength = 0
+        this.#dividePoints.forEach((point, value) => {
+            points.push(point)
+            if (value > maxLength) {
+                maxLength = value
+            }
+        })
+        return points
     }
 
     get(point) {
