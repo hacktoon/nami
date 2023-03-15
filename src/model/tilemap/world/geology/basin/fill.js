@@ -23,6 +23,9 @@ class BasinFill extends ConcurrentFill {
         const adjacents = Point.adjacents(parentPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         // is basin divide (is fill border)?
+        if (Point.hash(wrappedParentPoint) == '48,29') {
+            console.log(fill.level);
+        }
         if (isDivide(fill.context, adjacents)) {
             dividePoints.add(wrappedParentPoint)
         }

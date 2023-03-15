@@ -8,7 +8,7 @@ import { buildBasinMap } from './fill'
 export class BasinLayer {
     #basinMap = new PointMap()
     #erosionMap = new PointMap()
-    #dividePoints = new PointSet()
+    #dividePoints = new PointSet() // change to point map
 
     constructor(rect, layers) {
         const context = {

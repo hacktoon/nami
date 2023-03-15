@@ -7,11 +7,13 @@ import { TileMapDiagram } from '/src/model/tilemap/lib'
 const SCHEMA = new Schema(
     'RegionTileMapDiagram',
     Type.boolean('showOrigins', 'Origins', {default: true}),
-    Type.boolean('showLevels', 'Levels', {default: true}),
     Type.boolean('showBorders', 'Borders', {default: true}),
     Type.boolean('showNeighborBorder', 'Neighbor borders', {default: false}),
     Type.boolean('selectRegion', 'Select region', {default: false}),
     Type.number('selectedRegion', 'Region', {default: 0, min: 0, step: 1}),
+    Type.boolean('showGrowth', 'Growth', {default: true}),
+    Type.number('selectedGrowth', 'Growth', {default: 1, min: 0}),
+    Type.boolean('showLevels', 'Levels', {default: true}),
     Type.number('selectedLevel', 'Level', {default: 1, min: 0}),
 )
 
@@ -52,20 +54,18 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         this.colorMap = colorMap
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
-        this.showLevels = params.get('showLevels')
         this.showNeighborBorder = params.get('showNeighborBorder')
+        this.selectedGrowth = params.get('selectedGrowth')
         this.selectedLevel = params.get('selectedLevel')
-        this.level = params.get('level')
+        this.showLevels = params.get('showLevels')
+        this.showGrowth = params.get('showGrowth')
     }
 
     get(_point) {
         const point = this.tileMap.rect.wrap(_point)
         const regionId = this.tileMap.getRegion(point)
-        const level = this.tileMap.getLevel(point)
+        const growth = this.tileMap.getGrowth(point)
         const color = this.colorMap.get(regionId)
-        if (level >= this.selectedLevel) {
-            return Color.WHITE
-        }
         if (this.showOrigins && this.tileMap.isOrigin(point)) {
             return color.invert()
         }
@@ -79,7 +79,16 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         }
         if (this.showLevels) {
             const level = this.tileMap.getLevel(point)
+            if (level > this.selectedLevel) {
+                return Color.WHITE
+            }
             return color.darken(level * 1.5)
+        }
+        if (this.showGrowth) {
+            if (growth >= this.selectedGrowth) {
+                return Color.WHITE
+            }
+            return color.darken(growth * 1.5)
         }
         if (this.params.get('selectRegion')) {
             const toggle = (point[0] + point[1]) % 2 === 0

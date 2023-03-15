@@ -6,15 +6,18 @@ const MAX_LOOP_COUNT = 2000
 
 export class ConcurrentFill {
     #seedTable = []
-    #levelTable = []
+    #growthTable = []  // stores the level of growth on each point
+    #levelTable = []   // stores the level of each layer for each point
 
     start(origins, context={}) {
         // Initialize data and fill origins
+        const growth = 0
         const level = 0
         for(let id = 0; id < origins.length; id ++) {
-            const fill = {id, context, level}
+            const fill = {id, context, growth, level}
             const target = origins[id]
             const neighbors = this.getNeighbors(fill, target)
+            this.#growthTable.push(growth)
             this.#levelTable.push(level)
             this.#seedTable.push([target])
             this.onInitFill(fill, target, neighbors)
@@ -22,44 +25,52 @@ export class ConcurrentFill {
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
         while(loopCount-- > 0) {
-            if (this.#fillLayers(origins, context)) {
+            const completedFills = this.#fillStep(origins, context)
+            if (completedFills === origins.length) {
                 break
             }
         }
     }
 
-    #fillLayers(origins, context) {
+    #fillStep(origins, context) {
         let completedFills = 0
         for(let id = 0; id < origins.length; id ++) {
             // fill one or many layers for each id
-            const fill = {id, context, level: this.#levelTable[id]}
+            const growth = this.#growthTable[id]
+            const level = this.#levelTable[id]
+            const fill = {id, context, growth, level}
             const nextSeeds = this.#fillLayer(fill)
             // Increase number of completed fills if it has no seeds
             completedFills += nextSeeds.length === 0 ? 1 : 0
-            // raise fill level if it has more seeds to spread
-            this.#levelTable[id] += nextSeeds.length >= 0 ? 1 : 0
+            // raise fill growth if it has more seeds to spread
+            this.#growthTable[id] += nextSeeds.length > 0 ? 1 : 0
             // set seeds for next layer
             this.#seedTable[id] = nextSeeds
         }
-        return completedFills === origins.length
+        return completedFills
     }
 
     #fillLayer(fill) {
         const nextSeeds = this.#fillSingleLayer(fill, this.#seedTable[fill.id])
-        return this.#fillExtraRandomLayers(fill, nextSeeds)
+        // update level on fill context
+        const newLevelFill = {...fill, level: this.#levelTable[fill.id]}
+        return this.#fillExtraRandomLayers(newLevelFill, nextSeeds)
     }
 
     #fillSingleLayer(fill, seeds) {
         // for each seed, get its neighbors and try to fill
-        let nextSeeds = []
+        const nextSeeds = []
+        const nextLevel = this.#levelTable[fill.id] + 1
         for(let source of seeds) {
             // for each seed, try to fill its neighbors
             const neighbors = this.getNeighbors(fill, source)
             for(let target of neighbors) {
                 // I'm seed, can I fill my neighbor?
                 if (this.canFill(fill, target, source, neighbors)) {
+                    // update level if can be filled
+                    const newLevelFill = {...fill, level: nextLevel}
                     // fill this neighbor
-                    this.onFill(fill, target, source, neighbors)
+                    this.onFill(newLevelFill, target, source, neighbors)
                     // make the filled neighbor a seed for next iteration
                     nextSeeds.push(target)
                 } else {
@@ -68,6 +79,8 @@ export class ConcurrentFill {
                 }
             }
         }
+        // set new level if has filled seeds
+        if (nextSeeds.length > 0) this.#levelTable[fill.id] = nextLevel
         return nextSeeds
     }
 
@@ -78,7 +91,9 @@ export class ConcurrentFill {
             // split given seeds by chance
             const [nextSeeds, cachedSeeds] = this.#splitSeeds(fill, extraSeeds)
             // fill an extra layer using a fraction of given seeds
-            const filled = this.#fillSingleLayer(fill, nextSeeds)
+            // update level on fill context
+            const newLevelFill = {...fill, level: this.#levelTable[fill.id]}
+            const filled = this.#fillSingleLayer(newLevelFill, nextSeeds)
             // sum up filled & deferred seeds for next iteration
             extraSeeds = cachedSeeds.concat(filled)
         }
