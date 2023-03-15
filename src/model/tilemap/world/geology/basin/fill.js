@@ -7,14 +7,14 @@ const CHANCE = .1  // chance of growing
 const GROWTH = 10  // make basins grow bigger than others
 
 
-export function buildErosionMap(context) {
+export function buildBasinMap(context) {
     // start filling from land borders
     let origins = context.surfaceLayer.landBorders
-    const fill = new ErosionFill()
+    const fill = new BasinFill()
     fill.start(origins, context)
 }
 
-class ErosionFill extends ConcurrentFill {
+class BasinFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 

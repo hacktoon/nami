@@ -3,6 +3,7 @@ import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 
 import { RIVER_NAMES } from './names'
+import { RiverStretch } from './data'
 
 
 // bitmask value => point in matrix 3x3
@@ -28,17 +29,20 @@ const RIVER_MEANDER_MIDDLE = .5
 */
 export function buildRiverMap(context) {
     let riverId = 0
-    const {layers} = context
-    const basinDivides = layers.basin.dividePoints.points
-    // get basin divides where rains enough to form rivers
-    const sourcePoints = basinDivides.filter(sourcePoint => {
-        return layers.rain.createsRivers(sourcePoint)
-    })
-    for(let sourcePoint of sourcePoints) {
+    for(let sourcePoint of buildSourcePoints(context.layers)) {
         buildRiver(context, sourcePoint, riverId++)
     }
 }
 
+
+function buildSourcePoints(layers) {
+    // get basin divides where rains enough to form rivers
+    const basinDivides = layers.basin.dividePoints
+    const sourcePoints = basinDivides.filter(sourcePoint => {
+        return layers.rain.createsRivers(sourcePoint)
+    })
+    return sourcePoints
+}
 
 function buildRiver(context, sourcePoint, riverId) {
     // start from river source point. Follows the points

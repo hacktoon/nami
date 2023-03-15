@@ -1,44 +1,39 @@
 import { Color } from '/src/lib/color'
 
 
-const STRETCH_SPEC = [
+const SPEC = [
     {
         id: 0,
-        name: 'Spring',
-        color: Color.fromHex('#11425a'),
+        name: 'Headwaters',
+        color: Color.fromHex('#8fa7b3'),
     },
     {
         id: 1,
-        name: 'Waterfall',
-        color: Color.fromHex('#11425a'),
+        name: 'Upper course',
+        color: Color.fromHex('#2f6d8b'),
     },
     {
-        id: 1,
-        name: 'Rapids',
-        color: Color.fromHex('#11425a'),
+        id: 2,
+        name: 'Low course',
+        color: Color.fromHex('#356881'),
     },
     {
-        id: 1,
-        name: 'Delta',
-        color: Color.fromHex('#11425a'),
-    },
-    {
-        id: 1,
-        name: 'Estuary',
-        color: Color.fromHex('#11425a'),
+        id: 3,
+        name: 'Flood plains',
+        color: Color.fromHex('#57c7ab'),
     },
 ]
 
-const TYPE_MAP = new Map(STRETCH_SPEC.map(spec => [spec.id, spec]))
+const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
 
-export class River {
+export class RiverStretch {
     static fromId(id) {
-        return TYPE_MAP.get(id) ?? STRETCH_SPEC[0]
+        return TYPE_MAP.get(id) ?? SPEC[0]
     }
 }
 
 
-STRETCH_SPEC.forEach(spec => {
+SPEC.forEach(spec => {
     const name = spec.name.toUpperCase().replace(/\s+/, '_')
-    River[name] = spec
+    RiverStretch[name] = spec
 })

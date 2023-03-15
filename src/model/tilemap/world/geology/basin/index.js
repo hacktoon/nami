@@ -2,7 +2,7 @@ import { PointMap } from '/src/lib/point/map'
 import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
 
-import { buildErosionMap } from './fill'
+import { buildBasinMap } from './fill'
 
 
 export class BasinLayer {
@@ -18,7 +18,7 @@ export class BasinLayer {
             basinMap: this.#basinMap,
             erosionMap: this.#erosionMap,
         }
-        buildErosionMap(context)
+        buildBasinMap(context)
     }
 
     get count() {
@@ -26,7 +26,7 @@ export class BasinLayer {
     }
 
     get dividePoints() {
-        return this.#dividePoints
+        return this.#dividePoints.points
     }
 
     get(point) {
