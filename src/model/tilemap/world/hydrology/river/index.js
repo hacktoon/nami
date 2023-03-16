@@ -18,7 +18,7 @@ export class RiverLayer {
     // the amount of water in a point
     #riverFlowRate = new PointMap()
     // map a river point to its river type
-    #stretchType = new PointMap()
+    #stretchMap = new PointMap()
     #riverMouths = new PointSet()
 
     constructor(rect, layers) {
@@ -29,6 +29,7 @@ export class RiverLayer {
             riverPoints: this.#riverPoints,
             riverMouths: this.#riverMouths,
             layoutMap: this.#layoutMap,
+            stretchMap: this.#stretchMap,
             riverMeanders: this.#riverMeanders,
             flowRate: this.#riverFlowRate,
         }

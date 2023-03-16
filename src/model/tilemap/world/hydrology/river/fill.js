@@ -29,81 +29,59 @@ const RIVER_MEANDER_MIDDLE = .5
 */
 export function buildRiverMap(context) {
     let riverId = 0
-    for(let sourcePoint of buildSourcePoints(context)) {
-        if (context.layers.rain.createsRivers(sourcePoint)) {
-            buildRiver(context, sourcePoint, riverId++)
-        }
-    }
-}
-
-function buildSourcePoints(context) {
-    // return a list of points, sorted by height
-    // in ascendent order: smaller rivers first
     const basinLayer = context.layers.basin
-    const dividePoints = basinLayer.getDividePoints()
-    const entries = dividePoints.map(point => {
+    const entries = basinLayer.getDividePoints()
+    // crate a list of pairs (point and height)
+    .map(point => {
         const height = basinLayer.getHeight(point)
         return [point, height]
     })
-    return entries.sort((a, b) => a[1] - b[1]).map(p => p[0])
+    // accept only points where there's enough rain
+    .filter(([point]) => context.layers.rain.createsRivers(point))
+    // in ascendent order: lower heights first
+    .sort((a, b) => a[1] - b[1])
+    // get last entry height, which is the highest divide
+    const [, maxHeight] = entries[entries.length - 1]
+    entries.forEach(([source]) => {
+        buildRiver(context, riverId++, source, maxHeight)
+    })
 }
 
-function buildRiver(context, sourcePoint, riverId) {
+function buildRiver(context, riverId, sourcePoint, maxHeight) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const {
-        layers, flowRate, rect, riverPoints, riverNames,
-        riverMouths
+        rect, layers, flowRate, riverPoints, riverNames,
+        riverMouths, stretchMap
     } = context
-    let point = sourcePoint
-    // save previous point for source detection
-    let prevPoint = sourcePoint
+    let currentPoint = prevPoint = sourcePoint
     let rate = 1
-    while (layers.surface.isLand(point)) {
-        let wrappedPoint = rect.wrap(point)
-        buildRiverPoint(context, wrappedPoint)
+    // go down river following next (land) points
+    while (layers.surface.isLand(currentPoint)) {
+        let wrappedPoint = rect.wrap(currentPoint)
+        buildRiverMeander(context, wrappedPoint)
         // has a rate, increase by one
         if (flowRate.has(wrappedPoint)) {
             rate = flowRate.get(wrappedPoint) + 1
         }
         flowRate.set(wrappedPoint, rate)
         riverPoints.set(wrappedPoint, riverId)
-        point = getNextRiverPoint(context, wrappedPoint)
+        currentPoint = getNextRiverPoint(context, wrappedPoint)
+        // save previous point for mouth detection
         prevPoint = wrappedPoint
     }
-    // current point is water, add previous as river mouth
+    // current (last) point is water, add previous as river mouth
     riverMouths.add(prevPoint)
     riverNames.set(riverId, Random.choiceFrom(RIVER_NAMES))
 }
 
 
-function buildRiverPoint(context, wrappedPoint) {
+function buildRiverMeander(context, wrappedPoint) {
     const {layers, layoutMap, riverMeanders} = context
     const basin = layers.basin.get(wrappedPoint)
     const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
     layoutMap.set(wrappedPoint, directionBitmask)
     riverMeanders.set(wrappedPoint, buildMeanderPoint(basin))
-}
-
-
-function getNextRiverPoint(context, currentPoint) {
-    const basin = context.layers.basin.get(context.rect.wrap(currentPoint))
-    return Point.atDirection(currentPoint, basin.erosion)
-}
-
-
-function buildMeanderPoint(basin) {
-    // choose a relative point around the middle of a square at [.5, .5]
-    // use erosion direction to steer point
-    const axis = basin.erosion.axis  // direction axis ([-1, 0], [1, 1], etc)
-    const coord = axis => {
-        const offset = Random.floatRange(.1, .3)
-        const axisToggle = axis === 0 ? Random.choice(1, -1) : axis
-        const newCoord = RIVER_MEANDER_MIDDLE + (offset * axisToggle)
-        // no need of a higher precision, return one decimal float
-        return newCoord.toFixed(1)
-    }
-    return [coord(axis[0]), coord(axis[1])]
 }
 
 
@@ -127,6 +105,26 @@ function buildDirectionBitmask(context, point) {
         }
     })
     return flowCode
+}
+
+function buildMeanderPoint(basin) {
+    // choose a relative point around the middle of a square at [.5, .5]
+    // use erosion direction to steer point
+    const axis = basin.erosion.axis  // direction axis ([-1, 0], [1, 1], etc)
+    const coord = axis => {
+        const offset = Random.floatRange(.1, .3)
+        const axisToggle = axis === 0 ? Random.choice(1, -1) : axis
+        const newCoord = RIVER_MEANDER_MIDDLE + (offset * axisToggle)
+        // no need of a higher precision, return one decimal float
+        return newCoord.toFixed(1)
+    }
+    return [coord(axis[0]), coord(axis[1])]
+}
+
+
+function getNextRiverPoint(context, currentPoint) {
+    const basin = context.layers.basin.get(context.rect.wrap(currentPoint))
+    return Point.atDirection(currentPoint, basin.erosion)
 }
 
 
