@@ -29,19 +29,12 @@ const RIVER_MEANDER_MIDDLE = .5
 */
 export function buildRiverMap(context) {
     let riverId = 0
-    for(let sourcePoint of buildSourcePoints(context.layers)) {
-        buildRiver(context, sourcePoint, riverId++)
+    const sourcePoints = context.layers.basin.getDividePoints()
+    for(let sourcePoint of sourcePoints) {
+        if (context.layers.rain.createsRivers(sourcePoint)) {
+            buildRiver(context, sourcePoint, riverId++)
+        }
     }
-}
-
-
-function buildSourcePoints(layers) {
-    // get basin divides where rains enough to form rivers
-    const basinDivides = layers.basin.dividePoints
-    const sourcePoints = basinDivides.filter(sourcePoint => {
-        return layers.rain.createsRivers(sourcePoint)
-    })
-    return sourcePoints
 }
 
 function buildRiver(context, sourcePoint, riverId) {

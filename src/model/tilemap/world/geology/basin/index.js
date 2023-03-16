@@ -25,25 +25,26 @@ export class BasinLayer {
         return this.#basinMap.size
     }
 
-    get dividePoints() {
-        const points = []
-        let maxLength = 0
-        this.#dividePoints.forEach((point, value) => {
-            points.push(point)
-            if (value > maxLength) {
-                maxLength = value
-            }
-        })
-        return points
-    }
-
     get(point) {
         const directionId = this.#erosionMap.get(point)
+        const hasDivide = this.#dividePoints.has(point)
+        const length = hasDivide ? this.#dividePoints.get(point) : 0
         const direction = Direction.fromId(directionId)
         return {
             basin: this.#basinMap.get(point),
             erosion: direction,
+            length,
         }
+    }
+
+    getDividePoints() {
+        // return points sorted by basin length
+        // in ascending order using indexes of entries
+        const entries = []
+        this.#dividePoints.forEach((point, length) => {
+            entries.push([point, length])
+        })
+        return entries.sort((a, b) => a[1] - b[1]).map(p => p[0])
     }
 
     getText(point) {
@@ -51,10 +52,11 @@ export class BasinLayer {
             return ''
         const basin = this.get(point)
         const attrs = [
-             `basin=${basin.basin}`,
+             `${basin.basin}`,
              `erosion=${basin.erosion.name}`,
+             `length=${basin.length}`,
         ].join(',')
-        return `Erosion(${attrs})`
+        return `Basin(${attrs})`
     }
 
     isDivide(point) {
