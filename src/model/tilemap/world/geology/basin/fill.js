@@ -19,12 +19,13 @@ class BasinFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        const {rect, dividePoints} = fill.context
+        const {rect, heightMap, dividePoints} = fill.context
         const adjacents = Point.adjacents(parentPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         // is basin divide (is fill border)?
         if (isDivide(fill.context, adjacents)) {
-            dividePoints.set(wrappedParentPoint, fill.level)
+            dividePoints.add(wrappedParentPoint)
+            heightMap.set(wrappedParentPoint, fill.level)
         }
         return adjacents
     }
@@ -41,7 +42,7 @@ class BasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         // set the initial fill point to search water neighbor
         // considers if it's basin (has water neighbor) or inland
-        const {rect, erosionMap, basinMap} = fill.context
+        const {rect, erosionMap, heightMap, basinMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // already filled, exit
         if (erosionMap.has(wrappedFillPoint)) {
@@ -63,6 +64,7 @@ class BasinFill extends ConcurrentFill {
                 basinMap.set(wrappedFillPoint, basinMap.get(wrappedNeighbor))
             }
         }
+        heightMap.set(wrappedFillPoint, fill.level)
     }
 
     #getWaterNeighbor(fill, neighbors) {
@@ -89,7 +91,7 @@ class BasinFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {rect, erosionMap, basinMap} = fill.context
+        const {rect, erosionMap, heightMap, basinMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         const directionToSource = getDirection(fillPoint, parentPoint)
@@ -97,6 +99,7 @@ class BasinFill extends ConcurrentFill {
         erosionMap.set(wrappedFillPoint, directionToSource.id)
         // use basin value from parent point
         basinMap.set(wrappedFillPoint, basinMap.get(wrappedParentPoint))
+        heightMap.set(wrappedParentPoint, fill.level)
     }
 }
 

@@ -12,7 +12,7 @@ export class RiverLayer {
     // map a point to an id
     #riverPoints = new PointMap()
     // map a point to a river layout code
-    #riverFlow = new PointMap()
+    #layoutMap = new PointMap()
     // map a point to a fraction point [.2, .2]
     #riverMeanders = new PointMap()
     // the amount of water in a point
@@ -20,9 +20,7 @@ export class RiverLayer {
     // map a river point to its river type
     #stretchType = new PointMap()
     #riverMouths = new PointSet()
-    #maxFlowRate = new Map()
 
-    // TODO: create point map and id map
     constructor(rect, layers) {
         const context = {
             rect,
@@ -30,10 +28,9 @@ export class RiverLayer {
             riverNames: this.#riverNames,
             riverPoints: this.#riverPoints,
             riverMouths: this.#riverMouths,
-            riverFlow: this.#riverFlow,
+            layoutMap: this.#layoutMap,
             riverMeanders: this.#riverMeanders,
             flowRate: this.#riverFlowRate,
-            maxFlowRate: this.#maxFlowRate,
         }
         buildRiverMap(context)
     }
@@ -50,7 +47,6 @@ export class RiverLayer {
         const id = this.#riverPoints.get(point)
         return {
             id,
-            flow: this.#riverFlow.get(point),
             flowDirections: this.#getRiverDirections(point),
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
@@ -64,8 +60,8 @@ export class RiverLayer {
         // at given direction on a 3x3 bitmask grid (cross)
         // for each direction, draw a point to the center
         const axisOffsets = []
-        const flowCode = this.#riverFlow.get(point)
-        const patternBitmask = new BitMask(flowCode)
+        const layoutId = this.#layoutMap.get(point)
+        const patternBitmask = new BitMask(layoutId)
         for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
             if (patternBitmask.has(code)) {
                 const direction = Direction.fromId(directionId)

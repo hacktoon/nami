@@ -8,7 +8,8 @@ import { buildBasinMap } from './fill'
 export class BasinLayer {
     #basinMap = new PointMap()
     #erosionMap = new PointMap()
-    #dividePoints = new PointMap()
+    #dividePoints = new PointSet()
+    #heightMap = new PointMap()
 
     constructor(rect, layers) {
         const context = {
@@ -17,6 +18,7 @@ export class BasinLayer {
             dividePoints: this.#dividePoints,
             basinMap: this.#basinMap,
             erosionMap: this.#erosionMap,
+            heightMap: this.#heightMap,
         }
         buildBasinMap(context)
     }
@@ -27,24 +29,21 @@ export class BasinLayer {
 
     get(point) {
         const directionId = this.#erosionMap.get(point)
-        const hasDivide = this.#dividePoints.has(point)
-        const length = hasDivide ? this.#dividePoints.get(point) : 0
+        const height = this.getHeight(point)
         const direction = Direction.fromId(directionId)
         return {
             basin: this.#basinMap.get(point),
             erosion: direction,
-            length,
+            height,
         }
     }
 
     getDividePoints() {
-        // return points sorted by basin length
-        // in ascending order using indexes of entries
-        const entries = []
-        this.#dividePoints.forEach((point, length) => {
-            entries.push([point, length])
-        })
-        return entries.sort((a, b) => a[1] - b[1]).map(p => p[0])
+        return this.#dividePoints.points
+    }
+
+    getHeight(point) {
+        return this.#heightMap.get(point)
     }
 
     getText(point) {
@@ -54,7 +53,7 @@ export class BasinLayer {
         const attrs = [
              `${basin.basin}`,
              `erosion=${basin.erosion.name}`,
-             `length=${basin.length}`,
+             `height=${basin.height}`,
         ].join(',')
         return `Basin(${attrs})`
     }

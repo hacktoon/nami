@@ -12,11 +12,11 @@ import {
 const DEFAULT_LAYER = 'biome'
 const LAYERS = [
     {value: 'surface', label: 'Surface'},
-    {value: 'relief', label: 'Relief'},
     {value: 'temperature', label: 'Temperature'},
     {value: 'rain', label: 'Rain'},
-    {value: 'biome', label: 'Biome'},
     {value: 'basin', label: 'Basin'},
+    {value: 'relief', label: 'Relief'},
+    {value: 'biome', label: 'Biome'},
 ]
 
 const SCHEMA = new Schema(

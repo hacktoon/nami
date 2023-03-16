@@ -29,12 +29,23 @@ const RIVER_MEANDER_MIDDLE = .5
 */
 export function buildRiverMap(context) {
     let riverId = 0
-    const sourcePoints = context.layers.basin.getDividePoints()
-    for(let sourcePoint of sourcePoints) {
+    for(let sourcePoint of buildSourcePoints(context)) {
         if (context.layers.rain.createsRivers(sourcePoint)) {
             buildRiver(context, sourcePoint, riverId++)
         }
     }
+}
+
+function buildSourcePoints(context) {
+    // return a list of points, sorted by height
+    // in ascendent order: smaller rivers first
+    const basinLayer = context.layers.basin
+    const dividePoints = basinLayer.getDividePoints()
+    const entries = dividePoints.map(point => {
+        const height = basinLayer.getHeight(point)
+        return [point, height]
+    })
+    return entries.sort((a, b) => a[1] - b[1]).map(p => p[0])
 }
 
 function buildRiver(context, sourcePoint, riverId) {
@@ -42,7 +53,7 @@ function buildRiver(context, sourcePoint, riverId) {
     // according to basin flow and builds a river.
     const {
         layers, flowRate, rect, riverPoints, riverNames,
-        maxFlowRate, riverMouths
+        riverMouths
     } = context
     let point = sourcePoint
     // save previous point for source detection
@@ -63,15 +74,14 @@ function buildRiver(context, sourcePoint, riverId) {
     // current point is water, add previous as river mouth
     riverMouths.add(prevPoint)
     riverNames.set(riverId, Random.choiceFrom(RIVER_NAMES))
-    maxFlowRate.set(riverId, rate)
 }
 
 
 function buildRiverPoint(context, wrappedPoint) {
-    const {layers, riverFlow, riverMeanders} = context
+    const {layers, layoutMap, riverMeanders} = context
     const basin = layers.basin.get(wrappedPoint)
     const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
-    riverFlow.set(wrappedPoint, directionBitmask)
+    layoutMap.set(wrappedPoint, directionBitmask)
     riverMeanders.set(wrappedPoint, buildMeanderPoint(basin))
 }
 
@@ -98,7 +108,7 @@ function buildMeanderPoint(basin) {
 
 
 function buildDirectionBitmask(context, point) {
-    const {rect, layers, riverFlow} = context
+    const {rect, layers, layoutMap} = context
     const wrappedPoint = rect.wrap(point)
     const basin = layers.basin.get(wrappedPoint)
     // set the tile according to which direction is flowing
@@ -112,7 +122,7 @@ function buildDirectionBitmask(context, point) {
         // neighbor basin flows here?
         if (! receivesFlow(context, sidePoint, point)) { return }
         // if it has a pattern, it's already a river point
-        if (riverFlow.has(wrappedSidePoint)) {
+        if (layoutMap.has(wrappedSidePoint)) {
             flowCode += DIRECTION_PATTERN_MAP.get(sideDirection.id)
         }
     })
