@@ -9,7 +9,8 @@ const GROWTH = 10  // make basins grow bigger than others
 
 export function buildBasinMap(context) {
     // start filling from land borders
-    let origins = context.surfaceLayer.landBorders
+    const {surfaceLayer, basinHeightMap} = context
+    let origins = surfaceLayer.landBorders
     const fill = new BasinFill()
     fill.start(origins, context)
 }
@@ -19,13 +20,19 @@ class BasinFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        const {rect, heightMap, dividePoints} = fill.context
+        const {rect, heightMap, basinHeightMap, dividePoints} = fill.context
         const adjacents = Point.adjacents(parentPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         // is basin divide (is fill border)?
         if (isDivide(fill.context, adjacents)) {
-            dividePoints.add(wrappedParentPoint)
+            let basinHeight = basinHeightMap.get(fill.id) ?? 0
+            // update max basin height
+            if (fill.level > basinHeight) {
+                basinHeightMap.set(fill.id, fill.level)
+            }
+            // add height by point
             heightMap.set(wrappedParentPoint, fill.level)
+            dividePoints.add(wrappedParentPoint)
         }
         return adjacents
     }

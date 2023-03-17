@@ -16,8 +16,6 @@ export class RiverLayer {
     #layoutMap = new PointMap()
     // map a point to a fraction point [.2, .2]
     #riverMeanders = new PointMap()
-    // the amount of water in a point
-    #riverFlowRate = new PointMap()
     // map a river point to its river type
     #stretchMap = new PointMap()
     #riverMouths = new PointSet()
@@ -32,7 +30,6 @@ export class RiverLayer {
             layoutMap: this.#layoutMap,
             stretchMap: this.#stretchMap,
             riverMeanders: this.#riverMeanders,
-            flowRate: this.#riverFlowRate,
         }
         buildRiverMap(context)
     }
@@ -53,7 +50,6 @@ export class RiverLayer {
             flowDirections: this.#getRiverDirections(point),
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
-            flowRate: this.#riverFlowRate.get(point),
             stretch: RiverStretch.fromId(stretchId),
             meander: this.#riverMeanders.get(point),
         }
@@ -81,9 +77,8 @@ export class RiverLayer {
         const river = this.get(point)
         const attrs = [
              `name=${river.name}`,
-             `source=${river.source ? 1 : 0}`,
              `mouth=${river.mouth ? 1 : 0}`,
-             `flowRate=${river.flowRate}`,
+             `stretch=${river.stretch.name}`,
         ].join(',')
         return `River(${attrs})`
     }

@@ -40,18 +40,16 @@ export function buildRiverMap(context) {
     .filter(([point]) => context.layers.rain.createsRivers(point))
     // in ascendent order: lower heights first
     .sort((a, b) => a[1] - b[1])
-    // get last entry height, which is the highest divide
-    const [, maxHeight] = entries[entries.length - 1]
     entries.forEach(([source]) => {
-        buildRiver(context, riverId++, source, maxHeight)
+        buildRiver(context, riverId++, source)
     })
 }
 
-function buildRiver(context, riverId, sourcePoint, maxHeight) {
+function buildRiver(context, riverId, sourcePoint) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const {
-        rect, layers, flowRate, riverPoints, riverNames,
+        rect, layers, riverPoints, riverNames,
         riverMouths, stretchMap
     } = context
     let currentPoint = prevPoint = sourcePoint
@@ -60,12 +58,7 @@ function buildRiver(context, riverId, sourcePoint, maxHeight) {
     while (layers.surface.isLand(currentPoint)) {
         let wrappedPoint = rect.wrap(currentPoint)
         buildRiverMeander(context, wrappedPoint)
-        // has a rate, increase by one
-        if (flowRate.has(wrappedPoint)) {
-            rate = flowRate.get(wrappedPoint) + 1
-        }
-        flowRate.set(wrappedPoint, rate)
-        const stretch = getStretch(context, wrappedPoint, maxHeight)
+        const stretch = getStretch(context, wrappedPoint)
         stretchMap.set(wrappedPoint, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(wrappedPoint, riverId)
@@ -125,7 +118,8 @@ function buildMeanderPoint(basin) {
 }
 
 
-function getStretch(context, point, maxHeight) {
+function getStretch(context, point) {
+    const maxHeight = context.layers.basin.getBasinHeight(point)
     const height = context.layers.basin.getHeight(point)
     const isDivide = context.layers.basin.isDivide(point)
     let ratio = (height / maxHeight).toFixed(1)

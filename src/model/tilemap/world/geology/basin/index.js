@@ -10,6 +10,7 @@ export class BasinLayer {
     #erosionMap = new PointMap()
     #dividePoints = new PointSet()
     #heightMap = new PointMap()
+    #basinHeightMap = new Map()
 
     constructor(rect, layers) {
         const context = {
@@ -19,6 +20,7 @@ export class BasinLayer {
             basinMap: this.#basinMap,
             erosionMap: this.#erosionMap,
             heightMap: this.#heightMap,
+            basinHeightMap: this.#basinHeightMap,
         }
         buildBasinMap(context)
     }
@@ -44,6 +46,11 @@ export class BasinLayer {
 
     getHeight(point) {
         return this.#heightMap.get(point)
+    }
+
+    getBasinHeight(point) {
+        const basin = this.#basinMap.get(point)
+        return this.#basinHeightMap.get(basin)
     }
 
     getText(point) {
