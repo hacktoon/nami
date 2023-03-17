@@ -67,7 +67,7 @@ class BasinFill extends ConcurrentFill {
 
 
     onFill(fill, fillPoint, parentPoint) {
-        const {rect, erosionMap, heightMap, basinMap} = fill.context
+        const {rect, erosionMap, heightMap, basinMap, distanceMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         const directionToSource = getDirection(fillPoint, parentPoint)
@@ -75,6 +75,7 @@ class BasinFill extends ConcurrentFill {
         erosionMap.set(wrappedFillPoint, directionToSource.id)
         // use basin value from parent point
         basinMap.set(wrappedFillPoint, basinMap.get(wrappedParentPoint))
+        distanceMap.set(wrappedFillPoint, distanceMap.get(wrappedParentPoint) + 1)
         heightMap.set(wrappedParentPoint, fill.level)
     }
 }
