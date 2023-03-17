@@ -6,25 +6,25 @@ const SPEC = [
         id: 0,
         name: 'Headwaters',
         width: .05,
-        color: Color.fromHex('#8fa7b3'),
+        color: Color.fromHex('#4b8fb1'),
     },
     {
         id: 1,
         name: 'Fast course',
         width: .1,
-        color: Color.fromHex('#2f6d8b'),
+        color: Color.fromHex('#2a83af'),
     },
     {
         id: 2,
         name: 'Slow course',
-        width: .16,
-        color: Color.fromHex('#356881'),
+        width: .15,
+        color: Color.fromHex('#26749b'),
     },
     {
         id: 3,
         name: 'Depositional',
-        width: .25,
-        color: Color.fromHex('#57c7ab'),
+        width: .2,
+        color: Color.fromHex('#216384'),
     },
 ]
 

@@ -80,6 +80,7 @@ export function drawRiver(river, {canvas, canvasPoint, size}) {
     const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
     const meanderOffsetPoint = buildMeanderOffsetPoint(river, size)
     const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
+    const color = river.stretch.color.toHex()
     for(let axisOffset of river.flowDirections) {
         // build a point for each flow that points to this point
         // create a midpoint at tile's square side
@@ -87,7 +88,7 @@ export function drawRiver(river, {canvas, canvasPoint, size}) {
             midCanvasPoint[0] + axisOffset[0] * midSize,
             midCanvasPoint[1] + axisOffset[1] * midSize
         ]
-        canvas.line(edgeMidPoint, meanderPoint, riverWidth, RIVER_COLOR)
+        canvas.line(edgeMidPoint, meanderPoint, riverWidth, color)
     }
 }
 
