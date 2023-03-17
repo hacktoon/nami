@@ -75,7 +75,7 @@ export function drawCapital(props) {
 
 
 export function drawRiver(river, {canvas, canvasPoint, size}) {
-    const riverWidth = buildRiverWidth(river, size)
+    const riverWidth = Math.floor(river.stretch.width * size)
     const midSize = Math.round(size / 2)
     const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
     const meanderOffsetPoint = buildMeanderOffsetPoint(river, size)
@@ -107,19 +107,6 @@ export function drawRiverSource(river, {canvas, canvasPoint, size}) {
 function buildMeanderOffsetPoint(river, size) {
     const percentage = river.meander
     return Point.multiplyScalar(percentage, size)
-}
-
-
-function buildRiverWidth(river, size) {
-    const maxWidth = Math.floor(size / 6)
-    let width = Math.floor(size / 2)
-    if (river.flowRate < 4) {  // creeks
-        width = 1
-    }
-    else if (river.flowRate < 10) { // medium rivers
-        width = Math.floor(size / 15)
-    }
-    return clamp(width, 1, maxWidth)
 }
 
 

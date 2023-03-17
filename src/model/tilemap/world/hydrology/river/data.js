@@ -5,21 +5,25 @@ const SPEC = [
     {
         id: 0,
         name: 'Headwaters',
+        width: .05,
         color: Color.fromHex('#8fa7b3'),
     },
     {
         id: 1,
-        name: 'Upper course',
+        name: 'Fast course',
+        width: .1,
         color: Color.fromHex('#2f6d8b'),
     },
     {
         id: 2,
-        name: 'Low course',
+        name: 'Slow course',
+        width: .16,
         color: Color.fromHex('#356881'),
     },
     {
         id: 3,
-        name: 'Flood plains',
+        name: 'Depositional',
+        width: .25,
         color: Color.fromHex('#57c7ab'),
     },
 ]

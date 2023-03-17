@@ -4,6 +4,7 @@ import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 
 import { buildRiverMap, DIRECTION_PATTERN_MAP } from './fill'
+import { RiverStretch } from './data'
 
 
 export class RiverLayer {
@@ -46,12 +47,14 @@ export class RiverLayer {
 
     get(point) {
         const id = this.#riverPoints.get(point)
+        const stretchId = this.#stretchMap.get(point)
         return {
             id,
             flowDirections: this.#getRiverDirections(point),
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
             flowRate: this.#riverFlowRate.get(point),
+            stretch: RiverStretch.fromId(stretchId),
             meander: this.#riverMeanders.get(point),
         }
     }

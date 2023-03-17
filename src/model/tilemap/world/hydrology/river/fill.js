@@ -65,6 +65,9 @@ function buildRiver(context, riverId, sourcePoint, maxHeight) {
             rate = flowRate.get(wrappedPoint) + 1
         }
         flowRate.set(wrappedPoint, rate)
+        const stretch = getStretch(context, wrappedPoint, maxHeight)
+        stretchMap.set(wrappedPoint, stretch.id)
+        // overwrite previous river id at point
         riverPoints.set(wrappedPoint, riverId)
         currentPoint = getNextRiverPoint(context, wrappedPoint)
         // save previous point for mouth detection
@@ -119,6 +122,18 @@ function buildMeanderPoint(basin) {
         return newCoord.toFixed(1)
     }
     return [coord(axis[0]), coord(axis[1])]
+}
+
+
+function getStretch(context, point, maxHeight) {
+    const height = context.layers.basin.getHeight(point)
+    const isDivide = context.layers.basin.isDivide(point)
+    let ratio = (height / maxHeight).toFixed(1)
+    if (height === 0 || isDivide) return RiverStretch.HEADWATERS
+    if (ratio >= .8) return RiverStretch.HEADWATERS
+    if (ratio >= .6) return RiverStretch.FAST_COURSE
+    if (ratio >= .4) return RiverStretch.SLOW_COURSE
+    return RiverStretch.DEPOSITIONAL
 }
 
 
