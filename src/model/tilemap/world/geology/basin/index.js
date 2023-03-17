@@ -71,6 +71,7 @@ export class BasinLayer {
              `${basin.basin}`,
              `erosion=${basin.erosion.name}`,
              `height=${basin.height}`,
+             `distance=${basin.distance}`,
         ].join(',')
         return `Basin(${attrs})`
     }
