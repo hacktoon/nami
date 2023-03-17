@@ -52,8 +52,8 @@ function buildRiver(context, riverId, sourcePoint) {
         rect, layers, riverPoints, riverNames,
         riverMouths, stretchMap
     } = context
-    let currentPoint = prevPoint = sourcePoint
-    let rate = 1
+    let currentPoint = sourcePoint
+    let prevPoint = sourcePoint
     // go down river following next (land) points
     while (layers.surface.isLand(currentPoint)) {
         let wrappedPoint = rect.wrap(currentPoint)
