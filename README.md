@@ -22,19 +22,19 @@
   - border points get a grained island noise
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
-### WorldBlockMap
-- Each block has 4 spawn points
-- Each city in block map can occupy tiles as zones
+### BiomeLayer
+- Consider relief on biome selection
+
+### TemperatureLayer
 - Make temperature dynamic using noise offset and season `temp.get(point, season)`
 
 ### HydrologyLayer
-- Set river length on basin layer and return sorted dividePoints by length
-- Start river on all directions (add source array)
 - Create types of lakes (swamp, pond, well)
 - River that start on small seas can't go much further
 - Height of terrain often make waterfalls or rapids
 
 ### TopologyLayer
+- Each city in block map can occupy tiles as zones or neighborhoods
 - Dungeon types and levels like cat quest
   - dungeons at high level like 79
 - Add city ruins on dry rivers or dry land

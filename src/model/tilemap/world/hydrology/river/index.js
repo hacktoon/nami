@@ -71,6 +71,15 @@ export class RiverLayer {
         return axisOffsets
     }
 
+    isMouth(point) {
+        return this.#riverMouths.has(point)
+    }
+
+    isDepositional(point) {
+        const river = this.get(point)
+        return river.stretch.id == RiverStretch.DEPOSITIONAL.id
+    }
+
     getText(point) {
         if (! this.has(point))
             return ''
@@ -81,9 +90,5 @@ export class RiverLayer {
              `stretch=${river.stretch.name}`,
         ].join(',')
         return `River(${attrs})`
-    }
-
-    isMouth(point) {
-        return this.#riverMouths.has(point)
     }
 }
