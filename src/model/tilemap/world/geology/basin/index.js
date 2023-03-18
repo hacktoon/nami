@@ -6,21 +6,31 @@ import { buildBasinMap } from './fill'
 
 
 export class BasinLayer {
+    // map a point to a basin id
     #basinMap = new PointMap()
+
+    // map a point to a direction of a erosion path
     #erosionMap = new PointMap()
-    #dividePoints = new PointSet()
+
     // the walk distance of each basin point to the shore
     // used to determine river stretch
     #distanceMap = new PointMap()
+
+    // the highest points of basins that borders others basins
+    #dividePoints = new PointSet()
+
+    // can form a lake or spring (where a river may begin on a hill)
+    #waterSourceMap = new PointSet()
 
     constructor(rect, layers) {
         const context = {
             rect,
             surfaceLayer: layers.surface,
-            dividePoints: this.#dividePoints,
             basinMap: this.#basinMap,
             erosionMap: this.#erosionMap,
             distanceMap: this.#distanceMap,
+            dividePoints: this.#dividePoints,
+            waterSourceMap: this.#waterSourceMap,
         }
         buildBasinMap(context)
     }

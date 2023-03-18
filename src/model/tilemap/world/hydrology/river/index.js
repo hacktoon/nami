@@ -35,7 +35,7 @@ export class RiverLayer {
     }
 
     get count() {
-        return this.#riverMouths.size
+        return this.#riverNames.size
     }
 
     has(point) {
