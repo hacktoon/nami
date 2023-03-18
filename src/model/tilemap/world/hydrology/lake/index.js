@@ -11,10 +11,13 @@ export class LakeLayer {
     #points = new PointMap()
 
     constructor(layers) {
-        for (let waterSource of layers.basin.getWaterSources()) {
-            if (Random.chance()) {
+        for (let point of layers.basin.getWaterSources()) {
+            const rain = layers.rain.get(point)
+            const temperature = layers.temperature.get(point)
+            const isRiverMouth = layers.river.isMouth(point)
+            // if (Random.chance()) {
 
-            }
+            // }
         }
     }
 
@@ -37,7 +40,6 @@ export class LakeLayer {
             name: this.#names.get(id),
         }
     }
-
 
     getText(point) {
         if (! this.has(point))

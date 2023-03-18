@@ -9,23 +9,28 @@ const SPEC = [
     },
     {
         id: 1,
-        name: 'Swamp',
-        color: Color.fromHex('#2a83af'),
+        name: 'Frozen',
+        color: Color.fromHex('#c1d1da'),
     },
     {
         id: 2,
-        name: 'Salt',
-        color: Color.fromHex('#26749b'),
+        name: 'Swamp',
+        color: Color.fromHex('#417449'),
     },
     {
         id: 3,
-        name: 'Lagoon',
-        color: Color.fromHex('#216384'),
+        name: 'Salt',
+        color: Color.fromHex('#adb4b8'),
     },
     {
         id: 4,
+        name: 'Lagoon',
+        color: Color.fromHex('#437c7e'),
+    },
+    {
+        id: 5,
         name: 'Oasis',
-        color: Color.fromHex('#216384'),
+        color: Color.fromHex('#0c7ab1'),
     },
 ]
 
