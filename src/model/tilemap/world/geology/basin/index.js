@@ -9,8 +9,6 @@ export class BasinLayer {
     #basinMap = new PointMap()
     #erosionMap = new PointMap()
     #dividePoints = new PointSet()
-    #heightMap = new PointMap()
-    #basinHeightMap = new Map()
     // the walk distance of each basin point to the shore
     // used to determine river stretch
     #distanceMap = new PointMap()
@@ -22,8 +20,6 @@ export class BasinLayer {
             dividePoints: this.#dividePoints,
             basinMap: this.#basinMap,
             erosionMap: this.#erosionMap,
-            heightMap: this.#heightMap,
-            basinHeightMap: this.#basinHeightMap,
             distanceMap: this.#distanceMap,
         }
         buildBasinMap(context)
@@ -36,12 +32,10 @@ export class BasinLayer {
     get(point) {
         const directionId = this.#erosionMap.get(point)
         const direction = Direction.fromId(directionId)
-        const height = this.getHeight(point)
-        const distance = this.getBasinDistance(point)
+        const distance = this.getDistance(point)
         return {
             basin: this.#basinMap.get(point),
             erosion: direction,
-            height,
             distance,
         }
     }
@@ -50,17 +44,8 @@ export class BasinLayer {
         return this.#dividePoints.points
     }
 
-    getBasinDistance(point) {
+    getDistance(point) {
         return this.#distanceMap.get(point)
-    }
-
-    getHeight(point) {
-        return this.#heightMap.get(point)
-    }
-
-    getBasinHeight(point) {
-        const basin = this.#basinMap.get(point)
-        return this.#basinHeightMap.get(basin)
     }
 
     getText(point) {
@@ -70,7 +55,6 @@ export class BasinLayer {
         const attrs = [
              `${basin.basin}`,
              `erosion=${basin.erosion.name}`,
-             `height=${basin.height}`,
              `distance=${basin.distance}`,
         ].join(',')
         return `Basin(${attrs})`

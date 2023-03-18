@@ -9,8 +9,7 @@ const GROWTH = 10  // make basins grow bigger than others
 
 export function buildBasinMap(context) {
     // start filling from land borders
-    const {surfaceLayer, basinHeightMap} = context
-    let origins = surfaceLayer.landBorders
+    let origins = context.surfaceLayer.landBorders
     const fill = new BasinFill()
     fill.start(origins, context)
 }
@@ -20,18 +19,11 @@ class BasinFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        const {rect, heightMap, basinHeightMap, dividePoints} = fill.context
+        const {rect, dividePoints} = fill.context
         const adjacents = Point.adjacents(parentPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         // is basin divide (is fill border)?
         if (isDivide(fill.context, adjacents)) {
-            let basinHeight = basinHeightMap.get(fill.id) ?? 0
-            // update max basin height
-            if (fill.level > basinHeight) {
-                basinHeightMap.set(fill.id, fill.level)
-            }
-            // add height by point
-            heightMap.set(wrappedParentPoint, fill.level)
             dividePoints.add(wrappedParentPoint)
         }
         return adjacents
@@ -48,7 +40,7 @@ class BasinFill extends ConcurrentFill {
 
     onInitFill(fill, fillPoint, neighbors) {
         // set the initial fill point on river mouth
-        const {rect, erosionMap, heightMap, basinMap, distanceMap} = fill.context
+        const {rect, erosionMap, basinMap, distanceMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         for(let neighbor of neighbors) {
             const neighborSurface = fill.context.surfaceLayer.get(neighbor)
@@ -58,16 +50,15 @@ class BasinFill extends ConcurrentFill {
                 erosionMap.set(wrappedFillPoint, direction.id)
                 // it's next to water, use original fill.id
                 basinMap.set(wrappedFillPoint, fill.id)
-                // initial distance is 0
-                distanceMap.set(wrappedFillPoint, 0)
+                // initial distance is 1
+                distanceMap.set(wrappedFillPoint, 1)
             }
         }
-        heightMap.set(wrappedFillPoint, fill.level)
     }
 
 
     onFill(fill, fillPoint, parentPoint) {
-        const {rect, erosionMap, heightMap, basinMap, distanceMap} = fill.context
+        const {rect, erosionMap, basinMap, distanceMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         const directionToSource = getDirection(fillPoint, parentPoint)
@@ -76,7 +67,6 @@ class BasinFill extends ConcurrentFill {
         // use basin value from parent point
         basinMap.set(wrappedFillPoint, basinMap.get(wrappedParentPoint))
         distanceMap.set(wrappedFillPoint, distanceMap.get(wrappedParentPoint) + 1)
-        heightMap.set(wrappedParentPoint, fill.level)
     }
 }
 

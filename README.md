@@ -8,6 +8,7 @@
 ## PLANNING
 
 ### General
+- create world types [medieval, cyberpunk, steampunk]
 - Get zoom on draw methods of Diagram
 	- Make it a parameter for detailed rendering (world, block)
 - Optimize canvas rendering
@@ -28,13 +29,14 @@
 
 ### HydrologyLayer
 - Set river length on basin layer and return sorted dividePoints by length
-- Set river type on flow to avoid `#buildRiverWidth` function on Diagram
 - Start river on all directions (add source array)
 - Create types of lakes (swamp, pond, well)
 - River that start on small seas can't go much further
 - Height of terrain often make waterfalls or rapids
 
 ### TopologyLayer
+- Dungeon types and levels like cat quest
+  - dungeons at high level like 79
 - Add city ruins on dry rivers or dry land
 - Start a fill to determine city area
 - connect sites inside a radius

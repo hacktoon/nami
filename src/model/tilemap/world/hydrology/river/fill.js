@@ -31,15 +31,13 @@ export function buildRiverMap(context) {
     let riverId = 0
     const basinLayer = context.layers.basin
     const entries = basinLayer.getDividePoints()
-    // crate a list of pairs (point and height)
-    .map(point => {
-        const height = basinLayer.getHeight(point)
-        return [point, height]
-    })
-    // accept only points where there's enough rain
-    .filter(([point]) => context.layers.rain.createsRivers(point))
-    // in ascendent order: lower heights first
-    .sort((a, b) => a[1] - b[1])
+        // crate a list of pairs (point and distance)
+        .map(point => [point, basinLayer.getDistance(point)])
+        // accept only points where there's enough rain
+        .filter(([point]) => context.layers.rain.createsRivers(point))
+        // in ascendent order: lower heights first
+        .sort((a, b) => a[1] - b[1])
+
     entries.forEach(([source]) => {
         buildRiver(context, riverId++, source)
     })
@@ -55,10 +53,11 @@ function buildRiver(context, riverId, sourcePoint) {
     let currentPoint = sourcePoint
     let prevPoint = sourcePoint
     // go down river following next (land) points
+    const maxDistance = layers.basin.getDistance(sourcePoint)
     while (layers.surface.isLand(currentPoint)) {
         let wrappedPoint = rect.wrap(currentPoint)
         buildRiverMeander(context, wrappedPoint)
-        const stretch = getStretch(context, wrappedPoint)
+        const stretch = getStretch(context, wrappedPoint, maxDistance)
         stretchMap.set(wrappedPoint, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(wrappedPoint, riverId)
@@ -118,15 +117,12 @@ function buildMeanderPoint(basin) {
 }
 
 
-function getStretch(context, point) {
-    const maxHeight = context.layers.basin.getBasinHeight(point)
-    const height = context.layers.basin.getHeight(point)
-    const isDivide = context.layers.basin.isDivide(point)
-    let ratio = (height / maxHeight).toFixed(1)
-    if (height === 0 || isDivide) return RiverStretch.HEADWATERS
+function getStretch(context, point, maxDistance) {
+    const distance = context.layers.basin.getDistance(point)
+    let ratio = (distance / maxDistance).toFixed(1)
     if (ratio >= .8) return RiverStretch.HEADWATERS
-    if (ratio >= .6) return RiverStretch.FAST_COURSE
-    if (ratio >= .4) return RiverStretch.SLOW_COURSE
+    if (ratio >= .5) return RiverStretch.FAST_COURSE
+    if (ratio >= .3) return RiverStretch.SLOW_COURSE
     return RiverStretch.DEPOSITIONAL
 }
 
