@@ -20,7 +20,7 @@ export class BasinLayer {
     #dividePoints = new PointSet()
 
     // can form a lake or spring (where a river may begin on a hill)
-    #waterSourceMap = new PointSet()
+    #waterSources = []
 
     constructor(rect, layers) {
         const context = {
@@ -30,7 +30,7 @@ export class BasinLayer {
             erosionMap: this.#erosionMap,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
-            waterSourceMap: this.#waterSourceMap,
+            waterSources: this.#waterSources,
         }
         buildBasinMap(context)
     }
@@ -52,6 +52,10 @@ export class BasinLayer {
 
     getDividePoints() {
         return this.#dividePoints.points
+    }
+
+    getWaterSources() {
+        return this.#waterSources
     }
 
     getDistance(point) {

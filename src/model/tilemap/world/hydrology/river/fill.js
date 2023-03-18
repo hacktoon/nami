@@ -2,7 +2,7 @@ import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 
-import { RIVER_NAMES } from './names'
+import { HYDRO_NAMES } from '../names'
 import { RiverStretch } from './data'
 
 
@@ -67,7 +67,7 @@ function buildRiver(context, riverId, sourcePoint) {
     }
     // current (last) point is water, add previous as river mouth
     riverMouths.add(prevPoint)
-    riverNames.set(riverId, Random.choiceFrom(RIVER_NAMES))
+    riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
 }
 
 

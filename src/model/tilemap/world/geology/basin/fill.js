@@ -6,6 +6,7 @@ import { Random } from '/src/lib/random'
 
 const CHANCE = .1  // chance of growing
 const GROWTH = 10  // make basins grow bigger than others
+const WATER_SOURCE_CHANCE = .2
 
 
 export function buildBasinMap(context) {
@@ -18,6 +19,29 @@ export function buildBasinMap(context) {
 class BasinFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
+
+    onInitFill(fill, fillPoint, neighbors) {
+        // set the initial fill point on river mouth
+        const {
+            rect, surfaceLayer, erosionMap, waterSources,
+            basinMap, distanceMap
+        } = fill.context
+        const wrappedFillPoint = rect.wrap(fillPoint)
+        // find water neighbor
+        for(let neighbor of neighbors) {
+            if (surfaceLayer.isLand(neighbor)) continue
+            const direction = getDirection(fillPoint, neighbor)
+            erosionMap.set(wrappedFillPoint, direction.id)
+            // it's next to water, use original fill.id
+            basinMap.set(wrappedFillPoint, fill.id)
+            // initial distance is 1
+            distanceMap.set(wrappedFillPoint, 1)
+            if (Random.chance(WATER_SOURCE_CHANCE)) {
+                waterSources.push(wrappedFillPoint)
+            }
+            break
+        }
+    }
 
     getNeighbors(fill, parentPoint) {
         const {rect, dividePoints} = fill.context
@@ -39,28 +63,10 @@ class BasinFill extends ConcurrentFill {
         return ! surface.water && isEmpty
     }
 
-    onInitFill(fill, fillPoint, neighbors) {
-        // set the initial fill point on river mouth
-        const {
-            rect, surfaceLayer, erosionMap, basinMap, distanceMap
-        } = fill.context
-        const wrappedFillPoint = rect.wrap(fillPoint)
-        // find water neighbor
-        for(let neighbor of neighbors) {
-            if (surfaceLayer.isLand(neighbor)) continue
-            const direction = getDirection(fillPoint, neighbor)
-            erosionMap.set(wrappedFillPoint, direction.id)
-            // it's next to water, use original fill.id
-            basinMap.set(wrappedFillPoint, fill.id)
-            // initial distance is 1
-            distanceMap.set(wrappedFillPoint, 1)
-            break
-        }
-    }
-
-
     onFill(fill, fillPoint, parentPoint) {
-        const {rect, erosionMap, basinMap, distanceMap} = fill.context
+        const {
+            rect, erosionMap, basinMap, waterSources, distanceMap
+        } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         const directionToSource = getDirection(fillPoint, parentPoint)
@@ -69,6 +75,9 @@ class BasinFill extends ConcurrentFill {
         // use basin value from parent point
         basinMap.set(wrappedFillPoint, basinMap.get(wrappedParentPoint))
         distanceMap.set(wrappedFillPoint, distanceMap.get(wrappedParentPoint) + 1)
+        if (Random.chance(WATER_SOURCE_CHANCE)) {
+            waterSources.push(wrappedFillPoint)
+        }
     }
 }
 
