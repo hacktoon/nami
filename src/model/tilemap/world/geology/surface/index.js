@@ -11,7 +11,7 @@ const FIRST_BODY_ID = 2
 
 // Area ratios
 const MINIMUN_OCEAN_RATIO = 2
-const MINIMUN_SEA_RATIO = .12
+const MINIMUN_SEA_RATIO = .2
 const MINIMUN_CONTINENT_RATIO = 1
 
 
