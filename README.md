@@ -29,7 +29,6 @@
 - Make temperature dynamic using noise offset and season `temp.get(point, season)`
 
 ### HydrologyLayer
-- Create types of lakes (swamp, pond, well)
 - River that start on small seas can't go much further
 - Height of terrain often make waterfalls or rapids
 

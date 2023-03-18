@@ -12,17 +12,19 @@ export class LakeLayer {
 
     constructor(layers) {
         for (let point of layers.basin.getWaterSources()) {
-            const rain = layers.rain.get(point)
-            const temperature = layers.temperature.get(point)
-            const isRiverMouth = layers.river.isMouth(point)
-            // if (Random.chance()) {
-
-            // }
+            const lake = this.#buildLake(layers, point)
         }
     }
 
     #buildLake(layers, point) {
+        const rain = layers.rain.get(point)
+        const temperature = layers.temperature.get(point)
+        const isRiver = layers.river.has(point)
+        const isRiverSource = isRiver && layers.basin.isDivide(point)
+        const isRiverMouth = isRiver && layers.river.isMouth(point)
+        let id
 
+        this.#points.set(point, id)
     }
 
     get count() {
