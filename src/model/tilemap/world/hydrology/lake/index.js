@@ -11,7 +11,7 @@ export class LakeLayer {
     #points = new PointMap()
 
     constructor(layers) {
-        for (let point of layers.basin.getWaterSources()) {
+        for (let point of layers.basin.getDepressions()) {
             const lake = this.#buildLake(layers, point)
         }
     }

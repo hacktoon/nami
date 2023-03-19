@@ -6,7 +6,7 @@ import { Random } from '/src/lib/random'
 
 const CHANCE = .1  // chance of growing
 const GROWTH = 10  // make basins grow bigger than others
-const WATER_SOURCE_CHANCE = .2
+const DEPRESSION_CHANCE = .2
 
 
 export function buildBasinMap(context) {
@@ -23,7 +23,7 @@ class BasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         // set the initial fill point on river mouth
         const {
-            rect, surfaceLayer, erosionMap, waterSources,
+            rect, surfaceLayer, erosionMap, depressions,
             basinMap, distanceMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
@@ -36,8 +36,8 @@ class BasinFill extends ConcurrentFill {
             basinMap.set(wrappedFillPoint, fill.id)
             // initial distance is 1
             distanceMap.set(wrappedFillPoint, 1)
-            if (Random.chance(WATER_SOURCE_CHANCE)) {
-                waterSources.push(wrappedFillPoint)
+            if (Random.chance(DEPRESSION_CHANCE)) {
+                depressions.push(wrappedFillPoint)
             }
             break
         }
@@ -65,7 +65,7 @@ class BasinFill extends ConcurrentFill {
 
     onFill(fill, fillPoint, parentPoint) {
         const {
-            rect, erosionMap, basinMap, waterSources, distanceMap
+            rect, erosionMap, basinMap, depressions, distanceMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
@@ -75,8 +75,8 @@ class BasinFill extends ConcurrentFill {
         // use basin value from parent point
         basinMap.set(wrappedFillPoint, basinMap.get(wrappedParentPoint))
         distanceMap.set(wrappedFillPoint, distanceMap.get(wrappedParentPoint) + 1)
-        if (Random.chance(WATER_SOURCE_CHANCE)) {
-            waterSources.push(wrappedFillPoint)
+        if (Random.chance(DEPRESSION_CHANCE)) {
+            depressions.push(wrappedFillPoint)
         }
     }
 }
