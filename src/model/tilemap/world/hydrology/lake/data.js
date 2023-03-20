@@ -30,7 +30,7 @@ const SPEC = [
     {
         id: 5,
         name: 'Oasis',
-        color: Color.fromHex('#0c7ab1'),
+        color: Color.fromHex('#92c7ae'),
     },
 ]
 

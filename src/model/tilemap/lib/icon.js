@@ -7,21 +7,6 @@ const RIVER_COLOR = '#2878a0'
 const RIVER_SOUCE_COLOR = '#44F'
 
 
-export function drawLake(baseProps) {
-    const template = [
-        [0, 1, 1, 0, 0],
-        [1, 1, 1, 1, 0],
-        [1, 1, 1, 1, 1],
-        [0, 1, 1, 1, 0],
-        [0, 0, 0, 0, 0],
-    ]
-    const colorMap = {1: Color.fromHex(RIVER_COLOR)}
-    const midSize = Math.round(baseProps.size / 2)
-    const midPoint = Point.plusScalar(baseProps.canvasPoint, midSize)
-    const props = {...baseProps, canvasPoint: midPoint}
-    drawIcon(props, template, colorMap)
-}
-
 export function drawDungeon(baseProps) {
     const template = [
         [0, 0, 0, 0, 0],
@@ -71,6 +56,19 @@ export function drawCapital(props) {
         2: Color.BLACK,
     }
     drawIcon(props, template, colorMap)
+}
+
+
+export function drawLake(lake, props) {
+    const {canvas, canvasPoint, size} = props
+    const pixelSize = Math.round(size / 4)
+    const halfPixelSize = Math.round(pixelSize / 2)
+    const canvasLakePoint = Point.plus(canvasPoint, [
+        Math.round(size / 2) - halfPixelSize,
+        Math.round(size / 2) - halfPixelSize,
+    ])
+    const color = lake.type.color.toHex()
+    canvas.rect(canvasLakePoint, pixelSize, color)
 }
 
 

@@ -123,7 +123,8 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             }
         }
         if (this.params.get('showLakes') && layers.lake.has(point)) {
-            drawLake(props)
+            const lake = layers.lake.get(point)
+            drawLake(lake, props)
 
         }
         if (isDungeon && this.params.get('showDungeons')) {

@@ -32,6 +32,10 @@ export class Biome {
         this.name = spec.name
         this.color = Color.fromHex(spec.color)
     }
+
+    is(type) {
+        return this.id === type.id
+    }
 }
 
 SPEC.forEach(spec => {
