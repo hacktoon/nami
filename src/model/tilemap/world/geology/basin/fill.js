@@ -6,7 +6,7 @@ import { Random } from '/src/lib/random'
 
 const CHANCE = .1  // chance of growing
 const GROWTH = 10  // make basins grow bigger than others
-const DEPRESSION_CHANCE = .2
+const DEPRESSION_CHANCE = .3
 
 
 export function buildBasinMap(context) {

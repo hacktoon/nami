@@ -104,7 +104,6 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const point = this.rect.wrap(props.tilePoint)
         const isLand = layers.surface.isLand(point)
         const isRiver = layers.river.has(point)
-        const isLake = false //layers.river.isLake(point)
         const isDungeon = layers.topo.isDungeon(point)
         const isCity = layers.topo.isCity(point)
         const river = this.tileMap.layers.river.get(point)
@@ -123,8 +122,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
                 drawCity(props)
             }
         }
-        if (isLake && this.params.get('showLakes')) {
+        if (this.params.get('showLakes') && layers.lake.has(point)) {
             drawLake(props)
+
         }
         if (isDungeon && this.params.get('showDungeons')) {
             drawDungeon(props)

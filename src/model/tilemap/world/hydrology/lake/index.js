@@ -9,22 +9,27 @@ export class LakeLayer {
     #names = new Map()
     // map a point to an id
     #points = new PointMap()
+    #typeMap = new Map()
 
     constructor(layers) {
+        let lakeId = 0
         for (let point of layers.basin.getDepressions()) {
-            const lake = this.#buildLake(layers, point)
+            this.#points.set(point, lakeId)
+            this.#typeMap.set(point, lakeId)
+            lakeId++
+
         }
     }
 
-    #buildLake(layers, point) {
+    #detectType(layers, point) {
         const rain = layers.rain.get(point)
         const temperature = layers.temperature.get(point)
         const isRiver = layers.river.has(point)
         const isRiverSource = isRiver && layers.basin.isDivide(point)
-        const isRiverMouth = isRiver && layers.river.isMouth(point)
-        let id
-
-        this.#points.set(point, id)
+        if (isRiver && layers.river.isMouth(point)) {
+            return Lake.ESTUARY
+        }
+        return Lake.FRESH
     }
 
     get count() {

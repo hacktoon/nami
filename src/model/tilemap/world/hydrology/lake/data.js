@@ -24,7 +24,7 @@ const SPEC = [
     },
     {
         id: 4,
-        name: 'Lagoon',
+        name: 'Estuary',
         color: Color.fromHex('#437c7e'),
     },
     {
