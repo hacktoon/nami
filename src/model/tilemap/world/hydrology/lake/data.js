@@ -20,7 +20,7 @@ const SPEC = [
     {
         id: 3,
         name: 'Salt',
-        color: Color.fromHex('#adb4b8'),
+        color: Color.fromHex('#ccd4da'),
     },
     {
         id: 4,

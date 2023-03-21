@@ -10,7 +10,8 @@ import { Lake } from './data'
 
 
 const LAKE_CHANCE = .5
-const OASIS_CHANCE = .1
+const OASIS_CHANCE = .05
+const SALT_LAKE_CHANCE = .08
 
 
 export class LakeLayer {
@@ -39,11 +40,15 @@ export class LakeLayer {
         const biome = layers.biome.get(point)
         if (biome.is(Biome.DESERT)) {
             if (Random.chance(OASIS_CHANCE)) return Lake.OASIS
+            if (Random.chance(SALT_LAKE_CHANCE)) return Lake.SALT
             return null
         }
+        if (rain.is(Rain.HUMID)) return Lake.SWAMP
+        if (temperature.is(Temperature.FROZEN)) return Lake.FROZEN
         if (Random.chance(LAKE_CHANCE)) {
-            if (layers.river.has(point)) {
-                if (layers.river.isMouth(point)) { // is river big?
+            const isDepositional = layers.river.isDepositional(point)
+            if (layers.river.has(point) && isDepositional) {
+                if (layers.river.isMouth(point)) {
                     return Lake.ESTUARY
                 }
             }

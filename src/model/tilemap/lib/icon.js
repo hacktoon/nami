@@ -3,7 +3,6 @@ import { Color } from '/src/lib/color'
 import { clamp } from '/src/lib/number'
 
 
-const RIVER_COLOR = '#2878a0'
 const RIVER_SOUCE_COLOR = '#44F'
 
 
