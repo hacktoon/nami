@@ -6,7 +6,7 @@ import { Biome } from './data'
 
 
 
-const CORAL_REEF_NOISE = .55
+const CORAL_REEF_NOISE = .6
 const ICECAP_NOISE = .4
 const MANGROVE_NOISE = .6
 

@@ -47,18 +47,14 @@ export class SurfaceLayer {
         this.landBorders = []
         this.#bodyMatrix.forEach(point => {
             const isWater = this.isWater(point)
-            if (! this.#detectBorder(point, isWater)) {
-                return
-            }
             const bodyId = this.#bodyMatrix.get(point)
-            // negative bodyId's are surface borders
-            this.#bodyMatrix.set(point, -bodyId)
-            // store land borders for other layers to use
-            if (isWater) {
-                this.#waterArea++
-            } else {
-                this.landBorders.push(point)
+            if (this.#detectBorder(point, isWater)) {
+                // negative bodyId's are surface borders
+                this.#bodyMatrix.set(point, -bodyId)
+                // store land borders for other layers to use
+                if (!isWater) this.landBorders.push(point)
             }
+            if (isWater) this.#waterArea++
         })
     }
 
