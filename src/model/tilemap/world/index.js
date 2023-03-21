@@ -65,7 +65,7 @@ export class WorldTileMap extends TileMap {
             this.layers.river.getText(wrappedPoint),
             this.layers.biome.getText(wrappedPoint),
             this.layers.lake.getText(wrappedPoint),
-        ].join('\n').trim()
+        ].filter(x=>x).join('\n').trim()
     }
 
     getDescription() {

@@ -6,7 +6,7 @@ import { Biome } from './data'
 
 
 
-const CORAL_REEF_NOISE = .6
+const CORAL_REEF_NOISE = .55
 const ICECAP_NOISE = .4
 const MANGROVE_NOISE = .6
 
@@ -87,7 +87,10 @@ export class BiomeLayer {
             const isReefTemp = temperature.is(Temperature.WARM)
                                || temperature.is(Temperature.HOT)
             const isReefNoise = grainedNoise > CORAL_REEF_NOISE
-            return isReefTemp && isReefNoise ? Biome.REEF : Biome.SEA
+            const isBorder = layers.surface.isBorder(point)
+            if (!isBorder && isReefTemp && isReefNoise)
+                return Biome.REEF
+            return Biome.SEA
         }
         return Biome.OCEAN
     }

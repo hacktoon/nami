@@ -44,10 +44,9 @@ export class LakeLayer {
             if (Random.chance(SALT_LAKE_CHANCE)) return Lake.SALT
             return null
         }
-        if (temperature.is(Temperature.FROZEN)) return Lake.FROZEN
-        if (temperature.is(Temperature.COLD)) return Lake.FRESH
-        if (rain.is(Rain.HUMID)) return Lake.SWAMP
         if (Random.chance(LAKE_CHANCE)) {
+            if (temperature.is(Temperature.FROZEN)) return Lake.FROZEN
+            if (rain.is(Rain.HUMID)) return Lake.SWAMP
             const isDepositional = layers.river.isDepositional(point)
             if (isRiver && isDepositional) return Lake.ESTUARY
             return Lake.FRESH
