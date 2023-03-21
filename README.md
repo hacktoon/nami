@@ -28,8 +28,8 @@
 ### BiomeLayer
 - Consider relief on biome selection
 
-### TemperatureLayer
-- Make temperature dynamic using noise offset and season `temp.get(point, season)`
+### RainLayer
+- Make rain dynamic using noise offset and season `temp.get(point, season)`
 
 ### HydrologyLayer
 - River that start on small seas can't go much further
