@@ -38,20 +38,18 @@ export class LakeLayer {
         const rain = layers.rain.get(point)
         const temperature = layers.temperature.get(point)
         const biome = layers.biome.get(point)
-        if (biome.is(Biome.DESERT)) {
+        const isRiver = layers.river.has(point)
+        if (biome.is(Biome.DESERT) && !isRiver) {
             if (Random.chance(OASIS_CHANCE)) return Lake.OASIS
             if (Random.chance(SALT_LAKE_CHANCE)) return Lake.SALT
             return null
         }
-        if (rain.is(Rain.HUMID)) return Lake.SWAMP
         if (temperature.is(Temperature.FROZEN)) return Lake.FROZEN
+        if (temperature.is(Temperature.COLD)) return Lake.FRESH
+        if (rain.is(Rain.HUMID)) return Lake.SWAMP
         if (Random.chance(LAKE_CHANCE)) {
             const isDepositional = layers.river.isDepositional(point)
-            if (layers.river.has(point) && isDepositional) {
-                if (layers.river.isMouth(point)) {
-                    return Lake.ESTUARY
-                }
-            }
+            if (isRiver && isDepositional) return Lake.ESTUARY
             return Lake.FRESH
         }
         return null

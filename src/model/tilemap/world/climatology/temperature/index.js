@@ -2,8 +2,8 @@ import { Matrix } from '/src/lib/matrix'
 import { Temperature } from './data'
 
 
-const COLD_RATIO = .2
-const TEMPERATE_RATIO = .3
+const COLD_RATIO = .15
+const TEMPERATE_RATIO = .4
 const WARM_RATIO = .5
 const HOT_RATIO = .75
 

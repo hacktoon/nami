@@ -7,7 +7,7 @@ import { Biome } from './data'
 
 
 const CORAL_REEF_NOISE = .6
-const ICECAP_NOISE = .6
+const ICECAP_NOISE = .4
 const MANGROVE_NOISE = .6
 
 
@@ -34,8 +34,7 @@ export class BiomeLayer {
         const temperature = layers.temperature.get(point)
 
         if (temperature.is(Temperature.FROZEN)) {
-            const isIcecap = grainedNoise > ICECAP_NOISE
-            if (rain.is(Rain.DRY) || rain.is(Rain.ARID) && isIcecap)
+            if (rain.is(Rain.ARID) && grainedNoise > ICECAP_NOISE)
                 return Biome.ICECAP
             return Biome.TUNDRA
         }
