@@ -75,7 +75,20 @@ export class RiverLayer {
         return this.#riverMouths.has(point)
     }
 
+    isHeadWaters(point) {
+        if (! this.#riverPoints.has(point)) return false
+        const river = this.get(point)
+        return river.stretch.id == RiverStretch.HEADWATERS.id
+    }
+
+    isFastCourse(point) {
+        if (! this.#riverPoints.has(point)) return false
+        const river = this.get(point)
+        return river.stretch.id == RiverStretch.FAST_COURSE.id
+    }
+
     isDepositional(point) {
+        if (! this.#riverPoints.has(point)) return false
         const river = this.get(point)
         return river.stretch.id == RiverStretch.DEPOSITIONAL.id
     }

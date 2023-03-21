@@ -38,15 +38,26 @@ export class ReliefLayer {
     #detectLandType(layers, point) {
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
+        // define highest basin points
         if (layers.basin.isDivide(point)) {
             // check if has a river (i.e. it rains enough)
             if (layers.river.has(point)) {
                 if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
                 return Relief.PLATEAU
+            } else {
+                // dry divide points, make them flatter
+                if (grainedNoise < PLATEAU_RATIO) return Relief.PLATEAU
+                if (grainedNoise < HILL_RATIO) return Relief.HILL
+                return Relief.PLAIN
             }
-            if (grainedNoise < PLATEAU_RATIO) return Relief.PLATEAU
+        }
+        // define hill for upstream river points
+        if (layers.river.isHeadWaters(point) || layers.river.isFastCourse(point)) {
             return Relief.HILL
         }
+        // try adding more plateaus
+        if (featureNoise < PLATEAU_RATIO) return Relief.PLATEAU
+        // define high river points
         return Relief.PLAIN
     }
 
