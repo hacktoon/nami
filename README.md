@@ -22,19 +22,17 @@
   - border points get a grained island noise
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
-### ReliefLayer
-- Make relief dependent on biome
+### HydrologyLayer
+- type of stretch often make waterfalls or rapids
 
-### BiomeLayer
-- Consider relief on biome selection
+
+### TerrainLayer
+- Add features
+  [volcano, ]
 
 ### RainLayer
 - Make rain dynamic using noise offset and season `temp.get(point, season)`
 
-### HydrologyLayer
-- River that start on small seas can't go much further
-  - mark basin as sea basin
-- type of stretch often make waterfalls or rapids
 
 ### TopologyLayer
 - Set city type using a fill from capital point

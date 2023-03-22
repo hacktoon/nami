@@ -80,8 +80,8 @@ export class BiomeLayer {
         if (temperature.is(Temperature.FROZEN) && grainedNoise > ICECAP_NOISE) {
             return Biome.ICECAP
         }
-        if (layers.relief.isTrench(point)) return Biome.TRENCH
-        if (layers.relief.isPlatform(point)) {
+        if (layers.terrain.isTrench(point)) return Biome.TRENCH
+        if (layers.terrain.isPlatform(point)) {
             const isReefTemp = temperature.is(Temperature.WARM)
                                || temperature.is(Temperature.HOT)
             const isReefNoise = grainedNoise > CORAL_REEF_NOISE
