@@ -43,16 +43,16 @@ export class ReliefLayer {
             if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
             return Relief.PLATEAU
         } else {
-            // define hill for other river points on the basin
+            // all depositional rives parts are plains
             if (layers.river.isDepositional(point)) return Relief.PLAIN
             const isFastCourse = layers.river.isFastCourse(point)
             const isHeadWaters = layers.river.isHeadWaters(point)
+            // define hill for other river points on the basin
             if (isFastCourse || isHeadWaters) return Relief.HILL
         }
         // not on a river, try adding more plateaus or hills
         if (grainedNoise < PLATEAU_RATIO) return Relief.PLATEAU
         if (grainedNoise < HILL_RATIO) return Relief.HILL
-        // define high river points
         return Relief.PLAIN
     }
 
