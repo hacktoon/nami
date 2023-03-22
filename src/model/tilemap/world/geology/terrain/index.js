@@ -6,7 +6,7 @@ import { Terrain } from './data'
 const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
-const HILL_RATIO = .55
+const HILL_RATIO = .5
 const PLATEAU_RATIO = .4
 const MOUNTAIN_RATIO = .4
 
@@ -44,11 +44,14 @@ export class TerrainLayer {
             return Terrain.PLATEAU
         } else {
             // all depositional rives parts are plains
-            if (layers.river.isDepositional(point)) return Terrain.PLAIN
             const isFastCourse = layers.river.isFastCourse(point)
             const isHeadWaters = layers.river.isHeadWaters(point)
             // define hill for other river points on the basin
             if (isFastCourse || isHeadWaters) return Terrain.HILL
+            // lower points of rivers
+            const isSlowCourse = layers.river.isSlowCourse(point)
+            const isDepositional = layers.river.isDepositional(point)
+            if (isDepositional || isSlowCourse) return Terrain.PLAIN
         }
         // not on a river, try adding more plateaus or hills
         if (grainedNoise < PLATEAU_RATIO) return Terrain.PLATEAU

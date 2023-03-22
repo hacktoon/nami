@@ -22,13 +22,14 @@
   - border points get a grained island noise
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
+
 ### HydrologyLayer
 - type of stretch often make waterfalls or rapids
 
 
 ### TerrainLayer
-- Add features
-  [volcano, ]
+- Add features (i.e: volcanos)
+
 
 ### RainLayer
 - Make rain dynamic using noise offset and season `temp.get(point, season)`
@@ -44,6 +45,7 @@
 - connect sites inside a radius
 - create junction points between two route points to set midpath detours
   - follow road and calc nearest junction start
+
 
 ### SociologyLayer
 - Start a fill on capitals to determine realms territory
