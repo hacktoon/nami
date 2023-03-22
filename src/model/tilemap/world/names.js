@@ -1,4 +1,4 @@
-const WORLD_NAMES = [
+export const WORLD_NAMES = [
     "Aluria",
     "Aether",
     "Albion",
@@ -65,9 +65,6 @@ const WORLD_NAMES = [
     "Polus",
     "Marte",
     "Venus",
-    "Pern",
-    "Entity",
-    "Param",
     "Plat",
     "Lua",
     "Utopia",

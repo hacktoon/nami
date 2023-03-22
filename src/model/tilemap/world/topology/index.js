@@ -90,6 +90,14 @@ export class TopologyLayer {
     }
 
     getText(point) {
-
+        const attrs = []
+        if (this.#cityPoints.has(point)) {
+            const isCapital = this.#capitals.has(point)
+            attrs.push(isCapital ? `capital=` : `city=`)
+        }
+        if (this.#dungeonPoints.has(point)) {
+            attrs.push(`dungeon`)
+        }
+        return `Topo(${attrs.join(',')})`
     }
 }

@@ -1,6 +1,7 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
+import { Random } from '/src/lib/random'
 import { TileMap } from '/src/model/tilemap/lib'
 import { UITileMap } from '/src/ui/tilemap'
 
@@ -16,6 +17,7 @@ import { BiomeLayer } from './biology/biome'
 import { TopologyLayer } from './topology'
 
 import { WorldTileMapDiagram } from './diagram'
+import { WORLD_NAMES } from './names'
 
 
 const SCHEMA = new Schema(
@@ -51,6 +53,7 @@ export class WorldTileMap extends TileMap {
         layers.lake = new LakeLayer(layers)
         layers.topo = new TopologyLayer(rect, layers, realmCount)
         this.layers = layers
+        this.name = Random.choiceFrom(WORLD_NAMES)
     }
 
     get(point) {
@@ -65,12 +68,14 @@ export class WorldTileMap extends TileMap {
             this.layers.river.getText(wrappedPoint),
             this.layers.biome.getText(wrappedPoint),
             this.layers.lake.getText(wrappedPoint),
+            this.layers.topo.getText(wrappedPoint),
         ].filter(x=>x).join('\n').trim()
     }
 
     getDescription() {
         return [
-            `Water: ${this.layers.surface.getWaterArea()}%`,
+            `World: '${this.name}'`,
+            `${this.layers.surface.getWaterArea()}% water`,
             `Rivers: ${this.layers.river.count}`,
             `Cities: ${this.layers.topo.getTotalCities()}`,
         ].join(', ').trim()
