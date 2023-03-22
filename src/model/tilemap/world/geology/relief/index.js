@@ -38,25 +38,20 @@ export class ReliefLayer {
     #detectLandType(layers, point) {
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
-        // define highest basin points
-        if (layers.basin.isDivide(point)) {
-            // check if has a river (i.e. it rains enough)
-            if (layers.river.has(point)) {
-                if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
-                return Relief.PLATEAU
-            } else {
-                // dry divide points, make them flatter
-                if (grainedNoise < PLATEAU_RATIO) return Relief.PLATEAU
-                if (grainedNoise < HILL_RATIO) return Relief.HILL
-                return Relief.PLAIN
-            }
+        const isRiverSource = layers.river.has(point) && layers.basin.isDivide(point)
+        if (isRiverSource) {
+            if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
+            return Relief.PLATEAU
+        } else {
+            // define hill for other river points on the basin
+            if (layers.river.isDepositional(point)) return Relief.PLAIN
+            const isFastCourse = layers.river.isFastCourse(point)
+            const isHeadWaters = layers.river.isHeadWaters(point)
+            if (isFastCourse || isHeadWaters) return Relief.HILL
         }
-        // define hill for upstream river points
-        if (layers.river.isHeadWaters(point) || layers.river.isFastCourse(point)) {
-            return Relief.HILL
-        }
-        // try adding more plateaus
-        if (featureNoise < PLATEAU_RATIO) return Relief.PLATEAU
+        // not on a river, try adding more plateaus or hills
+        if (grainedNoise < PLATEAU_RATIO) return Relief.PLATEAU
+        if (grainedNoise < HILL_RATIO) return Relief.HILL
         // define high river points
         return Relief.PLAIN
     }
@@ -84,5 +79,10 @@ export class ReliefLayer {
     isTrench(point) {
         const id = this.#matrix.get(point)
         return id === Relief.TRENCH.id
+    }
+
+    isPlain(point) {
+        const id = this.#matrix.get(point)
+        return id === Relief.PLAIN.id
     }
 }

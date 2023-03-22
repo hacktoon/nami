@@ -87,6 +87,12 @@ export class RiverLayer {
         return river.stretch.id == RiverStretch.FAST_COURSE.id
     }
 
+    isSlowCourse(point) {
+        if (! this.#riverPoints.has(point)) return false
+        const river = this.get(point)
+        return river.stretch.id == RiverStretch.SLOW_COURSE.id
+    }
+
     isDepositional(point) {
         if (! this.#riverPoints.has(point)) return false
         const river = this.get(point)
