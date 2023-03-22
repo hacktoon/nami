@@ -21,6 +21,7 @@ export class SurfaceLayer {
     #bodyMatrix
     // maps a body id to its surface type
     #bodyTypeMap = new Map()
+    // maps a body id to its surface area
     #bodyAreaMap = new Map()
     #waterArea = 0
 
@@ -84,6 +85,9 @@ export class SurfaceLayer {
         // default type
         let type = Surface.CONTINENT
         // area is filled; decide type
+        if (originPoint[0] == 77 && originPoint[1] == 31) {
+            console.log('a');
+        }
         if (isEmptyWaterBody) {
             if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
                 type = Surface.OCEAN
@@ -92,6 +96,7 @@ export class SurfaceLayer {
         } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
             type = Surface.ISLAND
         }
+
         return {type, area}
     }
 
