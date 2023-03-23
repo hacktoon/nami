@@ -56,7 +56,10 @@ export class BiomeLayer {
         if (temperature.is(Temperature.WARM)) {
             const isDepositional = layers.river.isDepositional(point)
             if (isDepositional) return Biome.MANGROVE
-            if (rain.is(Rain.HUMID)) return Biome.JUNGLE
+            if (rain.is(Rain.HUMID)) {
+                if (layers.terrain.isMountain(point)) return Biome.SAVANNA
+                return Biome.JUNGLE
+            }
             if (rain.is(Rain.WET)) return Biome.WOODLANDS
             if (rain.is(Rain.SEASONAL)) return Biome.GRASSLANDS
             if (rain.is(Rain.DRY)) return Biome.SAVANNA
@@ -65,8 +68,12 @@ export class BiomeLayer {
         if (temperature.is(Temperature.HOT)) {
             const isDepositional = layers.river.isDepositional(point)
             const isSlowCourse = layers.river.isSlowCourse(point)
+            const isJungle = rain.is(Rain.HUMID) || rain.is(Rain.WET)
             if (isDepositional || isSlowCourse) return Biome.MANGROVE
-            if (rain.is(Rain.HUMID) || rain.is(Rain.WET)) return Biome.JUNGLE
+            if (isJungle) {
+                if (layers.terrain.isMountain(point)) return Biome.SAVANNA
+                return Biome.JUNGLE
+            }
             if (rain.is(Rain.SEASONAL)) return Biome.JUNGLE
             if (rain.is(Rain.DRY)) return Biome.SAVANNA
         }
