@@ -57,7 +57,7 @@ export class BiomeLayer {
             const isDepositional = layers.river.isDepositional(point)
             if (isDepositional) return Biome.MANGROVE
             if (rain.is(Rain.HUMID)) {
-                if (layers.terrain.isMountain(point)) return Biome.SAVANNA
+                if (layers.relief.isMountain(point)) return Biome.SAVANNA
                 return Biome.JUNGLE
             }
             if (rain.is(Rain.WET)) return Biome.WOODLANDS
@@ -71,7 +71,7 @@ export class BiomeLayer {
             const isJungle = rain.is(Rain.HUMID) || rain.is(Rain.WET)
             if (isDepositional || isSlowCourse) return Biome.MANGROVE
             if (isJungle) {
-                if (layers.terrain.isMountain(point)) return Biome.SAVANNA
+                if (layers.relief.isMountain(point)) return Biome.SAVANNA
                 return Biome.JUNGLE
             }
             if (rain.is(Rain.SEASONAL)) return Biome.JUNGLE
@@ -87,8 +87,8 @@ export class BiomeLayer {
         if (temperature.is(Temperature.FROZEN) && grainedNoise > ICECAP_NOISE) {
             return Biome.ICECAP
         }
-        if (layers.terrain.isTrench(point)) return Biome.TRENCH
-        if (layers.terrain.isPlatform(point)) {
+        if (layers.relief.isTrench(point)) return Biome.TRENCH
+        if (layers.relief.isPlatform(point)) {
             const isReefTemp = temperature.is(Temperature.WARM)
                                || temperature.is(Temperature.HOT)
             const isReefNoise = grainedNoise > CORAL_REEF_NOISE

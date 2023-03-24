@@ -15,7 +15,7 @@ const LAYERS = [
     {value: 'temperature', label: 'Temperature'},
     {value: 'rain', label: 'Rain'},
     {value: 'basin', label: 'Basin'},
-    {value: 'terrain', label: 'Terrain'},
+    {value: 'relief', label: 'Relief'},
     {value: 'biome', label: 'Biome'},
 ]
 
@@ -74,9 +74,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             return surface.water ? Color.BLUE : Color.PURPLE
         }
         if (layer === 'surface') return color
-        if (layer === 'terrain') {
-            const terrain = this.tileMap.layers.terrain.get(point)
-            color = terrain.color
+        if (layer === 'relief') {
+            const relief = this.tileMap.layers.relief.get(point)
+            color = relief.color
         }
         if (layer === 'temperature') {
             const temperature = this.tileMap.layers.temperature.get(point)

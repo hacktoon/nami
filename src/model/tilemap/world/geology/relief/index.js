@@ -1,6 +1,6 @@
 import { Matrix } from '/src/lib/matrix'
 
-import { Terrain } from './data'
+import { Relief } from './data'
 
 
 const TRENCH_RATIO = .65
@@ -11,8 +11,8 @@ const PLATEAU_RATIO = .4
 const MOUNTAIN_RATIO = .4
 
 
-export class TerrainLayer {
-    // Terrain is related to large geologic features
+export class ReliefLayer {
+    // Relief is related to large geologic features
     #matrix
 
     constructor(rect, layers) {
@@ -25,14 +25,14 @@ export class TerrainLayer {
     }
 
     #detectWaterType(layers, point) {
-        // use noise to create water terrain
+        // use noise to create water relief
         const outlineNoise = layers.noise.getOutline(point)
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
-        if (outlineNoise > PLATFORM_RATIO) return Terrain.PLATFORM
-        if (featureNoise > OCEAN_RATIO) return Terrain.OCEAN
-        if (grainedNoise > TRENCH_RATIO) return Terrain.TRENCH
-        return Terrain.ABYSS
+        if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM
+        if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
+        if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH
+        return Relief.ABYSS
     }
 
     #detectLandType(layers, point) {
@@ -40,52 +40,52 @@ export class TerrainLayer {
         const grainedNoise = layers.noise.getGrained(point)
         const isRiverSource = layers.river.has(point) && layers.basin.isDivide(point)
         if (isRiverSource) {
-            if (featureNoise > MOUNTAIN_RATIO) return Terrain.MOUNTAIN
-            return Terrain.PLATEAU
+            if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
+            return Relief.PLATEAU
         } else {
             // all depositional rives parts are plains
             const isFastCourse = layers.river.isFastCourse(point)
             const isHeadWaters = layers.river.isHeadWaters(point)
             // define hill for other river points on the basin
-            if (isFastCourse || isHeadWaters) return Terrain.HILL
+            if (isFastCourse || isHeadWaters) return Relief.HILL
             // lower points of rivers
             const isSlowCourse = layers.river.isSlowCourse(point)
             const isDepositional = layers.river.isDepositional(point)
-            if (isDepositional || isSlowCourse) return Terrain.PLAIN
+            if (isDepositional || isSlowCourse) return Relief.PLAIN
         }
         // not on a river, try adding more plateaus or hills
-        if (grainedNoise < PLATEAU_RATIO) return Terrain.PLATEAU
-        if (grainedNoise < HILL_RATIO) return Terrain.HILL
-        return Terrain.PLAIN
+        if (grainedNoise < PLATEAU_RATIO) return Relief.PLATEAU
+        if (grainedNoise < HILL_RATIO) return Relief.HILL
+        return Relief.PLAIN
     }
 
     get(point) {
         const id = this.#matrix.get(point)
-        return Terrain.fromId(id)
+        return Relief.fromId(id)
     }
 
     getText(point) {
-        const terrain = this.get(point)
-        return `Terrain(${terrain.name})`
+        const relief = this.get(point)
+        return `Relief(${relief.name})`
     }
 
     isMountain(point) {
         const id = this.#matrix.get(point)
-        return id === Terrain.MOUNTAIN.id
+        return id === Relief.MOUNTAIN.id
     }
 
     isPlatform(point) {
         const id = this.#matrix.get(point)
-        return id === Terrain.PLATFORM.id
+        return id === Relief.PLATFORM.id
     }
 
     isTrench(point) {
         const id = this.#matrix.get(point)
-        return id === Terrain.TRENCH.id
+        return id === Relief.TRENCH.id
     }
 
     isPlain(point) {
         const id = this.#matrix.get(point)
-        return id === Terrain.PLAIN.id
+        return id === Relief.PLAIN.id
     }
 }

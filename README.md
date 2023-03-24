@@ -31,9 +31,8 @@
   - type of stretch often make waterfalls or rapids
 
 
-
-### TerrainLayer
-- landform or terrain? canyon / volcano / reef
+### ReliefLayer
+- landform or relief? canyon / volcano / reef
 - Add features (i.e: volcanos)
 
 

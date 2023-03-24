@@ -46,7 +46,7 @@ const SPEC = [
 
 const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
 
-export class Terrain {
+export class Relief {
     static fromId(id) {
         return TYPE_MAP.get(id) ?? SPEC[0]
     }
@@ -55,5 +55,5 @@ export class Terrain {
 
 SPEC.forEach(spec => {
     const name = spec.name.toUpperCase().replace(/\s+/, '_')
-    Terrain[name] = spec
+    Relief[name] = spec
 })
