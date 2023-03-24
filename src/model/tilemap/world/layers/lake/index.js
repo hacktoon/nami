@@ -1,7 +1,7 @@
 import { PointMap } from '/src/lib/point/map'
 import { Random } from '/src/lib/random'
 
-import { HYDRO_NAMES } from '../../hydrology/names'
+import { HYDRO_NAMES } from '../../names'
 import { Temperature } from '../temperature/data'
 import { Rain } from '../rain/data'
 import { Biome } from '../biome/data'
