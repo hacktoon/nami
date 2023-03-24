@@ -17,20 +17,17 @@
     	otherwise translate canvas element
 - Point
   - create a wrappedAdjacents similar to `Point.adjacents(parentPoint)` that receives a rect
+- Create ArrayGrid
+- PointSets can be dependent on a rect to map points to indexes in a matrix, thus using integers instead of points
 - Create ContinentLayer (maybe)
   - Use 32x32 tilemap with regionMap borders for separating landmasses
   - border points get a grained island noise
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
 
-### FeatureLayer
-  - Make lake type a landform, dependent on basin depression
+### LandformLayer
   - type of stretch often make waterfalls or rapids
-
-
-### ReliefLayer
-- landform or relief? canyon / volcano / reef
-- Add features (i.e: volcanos)
+  - canyon / volcano / reef
 
 
 ### RainLayer

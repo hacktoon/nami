@@ -14,6 +14,7 @@ import { RainLayer } from './layers/rain'
 import { RiverLayer } from './layers/river'
 import { LakeLayer } from './layers/lake'
 import { BiomeLayer } from './layers/biome'
+import { LandformLayer } from './layers/landform'
 import { TopologyLayer } from './layers/topology'
 
 import { WorldTileMapDiagram } from './diagram'
@@ -51,6 +52,7 @@ export class WorldTileMap extends TileMap {
         layers.relief = new ReliefLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
         layers.lake = new LakeLayer(layers)
+        layers.landform = new LandformLayer(rect, layers)
         layers.topo = new TopologyLayer(rect, layers, realmCount)
         this.layers = layers
         this.name = Random.choiceFrom(WORLD_NAMES)
@@ -68,6 +70,7 @@ export class WorldTileMap extends TileMap {
             this.layers.river.getText(wrappedPoint),
             this.layers.biome.getText(wrappedPoint),
             this.layers.lake.getText(wrappedPoint),
+            this.layers.landform.getText(wrappedPoint),
             this.layers.topo.getText(wrappedPoint),
         ].filter(x=>x).join('\n').trim()
     }
