@@ -2,9 +2,9 @@ import { PointMap } from '/src/lib/point/map'
 import { Random } from '/src/lib/random'
 
 import { HYDRO_NAMES } from '../names'
-import { Temperature } from '../../climatology/temperature/data'
-import { Rain } from '../../climatology/rain/data'
-import { Biome } from '../../biology/biome/data'
+import { Temperature } from '../../layers/temperature/data'
+import { Rain } from '../../layers/rain/data'
+import { Biome } from '../../layers/biome/data'
 
 import { Lake } from './data'
 

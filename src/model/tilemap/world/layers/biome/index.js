@@ -1,14 +1,12 @@
 import { Matrix } from '/src/lib/matrix'
 
-import { Temperature } from '../../climatology/temperature/data'
-import { Rain } from '../../climatology/rain/data'
+import { Temperature } from '../../layers/temperature/data'
+import { Rain } from '../rain/data'
 import { Biome } from './data'
-
 
 
 const CORAL_REEF_NOISE = .6
 const ICECAP_NOISE = .4
-const MANGROVE_NOISE = .6
 
 
 export class BiomeLayer {
