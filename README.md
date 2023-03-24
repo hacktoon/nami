@@ -23,11 +23,17 @@
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
 
-### HydrologyLayer
-- type of stretch often make waterfalls or rapids
+### BasinLayer
+  -
+
+### LandformLayer
+  - Make lake type a landform, dependent on basin depression
+  - type of stretch often make waterfalls or rapids
+
 
 
 ### TerrainLayer
+- landform or terrain? canyon / volcano / reef
 - Add features (i.e: volcanos)
 
 
@@ -36,6 +42,7 @@
 
 
 ### TopologyLayer
+- Cities next to salt lakes are ruins
 - Set city type using a fill from capital point
 - Each city in block map can occupy tiles as zones or neighborhoods
 - Dungeon types and levels like cat quest
