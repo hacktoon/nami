@@ -2,7 +2,7 @@ import { PointMap } from '/src/lib/point/map'
 import { Random } from '/src/lib/random'
 
 import { HYDRO_NAMES } from '../../names'
-import { Temperature } from '../temperature/data'
+import { Climate } from '../climate/data'
 import { Rain } from '../rain/data'
 import { Biome } from '../biome/data'
 
@@ -36,7 +36,7 @@ export class LakeLayer {
 
     #detectType(layers, point) {
         const rain = layers.rain.get(point)
-        const temperature = layers.temperature.get(point)
+        const climate = layers.climate.get(point)
         const biome = layers.biome.get(point)
         const isRiver = layers.river.has(point)
         if (biome.is(Biome.DESERT) && !isRiver) {
@@ -45,7 +45,7 @@ export class LakeLayer {
             return null
         }
         if (Random.chance(LAKE_CHANCE)) {
-            if (temperature.is(Temperature.FROZEN)) return Lake.FROZEN
+            if (climate.is(Climate.FROZEN)) return Lake.FROZEN
             if (rain.is(Rain.HUMID)) return Lake.SWAMP
             const isDepositional = layers.river.isDepositional(point)
             if (isRiver && isDepositional) return Lake.ESTUARY

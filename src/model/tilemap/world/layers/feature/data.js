@@ -1,20 +1,17 @@
 
 const SPEC = [
-    {name: 'Hydrotermal vent'},
-    {name: 'Submarive volcano'},
-    {name: 'Atol'},
-    {name: 'Sandbar'},
-    {name: 'Volcano'},
+    {name: 'Hydrothermal vent'},
+    {name: 'Sand bar'},
+    {name: 'Reef'},
     {name: 'Dunes'},
     {name: 'Beach'},
     {name: 'Waterfall'},
     {name: 'Rapid'},
-    {name: 'Valley'},
     {name: 'Canyon'},
     {name: 'Cliffs'},
     {name: 'Inselberg'},
     {name: 'Table'},
-
+    {name: 'Volcano'},
 ]
 
 const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))

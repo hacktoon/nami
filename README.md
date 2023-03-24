@@ -23,10 +23,7 @@
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
 
-### BasinLayer
-  -
-
-### LandformLayer
+### FeatureLayer
   - Make lake type a landform, dependent on basin depression
   - type of stretch often make waterfalls or rapids
 

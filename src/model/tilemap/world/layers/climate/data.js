@@ -33,16 +33,16 @@ const SPEC = [
 const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
 
 
-export class Temperature {
+export class Climate {
     static fromId(id) {
-        return new Temperature(TYPE_MAP.get(id))
+        return new Climate(TYPE_MAP.get(id))
     }
 
     static lower(spec) {
         const lower = SPEC[0].id
         const higher = SPEC[SPEC.length-1].id
         const id = clamp(spec.id - 1, lower, higher)
-        return new Temperature(TYPE_MAP.get(id))
+        return new Climate(TYPE_MAP.get(id))
     }
 
     constructor(spec) {
@@ -60,5 +60,5 @@ export class Temperature {
 SPEC.forEach(spec => {
     const name = spec.name.toUpperCase()
     // add object as constant
-    Temperature[name] = new Temperature(spec)
+    Climate[name] = new Climate(spec)
 })

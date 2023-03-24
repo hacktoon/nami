@@ -9,7 +9,7 @@ import { NoiseLayer } from './noise'
 import { SurfaceLayer } from './layers/surface'
 import { BasinLayer } from './layers/basin'
 import { ReliefLayer } from './layers/relief'
-import { TemperatureLayer } from './layers/temperature'
+import { ClimateLayer } from './layers/climate'
 import { RainLayer } from './layers/rain'
 import { RiverLayer } from './layers/river'
 import { LakeLayer } from './layers/lake'
@@ -44,7 +44,7 @@ export class WorldTileMap extends TileMap {
         const realmCount = params.get('realms')
         layers.noise = new NoiseLayer(rect, this.seed)
         layers.surface = new SurfaceLayer(rect, layers)
-        layers.temperature = new TemperatureLayer(rect, layers)
+        layers.climate = new ClimateLayer(rect, layers)
         layers.rain = new RainLayer(rect, layers)
         layers.basin = new BasinLayer(rect, layers)
         layers.river = new RiverLayer(rect, layers)
@@ -62,7 +62,7 @@ export class WorldTileMap extends TileMap {
             `Point(${Point.hash(point)})`,
             this.layers.surface.getText(wrappedPoint),
             this.layers.relief.getText(wrappedPoint),
-            this.layers.temperature.getText(wrappedPoint),
+            this.layers.climate.getText(wrappedPoint),
             this.layers.rain.getText(wrappedPoint),
             this.layers.basin.getText(wrappedPoint),
             this.layers.river.getText(wrappedPoint),
