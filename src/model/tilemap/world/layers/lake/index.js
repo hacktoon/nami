@@ -4,6 +4,7 @@ import { Random } from '/src/lib/random'
 import { HYDRO_NAMES } from '../../names'
 import { Climate } from '../climate/data'
 import { Rain } from '../rain/data'
+import { RiverStretch } from '../river/data'
 import { Biome } from '../biome/data'
 
 import { Lake } from './data'
@@ -47,8 +48,10 @@ export class LakeLayer {
                 return Lake.FROZEN
             }
             if (rain.is(point, Rain.HUMID)) return Lake.SWAMP
-            const isDepositional = layers.river.isDepositional(point)
-            if (isRiver && isDepositional) return Lake.ESTUARY
+            const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
+            if (isRiver && isDepositional) {
+                return Lake.ESTUARY
+            }
             return Lake.FRESH
         }
         return null

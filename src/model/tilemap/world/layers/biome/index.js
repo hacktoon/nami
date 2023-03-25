@@ -3,6 +3,7 @@ import { Matrix } from '/src/lib/matrix'
 import { Climate } from '../climate/data'
 import { Rain } from '../rain/data'
 import { Relief } from '../relief/data'
+import { RiverStretch } from '../river/data'
 import { Biome } from './data'
 
 
@@ -52,7 +53,7 @@ export class BiomeLayer {
         }
 
         if (climate.is(point, Climate.WARM)) {
-            const isDepositional = layers.river.isDepositional(point)
+            const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
             if (isDepositional) return Biome.MANGROVE
             if (rain.is(point, Rain.HUMID)) return Biome.JUNGLE
             if (rain.is(point, Rain.WET)) return Biome.WOODLANDS
@@ -61,8 +62,8 @@ export class BiomeLayer {
         }
 
         if (climate.is(point, Climate.HOT)) {
-            const isDepositional = layers.river.isDepositional(point)
-            const isSlowCourse = layers.river.isSlowCourse(point)
+            const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
+            const isSlowCourse = layers.river.is(point, RiverStretch.SLOW_COURSE)
             if (isDepositional || isSlowCourse) return Biome.MANGROVE
             if (rain.is(point, Rain.HUMID) || rain.is(point, Rain.WET)) return Biome.JUNGLE
             if (rain.is(point, Rain.SEASONAL)) return Biome.JUNGLE

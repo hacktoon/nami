@@ -50,7 +50,7 @@ export class RiverLayer {
             flowDirections: this.#getRiverDirections(point),
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
-            stretch: RiverStretch.fromId(stretchId),
+            stretch: RiverStretch.get(stretchId),
             meander: this.#riverMeanders.get(point),
         }
     }
@@ -75,28 +75,10 @@ export class RiverLayer {
         return this.#riverMouths.has(point)
     }
 
-    isHeadWaters(point) {
+    is(point, type) {
         if (! this.#riverPoints.has(point)) return false
         const river = this.get(point)
-        return river.stretch.id == RiverStretch.HEADWATERS.id
-    }
-
-    isFastCourse(point) {
-        if (! this.#riverPoints.has(point)) return false
-        const river = this.get(point)
-        return river.stretch.id == RiverStretch.FAST_COURSE.id
-    }
-
-    isSlowCourse(point) {
-        if (! this.#riverPoints.has(point)) return false
-        const river = this.get(point)
-        return river.stretch.id == RiverStretch.SLOW_COURSE.id
-    }
-
-    isDepositional(point) {
-        if (! this.#riverPoints.has(point)) return false
-        const river = this.get(point)
-        return river.stretch.id == RiverStretch.DEPOSITIONAL.id
+        return river.stretch.id == type.id
     }
 
     getText(point) {

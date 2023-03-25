@@ -1,43 +1,40 @@
 import { Color } from '/src/lib/color'
 
 
-const SPEC = [
-    {
-        id: 0,
-        name: 'Headwaters',
-        width: .05,
-        color: Color.fromHex('#4b8fb1'),
-    },
-    {
-        id: 1,
-        name: 'Fast course',
-        width: .1,
-        color: Color.fromHex('#2a83af'),
-    },
-    {
-        id: 2,
-        name: 'Slow course',
-        width: .15,
-        color: Color.fromHex('#26749b'),
-    },
-    {
-        id: 3,
-        name: 'Depositional',
-        width: .2,
-        color: Color.fromHex('#216384'),
-    },
-]
+class Spec {
+    static total = 0
+    static map = new Map()
 
-const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
+    static build(spec) {
+        const id = Spec.total++
+        const item = {...spec, id, color: Color.fromHex(spec.color)}
+        Spec.map.set(id, item)
+        return item
+    }
 
-export class RiverStretch {
-    static fromId(id) {
-        return TYPE_MAP.get(id) ?? SPEC[0]
+    static get(id) {
+        return Spec.map.get(id)
     }
 }
 
 
-SPEC.forEach(spec => {
-    const name = spec.name.toUpperCase().replace(/\s+/, '_')
-    RiverStretch[name] = spec
-})
+export class RiverStretch {
+    static HEADWATERS = Spec.build({
+        name: 'Headwaters', width: .05, color: '#4b8fb1'
+    })
+    static FAST_COURSE = Spec.build({
+        name: 'Fast course', width: .1, color: '#2a83af'
+    })
+    static SLOW_COURSE = Spec.build({
+        name: 'Slow course', width: .15, color: '#26749b'
+    })
+    static DEPOSITIONAL = Spec.build({
+        name: 'Depositional', width: .2, color: '#216384'
+    })
+
+
+    static get(id) {
+        return Spec.get(id)
+    }
+}
+

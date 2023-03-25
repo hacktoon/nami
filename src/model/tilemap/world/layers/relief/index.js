@@ -1,6 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 
 import { Relief } from './data'
+import { River, RiverStretch } from '../river/data'
 
 
 const TRENCH_RATIO = .65
@@ -46,17 +47,17 @@ export class ReliefLayer {
             return Relief.PLATEAU
         } else {
             // define other river points on the basin
-            const isHeadWaters = layers.river.isHeadWaters(point)
-            const isFastCourse = layers.river.isFastCourse(point)
+            const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
+            const isFastCourse = layers.river.is(point, RiverStretch.FAST_COURSE)
             // prioritize plateaus on non source headwaters
             if (isHeadWaters && grainedNoise < PLATEAU_RATIO) {
                 return Relief.PLATEAU
             }
             if (isFastCourse || isHeadWaters) return Relief.HILL
             // lower points of rivers
-            const isSlowCourse = layers.river.isSlowCourse(point)
+            const isSlowCourse = layers.river.is(point, RiverStretch.SLOW_COURSE)
             // all depositional rives parts are plains
-            const isDepositional = layers.river.isDepositional(point)
+            const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
             if (isDepositional || isSlowCourse) return Relief.PLAIN
         }
         // not on a river, try adding more plateaus or hills
