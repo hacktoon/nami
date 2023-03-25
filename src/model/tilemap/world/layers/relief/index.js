@@ -48,6 +48,10 @@ export class ReliefLayer {
             // define other river points on the basin
             const isHeadWaters = layers.river.isHeadWaters(point)
             const isFastCourse = layers.river.isFastCourse(point)
+            // prioritize plateaus on non source headwaters
+            if (isHeadWaters && grainedNoise < PLATEAU_RATIO) {
+                return Relief.PLATEAU
+            }
             if (isFastCourse || isHeadWaters) return Relief.HILL
             // lower points of rivers
             const isSlowCourse = layers.river.isSlowCourse(point)
