@@ -29,44 +29,44 @@ export class BiomeLayer {
 
     #buildLandBiome(layers, point) {
         const grainedNoise = layers.noise.getGrained(point)
-        const rain = layers.rain.get(point)
+        const {rain, climate} = layers
 
-        if (layers.climate.is(point, Climate.FROZEN)) {
-            if (rain.is(Rain.ARID) && grainedNoise > ICECAP_NOISE)
+        if (climate.is(point, Climate.FROZEN)) {
+            if (rain.is(point, Rain.ARID) && grainedNoise > ICECAP_NOISE)
                 return Biome.ICECAP
             return Biome.TUNDRA
         }
 
-        if (layers.climate.is(point, Climate.COLD)) {
-            if (rain.is(Rain.HUMID)) return Biome.TUNDRA
-            if (rain.is(Rain.ARID)) return Biome.GRASSLANDS
+        if (climate.is(point, Climate.COLD)) {
+            if (rain.is(point, Rain.HUMID)) return Biome.TUNDRA
+            if (rain.is(point, Rain.ARID)) return Biome.GRASSLANDS
             return Biome.TAIGA
         }
 
-        if (layers.climate.is(point, Climate.TEMPERATE)) {
-            if (rain.is(Rain.HUMID)) return Biome.TAIGA
-            if (rain.is(Rain.WET)) return Biome.WOODLANDS
-            if (rain.is(Rain.SEASONAL)) return Biome.WOODLANDS
-            if (rain.is(Rain.DRY)) return Biome.GRASSLANDS
-            if (rain.is(Rain.ARID)) return Biome.SAVANNA
+        if (climate.is(point, Climate.TEMPERATE)) {
+            if (rain.is(point, Rain.HUMID)) return Biome.TAIGA
+            if (rain.is(point, Rain.WET)) return Biome.WOODLANDS
+            if (rain.is(point, Rain.SEASONAL)) return Biome.WOODLANDS
+            if (rain.is(point, Rain.DRY)) return Biome.GRASSLANDS
+            if (rain.is(point, Rain.ARID)) return Biome.SAVANNA
         }
 
-        if (layers.climate.is(point, Climate.WARM)) {
+        if (climate.is(point, Climate.WARM)) {
             const isDepositional = layers.river.isDepositional(point)
             if (isDepositional) return Biome.MANGROVE
-            if (rain.is(Rain.HUMID)) return Biome.JUNGLE
-            if (rain.is(Rain.WET)) return Biome.WOODLANDS
-            if (rain.is(Rain.SEASONAL)) return Biome.GRASSLANDS
-            if (rain.is(Rain.DRY)) return Biome.SAVANNA
+            if (rain.is(point, Rain.HUMID)) return Biome.JUNGLE
+            if (rain.is(point, Rain.WET)) return Biome.WOODLANDS
+            if (rain.is(point, Rain.SEASONAL)) return Biome.GRASSLANDS
+            if (rain.is(point, Rain.DRY)) return Biome.SAVANNA
         }
 
-        if (layers.climate.is(point, Climate.HOT)) {
+        if (climate.is(point, Climate.HOT)) {
             const isDepositional = layers.river.isDepositional(point)
             const isSlowCourse = layers.river.isSlowCourse(point)
             if (isDepositional || isSlowCourse) return Biome.MANGROVE
-            if (rain.is(Rain.HUMID) || rain.is(Rain.WET)) return Biome.JUNGLE
-            if (rain.is(Rain.SEASONAL)) return Biome.JUNGLE
-            if (rain.is(Rain.DRY)) return Biome.SAVANNA
+            if (rain.is(point, Rain.HUMID) || rain.is(point, Rain.WET)) return Biome.JUNGLE
+            if (rain.is(point, Rain.SEASONAL)) return Biome.JUNGLE
+            if (rain.is(point, Rain.DRY)) return Biome.SAVANNA
         }
         return Biome.DESERT
     }

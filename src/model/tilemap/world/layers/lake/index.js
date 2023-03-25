@@ -35,7 +35,7 @@ export class LakeLayer {
     }
 
     #detectType(layers, point) {
-        const rain = layers.rain.get(point)
+        const rain = layers.rain
         const isRiver = layers.river.has(point)
         if (layers.biome.is(point, Biome.DESERT) && !isRiver) {
             if (Random.chance(OASIS_CHANCE)) return Lake.OASIS
@@ -46,7 +46,7 @@ export class LakeLayer {
             if (layers.climate.is(point, Climate.FROZEN)) {
                 return Lake.FROZEN
             }
-            if (rain.is(Rain.HUMID)) return Lake.SWAMP
+            if (rain.is(point, Rain.HUMID)) return Lake.SWAMP
             const isDepositional = layers.river.isDepositional(point)
             if (isRiver && isDepositional) return Lake.ESTUARY
             return Lake.FRESH
@@ -67,7 +67,7 @@ export class LakeLayer {
         return {
             id,
             name: this.#names.get(id),
-            type: Lake.fromId(this.#typeMap.get(id)),
+            type: Lake.get(this.#typeMap.get(id)),
         }
     }
 

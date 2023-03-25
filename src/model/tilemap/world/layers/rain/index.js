@@ -30,13 +30,18 @@ export class RainLayer {
     get(point, offset=10) {
         const offsetPoint = Point.plus(point, [offset, offset])
         const rain = this.#matrix.get(offsetPoint)
-        return Rain.fromId(rain)
+        return Rain.get(rain)
     }
 
     createsRivers(point) {
         const rain = this.get(point)
         const riverSourceOpts = [Rain.HUMID.id, Rain.WET.id, Rain.SEASONAL.id]
         return riverSourceOpts.includes(rain.id)
+    }
+
+    is(point, type) {
+        const id = this.#matrix.get(point)
+        return id === type.id
     }
 
     getText(point) {

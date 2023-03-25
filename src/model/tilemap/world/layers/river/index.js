@@ -104,10 +104,10 @@ export class RiverLayer {
             return ''
         const river = this.get(point)
         const attrs = [
-             `name=${river.name}`,
-             `mouth=${river.mouth ? 1 : 0}`,
+             `${river.name}`,
+             river.mouth ? 'mouth' : '',
              `stretch=${river.stretch.name}`,
-        ].join(',')
+        ].filter(x=>x).join(',')
         return `River(${attrs})`
     }
 }

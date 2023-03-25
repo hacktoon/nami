@@ -98,6 +98,8 @@ export class TopologyLayer {
         if (this.#dungeonPoints.has(point)) {
             attrs.push(`dungeon`)
         }
-        return `Topo(${attrs.join(',')})`
+        if (attrs.length > 0)
+            return `Topo(${attrs.join(',')})`
+        return ''
     }
 }
