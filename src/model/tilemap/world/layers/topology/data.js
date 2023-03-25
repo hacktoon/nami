@@ -1,62 +1,32 @@
 import { Color } from '/src/lib/color'
 
 
-const SPEC = [
-    {
-        id: 0,
-        name: 'Capital',
-        color: Color.fromHex('#2d4f5f'),
-    },
-    {
-        id: 1,
-        name: 'City',
-        color: Color.fromHex('#bbbbbb'),
-    },
-    {
-        id: 2,
-        name: 'Village',
-        color: Color.fromHex('#977979'),
-    },
-    {
-        id: 3,
-        name: 'Ruins',
-        color: Color.fromHex('#3a472b'),
-    },
-    {
-        id: 4,
-        name: 'Cave',
-        color: Color.fromHex('#352727'),
-    },
-    {
-        id: 5,
-        name: 'Fortress',
-        color: Color.fromHex('#535353'),
-    },
-]
+class Spec {
+    static total = 0
+    static map = new Map()
 
-
-const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
-
-
-export class Place {
-    static fromId(id) {
-        return new Place(TYPE_MAP.get(id))
+    static build(spec) {
+        const id = Spec.total++
+        const item = {...spec, id, color: Color.fromHex(spec.color)}
+        Spec.map.set(id, item)
+        return item
     }
 
-    constructor(spec) {
-        this.id = spec.id
-        this.name = spec.name
-        this.color = spec.color
+    static get(id) {
+        return Spec.map.get(id)
     }
 }
 
 
-SPEC.forEach(spec => {
-    const name = spec.name.toUpperCase()
-    // add object as constant
-    Place[name] = new Place(spec)
-    // add method for comparison
-    Place.prototype[`is${spec.name}`] = function() {
-        return this.id === spec.id
+export class Place {
+    static CAPITAL = Spec.build({name: 'Capital', color: '#2d4f5f'})
+    static CITY = Spec.build({name: 'City', color: '#bbbbbb'})
+    static VILLAGE = Spec.build({name: 'Village', color: '#977979'})
+    static RUINS = Spec.build({name: 'Ruins', color: '#3a472b'})
+    static CAVE = Spec.build({name: 'Cave', color: '#352727'})
+    static FORTRESS = Spec.build({name: 'Fortress', color: '#535353'})
+
+    static get(id) {
+        return Spec.get(id)
     }
-})
+}

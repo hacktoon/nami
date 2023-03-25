@@ -30,11 +30,9 @@
   - canyon / volcano / reef
 
 
-### RainLayer
-- Make rain dynamic using noise offset and season `temp.get(point, season)`
-
-
 ### TopologyLayer
+- Use sampling to create capitals instead of all cities
+  - the bigger the distance of capital, less development on places
 - Put inns/outposts at borders of city radius
 - Cities next to salt lakes are ruins
 - Set city type using a fill from capital point
@@ -50,6 +48,11 @@
 
 ### SociologyLayer
 - Start a fill on capitals to determine realms territory
+-
+
+
+### RainLayer
+- Make rain dynamic using noise offset and season `temp.get(point, season)`
 
 
 ## INSPIRATIONS

@@ -2,7 +2,7 @@ import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
-import { SURFACE_RATIO, Surface } from './data'
+import { Surface } from './data'
 
 
 const EMPTY_BODY = 0
@@ -10,6 +10,7 @@ const EMPTY_WATERBODY = 1
 const FIRST_BODY_ID = 2
 
 // Area ratios
+const SURFACE_RATIO = .55
 const MINIMUN_OCEAN_RATIO = 2
 const MINIMUN_SEA_RATIO = .2
 const MINIMUN_CONTINENT_RATIO = 1
@@ -120,7 +121,7 @@ export class SurfaceLayer {
     get(point) {
         // negative bodyId's are surface borders
         const bodyId = Math.abs(this.#bodyMatrix.get(point))
-        return Surface.fromId(this.#bodyTypeMap.get(bodyId))
+        return Surface.get(this.#bodyTypeMap.get(bodyId))
     }
 
     getText(point) {
@@ -141,16 +142,17 @@ export class SurfaceLayer {
         return area.toFixed(1)
     }
 
+    is(point, type) {
+        const id = this.#bodyTypeMap.get(point)
+        return id === type.id
+    }
+
     isWater(point) {
         return this.get(point).water
     }
 
     isLand(point) {
         return ! this.isWater(point)
-    }
-
-    isOcean(point) {
-        return this.get(point).id === Surface.OCEAN
     }
 
     isBorder(point) {
