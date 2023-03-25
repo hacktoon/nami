@@ -35,6 +35,7 @@
 
 
 ### TopologyLayer
+- Put inns/outposts at borders of city radius
 - Cities next to salt lakes are ruins
 - Set city type using a fill from capital point
 - Each city in block map can occupy tiles as zones or neighborhoods

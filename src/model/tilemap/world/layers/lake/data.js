@@ -1,49 +1,32 @@
 import { Color } from '/src/lib/color'
 
 
-const SPEC = [
-    {
-        id: 0,
-        name: 'Fresh',
-        color: Color.fromHex('#4b8fb1'),
-    },
-    {
-        id: 1,
-        name: 'Frozen',
-        color: Color.fromHex('#c1d1da'),
-    },
-    {
-        id: 2,
-        name: 'Swamp',
-        color: Color.fromHex('#417449'),
-    },
-    {
-        id: 3,
-        name: 'Salt',
-        color: Color.fromHex('#EEEEEE'),
-    },
-    {
-        id: 4,
-        name: 'Estuary',
-        color: Color.fromHex('#437c7e'),
-    },
-    {
-        id: 5,
-        name: 'Oasis',
-        color: Color.fromHex('#92c7ae'),
-    },
-]
+class Spec {
+    static total = 0
+    static map = new Map()
 
-const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
+    static build(spec) {
+        const id = Spec.total++
+        const item = {...spec, id, color: Color.fromHex(spec.color)}
+        Spec.map.set(id, item)
+        return item
+    }
 
-export class Lake {
-    static fromId(id) {
-        return TYPE_MAP.get(id) ?? SPEC[0]
+    static get(id) {
+        return Spec.map.get(id)
     }
 }
 
 
-SPEC.forEach(spec => {
-    const name = spec.name.toUpperCase().replace(/\s+/, '_')
-    Lake[name] = spec
-})
+export class Lake {
+    static FRESH = Spec.build({name: 'Fresh', color: '#4b8fb1'})
+    static FROZEN = Spec.build({name: 'Frozen', color: '#c1d1da'})
+    static SWAMP = Spec.build({name: 'Swamp', color: '#417449'})
+    static SALT = Spec.build({name: 'Salt', color: '#EEEEEE'})
+    static ESTUARY = Spec.build({name: 'Estuary', color: '#437c7e'})
+    static OASIS = Spec.build({name: 'Oasis', color: '#92c7ae'})
+
+    static get(id) {
+        return Spec.get(id)
+    }
+}

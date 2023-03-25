@@ -71,6 +71,12 @@ export class LakeLayer {
         }
     }
 
+    is(point, type) {
+        if (! this.#lakes.has(point)) return false
+        const id = this.#lakes.get(point)
+        return id === type.id
+    }
+
     getText(point) {
         if (! this.has(point))
             return ''
