@@ -38,18 +38,20 @@ export class ReliefLayer {
     #detectLandType(layers, point) {
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
-        const isRiverSource = layers.river.has(point) && layers.basin.isDivide(point)
+        const isRiverSource = (
+            layers.river.has(point) && layers.basin.isDivide(point)
+        )
         if (isRiverSource) {
             if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
             return Relief.PLATEAU
         } else {
-            // all depositional rives parts are plains
-            const isFastCourse = layers.river.isFastCourse(point)
+            // define other river points on the basin
             const isHeadWaters = layers.river.isHeadWaters(point)
-            // define hill for other river points on the basin
+            const isFastCourse = layers.river.isFastCourse(point)
             if (isFastCourse || isHeadWaters) return Relief.HILL
             // lower points of rivers
             const isSlowCourse = layers.river.isSlowCourse(point)
+            // all depositional rives parts are plains
             const isDepositional = layers.river.isDepositional(point)
             if (isDepositional || isSlowCourse) return Relief.PLAIN
         }

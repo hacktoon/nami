@@ -25,7 +25,12 @@ export class ClimateLayer {
 
     get(point) {
         const climate = this.#matrix.get(point)
-        return Climate.fromId(climate)
+        return Climate.get(climate)
+    }
+
+    is(point, type) {
+        const id = this.#matrix.get(point)
+        return id === type.id
     }
 
     getText(point) {

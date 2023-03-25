@@ -1,64 +1,31 @@
 import { Color } from '/src/lib/color'
-import { clamp } from '/src/lib/number'
 
 
-const SPEC = [
-    {
-        id: 1,
-        name: 'Frozen',
-        color: Color.fromHex('#EEE'),
-    },
-    {
-        id: 2,
-        name: 'Cold',
-        color: Color.fromHex('#9cfceb'),
-    },
-    {
-        id: 3,
-        name: 'Temperate',
-        color: Color.fromHex('#7be47f'),
-    },
-    {
-        id: 4,
-        name: 'Warm',
-        color: Color.fromHex('#ffe500'),
-    },
-    {
-        id: 5,
-        name: 'Hot',
-        color: Color.fromHex('#ff5922'),
-    }
-]
+class Spec {
+    static total = 0
+    static map = new Map()
 
-const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
-
-
-export class Climate {
-    static fromId(id) {
-        return new Climate(TYPE_MAP.get(id))
+    static build(spec) {
+        const id = Spec.total++
+        const item = {...spec, id, color: Color.fromHex(spec.color)}
+        Spec.map.set(id, item)
+        return item
     }
 
-    static lower(spec) {
-        const lower = SPEC[0].id
-        const higher = SPEC[SPEC.length-1].id
-        const id = clamp(spec.id - 1, lower, higher)
-        return new Climate(TYPE_MAP.get(id))
-    }
-
-    constructor(spec) {
-        this.id = spec.id
-        this.name = spec.name
-        this.color = spec.color
-    }
-
-    is(type) {
-        return this.id === type.id
+    static get(id) {
+        return Spec.map.get(id)
     }
 }
 
 
-SPEC.forEach(spec => {
-    const name = spec.name.toUpperCase()
-    // add object as constant
-    Climate[name] = new Climate(spec)
-})
+export class Climate {
+    static FROZEN = Spec.build({name: 'Frozen', color: '#EEE'})
+    static COLD = Spec.build({name: 'Cold', color: '#9cfceb'})
+    static TEMPERATE = Spec.build({name: 'Temperate', color: '#7be47f'})
+    static WARM = Spec.build({name: 'Warm', color: '#ffe500'})
+    static HOT = Spec.build({name: 'Hot', color: '#ff5922'})
+
+    static get(id) {
+        return Spec.get(id)
+    }
+}
