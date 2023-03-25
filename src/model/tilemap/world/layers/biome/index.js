@@ -100,7 +100,12 @@ export class BiomeLayer {
 
     get(point) {
         const id = this.#matrix.get(point)
-        return Biome.fromId(id)
+        return Biome.get(id)
+    }
+
+    is(point, type) {
+        const id = this.#matrix.get(point)
+        return id === type.id
     }
 
     getText(point) {

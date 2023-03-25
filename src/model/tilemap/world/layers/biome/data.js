@@ -1,47 +1,39 @@
 import { Color } from '/src/lib/color'
 
 
-export const SPEC = [
-    {id: 1,  color: "#f2f2f2", name: "Icecap"},
-    {id: 2,  color: "#afe7da", name: "Tundra"},
-    {id: 3,  color: "#56c472", name: "Taiga"},
-    {id: 4,  color: "#57aa13", name: "Woodlands"},
-    {id: 5,  color: "#4b8b17", name: "Jungle"},
-    {id: 6,  color: "#8abb63", name: "Grasslands"},
-    {id: 7,  color: "#b5c23f", name: "Savanna"},
-    {id: 8,  color: "#d1c69c", name: "Desert"},
-    {id: 9,  color: "#1d5674", name: "Trench"},
-    {id: 10, color: "#216384", name: "Ocean"},
-    {id: 11, color: "#2878a0", name: "Sea"},
-    {id: 12, color: "#8ea2ce", name: "Reef"},
-    {id: 13, color: "#437718", name: "Mangrove"},
-]
+class Spec {
+    static total = 0
+    static map = new Map()
 
-const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
-
-
-export class Biome {
-    static fromId(id) {
-        return new Biome(TYPE_MAP.get(id))
+    static build(spec) {
+        const id = Spec.total++
+        const item = {...spec, id, color: Color.fromHex(spec.color)}
+        Spec.map.set(id, item)
+        return item
     }
 
-    constructor(spec) {
-        this.id = spec.id
-        this.name = spec.name
-        this.color = Color.fromHex(spec.color)
-    }
-
-    is(type) {
-        return this.id === type.id
+    static get(id) {
+        return Spec.map.get(id)
     }
 }
 
-SPEC.forEach(spec => {
-    const name = spec.name.toUpperCase().replace(/\s+/, '_')
-    const methodName = `is${spec.name}`
-    Biome[name] = spec
-    // add method for comparison
-    Biome.prototype[methodName] = function() {
-        return this.id === spec.id
+
+export class Biome {
+    static ICECAP = Spec.build({name: "Icecap", color: "#f2f2f2", })
+    static TUNDRA = Spec.build({name: "Tundra", color: "#afe7da", })
+    static TAIGA = Spec.build({name: "Taiga", color: "#56c472", })
+    static WOODLANDS = Spec.build({name: "Woodlands", color: "#57aa13", })
+    static JUNGLE = Spec.build({name: "Jungle", color: "#4b8b17", })
+    static GRASSLANDS = Spec.build({name: "Grasslands", color: "#8abb63", })
+    static SAVANNA = Spec.build({name: "Savanna", color: "#b5c23f", })
+    static DESERT = Spec.build({name: "Desert", color: "#d1c69c", })
+    static TRENCH = Spec.build({name: "Trench", color: "#1d5674", })
+    static OCEAN = Spec.build({name: "Ocean", color: "#216384", })
+    static SEA = Spec.build({name: "Sea", color: "#2878a0", })
+    static REEF = Spec.build({name: "Reef", color: "#8ea2ce", })
+    static MANGROVE = Spec.build({name: "Mangrove", color: "#437718", })
+
+    static get(id) {
+        return Spec.get(id)
     }
-})
+}

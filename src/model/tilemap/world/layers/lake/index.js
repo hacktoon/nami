@@ -37,9 +37,8 @@ export class LakeLayer {
     #detectType(layers, point) {
         const rain = layers.rain.get(point)
         const climate = layers.climate.get(point)
-        const biome = layers.biome.get(point)
         const isRiver = layers.river.has(point)
-        if (biome.is(Biome.DESERT) && !isRiver) {
+        if (layers.biome.is(point, Biome.DESERT) && !isRiver) {
             if (Random.chance(OASIS_CHANCE)) return Lake.OASIS
             if (Random.chance(SALT_LAKE_CHANCE)) return Lake.SALT
             return null

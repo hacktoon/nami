@@ -1,7 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 import { PointMap } from '/src/lib/point/map'
 
-import { Landform } from '../../data/landform'
+import { Landform } from './data'
 import { Biome } from '../biome/data'
 
 
@@ -17,12 +17,11 @@ export class LandformLayer {
                 this.#landforms.set(point, type.id)
             }
         })
+        console.log(this.#landforms);
     }
 
     #detectType(layers, point) {
-        const biome = layers.biome.get(point)
-        const isDesert = biome.is(Biome.DESERT)
-        if (isDesert) {
+        if (layers.biome.is(point, Biome.DESERT)) {
             return Landform.DUNES
         }
         return
