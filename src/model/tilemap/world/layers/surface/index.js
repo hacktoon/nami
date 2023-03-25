@@ -85,9 +85,6 @@ export class SurfaceLayer {
         // default type
         let type = Surface.CONTINENT
         // area is filled; decide type
-        if (originPoint[0] == 77 && originPoint[1] == 31) {
-            console.log('a');
-        }
         if (isEmptyWaterBody) {
             if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
                 type = Surface.OCEAN

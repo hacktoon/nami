@@ -1,59 +1,35 @@
 import { Color } from '/src/lib/color'
 
 
-const SPEC = [
-    {
-        id: 0,
-        name: 'Trench',
-        color: Color.fromHex('#11425a'),
-    },
-    {
-        id: 1,
-        name: 'Abyss',
-        color: Color.fromHex('#185574'),
-    },
-    {
-        id: 2,
-        name: 'Ocean',
-        color: Color.fromHex('#216384'),
-    },
-    {
-        id: 3,
-        name: 'Platform',
-        color: Color.fromHex('#2878a0'),
-    },
-    {
-        id: 4,
-        name: 'Plain',
-        color: Color.fromHex('#7A7'),
-    },
-    {
-        id: 5,
-        name: 'Hill',
-        color: Color.fromHex('#8B8'),
-    },
-    {
-        id: 6,
-        name: 'Plateau',
-        color: Color.fromHex('#99b98b'),
-    },
-    {
-        id: 7,
-        name: 'Mountain',
-        color: Color.fromHex('#badfba'),
+class Spec {
+    static total = 0
+    static map = new Map()
+
+    static build(spec) {
+        const id = Spec.total++
+        const item = {...spec, id, color: Color.fromHex(spec.color)}
+        Spec.map.set(id, item)
+        return item
     }
-]
 
-const TYPE_MAP = new Map(SPEC.map(spec => [spec.id, spec]))
-
-export class Relief {
-    static fromId(id) {
-        return TYPE_MAP.get(id) ?? SPEC[0]
+    static get(id) {
+        return Spec.map.get(id)
     }
 }
 
 
-SPEC.forEach(spec => {
-    const name = spec.name.toUpperCase().replace(/\s+/, '_')
-    Relief[name] = spec
-})
+export class Relief {
+    static TRENCH = Spec.build({name: 'Trench', color: '#11425a'})
+    static ABYSS = Spec.build({name: 'Abyss', color: '#185574'})
+    static OCEAN = Spec.build({name: 'Ocean', color: '#216384'})
+    static PLATFORM = Spec.build({name: 'Platform', color: '#2878a0'})
+    static PLAIN = Spec.build({name: 'Plain', color: '#77AA77'})
+    static HILL = Spec.build({name: 'Hill', color: '#88BB88'})
+    static PLATEAU = Spec.build({name: 'Plateau', color: '#99b98b'})
+    static MOUNTAIN = Spec.build({name: 'Mountain', color: '#badfba'})
+
+    static get(id) {
+        return Spec.get(id)
+    }
+}
+

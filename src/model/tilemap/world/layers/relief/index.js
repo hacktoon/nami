@@ -67,7 +67,7 @@ export class ReliefLayer {
 
     get(point) {
         const id = this.#matrix.get(point)
-        return Relief.fromId(id)
+        return Relief.get(id)
     }
 
     getText(point) {
@@ -75,23 +75,8 @@ export class ReliefLayer {
         return `Relief(${relief.name})`
     }
 
-    isMountain(point) {
+    is(point, type) {
         const id = this.#matrix.get(point)
-        return id === Relief.MOUNTAIN.id
-    }
-
-    isPlatform(point) {
-        const id = this.#matrix.get(point)
-        return id === Relief.PLATFORM.id
-    }
-
-    isTrench(point) {
-        const id = this.#matrix.get(point)
-        return id === Relief.TRENCH.id
-    }
-
-    isPlain(point) {
-        const id = this.#matrix.get(point)
-        return id === Relief.PLAIN.id
+        return id === type.id
     }
 }

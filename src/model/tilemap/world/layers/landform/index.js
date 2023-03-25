@@ -17,7 +17,6 @@ export class LandformLayer {
                 this.#landforms.set(point, type.id)
             }
         })
-        console.log(this.#landforms);
     }
 
     #detectType(layers, point) {
@@ -25,6 +24,10 @@ export class LandformLayer {
             return Landform.DUNES
         }
         return
+    }
+
+    has(point) {
+        return this.#landforms.has(point)
     }
 
     get(point) {
@@ -38,8 +41,11 @@ export class LandformLayer {
     }
 
     getText(point) {
-        const landform = this.get(point)
-        return `Landform(${landform.name})`
+        if (this.#landforms.has(point)) {
+            const landform = this.get(point)
+            return `Landform(${landform.name})`
+        }
+        return ''
     }
 
 }

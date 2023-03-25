@@ -1,7 +1,8 @@
 import { Matrix } from '/src/lib/matrix'
 
-import { Climate } from '../../layers/climate/data'
+import { Climate } from '../climate/data'
 import { Rain } from '../rain/data'
+import { Relief } from '../relief/data'
 import { Biome } from './data'
 
 
@@ -53,10 +54,7 @@ export class BiomeLayer {
         if (layers.climate.is(point, Climate.WARM)) {
             const isDepositional = layers.river.isDepositional(point)
             if (isDepositional) return Biome.MANGROVE
-            if (rain.is(Rain.HUMID)) {
-                if (layers.relief.isMountain(point)) return Biome.SAVANNA
-                return Biome.JUNGLE
-            }
+            if (rain.is(Rain.HUMID)) return Biome.JUNGLE
             if (rain.is(Rain.WET)) return Biome.WOODLANDS
             if (rain.is(Rain.SEASONAL)) return Biome.GRASSLANDS
             if (rain.is(Rain.DRY)) return Biome.SAVANNA
@@ -65,26 +63,22 @@ export class BiomeLayer {
         if (layers.climate.is(point, Climate.HOT)) {
             const isDepositional = layers.river.isDepositional(point)
             const isSlowCourse = layers.river.isSlowCourse(point)
-            const isJungle = rain.is(Rain.HUMID) || rain.is(Rain.WET)
             if (isDepositional || isSlowCourse) return Biome.MANGROVE
-            if (isJungle) {
-                if (layers.relief.isMountain(point)) return Biome.SAVANNA
-                return Biome.JUNGLE
-            }
+            if (rain.is(Rain.HUMID) || rain.is(Rain.WET)) return Biome.JUNGLE
             if (rain.is(Rain.SEASONAL)) return Biome.JUNGLE
             if (rain.is(Rain.DRY)) return Biome.SAVANNA
         }
-
         return Biome.DESERT
     }
 
     #buildWaterBiome(layers, point) {
         const grainedNoise = layers.noise.getGrained(point)
-        if (layers.climate.is(point, Climate.FROZEN) && grainedNoise > ICECAP_NOISE) {
+        const isFrozen = layers.climate.is(point, Climate.FROZEN)
+        if (isFrozen && grainedNoise > ICECAP_NOISE) {
             return Biome.ICECAP
         }
-        if (layers.relief.isTrench(point)) return Biome.TRENCH
-        if (layers.relief.isPlatform(point)) {
+        if (layers.relief.is(point, Relief.TRENCH)) return Biome.TRENCH
+        if (layers.relief.is(point, Relief.PLATFORM)) {
             const isReefTemp = layers.climate.is(point, Climate.WARM)
                                || layers.climate.is(point, Climate.HOT)
             const isReefNoise = grainedNoise > CORAL_REEF_NOISE

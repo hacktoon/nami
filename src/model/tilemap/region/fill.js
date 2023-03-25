@@ -27,7 +27,6 @@ export class RegionFloodFill extends ConcurrentFill {
         // point is neighbor being filled
         fill.context.regionMatrix.set(point, fill.id)
         fill.context.growthMatrix.set(point, fill.growth)
-        // console.log(fill.level);
         fill.context.levelMatrix.set(point, fill.level)
     }
 
