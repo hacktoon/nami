@@ -80,7 +80,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
         if (layer === 'climate') {
             const climate = this.tileMap.layers.climate.get(point)
-            color = surface.water ? Color.DARKBLUE : climate.color
+            color = surface.water
+                    ? climate.color.average(Color.BLACK).average(Color.DARKBLUE)
+                    : climate.color
         }
         if (layer === 'rain') {
             const rain = this.tileMap.layers.rain.get(point)
