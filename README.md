@@ -25,25 +25,24 @@
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
 
-### LandformLayer
-  - type of stretch often make waterfalls or rapids
-  - canyon / volcano / reef
-
-
 ### TopologyLayer
-- Use sampling to create capitals instead of all cities
-  - the bigger the distance of capital, less development on places
-- Put inns/outposts at borders of city radius
-- Cities next to salt lakes are ruins
 - Set city type using a fill from capital point
+  - the bigger the distance of capital, less development on places
+  - depending on realm type, can grow less or more cities
+  - Put inns/outposts at borders of city radius
+- Cities next to salt lakes are ruins
 - Each city in block map can occupy tiles as zones or neighborhoods
 - Dungeon types and levels like cat quest
   - dungeons at high level like 79
 - Add city ruins on dry rivers or dry land
 - Start a fill to determine city area
-- connect sites inside a radius
 - create junction points between two route points to set midpath detours
   - follow road and calc nearest junction start
+
+
+### LandformLayer
+  - type of stretch often make waterfalls or rapids
+  - canyon / volcano / reef
 
 
 ### SociologyLayer

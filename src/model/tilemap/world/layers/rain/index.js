@@ -16,9 +16,11 @@ export class RainLayer {
     #matrix
 
     constructor(rect, layers) {
+        const offset = [10, 10]
         this.#matrix = Matrix.fromRect(rect, point => {
             let rain = Rain.HUMID
-            const noise = layers.noise.getOutline(point)
+            const offsetPoint = Point.plus(point, offset)
+            const noise = layers.noise.getOutline(offsetPoint)
             if (noise > WET_RATIO) rain = Rain.WET
             if (noise > SEASONAL_RATIO) rain = Rain.SEASONAL
             if (noise > DRY_RATIO) rain = Rain.DRY
@@ -27,9 +29,8 @@ export class RainLayer {
         })
     }
 
-    get(point, offset=10) {
-        const offsetPoint = Point.plus(point, [offset, offset])
-        const rain = this.#matrix.get(offsetPoint)
+    get(point) {
+        const rain = this.#matrix.get(point)
         return Rain.get(rain)
     }
 

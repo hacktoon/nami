@@ -56,7 +56,9 @@ export class BiomeLayer {
             const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
             if (isDepositional) return Biome.MANGROVE
             if (rain.is(point, Rain.HUMID)) return Biome.JUNGLE
-            if (rain.is(point, Rain.WET)) return Biome.WOODLANDS
+            if (rain.is(point, Rain.WET)) {
+                return Biome.WOODLANDS
+            }
             if (rain.is(point, Rain.SEASONAL)) return Biome.GRASSLANDS
             if (rain.is(point, Rain.DRY)) return Biome.SAVANNA
         }
@@ -65,7 +67,8 @@ export class BiomeLayer {
             const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
             const isSlowCourse = layers.river.is(point, RiverStretch.SLOW_COURSE)
             if (isDepositional || isSlowCourse) return Biome.MANGROVE
-            if (rain.is(point, Rain.HUMID) || rain.is(point, Rain.WET)) return Biome.JUNGLE
+            const isJungle = rain.is(point, Rain.HUMID) || rain.is(point, Rain.WET)
+            if (isJungle) return Biome.JUNGLE
             if (rain.is(point, Rain.SEASONAL)) return Biome.JUNGLE
             if (rain.is(point, Rain.DRY)) return Biome.SAVANNA
         }
