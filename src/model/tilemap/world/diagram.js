@@ -29,6 +29,7 @@ const SCHEMA = new Schema(
     Type.boolean('showLakes', 'Lakes', {default: true}),
     Type.boolean('showCities', 'Cities', {default: true}),
     Type.boolean('showDungeons', 'Dungeons', {default: true}),
+    Type.boolean('showLandforms', 'Landforms', {default: true}),
 )
 
 
@@ -64,38 +65,42 @@ export class WorldTileMapDiagram extends TileMapDiagram {
 
     get(relativePoint) {
         const params = this.params
+        const layers = this.tileMap.layers
         const point = this.rect.wrap(relativePoint)
         const layer = params.get('showLayer')
-        const surface = this.tileMap.layers.surface.get(point)
-        const isBorder = this.tileMap.layers.surface.isBorder(point)
+        const surface = layers.surface.get(point)
+        const isBorder = layers.surface.isBorder(point)
         let color = surface.color
 
         if (isBorder && params.get('showBorders')) {
             return surface.water ? Color.BLUE : Color.PURPLE
         }
+        if (layers.landform.has(point) && params.get('showLandforms')) {
+            return Color.BLUE
+        }
         if (layer === 'surface') return color
         if (layer === 'relief') {
-            const relief = this.tileMap.layers.relief.get(point)
+            const relief = layers.relief.get(point)
             color = relief.color
         }
         if (layer === 'climate') {
-            const climate = this.tileMap.layers.climate.get(point)
+            const climate = layers.climate.get(point)
             color = surface.water
                     ? climate.color.average(Color.BLACK).average(Color.DARKBLUE)
                     : climate.color
         }
         if (layer === 'rain') {
-            const rain = this.tileMap.layers.rain.get(point)
+            const rain = layers.rain.get(point)
             color = surface.water ? Color.DARKBLUE : rain.color
         }
         if (layer === 'basin') {
-            const river = this.tileMap.layers.river.get(point)
+            const river = layers.river.get(point)
             if (river && !surface.water) {
                 color = this.colorMap.getByBasin(point)
             }
         }
         if (layer === 'biome') {
-            const biome = this.tileMap.layers.biome.get(point)
+            const biome = layers.biome.get(point)
             color = biome.color
         }
         return color
