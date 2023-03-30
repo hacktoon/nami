@@ -20,7 +20,7 @@ export class Landform {
     static HYDROTHERMAL_VENTS = Spec.build({name: 'Hydrothermal vents'})
     static ATOL = Spec.build({name: 'Atol'})
     static ICEBERGS = Spec.build({name: 'Icebergs'})
-    static SAND_BARS = Spec.build({name: 'Sand bars'})
+    static SANDBARS = Spec.build({name: 'Sand bars'})
     static REEFS = Spec.build({name: 'Reefs'})
     static DUNES = Spec.build({name: 'Dunes'})
     static CANYON = Spec.build({name: 'Canyon'})

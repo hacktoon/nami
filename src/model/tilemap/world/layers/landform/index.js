@@ -30,14 +30,24 @@ export class LandformLayer {
     #detectLandType(layers, point) {
         const isBorder = layers.surface.isBorder(point)
 
+        // VOLCANO ---------------
+        const isMountain = layers.relief.is(point, Relief.MOUNTAIN)
+        if (isMountain) return Landform.VOLCANO
+
+        // DUNES ---------------
+        if (layers.biome.is(point, Biome.DESERT)) return Landform.DUNES
+
+        // MESA ---------------
+        const isMesa = layers.relief.is(point, Relief.PLATEAU)
+        if (!isBorder && isMesa) return Landform.MESA
+
         // CANYON ---------------
         const isCanyon = layers.relief.is(point, Relief.HILL)
                       || layers.relief.is(point, Relief.PLATEAU)
         if (!isBorder && isCanyon) return Landform.CANYON
 
-        // DUNES ---------------
-        if (layers.biome.is(point, Biome.DESERT)) return Landform.DUNES
-
+        // return Landform.RAVINE
+        // return Landform.CRATER
         // NO LANDFORM
         return
     }
@@ -60,10 +70,10 @@ export class LandformLayer {
         if (isFrozen) return Landform.ICEBERGS
 
         // SAND BARS ---------------
-        const isSandBarClimate = layers.climate.is(point, Climate.HOT)
-                              || layers.climate.is(point, Climate.WARM)
-                              || layers.climate.is(point, Climate.TEMPERATE)
-        if (isPlatform && isSandBarClimate) return Landform.SAND_BARS
+        const isSandBarClimate = ! layers.climate.is(point, Climate.FROZEN)
+        if (isPlatform && isSandBarClimate) return Landform.SANDBARS
+
+        // REEFS ---------------
         if (isPlatform) return Landform.REEFS
 
         // NO LANDFORM
