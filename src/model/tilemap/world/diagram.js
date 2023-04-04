@@ -76,7 +76,8 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             return surface.water ? Color.BLUE : Color.PURPLE
         }
         if (layers.landform.has(point) && params.get('showLandforms')) {
-            return Color.BLUE
+            const landform = layers.landform.get(point)
+            return landform.color
         }
         if (layer === 'surface') return color
         if (layer === 'relief') {

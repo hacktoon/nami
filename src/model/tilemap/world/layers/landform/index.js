@@ -6,9 +6,20 @@ import { Landform } from './data'
 import { Biome } from '../biome/data'
 import { Relief } from '../relief/data'
 import { Climate } from '../climate/data'
+import { RiverStretch } from '../river/data'
 
 
-const LANDFORM_RATIO = .6
+// LAND
+const VOLCANO_CHANCE = .08
+const DUNE_CHANCE = .2
+const MESA_CHANCE = .1
+const CANYON_CHANCE = .1
+
+// WATER
+const ATOL_CHANCE = .2
+const VENTS_CHANCE = .2
+const ICEBERG_CHANCE = .8
+const SANDBAR_CHANCE = .1
 
 
 export class LandformLayer {
@@ -17,11 +28,10 @@ export class LandformLayer {
 
     constructor(rect, layers) {
         Matrix.fromRect(rect, point => {
-            const grainedNoise = layers.noise.getGrained(point)
             const isWater = layers.surface.isWater(point)
             const type = isWater ? this.#detectWaterType(layers, point)
                                  : this.#detectLandType(layers, point)
-            if (type && grainedNoise > LANDFORM_RATIO) {
+            if (type) {
                 this.#landforms.set(point, type.id)
             }
         })
@@ -29,25 +39,36 @@ export class LandformLayer {
 
     #detectLandType(layers, point) {
         const isBorder = layers.surface.isBorder(point)
+        const isRiver = layers.river.has(point)
+        const isHill = layers.relief.is(point, Relief.HILL)
+        const isPlateau = layers.relief.is(point, Relief.PLATEAU)
+        const isMountain = layers.relief.is(point, Relief.MOUNTAIN)
 
         // VOLCANO ---------------
-        const isMountain = layers.relief.is(point, Relief.MOUNTAIN)
-        if (isMountain) return Landform.VOLCANO
+        if (Random.chance(VOLCANO_CHANCE) && isMountain) {
+            return Landform.VOLCANO
+        }
 
         // DUNES ---------------
-        if (layers.biome.is(point, Biome.DESERT)) return Landform.DUNES
-
-        // MESA ---------------
-        const isMesa = layers.relief.is(point, Relief.PLATEAU)
-        if (!isBorder && isMesa) return Landform.MESA
+        if (Random.chance(DUNE_CHANCE)) {
+            const isDesert = layers.biome.is(point, Biome.DESERT)
+            if (isDesert && ! isMountain && ! isPlateau) return Landform.DUNES
+        }
 
         // CANYON ---------------
-        const isCanyon = layers.relief.is(point, Relief.HILL)
-                      || layers.relief.is(point, Relief.PLATEAU)
-        if (!isBorder && isCanyon) return Landform.CANYON
+        if (Random.chance(CANYON_CHANCE) && !isBorder) {
+            const isCanyonRiver = layers.river.is(point, RiverStretch.FAST_COURSE)
+                               || layers.river.is(point, RiverStretch.SLOW_COURSE)
+            const isPlain = layers.relief.is(point, Relief.PLAIN)
+            if (isPlateau || (!isPlain && isCanyonRiver)) return Landform.CANYON
+        }
 
-        // return Landform.RAVINE
-        // return Landform.CRATER
+        // MESA ---------------
+        if (Random.chance(MESA_CHANCE)) {
+            const isMesa = (isPlateau || isHill) && !isBorder && !isRiver
+            if (isMesa) return Landform.MESA
+        }
+
         // NO LANDFORM
         return
     }
@@ -55,26 +76,32 @@ export class LandformLayer {
     #detectWaterType(layers, point) {
         const isBorder = layers.surface.isBorder(point)
         const isPlatform = layers.relief.is(point, Relief.PLATFORM)
+        const isCoral = layers.biome.is(point, Biome.CORAL)
 
         // HYDROTHERMAL VENTS ---------------
-        if (layers.relief.is(point, Relief.TRENCH)) return Landform.HYDROTHERMAL_VENTS
+        if (Random.chance(VENTS_CHANCE)) {
+            if (layers.relief.is(point, Relief.TRENCH))
+                return Landform.HYDROTHERMAL_VENTS
+        }
 
         // ATOLS ---------------
-        const isAtolClimate = layers.climate.is(point, Climate.HOT)
-                           || layers.climate.is(point, Climate.WARM)
-        if (!isBorder && isAtolClimate) return Landform.ATOL
+        if (Random.chance(ATOL_CHANCE)) {
+            if (!isBorder && isCoral) return Landform.ATOL
+        }
+        if (isCoral) return Landform.REEFS
 
         // ICEBERGS ---------------
-        const isFrozen = layers.biome.is(point, Biome.ICECAP)
-                      || layers.biome.is(point, Biome.TUNDRA)
-        if (isFrozen) return Landform.ICEBERGS
+        if (Random.chance(ICEBERG_CHANCE)) {
+            const isFrozen = layers.biome.is(point, Biome.ICECAP)
+                          || layers.biome.is(point, Biome.TUNDRA)
+            if (isFrozen) return Landform.ICEBERGS
+        }
 
-        // SAND BARS ---------------
-        const isSandBarClimate = ! layers.climate.is(point, Climate.FROZEN)
-        if (isPlatform && isSandBarClimate) return Landform.SANDBARS
-
-        // REEFS ---------------
-        if (isPlatform) return Landform.REEFS
+        // SANDBARS ---------------
+        if (Random.chance(SANDBAR_CHANCE)) {
+            const isSandBarClimate = ! layers.climate.is(point, Climate.FROZEN)
+            if (isPlatform && isSandBarClimate) return Landform.SANDBARS
+        }
 
         // NO LANDFORM
         return

@@ -8,6 +8,7 @@
 ## PLANNING
 
 ### General
+- use larger noise layer for world block map 32
 - create world types [medieval, cyberpunk, steampunk]
 - Get zoom on draw methods of Diagram
 	- Make it a parameter for detailed rendering (world, block)

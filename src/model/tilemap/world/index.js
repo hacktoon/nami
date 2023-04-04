@@ -63,13 +63,13 @@ export class WorldTileMap extends TileMap {
         return [
             `Point(${Point.hash(point)})`,
             this.layers.surface.getText(wrappedPoint),
-            this.layers.relief.getText(wrappedPoint),
             this.layers.climate.getText(wrappedPoint),
             this.layers.rain.getText(wrappedPoint),
             this.layers.basin.getText(wrappedPoint),
             this.layers.river.getText(wrappedPoint),
             this.layers.biome.getText(wrappedPoint),
             this.layers.lake.getText(wrappedPoint),
+            this.layers.relief.getText(wrappedPoint),
             this.layers.landform.getText(wrappedPoint),
             this.layers.topo.getText(wrappedPoint),
         ].filter(x=>x).join('\n').trim()

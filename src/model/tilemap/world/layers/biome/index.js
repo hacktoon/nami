@@ -7,7 +7,7 @@ import { RiverStretch } from '../river/data'
 import { Biome } from './data'
 
 
-const CORAL_REEF_NOISE = .6
+const CORAL_CORAL_NOISE = .6
 const ICECAP_NOISE = .4
 
 
@@ -85,10 +85,10 @@ export class BiomeLayer {
         if (layers.relief.is(point, Relief.PLATFORM)) {
             const isReefTemp = layers.climate.is(point, Climate.WARM)
                                || layers.climate.is(point, Climate.HOT)
-            const isReefNoise = grainedNoise > CORAL_REEF_NOISE
+            const isReefNoise = grainedNoise > CORAL_CORAL_NOISE
             const isBorder = layers.surface.isBorder(point)
             if (!isBorder && isReefTemp && isReefNoise)
-                return Biome.REEF
+                return Biome.CORAL
             return Biome.SEA
         }
         return Biome.OCEAN
