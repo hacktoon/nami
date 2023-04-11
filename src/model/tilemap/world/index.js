@@ -43,7 +43,7 @@ export class WorldTileMap extends TileMap {
         const rect = this.rect
         const layers = {}
         const realmCount = params.get('realms')
-        layers.noise = new NoiseLayer(rect, this.seed)
+        layers.noise = new NoiseLayer(rect)
         layers.surface = new SurfaceLayer(rect, layers)
         layers.climate = new ClimateLayer(rect, layers)
         layers.rain = new RainLayer(rect, layers)

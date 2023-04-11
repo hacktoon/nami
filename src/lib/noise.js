@@ -1,4 +1,5 @@
 import { Random } from '/src/lib/random'
+import { clamp } from '/src/lib/number'
 
 /*
  * A speed-improved simplex noise algorithm for 2D, 3D and 4D.
@@ -68,7 +69,7 @@ export class SimplexNoise {
 
         //add successively smaller, higher-frequency terms
         for(let i = 0; i < this.octaves; ++i) {
-            noise += this._calcNoise2D(point[0] * freq, point[1] * freq) * amp
+            noise += this.#calcNoise2D(point[0] * freq, point[1] * freq) * amp
             amp *= this.persistence
             freq *= 2
         }
@@ -96,15 +97,16 @@ export class SimplexNoise {
         //add successively smaller, higher-frequency terms
         for(let i = 0; i < this.octaves; ++i) {
             let p = [nx * freq, ny * freq, nz * freq, nw * freq]
-            noise += this._calcNoise4D(...p) * amp
+            noise += this.#calcNoise4D(...p) * amp
             amp *= this.persistence
             freq *= 2
         }
-        return noise
+        // remap from [-1, 1] to [0, 1]
+        return clamp((noise + 1) / 2, 0, 1)
     }
 
     // 2D simplex noise
-    _calcNoise2D(xin, yin) {
+    #calcNoise2D(xin, yin) {
         let n0, n1, n2 // Noise contributions from the three corners
         // Skew the input space to determine which simplex cell we're in
         let s = (xin + yin) * this.F2 // Hairy factor for 2D
@@ -256,7 +258,7 @@ export class SimplexNoise {
 
 
     // 4D simplex noise, better simplex rank ordering method 2012-03-09
-    _calcNoise4D(x, y, z, w) {
+    #calcNoise4D(x, y, z, w) {
         // Noise contributions from the five corners
         let n0, n1, n2, n3, n4
         // Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in
@@ -372,7 +374,7 @@ export class SimplexNoise {
         n4 = t4 * t4 * this.dot4D(GRAD4[gi4], x4, y4, z4, w4);
       }
       // Sum up and scale the result to cover the range [-1,1]
-      return 27.0 * (n0 + n1 + n2 + n3 + n4);
+      return 27.0 * (n0 + n1 + n2 + n3 + n4)
     }
 
     // This method is a *lot* faster than using Math.floor(x)

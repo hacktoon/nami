@@ -1,4 +1,4 @@
-import { NoiseTileMap } from '/src/model/tilemap/noise'
+import { SimplexNoise } from '/src/lib/noise'
 
 
 const NOISE_SPEC = [
@@ -10,23 +10,21 @@ const NOISE_SPEC = [
 
 
 export class NoiseLayer {
-    constructor(rect, seed) {
+    constructor(rect) {
         this.rect = rect
         this.map = new Map()
         for(let noiseSpec of Object.values(NOISE_SPEC)) {
-            const noiseMap = NoiseTileMap.fromData({
-                rect: rect.hash(),
-                octaves: noiseSpec.octaves,
-                resolution: noiseSpec.resolution,
-                scale: noiseSpec.scale,
-                seed: `${seed}${noiseSpec.id}`,
-            })
-            this.map.set(noiseSpec.id, noiseMap)
+            const noise = new SimplexNoise(
+                noiseSpec.octaves,
+                noiseSpec.resolution,
+                noiseSpec.scale,
+            )
+            this.map.set(noiseSpec.id, noise)
         }
     }
 
     #get(id, point) {
-        return this.map.get(id).getNoise(point)
+        return this.map.get(id).wrappedNoise4D(this.rect, point)
     }
 
     getOutline(point) {

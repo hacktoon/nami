@@ -7,18 +7,15 @@
 
 ## PLANNING
 
-### General
-- fix noise `get` method
-    - dependents:
-      - use larger noise layer for world block map - 32x32 pixels per block?
-      - call noise without storing it
+### General ideas
 - Get zoom on draw methods of Diagram
 	- Make it a parameter for detailed rendering (world, block)
-- create world types [medieval, cyberpunk, steampunk]
+  - use larger noise layer for world block map - 32x32 pixels per block?
 - Optimize canvas rendering
 	- Use offscreen canvas
 	- When map fills screen entirely, snap canvas to viewport,
     	otherwise translate canvas element
+- create world types [medieval, cyberpunk, steampunk]
 - Point
   - create a wrappedAdjacents similar to `Point.adjacents(parentPoint)` that receives a rect
 - Create ArrayGrid

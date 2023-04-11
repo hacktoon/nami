@@ -1,4 +1,3 @@
-import { Matrix } from '/src/lib/matrix'
 import { SimplexNoise } from '/src/lib/noise'
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
@@ -34,24 +33,13 @@ export class NoiseTileMap extends TileMap {
         return new NoiseTileMap(params)
     }
 
-    #matrix
+    #simplex
 
     constructor(params) {
         super(params)
         const keys = ['octaves', 'resolution', 'scale']
         const [octaves, resolution, scale] = params.get(...keys)
-        const simplex = new SimplexNoise(octaves, resolution, scale)
-        let [min, max] = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]
-        this.#matrix = Matrix.fromRect(this.rect, point => {
-            const value = simplex.wrappedNoise4D(this.rect, point)
-            if (value > max) {
-                max = value
-            } else if (value < min) {
-                min = value
-            }
-            return value
-        })
-        this.range = [min, max]
+        this.#simplex = new SimplexNoise(octaves, resolution, scale)
     }
 
     get(point) {
@@ -62,9 +50,6 @@ export class NoiseTileMap extends TileMap {
     }
 
     getNoise(point) {
-        const value = this.#matrix.get(point)
-        const [min, max] = this.range
-        // normalize to [0, 1]
-        return (value - min) / (max - min)
+        return this.#simplex.wrappedNoise4D(this.rect, point)
     }
 }
