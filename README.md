@@ -8,10 +8,13 @@
 ## PLANNING
 
 ### General
-- use larger noise layer for world block map 32
-- create world types [medieval, cyberpunk, steampunk]
+- fix noise `get` method
+    - dependents:
+      - use larger noise layer for world block map - 32x32 pixels per block?
+      - call noise without storing it
 - Get zoom on draw methods of Diagram
 	- Make it a parameter for detailed rendering (world, block)
+- create world types [medieval, cyberpunk, steampunk]
 - Optimize canvas rendering
 	- Use offscreen canvas
 	- When map fills screen entirely, snap canvas to viewport,
@@ -19,7 +22,7 @@
 - Point
   - create a wrappedAdjacents similar to `Point.adjacents(parentPoint)` that receives a rect
 - Create ArrayGrid
-- PointSets can be dependent on a rect to map points to indexes in a matrix, thus using integers instead of points
+  - PointSets can be dependent on a rect to map points to indexes in a matrix, thus using integers instead of points
 - Create ContinentLayer (maybe)
   - Use 32x32 tilemap with regionMap borders for separating landmasses
   - border points get a grained island noise
