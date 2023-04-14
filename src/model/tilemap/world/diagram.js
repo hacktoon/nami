@@ -28,7 +28,6 @@ const SCHEMA = new Schema(
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showLakes', 'Lakes', {default: true}),
     Type.boolean('showCities', 'Cities', {default: true}),
-    Type.boolean('showDungeons', 'Dungeons', {default: true}),
     Type.boolean('showLandforms', 'Landforms', {default: true}),
 )
 
@@ -73,7 +72,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         let color = surface.color
 
         if (isBorder && params.get('showBorders')) {
-            return surface.water ? Color.BLUE : Color.PURPLE
+            return surface.water ? Color.BLUE : Color.GREEN
         }
         if (layers.landform.has(point) && params.get('showLandforms')) {
             const landform = layers.landform.get(point)
@@ -112,8 +111,6 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const point = this.rect.wrap(props.tilePoint)
         const isLand = layers.surface.isLand(point)
         const isRiver = layers.river.has(point)
-        const isDungeon = layers.topo.isDungeon(point)
-        const isCity = layers.topo.isCity(point)
         const river = this.tileMap.layers.river.get(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
             drawRiver(river, props)
@@ -123,20 +120,19 @@ export class WorldTileMapDiagram extends TileMapDiagram {
                 drawRiverSource(river, props)
             }
         }
-        if (isCity && this.params.get('showCities')) {
-            if (layers.topo.isCapital(point)) {
-                drawCapital(props)
-            } else {
-                drawCity(props)
+        if (this.params.get('showCities')) {
+            if (layers.topo.isCity(point)) {
+                if (layers.topo.isCapital(point)) {
+                    drawCapital(props)
+                } else {
+                    drawCity(props)
+                }
             }
+            if(layers.topo.isDungeon(point)) drawDungeon(props)
         }
         if (this.params.get('showLakes') && layers.lake.has(point)) {
             const lake = layers.lake.get(point)
             drawLake(lake, props)
-
-        }
-        if (isDungeon && this.params.get('showDungeons')) {
-            drawDungeon(props)
         }
     }
 

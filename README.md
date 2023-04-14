@@ -8,6 +8,7 @@
 ## PLANNING
 
 ### General ideas
+- Transfer render method to each tile entity on the map (city, relief, etc)
 - Get zoom on draw methods of Diagram
 	- Make it a parameter for detailed rendering (world, block)
   - use larger noise layer for world block map - 32x32 pixels per block?
@@ -19,10 +20,7 @@
 - Point
   - create a wrappedAdjacents similar to `Point.adjacents(parentPoint)` that receives a rect
 - Create ArrayGrid
-  - PointSets can be dependent on a rect to map points to indexes in a matrix, thus using integers instead of points
-- Create ContinentLayer (maybe)
-  - Use 32x32 tilemap with regionMap borders for separating landmasses
-  - border points get a grained island noise
+  - PointSets can be dependent on a rect to map points to indexes in a matrix, thus using integers instead of points - each index represents a point
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
 

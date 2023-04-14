@@ -6,8 +6,8 @@ import { PointSet, PointArraySet } from '/src/lib/point/set'
 
 const CITY_RADIUS = 3
 const WATER_CITY_CHANCE = .003
-const WATER_DUNGEON_CHANCE = .01
-const LAND_DUNGEON_CHANCE = .08
+const WATER_DUNGEON_CHANCE = .02
+const LAND_DUNGEON_CHANCE = .2
 
 
 export class TopologyLayer {
@@ -30,7 +30,7 @@ export class TopologyLayer {
                 this.#dungeonPoints.add(point)
             }
             // set matrix init value
-            this.#placeMap.set(point, 1)
+            // this.#placeMap.set(point, 1)
         })
         this.#cityPoints = this.#buildCities(rect, possibleCityPoints)
     }
@@ -46,10 +46,11 @@ export class TopologyLayer {
     }
 
     #isDungeon(layers, point) {
-        const isLand = layers.surface.isLand(point)
-        const isWaterDungeon = !isLand && Random.chance(WATER_DUNGEON_CHANCE)
-        const isLandDungeon = isLand && Random.chance(LAND_DUNGEON_CHANCE)
-        return isWaterDungeon || isLandDungeon
+        if (layers.surface.isLand(point)) {
+            return Random.chance(LAND_DUNGEON_CHANCE)
+        } else {
+            return Random.chance(WATER_DUNGEON_CHANCE)
+        }
     }
 
     #buildCities(rect, possibleCityPoints) {
