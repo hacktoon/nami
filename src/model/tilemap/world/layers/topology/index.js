@@ -2,7 +2,9 @@ import { Matrix } from '/src/lib/matrix'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 import { PointSet, PointArraySet } from '/src/lib/point/set'
-
+import {
+    drawCity, drawCapital, drawDungeon
+} from '/src/model/tilemap/lib/icon'
 
 const CITY_RADIUS = 3
 const WATER_CITY_CHANCE = .003
@@ -13,6 +15,8 @@ const LAND_DUNGEON_CHANCE = .2
 export class TopologyLayer {
     // Define locations and features and their relation
     // cities, caves, ruins, dungeons
+    #layers
+    #rect
     #placeMap = new Map()
     #cityPoints
     #dungeonPoints = new PointSet()
@@ -21,7 +25,9 @@ export class TopologyLayer {
 
     constructor(rect, layers, realmCount) {
         const possibleCityPoints = new PointArraySet()
+        this.#rect = rect
         this.#realmCount = realmCount
+        this.#layers = layers
         Matrix.fromRect(rect, point => {
             if (this.#isPossibleCity(layers, point)) {
                 possibleCityPoints.add(point)
@@ -102,5 +108,18 @@ export class TopologyLayer {
         if (attrs.length > 0)
             return `Topo(${attrs.join(',')})`
         return ''
+    }
+
+    draw(props) {
+        const layers = this.#layers
+        const point = this.#rect.wrap(props.tilePoint)
+        if (layers.topo.isCity(point)) {
+            if (layers.topo.isCapital(point)) {
+                drawCapital(props)
+            } else {
+                drawCity(props)
+            }
+        }
+        if(layers.topo.isDungeon(point)) drawDungeon(props)
     }
 }

@@ -4,8 +4,7 @@ import { Color } from '/src/lib/color'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 import {
-    drawCity, drawCapital, drawLake, drawRiver,
-    drawDungeon, drawRiverSource
+    drawLake, drawRiver, drawRiverSource
 } from '/src/model/tilemap/lib/icon'
 
 
@@ -121,14 +120,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             }
         }
         if (this.params.get('showCities')) {
-            if (layers.topo.isCity(point)) {
-                if (layers.topo.isCapital(point)) {
-                    drawCapital(props)
-                } else {
-                    drawCity(props)
-                }
-            }
-            if(layers.topo.isDungeon(point)) drawDungeon(props)
+            layers.topo.draw(props)
         }
         if (this.params.get('showLakes') && layers.lake.has(point)) {
             const lake = layers.lake.get(point)
