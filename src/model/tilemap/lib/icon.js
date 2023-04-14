@@ -90,18 +90,6 @@ export function drawRiver(river, {canvas, canvasPoint, size}) {
 }
 
 
-export function drawRiverSource(river, {canvas, canvasPoint, size}) {
-    const pixelSize = Math.round(size / 6)
-    const meanderOffsetPoint = buildMeanderOffsetPoint(river, size)
-    const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-    const wrappedMeanderPoint = [
-        clamp(meanderPoint[0], 0, canvasPoint[0] + size - pixelSize),
-        clamp(meanderPoint[1], 0, canvasPoint[1] + size - pixelSize),
-    ]
-    canvas.rect(wrappedMeanderPoint, pixelSize, RIVER_SOUCE_COLOR)
-}
-
-
 function buildMeanderOffsetPoint(river, size) {
     const percentage = river.meander
     return Point.multiplyScalar(percentage, size)

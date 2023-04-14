@@ -19,6 +19,8 @@ export class BasinLayer {
     // the highest points of basins that borders others basins
     #dividePoints = new PointSet()
 
+    #colors = new Map()
+
     // can form a lake or spring (where a river may begin on a hill)
     #depressions = []
 
@@ -48,6 +50,10 @@ export class BasinLayer {
             erosion: direction,
             distance,
         }
+    }
+
+    getColor(point) {
+
     }
 
     getDividePoints() {

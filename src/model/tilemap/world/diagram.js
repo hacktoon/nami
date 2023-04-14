@@ -3,9 +3,7 @@ import { Type } from '/src/lib/type'
 import { Color } from '/src/lib/color'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
-import {
-    drawLake, drawRiver, drawRiverSource
-} from '/src/model/tilemap/lib/icon'
+import { drawLake, drawRiver } from '/src/model/tilemap/lib/icon'
 
 
 const DEFAULT_LAYER = 'biome'
@@ -22,12 +20,11 @@ const SCHEMA = new Schema(
     'WorldTileMapDiagram',
     Type.selection('showLayer', 'Layer', {default: DEFAULT_LAYER, options: LAYERS}),
     Type.boolean('showBorders', 'Borders', {default: false}),
-    Type.boolean('showRiverSources', 'River sources', {default: false}),
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showLakes', 'Lakes', {default: true}),
-    Type.boolean('showCities', 'Cities', {default: true}),
-    Type.boolean('showLandforms', 'Landforms', {default: true}),
+    Type.boolean('showCities', 'Cities', {default: false}),
+    Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
 
 
@@ -113,11 +110,6 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const river = this.tileMap.layers.river.get(point)
         if (isLand && isRiver && this.params.get('showRivers')) {
             drawRiver(river, props)
-        }
-        if (this.params.get('showRiverSources')) {
-            if (isRiver && layers.basin.isDivide(point)) {
-                drawRiverSource(river, props)
-            }
         }
         if (this.params.get('showCities')) {
             layers.topo.draw(props)
