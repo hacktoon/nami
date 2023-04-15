@@ -12,7 +12,6 @@ import { UITileMapScene } from './scene'
 export function UITileMap({TileMap}) {
     const [data, setData] = useState(TileMap.schema.build())
     const tileMap = TileMap.create(data)
-    const colorMap = new TileMap.diagram.colorMap(tileMap)
 
     return <section className='UITileMap'>
         <section className="UITileMapForm">
@@ -23,17 +22,16 @@ export function UITileMap({TileMap}) {
         <UITileMapDiagram
             diagram={TileMap.diagram}
             tileMap={tileMap}
-            colorMap={colorMap}
         />
     </section>
 }
 
 
-function UITileMapDiagram({diagram, tileMap, colorMap}) {
+function UITileMapDiagram({diagram, tileMap}) {
     const [diagramData, setDiagramData] = useState(diagram.schema.build())
     const [sceneData, setSceneData] = useState(TileMapScene.schema.build())
 
-    const mapDiagram = diagram.create(tileMap, colorMap, diagramData)
+    const mapDiagram = diagram.create(tileMap, diagramData)
 
     const handleDrag = point => {
         setSceneData(sceneData.update('focus', Point.hash(point)))

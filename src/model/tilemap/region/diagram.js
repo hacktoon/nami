@@ -8,7 +8,6 @@ const SCHEMA = new Schema(
     'RegionTileMapDiagram',
     Type.boolean('showOrigins', 'Origins', {default: true}),
     Type.boolean('showBorders', 'Borders', {default: true}),
-    Type.boolean('showNeighborBorder', 'Neighbor borders', {default: false}),
     Type.boolean('selectRegion', 'Select region', {default: false}),
     Type.number('selectedRegion', 'Region', {default: 0, min: 0, step: 1}),
     Type.boolean('showGrowth', 'Growth', {default: true}),
@@ -18,43 +17,17 @@ const SCHEMA = new Schema(
 )
 
 
-class RegionColorMap {
-    #map
-
-    constructor(regionMap) {
-        const entries = regionMap.map(regionId => [regionId, new Color()])
-        this.#map = new Map(entries)
-    }
-
-    get(regionId) {
-        return this.#map.get(regionId) || Color.fromHex('#FFF')
-    }
-
-    getMix([firstRegionId, ...regionIds]) {
-        let color = this.get(firstRegionId)
-        for(let regionId of regionIds) {
-            color = color.average(this.get(regionId))
-        }
-        return color
-    }
-}
-
-
 export class RegionTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
-    static colorMap = RegionColorMap
-
-    static create(tileMap, colorMap, params) {
-        return new RegionTileMapDiagram(tileMap, colorMap, params)
+    static create(tileMap, params) {
+        return new RegionTileMapDiagram(tileMap, params)
     }
 
-    constructor(tileMap, colorMap, params) {
+    constructor(tileMap, params) {
         super(tileMap)
         this.params = params
-        this.colorMap = colorMap
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
-        this.showNeighborBorder = params.get('showNeighborBorder')
         this.selectedGrowth = params.get('selectedGrowth')
         this.selectedLevel = params.get('selectedLevel')
         this.showLevels = params.get('showLevels')
@@ -65,18 +38,12 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         const point = this.tileMap.rect.wrap(_point)
         const regionId = this.tileMap.getRegion(point)
         const growth = this.tileMap.getGrowth(point)
-        const color = this.colorMap.get(regionId)
+        const color = this.tileMap.getColor(point, this.showBorders)
+
         if (this.showOrigins && this.tileMap.isOrigin(point)) {
             return color.invert()
         }
-        if (this.showBorders && this.tileMap.isBorder(point)) {
-            if (this.showNeighborBorder) {
-                const neighborRegions = this.tileMap.getBorderRegions(point)
-                const borderColor = this.colorMap.getMix(neighborRegions)
-                return borderColor
-            }
-            return color.darken(50)
-        }
+
         if (this.showLevels) {
             const level = this.tileMap.getLevel(point)
             if (level > this.selectedLevel) {

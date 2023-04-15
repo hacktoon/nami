@@ -1,5 +1,6 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
 
 
 const EMPTY = null
@@ -16,6 +17,15 @@ export class RegionFloodFill extends ConcurrentFill {
 
     getGrowth(fill) {
         return fill.context.growth
+    }
+
+    onInitFill(fill, fillPoint, neighbors) {
+        // center is the seed at center
+        // point is neighbor being filled
+        fill.context.regionMatrix.set(fillPoint, fill.id)
+        fill.context.growthMatrix.set(fillPoint, fill.growth)
+        fill.context.levelMatrix.set(fillPoint, fill.level)
+        fill.context.colorMap.set(fill.id, new Color())
     }
 
     canFill(fill, point, center) {

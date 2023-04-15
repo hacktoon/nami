@@ -28,25 +28,15 @@ const SCHEMA = new Schema(
 )
 
 
-class ColorMap {
-    constructor(tileMap) {
-        this.tileMap = tileMap
-
-    }
-}
-
-
 export class WorldTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
-    static colorMap = ColorMap
 
-    static create(tileMap, colorMap, params) {
-        return new WorldTileMapDiagram(tileMap, colorMap, params)
+    static create(tileMap, params) {
+        return new WorldTileMapDiagram(tileMap, params)
     }
 
-    constructor(tileMap, colorMap, params) {
+    constructor(tileMap, params) {
         super(tileMap)
-        this.colorMap = colorMap
         this.params = params
     }
 

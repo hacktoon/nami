@@ -3,6 +3,7 @@ import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 import { Matrix } from '/src/lib/matrix'
+import { Color } from '/src/lib/color'
 import { Graph } from '/src/lib/graph'
 import { EvenPointSampling } from '/src/lib/point'
 import { PointMap } from '/src/lib/point/map'
@@ -42,6 +43,7 @@ export class RegionTileMap extends TileMap {
 
     #graph = new Graph()
     #borderMap = new PointMap()
+    #colorMap = new Map()
     #centerPoints
     #regionMatrix
     #growthMatrix
@@ -61,6 +63,7 @@ export class RegionTileMap extends TileMap {
         new RegionFloodFill().start(this.#origins, {
             regionMatrix: this.#regionMatrix,
             growthMatrix: this.#growthMatrix,
+            colorMap: this.#colorMap,
             levelMatrix: this.#levelMatrix,
             borderMap: this.#borderMap,
             graph: this.#graph,
@@ -84,6 +87,22 @@ export class RegionTileMap extends TileMap {
             `id: ${region}`,
             `level: ${this.getLevel(point)}`
         ].join(', ')
+    }
+
+    getColor(point, showBorder) {
+        const id = this.getRegion(point)
+        if (! this.#colorMap.has(id)) {
+            return Color.WHITE
+        }
+        const color = this.#colorMap.get(id)
+        if (showBorder && this.isBorder(point)) {
+            // if (this.showNeighborBorder) {
+            //     const neighborRegions = this.getBorderRegions(point)
+            //     return this.getColor(neighborRegions)
+            // }
+            return color.darken(40)
+        }
+        return color
     }
 
     getRegion(point) {
