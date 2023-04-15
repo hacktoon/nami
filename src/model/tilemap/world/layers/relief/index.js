@@ -1,7 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 
 import { Relief } from './data'
-import { River, RiverStretch } from '../river/data'
+import { RiverStretch } from '../river/data'
 
 
 const TRENCH_RATIO = .65
@@ -74,6 +74,10 @@ export class ReliefLayer {
     getText(point) {
         const relief = this.get(point)
         return `Relief(${relief.name})`
+    }
+
+    getColor(point) {
+        return this.get(point).color
     }
 
     is(point, type) {

@@ -35,20 +35,16 @@ export class TileMapScene {
             if (this.isWrappable(tilePoint)) {
                 let color = this.diagram.get(tilePoint)
                 let text = this.diagram.getText(tilePoint)
-                let hasOutline = this.diagram.getOutline(tilePoint)
                 const context = {
                     canvas,
                     tilePoint,
                     canvasPoint,
-                    size: this.zoom,
+                    tileSize: this.zoom,
                 }
                 canvas.rect(canvasPoint, this.zoom, color.toHex())
                 if (text) {
                     const txtColor = '#000'
                     canvas.text(canvasPoint, this.zoom, text, txtColor)
-                }
-                if (hasOutline) {
-                    canvas.outline(canvasPoint, this.zoom)
                 }
                 this.diagram.draw(context)
             } else {

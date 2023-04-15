@@ -1,6 +1,7 @@
 import { PointMap } from '/src/lib/point/map'
 import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
+import { Color } from '/src/lib/color'
 
 import { buildBasinMap } from './fill'
 
@@ -19,7 +20,8 @@ export class BasinLayer {
     // the highest points of basins that borders others basins
     #dividePoints = new PointSet()
 
-    #colors = new Map()
+    // a color for each basin
+    #colorMap = new Map()
 
     // can form a lake or spring (where a river may begin on a hill)
     #depressions = []
@@ -29,6 +31,7 @@ export class BasinLayer {
             rect,
             surfaceLayer: layers.surface,
             basinMap: this.#basinMap,
+            colorMap: this.#colorMap,
             erosionMap: this.#erosionMap,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
@@ -43,17 +46,19 @@ export class BasinLayer {
 
     get(point) {
         const directionId = this.#erosionMap.get(point)
-        const direction = Direction.fromId(directionId)
-        const distance = this.getDistance(point)
         return {
             basin: this.#basinMap.get(point),
-            erosion: direction,
-            distance,
+            erosion: Direction.fromId(directionId),
+            distance: this.getDistance(point),
         }
     }
 
     getColor(point) {
-
+        if (! this.#basinMap.has(point)) {
+            return Color.DARKBLUE
+        }
+        const id = this.#basinMap.get(point)
+        return this.#colorMap.get(id)
     }
 
     getDividePoints() {

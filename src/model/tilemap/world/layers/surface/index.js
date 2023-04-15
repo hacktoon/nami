@@ -1,5 +1,6 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { Surface } from './data'
@@ -122,6 +123,14 @@ export class SurfaceLayer {
         // negative bodyId's are surface borders
         const bodyId = Math.abs(this.#bodyMatrix.get(point))
         return Surface.get(this.#bodyTypeMap.get(bodyId))
+    }
+
+    getColor(point, showBorders) {
+        const surface = this.get(point)
+        if (showBorders && this.isBorder(point)) {
+            return surface.water ? Color.BLUE : Color.GREEN
+        }
+        return surface.color
     }
 
     getText(point) {

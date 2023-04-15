@@ -43,9 +43,5 @@ export class TileMapDiagram {
         return
     }
 
-    getOutline(point) {
-        return false
-    }
-
     draw(context) {}
 }

@@ -1,10 +1,5 @@
 import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
-import { clamp } from '/src/lib/number'
-
-
-const RIVER_SOUCE_COLOR = '#44F'
-
 
 export function drawDungeon(baseProps) {
     const template = [
@@ -18,7 +13,7 @@ export function drawDungeon(baseProps) {
         1: Color.BROWN,
         2: Color.BLACK,
     }
-    const midSize = Math.round(baseProps.size / 2)
+    const midSize = Math.round(baseProps.tileSize / 2)
     const midPoint = Point.plus(baseProps.canvasPoint, [midSize, 0])
     const props = {...baseProps, canvasPoint: midPoint}
     drawIcon(props, template, colorMap)
@@ -59,23 +54,23 @@ export function drawCapital(props) {
 
 
 export function drawLake(lake, props) {
-    const {canvas, canvasPoint, size} = props
-    const pixelSize = Math.round(size / 4)
+    const {canvas, canvasPoint, tileSize} = props
+    const pixelSize = Math.round(tileSize / 4)
     const halfPixelSize = Math.round(pixelSize / 2)
     const canvasLakePoint = Point.plus(canvasPoint, [
-        Math.round(size / 2) - halfPixelSize,
-        Math.round(size / 2) - halfPixelSize,
+        Math.round(tileSize / 2) - halfPixelSize,
+        Math.round(tileSize / 2) - halfPixelSize,
     ])
     const color = lake.type.color.toHex()
     canvas.rect(canvasLakePoint, pixelSize, color)
 }
 
 
-export function drawRiver(river, {canvas, canvasPoint, size}) {
-    const riverWidth = Math.floor(river.stretch.width * size)
-    const midSize = Math.round(size / 2)
+export function drawRiver(river, {canvas, canvasPoint, tileSize}) {
+    const riverWidth = Math.floor(river.stretch.width * tileSize)
+    const midSize = Math.round(tileSize / 2)
     const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-    const meanderOffsetPoint = buildMeanderOffsetPoint(river, size)
+    const meanderOffsetPoint = buildMeanderOffsetPoint(river, tileSize)
     const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
     const color = river.stretch.color.toHex()
     for(let axisOffset of river.flowDirections) {
@@ -90,15 +85,15 @@ export function drawRiver(river, {canvas, canvasPoint, size}) {
 }
 
 
-function buildMeanderOffsetPoint(river, size) {
+function buildMeanderOffsetPoint(river, tileSize) {
     const percentage = river.meander
-    return Point.multiplyScalar(percentage, size)
+    return Point.multiplyScalar(percentage, tileSize)
 }
 
 
 export function drawIcon(props, template, colorMap) {
-    const {canvas, canvasPoint, size} = props
-    const pixelSize = Math.floor(size / 2 / template.length)
+    const {canvas, canvasPoint, tileSize} = props
+    const pixelSize = Math.floor(tileSize / 2 / template.length)
     for (let y = 0; y < template.length; y++) {
         for (let x = 0; x < template[y].length; x++) {
             const pixel = template[y][x]

@@ -1,11 +1,12 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
 
 
-const CHANCE = .1  // chance of growing
-const GROWTH = 10  // make basins grow bigger than others
+const CHANCE = .1  // chance of fill growing
+const GROWTH = 10  // make fill basins grow bigger than others
 const DEPRESSION_CHANCE = .3
 
 
@@ -24,7 +25,7 @@ class BasinFill extends ConcurrentFill {
         // set the initial fill point on river mouth
         const {
             rect, surfaceLayer, erosionMap, depressions,
-            basinMap, distanceMap
+            basinMap, distanceMap, colorMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // find water neighbor
@@ -34,6 +35,7 @@ class BasinFill extends ConcurrentFill {
             erosionMap.set(wrappedFillPoint, direction.id)
             // it's next to water, use original fill.id
             basinMap.set(wrappedFillPoint, fill.id)
+            colorMap.set(fill.id, new Color())
             // initial distance is 1
             distanceMap.set(wrappedFillPoint, 1)
             if (Random.chance(DEPRESSION_CHANCE)) {

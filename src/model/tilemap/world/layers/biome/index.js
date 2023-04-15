@@ -99,6 +99,10 @@ export class BiomeLayer {
         return Biome.get(id)
     }
 
+    getColor(point) {
+        return this.get(point).color
+    }
+
     is(point, type) {
         const id = this.#matrix.get(point)
         return id === type.id
