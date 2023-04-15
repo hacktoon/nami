@@ -125,12 +125,12 @@ export class SurfaceLayer {
         return Surface.get(this.#bodyTypeMap.get(bodyId))
     }
 
-    getColor(point, showBorders) {
-        const surface = this.get(point)
-        if (showBorders && this.isBorder(point)) {
-            return surface.water ? Color.BLUE : Color.GREEN
+    getColor(point) {
+        const color = this.get(point).color
+        if (this.isBorder(point)) {
+            return color.darken(40)
         }
-        return surface.color
+        return color
     }
 
     getText(point) {

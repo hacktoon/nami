@@ -19,7 +19,6 @@ const LAYERS = [
 const SCHEMA = new Schema(
     'WorldTileMapDiagram',
     Type.selection('showLayer', 'Layer', {default: DEFAULT_LAYER, options: LAYERS}),
-    Type.boolean('showBorders', 'Borders', {default: false}),
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showLakes', 'Lakes', {default: true}),
@@ -57,15 +56,16 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (layer === 'biome') return layers.biome.getColor(point)
 
         // surface layer is default
-        const showBorders = params.get('showBorders')
-        return layers.surface.getColor(point, showBorders)
+        return layers.surface.getColor(point)
     }
 
     draw(props) {
+        const {canvasPoint, tileSize} = props
         const layers = this.tileMap.layers
         const point = this.rect.wrap(props.tilePoint)
         const river = this.tileMap.layers.river.get(point)
-        const showRiver = props.tileSize >= 15 && this.params.get('showRivers')
+        const isLand = this.tileMap.layers.surface.isLand(point)
+        const showRiver = tileSize >= 15 && this.params.get('showRivers')
         if (layers.river.has(point) && showRiver) {
             drawRiver(river, props)
         }
@@ -76,15 +76,10 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             const lake = layers.lake.get(point)
             drawLake(lake, props)
         }
-    }
-
-    getText(relativePoint) {
-        const point = this.rect.wrap(relativePoint)
-        const isLand = this.tileMap.layers.surface.isLand(point)
         if (isLand && this.params.get('showErosion')) {
             const basin = this.tileMap.layers.basin.get(point)
-            return basin.erosion.symbol
+            const text = basin.erosion.symbol
+            props.canvas.text(canvasPoint, tileSize, text, '#000')
         }
-        return ''
     }
 }
