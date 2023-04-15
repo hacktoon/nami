@@ -53,19 +53,6 @@ export function drawCapital(props) {
 }
 
 
-export function drawLake(lake, props) {
-    const {canvas, canvasPoint, tileSize} = props
-    const pixelSize = Math.round(tileSize / 4)
-    const halfPixelSize = Math.round(pixelSize / 2)
-    const canvasLakePoint = Point.plus(canvasPoint, [
-        Math.round(tileSize / 2) - halfPixelSize,
-        Math.round(tileSize / 2) - halfPixelSize,
-    ])
-    const color = lake.type.color.toHex()
-    canvas.rect(canvasLakePoint, pixelSize, color)
-}
-
-
 export function drawIcon(props, template, colorMap) {
     const {canvas, canvasPoint, tileSize} = props
     const pixelSize = Math.floor(tileSize / 2 / template.length)

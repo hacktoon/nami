@@ -1,9 +1,7 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Color } from '/src/lib/color'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
-import { drawLake, drawRiver } from '/src/model/tilemap/lib/icon'
 
 
 const DEFAULT_LAYER = 'biome'
@@ -64,11 +62,10 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             layers.topo.draw(props)
         }
         if (this.params.get('showLakes') && layers.lake.has(point)) {
-            const lake = layers.lake.get(point)
-            drawLake(lake, props)
+            layers.lake.draw(point, props)
         }
         if (isLand && this.params.get('showErosion')) {
-            const basin = this.tileMap.layers.basin.get(point)
+            const basin = layers.basin.get(point)
             const text = basin.erosion.symbol
             props.canvas.text(canvasPoint, tileSize, text, '#000')
         }

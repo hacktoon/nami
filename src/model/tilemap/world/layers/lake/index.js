@@ -1,5 +1,6 @@
 import { PointMap } from '/src/lib/point/map'
 import { Random } from '/src/lib/random'
+import { Point } from '/src/lib/point'
 
 import { HYDRO_NAMES } from '../../names'
 import { Climate } from '../climate/data'
@@ -89,5 +90,17 @@ export class LakeLayer {
              `type=${lake.type.name}`,
         ].join(',')
         return `Lake(${attrs})`
+    }
+
+    draw(point, props) {
+        const {canvas, canvasPoint, tileSize} = props
+        const pixelSize = Math.round(tileSize / 4)
+        const halfPixelSize = Math.round(pixelSize / 2)
+        const canvasLakePoint = Point.plus(canvasPoint, [
+            Math.round(tileSize / 2) - halfPixelSize,
+            Math.round(tileSize / 2) - halfPixelSize,
+        ])
+        const color = this.get(point).type.color.toHex()
+        canvas.rect(canvasLakePoint, pixelSize, color)
     }
 }
