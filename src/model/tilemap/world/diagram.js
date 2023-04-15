@@ -52,7 +52,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
         if (layer === 'relief') return layers.relief.getColor(point)
         if (layer === 'climate') return layers.climate.getColor(point)
-        if (layer === 'rain') return layers.rain.get(point).color
+        if (layer === 'rain') return layers.rain.getColor(point)
         if (layer === 'basin') return layers.basin.getColor(point)
         if (layer === 'biome') return layers.biome.getColor(point)
 
