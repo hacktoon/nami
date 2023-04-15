@@ -34,7 +34,7 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         this.showGrowth = params.get('showGrowth')
     }
 
-    get(_point) {
+    drawBackground(_point) {
         const point = this.tileMap.rect.wrap(_point)
         const regionId = this.tileMap.getRegion(point)
         const growth = this.tileMap.getGrowth(point)

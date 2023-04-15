@@ -66,31 +66,6 @@ export function drawLake(lake, props) {
 }
 
 
-export function drawRiver(river, {canvas, canvasPoint, tileSize}) {
-    const riverWidth = Math.floor(river.stretch.width * tileSize)
-    const midSize = Math.round(tileSize / 2)
-    const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-    const meanderOffsetPoint = buildMeanderOffsetPoint(river, tileSize)
-    const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-    const color = river.stretch.color.toHex()
-    for(let axisOffset of river.flowDirections) {
-        // build a point for each flow that points to this point
-        // create a midpoint at tile's square side
-        const edgeMidPoint = [
-            midCanvasPoint[0] + axisOffset[0] * midSize,
-            midCanvasPoint[1] + axisOffset[1] * midSize
-        ]
-        canvas.line(edgeMidPoint, meanderPoint, riverWidth, color)
-    }
-}
-
-
-function buildMeanderOffsetPoint(river, tileSize) {
-    const percentage = river.meander
-    return Point.multiplyScalar(percentage, tileSize)
-}
-
-
 export function drawIcon(props, template, colorMap) {
     const {canvas, canvasPoint, tileSize} = props
     const pixelSize = Math.floor(tileSize / 2 / template.length)

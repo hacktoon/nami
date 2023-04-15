@@ -33,7 +33,7 @@ export class TileMapScene {
         // const offscreenCanvas = createCanvas(this.width, this.height)
         this.#renderFrame((tilePoint, canvasPoint) => {
             if (this.isWrappable(tilePoint)) {
-                let color = this.diagram.get(tilePoint)
+                let color = this.diagram.drawBackground(tilePoint)
                 const context = {
                     canvas,
                     tilePoint,

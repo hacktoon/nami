@@ -39,35 +39,26 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         this.params = params
     }
 
-    get(relativePoint) {
-        const params = this.params
+    drawBackground(relativePoint) {
         const layers = this.tileMap.layers
         const point = this.rect.wrap(relativePoint)
-        const layer = params.get('showLayer')
+        const layerName = this.params.get('showLayer')
 
-        if (layers.landform.has(point) && params.get('showLandforms')) {
+        if (layers.landform.has(point) && this.params.get('showLandforms')) {
             const landform = layers.landform.get(point)
             return landform.color
         }
-        if (layer === 'relief') return layers.relief.getColor(point)
-        if (layer === 'climate') return layers.climate.getColor(point)
-        if (layer === 'rain') return layers.rain.getColor(point)
-        if (layer === 'basin') return layers.basin.getColor(point)
-        if (layer === 'biome') return layers.biome.getColor(point)
-
-        // surface layer is default
-        return layers.surface.getColor(point)
+        return layers[layerName].getColor(point)
     }
 
     draw(props) {
         const {canvasPoint, tileSize} = props
         const layers = this.tileMap.layers
         const point = this.rect.wrap(props.tilePoint)
-        const river = this.tileMap.layers.river.get(point)
-        const isLand = this.tileMap.layers.surface.isLand(point)
+        const isLand = layers.surface.isLand(point)
         const showRiver = tileSize >= 15 && this.params.get('showRivers')
         if (layers.river.has(point) && showRiver) {
-            drawRiver(river, props)
+            layers.river.draw(point, props)
         }
         if (this.params.get('showCities')) {
             layers.topo.draw(props)
