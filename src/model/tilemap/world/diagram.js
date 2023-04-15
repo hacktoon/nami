@@ -41,11 +41,6 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layers = this.tileMap.layers
         const point = this.rect.wrap(relativePoint)
         const layerName = this.params.get('showLayer')
-
-        if (layers.landform.has(point) && this.params.get('showLandforms')) {
-            const landform = layers.landform.get(point)
-            return landform.color
-        }
         return layers[layerName].getColor(point)
     }
 
@@ -55,6 +50,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const point = this.rect.wrap(props.tilePoint)
         const isLand = layers.surface.isLand(point)
         const showRiver = tileSize >= 15 && this.params.get('showRivers')
+        if (layers.landform.has(point) && this.params.get('showLandforms')) {
+            layers.landform.draw(point, props)
+        }
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props)
         }

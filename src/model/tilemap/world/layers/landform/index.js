@@ -129,4 +129,9 @@ export class LandformLayer {
         return ''
     }
 
+    draw(point, props) {
+        const landform = this.get(point)
+        const {canvas, canvasPoint, tileSize} = props
+        canvas.rect(canvasPoint, tileSize, landform.color.toHex())
+    }
 }
