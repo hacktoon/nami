@@ -31,18 +31,12 @@ export class NoiseTileMapDiagram extends TileMapDiagram {
     }
 
     get(point) {
-        const range = [this.minLevel, this.maxLevel]
-        return this.#getColor(point, range, this.colors)
-    }
-
-    #getColor(point, range, colors) {
-        const [min, max] = range
         const noise = this.tileMap.getNoise(point)
         const octet = parseInt(noise * 255, 10)
-        if (octet < min) return Color.BLACK
-        if (octet > max) return Color.WHITE
-        const step = Math.floor(255 / colors)
-        const index = clamp(Math.floor(octet / step), 0, colors - 1)
+        if (octet < this.minLevel) return Color.BLACK
+        if (octet > this.maxLevel) return Color.WHITE
+        const step = Math.floor(255 / this.colors)
+        const index = clamp(Math.floor(octet / step), 0, this.colors - 1)
         const color = clamp(index * step, 0, octet)
         return new Color(color, color, color)
     }
