@@ -56,11 +56,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props)
         }
-        if (this.params.get('showCities')) {
-            layers.topo.draw(props)
-        }
         if (this.params.get('showLakes') && layers.lake.has(point)) {
             layers.lake.draw(point, props)
+        }
+        if (this.params.get('showCities')) {
+            layers.topo.draw(props)
         }
         if (isLand && this.params.get('showErosion')) {
             const basin = layers.basin.get(point)

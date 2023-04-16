@@ -13,7 +13,7 @@ import { Lake } from './data'
 
 const LAKE_CHANCE = .5
 const OASIS_CHANCE = .05
-const SALT_LAKE_CHANCE = .08
+const SALT_LAKE_CHANCE = .07
 
 
 export class LakeLayer {
@@ -45,14 +45,13 @@ export class LakeLayer {
             return null
         }
         if (Random.chance(LAKE_CHANCE)) {
-            if (layers.climate.is(point, Climate.FROZEN)) {
-                return Lake.FROZEN
-            }
-            if (rain.is(point, Rain.HUMID)) return Lake.SWAMP
+            if (layers.climate.is(point, Climate.FROZEN)) return Lake.FROZEN
             const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
-            if (isRiver && isDepositional) {
+            const isBorder = layers.surface.isBorder(point)
+            if (isBorder && isRiver && isDepositional) {
                 return Lake.ESTUARY
             }
+            if (rain.is(point, Rain.HUMID)) return Lake.SWAMP
             return Lake.FRESH
         }
         return null
