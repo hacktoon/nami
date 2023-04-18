@@ -1,6 +1,5 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
-import { Color } from '/src/lib/color'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { Surface } from './data'
@@ -152,8 +151,8 @@ export class SurfaceLayer {
     }
 
     is(point, type) {
-        const id = this.#bodyTypeMap.get(point)
-        return id === type.id
+        const surface = this.get(point)
+        return surface.id === type.id
     }
 
     isWater(point) {

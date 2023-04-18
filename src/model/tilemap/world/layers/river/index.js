@@ -97,7 +97,7 @@ export class RiverLayer {
     draw(point, props) {
         const {canvas, canvasPoint, tileSize} = props
         const river = this.get(point)
-        const riverWidth = Math.floor(river.stretch.width * tileSize)
+        const riverWidth = Math.round(river.stretch.width * tileSize)
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas

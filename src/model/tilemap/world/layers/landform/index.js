@@ -5,6 +5,7 @@ import { PointMap } from '/src/lib/point/map'
 import { Landform } from './data'
 import { Biome } from '../biome/data'
 import { Relief } from '../relief/data'
+import { Surface } from '../surface/data'
 import { Climate } from '../climate/data'
 import { RiverStretch } from '../river/data'
 
@@ -13,12 +14,12 @@ import { RiverStretch } from '../river/data'
 const VOLCANO_CHANCE = .08
 const DUNE_CHANCE = .2
 const MESA_CHANCE = .1
-const CANYON_CHANCE = .1
+const CANYON_CHANCE = .2
 
 // WATER
 const ATOL_CHANCE = .2
 const VENTS_CHANCE = .2
-const ICEBERG_CHANCE = .8
+const ICEBERG_CHANCE = .6
 const SANDBAR_CHANCE = .1
 
 
@@ -57,10 +58,9 @@ export class LandformLayer {
 
         // CANYON ---------------
         if (Random.chance(CANYON_CHANCE) && !isBorder) {
-            const isCanyonRiver = layers.river.is(point, RiverStretch.FAST_COURSE)
-                               || layers.river.is(point, RiverStretch.SLOW_COURSE)
-            const isPlain = layers.relief.is(point, Relief.PLAIN)
-            if (isPlateau || (!isPlain && isCanyonRiver)) return Landform.CANYON
+            const isDivide = layers.basin.isDivide(point)
+            const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
+            if (!isDivide && isHeadWaters && isPlateau) return Landform.CANYON
         }
 
         // MESA ---------------
@@ -80,7 +80,8 @@ export class LandformLayer {
 
         // HYDROTHERMAL VENTS ---------------
         if (Random.chance(VENTS_CHANCE)) {
-            if (layers.relief.is(point, Relief.TRENCH))
+            const isOcean = layers.surface.is(point, Surface.OCEAN)
+            if (isOcean && layers.relief.is(point, Relief.TRENCH))
                 return Landform.HYDROTHERMAL_VENTS
         }
 

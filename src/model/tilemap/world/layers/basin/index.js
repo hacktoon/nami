@@ -88,4 +88,8 @@ export class BasinLayer {
     isDivide(point) {
         return this.#dividePoints.has(point)
     }
+
+    isOld(point) {
+        return this.#basinMap.get(point) % 2 === 0
+    }
 }

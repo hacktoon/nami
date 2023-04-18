@@ -8,7 +8,7 @@ const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
 const HILL_RATIO = .5
-const PLATEAU_RATIO = .4
+const PLATEAU_RATIO = .3
 const MOUNTAIN_RATIO = .4
 
 
@@ -39,24 +39,18 @@ export class ReliefLayer {
     #detectLandType(layers, point) {
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
-        const isRiverSource = (
-            layers.river.has(point) && layers.basin.isDivide(point)
-        )
-        if (isRiverSource) {
+        if (layers.river.has(point) && layers.basin.isDivide(point)) {
             if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
             return Relief.PLATEAU
         } else {
-            // define other river points on the basin
+            // not a river source
             const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
             const isFastCourse = layers.river.is(point, RiverStretch.FAST_COURSE)
-            // prioritize plateaus on non source headwaters
-            if (isHeadWaters && grainedNoise < PLATEAU_RATIO) {
-                return Relief.PLATEAU
-            }
+            const isOldBasin = layers.basin.isOld(point)
+            if (isOldBasin && isHeadWaters) return Relief.PLATEAU
             if (isFastCourse || isHeadWaters) return Relief.HILL
-            // lower points of rivers
+            // all depositional and slow points of rives parts are plains
             const isSlowCourse = layers.river.is(point, RiverStretch.SLOW_COURSE)
-            // all depositional rives parts are plains
             const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
             if (isDepositional || isSlowCourse) return Relief.PLAIN
         }
