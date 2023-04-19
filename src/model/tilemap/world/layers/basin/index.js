@@ -47,7 +47,7 @@ export class BasinLayer {
     get(point) {
         const directionId = this.#erosionMap.get(point)
         return {
-            basin: this.#basinMap.get(point),
+            id: this.#basinMap.get(point),
             erosion: Direction.fromId(directionId),
             distance: this.getDistance(point),
         }
@@ -78,7 +78,7 @@ export class BasinLayer {
             return ''
         const basin = this.get(point)
         const attrs = [
-             `${basin.basin}`,
+             `${basin.id}`,
              `erosion=${basin.erosion.name}`,
              `distance=${basin.distance}`,
         ].join(',')
@@ -87,9 +87,5 @@ export class BasinLayer {
 
     isDivide(point) {
         return this.#dividePoints.has(point)
-    }
-
-    isOld(point) {
-        return this.#basinMap.get(point) % 2 === 0
     }
 }

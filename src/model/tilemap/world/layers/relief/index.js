@@ -39,15 +39,18 @@ export class ReliefLayer {
     #detectLandType(layers, point) {
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
+        // is river source?
         if (layers.river.has(point) && layers.basin.isDivide(point)) {
             if (featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
             return Relief.PLATEAU
         } else {
-            // not a river source
+            // not a river source, set type according to river stretch
             const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
             const isFastCourse = layers.river.is(point, RiverStretch.FAST_COURSE)
-            const isOldBasin = layers.basin.isOld(point)
-            if (isOldBasin && isHeadWaters) return Relief.PLATEAU
+            const isBasinIdEven = layers.basin.get(point).id % 2 === 0
+            // even id basins will set a plateau on river headwaters
+            if (isBasinIdEven && isHeadWaters) return Relief.PLATEAU
+            // headwaters and fast courses will appear on hills
             if (isFastCourse || isHeadWaters) return Relief.HILL
             // all depositional and slow points of rives parts are plains
             const isSlowCourse = layers.river.is(point, RiverStretch.SLOW_COURSE)
