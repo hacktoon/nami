@@ -2,6 +2,14 @@ import { Color } from '/src/lib/color'
 import {
     drawBase,
     drawHydrothermalVents,
+    drawAtol,
+    drawIcebergs,
+    drawDunes,
+    drawSandbars,
+    drawVolcano,
+    drawReefs,
+    drawCanyon,
+    drawMesa,
 } from './draw'
 
 
@@ -26,21 +34,21 @@ export class Landform {
     static HYDROTHERMAL_VENTS = Spec.build({
         name: 'Hydrothermal vents', color: "#75336a", draw: drawHydrothermalVents})
     static ATOL = Spec.build({
-        name: 'Atol', color: '#85ffcc', draw: drawBase})
+        name: 'Atol', color: '#85ffcc', draw: drawAtol})
     static ICEBERGS = Spec.build({
-        name: 'Icebergs', color: '#ffffff', draw: drawBase})
+        name: 'Icebergs', color: '#ffffff', draw: drawIcebergs})
     static SANDBARS = Spec.build({
-        name: 'Sand bars', color: '#fcff67', draw: drawBase})
+        name: 'Sand bars', color: '#fcff67', draw: drawSandbars})
     static REEFS = Spec.build({
-        name: 'Reefs', color: '#3f4961', draw: drawBase})
+        name: 'Reefs', color: '#3f4961', draw: drawReefs})
     static DUNES = Spec.build({
-        name: 'Dunes', color: '#c2b56c', draw: drawBase})
+        name: 'Dunes', color: '#c2b56c', draw: drawDunes})
     static CANYON = Spec.build({
-        name: 'Canyon', color: '#473d33', draw: drawBase})
+        name: 'Canyon', color: '#473d33', draw: drawCanyon})
     static MESA = Spec.build({
-        name: 'Mesa', color: '#a77253', draw: drawBase})
+        name: 'Mesa', color: '#a77253', draw: drawMesa})
     static VOLCANO = Spec.build({
-        name: 'Volcano', color: '#ff0000', draw: drawBase})
+        name: 'Volcano', color: '#ff0000', draw: drawVolcano})
     static RAVINE = Spec.build({
         name: 'Ravine', color: '#706262', draw: drawBase})
     static CRATER = Spec.build({

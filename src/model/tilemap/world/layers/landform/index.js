@@ -135,6 +135,7 @@ export class LandformLayer {
         if (! this.#landforms.has(point)) return
         const landform = this.get(point)
         const midSize = Math.round(props.tileSize / 2)
+        // put in bottom right quadrant
         const midPoint = Point.plus(props.canvasPoint, [midSize, midSize])
         landform.draw({
             ...props,
