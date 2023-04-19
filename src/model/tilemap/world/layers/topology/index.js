@@ -2,9 +2,8 @@ import { Matrix } from '/src/lib/matrix'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 import { PointSet, PointArraySet } from '/src/lib/point/set'
-import {
-    drawCity, drawCapital, drawDungeon
-} from '/src/model/tilemap/lib/icon'
+
+import { drawCity, drawCapital, drawDungeon } from './draw'
 
 const CITY_RADIUS = 3
 const WATER_CITY_CHANCE = .003

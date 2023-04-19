@@ -12,7 +12,7 @@ import { RiverStretch } from '../river/data'
 
 // LAND
 const VOLCANO_CHANCE = .08
-const DUNE_CHANCE = .2
+const DUNE_CHANCE = .8
 const MESA_CHANCE = .1
 const CANYON_CHANCE = .2
 
