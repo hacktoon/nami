@@ -109,16 +109,15 @@ export class TopologyLayer {
         return ''
     }
 
-    draw(props) {
-        const layers = this.#layers  // TODO: remove this
-        const point = this.#rect.wrap(props.tilePoint)
-        if (layers.topo.isCity(point)) {
-            if (layers.topo.isCapital(point)) {
+    draw(point, props) {
+        if (this.isCity(point)) {
+            if (this.isCapital(point)) {
                 drawCapital(props)
             } else {
                 drawCity(props)
             }
         }
-        if(layers.topo.isDungeon(point)) drawDungeon(props)
+        if(this.isDungeon(point))
+            drawDungeon(props)
     }
 }
