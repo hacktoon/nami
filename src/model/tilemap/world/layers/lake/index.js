@@ -9,6 +9,7 @@ import { RiverStretch } from '../river/data'
 import { Biome } from '../biome/data'
 
 import { Lake } from './data'
+import { Relief } from '../relief/data'
 
 
 const LAKE_CHANCE = .5
@@ -39,22 +40,24 @@ export class LakeLayer {
     #detectType(layers, point) {
         const rain = layers.rain
         const isRiver = layers.river.has(point)
-        if (layers.biome.is(point, Biome.DESERT) && !isRiver) {
-            if (Random.chance(OASIS_CHANCE)) return Lake.OASIS
+        const isDesert = layers.biome.is(point, Biome.DESERT)
+        // lakes on deserts will be oasis or salt lakes
+        if (isDesert && !isRiver) {
+            const isPlain = layers.relief.is(point, Relief.PLAIN)
+            if (isPlain && Random.chance(OASIS_CHANCE)) return Lake.OASIS
             if (Random.chance(SALT_LAKE_CHANCE)) return Lake.SALT
             return null
         }
-        if (Random.chance(LAKE_CHANCE)) {
-            if (layers.climate.is(point, Climate.FROZEN)) return Lake.FROZEN
-            const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
-            const isBorder = layers.surface.isBorder(point)
-            if (isBorder && isRiver && isDepositional) {
-                return Lake.ESTUARY
-            }
-            if (rain.is(point, Rain.HUMID)) return Lake.SWAMP
-            return Lake.FRESH
-        }
-        return null
+        if (! Random.chance(LAKE_CHANCE)) return null
+        if (layers.climate.is(point, Climate.FROZEN)) return Lake.FROZEN
+        const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
+        const isBorder = layers.surface.isBorder(point)
+        // make estuaries on river mouths
+        if (isBorder && isRiver && isDepositional) return Lake.ESTUARY
+        // swamps will appear on humid places, not including basin divides
+        const isDivide = layers.basin.isDivide(point)
+        if (!isDivide && rain.is(point, Rain.HUMID)) return Lake.SWAMP
+        return Lake.FRESH
     }
 
     get count() {
