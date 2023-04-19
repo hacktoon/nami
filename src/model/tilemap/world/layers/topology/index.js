@@ -110,7 +110,7 @@ export class TopologyLayer {
     }
 
     draw(props) {
-        const layers = this.#layers
+        const layers = this.#layers  // TODO: remove this
         const point = this.#rect.wrap(props.tilePoint)
         if (layers.topo.isCity(point)) {
             if (layers.topo.isCapital(point)) {

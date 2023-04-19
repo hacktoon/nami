@@ -1,5 +1,6 @@
 import { Matrix } from '/src/lib/matrix'
 import { Random } from '/src/lib/random'
+import { Point } from '/src/lib/point'
 import { PointMap } from '/src/lib/point/map'
 
 import { Landform } from './data'
@@ -131,8 +132,14 @@ export class LandformLayer {
     }
 
     draw(point, props) {
+        if (! this.#landforms.has(point)) return
         const landform = this.get(point)
-        const {canvas, canvasPoint, tileSize} = props
-        canvas.rect(canvasPoint, tileSize, landform.color.toHex())
+        const midSize = Math.round(props.tileSize / 2)
+        const midPoint = Point.plus(props.canvasPoint, [midSize, midSize])
+        landform.draw({
+            ...props,
+            canvasPoint: midPoint,
+            color: landform.color.toHex()
+        })
     }
 }
