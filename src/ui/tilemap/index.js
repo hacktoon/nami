@@ -47,6 +47,7 @@ function UITileMapDiagram({diagram, tileMap}) {
             handleClick={handleClick}
         />
         <section className="UITileMapSidebar">
+            <UIBlockMap tileMap={tileMap}/>
             <Text>Seed: {tileMap.seed}</Text>
             <Text>{tileMap.getDescription()}</Text>
             <Form className="MapSceneForm"
@@ -59,4 +60,10 @@ function UITileMapDiagram({diagram, tileMap}) {
             </Form>
         </section>
     </>
+}
+
+function UIBlockMap({tileMap}) {
+    return <section>
+        <Text>{tileMap.getDescription()}</Text>
+    </section>
 }
