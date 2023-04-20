@@ -30,11 +30,10 @@ export function UITileMap({TileMap}) {
 function UITileMapDiagram({diagram, tileMap}) {
     const [diagramData, setDiagramData] = useState(diagram.schema.build())
     const [sceneData, setSceneData] = useState(TileMapScene.schema.build())
-
     const mapDiagram = diagram.create(tileMap, diagramData)
-
     const handleDrag = point => {
-        setSceneData(sceneData.update('focus', Point.hash(point)))
+        const updatedFocus = sceneData.update('focus', Point.hash(point))
+        setSceneData(updatedFocus)
     }
     const handleWheel = zoom => setSceneData(sceneData.update('zoom', zoom))
     const handleClick = point => console.info(tileMap.get(point))
