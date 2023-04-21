@@ -8,7 +8,6 @@
 ## PLANNING
 
 ### General ideas
-- Transfer render method to each tile entity on the map (city, relief, etc)
 - Get zoom on draw methods of Diagram
 	- Make it a parameter for detailed rendering (world, block)
   - use larger noise layer for world block map - 32x32 pixels per block?

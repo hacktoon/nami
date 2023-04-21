@@ -8,7 +8,7 @@ export class TileMapScene {
         'TileMapScene',
         Type.point('focus', "Focus", {default: '50,51'}),
         Type.boolean('wrap', "Wrap", {default: false}),
-        Type.number('zoom', "Zoom", {default: 10, step: 1, min: 5, max: 100}),
+        Type.number('zoom', "Zoom", {default: 10, step: 1, min: 5, max: 500}),
     )
 
     static create(diagram, viewport, params) {
@@ -30,30 +30,19 @@ export class TileMapScene {
     }
 
     render(canvas) {
-        // const offscreenCanvas = createCanvas(this.width, this.height)
-        this.#renderFrame((tilePoint, canvasPoint) => {
-            if (this.isWrappable(tilePoint)) {
-                let color = this.diagram.drawBackground(tilePoint)
-                const context = {
-                    canvas,
-                    tilePoint,
-                    canvasPoint,
-                    tileSize: this.zoom,
-                }
-                canvas.rect(canvasPoint, this.zoom, color.toHex())
-                this.diagram.draw(context)
-            } else {
-                canvas.clear(this.zoom, canvasPoint)
-            }
-        })
-    }
-
-    #renderFrame(callback) {
         const {origin, target} = this.frame.tileWindow(this.focus)
         for(let i = origin[0], x = 0; i <= target[0]; i++, x += this.zoom) {
             for(let j = origin[1], y = 0; j <= target[1]; j++, y += this.zoom) {
                 const canvasPoint = Point.minus([x, y], this.frame.offset)
-                callback([i, j], canvasPoint)
+                const tilePoint = [i, j]
+                if (this.isWrappable(tilePoint)) {
+                    const context = {
+                        canvas, tilePoint, canvasPoint, tileSize: this.zoom,
+                    }
+                    this.diagram.draw(context)
+                } else {
+                    canvas.clear(this.zoom, canvasPoint)
+                }
             }
         }
     }

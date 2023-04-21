@@ -37,19 +37,19 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         this.params = params
     }
 
-    drawBackground(relativePoint) {
-        const layers = this.tileMap.layers
-        const point = this.rect.wrap(relativePoint)
-        const layerName = this.params.get('showLayer')
-        return layers[layerName].getColor(point)
-    }
-
     draw(props) {
-        const {canvasPoint, tileSize} = props
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
         const layers = this.tileMap.layers
-        const point = this.rect.wrap(props.tilePoint)
+        const point = this.rect.wrap(tilePoint)
         const isLand = layers.surface.isLand(point)
         const showRiver = tileSize >= 15 && this.params.get('showRivers')
+        const layerName = this.params.get('showLayer')
+        const bgColor = layers[layerName].getColor(point)
+        // draw background rect
+        canvas.rect(canvasPoint, tileSize, bgColor.toHex())
+        if (props.tileSize >= 350) {
+            this.drawBlock(props)
+        }
         if (layers.landform.has(point) && this.params.get('showLandforms')) {
             layers.landform.draw(point, props)
         }
@@ -65,7 +65,14 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (isLand && this.params.get('showErosion')) {
             const basin = layers.basin.get(point)
             const text = basin.erosion.symbol
-            props.canvas.text(canvasPoint, tileSize, text, '#000')
+            canvas.text(canvasPoint, tileSize, text, '#000')
         }
+    }
+
+    drawBlock(props) {
+        const {canvas, canvasPoint, tileSize} = props
+        const blockMap = this.tileMap.getBlock(props.tilePoint)
+        const size = Math.round(tileSize/10)
+        canvas.rect(canvasPoint, size, '#020')
     }
 }

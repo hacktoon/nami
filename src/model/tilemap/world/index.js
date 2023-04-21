@@ -1,6 +1,7 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
+import { Rect } from '/src/lib/number'
 import { Random } from '/src/lib/random'
 import { TileMap } from '/src/model/tilemap/lib'
 import { UITileMap } from '/src/ui/tilemap'
@@ -18,6 +19,7 @@ import { LandformLayer } from './layers/landform'
 import { TopologyLayer } from './layers/topology'
 
 import { WorldTileMapDiagram } from './diagram'
+import { BlockMap } from './block'
 import { WORLD_NAMES } from './names'
 
 
@@ -40,8 +42,13 @@ export class WorldTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const rect = this.rect
+        this.layers = this.#buildLayers(params)
+        this.name = Random.choiceFrom(WORLD_NAMES)
+    }
+
+    #buildLayers(params) {
         const layers = {}
+        const rect = this.rect
         const realmCount = params.get('realms')
         layers.noise = new NoiseLayer(rect)
         layers.surface = new SurfaceLayer(rect, layers)
@@ -54,8 +61,7 @@ export class WorldTileMap extends TileMap {
         layers.lake = new LakeLayer(layers)
         layers.landform = new LandformLayer(rect, layers)
         layers.topo = new TopologyLayer(rect, layers, realmCount)
-        this.layers = layers
-        this.name = Random.choiceFrom(WORLD_NAMES)
+        return layers
     }
 
     get(point) {
@@ -73,6 +79,12 @@ export class WorldTileMap extends TileMap {
             this.layers.landform.getText(wrappedPoint),
             this.layers.topo.getText(wrappedPoint),
         ].filter(x=>x).join('\n').trim()
+    }
+
+    getBlock(point) {
+        const wrappedPoint = this.rect.wrap(point)
+        const rect = new Rect(32, 32)
+        return new BlockMap(this.layers, this.seed, rect, wrappedPoint)
     }
 
     getDescription() {
