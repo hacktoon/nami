@@ -1,5 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
+import { Point } from '/src/lib/point'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 
@@ -23,6 +24,9 @@ const SCHEMA = new Schema(
     Type.boolean('showCities', 'Cities', {default: false}),
     Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
+
+
+const BLOCK_SIZE = 32
 
 
 export class WorldTileMapDiagram extends TileMapDiagram {
@@ -70,9 +74,19 @@ export class WorldTileMapDiagram extends TileMapDiagram {
     }
 
     drawBlock(props) {
-        const {canvas, canvasPoint, tileSize} = props
-        const blockMap = this.tileMap.getBlock(props.tilePoint)
-        const size = Math.round(tileSize/10)
-        canvas.rect(canvasPoint, size, '#020')
+        const {canvas, tilePoint, canvasPoint, tileSize} = props
+        const blockMap = this.tileMap.getBlock(tilePoint)
+        const size = tileSize / BLOCK_SIZE
+        for (let x=0; x<BLOCK_SIZE; x++) {
+            for (let y=0; y<BLOCK_SIZE; y++) {
+                const blockPoint = [y, x]
+                const block = blockMap.get(blockPoint)
+                const blockCanvasPoint = Point.plus(canvasPoint, [y*size, x*size])
+                if (block !== 0) {
+                    const color = block == 1 ? '#020' : '#fff'
+                    canvas.rect(blockCanvasPoint, size, color)
+                }
+            }
+        }
     }
 }

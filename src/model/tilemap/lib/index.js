@@ -2,15 +2,15 @@ import { Random } from '/src/lib/random'
 
 
 export class TileMap {
-    #buildSeed(text='') {
-        const seed = text.length ? text : String(Number(new Date()))
-        Random.seed = seed
-        return seed
-    }
-
     constructor(params) {
         this.rect = params.get('rect')
         this.seed = this.#buildSeed(params.get('seed'))
+    }
+
+    #buildSeed(text='') {
+        const seed = text.length ? text : Number(new Date())
+        Random.seed = seed
+        return seed
     }
 
     get area() {
@@ -18,7 +18,7 @@ export class TileMap {
     }
 
     get(point) {
-        return point
+        return null
     }
 
     getDescription() {
