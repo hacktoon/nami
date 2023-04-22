@@ -25,10 +25,6 @@ const SCHEMA = new Schema(
     Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
 
-
-const BLOCK_SIZE = 32
-
-
 export class WorldTileMapDiagram extends TileMapDiagram {
     static schema = SCHEMA
 
@@ -76,14 +72,14 @@ export class WorldTileMapDiagram extends TileMapDiagram {
     drawBlock(props) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
         const blockMap = this.tileMap.getBlock(tilePoint)
-        const size = tileSize / BLOCK_SIZE
-        for (let x=0; x<BLOCK_SIZE; x++) {
-            for (let y=0; y<BLOCK_SIZE; y++) {
-                const blockPoint = [y, x]
-                const block = blockMap.get(blockPoint)
-                const blockCanvasPoint = Point.plus(canvasPoint, [y*size, x*size])
+        const size = tileSize / blockMap.size
+        for (let x=0; x < blockMap.size; x++) {
+            const xSize = x * size
+            for (let y=0; y < blockMap.size; y++) {
+                const block = blockMap.get([y, x])
                 if (block !== 0) {
-                    const color = block == 1 ? '#020' : '#fff'
+                    const blockCanvasPoint = Point.plus(canvasPoint, [y*size, xSize])
+                    const color = block == 1 ? '#050' : '#162'
                     canvas.rect(blockCanvasPoint, size, color)
                 }
             }

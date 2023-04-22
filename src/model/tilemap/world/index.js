@@ -23,6 +23,8 @@ import { BlockMap } from './block'
 import { WORLD_NAMES } from './names'
 
 
+const BLOCK_SIZE = 32
+
 const SCHEMA = new Schema(
     'WorldTileMap',
     Type.rect('rect', 'Size', {default: '64x64', min:'2x2', max:'100x100'}),
@@ -44,6 +46,7 @@ export class WorldTileMap extends TileMap {
         super(params)
         this.layers = this.#buildLayers(params)
         this.name = Random.choiceFrom(WORLD_NAMES)
+        this.blockRect = new Rect(BLOCK_SIZE, BLOCK_SIZE)
     }
 
     #buildLayers(params) {
@@ -83,8 +86,7 @@ export class WorldTileMap extends TileMap {
 
     getBlock(point) {
         const wrappedPoint = this.rect.wrap(point)
-        const rect = new Rect(32, 32)
-        return new BlockMap(this.layers, this.seed, rect, wrappedPoint)
+        return new BlockMap(this.layers, this.seed, this.blockRect, wrappedPoint)
     }
 
     getDescription() {

@@ -10,8 +10,13 @@ export class BlockMap {
     constructor(layers, seed, rect, point) {
         this.layers = layers
         this.point = point
+        this.rect = rect
         this.seed = this.#buildSeed(point, seed)
         this.#matrix = this.#buildMatrix(rect)
+    }
+
+    get size() {
+        return this.rect.width
     }
 
     #buildSeed(point, baseSeed="") {
@@ -27,7 +32,7 @@ export class BlockMap {
             if (isBlockWater) {
                 return Random.choice(0, 0, 0, 0, 0, 0, 1)
             }
-            return Random.choice(0, 1)
+            return Random.choice(0, 1, 2)
         })
     }
 
