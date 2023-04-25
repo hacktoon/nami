@@ -82,7 +82,7 @@ export class LandformLayer {
         // HYDROTHERMAL VENTS ---------------
         if (Random.chance(VENTS_CHANCE)) {
             const isOcean = layers.surface.is(point, Surface.OCEAN)
-            if (isOcean && layers.relief.is(point, Relief.TRENCH))
+            if (isOcean && !isBorder && layers.relief.is(point, Relief.TRENCH))
                 return Landform.HYDROTHERMAL_VENTS
         }
 
