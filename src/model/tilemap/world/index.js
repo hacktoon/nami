@@ -23,7 +23,7 @@ import { BlockMap } from './block'
 import { WORLD_NAMES } from './names'
 
 
-const BLOCK_SIZE = 32
+const BLOCK_SIZE = 16
 
 const SCHEMA = new Schema(
     'WorldTileMap',

@@ -12,6 +12,7 @@ export class BlockMap {
         this.point = point
         this.rect = rect
         this.seed = this.#buildSeed(point, seed)
+        // seed is fixed for current block point
         this.#matrix = this.#buildMatrix(rect)
     }
 
