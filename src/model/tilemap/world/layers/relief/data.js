@@ -25,7 +25,7 @@ export class Relief {
     static PLATFORM = Spec.build({name: 'Platform', color: '#2878a0'})
     static PLAIN = Spec.build({name: 'Plain', color: '#77AA77'})
     static HILL = Spec.build({name: 'Hill', color: '#88BB88'})
-    static PLATEAU = Spec.build({name: 'Plateau', color: '#99b98b'})
+    static PLATEAU = Spec.build({name: 'Plateau', color: '#95af8b'})
     static MOUNTAIN = Spec.build({name: 'Mountain', color: '#badfba'})
 
     static get(id) {
