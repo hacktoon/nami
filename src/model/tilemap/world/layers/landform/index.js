@@ -8,14 +8,11 @@ import { Biome } from '../biome/data'
 import { Relief } from '../relief/data'
 import { Surface } from '../surface/data'
 import { Climate } from '../climate/data'
-import { RiverStretch } from '../river/data'
 
 
 // LAND
 const VOLCANO_CHANCE = .08
 const DUNE_CHANCE = .8
-const MESA_CHANCE = .1
-const CANYON_CHANCE = .2
 
 // WATER
 const ATOL_CHANCE = .2
@@ -40,9 +37,6 @@ export class LandformLayer {
     }
 
     #detectLandType(layers, point) {
-        const isBorder = layers.surface.isBorder(point)
-        const isRiver = layers.river.has(point)
-        const isHill = layers.relief.is(point, Relief.HILL)
         const isPlateau = layers.relief.is(point, Relief.PLATEAU)
         const isMountain = layers.relief.is(point, Relief.MOUNTAIN)
 
@@ -55,19 +49,6 @@ export class LandformLayer {
         if (Random.chance(DUNE_CHANCE)) {
             const isDesert = layers.biome.is(point, Biome.DESERT)
             if (isDesert && ! isMountain && ! isPlateau) return Landform.DUNES
-        }
-
-        // CANYON ---------------
-        if (Random.chance(CANYON_CHANCE) && !isBorder) {
-            const isDivide = layers.basin.isDivide(point)
-            const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
-            if (!isDivide && isHeadWaters && isPlateau) return Landform.CANYON
-        }
-
-        // MESA ---------------
-        if (Random.chance(MESA_CHANCE)) {
-            const isMesa = (isPlateau || isHill) && !isBorder && !isRiver
-            if (isMesa) return Landform.MESA
         }
 
         // NO LANDFORM
@@ -90,6 +71,8 @@ export class LandformLayer {
         if (Random.chance(ATOL_CHANCE)) {
             if (!isBorder && isCoral) return Landform.ATOL
         }
+
+        // REEFS
         if (isCoral) return Landform.REEFS
 
         // ICEBERGS ---------------

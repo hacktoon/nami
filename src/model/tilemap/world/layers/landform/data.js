@@ -8,8 +8,6 @@ import {
     drawSandbars,
     drawVolcano,
     drawReefs,
-    drawCanyon,
-    drawMesa,
 } from './draw'
 
 
@@ -43,10 +41,6 @@ export class Landform {
         name: 'Reefs', color: '#3f4961', draw: drawReefs})
     static DUNES = Spec.build({
         name: 'Dunes', color: '#c2b56c', draw: drawDunes})
-    static CANYON = Spec.build({
-        name: 'Canyon', color: '#473d33', draw: drawCanyon})
-    static MESA = Spec.build({
-        name: 'Mesa', color: '#a77253', draw: drawMesa})
     static VOLCANO = Spec.build({
         name: 'Volcano', color: '#ff0000', draw: drawVolcano})
     static RAVINE = Spec.build({

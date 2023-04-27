@@ -97,27 +97,3 @@ export function drawReefs(props) {
         1: Color.fromHex('#414141'),
     })
 }
-
-export function drawCanyon(props) {
-    drawIcon(props, [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [1, 0, 0, 0, 1],
-        [1, 1, 0, 1, 1],
-        [1, 1, 1, 1, 1],
-        ], {
-        1: Color.fromHex('#414141'),
-    })
-}
-
-export function drawMesa(props) {
-    drawIcon(props, [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 0],
-        [0, 1, 1, 1, 0],
-        [1, 1, 1, 1, 1],
-        ], {
-        1: Color.fromHex('#a77253'),
-    })
-}
