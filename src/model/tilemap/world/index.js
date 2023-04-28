@@ -62,7 +62,7 @@ export class WorldTileMap extends TileMap {
         layers.relief = new ReliefLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
         layers.lake = new LakeLayer(layers)
-        layers.landform = new LandformLayer(rect, layers)
+        // layers.landform = new LandformLayer(rect, layers)
         layers.topo = new TopologyLayer(rect, layers, realmCount)
         return layers
     }
@@ -79,7 +79,7 @@ export class WorldTileMap extends TileMap {
             this.layers.biome.getText(wrappedPoint),
             this.layers.lake.getText(wrappedPoint),
             this.layers.relief.getText(wrappedPoint),
-            this.layers.landform.getText(wrappedPoint),
+            // this.layers.landform.getText(wrappedPoint),
             this.layers.topo.getText(wrappedPoint),
         ].filter(x=>x).join('\n').trim()
     }

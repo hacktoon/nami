@@ -22,7 +22,7 @@ const SCHEMA = new Schema(
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showLakes', 'Lakes', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
-    Type.boolean('showLandforms', 'Landforms', {default: false}),
+    // Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
 
 export class WorldTileMapDiagram extends TileMapDiagram {
@@ -50,9 +50,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (props.tileSize >= 350) {
             this.drawBlock(props)
         }
-        if (layers.landform.has(point) && this.params.get('showLandforms')) {
-            layers.landform.draw(point, props)
-        }
+        // if (layers.landform.has(point) && this.params.get('showLandforms')) {
+        //     layers.landform.draw(point, props)
+        // }
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props)
         }
