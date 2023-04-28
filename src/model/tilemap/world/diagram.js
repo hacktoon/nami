@@ -20,8 +20,8 @@ const SCHEMA = new Schema(
     Type.selection('showLayer', 'Layer', {default: DEFAULT_LAYER, options: LAYERS}),
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
-    Type.boolean('showLakes', 'Lakes', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
+    // Type.boolean('showLakes', 'Lakes', {default: true}),
     // Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
 
