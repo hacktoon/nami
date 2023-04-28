@@ -44,21 +44,15 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const isLand = layers.surface.isLand(point)
         const showRiver = tileSize >= 15 && this.params.get('showRivers')
         const layerName = this.params.get('showLayer')
-        const bgColor = layers[layerName].getColor(point)
+        const layerColor = layers[layerName].getColor(point)
         // draw background rect
-        canvas.rect(canvasPoint, tileSize, bgColor.toHex())
-        if (props.tileSize >= 250) {
+        canvas.rect(canvasPoint, tileSize, layerColor.toHex())
+        if (props.tileSize >= 170) {
             this.drawBlock(props)
         }
-        // if (layers.landform.has(point) && this.params.get('showLandforms')) {
-        //     layers.landform.draw(point, props)
-        // }
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props)
         }
-        // if (this.params.get('showLakes') && layers.lake.has(point)) {
-        //     layers.lake.draw(point, props)
-        // }
         if (this.params.get('showCities')) {
             layers.topo.draw(point, props)
         }
@@ -85,4 +79,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             }
         }
     }
+
+    // if (layers.landform.has(point) && this.params.get('showLandforms')) {
+    //     layers.landform.draw(point, props)
+    // }
+    // if (this.params.get('showLakes') && layers.lake.has(point)) {
+    //     layers.lake.draw(point, props)
+    // }
 }

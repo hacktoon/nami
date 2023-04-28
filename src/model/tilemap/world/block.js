@@ -30,6 +30,8 @@ export class BlockMap {
     #buildMatrix(rect) {
         const isBlockWater = this.layers.surface.isWater(this.point)
         return Matrix.fromRect(rect, point => {
+            // get 3x3 point value
+            //
             if (isBlockWater) {
                 return Random.choice(0, 0, 0, 0, 0, 0, 1)
             }
