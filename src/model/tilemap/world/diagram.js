@@ -47,7 +47,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const bgColor = layers[layerName].getColor(point)
         // draw background rect
         canvas.rect(canvasPoint, tileSize, bgColor.toHex())
-        if (props.tileSize >= 350) {
+        if (props.tileSize >= 250) {
             this.drawBlock(props)
         }
         // if (layers.landform.has(point) && this.params.get('showLandforms')) {
@@ -56,9 +56,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props)
         }
-        if (this.params.get('showLakes') && layers.lake.has(point)) {
-            layers.lake.draw(point, props)
-        }
+        // if (this.params.get('showLakes') && layers.lake.has(point)) {
+        //     layers.lake.draw(point, props)
+        // }
         if (this.params.get('showCities')) {
             layers.topo.draw(point, props)
         }
