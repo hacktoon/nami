@@ -19,7 +19,7 @@ import { LandformLayer } from './layers/landform'
 import { TopologyLayer } from './layers/topology'
 
 import { WorldTileMapDiagram } from './diagram'
-import { BlockMap } from './block'
+import { BlockMap } from './blocks'
 import { WORLD_NAMES } from './names'
 
 
