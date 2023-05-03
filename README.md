@@ -7,6 +7,15 @@
 
 ## PLANNING
 
+### ReliefLayer
+- Choose point for same mountain relief neighbors
+
+
+### BasinLayer
+- Add erosion tree for all points
+- Vary river source point for each block
+
+
 ### General ideas
 - Get zoom on draw methods of Diagram
 	- Make it a parameter for detailed rendering (world, block)

@@ -21,6 +21,7 @@ const SCHEMA = new Schema(
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
+    Type.boolean('showBlocks', 'Blocks', {default: true}),
     // Type.boolean('showLakes', 'Lakes', {default: true}),
     // Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
@@ -47,8 +48,8 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layerColor = layers[layerName].getColor(point)
         // draw background rect
         canvas.rect(canvasPoint, tileSize, layerColor.toHex())
-        if (props.tileSize >= 170) {
-            this.drawBlock(props)
+        if (props.tileSize >= 170 && this.params.get('showBlocks')) {
+            this.drawBlock(props, layers)
         }
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props)
@@ -63,19 +64,18 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    drawBlock(props) {
+    drawBlock(props, layers) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
         const blockMap = this.tileMap.getBlock(tilePoint)
         const size = tileSize / blockMap.size
+        const reliefColor = layers.relief.get(tilePoint).color
         for (let x=0; x < blockMap.size; x++) {
             const xSize = x * size
             for (let y=0; y < blockMap.size; y++) {
                 const block = blockMap.get([y, x])
-                if (block !== 0) {
-                    const blockCanvasPoint = Point.plus(canvasPoint, [y*size, xSize])
-                    const color = block == 1 ? '#050' : '#162'
-                    canvas.rect(blockCanvasPoint, size, color)
-                }
+                const blockCanvasPoint = Point.plus(canvasPoint, [y*size, xSize])
+                const color = block !== 0 ? reliefColor.darken(40) : reliefColor
+                canvas.rect(blockCanvasPoint, size, color.toHex())
             }
         }
     }
