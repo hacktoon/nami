@@ -13,8 +13,8 @@ export class TileMapScene {
         Type.boolean('wrap', "Wrap", {default: false}),
         Type.number('zoom', "Zoom", {
             default: 10,
-            min: 5,
-            max: 500,
+            min: ZOOM_INCREMENT,
+            max: ZOOM_INCREMENT * 10,
             step: ZOOM_INCREMENT,
         }),
     )
