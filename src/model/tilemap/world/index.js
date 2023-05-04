@@ -27,7 +27,7 @@ const BLOCK_SIZE = 9
 
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.rect('rect', 'Size', {default: '64x64', min:'2x2', max:'100x100'}),
+    Type.rect('rect', 'Size', {default: '127x127', min:'2x2', max:'256x256'}),
     Type.text('seed', 'Seed', {default: ''}),
     Type.number('realms', 'Realms', {default: 10, min: 3, max: 16}),
 )

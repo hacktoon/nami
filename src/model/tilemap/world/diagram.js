@@ -43,7 +43,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layers = this.tileMap.layers
         const point = this.rect.wrap(tilePoint)
         const isLand = layers.surface.isLand(point)
-        const showRiver = tileSize >= 15 && this.params.get('showRivers')
+        const showRiver = tileSize >= 8 && this.params.get('showRivers')
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
         // draw background rect
