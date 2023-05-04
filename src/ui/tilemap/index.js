@@ -4,9 +4,8 @@ import { Point } from '/src/lib/point'
 import { Form } from '/src/ui/form'
 import { Button } from '/src/ui/form/button'
 import { Text } from '/src/ui'
-import { TileMapScene } from '/src/model/tilemap/lib/scene'
 
-import { UITileMapScene } from './scene'
+import { TileMapScene, UITileMapScene } from './scene'
 
 
 export function UITileMap({TileMap}) {
