@@ -3,12 +3,20 @@ import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 
 
+const ZOOM_INCREMENT = 5
+
+
 export class TileMapScene {
     static schema = new Schema(
         'TileMapScene',
         Type.point('focus', "Focus", {default: '50,51'}),
         Type.boolean('wrap', "Wrap", {default: false}),
-        Type.number('zoom', "Zoom", {default: 10, step: 1, min: 5, max: 500}),
+        Type.number('zoom', "Zoom", {
+            default: 10,
+            min: 5,
+            max: 500,
+            step: ZOOM_INCREMENT,
+        }),
     )
 
     static create(diagram, viewport, params) {
@@ -23,6 +31,7 @@ export class TileMapScene {
         this.focus = focus
         this.wrap = wrap
         this.zoom = zoom
+        this.zoomIncrement = ZOOM_INCREMENT
         this.viewport = viewport  // TODO: needed only in UITileMapMouse, delete
 
         // TODO: send params to render method, avoid buildind an

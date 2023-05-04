@@ -30,7 +30,9 @@ function UITileMapSceneContent({diagram, viewport, ...props}) {
 
     const handleDragStart = () => setPrevFocus(scene.focus)
     const handleDrag = point => props.handleDrag(Point.plus(prevFocus, point))
-    const handleWheel = amount => props.handleWheel(scene.zoom + amount)
+    const handleWheel = yModifier => {
+        props.handleWheel(scene.zoom + scene.zoomIncrement * yModifier)
+    }
     const handleClick = point => props.handleClick(point)
     const handleInit = canvas => scene.render(canvas)
 
