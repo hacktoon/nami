@@ -5,9 +5,9 @@ import { drawIcon } from '/src/ui/tilemap/draw'
 export function drawPeak(props) {
     drawIcon(props, [
         [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0],
-        [0, 1, 1, 1, 0],
-        [0, 2, 1, 2, 0],
+        [0, 2, 2, 2, 0],
         [2, 2, 2, 2, 2],
         ], {
         1: Color.fromHex('#eee'),
