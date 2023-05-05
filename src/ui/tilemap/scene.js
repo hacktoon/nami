@@ -58,7 +58,7 @@ export class TileMapScene {
         Type.number('zoom', "Zoom", {
             default: 10,
             min: ZOOM_INCREMENT,
-            max: ZOOM_INCREMENT * 10,
+            max: ZOOM_INCREMENT * 100,
             step: ZOOM_INCREMENT,
         }),
     )

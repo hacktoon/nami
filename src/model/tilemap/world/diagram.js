@@ -48,19 +48,20 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layerColor = layers[layerName].getColor(point)
         // draw background rect
         canvas.rect(canvasPoint, tileSize, layerColor.toHex())
+
         if (props.tileSize >= 170 && this.params.get('showBlocks')) {
             this.drawBlock(props, layers)
+        }
+        if (isLand && this.params.get('showErosion')) {
+            const basin = layers.basin.get(point)
+            const text = basin.erosion.symbol
+            canvas.text(canvasPoint, tileSize, text, '#000')
         }
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props)
         }
         if (this.params.get('showCities')) {
             layers.topo.draw(point, props)
-        }
-        if (isLand && this.params.get('showErosion')) {
-            const basin = layers.basin.get(point)
-            const text = basin.erosion.symbol
-            canvas.text(canvasPoint, tileSize, text, '#000')
         }
     }
 

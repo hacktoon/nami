@@ -1,4 +1,5 @@
 import { Matrix } from '/src/lib/matrix'
+import { Point } from '/src/lib/point'
 
 import { Relief } from './data'
 import { RiverStretch } from '../river/data'
@@ -42,15 +43,15 @@ export class ReliefLayer {
         const isBorder = layers.surface.isBorder(point)
         // is river source?
         if (layers.river.has(point) && layers.basin.isDivide(point)) {
-            if (!isBorder && featureNoise > MOUNTAIN_RATIO) return Relief.MOUNTAIN
-            return Relief.PLATEAU
+            if (!isBorder && featureNoise > MOUNTAIN_RATIO) return Relief.PEAK
+            return Relief.MOUNTAIN
         } else {
             // not a river source, set type according to river stretch
             const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
             const isFastCourse = layers.river.is(point, RiverStretch.FAST_COURSE)
             const isBasinIdEven = layers.basin.get(point).id % 2 === 0
             // even id basins will set a plateau on river headwaters
-            if (isBasinIdEven && isHeadWaters) return Relief.PLATEAU
+            if (isBasinIdEven && isHeadWaters) return Relief.MOUNTAIN
             // headwaters and fast courses will appear on hills
             if (isFastCourse || isHeadWaters) return Relief.HILL
             // all depositional and slow points of rives parts are plains
@@ -59,7 +60,7 @@ export class ReliefLayer {
             if (isDepositional || isSlowCourse) return Relief.PLAIN
         }
         // not on a river, try adding more plateaus or hills
-        if (grainedNoise < PLATEAU_RATIO) return Relief.PLATEAU
+        if (grainedNoise < PLATEAU_RATIO) return Relief.MOUNTAIN
         if (grainedNoise < HILL_RATIO) return Relief.HILL
         return Relief.PLAIN
     }
@@ -81,5 +82,14 @@ export class ReliefLayer {
     is(point, type) {
         const id = this.#matrix.get(point)
         return id === type.id
+    }
+
+    draw(point, props) {
+        const relief = this.get(point)
+        relief.draw({
+            ...props,
+            canvasPoint,
+            color: relief.color.toHex()
+        })
     }
 }
