@@ -2,12 +2,6 @@ import { Color } from '/src/lib/color'
 import { drawIcon } from '/src/ui/tilemap/draw'
 
 
-export function drawBase(props) {
-    const {canvas, canvasPoint, tileSize} = props
-    canvas.rect(canvasPoint, tileSize, props.color)
-}
-
-
 export function drawPeak(props) {
     drawIcon(props, [
         [0, 0, 0, 0, 0],
