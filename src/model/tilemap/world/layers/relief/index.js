@@ -88,7 +88,7 @@ export class ReliefLayer {
         const relief = this.get(point)
         relief.draw({
             ...props,
-            canvasPoint,
+            canvasPoint: props.canvasPoint,
             color: relief.color.toHex()
         })
     }

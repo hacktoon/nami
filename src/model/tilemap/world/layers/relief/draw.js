@@ -13,11 +13,11 @@ export function drawPeak(props) {
         [0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0],
         [0, 1, 1, 1, 0],
-        [0, 2, 2, 2, 0],
+        [0, 2, 1, 2, 0],
         [2, 2, 2, 2, 2],
         ], {
         1: Color.fromHex('#eee'),
-        2: Color.fromHex('#4c585e'),
+        2: Color.fromHex('#a1a1a1'),
     })
 }
 

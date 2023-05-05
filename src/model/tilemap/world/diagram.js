@@ -60,6 +60,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props)
         }
+        if (layers.surface.isLand(point)) {
+            layers.relief.draw(point, props)
+        }
         if (this.params.get('showCities')) {
             layers.topo.draw(point, props)
         }
