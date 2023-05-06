@@ -37,18 +37,16 @@ export class LandformLayer {
     }
 
     #detectLandType(layers, point) {
-        const isPlateau = layers.relief.is(point, Relief.MOUNTAIN)
-        const isPeak = layers.relief.is(point, Relief.PEAK)
-
+        const isMountain = layers.relief.is(point, Relief.MOUNTAIN)
         // VOLCANO ---------------
-        if (Random.chance(VOLCANO_CHANCE) && isPeak) {
+        if (Random.chance(VOLCANO_CHANCE) && isMountain) {
             return Landform.VOLCANO
         }
 
         // DUNES ---------------
         if (Random.chance(DUNE_CHANCE)) {
             const isDesert = layers.biome.is(point, Biome.DESERT)
-            if (isDesert && ! isPeak && ! isPlateau) return Landform.DUNES
+            if (isDesert && ! isMountain) return Landform.DUNES
         }
 
         // NO LANDFORM

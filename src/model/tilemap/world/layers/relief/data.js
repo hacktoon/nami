@@ -49,21 +49,7 @@ export class Relief {
         }
     })
     static MOUNTAIN = Spec.build({
-        name: 'Mountain', color: '#95af8b', draw: function(props) {
-            drawIcon(props, [
-                [0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0],
-                [0, 0, 2, 2, 0],
-                [0, 1, 1, 1, 1],
-                [0, 0, 0, 0, 0],
-                ], {
-                1: Color.fromHex('#788057'),
-                2: Color.fromHex('#8b845d'),
-            })
-        }
-    })
-    static PEAK = Spec.build({
-        name: 'Peak', color: '#badfba', draw: function(props) {
+        name: 'Mountain', color: '#badfba', draw: function(props) {
             drawIcon(props, [
                 [0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0],
