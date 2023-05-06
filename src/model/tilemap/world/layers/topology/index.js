@@ -31,9 +31,9 @@ export class TopologyLayer {
             if (this.#isPossibleCity(layers, point)) {
                 possibleCityPoints.add(point)
             }
-            if (this.#isDungeon(layers, point)) {
-                this.#dungeonPoints.add(point)
-            }
+            // if (this.#isDungeon(layers, point)) {
+            //     this.#dungeonPoints.add(point)
+            // }
         })
         this.#cityPoints = this.#buildCities(rect, possibleCityPoints)
     }
@@ -114,7 +114,7 @@ export class TopologyLayer {
                 drawCity(props)
             }
         }
-        if(this.isDungeon(point))
-            drawDungeon(props)
+        // if(this.isDungeon(point))
+        //     drawDungeon(props)
     }
 }
