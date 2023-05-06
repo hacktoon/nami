@@ -3,6 +3,7 @@ import { PointMap } from '/src/lib/point/map'
 import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
 
 import { buildRiverMap, DIRECTION_PATTERN_MAP } from './fill'
 import { RiverStretch } from './data'
@@ -19,8 +20,8 @@ export class RiverLayer {
     #riverMeanders = new PointMap()
     // map a river point to its river type
     #stretchMap = new PointMap()
-    // set of rivers that has continuous running water
-    #perennialSet = new Set()
+    // water river points
+    #waterPoints = new PointSet()
     #riverMouths = new PointSet()
 
     constructor(rect, layers) {
@@ -32,7 +33,7 @@ export class RiverLayer {
             riverMouths: this.#riverMouths,
             layoutMap: this.#layoutMap,
             stretchMap: this.#stretchMap,
-            perennialSet: this.#perennialSet,
+            waterPoints: this.#waterPoints,
             riverMeanders: this.#riverMeanders,
         }
         buildRiverMap(context)
@@ -56,6 +57,7 @@ export class RiverLayer {
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
             meander: this.#riverMeanders.get(point),
+            hasWater: this.#waterPoints.has(point),
         }
     }
 
@@ -79,9 +81,8 @@ export class RiverLayer {
         return this.#riverMouths.has(point)
     }
 
-    isPerennial(point) {
-        const id = this.#riverPoints.get(point)
-        return this.#perennialSet.has(id)
+    hasWater(point) {
+        return this.#waterPoints.has(point)
     }
 
     is(point, type) {
@@ -94,6 +95,7 @@ export class RiverLayer {
         if (! this.has(point))
             return ''
         const river = this.get(point)
+        if (! river.hasWater) return ''
         const attrs = [
              `${river.name}`,
              river.mouth ? 'mouth' : '',
@@ -111,7 +113,7 @@ export class RiverLayer {
         // calc meander offset point on canvas
         const meanderOffsetPoint = Point.multiplyScalar(river.meander, tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-        const color = river.stretch.color.average(baseColor).toHex()
+        let color = this.hasWater(point) ? river.stretch.color : baseColor.darken(10)
         for(let axisOffset of river.flowDirections) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
@@ -119,7 +121,7 @@ export class RiverLayer {
                 midCanvasPoint[0] + axisOffset[0] * midSize,
                 midCanvasPoint[1] + axisOffset[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, riverWidth, color)
+            canvas.line(edgeMidPoint, meanderPoint, riverWidth, color.toHex())
         }
     }
 }

@@ -97,12 +97,16 @@ export class Color {
         )
     }
 
-    average(color) {
-        return new Color(
-            Math.floor((this.red + color.red) / 2),
-            Math.floor((this.green + color.green) / 2),
-            Math.floor((this.blue + color.blue) / 2),
-        )
+    average(color, times=1) {
+        let avgColor = color
+        for(let i = 0; i < times; i++) {
+            avgColor = new Color(
+               Math.floor((this.red + avgColor.red) / 2),
+               Math.floor((this.green + avgColor.green) / 2),
+               Math.floor((this.blue + avgColor.blue) / 2),
+           )
+        }
+        return avgColor
     }
 
     grayscale() {

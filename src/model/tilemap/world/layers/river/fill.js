@@ -30,16 +30,13 @@ const RIVER_MEANDER_MIDDLE = .5
 export function buildRiverMap(context) {
     let riverId = 0
     const basinLayer = context.layers.basin
-    const entries = basinLayer.getDividePoints()
+    basinLayer.getDividePoints()
         // crate a list of pairs (point and distance)
         .map(point => [point, basinLayer.getDistance(point)])
         // in ascendent order: higher points first
         // for starting rivers on basin divides
         .sort((a, b) => a[1] - b[1])
-
-    entries.forEach(([source]) => {
-        buildRiver(context, riverId++, source)
-    })
+        .forEach(([source]) => buildRiver(context, riverId++, source))
 }
 
 function buildRiver(context, riverId, sourcePoint) {
@@ -47,12 +44,13 @@ function buildRiver(context, riverId, sourcePoint) {
     // according to basin flow and builds a river.
     const {
         rect, layers, riverPoints, riverNames, riverMouths,
-        stretchMap, perennialSet
+        stretchMap, waterPoints
     } = context
     let currentPoint = sourcePoint
     let prevPoint = sourcePoint
-    // go down river following next (land) points
+    // follow river down following next land points
     const maxDistance = layers.basin.getDistance(sourcePoint)
+    const rainsOnSource = layers.rain.createsRivers(sourcePoint)
     while (layers.surface.isLand(currentPoint)) {
         let wrappedPoint = rect.wrap(currentPoint)
         buildRiverMeander(context, wrappedPoint)
@@ -60,6 +58,10 @@ function buildRiver(context, riverId, sourcePoint) {
         stretchMap.set(wrappedPoint, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(wrappedPoint, riverId)
+        if (rainsOnSource) {
+            waterPoints.add(wrappedPoint)
+        }
+        // get next river point
         currentPoint = getNextRiverPoint(context, wrappedPoint)
         // save previous point for mouth detection
         prevPoint = wrappedPoint
@@ -67,9 +69,6 @@ function buildRiver(context, riverId, sourcePoint) {
     // current (last) point is water, add previous as river mouth
     riverMouths.add(prevPoint)
     riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
-    if (layers.rain.createsRivers(sourcePoint)) {
-        perennialSet.add(riverId)
-    }
 }
 
 

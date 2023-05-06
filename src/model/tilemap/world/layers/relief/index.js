@@ -37,7 +37,7 @@ export class ReliefLayer {
 
     #detectLandType(layers, point) {
         const grainedNoise = layers.noise.getGrained(point)
-        if (layers.river.isPerennial(point)) {
+        if (layers.river.hasWater(point)) {
             // is river source?
             if (layers.basin.isDivide(point)) {
                 if (grainedNoise < MOUNTAIN_RATIO) return Relief.HILL
@@ -51,7 +51,7 @@ export class ReliefLayer {
             // all depositional and slow points of rives parts are plains
             return Relief.PLAIN
         }
-        // not on a river, try adding more hills
+        // not on an actual river, try adding more hills
         if (grainedNoise < HILL_RATIO) return Relief.HILL
         return Relief.PLAIN
     }
