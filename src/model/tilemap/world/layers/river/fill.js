@@ -33,9 +33,8 @@ export function buildRiverMap(context) {
     const entries = basinLayer.getDividePoints()
         // crate a list of pairs (point and distance)
         .map(point => [point, basinLayer.getDistance(point)])
-        // accept only points where there's enough rain
-        .filter(([point]) => context.layers.rain.createsRivers(point))
-        // in ascendent order: lower heights first
+        // in ascendent order: higher points first
+        // for starting rivers on basin divides
         .sort((a, b) => a[1] - b[1])
 
     entries.forEach(([source]) => {
@@ -47,8 +46,8 @@ function buildRiver(context, riverId, sourcePoint) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const {
-        rect, layers, riverPoints, riverNames,
-        riverMouths, stretchMap
+        rect, layers, riverPoints, riverNames, riverMouths,
+        stretchMap, perennialSet
     } = context
     let currentPoint = sourcePoint
     let prevPoint = sourcePoint
@@ -68,6 +67,9 @@ function buildRiver(context, riverId, sourcePoint) {
     // current (last) point is water, add previous as river mouth
     riverMouths.add(prevPoint)
     riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
+    if (layers.rain.createsRivers(sourcePoint)) {
+        perennialSet.add(riverId)
+    }
 }
 
 

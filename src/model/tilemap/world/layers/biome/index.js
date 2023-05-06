@@ -29,12 +29,9 @@ export class BiomeLayer {
     }
 
     #buildLandBiome(layers, point) {
-        const grainedNoise = layers.noise.getGrained(point)
         const {rain, climate} = layers
 
         if (climate.is(point, Climate.FROZEN)) {
-            if (rain.is(point, Rain.ARID) && grainedNoise > ICECAP_NOISE)
-                return Biome.ICECAP
             return Biome.TUNDRA
         }
 

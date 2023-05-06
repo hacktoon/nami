@@ -19,13 +19,13 @@ class Spec {
 
 
 export class Biome {
-    static ICECAP = Spec.build({name: "Icecap", color: "#f2f2f2"})
-    static TUNDRA = Spec.build({name: "Tundra", color: "#afe7da"})
+    static ICECAP = Spec.build({name: "Icecap", color: "#bcfbff"})
+    static TUNDRA = Spec.build({name: "Tundra", color: "#afddd3"})
     static TAIGA = Spec.build({name: "Taiga", color: "#56c472"})
     static WOODLANDS = Spec.build({name: "Woodlands", color: "#57aa13"})
     static JUNGLE = Spec.build({name: "Jungle", color: "#4b8b17"})
-    static GRASSLANDS = Spec.build({name: "Grasslands", color: "#8abb63"})
-    static SAVANNA = Spec.build({name: "Savanna", color: "#b5c23f"})
+    static GRASSLANDS = Spec.build({name: "Grasslands", color: "#89c558"})
+    static SAVANNA = Spec.build({name: "Savanna", color: "#b8c25d"})
     static DESERT = Spec.build({name: "Desert", color: "#d1c69c"})
     static TRENCH = Spec.build({name: "Trench", color: "#1d5674"})
     static OCEAN = Spec.build({name: "Ocean", color: "#216384"})

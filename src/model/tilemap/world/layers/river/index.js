@@ -19,6 +19,8 @@ export class RiverLayer {
     #riverMeanders = new PointMap()
     // map a river point to its river type
     #stretchMap = new PointMap()
+    // set of rivers that has continuous running water
+    #perennialSet = new Set()
     #riverMouths = new PointSet()
 
     constructor(rect, layers) {
@@ -30,6 +32,7 @@ export class RiverLayer {
             riverMouths: this.#riverMouths,
             layoutMap: this.#layoutMap,
             stretchMap: this.#stretchMap,
+            perennialSet: this.#perennialSet,
             riverMeanders: this.#riverMeanders,
         }
         buildRiverMap(context)
@@ -74,6 +77,11 @@ export class RiverLayer {
 
     isMouth(point) {
         return this.#riverMouths.has(point)
+    }
+
+    isPerennial(point) {
+        const id = this.#riverPoints.get(point)
+        return this.#perennialSet.has(id)
     }
 
     is(point, type) {
