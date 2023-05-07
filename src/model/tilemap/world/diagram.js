@@ -49,9 +49,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         // draw background rect
         canvas.rect(canvasPoint, tileSize, layerColor.toHex())
 
-        // if (props.tileSize >= 170 && this.params.get('showBlocks')) {
-        //     this.drawBlock(props, layers)
-        // }
+        if (props.tileSize >= 100 && this.params.get('showBlocks')) {
+            this.drawBlock(props, layers)
+        }
         if (isLand && this.params.get('showErosion')) {
             const basin = layers.basin.get(point)
             const text = basin.erosion.symbol

@@ -113,7 +113,8 @@ export class RiverLayer {
         // calc meander offset point on canvas
         const meanderOffsetPoint = Point.multiplyScalar(river.meander, tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-        let color = this.hasWater(point) ? river.stretch.color : baseColor.darken(10)
+        const color = this.hasWater(point) ? river.stretch.color : baseColor.darken(20)
+        // for each neighbor with a river connection
         for(let axisOffset of river.flowDirections) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side

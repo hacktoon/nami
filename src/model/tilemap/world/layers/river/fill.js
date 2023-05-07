@@ -22,6 +22,7 @@ export const DIRECTION_PATTERN_MAP = new Map([
 
 const RIVER_MEANDER_MIDDLE = .5
 
+
 /*
     The shape fill starts from river sources
     following the direction and marking how much strong a
@@ -39,6 +40,7 @@ export function buildRiverMap(context) {
         .forEach(([source]) => buildRiver(context, riverId++, source))
 }
 
+
 function buildRiver(context, riverId, sourcePoint) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
@@ -46,8 +48,7 @@ function buildRiver(context, riverId, sourcePoint) {
         rect, layers, riverPoints, riverNames, riverMouths,
         stretchMap, waterPoints
     } = context
-    let currentPoint = sourcePoint
-    let prevPoint = sourcePoint
+    let currentPoint = prevPoint = sourcePoint
     // follow river down following next land points
     const maxDistance = layers.basin.getDistance(sourcePoint)
     const rainsOnSource = layers.rain.createsRivers(sourcePoint)
@@ -102,6 +103,7 @@ function buildDirectionBitmask(context, point) {
     })
     return flowCode
 }
+
 
 function buildMeanderPoint(basin) {
     // choose a relative point around the middle of a square at [.5, .5]

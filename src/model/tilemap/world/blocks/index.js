@@ -28,6 +28,7 @@ export class BlockMap {
     }
 
     #buildMatrix(rect) {
+        // get river line - after reworking rivers
         const isBlockWater = this.layers.surface.isWater(this.point)
         return Matrix.fromRect(rect, point => {
             // get 3x3 point value
