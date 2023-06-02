@@ -1,6 +1,7 @@
 import { Matrix } from '/src/lib/matrix'
 
 import { Relief } from './data'
+import { Surface } from '../surface/data'
 import { RiverStretch } from '../river/data'
 
 
@@ -25,10 +26,13 @@ export class ReliefLayer {
     }
 
     #detectWaterType(layers, point) {
-        // use noise to create water relief
         const outlineNoise = layers.noise.getOutline(point)
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
+        if (layers.surface.is(point, Surface.SEA)) {
+            if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
+            return Relief.PLATFORM
+        }
         if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM
         if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
         if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH
