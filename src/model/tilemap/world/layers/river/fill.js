@@ -55,7 +55,7 @@ function buildRiver(context, riverId, sourcePoint) {
     while (layers.surface.isLand(currentPoint)) {
         let wrappedPoint = rect.wrap(currentPoint)
         buildRiverMeander(context, wrappedPoint)
-        const stretch = getStretch(context, wrappedPoint, maxDistance)
+        const stretch = buildStretch(context, wrappedPoint, maxDistance)
         stretchMap.set(wrappedPoint, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(wrappedPoint, riverId)
@@ -120,7 +120,7 @@ function buildMeanderPoint(basin) {
 }
 
 
-function getStretch(context, point, maxDistance) {
+function buildStretch(context, point, maxDistance) {
     const distance = context.layers.basin.getDistance(point)
     let ratio = (distance / maxDistance).toFixed(1)
     if (ratio >= .8) return RiverStretch.HEADWATERS
