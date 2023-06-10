@@ -90,7 +90,6 @@ function buildDirectionBitmask(context, point) {
     let flowCode = DIRECTION_PATTERN_MAP.get(basin.erosion.id)
     // add flowCode for each neighbor that flows to this point
     Point.adjacents(point, (sidePoint, sideDirection) => {
-        // ignore water neighbors
         const wrappedSidePoint = rect.wrap(sidePoint)
         // ignore adjacent water tiles
         if (layers.surface.isWater(sidePoint)) { return }

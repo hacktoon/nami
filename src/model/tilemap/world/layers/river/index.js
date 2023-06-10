@@ -3,7 +3,6 @@ import { PointMap } from '/src/lib/point/map'
 import { BitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
-import { Color } from '/src/lib/color'
 
 import { buildRiverMap, DIRECTION_PATTERN_MAP } from './fill'
 import { RiverStretch } from './data'
@@ -107,13 +106,15 @@ export class RiverLayer {
     draw(point, props, baseColor) {
         const {canvas, canvasPoint, tileSize} = props
         const river = this.get(point)
+        const isWater = this.hasWater(point)
         const riverWidth = Math.round(river.stretch.width * tileSize)
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
         const meanderOffsetPoint = Point.multiplyScalar(river.meander, tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-        const color = this.hasWater(point) ? river.stretch.color : baseColor.darken(20)
+        const color = isWater ? river.stretch.color : baseColor.darken(20)
+        const hexColor = color.toHex()
         // for each neighbor with a river connection
         for(let axisOffset of river.flowDirections) {
             // build a point for each flow that points to this point
@@ -122,7 +123,7 @@ export class RiverLayer {
                 midCanvasPoint[0] + axisOffset[0] * midSize,
                 midCanvasPoint[1] + axisOffset[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, riverWidth, color.toHex())
+            canvas.line(edgeMidPoint, meanderPoint, riverWidth, hexColor)
         }
     }
 }
