@@ -5,8 +5,10 @@ import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 import { Surface } from './data'
 
 
+// use 0 and 1 as "empty" values
 const EMPTY_BODY = 0
 const EMPTY_WATERBODY = 1
+// this is the first value considered "filled"
 const FIRST_BODY_ID = 2
 
 // Area ratios
@@ -56,8 +58,27 @@ export class SurfaceLayer {
                 // store land borders for other layers to use
                 if (!isWater) this.landBorders.push(point)
             }
+            // update water tile area
             if (isWater) this.#waterArea++
         })
+    }
+
+    #buildSurfaceBody(originPoint, bodyId) {
+        const isEmptyWaterBody = this.#isEmptyWaterBody(originPoint)
+        const area = this.#fillBodyArea(originPoint, bodyId)
+        const surfaceAreaRatio = (area * 100) / this.#bodyMatrix.area
+        // set continent as default type
+        let type = Surface.CONTINENT
+        // area is filled; decide type
+        if (isEmptyWaterBody) {
+            if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
+                type = Surface.OCEAN
+            else if (surfaceAreaRatio >= MINIMUN_SEA_RATIO)
+                type = Surface.SEA
+        } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
+            type = Surface.ISLAND
+        }
+        return {type, area}
     }
 
     #detectBorder(point, isWater) {
@@ -79,26 +100,7 @@ export class SurfaceLayer {
         return this.#bodyMatrix.get(point) === EMPTY_WATERBODY
     }
 
-    #buildSurfaceBody(originPoint, bodyId) {
-        const isEmptyWaterBody = this.#isEmptyWaterBody(originPoint)
-        const area = this.#fillSurface(originPoint, bodyId)
-        const surfaceAreaRatio = (area * 100) / this.#bodyMatrix.area
-        // default type
-        let type = Surface.CONTINENT
-        // area is filled; decide type
-        if (isEmptyWaterBody) {
-            if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
-                type = Surface.OCEAN
-            else if (surfaceAreaRatio >= MINIMUN_SEA_RATIO)
-                type = Surface.SEA
-        } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
-            type = Surface.ISLAND
-        }
-
-        return {type, area}
-    }
-
-    #fillSurface(originPoint, bodyId) {
+    #fillBodyArea(originPoint, bodyId) {
         // discover all points of same type ( water | land )
         let area = 0
         const isOriginWater = this.#isEmptyWaterBody(originPoint)
