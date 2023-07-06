@@ -47,16 +47,19 @@ function buildRiver(context, riverId, sourcePoint) {
     // according to basin flow and builds a river.
     const {
         rect, layers, riverPoints, riverNames, riverMouths,
-        stretchMap, waterPoints
+        stretchMap, waterPoints, layoutMap, riverMeanders
     } = context
     let currentPoint = prevPoint = sourcePoint
     // follow river down following next land points
     const maxDistance = layers.basin.getDistance(sourcePoint)
     const rainsOnSource = layers.rain.createsRivers(sourcePoint)
     while (layers.surface.isLand(currentPoint)) {
-        let wrappedPoint = rect.wrap(currentPoint)
-        buildRiverMeander(context, wrappedPoint)
+        const wrappedPoint = rect.wrap(currentPoint)
+        const meander = buildMeander(context, wrappedPoint)
+        const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
         const stretch = buildStretch(context, wrappedPoint, maxDistance)
+        riverMeanders.set(wrappedPoint, meander)
+        layoutMap.set(wrappedPoint, directionBitmask)
         stretchMap.set(wrappedPoint, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(wrappedPoint, riverId)
@@ -74,15 +77,11 @@ function buildRiver(context, riverId, sourcePoint) {
 }
 
 
-function buildRiverMeander(context, wrappedPoint) {
-    const {layers, layoutMap, riverMeanders} = context
-    const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
+function buildMeander(context, wrappedPoint) {
     const base = RIVER_MEANDER_MIDDLE
     // direction axis ([-1, 0], [1, 1], etc)
-    const axis = layers.basin.getErosionAxis(wrappedPoint)
-    const meander = Point.randomRelativeDiff(base, OFFSET_RANGE, axis)
-    riverMeanders.set(wrappedPoint, meander)
-    layoutMap.set(wrappedPoint, directionBitmask)
+    const axis = context.layers.basin.getErosionAxis(wrappedPoint)
+    return Point.randomRelativeDiff(base, OFFSET_RANGE, axis)
 }
 
 
