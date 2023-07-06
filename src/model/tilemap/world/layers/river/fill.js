@@ -76,10 +76,10 @@ function buildRiver(context, riverId, sourcePoint) {
 
 function buildRiverMeander(context, wrappedPoint) {
     const {layers, layoutMap, riverMeanders} = context
-    const basin = layers.basin.get(wrappedPoint)
     const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
     const base = RIVER_MEANDER_MIDDLE
-    const axis = basin.erosion.axis  // direction axis ([-1, 0], [1, 1], etc)
+    // direction axis ([-1, 0], [1, 1], etc)
+    const axis = layers.basin.getErosionAxis(wrappedPoint)
     const meander = Point.randomRelativeDiff(base, OFFSET_RANGE, axis)
     riverMeanders.set(wrappedPoint, meander)
     layoutMap.set(wrappedPoint, directionBitmask)

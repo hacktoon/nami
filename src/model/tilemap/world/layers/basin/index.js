@@ -61,6 +61,12 @@ export class BasinLayer {
         return this.#colorMap.get(id)
     }
 
+    getErosionAxis(point) {
+        const directionId = this.#erosionMap.get(point)
+        const direction = Direction.fromId(directionId)
+        return direction.axis
+    }
+
     getDividePoints() {
         return this.#dividePoints.points
     }
