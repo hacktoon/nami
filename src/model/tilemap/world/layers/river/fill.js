@@ -21,6 +21,7 @@ export const DIRECTION_PATTERN_MAP = new Map([
 ])
 
 const RIVER_MEANDER_MIDDLE = .5
+const OFFSET_RANGE = [.1, .3]
 
 
 /*
@@ -77,8 +78,11 @@ function buildRiverMeander(context, wrappedPoint) {
     const {layers, layoutMap, riverMeanders} = context
     const basin = layers.basin.get(wrappedPoint)
     const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
+    const base = RIVER_MEANDER_MIDDLE
+    const axis = basin.erosion.axis  // direction axis ([-1, 0], [1, 1], etc)
+    const meander = Point.randomRelativeDiff(base, OFFSET_RANGE, axis)
+    riverMeanders.set(wrappedPoint, meander)
     layoutMap.set(wrappedPoint, directionBitmask)
-    riverMeanders.set(wrappedPoint, buildMeanderPoint(basin))
 }
 
 
@@ -101,21 +105,6 @@ function buildDirectionBitmask(context, point) {
         }
     })
     return flowCode
-}
-
-
-function buildMeanderPoint(basin) {
-    // choose a relative point around the middle of a square at [.5, .5]
-    // use erosion direction to steer point
-    const axis = basin.erosion.axis  // direction axis ([-1, 0], [1, 1], etc)
-    const coord = axis => {
-        const offset = Random.floatRange(.1, .3)
-        const axisToggle = axis === 0 ? Random.choice(1, -1) : axis
-        const newCoord = RIVER_MEANDER_MIDDLE + (offset * axisToggle)
-        // no need of a higher precision, return one decimal float
-        return newCoord.toFixed(1)
-    }
-    return [coord(axis[0]), coord(axis[1])]
 }
 
 
