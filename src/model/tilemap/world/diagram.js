@@ -46,9 +46,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const showRiver = tileSize >= 8 && this.params.get('showRivers')
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
-        // draw background rect
-        canvas.rect(canvasPoint, tileSize, layerColor.toHex())
-
+        if (props.tileSize >= 50) {
+            this.drawSubtile(props, layers)
+        } else {
+            canvas.rect(canvasPoint, tileSize, layerColor.toHex())
+        }
         if (props.tileSize >= 100 && this.params.get('showBlocks')) {
             this.drawBlock(props, layers)
         }
@@ -77,7 +79,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             const xSize = x * size
             for (let y=0; y < blockMap.size; y++) {
                 const block = blockMap.get([y, x])
-                const blockCanvasPoint = Point.plus(canvasPoint, [y*size, xSize])
+                const blockCanvasPoint = Point.plus(canvasPoint, [y * size, xSize])
                 const color = block !== 0 ? reliefColor.darken(40) : reliefColor
                 canvas.rect(blockCanvasPoint, size, color.toHex())
             }
