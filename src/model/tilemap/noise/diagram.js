@@ -30,7 +30,14 @@ export class NoiseTileMapDiagram extends TileMapDiagram {
         this.colors = params.get('colors')
     }
 
-    drawBackground(point) {
+    draw(props) {
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        const point = this.tileMap.rect.wrap(tilePoint)
+        const color = this.getColor(point)
+        canvas.rect(canvasPoint, tileSize, color.toHex())
+    }
+
+    getColor(point) {
         const noise = this.tileMap.getNoise(point)
         const octet = parseInt(noise * 255, 10)
         if (octet < this.minLevel) return Color.BLACK

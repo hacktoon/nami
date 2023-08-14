@@ -34,8 +34,14 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         this.showGrowth = params.get('showGrowth')
     }
 
-    drawBackground(_point) {
-        const point = this.tileMap.rect.wrap(_point)
+    draw(props) {
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        const point = this.tileMap.rect.wrap(tilePoint)
+        const color = this.getColor(point)
+        canvas.rect(canvasPoint, tileSize, color.toHex())
+    }
+
+    getColor(point) {
         const regionId = this.tileMap.getRegion(point)
         const growth = this.tileMap.getGrowth(point)
         const color = this.tileMap.getColor(point, this.showBorders)
