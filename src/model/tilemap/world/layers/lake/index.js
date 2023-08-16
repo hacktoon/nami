@@ -26,15 +26,15 @@ export class LakeLayer {
 
     constructor(layers) {
         let lakeId = 0
-        for (let point of layers.basin.getDepressions()) {
-            const type = this.#detectType(layers, point)
-            if (type) {
-                this.#names.set(lakeId, Random.choiceFrom(HYDRO_NAMES))
-                this.#lakes.set(point, lakeId)
-                this.#typeMap.set(lakeId, type.id)
-                lakeId++
-            }
-        }
+        // for (let point of layers.basin.getDepressions()) {
+        //     const type = this.#detectType(layers, point)
+        //     if (type) {
+        //         this.#names.set(lakeId, Random.choiceFrom(HYDRO_NAMES))
+        //         this.#lakes.set(point, lakeId)
+        //         this.#typeMap.set(lakeId, type.id)
+        //         lakeId++
+        //     }
+        // }
     }
 
     #detectType(layers, point) {

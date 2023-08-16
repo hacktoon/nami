@@ -28,6 +28,8 @@ export class SurfaceLayer {
     #bodyAreaMap = new Map()
     #waterArea = 0
 
+    landBorders = []
+
     constructor(rect, layers) {
         this.#bodyMatrix = Matrix.fromRect(rect, point => {
             // detect water points with "outline" noise map
@@ -48,7 +50,6 @@ export class SurfaceLayer {
 
         // surface body matrix already defined, update it by setting
         // water/land borders as negative ids
-        this.landBorders = []
         this.#bodyMatrix.forEach(point => {
             const isWater = this.isWater(point)
             const bodyId = this.#bodyMatrix.get(point)

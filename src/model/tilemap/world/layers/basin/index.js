@@ -17,25 +17,25 @@ export class BasinLayer {
     // used to determine river stretch
     #distanceMap = new PointMap()
 
+    // the point in the middle of each block that sets erosion
+    #midpointMap = new PointMap()
+
     // the highest points of basins that borders others basins
     #dividePoints = new PointSet()
 
     // a color for each basin
     #colorMap = new Map()
 
-    // can form a lake or spring (where a river may begin on a hill)
-    #depressions = []
-
     constructor(rect, layers) {
         const context = {
             rect,
-            surfaceLayer: layers.surface,
+            layers: layers,
             basinMap: this.#basinMap,
+            midpointMap: this.#midpointMap,
             colorMap: this.#colorMap,
             erosionMap: this.#erosionMap,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
-            depressions: this.#depressions,
         }
         buildBasinMap(context)
     }
@@ -69,10 +69,6 @@ export class BasinLayer {
 
     getDividePoints() {
         return this.#dividePoints.points
-    }
-
-    getDepressions() {
-        return this.#depressions
     }
 
     getDistance(point) {
