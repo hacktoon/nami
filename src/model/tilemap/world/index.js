@@ -9,6 +9,7 @@ import { UITileMap } from '/src/ui/tilemap'
 import { NoiseLayer } from './noise'
 import { SurfaceLayer } from './layers/surface'
 import { BasinLayer } from './layers/basin'
+import { BasinLayer2 } from './layers/basin2'
 import { ReliefLayer } from './layers/relief'
 import { ClimateLayer } from './layers/climate'
 import { RainLayer } from './layers/rain'
@@ -59,6 +60,7 @@ export class WorldTileMap extends TileMap {
         layers.climate = new ClimateLayer(rect, layers)
         layers.rain = new RainLayer(rect, layers)
         layers.basin = new BasinLayer(rect, layers)
+        layers.basin2 = new BasinLayer2(rect, layers)
         layers.river = new RiverLayer(rect, layers)
         layers.relief = new ReliefLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)

@@ -12,6 +12,7 @@
 
 
 ### BasinLayer
+- Add basin types (plain, plateau, slope)
 - Add erosion tree for all points
 - Vary river source point for each block
 
