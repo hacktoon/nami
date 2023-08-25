@@ -74,14 +74,19 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
         const blockMap = this.tileMap.getBlock(tilePoint)
         const size = tileSize / blockMap.size
-        const color = layers.surface.get(tilePoint).color
         for (let x=0; x < blockMap.size; x++) {
             const xSize = x * size
             for (let y=0; y < blockMap.size; y++) {
                 const block = blockMap.get([y, x])
                 const isWater = block == 0
+                const isMountain = block == 2
                 const blockCanvasPoint = Point.plus(canvasPoint, [y * size, xSize])
-                const hexColor = isWater ? '#1d2255' : '#71b13e'
+                let hexColor
+                if (isMountain) {
+                    hexColor = '#bfcfa5'
+                } else {
+                    hexColor = isWater ? '#1d2255' : '#71b13e'
+                }
                 canvas.rect(blockCanvasPoint, size, hexColor)
             }
         }
