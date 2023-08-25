@@ -7,8 +7,9 @@
 
 ## PLANNING
 
-### ReliefLayer
-- Choose point for same mountain relief neighbors
+### BlockLayer
+- Create 3x3 surface code map to distribute % used by fill below
+- Start fill from block shore points
 
 
 ### BasinLayer

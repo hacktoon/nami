@@ -44,7 +44,7 @@ export class SimplexNoise {
         this.perm = new Array(512)
         this.permMod12 = new Array(512)
         const points = []
-        for (let i=0; i<=255; i++) {
+        for (let i=0; i<256; i++) {
             points[i] = Random.int(255)
         }
         // To remove the need for index wrapping, double the permutation table length

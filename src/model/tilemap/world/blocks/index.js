@@ -1,43 +1,43 @@
 import { Point } from '/src/lib/point'
-import { Rect } from '/src/lib/number'
 import { Random } from '/src/lib/random'
 import { Matrix } from '/src/lib/matrix'
+import { SimplexNoise } from '/src/lib/noise'
 
 
 export class BlockMap {
+    #noise
     #matrix
 
-    constructor(layers, seed, rect, point) {
-        this.layers = layers
-        this.point = point
+    constructor(worldSeed, rect, isWater, worldPoint) {
+        this.#noise = new SimplexNoise(6, .8, .08)
         this.rect = rect
-        this.seed = this.#buildSeed(point, seed)
+        this.worldPoint = worldPoint
+        this.isWater = isWater
+        this.#matrix = this.#buildMatrix(worldSeed, rect, worldPoint)
         // seed is fixed for current block point
-        this.#matrix = this.#buildMatrix(rect)
     }
 
     get size() {
         return this.rect.width
     }
 
-    #buildSeed(point, baseSeed="") {
-        // create a seed like '1567456731+5,7'
-        const seed = `${baseSeed}+${Point.hash(point)}`
-        Random.seed = seed
-        return seed
+    #buildMatrix(worldSeed, rect, worldPoint) {
+        Random.seed = `${worldSeed}+${Point.hash(worldPoint)}`
+        // get river line - after reworking rivers
+        const offset = [0, 0]
+        return Matrix.fromRect(rect, point => {
+            const blockPoint = Point.plus(point, offset)
+            if (this.isWater) {
+                const noise = this.#buildNoise(rect, blockPoint)
+                return noise > .8 ? 1 : 0
+            }
+            const noise = this.#buildNoise(rect, blockPoint)
+            return noise > .3 ? 1 : 0
+        })
     }
 
-    #buildMatrix(rect) {
-        // get river line - after reworking rivers
-        const isBlockWater = this.layers.surface.isWater(this.point)
-        return Matrix.fromRect(rect, point => {
-            // get 3x3 point value
-            //
-            if (isBlockWater) {
-                return Random.choice(0, 0, 0, 0, 0, 0, 1)
-            }
-            return Random.choice(0, 1, 2)
-        })
+    #buildNoise(rect, point) {
+        return this.#noise.wrappedNoise4D(rect, point)
     }
 
     get(point) {

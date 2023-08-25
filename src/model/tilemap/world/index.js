@@ -82,12 +82,16 @@ export class WorldTileMap extends TileMap {
             this.layers.relief.getText(wrappedPoint),
             // this.layers.landform.getText(wrappedPoint),
             this.layers.topo.getText(wrappedPoint),
-        ].filter(x=>x).join('\n').trim()
+        ].filter(x => x != '')
+        .join('\n')
+        .trim()
     }
 
     getBlock(point) {
         const wrappedPoint = this.rect.wrap(point)
-        return new BlockMap(this.layers, this.seed, this.blockRect, wrappedPoint)
+        const isWater = this.layers.surface.isWater(wrappedPoint)
+        // build neighbor blocks data
+        return new BlockMap(this.seed, this.blockRect, isWater, wrappedPoint)
     }
 
     getDescription() {
