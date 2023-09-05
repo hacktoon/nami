@@ -50,6 +50,6 @@ export class NoiseTileMap extends TileMap {
     }
 
     getNoise(point) {
-        return this.#simplex.wrappedNoise4D(this.rect, point)
+        return this.#simplex.wrapped4D(this.rect, point)
     }
 }

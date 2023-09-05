@@ -51,7 +51,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         //     this.drawSubtile(props, layers)
         // } else {
         // }
-        if (props.tileSize >= 100 && this.params.get('showBlocks')) {
+        if (props.tileSize >= 90 && this.params.get('showBlocks')) {
             this.drawBlock(props, layers)
         }
         if (isLand && this.params.get('showErosion')) {
@@ -73,20 +73,28 @@ export class WorldTileMapDiagram extends TileMapDiagram {
     drawBlock(props, layers) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
         const blockMap = this.tileMap.getBlock(tilePoint)
-        const size = tileSize / blockMap.size
-        for (let x=0; x < blockMap.size; x++) {
+        const blockSize = blockMap.size
+        const size = tileSize / blockSize
+        // render sub tiles
+        for (let x=0; x < blockSize; x++) {
             const xSize = x * size
-            for (let y=0; y < blockMap.size; y++) {
+            for (let y=0; y < blockSize; y++) {
                 const block = blockMap.get([y, x])
-                const isWater = block == 0
-                const isMountain = block == 2
                 const blockCanvasPoint = Point.plus(canvasPoint, [y * size, xSize])
                 let hexColor
-                if (isMountain) {
+                if (block > .98)
                     hexColor = '#bfcfa5'
-                } else {
-                    hexColor = isWater ? '#1d2255' : '#71b13e'
-                }
+                else if (block > .9)
+                    hexColor = '#b4b192'
+                else if (block > .6)
+                    hexColor = '#71b13e'
+                else if (block > .55)
+                    hexColor = '#538629'
+                else if (block > .4)
+                    hexColor = '#282e6e'
+                else
+                    hexColor = '#1d2255'
+                // const color = Color.fromHex(hexColor).
                 canvas.rect(blockCanvasPoint, size, hexColor)
             }
         }

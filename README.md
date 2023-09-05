@@ -8,7 +8,7 @@
 ## PLANNING
 
 ### BlockLayer
-- Create 3x3 surface code map to distribute % used by fill below
+- Calculate 3x3 surface code map to distribute % of erosion
 - Start fill from block shore points
 
 

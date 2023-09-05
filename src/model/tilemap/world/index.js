@@ -1,7 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
-import { Rect } from '/src/lib/number'
 import { Random } from '/src/lib/random'
 import { TileMap } from '/src/model/tilemap/lib'
 import { UITileMap } from '/src/ui/tilemap'
@@ -22,8 +21,6 @@ import { WorldTileMapDiagram } from './diagram'
 import { BlockMap } from './blocks'
 import { WORLD_NAMES } from './names'
 
-
-const BLOCK_SIZE = 9
 
 const SCHEMA = new Schema(
     'WorldTileMap',
@@ -46,7 +43,6 @@ export class WorldTileMap extends TileMap {
         super(params)
         this.layers = this.#buildLayers(params)
         this.name = Random.choiceFrom(WORLD_NAMES)
-        this.blockRect = new Rect(BLOCK_SIZE, BLOCK_SIZE)
     }
 
     #buildLayers(params) {
@@ -89,9 +85,8 @@ export class WorldTileMap extends TileMap {
 
     getBlock(point) {
         const wrappedPoint = this.rect.wrap(point)
-        const isWater = this.layers.surface.isWater(wrappedPoint)
         // build neighbor blocks data
-        return new BlockMap(this.seed, this.blockRect, isWater, wrappedPoint)
+        return new BlockMap(this, wrappedPoint)
     }
 
     getDescription() {

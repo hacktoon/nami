@@ -6,7 +6,12 @@ const NOISE_SPEC = [
     {id: 'outline', octaves: 6, resolution: .8, scale: .02},
     {id: 'feature', octaves: 6, resolution: .8, scale: .04},
     {id: 'grained', octaves: 6, resolution: .8, scale: .08},
+    {id: 'block', octaves: 6, resolution: .8, scale: .04},
 ]
+
+// this.#landNoise = new SimplexNoise(4, .2, .04)
+// this.#borderLandNoise = new SimplexNoise(4, .2, .02)
+// this.#waterNoise = new SimplexNoise(4, .2, .02)
 
 
 export class NoiseLayer {
@@ -24,7 +29,12 @@ export class NoiseLayer {
     }
 
     #get(id, point) {
-        return this.map.get(id).wrappedNoise4D(this.rect, point)
+        return this.map.get(id).wrapped4D(this.rect, point)
+    }
+
+    // use this interface
+    get4D(rect, point, preset) {
+        return this.map.get(preset).wrapped4D(rect, point)
     }
 
     getOutline(point) {
