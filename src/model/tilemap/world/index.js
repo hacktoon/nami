@@ -83,10 +83,12 @@ export class WorldTileMap extends TileMap {
         .trim()
     }
 
-    getBlock(point) {
-        const wrappedPoint = this.rect.wrap(point)
-        // build neighbor blocks data
-        return new BlockMap(this, wrappedPoint)
+    getBlock(point, blockSize) {
+        const worldPoint = this.rect.wrap(point)
+        let resolution = 3
+        if (blockSize >= 60) resolution = 3
+        if (blockSize >= 130) resolution = 9
+        return new BlockMap(this, resolution, worldPoint)
     }
 
     getDescription() {

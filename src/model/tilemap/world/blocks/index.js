@@ -4,25 +4,23 @@ import { Rect } from '/src/lib/number'
 import { Matrix } from '/src/lib/matrix'
 
 
-const BLOCK_SIZE = 9
-
-
 export class BlockMap {
     #world
+    #resolution
     #layers
     #surfaceMatrix
-    #rect = new Rect(BLOCK_SIZE, BLOCK_SIZE)
 
-    constructor(world, worldPoint) {
+    constructor(world, resolution, worldPoint) {
         this.#world = world
         this.#layers = world.layers
-        this.worldPoint = worldPoint
+        this.#resolution = resolution  // int like 3x3, 9x9, etc
         this.#surfaceMatrix = this.#buildSurface(worldPoint)
+        this.worldPoint = worldPoint
         // seed is fixed for current block point
     }
 
-    get size() {
-        return this.#rect.width
+    get resolution() {
+        return this.#resolution
     }
 
     #buildSurface(worldPoint) {
@@ -30,11 +28,14 @@ export class BlockMap {
         const isWaterBlock = this.#layers.surface.isWater(worldPoint)
         const isBorderBlock = this.#layers.surface.isBorder(worldPoint)
         const noiseRect = new Rect(
-            this.#world.rect.width * this.#rect.width,
-            this.#world.rect.height * this.#rect.height,
+            this.#world.rect.width * this.#resolution,
+            this.#world.rect.height * this.#resolution,
         )
-        const baseNoisePoint = [worldPoint[0] * BLOCK_SIZE, worldPoint[1] * BLOCK_SIZE]
-        return Matrix.fromRect(this.#rect, point => {
+        const baseNoisePoint = [
+            worldPoint[0] * this.#resolution,
+            worldPoint[1] * this.#resolution
+        ]
+        return Matrix.fromSize(this.#resolution, point => {
             // map point at world noise map to a point in block
             const noisePoint = Point.plus(baseNoisePoint, point)
 

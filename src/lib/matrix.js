@@ -23,6 +23,10 @@ export class Matrix {
         return new Matrix(width, height, buildValue)
     }
 
+    static fromSize(size, buildValue) {
+        return new Matrix(size, size, buildValue)
+    }
+
     get(point) {
         let [x, y] = this.wrap(point)
         return this.matrix[y][x]
