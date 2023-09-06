@@ -49,7 +49,8 @@ function buildRiver(context, riverId, sourcePoint) {
         rect, layers, riverPoints, riverNames, riverMouths,
         stretchMap, waterPoints, layoutMap, riverMeanders
     } = context
-    let currentPoint = prevPoint = sourcePoint
+    let prevPoint = sourcePoint
+    let currentPoint = sourcePoint
     // follow river down following next land points
     const maxDistance = layers.basin.getDistance(sourcePoint)
     const rainsOnSource = layers.rain.createsRivers(sourcePoint)
