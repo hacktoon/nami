@@ -1,3 +1,4 @@
+import { clamp } from '/src/lib/number'
 import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
 import { Rect } from '/src/lib/number'
@@ -25,8 +26,10 @@ export class BlockMap {
 
     #buildSurface(worldPoint) {
         const noiseLayer = this.#layers.noise
-        const isWaterBlock = this.#layers.surface.isWater(worldPoint)
+        const isLandBlock = this.#layers.surface.isLand(worldPoint)
         const isBorderBlock = this.#layers.surface.isBorder(worldPoint)
+        const waterMod = .05
+        const borderMod = -.05
         const noiseRect = new Rect(
             this.#world.rect.width * this.#resolution,
             this.#world.rect.height * this.#resolution,
@@ -38,19 +41,19 @@ export class BlockMap {
         return Matrix.fromSize(this.#resolution, point => {
             // map point at world noise map to a point in block
             const noisePoint = Point.plus(baseNoisePoint, point)
-
-            const noise = noiseLayer.get4D(noiseRect, noisePoint, 'outline')
-            // if (isWaterBlock) {
-            //     return noise > .70
-            //         ? (noise > .80 ? 3 : 0)
-            //         : 0
+            const outlineNoise = noiseLayer.get4D(noiseRect, noisePoint, 'outline')
+            const blockNoise = noiseLayer.get4D(noiseRect, noisePoint, 'block')
+            if (isLandBlock) {
+                if (isBorderBlock)
+                    return outlineNoise + 0.05
+                return clamp(outlineNoise, .61, 1)
+            }
+            // if (isBorderBlock) {
+            //     return outlineNoise + borderMod
             // }
             // const isEdge = this.#rect.inEdge(point)
-            // if (isBorderBlock) {
-            //     return noise > .45 ? 1 : 0
-            // }
             // return noise > .25 ? 1 : 2
-            return noise
+            return outlineNoise
         })
     }
 

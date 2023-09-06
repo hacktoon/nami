@@ -33,7 +33,7 @@ export class SurfaceLayer {
     constructor(rect, layers) {
         this.#bodyMatrix = Matrix.fromRect(rect, point => {
             // detect water points with "outline" noise map
-            const isWaterBody = SURFACE_RATIO >= layers.noise.getOutline(point)
+            const isWaterBody = layers.noise.getOutline(point) < SURFACE_RATIO
             return isWaterBody ? EMPTY_WATERBODY : EMPTY_BODY
         })
 

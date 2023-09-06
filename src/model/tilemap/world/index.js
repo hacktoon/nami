@@ -83,11 +83,8 @@ export class WorldTileMap extends TileMap {
         .trim()
     }
 
-    getBlock(point, blockSize) {
+    getBlock(point, resolution) {
         const worldPoint = this.rect.wrap(point)
-        let resolution = 3
-        if (blockSize >= 60) resolution = 3
-        if (blockSize >= 130) resolution = 9
         return new BlockMap(this, resolution, worldPoint)
     }
 

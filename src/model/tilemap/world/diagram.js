@@ -22,7 +22,6 @@ const SCHEMA = new Schema(
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
     Type.boolean('showBlocks', 'Blocks', {default: true}),
-    // Type.boolean('showLakes', 'Lakes', {default: true}),
     Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
 
@@ -46,14 +45,19 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const showRiver = tileSize >= 8 && this.params.get('showRivers')
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
-        canvas.rect(canvasPoint, tileSize, layerColor.toHex())
-        // if (props.tileSize >= 50) {
-        //     this.drawSubtile(props, layers)
-        // } else {
-        // }
-        if (props.tileSize >= 90 && this.params.get('showBlocks')) {
-            this.drawBlock(props, layers)
+        // TODO: refactor resolution calc
+        let resolution = undefined
+        if (tileSize >= 20) resolution = Math.floor(tileSize / 10)
+        // if (tileSize >= 30) resolution = 3
+        // if (tileSize >= 80) resolution = 6
+        // if (tileSize >= 110) resolution = 9
+        if (this.params.get('showBlocks') && resolution) {
+            const blockMap = this.tileMap.getBlock(tilePoint, resolution)
+            this.drawBlock(props, blockMap)
+        } else {
+            canvas.rect(canvasPoint, tileSize, layerColor.toHex())
         }
+
         if (isLand && this.params.get('showErosion')) {
             const basin = layers.basin.get(point)
             const text = basin.erosion.symbol
@@ -70,12 +74,14 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    drawBlock(props, layers) {
+    drawBlock(props, blockMap) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
-        const blockMap = this.tileMap.getBlock(tilePoint, tileSize)
+        const point = this.rect.wrap(tilePoint)
+        const layers = this.tileMap.layers
         const resolution = blockMap.resolution
         const size = tileSize / resolution
-        // render sub tiles
+
+        // render block tiles
         for (let x=0; x < resolution; x++) {
             const xSize = x * size
             for (let y=0; y < resolution; y++) {
@@ -86,11 +92,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
                     hexColor = '#bfcfa5'
                 else if (block > .9)
                     hexColor = '#b4b192'
-                else if (block > .6)
+                else if (block > .7)
                     hexColor = '#71b13e'
-                else if (block > .55)
+                else if (block > .6)
                     hexColor = '#538629'
-                else if (block > .4)
+                else if (block > .5)
                     hexColor = '#282e6e'
                 else
                     hexColor = '#1d2255'
@@ -98,6 +104,10 @@ export class WorldTileMapDiagram extends TileMapDiagram {
                 canvas.rect(blockCanvasPoint, size, hexColor)
             }
         }
+    }
+
+    buildLandBlock(block) {
+
     }
 
     // if (layers.landform.has(point) && this.params.get('showLandforms')) {
