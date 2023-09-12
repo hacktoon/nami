@@ -46,12 +46,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
         // TODO: refactor resolution calc
-        let resolution = undefined
-        if (tileSize >= 20) resolution = Math.floor(tileSize / 10)
-        // if (tileSize >= 30) resolution = 3
-        // if (tileSize >= 80) resolution = 6
         // if (tileSize >= 110) resolution = 9
-        if (this.params.get('showBlocks') && resolution) {
+        if (this.params.get('showBlocks') && tileSize >= 20) {
+            const resolution = Math.floor(tileSize / 10)
             const blockMap = this.tileMap.getBlock(tilePoint, resolution)
             this.drawBlock(props, blockMap)
         } else {
