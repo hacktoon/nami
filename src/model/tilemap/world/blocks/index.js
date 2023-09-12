@@ -25,15 +25,16 @@ export class BlockMap {
     }
 
     #buildSurface(worldPoint) {
+        const landMod = .05
+        const waterMod = .2
         const noiseLayer = this.#layers.noise
         const isLandBlock = this.#layers.surface.isLand(worldPoint)
         const isBorderBlock = this.#layers.surface.isBorder(worldPoint)
-        const waterMod = .05
-        const borderMod = -.05
         const noiseRect = new Rect(
             this.#world.rect.width * this.#resolution,
             this.#world.rect.height * this.#resolution,
         )
+        // scale coordinate to block grid
         const baseNoisePoint = [
             worldPoint[0] * this.#resolution,
             worldPoint[1] * this.#resolution
@@ -45,12 +46,11 @@ export class BlockMap {
             const blockNoise = noiseLayer.get4D(noiseRect, noisePoint, 'block')
             if (isLandBlock) {
                 if (isBorderBlock)
-                    return outlineNoise + 0.05
+                    return outlineNoise
                 return clamp(outlineNoise, .61, 1)
             }
-            // if (isBorderBlock) {
-            //     return outlineNoise + borderMod
-            // }
+            // if (isBorderBlock)
+            //     return blockNoise - waterMod
             // const isEdge = this.#rect.inEdge(point)
             // return noise > .25 ? 1 : 2
             return outlineNoise

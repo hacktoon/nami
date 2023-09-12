@@ -29,6 +29,12 @@ class CanvasContext {
         this.#ctx.fillRect(x, y, size, size)
     }
 
+    strokeRect(point, size, color) {
+        const [x, y] = point
+        this.#ctx.strokeStyle = color
+        this.#ctx.strokeRect(x, y, size, size)
+    }
+
     line(sourcePoint, targetPoint, size, color) {
         this.#ctx.strokeStyle = color
         this.#ctx.lineCap = "round"

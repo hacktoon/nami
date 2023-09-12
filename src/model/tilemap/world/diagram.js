@@ -42,15 +42,20 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layers = this.tileMap.layers
         const point = this.rect.wrap(tilePoint)
         const isLand = layers.surface.isLand(point)
+        const isBorder = layers.surface.isBorder(point)
         const showRiver = tileSize >= 8 && this.params.get('showRivers')
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
         // TODO: refactor resolution calc
         // if (tileSize >= 110) resolution = 9
         if (this.params.get('showBlocks') && tileSize >= 20) {
-            const resolution = Math.floor(tileSize / 10)
+            const resolution = tileSize >= 110
+                ? 10
+                : Math.floor(tileSize / 10)
             const blockMap = this.tileMap.getBlock(tilePoint, resolution)
             this.drawBlock(props, blockMap)
+            if (isBorder && isLand)
+                canvas.strokeRect(canvasPoint, tileSize, '#F44')
         } else {
             canvas.rect(canvasPoint, tileSize, layerColor.toHex())
         }

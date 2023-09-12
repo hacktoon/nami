@@ -9,7 +9,7 @@
 
 ### BlockLayer
 - Calculate 3x3 surface code map to distribute % of erosion
-- Start fill from block shore points
+- Start fill from river and block shore points
 
 
 ### BasinLayer

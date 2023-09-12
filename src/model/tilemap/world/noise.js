@@ -6,7 +6,7 @@ const NOISE_SPEC = [
     {id: 'outline', octaves: 6, resolution: .8, scale: .02},
     {id: 'feature', octaves: 6, resolution: .8, scale: .04},
     {id: 'grained', octaves: 6, resolution: .8, scale: .08},
-    {id: 'block', octaves: 6, resolution: .8, scale: .03},
+    {id: 'block', octaves: 6, resolution: 1, scale: .02},
 ]
 
 // this.#landNoise = new SimplexNoise(4, .2, .04)
