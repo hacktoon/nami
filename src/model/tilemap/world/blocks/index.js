@@ -25,39 +25,47 @@ export class BlockMap {
     }
 
     #buildSurface(worldPoint) {
-        const landMod = .05
-        const waterMod = .2
         const noiseLayer = this.#layers.noise
         const isLandBlock = this.#layers.surface.isLand(worldPoint)
         const isBorderBlock = this.#layers.surface.isBorder(worldPoint)
-        const noiseRect = new Rect(
-            this.#world.rect.width * this.#resolution,
-            this.#world.rect.height * this.#resolution,
+        const blockRect = new Rect(
+            this.#world.width * this.#resolution,
+            this.#world.height * this.#resolution,
         )
         // scale coordinate to block grid
-        const baseNoisePoint = [
-            worldPoint[0] * this.#resolution,
-            worldPoint[1] * this.#resolution
-        ]
+        const basePoint = Point.multiplyScalar(worldPoint, this.#resolution)
         return Matrix.fromSize(this.#resolution, point => {
             // map point at world noise map to a point in block
-            const noisePoint = Point.plus(baseNoisePoint, point)
-            const outlineNoise = noiseLayer.get4D(noiseRect, noisePoint, 'outline')
-            const blockNoise = noiseLayer.get4D(noiseRect, noisePoint, 'block')
-            if (isLandBlock) {
-                if (isBorderBlock)
-                    return outlineNoise
-                return clamp(outlineNoise, .61, 1)
+            const blockPoint = Point.plus(basePoint, point)
+            const outlineNoise = noiseLayer.get4D(blockRect, blockPoint, 'outline')
+            const blockNoise = noiseLayer.get4D(blockRect, blockPoint, 'block')
+            // if (isLandBlock && outlineNoise >= .6) {
+            //     if (outlineNoise > .6 && blockNoise > .6)
+            //         return 2
+            //     return 1
+            // }
+            if (outlineNoise > .6) {
+                if (outlineNoise > .8) {
+                    const n = (outlineNoise + blockNoise) / 2
+                    if (n >= 1) return 4
+                    if (n >= .8) return 3
+                    if (n >= .6) return 2
+                }
+                return 1
             }
-            // if (isBorderBlock)
-            //     return blockNoise - waterMod
-            // const isEdge = this.#rect.inEdge(point)
-            // return noise > .25 ? 1 : 2
-            return outlineNoise
+            return 0
         })
     }
 
     get(point) {
         return this.#surfaceMatrix.get(point)
+    }
+
+    isWater(point) {
+        return this.get(point) == 0
+    }
+
+    isMountain(point) {
+        return this.get(point) == 2
     }
 }

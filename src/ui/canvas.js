@@ -26,7 +26,8 @@ class CanvasContext {
     rect(point, size, color) {
         const [x, y] = point
         this.#ctx.fillStyle = color
-        this.#ctx.fillRect(x, y, size, size)
+        // add .5 to fix pixel bug
+        this.#ctx.fillRect(x, y, size+.5, size+.5)
     }
 
     strokeRect(point, size, color) {

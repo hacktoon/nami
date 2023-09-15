@@ -43,6 +43,8 @@ export class WorldTileMap extends TileMap {
         super(params)
         this.layers = this.#buildLayers(params)
         this.name = Random.choiceFrom(WORLD_NAMES)
+        this.width = this.rect.width
+        this.height = this.rect.height
     }
 
     #buildLayers(params) {

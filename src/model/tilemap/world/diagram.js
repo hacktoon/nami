@@ -44,20 +44,14 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layers = this.tileMap.layers
         const point = this.rect.wrap(tilePoint)
         const isLand = layers.surface.isLand(point)
-        const isBorder = layers.surface.isBorder(point)
         const showRiver = tileSize >= 8 && this.params.get('showRivers')
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
         // TODO: refactor resolution calc
-        // if (tileSize >= 110) resolution = 9
         if (this.params.get('showBlocks') && tileSize >= 20) {
-            const resolution = tileSize >= 110
-                ? 10
-                : Math.floor(tileSize / 10)
+            const resolution = tileSize >= 90 ? 10 : 3
             const blockMap = this.tileMap.getBlock(tilePoint, resolution)
             this.drawBlock(props, blockMap)
-            if (isBorder && isLand)
-                canvas.strokeRect(canvasPoint, tileSize, '#F44')
         } else {
             canvas.rect(canvasPoint, tileSize, layerColor.toHex())
         }
@@ -89,22 +83,20 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         for (let x=0; x < resolution; x++) {
             const xSize = x * size
             for (let y=0; y < resolution; y++) {
-                const block = blockMap.get([y, x])
                 const blockCanvasPoint = Point.plus(canvasPoint, [y * size, xSize])
-                let hexColor = '#bfcfa5'
-                if (block > .99)
-                    hexColor = '#bfcfa5'
-                else if (block > .9)
-                    hexColor = '#b4b192'
-                else if (block > .7)
-                    hexColor = '#71b13e'
-                else if (block > .55)
-                    hexColor = '#538629'
-                else if (block > .5)
+                let block = blockMap.get([y, x])
+                let hexColor
+                if (block == 0) {
                     hexColor = '#282e6e'
-                else
-                    hexColor = '#1d2255'
-                // const hexColor = this.#buildColor(block)
+                } else if (block == 1) {
+                    hexColor = '#426e1e'
+                } else if (block == 2) {
+                    hexColor = '#6a914b'
+                } else if (block == 3) {
+                    hexColor = '#b1c5a0'
+                } else if (block == 4) {
+                    hexColor = '#cadbbc'
+                }
                 canvas.rect(blockCanvasPoint, size, hexColor)
             }
         }
