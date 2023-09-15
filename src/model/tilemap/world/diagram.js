@@ -1,6 +1,8 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
+import { clamp } from '/src/lib/number'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 
@@ -89,23 +91,29 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             for (let y=0; y < resolution; y++) {
                 const block = blockMap.get([y, x])
                 const blockCanvasPoint = Point.plus(canvasPoint, [y * size, xSize])
-                let hexColor
-                if (block > .98)
+                let hexColor = '#bfcfa5'
+                if (block > .99)
                     hexColor = '#bfcfa5'
                 else if (block > .9)
                     hexColor = '#b4b192'
                 else if (block > .7)
                     hexColor = '#71b13e'
-                else if (block > .6)
+                else if (block > .55)
                     hexColor = '#538629'
                 else if (block > .5)
                     hexColor = '#282e6e'
                 else
                     hexColor = '#1d2255'
-                // const color = Color.fromHex(hexColor).
+                // const hexColor = this.#buildColor(block)
                 canvas.rect(blockCanvasPoint, size, hexColor)
             }
         }
+    }
+
+    #buildColor(noise) {
+        const octet = parseInt(noise * 255, 10)
+        const color = clamp(octet, 0, 255)
+        return new Color(color, color, color).toHex()
     }
 
     buildLandBlock(block) {
