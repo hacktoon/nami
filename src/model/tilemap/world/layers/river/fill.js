@@ -53,7 +53,7 @@ function buildRiver(context, riverId, sourcePoint) {
     let currentPoint = sourcePoint
     // follow river down following next land points
     const maxDistance = layers.basin.getDistance(sourcePoint)
-    const rainsOnSource = layers.rain.createsRivers(sourcePoint)
+    const rainsOnSource = layers.rain.canCreateRiver(sourcePoint)
     while (layers.surface.isLand(currentPoint)) {
         const wrappedPoint = rect.wrap(currentPoint)
         const meander = buildMeander(context, wrappedPoint)

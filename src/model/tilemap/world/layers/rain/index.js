@@ -38,7 +38,7 @@ export class RainLayer {
         return this.get(point).color
     }
 
-    createsRivers(point) {
+    canCreateRiver(point) {
         const rain = this.get(point)
         const riverSourceOpts = [Rain.HUMID.id, Rain.WET.id, Rain.SEASONAL.id]
         return riverSourceOpts.includes(rain.id)
