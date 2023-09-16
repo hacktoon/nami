@@ -1,4 +1,3 @@
-import { Matrix } from '/src/lib/matrix'
 import { Climate } from './data'
 
 
@@ -9,23 +8,17 @@ const HOT_RATIO = .75
 
 
 export class ClimateLayer {
-    #matrix
-
-    constructor(rect, layers) {
-        this.#matrix = Matrix.fromRect(rect, point => {
-            const noise = layers.noise.getAtmos(point)
-            let climate = Climate.FROZEN
-            if (noise > COLD_RATIO)      climate = Climate.COLD
-            if (noise > TEMPERATE_RATIO) climate = Climate.TEMPERATE
-            if (noise > WARM_RATIO)      climate = Climate.WARM
-            if (noise > HOT_RATIO)       climate = Climate.HOT
-            return climate.id
-        })
+    constructor(layers) {
+        this.layers = layers
     }
 
     get(point) {
-        const climate = this.#matrix.get(point)
-        return Climate.get(climate)
+        const noise = this.layers.noise.getAtmos(point)
+        if (noise > HOT_RATIO)       return Climate.HOT
+        if (noise > WARM_RATIO)      return Climate.WARM
+        if (noise > TEMPERATE_RATIO) return Climate.TEMPERATE
+        if (noise > COLD_RATIO)      return Climate.COLD
+        return Climate.FROZEN
     }
 
     getColor(point) {
@@ -33,8 +26,8 @@ export class ClimateLayer {
     }
 
     is(point, type) {
-        const id = this.#matrix.get(point)
-        return id === type.id
+        const rain = this.get(point)
+        return rain.id === type.id
     }
 
     getText(point) {

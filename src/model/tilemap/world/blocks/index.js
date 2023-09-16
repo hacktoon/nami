@@ -44,12 +44,12 @@ export class BlockMap {
             //         return 2
             //     return 1
             // }
-            if (outlineNoise > .6) {
-                if (outlineNoise > .8) {
-                    const n = (outlineNoise + blockNoise) / 2
-                    if (n >= 1) return 4
-                    if (n >= .8) return 3
-                    if (n >= .6) return 2
+            if (isLandBlock) {
+                if (isBorderBlock) {
+                    if (outlineNoise > .6)
+                        return 1
+                    else
+                        return 0
                 }
                 return 1
             }
