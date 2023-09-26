@@ -28,6 +28,8 @@ export class SurfaceLayer {
     #bodyAreaMap = new Map()
     #waterArea = 0
 
+    #bodyId = FIRST_BODY_ID
+
     landBorders = []
 
     constructor(rect, layers) {
@@ -38,14 +40,10 @@ export class SurfaceLayer {
         })
 
         // detect surface body id and area
-        let bodyId = FIRST_BODY_ID
+        // start a fill for each empty point in matrix
         this.#bodyMatrix.forEach(point => {
-            // start a fill for each empty point in matrix
-            if (!this.#isEmptyBody(point)) return
-            const body = this.#buildSurfaceBody(point, bodyId)
-            this.#bodyTypeMap.set(bodyId, body.type.id)
-            this.#bodyAreaMap.set(bodyId, body.area)
-            bodyId++
+            if (this.#isEmptyBody(point))
+                this.#buildSurfaceBody(point)
         })
 
         // surface body matrix already defined, update it by setting
@@ -64,9 +62,9 @@ export class SurfaceLayer {
         })
     }
 
-    #buildSurfaceBody(originPoint, bodyId) {
+    #buildSurfaceBody(originPoint) {
         const isEmptyWaterBody = this.#isEmptyWaterBody(originPoint)
-        const area = this.#fillBodyArea(originPoint, bodyId)
+        const area = this.#fillBodyArea(originPoint, this.#bodyId)
         const surfaceAreaRatio = (area * 100) / this.#bodyMatrix.area
         // set continent as default type
         let type = Surface.CONTINENT
@@ -79,7 +77,9 @@ export class SurfaceLayer {
         } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
             type = Surface.ISLAND
         }
-        return {type, area}
+        this.#bodyTypeMap.set(this.#bodyId, type.id)
+        this.#bodyAreaMap.set(this.#bodyId, area)
+        this.#bodyId++
     }
 
     #detectBorder(point, isWater) {
