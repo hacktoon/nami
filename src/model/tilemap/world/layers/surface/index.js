@@ -40,10 +40,11 @@ export class SurfaceLayer {
         })
 
         // detect surface body id and area
-        // start a fill for each empty point in matrix
         this.#bodyMatrix.forEach(point => {
-            if (this.#isEmptyBody(point))
+            if (this.#isEmptyBody(point)) {
+                // start a fill at each empty point in bodyMatrix
                 this.#buildSurfaceBody(point)
+            }
         })
 
         // surface body matrix already defined, update it by setting

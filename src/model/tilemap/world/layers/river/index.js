@@ -96,6 +96,7 @@ export class RiverLayer {
         const river = this.get(point)
         if (! river.hasWater) return ''
         const attrs = [
+             `${river.id}`,
              `${river.name}`,
              river.mouth ? 'mouth' : '',
              `stretch=${river.stretch.name}`,

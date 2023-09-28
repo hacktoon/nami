@@ -47,9 +47,8 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const showRiver = tileSize >= 8 && this.params.get('showRivers')
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
-        // TODO: refactor resolution calc
         if (this.params.get('showBlocks') && tileSize >= 20) {
-            const resolution = tileSize >= 90 ? 9 : 3
+            const resolution = tileSize >= 80 ? 9 : 3
             const blockMap = this.tileMap.getBlock(tilePoint, resolution)
             this.drawBlock(props, blockMap)
         } else {
@@ -84,20 +83,8 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             const xSize = x * size
             for (let y=0; y < resolution; y++) {
                 const blockCanvasPoint = Point.plus(canvasPoint, [y * size, xSize])
-                let block = blockMap.get([y, x])
-                let hexColor
-                if (block == 0) {
-                    hexColor = '#282e6e'
-                } else if (block == 1) {
-                    hexColor = '#426e1e'
-                } else if (block == 2) {
-                    hexColor = '#6a914b'
-                } else if (block == 3) {
-                    hexColor = '#b1c5a0'
-                } else if (block == 4) {
-                    hexColor = '#cadbbc'
-                }
-                canvas.rect(blockCanvasPoint, size, hexColor)
+                let surface = blockMap.getSurface([y, x])
+                canvas.rect(blockCanvasPoint, size, surface.color.toHex())
             }
         }
     }

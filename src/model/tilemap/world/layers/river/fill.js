@@ -20,6 +20,7 @@ export const DIRECTION_PATTERN_MAP = new Map([
     [Direction.SOUTH.id, 16],
 ])
 
+const MAX_RIVER_SIZE = 2
 const RIVER_MEANDER_MIDDLE = .5
 const OFFSET_RANGE = [.1, .3]
 
@@ -33,12 +34,14 @@ export function buildRiverMap(context) {
     let riverId = 0
     const basinLayer = context.layers.basin
     basinLayer.getDividePoints()
-        // crate a list of pairs (point and distance)
+        // create a list of pairs (point and basin distance to mouth)
         .map(point => [point, basinLayer.getDistance(point)])
-        // in ascendent order: higher points first
+        // in ascendent order to get longest rivers first
         // for starting rivers on basin divides
         .sort((a, b) => a[1] - b[1])
-        .forEach(([source]) => buildRiver(context, riverId++, source))
+        .forEach(([source, ]) => {
+            buildRiver(context, riverId++, source)
+        })
 }
 
 
@@ -54,6 +57,7 @@ function buildRiver(context, riverId, sourcePoint) {
     // follow river down following next land points
     const maxDistance = layers.basin.getDistance(sourcePoint)
     const rainsOnSource = layers.rain.canCreateRiver(sourcePoint)
+    if (maxDistance < MAX_RIVER_SIZE) return
     while (layers.surface.isLand(currentPoint)) {
         const wrappedPoint = rect.wrap(currentPoint)
         const meander = buildMeander(context, wrappedPoint)

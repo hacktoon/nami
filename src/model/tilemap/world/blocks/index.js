@@ -1,5 +1,5 @@
-import { clamp } from '/src/lib/number'
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
 import { Rect } from '/src/lib/number'
 import { Matrix } from '/src/lib/matrix'
@@ -35,30 +35,26 @@ export class BlockMap {
         // scale coordinate to block grid
         const basePoint = Point.multiplyScalar(worldPoint, this.#resolution)
         return Matrix.fromSize(this.#resolution, point => {
-            // map point at world noise map to a point in block
             const blockPoint = Point.plus(basePoint, point)
-            const outlineNoise = noiseLayer.get4D(blockRect, blockPoint, 'outline')
-            const blockNoise = noiseLayer.get4D(blockRect, blockPoint, 'block')
-            // if (isLandBlock && outlineNoise >= .6) {
-            //     if (outlineNoise > .6 && blockNoise > .6)
-            //         return 2
-            //     return 1
-            // }
+            const noise = noiseLayer.get4D(blockRect, blockPoint, 'outline')
             if (isLandBlock) {
                 if (isBorderBlock) {
-                    if (outlineNoise > .6)
-                        return 1
-                    else
-                        return 0
+                    return noise > .6 ? 1 : 0
                 }
-                return 1
+                return noise > .7 ? 2 : 1
             }
-            return 0
+            return noise > .7 ? 1 : 0
         })
     }
 
-    get(point) {
-        return this.#surfaceMatrix.get(point)
+    getSurface(point) {
+        const id = this.#surfaceMatrix.get(point)
+        let color = {
+            0: '#216384',
+            1: '#71b13e',
+            2: '#c5ed7d',
+        }[id]
+        return {id, color: Color.fromHex(color)}
     }
 
     isWater(point) {

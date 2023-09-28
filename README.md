@@ -7,6 +7,12 @@
 
 ## PLANNING
 
+- start rivers on water borders (recreate basin)
+- river mouthes must be all land
+
+### SurfaceLayer
+
+
 ### BlockLayer
 - Calculate 3x3 surface code map to distribute % of erosion
 - Start fill from river and block shore points
