@@ -7,8 +7,8 @@
 
 ## PLANNING
 
-- start rivers on water borders (recreate basin)
-- river mouthes must be all land
+- fix river meander
+- river mouths must be land
 
 ### SurfaceLayer
 

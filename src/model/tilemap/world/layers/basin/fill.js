@@ -10,7 +10,7 @@ const GROWTH = 10  // make fill basins grow bigger than others
 
 export function buildBasinMap(context) {
     // start filling from land borders
-    let origins = context.layers.surface.landBorders
+    let origins = context.layers.surface.waterBorders
     const fill = new BasinFill()
     fill.start(origins, context)
 }
@@ -19,29 +19,21 @@ class BasinFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
-    onInitFill(fill, fillPoint, neighbors) {
+    onInitFill(fill, fillPoint) {
         // set the initial fill point on river mouth
         const {
-            rect, layers, erosionMap, midpointMap,
+            rect, layers, midpointMap,
             basinMap, distanceMap, colorMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         const noise = layers.noise.getGrained(wrappedFillPoint)
-        // set basin id
+        // set basin id to spread on fill
         basinMap.set(wrappedFillPoint, fill.id)
         // set basin color
         colorMap.set(fill.id, new Color())
         // initial distance is 1
         distanceMap.set(wrappedFillPoint, 1)
         midpointMap.set(wrappedFillPoint, noise)
-        // find water neighbor
-        for(let neighbor of neighbors) {
-            if (layers.surface.isWater(neighbor)) {
-                const direction = getDirection(fillPoint, neighbor)
-                erosionMap.set(wrappedFillPoint, direction.id)
-                break
-            }
-        }
     }
 
     getNeighbors(fill, parentPoint) {
