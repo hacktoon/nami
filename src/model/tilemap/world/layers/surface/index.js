@@ -31,6 +31,7 @@ export class SurfaceLayer {
     #bodyId = FIRST_BODY_ID
 
     landBorders = []
+    waterBorders = []
 
     constructor(rect, layers) {
         this.#bodyMatrix = Matrix.fromRect(rect, point => {
@@ -75,8 +76,11 @@ export class SurfaceLayer {
             if (this.#detectBorder(point, isWater)) {
                 // negative bodyId's are surface borders
                 this.#bodyMatrix.set(point, -bodyId)
-                // store land borders for other layers to use
-                if (!isWater) this.landBorders.push(point)
+                // store borders for other layers to use
+                if (isWater)
+                    this.waterBorders.push(point)
+                else
+                    this.landBorders.push(point)
             }
             // update water tile area
             if (isWater) this.#waterArea++
