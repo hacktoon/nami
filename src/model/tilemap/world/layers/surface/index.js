@@ -47,6 +47,10 @@ export class SurfaceLayer {
             }
         })
 
+        this.#buildBorders()
+    }
+
+    #buildBorders() {
         // surface body matrix already defined, update it by setting
         // water/land borders as negative ids
         this.#bodyMatrix.forEach(point => {
