@@ -38,16 +38,32 @@ export class SurfaceLayer {
             const isWaterBody = layers.noise.getOutline(point) < SURFACE_RATIO
             return isWaterBody ? EMPTY_WATERBODY : EMPTY_BODY
         })
-
-        // detect surface body id and area
-        this.#bodyMatrix.forEach(point => {
-            if (this.#isEmptyBody(point)) {
-                // start a fill at each empty point in bodyMatrix
-                this.#buildSurfaceBody(point)
-            }
-        })
-
+        this.#buildSurfaceBody()
         this.#buildBorders()
+    }
+
+    #buildSurfaceBody() {
+        this.#bodyMatrix.forEach(originPoint => {
+            if (! this.#isEmptyBody(originPoint)) return
+            // start fill
+            const isEmptyWaterBody = this.#isEmptyWaterBody(originPoint)
+            const area = this.#fillBodyArea(originPoint, this.#bodyId)
+            const surfaceAreaRatio = (area * 100) / this.#bodyMatrix.area
+            // set continent as default type
+            let type = Surface.CONTINENT
+            // area is filled; decide type
+            if (isEmptyWaterBody) {
+                if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
+                    type = Surface.OCEAN
+                else if (surfaceAreaRatio >= MINIMUN_SEA_RATIO)
+                    type = Surface.SEA
+            } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
+                type = Surface.ISLAND
+            }
+            this.#bodyTypeMap.set(this.#bodyId, type.id)
+            this.#bodyAreaMap.set(this.#bodyId, area)
+            this.#bodyId++
+        })
     }
 
     #buildBorders() {
@@ -67,26 +83,6 @@ export class SurfaceLayer {
         })
     }
 
-    #buildSurfaceBody(originPoint) {
-        const isEmptyWaterBody = this.#isEmptyWaterBody(originPoint)
-        const area = this.#fillBodyArea(originPoint, this.#bodyId)
-        const surfaceAreaRatio = (area * 100) / this.#bodyMatrix.area
-        // set continent as default type
-        let type = Surface.CONTINENT
-        // area is filled; decide type
-        if (isEmptyWaterBody) {
-            if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
-                type = Surface.OCEAN
-            else if (surfaceAreaRatio >= MINIMUN_SEA_RATIO)
-                type = Surface.SEA
-        } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
-            type = Surface.ISLAND
-        }
-        this.#bodyTypeMap.set(this.#bodyId, type.id)
-        this.#bodyAreaMap.set(this.#bodyId, area)
-        this.#bodyId++
-    }
-
     #detectBorder(point, isWater) {
         for (let sidePoint of Point.adjacents(point)) {
             const isSideWater = this.isWater(sidePoint)
@@ -96,6 +92,7 @@ export class SurfaceLayer {
         }
         return false
     }
+
 
     #isEmptyBody(point) {
         const bodyId = this.#bodyMatrix.get(point)
