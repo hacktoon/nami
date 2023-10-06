@@ -50,6 +50,7 @@ export class BasinLayer {
             id: this.#basinMap.get(point),
             erosion: Direction.fromId(directionId),
             distance: this.getDistance(point),
+            midpoint: this.getMidpoint(point),
         }
     }
 
@@ -75,6 +76,10 @@ export class BasinLayer {
         return this.#distanceMap.get(point)
     }
 
+    getMidpoint(point) {
+        return this.#midpointMap.get(point)
+    }
+
     getText(point) {
         if (! this.#erosionMap.has(point))
             return ''
@@ -83,6 +88,7 @@ export class BasinLayer {
              `${basin.id}`,
              `erosion=${basin.erosion.name}`,
              `distance=${basin.distance}`,
+             `midpoint=${basin.midpoint}`,
         ].join(',')
         return `Basin(${attrs})`
     }

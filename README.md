@@ -8,6 +8,7 @@
 ## PLANNING
 
 - fix river meander
+- create river start on surface pattern
 - river mouths must be land
 
 ### SurfaceLayer

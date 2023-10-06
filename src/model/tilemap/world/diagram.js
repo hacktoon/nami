@@ -63,7 +63,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props, layerColor)
         }
-        if (layers.surface.isLand(point) && this.params.get('showLandforms')) {
+        if (this.params.get('showLandforms')) {
             layers.relief.draw(point, props, layerColor)
         }
         if (this.params.get('showCities')) {
@@ -88,21 +88,4 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             }
         }
     }
-
-    #buildColor(noise) {
-        const octet = parseInt(noise * 255, 10)
-        const color = clamp(octet, 0, 255)
-        return new Color(color, color, color).toHex()
-    }
-
-    buildLandBlock(block) {
-
-    }
-
-    // if (layers.landform.has(point) && this.params.get('showLandforms')) {
-    //     layers.landform.draw(point, props)
-    // }
-    // if (this.params.get('showLakes') && layers.lake.has(point)) {
-    //     layers.lake.draw(point, props)
-    // }
 }

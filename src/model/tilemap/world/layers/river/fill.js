@@ -34,13 +34,13 @@ export function buildRiverMap(context) {
     let riverId = 0
     const basinLayer = context.layers.basin
     basinLayer.getDividePoints()
-        // create a list of pairs (point and basin distance to mouth)
+        // create a list of pairs = (point, basin distance to mouth)
         .map(point => [point, basinLayer.getDistance(point)])
         // in ascendent order to get longest rivers first
         // for starting rivers on basin divides
         .sort((a, b) => a[1] - b[1])
-        .forEach(([source, ]) => {
-            buildRiver(context, riverId++, source)
+        .forEach(([point, ]) => {
+            buildRiver(context, riverId++, point)
         })
 }
 
@@ -86,7 +86,14 @@ function buildMeander(context, wrappedPoint) {
     const base = RIVER_MEANDER_MIDDLE
     // direction axis ([-1, 0], [1, 1], etc)
     const axis = context.layers.basin.getErosionAxis(wrappedPoint)
-    return Point.randomRelativeDiff(base, OFFSET_RANGE, axis)
+    const rand = (axisDirection) => {
+        const offset = Random.floatRange(...OFFSET_RANGE)
+        const axisToggle = axisDirection === 0
+                           ? Random.choice(-1, 1)
+                           : axisDirection
+        return base + (offset * axisToggle)
+    }
+    return [rand(axis[0]), rand(axis[1])]
 }
 
 

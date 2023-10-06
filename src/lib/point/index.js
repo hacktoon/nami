@@ -24,21 +24,6 @@ export class Point {
         return [Random.int(rangeWidth), Random.int(rangeHeight)]
     }
 
-    static randomRelativeDiff(base, offsetRange, axisPoint) {
-        // choose a relative float point in offsetRange around
-        // the middle of a square at base (like .5).
-        // Use axisPoint to steer result point
-        const rand = toggle => {
-            const offset = Random.floatRange(...offsetRange)
-            const axisToggle = toggle === 0 ? 1 : toggle
-            return base + (offset * axisToggle)
-        }
-        return [
-            rand(axisPoint[0]),
-            rand(axisPoint[1])
-        ]
-    }
-
     static fromHash(hash) {
         return hash.split(',').map(h => parseInt(h, 10))
     }
@@ -65,6 +50,13 @@ export class Point {
 
     static plusScalar(point, value) {
         return [point[0] + value, point[1] + value]
+    }
+
+    static multiply(point, another) {
+        return [
+            point[0] * another[0],
+            point[1] * another[1]
+        ]
     }
 
     static multiplyScalar(point, x, y) {
