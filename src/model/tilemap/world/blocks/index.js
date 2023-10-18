@@ -56,12 +56,4 @@ export class BlockMap {
         }[id]
         return {id, color: Color.fromHex(color)}
     }
-
-    isWater(point) {
-        return this.get(point) == 0
-    }
-
-    isMountain(point) {
-        return this.get(point) == 2
-    }
 }

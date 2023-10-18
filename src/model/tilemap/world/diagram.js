@@ -48,9 +48,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
         if (this.params.get('showBlocks') && tileSize >= 20) {
-            const resolution = tileSize >= 80 ? 9 : 3
-            const blockMap = this.tileMap.getBlock(tilePoint, resolution)
-            this.drawBlock(props, blockMap)
+            this.drawBlock(props)
         } else {
             canvas.rect(canvasPoint, tileSize, layerColor.toHex())
         }
@@ -71,8 +69,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    drawBlock(props, blockMap) {
+    drawBlock(props) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
+        const blockMap = this.tileMap.getBlock(tilePoint, 3)
         const point = this.rect.wrap(tilePoint)
         const layers = this.tileMap.layers
         const resolution = blockMap.resolution
