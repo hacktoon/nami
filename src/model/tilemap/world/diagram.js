@@ -71,18 +71,17 @@ export class WorldTileMapDiagram extends TileMapDiagram {
 
     drawBlock(props) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
-        const blockMap = this.tileMap.getBlock(tilePoint, 3)
-        const point = this.rect.wrap(tilePoint)
-        const layers = this.tileMap.layers
-        const resolution = blockMap.resolution
-        const size = tileSize / resolution
+        const blockMap = this.tileMap.getBlock(tilePoint)
+        const blockSize = blockMap.size
+        const size = tileSize / blockSize
 
         // render block tiles
-        for (let x=0; x < resolution; x++) {
+        for (let x=0; x < blockSize; x++) {
             const xSize = x * size
-            for (let y=0; y < resolution; y++) {
-                const blockCanvasPoint = Point.plus(canvasPoint, [y * size, xSize])
-                let surface = blockMap.getSurface([y, x])
+            for (let y=0; y < blockSize; y++) {
+                const ySize = y * size
+                const blockCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
+                let surface = blockMap.get([y, x])
                 canvas.rect(blockCanvasPoint, size, surface.color.toHex())
             }
         }

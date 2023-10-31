@@ -5,7 +5,7 @@ import { PointSet, PointArraySet } from '/src/lib/point/set'
 
 import { drawCity, drawCapital, drawDungeon } from './draw'
 
-const CITY_RADIUS = 3
+const CITY_RADIUS = 5
 const WATER_CITY_CHANCE = .003
 const WATER_DUNGEON_CHANCE = .02
 const LAND_DUNGEON_CHANCE = .2

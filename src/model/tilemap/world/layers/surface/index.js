@@ -130,6 +130,11 @@ export class SurfaceLayer {
         return Surface.get(this.#bodyTypeMap.get(bodyId))
     }
 
+    getBlock(world, point) {
+        const surface = this.get(point)
+        return new SurfaceBlockMap(world, surface, point)
+    }
+
     getColor(point) {
         const color = this.get(point).color
         if (this.isBorder(point)) {

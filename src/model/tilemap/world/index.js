@@ -18,7 +18,6 @@ import { LandformLayer } from './layers/landform'
 import { TopologyLayer } from './layers/topology'
 
 import { WorldTileMapDiagram } from './diagram'
-import { BlockMap } from './blocks'
 import { WORLD_NAMES } from './names'
 
 
@@ -85,9 +84,9 @@ export class WorldTileMap extends TileMap {
         .trim()
     }
 
-    getBlock(point, resolution) {
+    getBlock(point) {
         const worldPoint = this.rect.wrap(point)
-        return new BlockMap(this, resolution, worldPoint)
+        return this.layers.surface.getBlock(this, worldPoint)
     }
 
     getDescription() {
