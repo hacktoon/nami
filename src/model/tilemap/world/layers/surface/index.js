@@ -3,6 +3,7 @@ import { Point } from '/src/lib/point'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { Surface } from './data'
+import { SurfaceBlockMap } from './block'
 
 
 // use 0 and 1 as "empty" values

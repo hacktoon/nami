@@ -5,7 +5,7 @@ import { Rect } from '/src/lib/number'
 import { Matrix } from '/src/lib/matrix'
 
 
-export class BlockMap {
+export class SurfaceBlockMap {
     #world
     #resolution
     #layers
@@ -18,10 +18,6 @@ export class BlockMap {
         this.worldPoint = worldPoint
         this.#surfaceMatrix = this.#buildSurface()
         // seed is fixed for current block point
-    }
-
-    get resolution() {
-        return this.#resolution
     }
 
     #buildSurface() {
