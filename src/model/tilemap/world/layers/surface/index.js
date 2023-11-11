@@ -3,7 +3,7 @@ import { Point } from '/src/lib/point'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import { Surface } from './data'
-import { SurfaceBlockMap } from './block'
+import { SurfaceChunk } from './chunk'
 
 
 // use 0 and 1 as "empty" values
@@ -130,9 +130,8 @@ export class SurfaceLayer {
         return Surface.get(this.#bodyTypeMap.get(bodyId))
     }
 
-    getBlock(world, point) {
-        const surface = this.get(point)
-        return new SurfaceBlockMap(world, surface, point)
+    getChunk(params) {
+        return new SurfaceChunk(params)
     }
 
     getColor(point) {

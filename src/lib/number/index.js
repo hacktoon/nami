@@ -25,6 +25,10 @@ export class Rect {
         return new Rect(w, h)
     }
 
+    static multiply(rect, factor) {
+        return new Rect(rect.width * factor, rect.height * factor)
+    }
+
     constructor(width, height) {
         this.width = width
         this.height = height ?? width

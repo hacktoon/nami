@@ -48,7 +48,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
         if (this.params.get('showBlocks') && tileSize >= 20) {
-            this.drawBlock(props)
+            this.drawChunk(props)
         } else {
             canvas.rect(canvasPoint, tileSize, layerColor.toHex())
         }
@@ -69,19 +69,18 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    drawBlock(props) {
+    drawChunk(props) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
-        const blockMap = this.tileMap.getBlock(tilePoint)
-        const blockSize = blockMap.size
-        const size = tileSize / blockSize
-
+        const chunk = this.tileMap.getChunk(tilePoint)
+        const chunkSize = chunk.size
+        const size = tileSize / chunkSize
         // render block tiles
-        for (let x=0; x < blockSize; x++) {
+        for (let x=0; x < chunkSize; x++) {
             const xSize = x * size
-            for (let y=0; y < blockSize; y++) {
+            for (let y=0; y < chunkSize; y++) {
                 const ySize = y * size
                 const blockCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                let surface = blockMap.get([y, x])
+                let surface = chunk.get([y, x])
                 canvas.rect(blockCanvasPoint, size, surface.color.toHex())
             }
         }

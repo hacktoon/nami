@@ -29,6 +29,9 @@ const SCHEMA = new Schema(
 )
 
 
+const CHUNK_SIZE = 3
+
+
 export class WorldTileMap extends TileMap {
     static diagram = WorldTileMapDiagram
     static schema = SCHEMA
@@ -84,9 +87,12 @@ export class WorldTileMap extends TileMap {
         .trim()
     }
 
-    getBlock(point) {
-        const worldPoint = this.rect.wrap(point)
-        return this.layers.surface.getBlock(this, worldPoint)
+    getChunk(point) {
+        return this.layers.surface.getChunk({
+            world: this,
+            chunkSize: CHUNK_SIZE,
+            worldPoint: this.rect.wrap(point),
+        })
     }
 
     getDescription() {
