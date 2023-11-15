@@ -5,22 +5,18 @@ import { Random } from '/src/lib/random'
 import { Rect } from '/src/lib/number'
 import { Matrix } from '/src/lib/matrix'
 
+import { Surface } from './data'
 
-const GRID_DIR_MASK = [
-    [
-        [Direction.NORTH, Direction.WEST, Direction.NORTHWEST], // 0, 0
-        [Direction.WEST],                                       // 0, 1
-        [Direction.SOUTH, Direction.WEST, Direction.SOUTHWEST], // 0, 2
-    ], [
-        [Direction.NORTH],                                      // 1, 0
-        [Direction.NULL],                                       // 1, 1
-        [Direction.SOUTH],                                      // 1, 2
-    ], [
-        [Direction.NORTH, Direction.EAST, Direction.NORTHEAST], // 2, 0
-        [Direction.EAST],                                       // 2, 1
-        [Direction.SOUTH, Direction.EAST, Direction.SOUTHEAST], // 2, 2
-    ]
-]
+
+// 0,0   1,0   2,0
+// 0,1   1,1   2,1
+// 0,2   1,2   2,2
+
+const CHUNK_SIDE_DIRECTION_MAP = {
+    0: {1: Direction.WEST},
+    1: {0: Direction.NORTH, 2: Direction.SOUTH},
+    2: {1: Direction.EAST},
+}
 
 
 export class SurfaceChunk {
@@ -37,50 +33,57 @@ export class SurfaceChunk {
     }
 
     #build(chunkSize, worldPoint) {
-        const surfaceLayer = this.#layers.surface
         const noiseLayer = this.#layers.noise
+        const surfaceLayer = this.#layers.surface
         const isLandBlock = surfaceLayer.isLand(worldPoint)
         const isBorderBlock = surfaceLayer.isBorder(worldPoint)
         // scale coordinate to block grid
-        const basePoint = Point.multiplyScalar(worldPoint, chunkSize)
-        return Matrix.fromSize(chunkSize, point => {
-            // const [x, y] = point  // point is on range 0:2
-            // let waterSides = 0
-            // let landSides = 0
-            // for (const direction of GRID_DIR_MASK[x][y]) {  // get directions to check
-            //     // axis is a identity point, sum to world point to get neighbor tiles
-            //     const sidePoint = Point.plus(worldPoint, direction.axis)
-            //     if (surfaceLayer.isLand(sidePoint))
-            //         landSides++
-            //     else
-            //     waterSides++
-            // }
-            const chunkPoint = Point.plus(basePoint, point)
-            // if (worldPoint[0] == 37 && worldPoint[1] == 32)
-            //     console.log(point, ` has ${landSides} land sides and ${waterSides} waters`);
-            const noise = noiseLayer.get4D(this.#chunkRect, chunkPoint, 'outline')
-            // if (! isLandBlock) return 0
-            // if (! isBorderBlock) return 2
-            if (noise > .6 && noise <= .7) return 3
-            if (noise > .6) {
-                return 2
+        const surface = surfaceLayer.get(worldPoint)
+        const baseChunkPoint = Point.multiplyScalar(worldPoint, chunkSize)
+        const buildTile = (indexPoint) => {
+            // handle borders world points
+            if (isBorderBlock) {
+                const [x, y] = indexPoint
+                // middle point remains the same
+                if (x == 1 && y == 1) return surface
+                // side points
+                if (x == 1 || y == 1) {
+                    const direction = CHUNK_SIDE_DIRECTION_MAP[x][y]
+                    const sidePoint = Point.plus(worldPoint, direction.axis)
+                    const isSidePointLand = surfaceLayer.isLand(sidePoint)
+                    const isLandNeighbor = isLandBlock && isSidePointLand
+                    const isWaterNeighbor = !isLandBlock && !isSidePointLand
+                    if (isLandNeighbor || isWaterNeighbor) {
+                        return surface
+                    }
+                }
+                // corners points
+            } else {
+                // remove water tiles inside continent
+                return surface
             }
-            return 1
+
+            // handle the other chunk points
+            const chunkPoint = Point.plus(baseChunkPoint, indexPoint)
+            const noise = noiseLayer.get4D(this.#chunkRect, chunkPoint, 'outline')
+            // any of neighbors are island? if land, set island
+            // any of neighbors are sea? is water, set sea
+            if (noise > .6) {
+                if (surfaceLayer.isIsland(worldPoint)) return Surface.ISLAND
+                return Surface.CONTINENT
+            }
+            if (surfaceLayer.isSea(worldPoint)) return Surface.SEA
+            return Surface.OCEAN
+        }
+
+        return Matrix.fromSize(chunkSize, indexPoint => {
+            const surface = buildTile(indexPoint)
+            return surface.id
         })
     }
 
     get(point) {
-        const id = this.#matrix.get(point)
-        let color = {
-            0: '#144c68',
-            1: '#216384',
-            2: '#71b13e',
-            3: '#518329',
-        }[id]
-        return {id, color: Color.fromHex(color)}
-    }
-
-    isWater(point) {
-        return this.get(point) == 0
+        const surfaceId = this.#matrix.get(point)
+        return Surface.get(surfaceId)
     }
 }

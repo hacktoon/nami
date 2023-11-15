@@ -14,7 +14,7 @@ const FIRST_BODY_ID = 2
 
 // Area ratios
 const SURFACE_RATIO = .6
-const MINIMUN_OCEAN_RATIO = 2
+const MINIMUN_OCEAN_RATIO = 4
 const MINIMUN_SEA_RATIO = .2
 const MINIMUN_CONTINENT_RATIO = 1
 
@@ -171,6 +171,16 @@ export class SurfaceLayer {
 
     isLand(point) {
         return ! this.isWater(point)
+    }
+
+    isIsland(point) {
+        const surface = this.get(point)
+        return surface.id == Surface.ISLAND.id
+    }
+
+    isSea(point) {
+        const surface = this.get(point)
+        return surface.id == Surface.SEA.id
     }
 
     isBorder(point) {
