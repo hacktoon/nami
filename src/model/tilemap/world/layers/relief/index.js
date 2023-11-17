@@ -1,14 +1,13 @@
 import { Matrix } from '/src/lib/matrix'
 
 import { Relief } from './data'
-import { Surface } from '../surface/data'
+import { SeaSurface } from '../surface/data'
 import { RiverStretch } from '../river/data'
 
 
 const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
-const HILL_RATIO = .4
 const MOUNTAIN_RATIO = .3
 
 
@@ -29,7 +28,7 @@ export class ReliefLayer {
         const outlineNoise = layers.noise.getOutline(point)
         const featureNoise = layers.noise.getFeature(point)
         const grainedNoise = layers.noise.getGrained(point)
-        if (layers.surface.is(point, Surface.SEA)) {
+        if (layers.surface.is(point, SeaSurface)) {
             if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
             return Relief.PLATFORM
         }

@@ -1,30 +1,45 @@
 import { Color } from '/src/lib/color'
 
-
-class Spec {
-    static total = 0
-    static map = new Map()
-
-    static build(spec) {
-        const id = Spec.total++
-        const item = {...spec, id, color: Color.fromHex(spec.color)}
-        Spec.map.set(id, item)
-        return item
-    }
-
-    static get(id) {
-        return Spec.map.get(id)
+export class Surface {
+    static parse(id) {
+        return SURFACE_MAP[id]
     }
 }
 
 
-export class Surface {
-    static OCEAN = Spec.build({name: 'Ocean', water: true, color: '#1d2255'})
-    static SEA = Spec.build({name: 'Sea', water: true, color: '#216384'})
-    static CONTINENT = Spec.build({name: 'Continent', water: false, color: '#71b13e'})
-    static ISLAND = Spec.build({name: 'Island', water: false, color: '#c5ed7d'})
+export class OceanSurface extends Surface {
+    static id = 0
+    static name = 'Ocean'
+    static water = true
+    static color = Color.fromHex('#1d2255')
+}
 
-    static get(id) {
-        return Spec.get(id)
-    }
+
+export class SeaSurface extends Surface {
+    static id = 1
+    static name = 'Sea'
+    static water = true
+    static color = Color.fromHex('#216384')
+}
+
+export class IslandSurface extends Surface {
+    static id = 2
+    static name = 'Island'
+    static water = false
+    static color = Color.fromHex('#c5ed7d')
+}
+
+export class ContinentSurface extends Surface {
+    static id = 3
+    static name = 'Continent'
+    static water = false
+    static color = Color.fromHex('#71b13e')
+}
+
+
+const SURFACE_MAP = {
+    0: OceanSurface,
+    1: SeaSurface,
+    2: IslandSurface,
+    3: ContinentSurface,
 }
