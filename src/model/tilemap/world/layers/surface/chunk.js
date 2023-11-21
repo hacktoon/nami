@@ -60,6 +60,7 @@ export class SurfaceChunk {
         const surface = surfaceLayer.get(worldPoint)
         const baseChunkPoint = Point.multiplyScalar(worldPoint, chunkSize)
         const buildTile = (indexPoint) => {
+            const isNoiseLand = this.#isNoiseLand(baseChunkPoint, worldPoint, indexPoint)
             // handle borders world points
             if (isBorderChunk) {
                 const [x, y] = indexPoint
@@ -81,7 +82,6 @@ export class SurfaceChunk {
                         //     return SeaSurface
                         // }
                     }
-
                 }
 
                 // corners points
@@ -89,7 +89,12 @@ export class SurfaceChunk {
                 // remove water tiles inside continent
                 return surface
             }
-            return this.#getSurfaceByNoise(baseChunkPoint, worldPoint, indexPoint)
+            if (isNoiseLand) {
+                if (surfaceLayer.isIsland(worldPoint)) return IslandSurface
+                return ContinentSurface
+            }
+            if (surfaceLayer.isSea(worldPoint)) return SeaSurface
+            return OceanSurface
         }
 
         return Matrix.fromSize(chunkSize, indexPoint => {
@@ -98,19 +103,14 @@ export class SurfaceChunk {
         })
     }
 
-    #getSurfaceByNoise(baseChunkPoint, worldPoint, indexPoint) {
+    #isNoiseLand(baseChunkPoint, worldPoint, indexPoint) {
         // handle the other chunk points
         const surfaceLayer = this.#layers.surface
         const chunkPoint = Point.plus(baseChunkPoint, indexPoint)
         const noise = this.#layers.noise.get4D(this.#chunkRect, chunkPoint, 'outline')
         // any of neighbors are island? if land, set island
         // any of neighbors are sea? is water, set sea
-        if (noise > .6) {
-            if (surfaceLayer.isIsland(worldPoint)) return IslandSurface
-            return ContinentSurface
-        }
-        if (surfaceLayer.isSea(worldPoint)) return SeaSurface
-        return OceanSurface
+        return noise > .6
     }
 
     get(point) {
