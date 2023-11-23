@@ -52,44 +52,50 @@ export class SurfaceChunk {
     }
 
     #build(chunkSize, worldPoint) {
-        const noiseLayer = this.#layers.noise
         const surfaceLayer = this.#layers.surface
-        const isLandChunk = surfaceLayer.isLand(worldPoint)
+        const isChunkLand = surfaceLayer.isLand(worldPoint)
         const isBorderChunk = surfaceLayer.isBorder(worldPoint)
-        // scale coordinate to block grid
         const surface = surfaceLayer.get(worldPoint)
+        // scale world coordinate to chunk 3x3 grid
         const baseChunkPoint = Point.multiplyScalar(worldPoint, chunkSize)
         const buildTile = (indexPoint) => {
-            const isNoiseLand = this.#isNoiseLand(baseChunkPoint, worldPoint, indexPoint)
+            const isCellLand = this.#isCellLand(baseChunkPoint, indexPoint)
+            const [x, y] = indexPoint
+            if (! isBorderChunk) return surface
+            // middle point remains the same
+            if (x == 1 && y == 1) return surface
             // handle borders world points
-            if (isBorderChunk) {
-                const [x, y] = indexPoint
-                // middle point remains the same
-                if (x == 1 && y == 1) return surface
-                // side and corner points
-                const directions = CHUNK_POINT_SIDE_MAP[x][y]
-                for (let direction of directions) {
-                    const sidePoint = Point.plus(worldPoint, direction.axis)
-                    if (x == 1 || y == 1) {
-                        const isSidePointLand = surfaceLayer.isLand(sidePoint)
-                        const isLandNeighbor = isLandChunk && isSidePointLand
-                        const isWaterNeighbor = !isLandChunk && !isSidePointLand
-                        if (isLandNeighbor || isWaterNeighbor) {
-                            return surface
-                        }
-                    } else {  // corners
-                        // if (! isLandChunk && surfaceLayer.isSea(sidePoint)) {
-                        //     return SeaSurface
-                        // }
-                    }
+            const directions = CHUNK_POINT_SIDE_MAP[x][y]
+            // side points
+            if (x == 1 || y == 1) {
+                const sideChunk = Point.plus(worldPoint, directions[0].axis)
+                const isSideChunkSea = surfaceLayer.isSea(sideChunk)
+                const isSideChunkLand = surfaceLayer.isLand(sideChunk)
+                const bothLand = isChunkLand && isSideChunkLand
+                const bothWater = !isChunkLand && !isSideChunkLand
+                // mark sea cells on land chunks neighbor to sea chunks
+                if (! isCellLand && isChunkLand && isSideChunkSea) {
+                    return SeaSurface
                 }
-
-                // corners points
-            } else {
-                // remove water tiles inside continent
-                return surface
+                if (bothLand || bothWater)
+                    return surface
+            } else {  // corners points
+                let totalSeaSides = 0
+                let totalLandSides = 0
+                for (let direction of directions) {
+                    const sideChunk = Point.plus(worldPoint, direction.axis)
+                    totalLandSides += surfaceLayer.isLand(sideChunk) ? 1 : 0
+                    totalSeaSides += surfaceLayer.isSea(sideChunk) ? 1 : 0
+                }
+                if (totalLandSides > 2) {
+                    return ContinentSurface
+                }
+                // mark sea cells on land chunks neighbor to sea chunks
+                if (! isCellLand && totalSeaSides > 0) {
+                    return SeaSurface
+                }
             }
-            if (isNoiseLand) {
+            if (isCellLand) {
                 if (surfaceLayer.isIsland(worldPoint)) return IslandSurface
                 return ContinentSurface
             }
@@ -103,7 +109,7 @@ export class SurfaceChunk {
         })
     }
 
-    #isNoiseLand(baseChunkPoint, worldPoint, indexPoint) {
+    #isCellLand(baseChunkPoint, indexPoint) {
         // handle the other chunk points
         const surfaceLayer = this.#layers.surface
         const chunkPoint = Point.plus(baseChunkPoint, indexPoint)
