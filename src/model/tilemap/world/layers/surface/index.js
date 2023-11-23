@@ -180,7 +180,12 @@ export class SurfaceLayer {
     }
 
     isLand(point) {
-        return ! this.isWater(point)
+        return ! this.get(point).water
+    }
+
+    isContinent(point) {
+        const surface = this.get(point)
+        return surface.id == ContinentSurface.id
     }
 
     isIsland(point) {
