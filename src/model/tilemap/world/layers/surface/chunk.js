@@ -53,48 +53,61 @@ export class SurfaceChunk {
 
     #build(chunkSize, worldPoint) {
         const surfaceLayer = this.#layers.surface
-        const isChunkLand = surfaceLayer.isLand(worldPoint)
         const isBorderChunk = surfaceLayer.isBorder(worldPoint)
         const surface = surfaceLayer.get(worldPoint)
         // scale world coordinate to chunk 3x3 grid
         const baseChunkPoint = Point.multiplyScalar(worldPoint, chunkSize)
+
         const buildTile = (indexPoint) => {
-            const isCellLand = this.#isCellLand(baseChunkPoint, indexPoint)
             const [x, y] = indexPoint
+            const isCellLand = this.#isCellLand(baseChunkPoint, indexPoint)
             if (! isBorderChunk) return surface
-            // middle point remains the same
             if (x == 1 && y == 1) return surface
-            // handle borders world points
+            // middle point remains the same
             const directions = CHUNK_POINT_SIDE_MAP[x][y]
-            // side points
-            if (x == 1 || y == 1) {
-                const sideChunk = Point.plus(worldPoint, directions[0].axis)
-                const isSideChunkSea = surfaceLayer.isSea(sideChunk)
-                const isSideChunkLand = surfaceLayer.isLand(sideChunk)
-                const bothLand = isChunkLand && isSideChunkLand
-                const bothWater = !isChunkLand && !isSideChunkLand
-                // mark sea cells on land chunks neighbor to sea chunks
-                if (! isCellLand && isChunkLand && isSideChunkSea) {
-                    return SeaSurface
-                }
-                if (bothLand || bothWater)
-                    return surface
-            } else {  // corners points
-                let totalSeaSides = 0
-                let totalLandSides = 0
-                for (let direction of directions) {
-                    const sideChunk = Point.plus(worldPoint, direction.axis)
-                    totalLandSides += surfaceLayer.isLand(sideChunk) ? 1 : 0
-                    totalSeaSides += surfaceLayer.isSea(sideChunk) ? 1 : 0
-                }
-                if (totalLandSides > 2) {
-                    return ContinentSurface
-                }
-                // mark sea cells on land chunks neighbor to sea chunks
-                if (! isCellLand && totalSeaSides > 0) {
-                    return SeaSurface
-                }
+            const context = {
+                surface,
+                surfaceLayer,
+                directions, isCellLand, worldPoint
             }
+            if (x == 1 || y == 1) {
+                return buildSideCell(context)
+            } else {
+                return buildCornerCell(context)
+            }
+        }
+
+        const buildSideCell = (context) => {
+            const isChunkLand = context.surfaceLayer.isLand(context.worldPoint)
+            const axis = context.directions[0].axis
+            const sideChunk = Point.plus(context.worldPoint, axis)
+            const isSideChunkSea = context.surfaceLayer.isSea(sideChunk)
+            const isSideChunkLand = context.surfaceLayer.isLand(sideChunk)
+            const bothLand = isChunkLand && isSideChunkLand
+            const bothWater = !isChunkLand && !isSideChunkLand
+            // mark sea cells on land chunks neighbor to sea chunks
+            if (! context.isCellLand && isChunkLand && isSideChunkSea) {
+                return SeaSurface
+            }
+            if (bothLand || bothWater) return context.surface
+            return getDefaultCell(context.worldPoint, context.isCellLand)
+        }
+
+        const buildCornerCell = (context) => {
+            let totalSeaSides = 0
+            let totalLandSides = 0
+            for (let direction of context.directions) {
+                const sideChunk = Point.plus(context.worldPoint, direction.axis)
+                totalLandSides += context.surfaceLayer.isLand(sideChunk) ? 1 : 0
+                totalSeaSides += context.surfaceLayer.isSea(sideChunk) ? 1 : 0
+            }
+            if (totalLandSides > 2) return ContinentSurface
+            // mark sea cells on land chunks neighbor to sea chunks
+            if (! context.isCellLand && totalSeaSides > 0) return SeaSurface
+            return getDefaultCell(context.worldPoint, context.isCellLand)
+        }
+
+        const getDefaultCell = (worldPoint, isCellLand) => {
             if (isCellLand) {
                 if (surfaceLayer.isIsland(worldPoint)) return IslandSurface
                 return ContinentSurface
@@ -111,11 +124,8 @@ export class SurfaceChunk {
 
     #isCellLand(baseChunkPoint, indexPoint) {
         // handle the other chunk points
-        const surfaceLayer = this.#layers.surface
         const chunkPoint = Point.plus(baseChunkPoint, indexPoint)
         const noise = this.#layers.noise.get4D(this.#chunkRect, chunkPoint, 'outline')
-        // any of neighbors are island? if land, set island
-        // any of neighbors are sea? is water, set sea
         return noise > .6
     }
 
