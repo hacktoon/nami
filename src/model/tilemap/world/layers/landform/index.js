@@ -6,7 +6,7 @@ import { PointMap } from '/src/lib/point/map'
 import { Landform } from './data'
 import { Biome } from '../biome/data'
 import { Relief } from '../relief/data'
-import { OceanSurface } from '../surface/data'
+import { WaterSurface } from '../surface/data'
 import { Climate } from '../climate/data'
 
 
@@ -60,7 +60,7 @@ export class LandformLayer {
 
         // HYDROTHERMAL VENTS ---------------
         if (Random.chance(VENTS_CHANCE)) {
-            const isOcean = layers.surface.is(point, OceanSurface)
+            const isOcean = layers.surface.is(point, WaterSurface)
             if (isOcean && !isBorder && layers.relief.is(point, Relief.TRENCH))
                 return Landform.HYDROTHERMAL_VENTS
         }

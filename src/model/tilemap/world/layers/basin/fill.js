@@ -16,6 +16,7 @@ export function buildBasinMap(context) {
     fill.start(origins, context)
 }
 
+
 class BasinFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
@@ -36,7 +37,7 @@ class BasinFill extends ConcurrentFill {
         colorMap.set(fill.id, new Color())
         // initial distance is 1
         distanceMap.set(wrappedFillPoint, 1)
-        // find water neighbor
+        // find water neighbor to set initial erosion path
         for(let neighbor of neighbors) {
             if (layers.surface.isWater(neighbor)) {
                 const direction = getDirection(fillPoint, neighbor)
@@ -47,7 +48,7 @@ class BasinFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
-        const {rect, layers, dividePoints} = fill.context
+        const {rect, dividePoints} = fill.context
         const adjacents = Point.adjacents(parentPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         // is basin divide (is fill border)?
@@ -60,10 +61,8 @@ class BasinFill extends ConcurrentFill {
     canFill(fill, fillPoint) {
         const {rect, layers, erosionMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
-        const surface = layers.surface.get(wrappedFillPoint)
         // use flow map to track already visited points
-        const isEmpty = ! erosionMap.has(wrappedFillPoint)
-        return ! surface.water && isEmpty
+        return ! erosionMap.has(wrappedFillPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {

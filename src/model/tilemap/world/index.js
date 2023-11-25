@@ -29,7 +29,7 @@ const SCHEMA = new Schema(
 )
 
 
-const CHUNK_SIZE = 3
+const CHUNK_SIZE = 5
 
 
 export class WorldTileMap extends TileMap {
@@ -62,8 +62,6 @@ export class WorldTileMap extends TileMap {
         layers.river = new RiverLayer(rect, layers)
         layers.relief = new ReliefLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
-        // layers.lake = new LakeLayer(layers)
-        // layers.landform = new LandformLayer(rect, layers)
         layers.topo = new TopologyLayer(rect, layers, realmCount)
         return layers
     }
@@ -88,11 +86,13 @@ export class WorldTileMap extends TileMap {
     }
 
     getChunk(point) {
-        return this.layers.surface.getChunk({
+        const chunkPoint = this.rect.wrap(point)
+        const params = {
             world: this,
+            seed: this.seed,
             chunkSize: CHUNK_SIZE,
-            worldPoint: this.rect.wrap(point),
-        })
+        }
+        return this.layers.surface.getChunk(chunkPoint, params)
     }
 
     getDescription() {

@@ -130,7 +130,7 @@ function buildStretch(context, point, maxDistance) {
 
 
 function getNextRiverPoint(context, currentPoint) {
-    const basin = context.layers.basin.get(context.rect.wrap(currentPoint))
+    const basin = context.layers.basin.get(currentPoint)
     return Point.atDirection(currentPoint, basin.erosion)
 }
 

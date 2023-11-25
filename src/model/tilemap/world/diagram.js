@@ -52,7 +52,6 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         } else {
             canvas.rect(canvasPoint, tileSize, layerColor.toHex())
         }
-
         if (isLand && this.params.get('showErosion')) {
             const basin = layers.basin.get(point)
             const text = basin.erosion.symbol
