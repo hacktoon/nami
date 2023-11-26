@@ -66,6 +66,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (this.params.get('showCities')) {
             layers.topo.draw(point, props)
         }
+        layers.basin.draw(point, props)
     }
 
     drawChunk(props) {

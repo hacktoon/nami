@@ -25,12 +25,12 @@ class BasinFill extends ConcurrentFill {
         // set the initial fill point on river mouth
         const {
             rect, layers, midpointMap, erosionMap,
-            basinMap, distanceMap, colorMap
+            basinMap, distanceMap, colorMap, erosionVectorMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // create a basin midpoint
-        const midpoint = buildMidPoint()
-        midpointMap.set(wrappedFillPoint, midpoint)
+        const midPoint = buildMidPoint()
+        midpointMap.set(wrappedFillPoint, midPoint)
         // set basin id to spread on fill
         basinMap.set(wrappedFillPoint, fill.id)
         // set basin color
@@ -38,21 +38,27 @@ class BasinFill extends ConcurrentFill {
         // initial distance is 1
         distanceMap.set(wrappedFillPoint, 1)
         // find water neighbor to set initial erosion path
+        const paths = []
         for(let neighbor of neighbors) {
+            // border is initial point of erosion vectors
+            // set direction from each neighbor to midpoint
+            const sideRate = buildSideRate(layers, wrappedFillPoint, neighbor)
+            paths.push([neighbor, sideRate])
             if (layers.surface.isWater(neighbor)) {
                 const direction = getDirection(fillPoint, neighbor)
                 erosionMap.set(wrappedFillPoint, direction.id)
                 break
             }
         }
+        erosionVectorMap.set(wrappedFillPoint, paths)
     }
 
     getNeighbors(fill, parentPoint) {
         const {rect, dividePoints} = fill.context
         const adjacents = Point.adjacents(parentPoint)
-        const wrappedParentPoint = rect.wrap(parentPoint)
         // is basin divide (is fill border)?
         if (isDivide(fill.context, adjacents)) {
+            const wrappedParentPoint = rect.wrap(parentPoint)
             dividePoints.add(wrappedParentPoint)
         }
         return adjacents
@@ -61,23 +67,38 @@ class BasinFill extends ConcurrentFill {
     canFill(fill, fillPoint) {
         const {rect, layers, erosionMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
-        // use flow map to track already visited points
+        // use erosion map to track already visited points
         return ! erosionMap.has(wrappedFillPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {rect, erosionMap, basinMap, midpointMap, distanceMap} = fill.context
+        const {
+            layers, rect, erosionMap, basinMap, midpointMap,
+            distanceMap, erosionVectorMap
+        } = fill.context
         const point = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         const directionToSource = getDirection(fillPoint, parentPoint)
         const currentDistance = distanceMap.get(wrappedParentPoint)
+        const midPoint = buildMidPoint()
+        const sideRate = buildSideRate(layers, point, wrappedParentPoint)
+        const currentList = erosionVectorMap.get(point) ?? []
         distanceMap.set(point, currentDistance + 1)
-        midpointMap.set(point, buildMidPoint())
+        midpointMap.set(point, midPoint)
         // set direction to source
         erosionMap.set(point, directionToSource.id)
         // use basin value from parent point
         basinMap.set(point, basinMap.get(wrappedParentPoint))
+        currentList.push([wrappedParentPoint, sideRate])
+        erosionVectorMap.set(point, currentList)
     }
+}
+
+
+function buildSideRate(layers, point, parentPoint) {
+    const rate = layers.noise.getGrained(point)
+    const parentRate = layers.noise.getGrained(parentPoint)
+    return ((rate + parentRate) / 2).toFixed(1)
 }
 
 
@@ -85,8 +106,8 @@ function buildMidPoint() {
     const min = .2
     const max = .8
     return [
-        Random.floatRange(min, max),
-        Random.floatRange(min, max)
+        Random.floatRange(min, max).toFixed(1),
+        Random.floatRange(min, max).toFixed(1)
     ]
 }
 
