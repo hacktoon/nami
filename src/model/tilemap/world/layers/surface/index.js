@@ -54,7 +54,7 @@ export class SurfaceLayer {
             if (! this.#isEmptyBody(originPoint)) return
             const isWaterBody = this.#isEmptyWaterBody(originPoint)
             const area = this.#fillBodyArea(originPoint, this.#bodyIdCount)
-            const type = isWaterBody ? WaterSurface : LandSurface
+            const type = isWaterBody && area > 3 ? WaterSurface : LandSurface
             this.#bodyTypeMap.set(this.#bodyIdCount, type.id)
             this.#bodyAreaMap.set(this.#bodyIdCount, area)
             this.#bodyIdCount++
