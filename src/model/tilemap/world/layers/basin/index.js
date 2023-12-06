@@ -4,7 +4,7 @@ import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
 import { Color } from '/src/lib/color'
 
-import { buildBasinMap } from './fill'
+import { BasinFill } from './fill'
 
 
 export class BasinLayer {
@@ -21,8 +21,8 @@ export class BasinLayer {
     // the point in the middle of each block that sets erosion
     #midpointMap = new PointMap()
 
-    // a list of vectors point and direction of erosion paths
-    #erosionVectorMap = new PointMap()
+    // a list of vectors [direction, anchor] of erosion paths leaving
+    #erosionInputs = new PointMap()
 
     // the highest points of basins that borders others basins
     #dividePoints = new PointSet()
@@ -38,11 +38,14 @@ export class BasinLayer {
             midpointMap: this.#midpointMap,
             colorMap: this.#colorMap,
             erosionMap: this.#erosionMap,
-            erosionVectorMap: this.#erosionVectorMap,
+            erosionInputs: this.#erosionInputs,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
         }
-        buildBasinMap(context)
+        // start filling from land borders
+        let origins = context.layers.surface.landBorders
+        const fill = new BasinFill()
+        fill.start(origins, context)
     }
 
     get count() {
@@ -87,7 +90,7 @@ export class BasinLayer {
     }
 
     getErosionVectors(point) {
-        return this.#erosionVectorMap.get(point)
+        return this.#erosionInputs.get(point)
     }
 
     getText(point) {
