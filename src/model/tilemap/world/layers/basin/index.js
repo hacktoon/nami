@@ -5,14 +5,12 @@ import { Direction } from '/src/lib/direction'
 import { Color } from '/src/lib/color'
 
 import { BasinFill } from './fill'
+import { ErosionMap } from './erosion'
 
 
 export class BasinLayer {
     // map a point to a basin id
     #basinMap = new PointMap()
-
-    // map a point to a direction of a erosion path
-    #erosionMap = new PointMap()
 
     // the walk distance of each basin point to the shore
     // used to determine river stretch
@@ -21,8 +19,8 @@ export class BasinLayer {
     // the point in the middle of each block that sets erosion
     #midpointMap = new PointMap()
 
-    // a list of vectors [direction, anchor] of erosion paths leaving
-    #erosionInputs = new PointMap()
+    // map a point to a direction of a erosion path
+    #erosionOutput = new PointMap()
 
     // the highest points of basins that borders others basins
     #dividePoints = new PointSet()
@@ -37,8 +35,7 @@ export class BasinLayer {
             basinMap: this.#basinMap,
             midpointMap: this.#midpointMap,
             colorMap: this.#colorMap,
-            erosionMap: this.#erosionMap,
-            erosionInputs: this.#erosionInputs,
+            erosionOutput: this.#erosionOutput,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
         }
@@ -53,13 +50,13 @@ export class BasinLayer {
     }
 
     get(point) {
-        const directionId = this.#erosionMap.get(point)
+        const directionId = this.#erosionOutput.get(point)
         return {
             id: this.#basinMap.get(point),
-            erosion: Direction.fromId(directionId),
             distance: this.getDistance(point),
             midpoint: this.getMidpoint(point),
-            erosionVectors: this.getErosionVectors(point),
+            erosionOutput: Direction.fromId(directionId),
+            erosionMap: this.getErosionInputs(point),
         }
     }
 
@@ -72,7 +69,7 @@ export class BasinLayer {
     }
 
     getErosionAxis(point) {
-        const directionId = this.#erosionMap.get(point)
+        const directionId = this.#erosionOutput.get(point)
         const direction = Direction.fromId(directionId)
         return direction.axis
     }
@@ -89,20 +86,20 @@ export class BasinLayer {
         return this.#midpointMap.get(point)
     }
 
-    getErosionVectors(point) {
-        return this.#erosionInputs.get(point)
+    getErosionInputs(point) {
+        return [] //this.#erosionMap.get(point)
     }
 
     getText(point) {
-        if (! this.#erosionMap.has(point))
+        if (! this.#erosionOutput.has(point))
             return ''
         const basin = this.get(point)
         const attrs = [
              `${basin.id}`,
-             `erosion=${basin.erosion.name}`,
+             `erosionOutput=${basin.erosionOutput.name}`,
              `distance=${basin.distance}`,
              `midpoint=${basin.midpoint}`,
-             `erosionVectors=${basin.erosionVectors}`,
+             `erosionMap=${basin.erosionMap}`,
         ].join(',')
         return `Basin(${attrs})`
     }
@@ -116,16 +113,15 @@ export class BasinLayer {
         const midPoint = this.getMidpoint(point)
         const offsetPoint = Point.multiplyScalar(midPoint, tileSize)
         const midCanvasPoint = Point.plus(canvasPoint, offsetPoint)
-        const vectors = this.getErosionVectors(point)
-        for(let vector of vectors) {
-            const [neighbor, rate] = vector
+        for(let erosionInput of this.getErosionInputs(point)) {
+            const [neighbor, rate] = erosionInput
             // build a point for each flow that points to this point
             // const axis = Point.minus(neighbor, point)
             // if (point[0] == 28 && point[1] == 12) {
             //     console.log(neighbor, edgePoint, rate)
             // }
             // canvas.line(midCanvasPoint, [0, 0], 2, "#00F")
-            canvas.rect(midCanvasPoint, 4, "#05F")
         }
+        canvas.rect(midCanvasPoint, 4, "#05F")
     }
 }

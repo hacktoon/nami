@@ -14,35 +14,32 @@ export class BasinFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     onInitFill(fill, fillPoint, neighbors) {
-        // set the initial fill point on river mouth
         const {
-            rect, layers, midpointMap, erosionMap,
-            basinMap, distanceMap, colorMap, erosionInputs
+            rect, layers, midpointMap, erosionOutput,
+            basinMap, distanceMap, colorMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
+        // set basin color
+        colorMap.set(fill.id, new Color())
         // create a basin midpoint
         const midPoint = buildMidPoint()
         midpointMap.set(wrappedFillPoint, midPoint)
         // set basin id to spread on fill
         basinMap.set(wrappedFillPoint, fill.id)
-        // set basin color
-        colorMap.set(fill.id, new Color())
         // initial distance is 1
         distanceMap.set(wrappedFillPoint, 1)
         // find water neighbor to set initial erosion path
-        const paths = []
         for(let neighbor of neighbors) {
             // border is initial point of erosion vectors
             // set direction from each neighbor to midpoint
-            const sideAnchor = buildSideAnchor(layers, wrappedFillPoint, neighbor)
-            paths.push([neighbor, sideAnchor])
+            // discover and change output
             if (layers.surface.isWater(neighbor)) {
-                const direction = getDirection(fillPoint, neighbor)
-                erosionMap.set(wrappedFillPoint, direction.id)
+                // const offset = buildSideAnchor(layers, wrappedFillPoint, neighbor)
+                const direction = getDirection(fillPoint, neighbor) // remove
+                erosionOutput.set(wrappedFillPoint, direction.id)
                 break
             }
         }
-        erosionInputs.set(wrappedFillPoint, paths)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -57,31 +54,30 @@ export class BasinFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {rect, erosionMap} = fill.context
+        const {rect, erosionOutput} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // use erosion map to track already visited points
-        return ! erosionMap.has(wrappedFillPoint)
+        return ! erosionOutput.has(wrappedFillPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
         const {
-            layers, rect, erosionMap, basinMap, midpointMap,
-            distanceMap, erosionInputs
+            layers, rect, erosionOutput, basinMap, midpointMap,
+            distanceMap
         } = fill.context
         const point = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         const directionToSource = getDirection(fillPoint, parentPoint)
         const currentDistance = distanceMap.get(wrappedParentPoint)
         const sideAnchor = buildSideAnchor(layers, point, wrappedParentPoint)
-        const currentList = erosionInputs.get(point) ?? []
         distanceMap.set(point, currentDistance + 1)
         midpointMap.set(point, buildMidPoint())
         // set direction to source
-        erosionMap.set(point, directionToSource.id)
+        erosionOutput.set(point, directionToSource.id)
         // use basin value from parent point
         basinMap.set(point, basinMap.get(wrappedParentPoint))
-        currentList.push([wrappedParentPoint, sideAnchor])
-        erosionInputs.set(point, currentList)
+
+
     }
 }
 
@@ -110,13 +106,13 @@ function getDirection(sourcePoint, targetPoint) {
 
 
 function isDivide(context, neighbors) {
-    const {rect, erosionMap, layers} = context
+    const {rect, erosionOutput, layers} = context
     // it's a river source if every neighbor is water
     let waterNeighborCount = 0
     let blockedCount = 0
     for(let neighbor of neighbors) {
         const isNeighborWater = layers.surface.isWater(neighbor)
-        const isOccupied = erosionMap.has(rect.wrap(neighbor))
+        const isOccupied = erosionOutput.has(rect.wrap(neighbor))
         waterNeighborCount += isNeighborWater ? 1 : 0
         blockedCount += (isNeighborWater || isOccupied) ? 1 : 0
     }
