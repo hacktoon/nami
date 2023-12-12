@@ -16,6 +16,10 @@ export class BasinLayer {
     // used to determine river stretch
     #distanceMap = new PointMap()
 
+    // map a point to a number representing the bitmask value
+    // of erosion's direction 3x3 cross
+    #layoutMap = new PointMap()
+
     // the point in the middle of each block that sets erosion
     #midpointMap = new PointMap()
 
@@ -38,6 +42,7 @@ export class BasinLayer {
             erosionOutput: this.#erosionOutput,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
+            layoutMap: this.#layoutMap,
         }
         // start filling from land borders
         let origins = context.layers.surface.landBorders
@@ -51,10 +56,14 @@ export class BasinLayer {
 
     get(point) {
         const directionId = this.#erosionOutput.get(point)
+        // const rate = layers.noise.getGrained(point)
+        //     const parentRate = layers.noise.getGrained(parentPoint)
+        //     buildSideAnchor (rate + parentRate) / 2
         return {
             id: this.#basinMap.get(point),
             distance: this.getDistance(point),
             midpoint: this.getMidpoint(point),
+            layoutMap: this.#layoutMap.get(point),
             erosionOutput: Direction.fromId(directionId),
             erosionMap: this.getErosionInputs(point),
         }
@@ -99,7 +108,7 @@ export class BasinLayer {
              `erosionOutput=${basin.erosionOutput.name}`,
              `distance=${basin.distance}`,
              `midpoint=${basin.midpoint}`,
-             `erosionMap=${basin.erosionMap}`,
+             `layoutMap=${basin.layoutMap}`,
         ].join(',')
         return `Basin(${attrs})`
     }

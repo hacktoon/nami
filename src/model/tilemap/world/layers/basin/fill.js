@@ -5,6 +5,20 @@ import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
 
 
+// bitmask value => point in matrix 3x3
+/*
+       1(N)
+ 2(W)         8 (E)
+       16(S)
+*/
+// detect matrix in source file
+export const DIRECTION_PATTERN_MAP = new Map([
+    [Direction.NORTH.id, 1],
+    [Direction.WEST.id, 2],
+    [Direction.EAST.id, 8],
+    [Direction.SOUTH.id, 16],
+])
+
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
 
@@ -16,7 +30,7 @@ export class BasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
             rect, layers, midpointMap, erosionOutput,
-            basinMap, distanceMap, colorMap
+            basinMap, distanceMap, layoutMap, colorMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // set basin color
@@ -28,18 +42,17 @@ export class BasinFill extends ConcurrentFill {
         basinMap.set(wrappedFillPoint, fill.id)
         // initial distance is 1
         distanceMap.set(wrappedFillPoint, 1)
-        // find water neighbor to set initial erosion path
+        // find neighbors to set initial erosion layout direction
+        let code = 0
         for(let neighbor of neighbors) {
-            // border is initial point of erosion vectors
-            // set direction from each neighbor to midpoint
-            // discover and change output
             if (layers.surface.isWater(neighbor)) {
-                // const offset = buildSideAnchor(layers, wrappedFillPoint, neighbor)
-                const direction = getDirection(fillPoint, neighbor) // remove
+                const direction = getDirection(fillPoint, neighbor)
                 erosionOutput.set(wrappedFillPoint, direction.id)
+                code += DIRECTION_PATTERN_MAP.get(direction.id)
                 break
             }
         }
+        layoutMap.set(wrappedFillPoint, code)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -62,30 +75,31 @@ export class BasinFill extends ConcurrentFill {
 
     onFill(fill, fillPoint, parentPoint) {
         const {
-            layers, rect, erosionOutput, basinMap, midpointMap,
-            distanceMap
+            rect, erosionOutput, basinMap, midpointMap,
+            distanceMap, layoutMap
         } = fill.context
         const point = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
-        const directionToSource = getDirection(fillPoint, parentPoint)
+        const directionToMouth = getDirection(fillPoint, parentPoint)
+        const directionFromSource = getDirection(parentPoint, fillPoint)
+        // distance to source by point
         const currentDistance = distanceMap.get(wrappedParentPoint)
-        const sideAnchor = buildSideAnchor(layers, point, wrappedParentPoint)
         distanceMap.set(point, currentDistance + 1)
+        // set midpoint for rendering  TODO: move to upper layer
         midpointMap.set(point, buildMidPoint())
         // set direction to source
-        erosionOutput.set(point, directionToSource.id)
+        erosionOutput.set(point, directionToMouth.id)
         // use basin value from parent point
         basinMap.set(point, basinMap.get(wrappedParentPoint))
-
-
+        // update erosion direction layout on parent point
+        // relative to this point
+        let code = layoutMap.get(wrappedParentPoint)
+        code += DIRECTION_PATTERN_MAP.get(directionFromSource.id)
+        layoutMap.set(wrappedParentPoint, code)
+        // set layout on this point
+        const mouthCode = DIRECTION_PATTERN_MAP.get(directionToMouth.id)
+        layoutMap.set(point, mouthCode)
     }
-}
-
-
-function buildSideAnchor(layers, point, parentPoint) {
-    const rate = layers.noise.getGrained(point)
-    const parentRate = layers.noise.getGrained(parentPoint)
-    return (rate + parentRate) / 2
 }
 
 
@@ -97,6 +111,7 @@ function buildMidPoint() {
         Random.floatRange(min, max).toFixed(1)
     ]
 }
+
 
 function getDirection(sourcePoint, targetPoint) {
     // need to get unwrapped points to get real angle
