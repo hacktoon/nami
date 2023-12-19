@@ -30,7 +30,8 @@ export class BasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
             rect, layers, midpointMap, erosionOutput,
-            basinMap, distanceMap, layoutMap, colorMap
+            basinMap, distanceMap, layoutMap, colorMap,
+            erosionMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // set basin color
@@ -47,9 +48,14 @@ export class BasinFill extends ConcurrentFill {
         for(let neighbor of neighbors) {
             if (layers.surface.isWater(neighbor)) {
                 const direction = getDirection(fillPoint, neighbor)
+                erosionMap.setFlow(wrappedFillPoint, direction)
+                // add erosion on that direction
+                erosionMap.addPath(wrappedFillPoint, direction)
+                // delete below
                 erosionOutput.set(wrappedFillPoint, direction.id)
                 code += DIRECTION_PATTERN_MAP.get(direction.id)
-                break
+                // delete above
+                break  // stop on first water neighbor
             }
         }
         layoutMap.set(wrappedFillPoint, code)
@@ -67,38 +73,46 @@ export class BasinFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {rect, erosionOutput} = fill.context
+        const {rect, basinMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
-        // use erosion map to track already visited points
-        return ! erosionOutput.has(wrappedFillPoint)
+        return ! basinMap.has(wrappedFillPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
         const {
             rect, erosionOutput, basinMap, midpointMap,
-            distanceMap, layoutMap
+            distanceMap, layoutMap, erosionMap
         } = fill.context
-        const point = rect.wrap(fillPoint)
+        const wrappedPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         const directionToMouth = getDirection(fillPoint, parentPoint)
         const directionFromSource = getDirection(parentPoint, fillPoint)
         // distance to source by point
         const currentDistance = distanceMap.get(wrappedParentPoint)
-        distanceMap.set(point, currentDistance + 1)
-        // set midpoint for rendering  TODO: move to upper layer
-        midpointMap.set(point, buildMidPoint())
-        // set direction to source
-        erosionOutput.set(point, directionToMouth.id)
+        distanceMap.set(wrappedPoint, currentDistance + 1)
         // use basin value from parent point
-        basinMap.set(point, basinMap.get(wrappedParentPoint))
+        basinMap.set(wrappedPoint, basinMap.get(wrappedParentPoint))
+        // set midpoint for rendering  TODO: move to upper layer
+        midpointMap.set(wrappedPoint, buildMidPoint())
+
+        // use code below
+        // set erosion flow on this point
+        erosionMap.setFlow(wrappedPoint, directionToMouth)
+        // set erosion flow on this point and in parent
+        erosionMap.addPath(wrappedPoint, directionToMouth)
+        erosionMap.addPath(wrappedParentPoint, directionFromSource)
+
+        // delete code below
+        // set direction to source
+        erosionOutput.set(wrappedPoint, directionToMouth.id)
         // update erosion direction layout on parent point
-        // relative to this point
-        let code = layoutMap.get(wrappedParentPoint)
-        code += DIRECTION_PATTERN_MAP.get(directionFromSource.id)
-        layoutMap.set(wrappedParentPoint, code)
+        const codeSum = layoutMap.get(wrappedParentPoint)
+        const code = DIRECTION_PATTERN_MAP.get(directionFromSource.id)
+        layoutMap.set(wrappedParentPoint, codeSum + code)
         // set layout on this point
+        const mouthCodeSum = layoutMap.get(wrappedPoint)
         const mouthCode = DIRECTION_PATTERN_MAP.get(directionToMouth.id)
-        layoutMap.set(point, mouthCode)
+        layoutMap.set(wrappedPoint, mouthCodeSum + mouthCode)
     }
 }
 

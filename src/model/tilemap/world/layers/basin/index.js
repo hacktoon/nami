@@ -5,7 +5,7 @@ import { Direction } from '/src/lib/direction'
 import { Color } from '/src/lib/color'
 
 import { BasinFill } from './fill'
-import { ErosionMap } from './erosion'
+import { ErosionPointMap } from './erosion'
 
 
 export class BasinLayer {
@@ -18,6 +18,8 @@ export class BasinLayer {
 
     // map a point to a number representing the bitmask value
     // of erosion's direction 3x3 cross
+    // substitute
+    #erosionMap
     #layoutMap = new PointMap()
 
     // the point in the middle of each block that sets erosion
@@ -33,6 +35,7 @@ export class BasinLayer {
     #colorMap = new Map()
 
     constructor(rect, layers) {
+        this.#erosionMap = new ErosionPointMap(rect)
         const context = {
             rect,
             layers: layers,
@@ -43,6 +46,7 @@ export class BasinLayer {
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
             layoutMap: this.#layoutMap,
+            erosionMap: this.#erosionMap,
         }
         // start filling from land borders
         let origins = context.layers.surface.landBorders
@@ -104,11 +108,11 @@ export class BasinLayer {
             return ''
         const basin = this.get(point)
         const attrs = [
-             `${basin.id}`,
-             `erosionOutput=${basin.erosionOutput.name}`,
-             `distance=${basin.distance}`,
-             `midpoint=${basin.midpoint}`,
-             `layoutMap=${basin.layoutMap}`,
+            `${basin.id}`,
+            `erosionOutput=${basin.erosionOutput.name}`,
+            `distance=${basin.distance}`,
+            `midpoint=${basin.midpoint}`,
+            `layoutMap=${basin.layoutMap}`,
         ].join(',')
         return `Basin(${attrs})`
     }

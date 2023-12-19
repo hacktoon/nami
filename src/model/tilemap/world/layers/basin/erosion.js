@@ -1,27 +1,45 @@
 import { PointMap } from '/src/lib/point/map'
+import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
 
-export class ErosionMap {
-    #inputs = new PointMap()
-    #output = new PointMap()
+// bitmask value => point in matrix 3x3
+/*
+       1(N)
+ 2(W)         8 (E)
+       16(S)
+*/
+// detect matrix in source file
+export const DIRECTION_PATTERN_MAP = new Map([
+    [Direction.NORTH.id, 1],
+    [Direction.WEST.id, 2],
+    [Direction.EAST.id, 8],
+    [Direction.SOUTH.id, 16],
+])
 
-    addInput(point, offset, direction) {
-        const inputs = this.#inputs.get(point)
-        inputs.push([offset, direction])
-        this.#inputs.set(point, inputs)
+
+export class ErosionPointMap {
+    #patternMap = new PointMap()
+    #typeMap = new PointMap()
+    #flowMap = new PointMap()
+
+    setFlow(source, direction) {
+        // source must be wrapped
+        this.#flowMap.set(source, direction.id)
     }
 
-    setOutput(point, offset, direction) {
-        this.#output.set(point, [offset, direction])
+    getFlow(point) {
+        return this.#flowMap.set(point)
     }
 
-    get(point) {
-        const output = this.#output.get(point)
-        return {
+    addPath(source, direction) {
+        // source must be wrapped
+        const code = DIRECTION_PATTERN_MAP.get(direction.id)
+        const codeSum = this.#patternMap.get(source)
+        this.#patternMap.set(source, codeSum + code)
+    }
 
-        }
+    getPath(point) {
+        return this.#patternMap.get(point)
     }
 }
-
-
