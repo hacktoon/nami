@@ -29,7 +29,11 @@ export class ErosionPointMap {
     }
 
     getFlow(point) {
-        return this.#flowMap.set(point)
+        return this.#flowMap.get(point)
+    }
+
+    hasFlow(point) {
+        return this.#flowMap.has(point)
     }
 
     addPath(source, direction) {
@@ -39,7 +43,7 @@ export class ErosionPointMap {
         this.#patternMap.set(source, codeSum + code)
     }
 
-    getPath(point) {
+    getPattern(point) {
         return this.#patternMap.get(point)
     }
 }

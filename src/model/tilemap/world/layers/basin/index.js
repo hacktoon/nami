@@ -25,9 +25,6 @@ export class BasinLayer {
     // the point in the middle of each block that sets erosion
     #midpointMap = new PointMap()
 
-    // map a point to a direction of a erosion path
-    #erosionOutput = new PointMap()
-
     // the highest points of basins that borders others basins
     #dividePoints = new PointSet()
 
@@ -42,7 +39,6 @@ export class BasinLayer {
             basinMap: this.#basinMap,
             midpointMap: this.#midpointMap,
             colorMap: this.#colorMap,
-            erosionOutput: this.#erosionOutput,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
             layoutMap: this.#layoutMap,
@@ -59,16 +55,13 @@ export class BasinLayer {
     }
 
     get(point) {
-        const directionId = this.#erosionOutput.get(point)
-        // const rate = layers.noise.getGrained(point)
-        //     const parentRate = layers.noise.getGrained(parentPoint)
-        //     buildSideAnchor (rate + parentRate) / 2
+        const directionId = this.#erosionMap.getFlow(point)
         return {
             id: this.#basinMap.get(point),
             distance: this.getDistance(point),
             midpoint: this.getMidpoint(point),
             layoutMap: this.#layoutMap.get(point),
-            erosionOutput: Direction.fromId(directionId),
+            erosionFlow: Direction.fromId(directionId),
             erosionMap: this.getErosionInputs(point),
         }
     }
@@ -82,7 +75,7 @@ export class BasinLayer {
     }
 
     getErosionAxis(point) {
-        const directionId = this.#erosionOutput.get(point)
+        const directionId = this.#erosionMap.getFlow(point)
         const direction = Direction.fromId(directionId)
         return direction.axis
     }
@@ -100,16 +93,16 @@ export class BasinLayer {
     }
 
     getErosionInputs(point) {
-        return [] //this.#erosionMap.get(point)
+        return [] //this.#erosionMap.getPattern(point)
     }
 
     getText(point) {
-        if (! this.#erosionOutput.has(point))
+        if (! this.#erosionMap.has(point))
             return ''
         const basin = this.get(point)
         const attrs = [
             `${basin.id}`,
-            `erosionOutput=${basin.erosionOutput.name}`,
+            `erosionMap=${basin.erosionFlow.name}`,
             `distance=${basin.distance}`,
             `midpoint=${basin.midpoint}`,
             `layoutMap=${basin.layoutMap}`,

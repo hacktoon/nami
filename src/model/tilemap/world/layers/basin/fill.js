@@ -29,7 +29,7 @@ export class BasinFill extends ConcurrentFill {
 
     onInitFill(fill, fillPoint, neighbors) {
         const {
-            rect, layers, midpointMap, erosionOutput,
+            rect, layers, midpointMap,
             basinMap, distanceMap, layoutMap, colorMap,
             erosionMap
         } = fill.context
@@ -52,7 +52,6 @@ export class BasinFill extends ConcurrentFill {
                 // add erosion on that direction
                 erosionMap.addPath(wrappedFillPoint, direction)
                 // delete below
-                erosionOutput.set(wrappedFillPoint, direction.id)
                 code += DIRECTION_PATTERN_MAP.get(direction.id)
                 // delete above
                 break  // stop on first water neighbor
@@ -80,7 +79,7 @@ export class BasinFill extends ConcurrentFill {
 
     onFill(fill, fillPoint, parentPoint) {
         const {
-            rect, erosionOutput, basinMap, midpointMap,
+            rect, basinMap, midpointMap,
             distanceMap, layoutMap, erosionMap
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
@@ -103,8 +102,6 @@ export class BasinFill extends ConcurrentFill {
         erosionMap.addPath(wrappedParentPoint, directionFromSource)
 
         // delete code below
-        // set direction to source
-        erosionOutput.set(wrappedPoint, directionToMouth.id)
         // update erosion direction layout on parent point
         const codeSum = layoutMap.get(wrappedParentPoint)
         const code = DIRECTION_PATTERN_MAP.get(directionFromSource.id)
@@ -135,13 +132,13 @@ function getDirection(sourcePoint, targetPoint) {
 
 
 function isDivide(context, neighbors) {
-    const {rect, erosionOutput, layers} = context
+    const {rect, layers, erosionMap} = context
     // it's a river source if every neighbor is water
     let waterNeighborCount = 0
     let blockedCount = 0
     for(let neighbor of neighbors) {
         const isNeighborWater = layers.surface.isWater(neighbor)
-        const isOccupied = erosionOutput.has(rect.wrap(neighbor))
+        const isOccupied = erosionMap.hasFlow(rect.wrap(neighbor))
         waterNeighborCount += isNeighborWater ? 1 : 0
         blockedCount += (isNeighborWater || isOccupied) ? 1 : 0
     }

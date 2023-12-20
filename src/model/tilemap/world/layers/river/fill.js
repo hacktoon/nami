@@ -101,7 +101,7 @@ function buildDirectionBitmask(context, point) {
     const wrappedPoint = rect.wrap(point)
     const basin = layers.basin.get(wrappedPoint)
     // set the tile according to which direction is flowing
-    let flowCode = DIRECTION_PATTERN_MAP.get(basin.erosionOutput.id)
+    let flowCode = DIRECTION_PATTERN_MAP.get(basin.erosionFlow.id)
     // add flowCode for each neighbor that flows to this point
     Point.adjacents(point, (sidePoint, sideDirection) => {
         const wrappedSidePoint = rect.wrap(sidePoint)
@@ -109,7 +109,7 @@ function buildDirectionBitmask(context, point) {
         if (layers.surface.isWater(sidePoint)) { return }
         // neighbor basin flows here?
         const basin = context.layers.basin.get(wrappedSidePoint)
-        const pointAtDirection = Point.atDirection(sidePoint, basin.erosionOutput)
+        const pointAtDirection = Point.atDirection(sidePoint, basin.erosionFlow)
         const receivesFlow = Point.equals(point, pointAtDirection)
         // if it has a pattern, it's already a river point
         if (receivesFlow && layoutMap.has(wrappedSidePoint)) {
@@ -132,5 +132,5 @@ function buildStretch(context, point, maxDistance) {
 
 function getNextRiverPoint(context, currentPoint) {
     const basin = context.layers.basin.get(currentPoint)
-    return Point.atDirection(currentPoint, basin.erosionOutput)
+    return Point.atDirection(currentPoint, basin.erosionFlow)
 }
