@@ -1,23 +1,8 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Direction } from '/src/lib/direction'
-import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
 
-
-// bitmask value => point in matrix 3x3
-/*
-       1(N)
- 2(W)         8 (E)
-       16(S)
-*/
-// detect matrix in source file
-export const DIRECTION_PATTERN_MAP = new Map([
-    [Direction.NORTH.id, 1],
-    [Direction.WEST.id, 2],
-    [Direction.EAST.id, 8],
-    [Direction.SOUTH.id, 16],
-])
 
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
@@ -29,35 +14,25 @@ export class BasinFill extends ConcurrentFill {
 
     onInitFill(fill, fillPoint, neighbors) {
         const {
-            rect, layers, midpointMap,
-            basinMap, distanceMap, layoutMap, colorMap,
+            rect, layers, basinMap, distanceMap, colorMap,
             erosionMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // set basin color
         colorMap.set(fill.id, new Color())
         // create a basin midpoint
-        const midPoint = buildMidPoint()
-        midpointMap.set(wrappedFillPoint, midPoint)
         // set basin id to spread on fill
         basinMap.set(wrappedFillPoint, fill.id)
         // initial distance is 1
         distanceMap.set(wrappedFillPoint, 1)
         // find neighbors to set initial erosion layout direction
-        let code = 0
         for(let neighbor of neighbors) {
             if (layers.surface.isWater(neighbor)) {
                 const direction = getDirectionBetween(fillPoint, neighbor)
-                erosionMap.setFlow(wrappedFillPoint, direction)
-                // add erosion on that direction
-                erosionMap.addPath(wrappedFillPoint, direction)
-                // delete below
-                code += DIRECTION_PATTERN_MAP.get(direction.id)
-                // delete above
+                erosionMap.set(wrappedFillPoint, direction)
                 break  // stop on first water neighbor
             }
         }
-        layoutMap.set(wrappedFillPoint, code)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -72,15 +47,16 @@ export class BasinFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {rect, basinMap} = fill.context
+        const {rect, layers, basinMap} = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
+        if (layers.surface.isWater(wrappedFillPoint))
+            return false
         return ! basinMap.has(wrappedFillPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
         const {
-            rect, basinMap, midpointMap,
-            distanceMap, layoutMap, erosionMap
+            rect, basinMap, distanceMap, erosionMap
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
@@ -90,38 +66,10 @@ export class BasinFill extends ConcurrentFill {
         // use basin value from parent point
         basinMap.set(wrappedPoint, basinMap.get(wrappedParentPoint))
         // set midpoint for rendering  TODO: move to upper layer
-        midpointMap.set(wrappedPoint, buildMidPoint())
-
-        // use code below
-        const directionToMouth = getDirectionBetween(fillPoint, parentPoint)
-        // set erosion flow on this point
-        erosionMap.setFlow(wrappedPoint, directionToMouth)
-        // add erosion path on point
-        erosionMap.addPath(wrappedPoint, directionToMouth)
-        // add erosion path on parent
-        const directionFromSource = getDirectionBetween(parentPoint, fillPoint)
-        erosionMap.addPath(wrappedParentPoint, directionFromSource)
-
-        // delete code below
-        // update erosion direction layout on parent point
-        const codeSum = layoutMap.get(wrappedParentPoint)
-        const code = DIRECTION_PATTERN_MAP.get(directionFromSource.id)
-        layoutMap.set(wrappedParentPoint, codeSum + code)
-        // set layout on this point
-        const mouthCodeSum = layoutMap.get(wrappedPoint)
-        const mouthCode = DIRECTION_PATTERN_MAP.get(directionToMouth.id)
-        layoutMap.set(wrappedPoint, mouthCodeSum + mouthCode)
+        const direction = getDirectionBetween(fillPoint, parentPoint)
+        // set erosion flow to parent
+        erosionMap.set(wrappedPoint, direction)
     }
-}
-
-
-function buildMidPoint() {
-    const min = .2
-    const max = .8
-    return [
-        Random.floatRange(min, max).toFixed(1),
-        Random.floatRange(min, max).toFixed(1)
-    ]
 }
 
 
@@ -139,7 +87,7 @@ function isDivide(context, neighbors) {
     let blockedCount = 0
     for(let neighbor of neighbors) {
         const isNeighborWater = layers.surface.isWater(neighbor)
-        const isOccupied = erosionMap.hasFlow(rect.wrap(neighbor))
+        const isOccupied = erosionMap.has(rect.wrap(neighbor))
         waterNeighborCount += isNeighborWater ? 1 : 0
         blockedCount += (isNeighborWater || isOccupied) ? 1 : 0
     }

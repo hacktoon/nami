@@ -84,7 +84,8 @@ function buildRiver(context, riverId, sourcePoint) {
 
 function buildMeander(context, wrappedPoint) {
     // direction axis ([-1, 0], [1, 1], etc)
-    const axis = context.layers.basin.getErosionAxis(wrappedPoint)
+    const basin = context.layers.basin.get(wrappedPoint)
+    const axis = basin.erosion.axis
     const rand = (axisDirection) => {
         const offset = Random.floatRange(...OFFSET_RANGE)
         const axisToggle = axisDirection === 0
@@ -101,7 +102,7 @@ function buildDirectionBitmask(context, point) {
     const wrappedPoint = rect.wrap(point)
     const basin = layers.basin.get(wrappedPoint)
     // set the tile according to which direction is flowing
-    let flowCode = DIRECTION_PATTERN_MAP.get(basin.erosionFlow.id)
+    let flowCode = DIRECTION_PATTERN_MAP.get(basin.erosion.id)
     // add flowCode for each neighbor that flows to this point
     Point.adjacents(point, (sidePoint, sideDirection) => {
         const wrappedSidePoint = rect.wrap(sidePoint)
@@ -109,7 +110,7 @@ function buildDirectionBitmask(context, point) {
         if (layers.surface.isWater(sidePoint)) { return }
         // neighbor basin flows here?
         const basin = context.layers.basin.get(wrappedSidePoint)
-        const pointAtDirection = Point.atDirection(sidePoint, basin.erosionFlow)
+        const pointAtDirection = Point.atDirection(sidePoint, basin.erosion)
         const receivesFlow = Point.equals(point, pointAtDirection)
         // if it has a pattern, it's already a river point
         if (receivesFlow && layoutMap.has(wrappedSidePoint)) {
@@ -132,5 +133,5 @@ function buildStretch(context, point, maxDistance) {
 
 function getNextRiverPoint(context, currentPoint) {
     const basin = context.layers.basin.get(currentPoint)
-    return Point.atDirection(currentPoint, basin.erosionFlow)
+    return Point.atDirection(currentPoint, basin.erosion)
 }

@@ -54,7 +54,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
         if (isLand && this.params.get('showErosion')) {
             const basin = layers.basin.get(point)
-            const text = basin.erosionFlow.symbol
+            const text = basin.erosion.symbol
             canvas.text(canvasPoint, tileSize, text, '#000')
         }
         if (layers.river.has(point) && showRiver) {
@@ -66,7 +66,6 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (this.params.get('showCities')) {
             layers.topo.draw(point, props)
         }
-        layers.basin.draw(point, props)
     }
 
     drawChunk(props) {
