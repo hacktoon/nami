@@ -47,7 +47,7 @@ export class BasinFill extends ConcurrentFill {
         let code = 0
         for(let neighbor of neighbors) {
             if (layers.surface.isWater(neighbor)) {
-                const direction = getDirection(fillPoint, neighbor)
+                const direction = getDirectionBetween(fillPoint, neighbor)
                 erosionMap.setFlow(wrappedFillPoint, direction)
                 // add erosion on that direction
                 erosionMap.addPath(wrappedFillPoint, direction)
@@ -84,8 +84,6 @@ export class BasinFill extends ConcurrentFill {
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
-        const directionToMouth = getDirection(fillPoint, parentPoint)
-        const directionFromSource = getDirection(parentPoint, fillPoint)
         // distance to source by point
         const currentDistance = distanceMap.get(wrappedParentPoint)
         distanceMap.set(wrappedPoint, currentDistance + 1)
@@ -95,10 +93,13 @@ export class BasinFill extends ConcurrentFill {
         midpointMap.set(wrappedPoint, buildMidPoint())
 
         // use code below
+        const directionToMouth = getDirectionBetween(fillPoint, parentPoint)
         // set erosion flow on this point
         erosionMap.setFlow(wrappedPoint, directionToMouth)
-        // set erosion flow on this point and in parent
+        // add erosion path on point
         erosionMap.addPath(wrappedPoint, directionToMouth)
+        // add erosion path on parent
+        const directionFromSource = getDirectionBetween(parentPoint, fillPoint)
         erosionMap.addPath(wrappedParentPoint, directionFromSource)
 
         // delete code below
@@ -124,7 +125,7 @@ function buildMidPoint() {
 }
 
 
-function getDirection(sourcePoint, targetPoint) {
+function getDirectionBetween(sourcePoint, targetPoint) {
     // need to get unwrapped points to get real angle
     const angle = Point.angle(sourcePoint, targetPoint)
     return Direction.fromAngle(angle)

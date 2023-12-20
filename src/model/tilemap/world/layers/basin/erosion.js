@@ -29,21 +29,22 @@ export class ErosionPointMap {
     }
 
     getFlow(point) {
-        return this.#flowMap.get(point)
+        const directionId = this.#flowMap.get(point)
+        return Direction.fromId(directionId)
     }
 
     hasFlow(point) {
         return this.#flowMap.has(point)
     }
 
-    addPath(source, direction) {
-        // source must be wrapped
+    addPath(sourcePoint, direction) {
+        // sourcePoint must be wrapped
         const code = DIRECTION_PATTERN_MAP.get(direction.id)
-        const codeSum = this.#patternMap.get(source)
-        this.#patternMap.set(source, codeSum + code)
+        const codeSum = this.#patternMap.get(sourcePoint)
+        this.#patternMap.set(sourcePoint, codeSum + code)
     }
 
-    getPattern(point) {
-        return this.#patternMap.get(point)
+    getBorderPoints(point) {
+        return [this.#patternMap.get(point)]
     }
 }

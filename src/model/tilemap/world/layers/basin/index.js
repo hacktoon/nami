@@ -1,7 +1,6 @@
 import { PointMap } from '/src/lib/point/map'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
-import { Direction } from '/src/lib/direction'
 import { Color } from '/src/lib/color'
 
 import { BasinFill } from './fill'
@@ -55,14 +54,13 @@ export class BasinLayer {
     }
 
     get(point) {
-        const directionId = this.#erosionMap.getFlow(point)
         return {
             id: this.#basinMap.get(point),
             distance: this.getDistance(point),
             midpoint: this.getMidpoint(point),
-            layoutMap: this.#layoutMap.get(point),
-            erosionFlow: Direction.fromId(directionId),
-            erosionMap: this.getErosionInputs(point),
+            layout: this.#layoutMap.get(point),
+            erosionFlow: this.#erosionMap.getFlow(point),
+            erosionLines: this.getErosionLines(point),
         }
     }
 
@@ -75,8 +73,7 @@ export class BasinLayer {
     }
 
     getErosionAxis(point) {
-        const directionId = this.#erosionMap.getFlow(point)
-        const direction = Direction.fromId(directionId)
+        const direction = this.#erosionMap.getFlow(point)
         return direction.axis
     }
 
@@ -92,20 +89,21 @@ export class BasinLayer {
         return this.#midpointMap.get(point)
     }
 
-    getErosionInputs(point) {
-        return [] //this.#erosionMap.getPattern(point)
+    getErosionLines(point) {
+        const borderPoints = this.#erosionMap.getBorderPoints(point)
+        return []
     }
 
     getText(point) {
-        if (! this.#erosionMap.has(point))
+        if (! this.#erosionMap.hasFlow(point))
             return ''
         const basin = this.get(point)
         const attrs = [
             `${basin.id}`,
-            `erosionMap=${basin.erosionFlow.name}`,
+            `erosionFlow=${basin.erosionFlow.name}`,
             `distance=${basin.distance}`,
             `midpoint=${basin.midpoint}`,
-            `layoutMap=${basin.layoutMap}`,
+            `layout=${basin.layout}`,
         ].join(',')
         return `Basin(${attrs})`
     }
@@ -119,8 +117,8 @@ export class BasinLayer {
         const midPoint = this.getMidpoint(point)
         const offsetPoint = Point.multiplyScalar(midPoint, tileSize)
         const midCanvasPoint = Point.plus(canvasPoint, offsetPoint)
-        for(let erosionInput of this.getErosionInputs(point)) {
-            const [neighbor, rate] = erosionInput
+        for(let erosionInput of this.getErosionLines(point)) {
+            // const [neighbor, rate] = erosionInput
             // build a point for each flow that points to this point
             // const axis = Point.minus(neighbor, point)
             // if (point[0] == 28 && point[1] == 12) {
