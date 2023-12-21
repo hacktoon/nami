@@ -29,7 +29,7 @@ export class BasinFill extends ConcurrentFill {
         for(let neighbor of neighbors) {
             if (layers.surface.isWater(neighbor)) {
                 const direction = getDirectionBetween(fillPoint, neighbor)
-                erosionMap.set(wrappedFillPoint, direction)
+                erosionMap.set(wrappedFillPoint, direction.id)
                 break  // stop on first water neighbor
             }
         }
@@ -68,7 +68,7 @@ export class BasinFill extends ConcurrentFill {
         // set midpoint for rendering  TODO: move to upper layer
         const direction = getDirectionBetween(fillPoint, parentPoint)
         // set erosion flow to parent
-        erosionMap.set(wrappedPoint, direction)
+        erosionMap.set(wrappedPoint, direction.id)
     }
 }
 

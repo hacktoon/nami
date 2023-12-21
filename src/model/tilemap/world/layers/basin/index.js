@@ -1,6 +1,7 @@
 import { PointMap } from '/src/lib/point/map'
 import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
+import { Direction } from '/src/lib/direction'
 
 import { BasinFill } from './fill'
 
@@ -46,7 +47,7 @@ export class BasinLayer {
         return {
             id: this.#basinMap.get(point),
             distance: this.getDistance(point),
-            erosion: this.#erosionMap.get(point),
+            erosion: Direction.fromId(this.#erosionMap.get(point)),
         }
     }
 
@@ -58,13 +59,12 @@ export class BasinLayer {
         return this.#colorMap.get(id)
     }
 
-    getErosionAxis(point) {
-        const direction = this.#erosionMap.get(point)
-        return direction.axis
-    }
-
     getDividePoints() {
         return this.#dividePoints.points
+    }
+
+    isDivide(point) {
+        return this.#dividePoints.has(point)
     }
 
     getDistance(point) {
@@ -72,18 +72,14 @@ export class BasinLayer {
     }
 
     getText(point) {
-        if (! this.#erosionMap.has(point))
+        if (! this.#basinMap.has(point))
             return ''
         const basin = this.get(point)
         const attrs = [
-            `${basin.id}`,
+            `id=${basin.id}`,
             `erosion=${basin.erosion.name}`,
             `distance=${basin.distance}`,
         ].join(',')
         return `Basin(${attrs})`
-    }
-
-    isDivide(point) {
-        return this.#dividePoints.has(point)
     }
 }

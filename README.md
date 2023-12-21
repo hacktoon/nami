@@ -6,10 +6,10 @@
 
 
 ## PLANNING
-- fix river meander
-
-
-### SurfaceLayer
+- determine basin type
+  - count number of water sides on basin to decide if forms river
+  - endorreic - may form deserts and semi-rivers
+  - exorreic
 
 
 ### BlockLayer

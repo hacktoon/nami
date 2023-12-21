@@ -34,7 +34,7 @@ export function buildRiverMap(context) {
     let riverId = 0
     const basinLayer = context.layers.basin
     basinLayer.getDividePoints()
-        // create a list of pairs = (point, basin distance to mouth)
+        // create a list of pairs: (point, basin distance to mouth)
         .map(point => [point, basinLayer.getDistance(point)])
         // in ascendent order to get longest rivers first
         // for starting rivers on basin divides
@@ -60,11 +60,14 @@ function buildRiver(context, riverId, sourcePoint) {
     if (maxDistance < MAX_RIVER_SIZE) return
     while (layers.surface.isLand(currentPoint)) {
         const wrappedPoint = rect.wrap(currentPoint)
+        // create river meander point
         const meander = buildMeander(context, wrappedPoint)
-        const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
-        const stretch = buildStretch(context, wrappedPoint, maxDistance)
         riverMeanders.set(wrappedPoint, meander)
+        // set layout
+        const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
         layoutMap.set(wrappedPoint, directionBitmask)
+        // set river stretch by distance
+        const stretch = buildStretch(context, wrappedPoint, maxDistance)
         stretchMap.set(wrappedPoint, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(wrappedPoint, riverId)
@@ -86,11 +89,9 @@ function buildMeander(context, wrappedPoint) {
     // direction axis ([-1, 0], [1, 1], etc)
     const basin = context.layers.basin.get(wrappedPoint)
     const axis = basin.erosion.axis
-    const rand = (axisDirection) => {
+    const rand = (coordAxis) => {
         const offset = Random.floatRange(...OFFSET_RANGE)
-        const axisToggle = axisDirection === 0
-                           ? Random.choice(-1, 1)
-                           : axisDirection
+        const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
         return RIVER_MEANDER_MIDDLE + (offset * axisToggle)
     }
     return [rand(axis[0]), rand(axis[1])]
