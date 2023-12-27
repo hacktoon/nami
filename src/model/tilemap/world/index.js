@@ -2,6 +2,7 @@ import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
+import { WORLD_NAMES } from '/src/lib/names'
 import { TileMap } from '/src/model/tilemap/lib'
 import { UITileMap } from '/src/ui/tilemap'
 
@@ -18,7 +19,6 @@ import { LandformLayer } from './layers/landform'
 import { TopologyLayer } from './layers/topology'
 
 import { WorldTileMapDiagram } from './diagram'
-import { WORLD_NAMES } from './names'
 
 
 const SCHEMA = new Schema(

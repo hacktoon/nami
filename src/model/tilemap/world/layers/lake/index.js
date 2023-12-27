@@ -2,7 +2,7 @@ import { PointMap } from '/src/lib/point/map'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 
-import { HYDRO_NAMES } from '../../names'
+import { HYDRO_NAMES } from '../../../../../lib/names'
 import { Climate } from '../climate/data'
 import { Rain } from '../rain/data'
 import { RiverStretch } from '../river/data'

@@ -2,7 +2,7 @@ import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 
-import { HYDRO_NAMES } from '../../names'
+import { HYDRO_NAMES } from '/src/lib/names'
 import { RiverStretch } from './data'
 
 
