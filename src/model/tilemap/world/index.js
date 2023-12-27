@@ -43,16 +43,16 @@ export class WorldTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.layers = this.#buildLayers(params)
+        this.layers = this.#buildLayers(params, this.rect)
         this.name = Random.choiceFrom(WORLD_NAMES)
         this.width = this.rect.width
         this.height = this.rect.height
     }
 
-    #buildLayers(params) {
+    #buildLayers(params, rect) {
         const layers = {}
-        const rect = this.rect
         const realmCount = params.get('realms')
+        const start = performance.now()
         // The layers creation follows order below
         layers.noise = new NoiseLayer(rect)
         layers.surface = new SurfaceLayer(rect, layers)
@@ -63,6 +63,8 @@ export class WorldTileMap extends TileMap {
         layers.relief = new ReliefLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
         layers.topo = new TopologyLayer(rect, layers, realmCount)
+        const time = (performance.now() - start).toFixed(2)
+        console.log(`generated in ${time}ms`);
         return layers
     }
 
