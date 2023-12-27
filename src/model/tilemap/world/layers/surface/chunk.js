@@ -19,12 +19,13 @@ export class SurfaceChunk {
         const baseChunkPoint = Point.multiplyScalar(point, chunkSize)
         this.#matrix = Matrix.fromSize(chunkSize, (indexPoint) => {
             const point = Point.plus(baseChunkPoint, indexPoint)
-            const noise = noiseLayer.get4D(rect, point, 'outline')
+            const noise = noiseLayer.get4D(rect, point, 'outlineBlock')
+            // if (noise > .6) return LandSurface.id
             if (noise > .6) {
                 // remove islands on open water
-                if (! isLand && notBorder) {
-                    return WaterSurface.id
-                }
+                // if (! isLand && notBorder) {
+                //     return WaterSurface.id
+                // }
                 return LandSurface.id
             }
             if (isLand && notBorder) {

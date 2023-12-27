@@ -29,7 +29,7 @@ const SCHEMA = new Schema(
 )
 
 
-const CHUNK_SIZE = 3
+const CHUNK_SIZE = 5
 
 
 export class WorldTileMap extends TileMap {

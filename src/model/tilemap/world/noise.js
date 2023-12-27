@@ -4,25 +4,28 @@ import { SimplexNoise } from '/src/lib/noise'
 const NOISE_SPEC = [
     {id: 'atmos', octaves: 6, resolution: .6, scale: .02},
     {id: 'outline', octaves: 6, resolution: .8, scale: .02},
+    {id: 'outlineBlock', octaves: 6, resolution: .9, scale: .02},
     {id: 'feature', octaves: 6, resolution: .8, scale: .02},
     {id: 'grained', octaves: 6, resolution: .8, scale: .08},
-    {id: 'block', octaves: 6, resolution: 1, scale: .02},
 ]
-
-// this.#landNoise = new SimplexNoise(4, .2, .04)
-// this.#borderLandNoise = new SimplexNoise(4, .2, .02)
-// this.#waterNoise = new SimplexNoise(4, .2, .02)
 
 
 export class NoiseLayer {
     constructor(rect) {
         this.rect = rect
         this.map = new Map()
+        const outlineNoisePoints = SimplexNoise.buildPoints()
+        const outlineIds = ['outlineBlock', 'outline']
         for(let noiseSpec of Object.values(NOISE_SPEC)) {
+            let noisePoints = null
+            if (outlineIds.includes(noiseSpec.id)) {
+                noisePoints = outlineNoisePoints
+            }
             const noise = new SimplexNoise(
                 noiseSpec.octaves,
                 noiseSpec.resolution,
                 noiseSpec.scale,
+                noisePoints
             )
             this.map.set(noiseSpec.id, noise)
         }
