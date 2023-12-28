@@ -1,5 +1,6 @@
 import { Random } from '/src/lib/random'
 import { interpolateNumbers, clamp } from '/src/lib/number'
+import { SimplexNoise } from '/src/lib/noise'
 
 
 const CHARS = '0123456789ABCDEF'
@@ -47,11 +48,10 @@ export class Color {
     static LIGHTGRAY = Color.fromHex('d3d3d3')
 
     static fromInteger(id) {
-        const scale = 255
+        const scale = 256
         const r = 1
-        const g = hex[1] + hex[1]
-        const b = hex[2] + hex[2]
-
+        const g = 1
+        const b = 1
         return new Color(r, g, b)
     }
 

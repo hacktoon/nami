@@ -56,6 +56,9 @@ export class BasinLayer {
             return Color.DARKBLUE
         }
         const id = this.#basinMap.get(point)
+        // if (id > 300 ) {
+        //     console.log(Color.fromInteger(id));
+        // }
         return this.#colorMap.get(id)
     }
 
