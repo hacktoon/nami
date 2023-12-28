@@ -4,7 +4,7 @@ import { clamp } from '/src/lib/number'
 /*
  * A speed-improved simplex noise algorithm for 2D, 3D and 4D.
  *
- * https://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
+ * https://itn-web.it.liu.se/~stegu76/TNM084-2011/simplexnoise-demystified.pdf
  *
  * Based on example code by Stefan Gustavson (stegu@itn.liu.se).
  * Optimisations by Peter Eastman (peastman@drizzle.stanford.edu).
@@ -59,8 +59,9 @@ export class SimplexNoise {
         }
 
         // Skewing and unskewing factors for 2, 3, and 4 dimensions
-        this.F2 = 0.5 * (Math.sqrt(3.0) - 1.0)
-        this.G2 = (3.0 - Math.sqrt(3.0)) / 6.0
+        const sqrt3 = Math.sqrt(3.0)
+        this.F2 = 0.5 * (sqrt3 - 1.0)
+        this.G2 = (3.0 - sqrt3) / 6.0
         this.F3 = 1.0 / 3.0
         this.G3 = 1.0 / 6.0
         this.F4 = (Math.sqrt(5.0) - 1.0) / 4.0

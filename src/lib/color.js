@@ -5,7 +5,7 @@ import { interpolateNumbers, clamp } from '/src/lib/number'
 const CHARS = '0123456789ABCDEF'
 
 
-export function gradientColors(source, target, count) {
+export function generateColorInterpolation(source, target, count) {
     let start = Color.fromHex(source),
         end = Color.fromHex(target)
     let red = interpolateNumbers(start.red, end.red, count),
@@ -25,16 +25,14 @@ const hexClamp = comp => clamp(comp, 0, 255)
 
 
 const expandShorthand = hex => {
-    return [
-        hex[0] + hex[0],
-        hex[1] + hex[1],
-        hex[2] + hex[2]
-    ].join('')
+    const r = hex[0] + hex[0]
+    const g = hex[1] + hex[1]
+    const b = hex[2] + hex[2]
+    return `${r}${g}${b}`
 }
 
 
 export class Color {
-    static TRANSPARENT = null
     static WHITE = Color.fromHex('FFF')
     static YELLOW = Color.fromHex('FF0')
     static RED = Color.fromHex('F00')
@@ -47,6 +45,15 @@ export class Color {
     static BLACK = Color.fromHex('000')
     static GRAY = Color.fromHex('666')
     static LIGHTGRAY = Color.fromHex('d3d3d3')
+
+    static fromInteger(id) {
+        const scale = 255
+        const r = 1
+        const g = hex[1] + hex[1]
+        const b = hex[2] + hex[2]
+
+        return new Color(r, g, b)
+    }
 
     static fromHex(value) {
         let hex = String(value).trim().replace('#', '')
