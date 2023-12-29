@@ -20,8 +20,8 @@ test('Grid position set value', () => {
     const grid = new Grid(2, 3)
     const ps = [[0, 1], [1, 0], [5, -8]]
     for (let p of ps) {
-        grid.set(p, `${p}`)
-        expect(grid.get(p)).toBe(`${p}`)
+        grid.set(p, 42)
+        expect(grid.get(p)).toBe(42)
     }
 })
 
