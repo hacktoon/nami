@@ -16,16 +16,12 @@ export class BiomeLayer {
 
     constructor(rect, layers) {
         this.#matrix = Matrix.fromRect(rect, point => {
-            const biome = this.#buildBiome(layers, point)
+            const isWater = layers.surface.isWater(point)
+            let biome = isWater
+                ? this.#buildWaterBiome(layers, point)
+                : this.#buildLandBiome(layers, point)
             return biome.id
         })
-    }
-
-    #buildBiome(layers, point) {
-        if (layers.surface.isWater(point)) {
-            return this.#buildWaterBiome(layers, point)
-        }
-        return this.#buildLandBiome(layers, point)
     }
 
     #buildLandBiome(layers, point) {
