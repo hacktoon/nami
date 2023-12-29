@@ -1,5 +1,3 @@
-import { Matrix } from '/src/lib/matrix'
-
 import { Climate } from '../climate/data'
 import { Rain } from '../rain/data'
 import { Relief } from '../relief/data'
@@ -12,20 +10,13 @@ const ICECAP_NOISE = .4
 
 
 export class BiomeLayer {
-    #matrix
-
     constructor(rect, layers) {
-        this.#matrix = Matrix.fromRect(rect, point => {
-            const isWater = layers.surface.isWater(point)
-            let biome = isWater
-                ? this.#buildWaterBiome(layers, point)
-                : this.#buildLandBiome(layers, point)
-            return biome.id
-        })
+        this.layers = layers
     }
 
-    #buildLandBiome(layers, point) {
-        const {rain, climate} = layers
+    #buildLandBiome(point) {
+        const {rain, climate} = this.layers
+        const layers = this.layers
 
         if (climate.is(point, Climate.FROZEN)) {
             return Biome.TUNDRA
@@ -68,7 +59,8 @@ export class BiomeLayer {
         return Biome.DESERT
     }
 
-    #buildWaterBiome(layers, point) {
+    #buildWaterBiome(point) {
+        const layers = this.layers
         const grainedNoise = layers.noise.getGrained(point)
         const isFrozen = layers.climate.is(point, Climate.FROZEN)
         if (isFrozen && grainedNoise > ICECAP_NOISE) {
@@ -88,8 +80,11 @@ export class BiomeLayer {
     }
 
     get(point) {
-        const id = this.#matrix.get(point)
-        return Biome.get(id)
+        const isWater = this.layers.surface.isWater(point)
+        let biome = isWater
+            ? this.#buildWaterBiome(point)
+            : this.#buildLandBiome(point)
+        return Biome.get(biome.id)
     }
 
     getColor(point) {
@@ -97,8 +92,8 @@ export class BiomeLayer {
     }
 
     is(point, type) {
-        const id = this.#matrix.get(point)
-        return id === type.id
+        const biome = this.get(point)
+        return biome.id === type.id
     }
 
     getText(point) {
