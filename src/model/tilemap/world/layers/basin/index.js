@@ -56,10 +56,9 @@ export class BasinLayer {
             return Color.DARKBLUE
         }
         const id = this.#basinMap.get(point)
-        // if (id > 300 ) {
-        //     console.log(Color.fromInteger(id));
-        // }
-        return this.#colorMap.get(id)
+        const basinCount = this.#basinMap.size
+        const r = id % basinCount
+        return new Color(id, id, id)
     }
 
     getDividePoints() {
