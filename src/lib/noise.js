@@ -36,25 +36,20 @@ const GRAD4 = [
 
 // Simplex noise in 2D, 3D and 4D
 export class SimplexNoise {
-    static buildPoints() {
+    constructor(octaves, persistence, scale) {
+        this.octaves = octaves
+        this.persistence = persistence
+        this.scale = scale
         const points = []
         for (let i=0; i<256; i++) {
             points[i] = Random.int(255)
         }
-        return points
-    }
-
-    constructor(octaves, persistence, scale, points=null) {
-        this.octaves = octaves
-        this.persistence = persistence
-        this.scale = scale
-        this.points = points ?? SimplexNoise.buildPoints()
         this.perm = []
         this.permMod12 = []
 
         // To remove the need for index wrapping, double the permutation table length
         for(let i=0; i<512; i++) {
-            this.perm[i] = this.points[i & 255]
+            this.perm[i] = points[i & 255]
             this.permMod12[i] = parseInt(this.perm[i] % 12, 10)
         }
 
@@ -68,9 +63,9 @@ export class SimplexNoise {
         this.G4 = (5.0-Math.sqrt(5.0)) / 20.0
     }
 
-    noise2D(point) {
+    noise2D(params, point) {
         let amp = 1
-        let freq = this.scale
+        let freq = params.scale
         let noise = 0
 
         //add successively smaller, higher-frequency terms

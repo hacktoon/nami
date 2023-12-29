@@ -1,6 +1,7 @@
 import { Point } from '/src/lib/point'
 import { Rect } from '/src/lib/number'
 import { Matrix } from '/src/lib/matrix'
+import { SimplexNoise } from '/src/lib/noise'
 import {
     Surface,
     LandSurface,
@@ -17,9 +18,10 @@ export class SurfaceChunk {
         const notBorder = ! world.layers.surface.isBorder(point)
         const rect = Rect.multiply(world.rect, chunkSize)
         const baseChunkPoint = Point.multiplyScalar(point, chunkSize)
+        const noisex = new SimplexNoise()
         this.#matrix = new Matrix(chunkSize, chunkSize, (indexPoint) => {
             const point = Point.plus(baseChunkPoint, indexPoint)
-            const noise = noiseLayer.get4D(rect, point, 'outlineBlock')
+            const noise = noiseLayer.get4D(rect, point, 'outline')
             if (noise > .6) {
                 // remove islands on open water
                 if (! isLand && notBorder) {
