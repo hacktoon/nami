@@ -20,15 +20,11 @@ export class BasinLayer {
     // the highest points of basins that borders others basins
     #dividePoints = new PointSet()
 
-    // a color for each basin
-    #colorMap = new Map()
-
     constructor(rect, layers) {
         const context = {
             rect,
             layers: layers,
             basinMap: this.#basinMap,
-            colorMap: this.#colorMap,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
             erosionMap: this.#erosionMap,

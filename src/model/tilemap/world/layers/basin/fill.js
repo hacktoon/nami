@@ -1,7 +1,6 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
-import { Color } from '/src/lib/color'
 
 
 const CHANCE = .1  // chance of fill growing
@@ -14,12 +13,9 @@ export class BasinFill extends ConcurrentFill {
 
     onInitFill(fill, fillPoint, neighbors) {
         const {
-            rect, layers, basinMap, distanceMap, colorMap,
-            erosionMap
+            rect, layers, basinMap, distanceMap, erosionMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
-        // set basin color
-        colorMap.set(fill.id, new Color())
         // create a basin midpoint
         // set basin id to spread on fill
         basinMap.set(wrappedFillPoint, fill.id)
