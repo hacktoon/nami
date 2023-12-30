@@ -1,6 +1,5 @@
 import { Matrix } from '/src/lib/matrix'
 import { Point } from '/src/lib/point'
-import { clamp } from '/src/lib/number'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import {
@@ -8,7 +7,6 @@ import {
     WaterSurface,
     LandSurface
 } from './data'
-import { SurfaceChunk } from './chunk'
 
 
 // use 0 and 1 as "empty" values
@@ -43,7 +41,8 @@ export class SurfaceLayer {
     #detectSurfaceBodies(rect, layers) {
         // init points as land/water according to noise map
         this.#matrix = Matrix.fromRect(rect, point => {
-            const noise = layers.noise.get2D(point, "outline")
+            const p = Point.plus(point, [2,2])
+            const noise = layers.noise.get4D(rect, p, "outline")
             const isWaterBody = noise < SURFACE_RATIO
             return isWaterBody ? EMPTY_WATERBODY : EMPTY_LANDBODY
         })

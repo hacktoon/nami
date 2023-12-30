@@ -5,7 +5,7 @@ import { PointSet, PointArraySet } from '/src/lib/point/set'
 
 import { drawCity, drawCapital, drawDungeon } from './draw'
 
-const CITY_RADIUS = 5
+const CITY_RADIUS = 10
 const WATER_CITY_CHANCE = .003
 const WATER_DUNGEON_CHANCE = .02
 const LAND_DUNGEON_CHANCE = .2
@@ -61,7 +61,8 @@ export class TopologyLayer {
         while (possibleCityPoints.size > 0) {
             const center = possibleCityPoints.random()
             // remove candidate points around a city circle
-            Point.insideCircle(center, CITY_RADIUS, point => {
+            const radius = Math.floor(rect.width / 10)
+            Point.insideCircle(center, radius, point => {
                 possibleCityPoints.delete(rect.wrap(point))
             })
             cityPoints.add(center)

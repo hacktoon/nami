@@ -44,26 +44,10 @@ export class Rect {
         return x && y
     }
 
-    inEdge(point) {
-        const x = point[0] === 0 || point[0] === this.width - 1
-        const y = point[1] === 0 || point[1] === this.height - 1
-        return x || y
-    }
-
-    distanceToEdge([x, y]){
-        // Calculate distances to each edge
-        const dist_left = x
-        const dist_right = this.width - 1 - x
-        const dist_top = y
-        const dist_bottom = this.height - 1 - y
-        // Find the minimum distance
-        return Math.min(dist_left, dist_right, dist_top, dist_bottom)
-    }
-
-    distanceToCenter([x, y]){
-        const midX = Math.floor(this.width / 2)
-        const midY = Math.floor(this.height / 2)
-        return Math.abs(x - midX) + Math.abs(y - midY)
+    inEdge([x, y]) {
+        const _x = x === 0 || x === this.width - 1
+        const _y = y === 0 || y === this.height - 1
+        return _x || _y
     }
 
     wrap(point) {
