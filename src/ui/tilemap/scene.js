@@ -26,7 +26,6 @@ function UITileMapSceneContent({diagram, viewport, ...props}) {
     const [prevFocus, setPrevFocus] = useState([0, 0])
 
     // TODO: calc if should create a moving canvas or not
-    // depends on wrap option
     // depends on canvas covering all viewport
 
     const handleDragStart = () => setPrevFocus(scene.focus)
@@ -54,7 +53,6 @@ export class TileMapScene {
     static schema = new Schema(
         'TileMapScene',
         Type.point('focus', "Focus", {default: '50,51'}),
-        Type.boolean('wrap', "Wrap", {default: false}),
         Type.number('zoom', "Zoom", {
             default: 10,
             min: ZOOM_INCREMENT,
@@ -68,12 +66,11 @@ export class TileMapScene {
     }
 
     constructor(diagram, viewport, params) {
-        const [focus, wrap, zoom] = params.get('focus', 'wrap', 'zoom')
+        const [focus, zoom] = params.get('focus', 'zoom')
         this.frame = new Frame(viewport, zoom)
         this.diagram = diagram
         this.textQueue = []
         this.focus = focus
-        this.wrap = wrap
         this.zoom = zoom
         this.zoomIncrement = ZOOM_INCREMENT
         this.viewport = viewport  // TODO: needed only in UITileMapMouse, delete
@@ -88,7 +85,7 @@ export class TileMapScene {
             for(let j = origin[1], y = 0; j <= target[1]; j++, y += this.zoom) {
                 const canvasPoint = Point.minus([x, y], this.frame.offset)
                 const tilePoint = [i, j]
-                if (this.isWrappable(tilePoint)) {
+                if (this.diagram.rect.isInside(tilePoint)) {
                     const context = {
                         canvas, tilePoint, canvasPoint, tileSize: this.zoom,
                     }
@@ -98,11 +95,6 @@ export class TileMapScene {
                 }
             }
         }
-    }
-
-    isWrappable(point) {
-        if (this.wrap) return true
-        return this.diagram.rect.isInside(point)
     }
 
     renderCursor(canvas, cursor) {

@@ -21,18 +21,21 @@ export class SurfaceChunk {
         const noisex = new SimplexNoise()
         this.#matrix = new Matrix(chunkSize, chunkSize, (indexPoint) => {
             const point = Point.plus(baseChunkPoint, indexPoint)
-            const noise = noiseLayer.get4D(rect, point, 'outline')
-            if (noise > .6) {
-                // remove islands on open water
-                if (! isLand && notBorder) {
-                    return WaterSurface.id
-                }
+            const noise = noiseLayer.get2D(point, 'outline')
+            if (noise > .2) {
                 return LandSurface.id
             }
-            // remove inner lakes on continents
-            if (isLand && notBorder) {
-                return LandSurface.id
-            }
+            // if (noise > .6) {
+            //     // remove islands on open water
+            //     if (! isLand && notBorder) {
+            //         return WaterSurface.id
+            //     }
+            //     return LandSurface.id
+            // }
+            // // remove inner lakes on continents
+            // if (isLand && notBorder) {
+            //     return LandSurface.id
+            // }
             return WaterSurface.id
         })
         this.size = chunkSize
