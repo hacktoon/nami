@@ -34,6 +34,7 @@ export function buildRiverMap(context) {
     let riverId = 0
     const basinLayer = context.layers.basin
     basinLayer.getDividePoints()
+        .filter(point => basinLayer.isRiverBasin(point))
         // create a list of pairs: (point, basin distance to mouth)
         .map(point => [point, basinLayer.getDistance(point)])
         // in ascendent order to get longest rivers first

@@ -20,11 +20,15 @@ export class BasinLayer {
     // the highest points of basins that borders others basins
     #dividePoints = new PointSet()
 
+    // basin is adequate for rivers
+    #riverBasinMap = new Map()
+
     constructor(rect, layers) {
         const context = {
             rect,
             layers: layers,
             basinMap: this.#basinMap,
+            riverBasinMap: this.#riverBasinMap,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
             erosionMap: this.#erosionMap,
@@ -62,6 +66,11 @@ export class BasinLayer {
 
     isDivide(point) {
         return this.#dividePoints.has(point)
+    }
+
+    isRiverBasin(point) {
+        const id = this.#basinMap.get(point)
+        return this.#riverBasinMap.get(id)
     }
 
     getDistance(point) {

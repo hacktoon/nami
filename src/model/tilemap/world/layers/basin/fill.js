@@ -13,7 +13,7 @@ export class BasinFill extends ConcurrentFill {
 
     onInitFill(fill, fillPoint, neighbors) {
         const {
-            rect, layers, basinMap, distanceMap, erosionMap
+            rect, layers, basinMap, riverBasinMap, distanceMap, erosionMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // create a basin midpoint
@@ -22,12 +22,20 @@ export class BasinFill extends ConcurrentFill {
         // initial distance is 1
         distanceMap.set(wrappedFillPoint, 1)
         // find neighbors to set initial erosion layout direction
+        let totalWaterSides = 0
         for(let neighbor of neighbors) {
             if (layers.surface.isWater(neighbor)) {
-                const direction = getDirectionBetween(fillPoint, neighbor)
-                erosionMap.set(wrappedFillPoint, direction.id)
-                break  // stop on first water neighbor
+                totalWaterSides ++
+                if (! erosionMap.has(wrappedFillPoint)) {
+                    const direction = getDirectionBetween(fillPoint, neighbor)
+                    erosionMap.set(wrappedFillPoint, direction.id)
+                }
             }
+        }
+        if (totalWaterSides == 1) {
+            riverBasinMap.set(fill.id, true) // has river
+        } else {
+            riverBasinMap.set(fill.id, false)
         }
     }
 
