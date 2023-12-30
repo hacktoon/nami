@@ -15,6 +15,7 @@ export class ReliefLayer {
     #matrix
 
     constructor(rect, layers) {
+        this.rect = rect
         this.#matrix = Matrix.fromRect(rect, point => {
             const isWater = layers.surface.isWater(point)
             const type = isWater ? this.#detectWaterType(layers, point)
@@ -24,7 +25,6 @@ export class ReliefLayer {
     }
 
     #detectWaterType(layers, point) {
-
         return Relief.ABYSS
     }
 
@@ -32,7 +32,7 @@ export class ReliefLayer {
         if (! layers.river.hasWater(point)) {
             return Relief.PLAIN
         }
-        const grainedNoise = layers.noise.get2D(point, "grained")
+        const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
         const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
         const isFastCourse = layers.river.is(point, RiverStretch.FAST_COURSE)
         const isDivide = layers.basin.isDivide(point)

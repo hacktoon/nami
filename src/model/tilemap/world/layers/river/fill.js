@@ -34,7 +34,10 @@ export function buildRiverMap(context) {
     let riverId = 0
     const basinLayer = context.layers.basin
     basinLayer.getDividePoints()
-        .filter(point => basinLayer.isRiverBasin(point))
+        .filter(point => {
+            const rainsOnSource = context.layers.rain.canCreateRiver(point)
+            return basinLayer.isRiverBasin(point) && rainsOnSource
+        })
         // create a list of pairs: (point, basin distance to mouth)
         .map(point => [point, basinLayer.getDistance(point)])
         // in ascendent order to get longest rivers first
@@ -57,7 +60,6 @@ function buildRiver(context, riverId, sourcePoint) {
     let currentPoint = sourcePoint
     // follow river down following next land points
     const maxDistance = layers.basin.getDistance(sourcePoint)
-    const rainsOnSource = layers.rain.canCreateRiver(sourcePoint)
     if (maxDistance < MAX_RIVER_SIZE) return
     while (layers.surface.isLand(currentPoint)) {
         const wrappedPoint = rect.wrap(currentPoint)
@@ -72,9 +74,7 @@ function buildRiver(context, riverId, sourcePoint) {
         stretchMap.set(wrappedPoint, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(wrappedPoint, riverId)
-        if (rainsOnSource) {
-            waterPoints.add(wrappedPoint)
-        }
+        waterPoints.add(wrappedPoint)
         // get next river point
         currentPoint = getNextRiverPoint(context, wrappedPoint)
         // save previous point for mouth detection

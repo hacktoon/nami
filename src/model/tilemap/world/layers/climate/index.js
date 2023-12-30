@@ -8,12 +8,13 @@ const HOT_RATIO = .65
 
 
 export class ClimateLayer {
-    constructor(layers) {
+    constructor(rect, layers) {
         this.layers = layers
+        this.rect = rect
     }
 
     get(point) {
-        const noise = this.layers.noise.get2D(point, "atmos")
+        const noise = this.layers.noise.get4D(this.rect, point, "atmos")
         if (noise > HOT_RATIO)       return Climate.HOT
         if (noise > WARM_RATIO)      return Climate.WARM
         if (noise > TEMPERATE_RATIO) return Climate.TEMPERATE

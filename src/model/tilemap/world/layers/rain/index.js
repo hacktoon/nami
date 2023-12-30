@@ -10,12 +10,13 @@ const ARID_RATIO = .65
 // TODO: rain is dynamic, make noise offset and loop
 
 export class RainLayer {
-    constructor(layers) {
+    constructor(rect, layers) {
         this.layers = layers
+        this.rect = rect
     }
 
     get(point) {
-        const noise = this.layers.noise.get2D(point, "feature")
+        const noise = this.layers.noise.get4D(this.rect, point, "feature")
         if (noise > ARID_RATIO)     return Rain.ARID
         if (noise > DRY_RATIO)      return Rain.DRY
         if (noise > SEASONAL_RATIO) return Rain.SEASONAL

@@ -4,8 +4,9 @@ import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import {
     Surface,
-    WaterSurface,
-    LandSurface
+    OceanSurface,
+    LakeSurface,
+    ContinentSurface
 } from './data'
 
 
@@ -54,7 +55,13 @@ export class SurfaceLayer {
             if (! this.#isEmptyBody(originPoint)) return
             const isWaterBody = this.#isEmptyWaterBody(originPoint)
             const area = this.#fillBodyArea(originPoint, this.#bodyIdCount)
-            const type = isWaterBody && area > 3 ? WaterSurface : LandSurface
+            let type
+            if (isWaterBody) {
+                console.log(area);
+                type = (area < 50) ? LakeSurface : OceanSurface
+            } else {
+                type = ContinentSurface
+            }
             this.#bodyTypeMap.set(this.#bodyIdCount, type.id)
             this.#bodyAreaMap.set(this.#bodyIdCount, area)
             this.#bodyIdCount++
@@ -145,7 +152,7 @@ export class SurfaceLayer {
     getArea(point) {
         const bodyId = Math.abs(this.#matrix.get(point))
         const area = (this.#bodyAreaMap.get(bodyId) * 100) / this.#matrix.area
-        return area.toFixed(1)
+        return area.toFixed(2)
     }
 
     getWaterArea() {

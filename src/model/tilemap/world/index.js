@@ -54,8 +54,8 @@ export class WorldTileMap extends TileMap {
         // The layers creation follows order below
         layers.noise = new NoiseLayer(rect)
         layers.surface = new SurfaceLayer(rect, layers)
-        layers.climate = new ClimateLayer(layers)
-        layers.rain = new RainLayer(layers)
+        layers.climate = new ClimateLayer(rect, layers)
+        layers.rain = new RainLayer(rect, layers)
         layers.basin = new BasinLayer(rect, layers)
         layers.river = new RiverLayer(rect, layers)
         layers.relief = new ReliefLayer(rect, layers)

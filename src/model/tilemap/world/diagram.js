@@ -23,7 +23,6 @@ const SCHEMA = new Schema(
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
-    Type.boolean('showBlocks', 'Blocks', {default: true}),
     Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
 
@@ -47,11 +46,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const showRiver = tileSize >= 8 && this.params.get('showRivers')
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
-        if (this.params.get('showBlocks') && tileSize >= 20) {
-            this.drawChunk(props)
-        } else {
-            canvas.rect(canvasPoint, tileSize, layerColor.toHex())
-        }
+
+        canvas.rect(canvasPoint, tileSize, layerColor.toHex())
+
         if (isLand && this.params.get('showErosion')) {
             const basin = layers.basin.get(point)
             const text = basin.erosion.symbol
@@ -65,23 +62,6 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
         if (this.params.get('showCities')) {
             layers.topo.draw(point, props)
-        }
-    }
-
-    drawChunk(props) {
-        const {canvas, tilePoint, canvasPoint, tileSize} = props
-        const chunk = this.tileMap.getChunk(tilePoint)
-        const chunkSize = chunk.size
-        const size = tileSize / chunkSize
-        // render block tiles
-        for (let x=0; x < chunkSize; x++) {
-            const xSize = x * size
-            for (let y=0; y < chunkSize; y++) {
-                const ySize = y * size
-                const blockCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                let surface = chunk.get([y, x])
-                canvas.rect(blockCanvasPoint, size, surface.color.toHex())
-            }
         }
     }
 }
