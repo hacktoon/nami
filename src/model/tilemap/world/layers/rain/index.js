@@ -15,7 +15,7 @@ export class RainLayer {
     }
 
     get(point) {
-        const noise = this.layers.noise.getFeature(point)
+        const noise = this.layers.noise.get2D(point, "feature")
         if (noise > ARID_RATIO)     return Rain.ARID
         if (noise > DRY_RATIO)      return Rain.DRY
         if (noise > SEASONAL_RATIO) return Rain.SEASONAL

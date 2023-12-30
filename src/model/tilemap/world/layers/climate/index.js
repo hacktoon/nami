@@ -2,9 +2,9 @@ import { Climate } from './data'
 
 
 const COLD_RATIO = .15
-const TEMPERATE_RATIO = .4
-const WARM_RATIO = .5
-const HOT_RATIO = .75
+const TEMPERATE_RATIO = .3
+const WARM_RATIO = .4
+const HOT_RATIO = .65
 
 
 export class ClimateLayer {
@@ -13,7 +13,7 @@ export class ClimateLayer {
     }
 
     get(point) {
-        const noise = this.layers.noise.getAtmos(point)
+        const noise = this.layers.noise.get2D(point, "atmos")
         if (noise > HOT_RATIO)       return Climate.HOT
         if (noise > WARM_RATIO)      return Climate.WARM
         if (noise > TEMPERATE_RATIO) return Climate.TEMPERATE

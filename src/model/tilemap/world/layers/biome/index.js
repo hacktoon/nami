@@ -61,7 +61,7 @@ export class BiomeLayer {
 
     #buildWaterBiome(point) {
         const layers = this.layers
-        const grainedNoise = layers.noise.getGrained(point)
+        const grainedNoise = layers.noise.get2D(point, "grained")
         const isFrozen = layers.climate.is(point, Climate.FROZEN)
         if (isFrozen && grainedNoise > ICECAP_NOISE) {
             return Biome.ICECAP

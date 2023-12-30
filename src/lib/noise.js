@@ -63,14 +63,14 @@ export class SimplexNoise {
         this.G4 = (5.0-Math.sqrt(5.0)) / 20.0
     }
 
-    noise2D(params, point) {
+    noise2D(point) {
+        const [x, y] = point
         let amp = 1
-        let freq = params.scale
+        let freq = this.scale
         let noise = 0
-
         //add successively smaller, higher-frequency terms
         for(let i = 0; i < this.octaves; ++i) {
-            noise += this.#calcNoise2D(point[0] * freq, point[1] * freq) * amp
+            noise += this.#calcNoise2D(x * freq, y * freq) * amp
             amp *= this.persistence
             freq *= 2
         }

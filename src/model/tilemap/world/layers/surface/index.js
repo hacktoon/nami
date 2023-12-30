@@ -43,7 +43,7 @@ export class SurfaceLayer {
         // init points as land/water according to noise map
         this.#matrix = Matrix.fromRect(rect, point => {
             // detect water points with "outline" noise map
-            const isWaterBody = layers.noise.getOutline(point) < SURFACE_RATIO
+            const isWaterBody = layers.noise.get2D(point, "outline") < SURFACE_RATIO
             return isWaterBody ? EMPTY_WATERBODY : EMPTY_LANDBODY
         })
     }

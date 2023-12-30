@@ -24,13 +24,7 @@ export class ReliefLayer {
     }
 
     #detectWaterType(layers, point) {
-        const outlineNoise = layers.noise.getOutline(point)
-        const featureNoise = layers.noise.getFeature(point)
-        const grainedNoise = layers.noise.getGrained(point)
-        if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
-        if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM
-        if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
-        if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH
+
         return Relief.ABYSS
     }
 
@@ -38,7 +32,7 @@ export class ReliefLayer {
         if (! layers.river.hasWater(point)) {
             return Relief.PLAIN
         }
-        const grainedNoise = layers.noise.getGrained(point)
+        const grainedNoise = layers.noise.get2D(point, "grained")
         const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
         const isFastCourse = layers.river.is(point, RiverStretch.FAST_COURSE)
         const isDivide = layers.basin.isDivide(point)
