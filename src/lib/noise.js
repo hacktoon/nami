@@ -74,7 +74,8 @@ export class SimplexNoise {
             amp *= this.persistence
             freq *= 2
         }
-        return noise
+        // remap from [-1, 1] to [0, 1]
+        return clamp((noise + 1) / 2, 0, 1)
     }
 
     wrapped4D(rect, [x, y]) {

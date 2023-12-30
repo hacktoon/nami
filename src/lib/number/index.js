@@ -50,6 +50,22 @@ export class Rect {
         return x || y
     }
 
+    distanceToEdge([x, y]){
+        // Calculate distances to each edge
+        const dist_left = x
+        const dist_right = this.width - 1 - x
+        const dist_top = y
+        const dist_bottom = this.height - 1 - y
+        // Find the minimum distance
+        return Math.min(dist_left, dist_right, dist_top, dist_bottom)
+    }
+
+    distanceToCenter([x, y]){
+        const midX = Math.floor(this.width / 2)
+        const midY = Math.floor(this.height / 2)
+        return Math.abs(x - midX) + Math.abs(y - midY)
+    }
+
     wrap(point) {
         let [x, y] = point
         if (x >= this.width) { x %= this.width }

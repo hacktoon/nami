@@ -18,7 +18,6 @@ export class SurfaceChunk {
         const notBorder = ! world.layers.surface.isBorder(point)
         const rect = Rect.multiply(world.rect, chunkSize)
         const baseChunkPoint = Point.multiplyScalar(point, chunkSize)
-        const noisex = new SimplexNoise()
         this.#matrix = new Matrix(chunkSize, chunkSize, (indexPoint) => {
             const point = Point.plus(baseChunkPoint, indexPoint)
             const noise = noiseLayer.get2D(point, 'outline')
