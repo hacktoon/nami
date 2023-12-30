@@ -51,10 +51,9 @@ export class BasinLayer {
         if (! this.#basinMap.has(point)) {
             return Color.DARKBLUE
         }
-        const id = this.#basinMap.get(point)
-        const basinCount = this.#basinMap.size
-        const r = id % basinCount
-        return new Color(id, id, id)
+        let color = Color.DARKGREEN
+        const distance = this.#distanceMap.get(point)
+        return color.darken(distance * 10)
     }
 
     getDividePoints() {

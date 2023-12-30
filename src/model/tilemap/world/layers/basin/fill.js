@@ -4,7 +4,7 @@ import { Point } from '/src/lib/point'
 
 
 const CHANCE = .1  // chance of fill growing
-const GROWTH = 10  // make fill basins grow bigger than others
+const GROWTH = 20  // make fill basins grow bigger than others
 
 
 export class BasinFill extends ConcurrentFill {

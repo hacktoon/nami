@@ -1,6 +1,5 @@
 import { Random } from '/src/lib/random'
 import { interpolateNumbers, clamp } from '/src/lib/number'
-import { SimplexNoise } from '/src/lib/noise'
 
 
 const CHARS = '0123456789ABCDEF'
@@ -12,7 +11,9 @@ export class Color {
     static YELLOW = Color.fromHex('FF0')
     static RED = Color.fromHex('F00')
     static DARKRED = Color.fromHex('8b0000')
+    static LIGHTGREEN = Color.fromHex('#90cc5e')
     static GREEN = Color.fromHex('0F0')
+    static DARKGREEN = Color.fromHex('71b13e')
     static PURPLE = Color.fromHex('808')
     static BLUE = Color.fromHex('00F')
     static DARKBLUE = Color.fromHex('235')
