@@ -4,7 +4,7 @@ import { Point } from '/src/lib/point'
 
 
 const CHANCE = .1  // chance of fill growing
-const GROWTH = 20  // make fill basins grow bigger than others
+const GROWTH = 10  // make fill basins grow bigger than others
 
 
 export class BasinFill extends ConcurrentFill {
@@ -16,27 +16,23 @@ export class BasinFill extends ConcurrentFill {
             rect, layers, basinMap, riverBasinMap, distanceMap, erosionMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
-        // create a basin midpoint
-        // set basin id to spread on fill
-        basinMap.set(wrappedFillPoint, fill.id)
-        // initial distance is 1
-        distanceMap.set(wrappedFillPoint, 1)
         // find neighbors to set initial erosion layout direction
         let totalOceanSides = 0
-        for(let neighbor of neighbors) {
-            if (layers.surface.isLand(neighbor)) continue
-            // only count water neighbors
+        const waterNeighbors = neighbors.filter(p => layers.surface.isWater(p))
+        for(let neighbor of waterNeighbors) {
             totalOceanSides += layers.surface.isOcean(neighbor) ? 1 : 0
-            if (! erosionMap.has(wrappedFillPoint)) {
-                const direction = getDirectionBetween(fillPoint, neighbor)
-                erosionMap.set(wrappedFillPoint, direction.id)
-            }
+            const direction = getDirectionBetween(fillPoint, neighbor)
+            erosionMap.set(wrappedFillPoint, direction.id)
         }
         if (totalOceanSides == 1) {
             riverBasinMap.set(fill.id, true) // has river
         } else {
             riverBasinMap.set(fill.id, false)
         }
+        // set basin id to spread on fill
+        basinMap.set(wrappedFillPoint, fill.id)
+        // initial distance is 1
+        distanceMap.set(wrappedFillPoint, 1)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -64,13 +60,13 @@ export class BasinFill extends ConcurrentFill {
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
+        const direction = getDirectionBetween(fillPoint, parentPoint)
         // distance to source by point
         const currentDistance = distanceMap.get(wrappedParentPoint)
         distanceMap.set(wrappedPoint, currentDistance + 1)
         // use basin value from parent point
         basinMap.set(wrappedPoint, basinMap.get(wrappedParentPoint))
         // set midpoint for rendering  TODO: move to upper layer
-        const direction = getDirectionBetween(fillPoint, parentPoint)
         // set erosion flow to parent
         erosionMap.set(wrappedPoint, direction.id)
     }
