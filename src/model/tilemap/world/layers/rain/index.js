@@ -30,7 +30,9 @@ export class RainLayer {
 
     canCreateRiver(point) {
         const rain = this.get(point)
-        const riverSourceOpts = [Rain.HUMID.id, Rain.WET.id, Rain.SEASONAL.id]
+        const riverSourceOpts = [
+            Rain.HUMID.id, Rain.WET.id, Rain.SEASONAL.id, Rain.DRY.id
+        ]
         return riverSourceOpts.includes(rain.id)
     }
 
