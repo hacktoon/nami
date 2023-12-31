@@ -47,8 +47,7 @@ export class SurfaceLayer {
     #detectSurfaceBodies(rect, layers) {
         // init points as land/water according to noise map
         this.#matrix = Matrix.fromRect(rect, point => {
-            const p = Point.plus(point, [2,2])
-            const noise = layers.noise.get4D(rect, p, "outline")
+            const noise = layers.noise.get4D(rect, point, "outline")
             const isWaterBody = noise < SURFACE_RATIO
             return isWaterBody ? EMPTY_WATERBODY : EMPTY_LANDBODY
         })
@@ -66,12 +65,13 @@ export class SurfaceLayer {
             let type = ContinentSurface
             // area is filled; decide type
             if (isEmptyWaterBody) {
-                if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
+                if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO) {
                     type = OceanSurface
-                else if (surfaceAreaRatio >= MINIMUN_SEA_RATIO)
+                } else if (surfaceAreaRatio >= MINIMUN_SEA_RATIO) {
                     type = SeaSurface
-                else
+                } else {
                     type = LakeSurface
+                }
             } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
                 type = IslandSurface
             }
@@ -179,6 +179,10 @@ export class SurfaceLayer {
 
     isOcean(point) {
         return this.get(point).id == OceanSurface.id
+    }
+
+    isLake(point) {
+        return this.get(point).id == LakeSurface.id
     }
 
     isLand(point) {
