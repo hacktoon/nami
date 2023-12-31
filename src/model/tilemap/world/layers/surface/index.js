@@ -7,7 +7,8 @@ import {
     OceanSurface,
     SeaSurface,
     ContinentSurface,
-    IslandSurface
+    IslandSurface,
+    LakeSurface
 } from './data'
 
 
@@ -67,8 +68,10 @@ export class SurfaceLayer {
             if (isEmptyWaterBody) {
                 if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
                     type = OceanSurface
-                else
+                else if (surfaceAreaRatio >= MINIMUN_SEA_RATIO)
                     type = SeaSurface
+                else
+                    type = LakeSurface
             } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
                 type = IslandSurface
             }
