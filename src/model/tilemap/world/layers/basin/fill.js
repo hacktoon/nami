@@ -22,17 +22,17 @@ export class BasinFill extends ConcurrentFill {
         // initial distance is 1
         distanceMap.set(wrappedFillPoint, 1)
         // find neighbors to set initial erosion layout direction
-        let totalWaterSides = 0
+        let totalOceanSides = 0
         for(let neighbor of neighbors) {
-            if (layers.surface.isWater(neighbor)) {
-                totalWaterSides ++
-                if (! erosionMap.has(wrappedFillPoint)) {
-                    const direction = getDirectionBetween(fillPoint, neighbor)
-                    erosionMap.set(wrappedFillPoint, direction.id)
-                }
+            if (layers.surface.isLand(neighbor)) continue
+            // only count water neighbors
+            totalOceanSides += layers.surface.isOcean(neighbor) ? 1 : 0
+            if (! erosionMap.has(wrappedFillPoint)) {
+                const direction = getDirectionBetween(fillPoint, neighbor)
+                erosionMap.set(wrappedFillPoint, direction.id)
             }
         }
-        if (totalWaterSides == 1) {
+        if (totalOceanSides == 1) {
             riverBasinMap.set(fill.id, true) // has river
         } else {
             riverBasinMap.set(fill.id, false)

@@ -32,14 +32,15 @@ const OFFSET_RANGE = [.1, .3]
 */
 export function buildRiverMap(context) {
     let riverId = 0
-    const basinLayer = context.layers.basin
-    basinLayer.getDividePoints()
+    const layers = context.layers
+    layers.basin.getDividePoints()
         .filter(point => {
-            const rainsOnSource = context.layers.rain.canCreateRiver(point)
-            return basinLayer.isRiverBasin(point) && rainsOnSource
+            const rainsOnSource = layers.rain.canCreateRiver(point)
+            const isRiverBasin = layers.basin.isRiverBasin(point)
+            return isRiverBasin && rainsOnSource
         })
         // create a list of pairs: (point, basin distance to mouth)
-        .map(point => [point, basinLayer.getDistance(point)])
+        .map(point => [point, layers.basin.getDistance(point)])
         // in ascendent order to get longest rivers first
         // for starting rivers on basin divides
         .sort((a, b) => a[1] - b[1])

@@ -7,11 +7,11 @@ export class Surface {
     }
 }
 
-export class LakeSurface extends Surface {
+export class SeaSurface extends Surface {
     static id = 0
     static name = 'Lake'
     static water = true
-    static color = Color.fromHex('#2c3274')
+    static color = Color.fromHex('#216384')
 }
 
 export class OceanSurface extends Surface {
@@ -25,7 +25,7 @@ export class IslandSurface extends Surface {
     static id = 2
     static name = 'Island'
     static water = false
-    static color = Color.fromHex('#a0b13e')
+    static color = Color.fromHex('#c5ed7d')
 }
 
 export class ContinentSurface extends Surface {
@@ -37,7 +37,7 @@ export class ContinentSurface extends Surface {
 
 
 const SURFACE_MAP = {
-    0: LakeSurface,
+    0: SeaSurface,
     1: OceanSurface,
     2: IslandSurface,
     3: ContinentSurface,

@@ -5,8 +5,9 @@ import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 import {
     Surface,
     OceanSurface,
-    LakeSurface,
-    ContinentSurface
+    SeaSurface,
+    ContinentSurface,
+    IslandSurface
 } from './data'
 
 
@@ -17,6 +18,9 @@ const EMPTY_WATERBODY = 1
 const FIRST_BODY_ID = 2
 // Area ratios
 const SURFACE_RATIO = .6
+const MINIMUN_OCEAN_RATIO = 2
+const MINIMUN_SEA_RATIO = .2
+const MINIMUN_CONTINENT_RATIO = 1
 
 
 // Major world bodies with surface area and type
@@ -53,14 +57,20 @@ export class SurfaceLayer {
         // flood fill "empty" points and determine body type by total area
         this.#matrix.forEach(originPoint => {
             if (! this.#isEmptyBody(originPoint)) return
-            const isWaterBody = this.#isEmptyWaterBody(originPoint)
+            // detect empty type before filling
+            const isEmptyWaterBody = this.#isEmptyWaterBody(originPoint)
             const area = this.#fillBodyArea(originPoint, this.#bodyIdCount)
-            let type
-            if (isWaterBody) {
-                console.log(area);
-                type = (area < 50) ? LakeSurface : OceanSurface
-            } else {
-                type = ContinentSurface
+            const surfaceAreaRatio = (area * 100) / this.#matrix.area
+            // set continent as default type
+            let type = ContinentSurface
+            // area is filled; decide type
+            if (isEmptyWaterBody) {
+                if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO)
+                    type = OceanSurface
+                else
+                    type = SeaSurface
+            } else if (surfaceAreaRatio < MINIMUN_CONTINENT_RATIO) {
+                type = IslandSurface
             }
             this.#bodyTypeMap.set(this.#bodyIdCount, type.id)
             this.#bodyAreaMap.set(this.#bodyIdCount, area)
@@ -162,6 +172,10 @@ export class SurfaceLayer {
 
     isWater(point) {
         return this.get(point).water
+    }
+
+    isOcean(point) {
+        return this.get(point).id == OceanSurface.id
     }
 
     isLand(point) {
