@@ -1,5 +1,7 @@
 import { Climate } from '../climate/data'
 import { Rain } from '../rain/data'
+import { Matrix } from '/src/lib/matrix'
+import { Point } from '/src/lib/point'
 import { Relief } from '../relief/data'
 import { RiverStretch } from '../river/data'
 import { Biome } from './data'
@@ -10,9 +12,19 @@ const ICECAP_NOISE = .4
 
 
 export class BiomeLayer {
+    #matrix
+
     constructor(rect, layers) {
         this.rect = rect
         this.layers = layers
+
+        this.#matrix = Matrix.fromRect(rect, point => {
+            const isWater = this.layers.surface.isWater(point)
+            let biome = isWater
+                ? this.#buildWaterBiome(point)
+                : this.#buildLandBiome(point)
+            return biome.id
+        })
     }
 
     #buildLandBiome(point) {
@@ -81,11 +93,8 @@ export class BiomeLayer {
     }
 
     get(point) {
-        const isWater = this.layers.surface.isWater(point)
-        let biome = isWater
-            ? this.#buildWaterBiome(point)
-            : this.#buildLandBiome(point)
-        return Biome.get(biome.id)
+        let biomeId = this.#matrix.get(point)
+        return Biome.get(biomeId)
     }
 
     getColor(point) {

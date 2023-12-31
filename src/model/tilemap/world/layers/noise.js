@@ -2,7 +2,7 @@ import { SimplexNoise } from '/src/lib/noise'
 
 
 const NOISE_SPEC = [
-    {id: 'atmos', octaves: 6, resolution: .6, scale: .01},
+    {id: 'atmos', octaves: 6, resolution: .6, scale: .02},
     {id: 'outline', octaves: 6, resolution: .8, scale: .02},
     {id: 'feature', octaves: 6, resolution: .8, scale: .02},
     {id: 'grained', octaves: 6, resolution: .8, scale: .08},
