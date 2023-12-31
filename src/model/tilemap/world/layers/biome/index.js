@@ -1,13 +1,12 @@
 import { Climate } from '../climate/data'
 import { Rain } from '../rain/data'
 import { Matrix } from '/src/lib/matrix'
-import { Point } from '/src/lib/point'
 import { Relief } from '../relief/data'
 import { RiverStretch } from '../river/data'
 import { Biome } from './data'
 
 
-const CORAL_CORAL_NOISE = .6
+const CORAL_CORAL_NOISE = .7
 const ICECAP_NOISE = .4
 
 
@@ -79,16 +78,16 @@ export class BiomeLayer {
         if (isFrozen && grainedNoise > ICECAP_NOISE) {
             return Biome.ICECAP
         }
-        // if (layers.relief.is(point, Relief.TRENCH)) return Biome.TRENCH
-        // if (layers.relief.is(point, Relief.PLATFORM)) {
-        //     const isReefTemp = layers.climate.is(point, Climate.WARM)
-        //                        || layers.climate.is(point, Climate.HOT)
-        //     const isReefNoise = grainedNoise > CORAL_CORAL_NOISE
-        //     const isBorder = layers.surface.isBorder(point)
-        //     if (!isBorder && isReefTemp && isReefNoise)
-        //         return Biome.CORAL
-        //     return Biome.SEA
-        // }
+        if (layers.relief.is(point, Relief.TRENCH)) return Biome.TRENCH
+        if (layers.relief.is(point, Relief.PLATFORM)) {
+            const isReefTemp = layers.climate.is(point, Climate.WARM)
+                               || layers.climate.is(point, Climate.HOT)
+            const isReefNoise = grainedNoise > CORAL_CORAL_NOISE
+            const isBorder = layers.surface.isBorder(point)
+            if (!isBorder && isReefTemp && isReefNoise)
+                return Biome.CORAL
+            return Biome.SEA
+        }
         return Biome.OCEAN
     }
 

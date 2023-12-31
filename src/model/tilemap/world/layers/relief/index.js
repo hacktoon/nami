@@ -2,6 +2,7 @@ import { Matrix } from '/src/lib/matrix'
 
 import { Relief } from './data'
 import { RiverStretch } from '../river/data'
+import { SeaSurface } from '../surface/data'
 
 
 const TRENCH_RATIO = .65
@@ -25,6 +26,16 @@ export class ReliefLayer {
     }
 
     #detectWaterType(layers, point) {
+        const outlineNoise = layers.noise.get4D(this.rect, point, "outline")
+        const featureNoise = layers.noise.get4D(this.rect, point, "feature")
+        const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
+        if (layers.surface.get(point).id == SeaSurface.id) {
+            if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
+            return Relief.PLATFORM
+        }
+        if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM
+        if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
+        if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH
         return Relief.ABYSS
     }
 
@@ -33,14 +44,13 @@ export class ReliefLayer {
             return Relief.PLAIN
         }
         const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
-        const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
-        const isFastCourse = layers.river.is(point, RiverStretch.FAST_COURSE)
-        const isDivide = layers.basin.isDivide(point)
         // is basin divide?
-        if (isDivide) {
+        if (layers.basin.isDivide(point)) {
             if (grainedNoise < MOUNTAIN_RATIO) return Relief.HILL
             return Relief.MOUNTAIN
         }
+        const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
+        const isFastCourse = layers.river.is(point, RiverStretch.FAST_COURSE)
         // Set type according to river stretch.
         // Headwaters and fast courses will appear on hills
         if (isFastCourse || isHeadWaters) return Relief.HILL
