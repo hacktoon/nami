@@ -24,14 +24,10 @@ export class BasinFill extends ConcurrentFill {
             const direction = getDirectionBetween(fillPoint, neighbor)
             erosionMap.set(wrappedFillPoint, direction.id)
         }
-        if (totalOceanSides == 1) {
-            riverBasinMap.set(fill.id, true) // has river
-        } else {
-            riverBasinMap.set(fill.id, false)
-        }
+        riverBasinMap.set(fill.id, totalOceanSides == 1) // has river
         // set basin id to spread on fill
         basinMap.set(wrappedFillPoint, fill.id)
-        // initial distance is 1
+        // initial distance from mouth is 1
         distanceMap.set(wrappedFillPoint, 1)
     }
 
