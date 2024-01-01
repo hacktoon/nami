@@ -39,7 +39,7 @@ export function buildRiverMap(context) {
             const isRiverBasin = layers.basin.isRiverBasin(point)
             return isRiverBasin && rainsOnSource
         })
-        // create a list of pairs: (point, basin distance to mouth)
+        // create a list of pairs: (point, river distance to mouth)
         .map(point => [point, layers.basin.getDistance(point)])
         // in ascendent order to get longest rivers first
         // for starting rivers on basin divides

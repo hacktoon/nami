@@ -17,14 +17,17 @@ export class BasinFill extends ConcurrentFill {
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
         // find neighbors to set initial erosion layout direction
-        let totalOceanSides = 0
+        let possibleMouthCount = 0
         const waterNeighbors = neighbors.filter(p => layers.surface.isWater(p))
         for(let neighbor of waterNeighbors) {
-            totalOceanSides += layers.surface.isOcean(neighbor) ? 1 : 0
+            const isSea = layers.surface.isSea(neighbor)
+            const isOcean = layers.surface.isOcean(neighbor)
             const direction = getDirectionBetween(fillPoint, neighbor)
             erosionMap.set(wrappedFillPoint, direction.id)
+            possibleMouthCount += (isOcean || isSea) ? 1 : 0
         }
-        riverBasinMap.set(fill.id, totalOceanSides == 1) // has river
+        // has 1 ocean/sea neighbor
+        riverBasinMap.set(fill.id, possibleMouthCount == 1)
         // set basin id to spread on fill
         basinMap.set(wrappedFillPoint, fill.id)
         // initial distance from mouth is 1
@@ -54,15 +57,15 @@ export class BasinFill extends ConcurrentFill {
         const {
             rect, basinMap, distanceMap, erosionMap
         } = fill.context
+        const direction = getDirectionBetween(fillPoint, parentPoint)
         const wrappedPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
-        const direction = getDirectionBetween(fillPoint, parentPoint)
         // distance to source by point
         const currentDistance = distanceMap.get(wrappedParentPoint)
         distanceMap.set(wrappedPoint, currentDistance + 1)
         // use basin value from parent point
-        basinMap.set(wrappedPoint, basinMap.get(wrappedParentPoint))
-        // set midpoint for rendering  TODO: move to upper layer
+        const parentBasin = basinMap.get(wrappedParentPoint)
+        basinMap.set(wrappedPoint, parentBasin)
         // set erosion flow to parent
         erosionMap.set(wrappedPoint, direction.id)
     }

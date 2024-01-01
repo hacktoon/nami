@@ -34,9 +34,8 @@ export class BasinLayer {
             erosionMap: this.#erosionMap,
         }
         // start filling from land borders
-        let origins = context.layers.surface.landBorders
         const fill = new BasinFill()
-        fill.start(origins, context)
+        fill.start(layers.surface.landBorders, context)
     }
 
     get count() {
@@ -47,7 +46,7 @@ export class BasinLayer {
         return {
             id: this.#basinMap.get(point),
             distance: this.getDistance(point),
-            erosion: Direction.fromId(this.#erosionMap.get(point)),
+            erosion: this.getErosion(point),
         }
     }
 
@@ -71,6 +70,11 @@ export class BasinLayer {
     isRiverBasin(point) {
         const id = this.#basinMap.get(point)
         return this.#riverBasinMap.get(id)
+    }
+
+    getErosion(point) {
+        const directionId = this.#erosionMap.get(point)
+        return Direction.fromId(directionId)
     }
 
     getDistance(point) {
