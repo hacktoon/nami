@@ -4,6 +4,10 @@ import { Color } from '/src/lib/color'
 import { Direction } from '/src/lib/direction'
 
 import { BasinFill } from './fill'
+import {
+    Basin,
+    RiverBasin,
+} from './data'
 
 
 export class BasinLayer {
@@ -21,14 +25,14 @@ export class BasinLayer {
     #dividePoints = new PointSet()
 
     // basin is adequate for rivers
-    #riverBasinMap = new Map()
+    #typeMap = new Map()
 
     constructor(rect, layers) {
         const context = {
             rect,
             layers: layers,
             basinMap: this.#basinMap,
-            riverBasinMap: this.#riverBasinMap,
+            typeMap: this.#typeMap,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
             erosionMap: this.#erosionMap,
@@ -43,8 +47,11 @@ export class BasinLayer {
     }
 
     get(point) {
+        const id = this.#basinMap.get(point)
+        const typeId = this.#typeMap.get(id)
         return {
-            id: this.#basinMap.get(point),
+            id,
+            type: Basin.parse(typeId),
             distance: this.getDistance(point),
             erosion: this.getErosion(point),
         }
@@ -68,8 +75,9 @@ export class BasinLayer {
     }
 
     isRiverBasin(point) {
-        const id = this.#basinMap.get(point)
-        return this.#riverBasinMap.get(id)
+        const basin = this.get(point)
+        if (! basin.type) return false
+        return basin.type.id == RiverBasin.id
     }
 
     getErosion(point) {
@@ -89,6 +97,7 @@ export class BasinLayer {
             `id=${basin.id}`,
             `erosion=${basin.erosion.name}`,
             `distance=${basin.distance}`,
+            `type=${basin.type ? basin.type.name : ''}`,
         ].join(',')
         return `Basin(${attrs})`
     }

@@ -2,6 +2,12 @@ import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
+import {
+    OldBasin,
+    SeaBasin,
+    LakeBasin,
+    RiverBasin,
+} from './data'
 
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
@@ -13,25 +19,40 @@ export class BasinFill extends ConcurrentFill {
 
     onInitFill(fill, fillPoint, neighbors) {
         const {
-            rect, layers, basinMap, riverBasinMap, distanceMap, erosionMap
+            rect, layers, basinMap, typeMap, distanceMap, erosionMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
-        // find neighbors to set initial erosion layout direction
-        let possibleMouthCount = 0
-        const waterNeighbors = neighbors.filter(p => layers.surface.isWater(p))
-        for(let neighbor of waterNeighbors) {
-            const isSea = layers.surface.isSea(neighbor)
-            const isOcean = layers.surface.isOcean(neighbor)
-            const direction = getDirectionBetween(fillPoint, neighbor)
-            erosionMap.set(wrappedFillPoint, direction.id)
-            possibleMouthCount += (isOcean || isSea) ? 1 : 0
-        }
-        // has 1 ocean/sea neighbor
-        riverBasinMap.set(fill.id, possibleMouthCount == 1)
+
+        // count neighbor water types
+        let total = {lake: 0, sea: 0, ocean: 0}
+        const waterNeighbors = neighbors.filter(neighbor => {
+            if (layers.surface.isLake(neighbor)) total.lake += 1
+            else if (layers.surface.isSea(neighbor)) total.sea += 1
+            else if (layers.surface.isOcean(neighbor)) total.ocean += 1
+            return layers.surface.isWater(neighbor)
+        })
+        // set erosion direction, use first water neighbor
+        const direction = getDirectionBetween(fillPoint, waterNeighbors[0])
+        erosionMap.set(wrappedFillPoint, direction.id)
+        // set basin type
+        let type = OldBasin
+        //  has 1 ocean/sea neighbor
+        if (total.lake == 0 && (total.sea == 1 || total.ocean == 1))
+            type = RiverBasin
+        else if (total.sea > 0)
+            type = SeaBasin
+        else if (total.lake > 0)
+            type = LakeBasin
+
+        typeMap.set(fill.id, type.id)
         // set basin id to spread on fill
         basinMap.set(wrappedFillPoint, fill.id)
         // initial distance from mouth is 1
         distanceMap.set(wrappedFillPoint, 1)
+    }
+
+    buildType() {
+
     }
 
     getNeighbors(fill, parentPoint) {
