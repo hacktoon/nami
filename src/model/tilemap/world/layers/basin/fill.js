@@ -3,6 +3,7 @@ import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
 import {
+    Basin,
     OldBasin,
     SeaBasin,
     LakeBasin,
@@ -22,7 +23,6 @@ export class BasinFill extends ConcurrentFill {
             rect, layers, basinMap, typeMap, distanceMap, erosionMap
         } = fill.context
         const wrappedFillPoint = rect.wrap(fillPoint)
-
         // count neighbor water types
         let total = {lake: 0, sea: 0, ocean: 0}
         const waterNeighbors = neighbors.filter(neighbor => {
@@ -35,6 +35,15 @@ export class BasinFill extends ConcurrentFill {
         const direction = getDirectionBetween(fillPoint, waterNeighbors[0])
         erosionMap.set(wrappedFillPoint, direction.id)
         // set basin type
+        const type = this.buildType(total)
+        typeMap.set(fill.id, type.id)
+        // set basin id to spread on fill
+        basinMap.set(wrappedFillPoint, fill.id)
+        // initial distance from mouth is 1
+        distanceMap.set(wrappedFillPoint, 1)
+    }
+
+    buildType(total) {
         let type = OldBasin
         //  has 1 ocean/sea neighbor
         if (total.lake == 0 && (total.sea == 1 || total.ocean == 1))
@@ -43,16 +52,7 @@ export class BasinFill extends ConcurrentFill {
             type = SeaBasin
         else if (total.lake > 0)
             type = LakeBasin
-
-        typeMap.set(fill.id, type.id)
-        // set basin id to spread on fill
-        basinMap.set(wrappedFillPoint, fill.id)
-        // initial distance from mouth is 1
-        distanceMap.set(wrappedFillPoint, 1)
-    }
-
-    buildType() {
-
+        return type
     }
 
     getNeighbors(fill, parentPoint) {
@@ -66,12 +66,19 @@ export class BasinFill extends ConcurrentFill {
         return adjacents
     }
 
-    canFill(fill, fillPoint) {
-        const {rect, layers, basinMap} = fill.context
-        const wrappedFillPoint = rect.wrap(fillPoint)
-        if (layers.surface.isWater(wrappedFillPoint))
+    canFill(fill, fillPoint, parentPoint) {
+        const {rect, layers, typeMap, basinMap} = fill.context
+        const wrappedPoint = rect.wrap(fillPoint)
+        if (layers.surface.isWater(wrappedPoint))
             return false
-        return ! basinMap.has(wrappedFillPoint)
+        // make lake basins small
+        const wrappedParentPoint = rect.wrap(parentPoint)
+        const parentBasinId = basinMap.get(wrappedParentPoint)
+        const typeId = typeMap.get(parentBasinId)
+        if (typeId == LakeBasin.id && fill.level > 1) {
+            return false
+        }
+        return ! basinMap.has(wrappedPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
