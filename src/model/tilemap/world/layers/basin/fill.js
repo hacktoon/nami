@@ -45,13 +45,13 @@ export class BasinFill extends ConcurrentFill {
 
     buildType(total) {
         let type = OldBasin
-        //  has 1 ocean/sea neighbor
-        if (total.lake == 0 && (total.sea == 1 || total.ocean == 1))
-            type = RiverBasin
-        else if (total.sea > 0)
+        if (total.sea > 0)
             type = SeaBasin
         else if (total.lake > 0)
             type = LakeBasin
+        // river = has 1 ocea or sea neighbor
+        else if (total.lake == 0 && (total.sea == 1 || total.ocean == 1))
+            type = RiverBasin
         return type
     }
 
@@ -75,7 +75,10 @@ export class BasinFill extends ConcurrentFill {
         const wrappedParentPoint = rect.wrap(parentPoint)
         const parentBasinId = basinMap.get(wrappedParentPoint)
         const typeId = typeMap.get(parentBasinId)
-        if (typeId == LakeBasin.id && fill.level > 1) {
+        if (typeId == LakeBasin.id && fill.level > 0) {
+            return false
+        }
+        if (typeId == SeaBasin.id && fill.level > 1) {
             return false
         }
         return ! basinMap.has(wrappedPoint)

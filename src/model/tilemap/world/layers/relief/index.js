@@ -9,6 +9,7 @@ const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
 const MOUNTAIN_RATIO = .3
+const UPLIFT_RATIO = .5
 
 
 export class ReliefLayer {
@@ -40,10 +41,21 @@ export class ReliefLayer {
     }
 
     #detectLandType(layers, point) {
-        if (! layers.river.hasWater(point)) {
+        const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
+
+        if (layers.basin.isOldBasin(point)) {
+            if (layers.basin.isDivide(point) && grainedNoise < MOUNTAIN_RATIO) {
+                return Relief.HILL
+            }
+            if (layers.surface.isBorder(point) && grainedNoise < MOUNTAIN_RATIO) {
+                return Relief.MOUNTAIN
+            }
             return Relief.PLAIN
         }
-        const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
+        if (! layers.river.hasWater(point)) {
+            if (grainedNoise < MOUNTAIN_RATIO) return Relief.HILL
+            return Relief.PLAIN
+        }
         // is basin divide?
         if (layers.basin.isDivide(point)) {
             if (grainedNoise < MOUNTAIN_RATIO) return Relief.HILL
