@@ -3,7 +3,7 @@ import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
 import { Direction } from '/src/lib/direction'
 
-import { BasinFill } from './fill'
+import { buildBasin } from './fill'
 import {
     Basin,
     OldBasin,
@@ -39,8 +39,7 @@ export class BasinLayer {
             erosionMap: this.#erosionMap,
         }
         // start filling from land borders
-        const fill = new BasinFill()
-        fill.start(layers.surface.landBorders, context)
+        buildBasin(layers.surface.landBorders, context)
     }
 
     get count() {

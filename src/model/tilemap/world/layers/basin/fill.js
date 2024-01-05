@@ -14,7 +14,13 @@ const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
 
 
-export class BasinFill extends ConcurrentFill {
+export function buildBasin(originPoints, context) {
+    const fill = new BasinFill()
+    fill.start(originPoints, context)
+}
+
+
+class BasinFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
