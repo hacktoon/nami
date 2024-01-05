@@ -47,23 +47,25 @@ export class BasinLayer {
     }
 
     get(point) {
-        const id = this.#basinMap.get(point)
-        const typeId = this.#typeMap.get(id)
         return {
-            id,
-            type: Basin.parse(typeId),
+            id: this.#basinMap.get(point),
+            type: this.getType(point),
             distance: this.getDistance(point),
             erosion: this.getErosion(point),
         }
+    }
+
+    getType(point) {
+        const id = this.#basinMap.get(point)
+        const typeId = this.#typeMap.get(id)
+        return Basin.parse(typeId)
     }
 
     getColor(point) {
         if (! this.#basinMap.has(point)) {
             return Color.DARKBLUE
         }
-        let color = Color.DARKGREEN
-        const distance = this.#distanceMap.get(point)
-        return color.darken(distance * 10)
+        return this.getType(point).color
     }
 
     getDividePoints() {

@@ -25,14 +25,14 @@ export class RiverBasin extends Basin {
 export class LakeBasin extends Basin {
     static id = 2
     static name = 'Lake'
-    static color = Color.fromHex('#3265a7')
+    static color = Color.fromHex('#7b9ea7')
 }
 
 
 export class SeaBasin extends Basin {
     static id = 3
     static name = 'Sea'
-    static color = Color.fromHex('#253e8f')
+    static color = Color.fromHex('#add3a1')
 }
 
 
