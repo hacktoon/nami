@@ -22,7 +22,13 @@ export function buildBasin(originPoints, context) {
 
 class BasinFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
-    getGrowth(fill) { return GROWTH }
+
+    getGrowth(fill) {
+        const typeId = fill.context.typeMap.get(fill.id)
+        if (typeId == LakeBasin.id) return 0
+        if (typeId == SeaBasin.id) return 0
+        return GROWTH
+    }
 
     onInitFill(fill, fillPoint, neighbors) {
         const {
@@ -82,9 +88,6 @@ class BasinFill extends ConcurrentFill {
         const parentBasinId = basinMap.get(wrappedParentPoint)
         const typeId = typeMap.get(parentBasinId)
         if (typeId == LakeBasin.id && fill.level > 0) {
-            return false
-        }
-        if (typeId == SeaBasin.id && fill.level > 1) {
             return false
         }
         return ! basinMap.has(wrappedPoint)

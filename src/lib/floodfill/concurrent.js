@@ -87,22 +87,22 @@ export class ConcurrentFill {
     #fillExtraRandomLayers(fill, seeds) {
         const growth = this.getGrowth(fill)
         let extraSeeds = seeds
+        const chance = this.getChance(fill)
         for(let i = 0; i < growth; i++) {
             // split given seeds by chance
-            const [nextSeeds, cachedSeeds] = this.#splitSeeds(fill, extraSeeds)
+            const [next, cached] = this.#splitSeeds(fill, extraSeeds, chance)
             // fill an extra layer using a fraction of given seeds
             // update level on fill context
             const newLevelFill = {...fill, level: this.#levelTable[fill.id]}
-            const filled = this.#fillSingleLayer(newLevelFill, nextSeeds)
+            const filled = this.#fillSingleLayer(newLevelFill, next)
             // sum up filled & deferred seeds for next iteration
-            extraSeeds = cachedSeeds.concat(filled)
+            extraSeeds = cached.concat(filled)
         }
         return extraSeeds
     }
 
-    #splitSeeds(fill, seeds) {
+    #splitSeeds(fill, seeds, chance) {
         const first = [], second = []
-        const chance = this.getChance(fill)
         for(let seed of seeds) {
             const outputArray = Random.chance(chance) ? first : second
             outputArray.push(seed)
