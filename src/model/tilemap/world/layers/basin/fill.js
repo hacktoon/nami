@@ -3,7 +3,6 @@ import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
 import {
-    Basin,
     OldBasin,
     SeaBasin,
     LakeBasin,
@@ -25,6 +24,7 @@ class BasinFill extends ConcurrentFill {
 
     getGrowth(fill) {
         const typeId = fill.context.typeMap.get(fill.id)
+        if (typeId == OldBasin.id) return 5
         if (typeId == LakeBasin.id) return 0
         if (typeId == SeaBasin.id) return 0
         return GROWTH
@@ -47,24 +47,11 @@ class BasinFill extends ConcurrentFill {
         const direction = getDirectionBetween(fillPoint, waterNeighbors[0])
         erosionMap.set(wrappedFillPoint, direction.id)
         // set basin type
-        const type = this.buildType(total)
-        typeMap.set(fill.id, type.id)
+        typeMap.set(fill.id, buildType(total))
         // set basin id to spread on fill
         basinMap.set(wrappedFillPoint, fill.id)
-        // initial distance from mouth is 1
-        distanceMap.set(wrappedFillPoint, 1)
-    }
-
-    buildType(total) {
-        let type = OldBasin
-        if (total.sea > 0)
-            type = SeaBasin
-        else if (total.lake > 0)
-            type = LakeBasin
-        // river = has 1 ocea or sea neighbor
-        else if (total.lake == 0 && (total.sea == 1 || total.ocean == 1))
-            type = RiverBasin
-        return type
+        // initial distance from mouth is 0
+        distanceMap.set(wrappedFillPoint, 0)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -79,17 +66,10 @@ class BasinFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint, parentPoint) {
-        const {rect, layers, typeMap, basinMap} = fill.context
+        const {rect, layers, basinMap} = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         if (layers.surface.isWater(wrappedPoint))
             return false
-        // make lake basins small
-        const wrappedParentPoint = rect.wrap(parentPoint)
-        const parentBasinId = basinMap.get(wrappedParentPoint)
-        const typeId = typeMap.get(parentBasinId)
-        if (typeId == LakeBasin.id && fill.level > 0) {
-            return false
-        }
         return ! basinMap.has(wrappedPoint)
     }
 
@@ -109,6 +89,19 @@ class BasinFill extends ConcurrentFill {
         // set erosion flow to parent
         erosionMap.set(wrappedPoint, direction.id)
     }
+}
+
+
+function buildType(total) {
+    let type = OldBasin
+    if (total.sea > 0)
+        type = SeaBasin
+    else if (total.lake > 0)
+        type = LakeBasin
+    // river = has 1 ocea or sea neighbor
+    else if (total.lake == 0 && (total.sea == 1 || total.ocean == 1))
+        type = RiverBasin
+    return type.id
 }
 
 

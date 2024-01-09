@@ -86,8 +86,8 @@ export class ConcurrentFill {
 
     #fillExtraRandomLayers(fill, seeds) {
         const growth = this.getGrowth(fill)
-        let extraSeeds = seeds
         const chance = this.getChance(fill)
+        let extraSeeds = seeds
         for(let i = 0; i < growth; i++) {
             // split given seeds by chance
             const [next, cached] = this.#splitSeeds(fill, extraSeeds, chance)
