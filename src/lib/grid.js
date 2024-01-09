@@ -1,16 +1,17 @@
 
 export class Grid {
+    #cells
+
     constructor(width, height, buildCell=() => null) {
         this.width = width
         this.height = height
-        this.cells = new Array(width * height)
+        this.#cells = []
 
         // sweep from left to right, top down
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                const index = this.pointToIndex([x, y])
-                this.cells[index] = buildCell([x, y])
-            }
+        const max = width * height
+        for (let idx = 0; idx < max; idx++) {
+            const [x, y] = this.indexToPoint(idx)
+            this.#cells.push(buildCell([x, y]))
         }
     }
 
@@ -26,13 +27,13 @@ export class Grid {
     get(point) {
         const [x, y] = this.wrap(point)
         const index = this.pointToIndex([x, y])
-        return this.cells[index]
+        return this.#cells[index]
     }
 
     set(point, value) {
         const [x, y] = this.wrap(point)
         const index = this.pointToIndex([x, y])
-        this.cells[index] = value
+        this.#cells[index] = value
     }
 
     pointToIndex([x, y]) {
@@ -41,17 +42,16 @@ export class Grid {
     }
 
     indexToPoint(index) {
-        const y = Math.floor(index / this.width);
-        const x = index % this.width;
-        return [x, y];
+        const y = Math.floor(index / this.width)
+        const x = index % this.width
+        return [x, y]
     }
 
     forEach(callback) {
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                const index = this.pointToIndex([x, y])
-                callback([x, y], this.cells[index])
-            }
+        const max = this.width * this.height
+        for (let idx = 0; idx < max; idx++) {
+            const point = this.indexToPoint(idx)
+            callback(point, this.#cells[idx])
         }
     }
 
