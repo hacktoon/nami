@@ -35,9 +35,10 @@ export function buildRiverMap(context) {
     const layers = context.layers
     layers.basin.getDividePoints()
         .filter(point => {
-            const rainsOnSource = layers.rain.canCreateRiver(point)
-            const isRiverBasin = layers.basin.isRiverBasin(point)
-            return isRiverBasin && rainsOnSource
+            return (
+                layers.rain.canCreateRiver(point)
+                && layers.basin.canCreateRiver(point)
+            )
         })
         // create a list of pairs: (point, river distance to mouth)
         .map(point => [point, layers.basin.getDistance(point)])

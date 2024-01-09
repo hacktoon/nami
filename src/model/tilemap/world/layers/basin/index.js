@@ -6,7 +6,7 @@ import { Direction } from '/src/lib/direction'
 import { buildBasin } from './fill'
 import {
     Basin,
-    OldBasin,
+    SeaBasin,
     RiverBasin,
 } from './data'
 
@@ -76,16 +76,14 @@ export class BasinLayer {
         return this.#dividePoints.has(point)
     }
 
-    isRiverBasin(point) {
-        const basin = this.get(point)
-        return basin.type.id == RiverBasin.id
-    }
-
-    isOldBasin(point) {
+    canCreateRiver(point) {
         if (! this.#basinMap.has(point))
             return false
         const basin = this.get(point)
-        return basin.type.id == OldBasin.id
+        return (
+            basin.type.id == RiverBasin.id
+            || basin.type.id == SeaBasin.id
+        )
     }
 
     getErosion(point) {

@@ -94,11 +94,12 @@ class BasinFill extends ConcurrentFill {
 
 function buildType(total) {
     let type = OldBasin
+    // try sea and lake first
     if (total.sea > 0)
         type = SeaBasin
     else if (total.lake > 0)
         type = LakeBasin
-    // river = has 1 ocea or sea neighbor
+    // try river = must have 1 ocea or sea neighbor
     else if (total.lake == 0 && (total.sea == 1 || total.ocean == 1))
         type = RiverBasin
     return type.id
