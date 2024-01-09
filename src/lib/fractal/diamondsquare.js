@@ -1,6 +1,6 @@
 import { clamp, sum } from '/src/lib/number'
 
-import { Matrix } from '/src/lib/matrix'
+import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
 
@@ -11,7 +11,7 @@ const EMPTY = null
 export class DiamondSquare {
     constructor(size, roughness, values) {
         this.scale  = roughness * (size - 1)
-        this.matrix   = new Matrix(size, size, () => EMPTY)
+        this.grid   = new Grid(size, size, () => EMPTY)
         this.max    = -Infinity
         this.min    = Infinity
         this.values = values || []
@@ -83,7 +83,7 @@ export class DiamondSquare {
     }
 
     _averagePoints(points) {
-        const getValue = ([ x, y ]) => this.matrix.get(new Point(x, y))
+        const getValue = ([ x, y ]) => this.grid.get(new Point(x, y))
         // TODO: is this filter necessary?
         const values = points.map(getValue).filter(n => typeof n == 'number')
         return sum(values) / values.length
@@ -92,7 +92,7 @@ export class DiamondSquare {
     _set(point, value) {
         const size = this.size
         const height = parseInt(clamp(value, -size, size), 10)
-        this.matrix.set(point, height)
+        this.grid.set(point, height)
         this._updateMinMax(height)
     }
 
@@ -102,7 +102,7 @@ export class DiamondSquare {
     }
 
     get(point) {
-        let value = this.matrix.get(point)
+        let value = this.grid.get(point)
         return this.values.length ? this._normalize(value) : value
     }
 
@@ -126,7 +126,7 @@ export class TileableDiamondSquare extends DiamondSquare {
     }
 
     _set(point, value) {
-        if (this.matrix.get(point) != EMPTY) return
+        if (this.grid.get(point) != EMPTY) return
         if (! this._isCorner(point)) {
             let oppositeEdge = this._getOpposite(point)
             super._set(oppositeEdge, value)

@@ -1,4 +1,4 @@
-import { Matrix } from '/src/lib/matrix'
+import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 import { PointSet, PointArraySet } from '/src/lib/point/set'
@@ -27,7 +27,7 @@ export class TopologyLayer {
         this.#rect = rect
         this.#realmCount = realmCount
         this.#layers = layers
-        Matrix.fromRect(rect, point => {
+        Grid.fromRect(rect, point => {
             if (this.#isPossibleCity(layers, point)) {
                 possibleCityPoints.add(point)
             }

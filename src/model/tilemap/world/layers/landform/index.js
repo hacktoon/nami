@@ -1,4 +1,4 @@
-import { Matrix } from '/src/lib/matrix'
+import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 import { PointMap } from '/src/lib/point/map'
@@ -26,7 +26,7 @@ export class LandformLayer {
     #landforms = new PointMap()
 
     constructor(rect, layers) {
-        Matrix.fromRect(rect, point => {
+        Grid.fromRect(rect, point => {
             const isWater = layers.surface.isWater(point)
             const type = isWater ? this.#detectWaterType(layers, point)
                                  : this.#detectLandType(layers, point)

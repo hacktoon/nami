@@ -1,4 +1,4 @@
-import { Matrix } from '/src/lib/matrix'
+import { Grid } from '/src/lib/grid'
 
 import { Relief } from './data'
 import { RiverStretch } from '../river/data'
@@ -9,16 +9,15 @@ const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
 const MOUNTAIN_RATIO = .3
-const UPLIFT_RATIO = .5
 
 
 export class ReliefLayer {
     // Relief is related to large geologic features
-    #matrix
+    #grid
 
     constructor(rect, layers) {
         this.rect = rect
-        this.#matrix = Matrix.fromRect(rect, point => {
+        this.#grid = Grid.fromRect(rect, point => {
             const isWater = layers.surface.isWater(point)
             const type = isWater ? this.#detectWaterType(layers, point)
                                  : this.#detectLandType(layers, point)
@@ -71,7 +70,7 @@ export class ReliefLayer {
     }
 
     get(point) {
-        const id = this.#matrix.get(point)
+        const id = this.#grid.get(point)
         return Relief.get(id)
     }
 
@@ -85,7 +84,7 @@ export class ReliefLayer {
     }
 
     is(point, type) {
-        const id = this.#matrix.get(point)
+        const id = this.#grid.get(point)
         return id === type.id
     }
 

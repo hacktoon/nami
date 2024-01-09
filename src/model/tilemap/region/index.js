@@ -2,7 +2,7 @@ import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
-import { Matrix } from '/src/lib/matrix'
+import { Grid } from '/src/lib/grid'
 import { Color } from '/src/lib/color'
 import { Graph } from '/src/lib/graph'
 import { EvenPointSampling } from '/src/lib/point'
@@ -55,9 +55,9 @@ export class RegionTileMap extends TileMap {
         super(params)
         const scale = params.get('scale')
         this.#origins = EvenPointSampling.create(this.rect, scale)
-        this.#regionMatrix = Matrix.fromRect(this.rect, () => EMPTY)
-        this.#growthMatrix = Matrix.fromRect(this.rect, () => 0)
-        this.#levelMatrix = Matrix.fromRect(this.rect, () => 0)
+        this.#regionMatrix = Grid.fromRect(this.rect, () => EMPTY)
+        this.#growthMatrix = Grid.fromRect(this.rect, () => 0)
+        this.#levelMatrix = Grid.fromRect(this.rect, () => 0)
         this.#centerPoints = new PointSet(this.#origins)
         this.#regions = this.#origins.map((_, id) => id)
         new RegionFloodFill().start(this.#origins, {
