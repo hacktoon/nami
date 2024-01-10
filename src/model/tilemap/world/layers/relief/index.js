@@ -9,6 +9,7 @@ const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
 const MOUNTAIN_RATIO = .4
+const HILL_RATIO = .3
 
 
 export class ReliefLayer {
@@ -46,7 +47,7 @@ export class ReliefLayer {
             return Relief.MOUNTAIN
         }
         if (! layers.river.hasWater(point)) {
-            if (grainedNoise < MOUNTAIN_RATIO) return Relief.HILL
+            if (grainedNoise < HILL_RATIO) return Relief.HILL
             return Relief.PLAIN
         }
         const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
