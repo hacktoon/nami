@@ -38,9 +38,9 @@ class BasinFill extends ConcurrentFill {
         // count neighbor water types
         let total = {lake: 0, sea: 0, ocean: 0}
         const waterNeighbors = neighbors.filter(neighbor => {
-            if (layers.surface.isLake(neighbor)) total.lake += 1
+            if (layers.surface.isOcean(neighbor)) total.ocean += 1
             else if (layers.surface.isSea(neighbor)) total.sea += 1
-            else if (layers.surface.isOcean(neighbor)) total.ocean += 1
+            else if (layers.surface.isLake(neighbor)) total.lake += 1
             return layers.surface.isWater(neighbor)
         })
         // set erosion direction, use first water neighbor
@@ -94,13 +94,15 @@ class BasinFill extends ConcurrentFill {
 
 function buildType(total) {
     let type = OldBasin
+    const oneWaterSide = total.lake == 1 || total.sea == 1 || total.ocean == 1
     // try sea and lake first
-    if (total.sea > 0)
+    if (total.ocean > 0 && oneWaterSide)
+        type = RiverBasin
+    else if (total.sea > 0)
         type = SeaBasin
     else if (total.lake > 0)
         type = LakeBasin
-    // try river = must have 1 ocea or sea neighbor
-    else if (total.lake == 0 && (total.sea == 1 || total.ocean == 1))
+    else if (oneWaterSide)
         type = RiverBasin
     return type.id
 }
