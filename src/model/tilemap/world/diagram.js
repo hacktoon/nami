@@ -1,8 +1,5 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/point'
-import { Color } from '/src/lib/color'
-import { clamp } from '/src/lib/number'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 
@@ -61,7 +58,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             layers.relief.draw(point, props, layerColor)
         }
         if (this.params.get('showCities')) {
-            layers.topo.draw(point, props)
+            layers.location.draw(point, props)
         }
     }
 }

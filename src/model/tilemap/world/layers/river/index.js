@@ -19,8 +19,7 @@ export class RiverLayer {
     #riverMeanders = new PointMap()
     // map a river point to its river type
     #stretchMap = new PointMap()
-    // water river points
-    #waterPoints = new PointSet()
+
     #riverMouths = new PointSet()
 
     constructor(rect, layers) {
@@ -32,7 +31,6 @@ export class RiverLayer {
             riverMouths: this.#riverMouths,
             layoutMap: this.#layoutMap,
             stretchMap: this.#stretchMap,
-            waterPoints: this.#waterPoints,
             riverMeanders: this.#riverMeanders,
         }
         buildRiverMap(context)
@@ -56,7 +54,6 @@ export class RiverLayer {
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
             meander: this.#riverMeanders.get(point),
-            hasWater: this.#waterPoints.has(point),
         }
     }
 
@@ -78,10 +75,6 @@ export class RiverLayer {
 
     isMouth(point) {
         return this.#riverMouths.has(point)
-    }
-
-    hasWater(point) {
-        return this.#waterPoints.has(point)
     }
 
     is(point, type) {
@@ -107,14 +100,12 @@ export class RiverLayer {
     draw(point, props, baseColor) {
         const {canvas, canvasPoint, tileSize} = props
         const river = this.get(point)
-        const isWater = this.hasWater(point)
         const riverWidth = Math.round(river.stretch.width * tileSize)
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
         const meanderOffsetPoint = Point.multiplyScalar(river.meander, tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-        // const color = isWater ? river.stretch.color : baseColor.darken(20)
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
         for(let axisOffset of river.flowDirections) {

@@ -46,7 +46,7 @@ export class ReliefLayer {
             if (grainedNoise < MOUNTAIN_RATIO) return Relief.HILL
             return Relief.MOUNTAIN
         }
-        if (! layers.river.hasWater(point)) {
+        if (! layers.river.has(point)) {
             if (grainedNoise < HILL_RATIO) return Relief.HILL
             return Relief.PLAIN
         }

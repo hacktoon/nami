@@ -189,6 +189,10 @@ export class SurfaceLayer {
         return this.get(point).id == SeaSurface.id
     }
 
+    isIsland(point) {
+        return this.get(point).id == IslandSurface.id
+    }
+
     isLand(point) {
         return ! this.get(point).water
     }

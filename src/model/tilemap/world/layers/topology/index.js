@@ -11,31 +11,39 @@ const WATER_DUNGEON_CHANCE = .02
 const LAND_DUNGEON_CHANCE = .2
 
 
-export class TopologyLayer {
+export class LocationLayer {
     // Define locations and features and their relation
     // cities, caves, ruins, dungeons
-    #layers
-    #rect
     #placeMap = new Map()
     #cityPoints
+    #capitalPoints
     #dungeonPoints = new PointSet()
-    #capitals = new PointSet()
     #realmCount
 
     constructor(rect, layers, realmCount) {
-        const possibleCityPoints = new PointArraySet()
-        this.#rect = rect
         this.#realmCount = realmCount
-        this.#layers = layers
+        this.#cityPoints = this.#buildCities(rect, layers)
+        this.#capitalPoints = this.#buildCapitals(layers, this.#cityPoints)
+    }
+
+    #buildCities(rect, layers) {
+        const candidates = new PointArraySet()
         Grid.fromRect(rect, point => {
             if (this.#isPossibleCity(layers, point)) {
-                possibleCityPoints.add(point)
+                candidates.add(point)
             }
-            // if (this.#isDungeon(layers, point)) {
-            //     this.#dungeonPoints.add(point)
-            // }
         })
-        this.#cityPoints = this.#buildCities(rect, possibleCityPoints)
+        const cityPoints = new PointSet()
+        while (candidates.size > 0) {
+            const center = candidates.random()
+            // remove candidate points around a city circle
+            const radius = Math.floor(rect.width / 10)
+            Point.insideCircle(center, radius, point => {
+                candidates.delete(rect.wrap(point))
+            })
+            cityPoints.add(center)
+        }
+        return cityPoints
     }
 
     #isPossibleCity(layers, point) {
@@ -43,6 +51,17 @@ export class TopologyLayer {
         const isBorder = layers.surface.isBorder(point)
         const isRiver = layers.river.has(point)
         return isLand && (isRiver || isBorder)
+    }
+
+    #buildCapitals(layers, cityPoints) {
+        const capitalPoints = new PointSet()
+        let realmId = this.#realmCount
+        cityPoints.forEach(point => {
+            // random city will become a capital (avoid islands)
+            if (realmId-- >= 0 && !layers.surface.isIsland(point))
+                capitalPoints.add(point)
+        })
+        return capitalPoints
     }
 
     #isDungeon(layers, point) {
@@ -53,30 +72,12 @@ export class TopologyLayer {
         }
     }
 
-    #buildCities(rect, possibleCityPoints) {
-        const cityPoints = new PointSet()
-        let realmId = this.#realmCount
-        while (possibleCityPoints.size > 0) {
-            const center = possibleCityPoints.random()
-            // remove candidate points around a city circle
-            const radius = Math.floor(rect.width / 10)
-            Point.insideCircle(center, radius, point => {
-                possibleCityPoints.delete(rect.wrap(point))
-            })
-            cityPoints.add(center)
-            if (realmId > 0)
-                this.#capitals.add(center)
-            realmId--
-        }
-        return cityPoints
-    }
-
     isCity(point) {
         return this.#cityPoints.has(point)
     }
 
     isCapital(point) {
-        return this.#capitals.has(point)
+        return this.#capitalPoints.has(point)
     }
 
     isDungeon(point) {
@@ -94,7 +95,7 @@ export class TopologyLayer {
     getText(point) {
         const attrs = []
         if (this.#cityPoints.has(point)) {
-            const isCapital = this.#capitals.has(point)
+            const isCapital = this.#capitalPoints.has(point)
             attrs.push(isCapital ? `capital=` : `city=`)
         }
         if (this.#dungeonPoints.has(point)) {
@@ -113,7 +114,7 @@ export class TopologyLayer {
                 drawCity(props)
             }
         }
-        // if(this.isDungeon(point))
-        //     drawDungeon(props)
+        if(this.isDungeon(point))
+            drawDungeon(props)
     }
 }

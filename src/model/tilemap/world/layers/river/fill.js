@@ -56,7 +56,7 @@ function buildRiver(context, riverId, sourcePoint) {
     // according to basin flow and builds a river.
     const {
         rect, layers, riverPoints, riverNames, riverMouths,
-        stretchMap, waterPoints, layoutMap, riverMeanders
+        stretchMap, layoutMap, riverMeanders
     } = context
     let prevPoint = sourcePoint
     let currentPoint = sourcePoint
@@ -76,7 +76,6 @@ function buildRiver(context, riverId, sourcePoint) {
         stretchMap.set(wrappedPoint, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(wrappedPoint, riverId)
-        waterPoints.add(wrappedPoint)
         // get next river point
         currentPoint = getNextRiverPoint(context, wrappedPoint)
         // save previous point for mouth detection

@@ -37,7 +37,7 @@
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
 
-### TopologyLayer
+### LocationLayer
 - Set city type using a fill from capital point
   - the bigger the distance of capital, less development on places
   - depending on realm type, can grow less or more cities

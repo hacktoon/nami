@@ -14,7 +14,7 @@ import { ClimateLayer } from './layers/climate'
 import { RainLayer } from './layers/rain'
 import { RiverLayer } from './layers/river'
 import { BiomeLayer } from './layers/biome'
-import { TopologyLayer } from './layers/topology'
+import { LocationLayer } from './layers/topology'
 
 import { WorldTileMapDiagram } from './diagram'
 
@@ -60,7 +60,7 @@ export class WorldTileMap extends TileMap {
         layers.river = new RiverLayer(rect, layers)
         layers.relief = new ReliefLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
-        layers.topo = new TopologyLayer(rect, layers, realmCount)
+        layers.location = new LocationLayer(rect, layers, realmCount)
         const time = (performance.now() - start).toFixed(2)
         console.log(`generated in ${time}ms`);
         return layers
@@ -79,7 +79,7 @@ export class WorldTileMap extends TileMap {
             // this.layers.lake.getText(wrappedPoint),
             this.layers.relief.getText(wrappedPoint),
             // this.layers.landform.getText(wrappedPoint),
-            this.layers.topo.getText(wrappedPoint),
+            this.layers.location.getText(wrappedPoint),
         ].filter(x => x != '')
         .join('\n')
         .trim()
@@ -100,7 +100,7 @@ export class WorldTileMap extends TileMap {
             `World: ${this.name}`,
             `${this.layers.surface.getWaterArea()}% water`,
             `Rivers: ${this.layers.river.count}`,
-            `Cities: ${this.layers.topo.getTotalCities()}`,
+            `Cities: ${this.layers.location.getTotalCities()}`,
         ].join(', ').trim()
     }
 }
