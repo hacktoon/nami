@@ -3,41 +3,40 @@ import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 import { PointSet, PointArraySet } from '/src/lib/point/set'
 
-import { drawCity, drawCapital, drawDungeon } from './draw'
+import { drawCity, drawCapital } from './draw'
+import { buildRealmGrid } from './fill'
 
-const CITY_RADIUS = 10
-const WATER_CITY_CHANCE = .003
-const WATER_DUNGEON_CHANCE = .02
-const LAND_DUNGEON_CHANCE = .2
+const CITY_RATIO = .08
 
 
-export class LocationLayer {
+export class CivilLayer {
     // Define locations and features and their relation
     // cities, caves, ruins, dungeons
-    #placeMap = new Map()
+    #locationMap = new Map()
+    #realmGrid
     #cityPoints
     #capitalPoints
-    #dungeonPoints = new PointSet()
     #realmCount
 
     constructor(rect, layers, realmCount) {
         this.#realmCount = realmCount
         this.#cityPoints = this.#buildCities(rect, layers)
         this.#capitalPoints = this.#buildCapitals(layers, this.#cityPoints)
+        // this.#realmGrid = buildRealmGrid(rect, layers, this.#capitalPoints)
     }
 
     #buildCities(rect, layers) {
         const candidates = new PointArraySet()
+        const cityPoints = new PointSet()
         Grid.fromRect(rect, point => {
             if (this.#isPossibleCity(layers, point)) {
                 candidates.add(point)
             }
         })
-        const cityPoints = new PointSet()
         while (candidates.size > 0) {
             const center = candidates.random()
-            // remove candidate points around a city circle
-            const radius = Math.floor(rect.width / 10)
+            // remove candidate points in a circle area
+            const radius = Math.floor(rect.width * CITY_RATIO)
             Point.insideCircle(center, radius, point => {
                 candidates.delete(rect.wrap(point))
             })
@@ -57,19 +56,12 @@ export class LocationLayer {
         const capitalPoints = new PointSet()
         let realmId = this.#realmCount
         cityPoints.forEach(point => {
-            // random city will become a capital (avoid islands)
-            if (realmId-- >= 0 && !layers.surface.isIsland(point))
+            // random city will become a capital
+            if (realmId >= 0)
                 capitalPoints.add(point)
+            realmId--
         })
         return capitalPoints
-    }
-
-    #isDungeon(layers, point) {
-        if (layers.surface.isLand(point)) {
-            return Random.chance(LAND_DUNGEON_CHANCE)
-        } else {
-            return Random.chance(WATER_DUNGEON_CHANCE)
-        }
     }
 
     isCity(point) {
@@ -80,12 +72,8 @@ export class LocationLayer {
         return this.#capitalPoints.has(point)
     }
 
-    isDungeon(point) {
-        return this.#dungeonPoints.has(point)
-    }
-
     get(point) {
-        return this.#placeMap.get(point)
+        return this.#locationMap.get(point)
     }
 
     getTotalCities() {
@@ -97,9 +85,6 @@ export class LocationLayer {
         if (this.#cityPoints.has(point)) {
             const isCapital = this.#capitalPoints.has(point)
             attrs.push(isCapital ? `capital=` : `city=`)
-        }
-        if (this.#dungeonPoints.has(point)) {
-            attrs.push(`dungeon`)
         }
         if (attrs.length > 0)
             return `Topo(${attrs.join(',')})`
@@ -114,7 +99,5 @@ export class LocationLayer {
                 drawCity(props)
             }
         }
-        if(this.isDungeon(point))
-            drawDungeon(props)
     }
 }

@@ -58,7 +58,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             layers.relief.draw(point, props, layerColor)
         }
         if (this.params.get('showCities')) {
-            layers.location.draw(point, props)
+            layers.civil.draw(point, props)
         }
     }
 }

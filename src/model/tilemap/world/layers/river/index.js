@@ -87,11 +87,9 @@ export class RiverLayer {
         if (! this.has(point))
             return ''
         const river = this.get(point)
-        if (! river.hasWater) return ''
         const attrs = [
              `${river.id}`,
-             `${river.name}`,
-             river.mouth ? 'mouth' : '',
+             `${river.name}${river.mouth ? ' mouth' : ''}`,
              `stretch=${river.stretch.name}`,
         ].filter(x=>x).join(',')
         return `River(${attrs})`

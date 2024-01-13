@@ -6,10 +6,12 @@
 
 
 ## PLANNING
-- determine basin type
-  - count number of water sides on basin to decide if forms river
-  - endorreic - may form deserts and semi-rivers
-  - exorreic
+- start a fill for each city,
+- Each city can have only 4 neighbours (road portals)
+  stop if found 4 neighbors
+- start a fill for each capital
+- city has a routing table
+- each route has a id, cities,
 
 
 ### BlockLayer
@@ -37,7 +39,7 @@
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
 
-### LocationLayer
+### CivilLayer
 - Set city type using a fill from capital point
   - the bigger the distance of capital, less development on places
   - depending on realm type, can grow less or more cities
