@@ -9,7 +9,6 @@
 - start a fill for each city,
 - Each city can have only 4 neighbours (road portals)
   stop if found 4 neighbors
-- start a fill for each capital
 - city has a routing table
 - each route has a id, cities,
 

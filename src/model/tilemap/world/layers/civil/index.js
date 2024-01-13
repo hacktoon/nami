@@ -91,12 +91,6 @@ export class CivilLayer {
     }
 
     draw(point, props) {
-        const {canvas, canvasPoint, tileSize} = props
-        const realm = this.#realmGrid.get(point)
-        const baseColor = this.#colorMap.get(Math.abs(realm))
-        const color = realm < 0 ? baseColor.toRGBA(.1) : baseColor.toRGBA(.6)
-        canvas.rect(canvasPoint, tileSize, color)
-
         if (this.isCity(point)) {
             if (this.isCapital(point)) {
                 drawCapital(props)
@@ -104,5 +98,13 @@ export class CivilLayer {
                 drawCity(props)
             }
         }
+    }
+
+    drawRealm(point, props) {
+        const {canvas, canvasPoint, tileSize} = props
+        const realm = this.#realmGrid.get(point)
+        const baseColor = this.#colorMap.get(Math.abs(realm))
+        const color = realm < 0 ? baseColor.toRGBA(.1) : baseColor.toRGBA(.6)
+        canvas.rect(canvasPoint, tileSize, color)
     }
 }
