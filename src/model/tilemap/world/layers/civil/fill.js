@@ -1,17 +1,26 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
+import { Random } from '/src/lib/random'
+import { WORLD_NAMES } from '/src/lib/names'
 
 
 const CHANCE = .1  // chance of fill growing
-const GROWTH = 10  // make fill basins grow bigger than others
-const EMPTY = null  // make fill basins grow bigger than others
+const GROWTH = 15  // make fill basins grow bigger than others
+const EMPTY = 0  // make fill basins grow bigger than others
 
 
-export function buildRealmGrid(rect, layers, capitalPoints) {
+export function buildRealms(rect, layers, context) {
     const fill = new RealmFill()
     const realmGrid = Grid.fromRect(rect, () => EMPTY)
-    fill.start(capitalPoints.points, {rect, layers, realmGrid})
+    const origins = context.capitalPoints.points
+    fill.start(origins, {
+        rect, layers,
+        idCount: 1,  // start from 1 to avoid 0 index
+        realmGrid,   // code -x for water, +x for land
+        ...context,
+    })
     return realmGrid
 }
 
@@ -20,10 +29,24 @@ class RealmFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
-    onFill(fill, fillPoint) {
-        const {rect, realmGrid} = fill.context
+    onInitFill(fill, fillPoint) {
+        const {
+            layers, rect, realmGrid, colorMap, realmNameMap
+        } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
-        realmGrid.set(wrappedPoint, fill.id)
+        const idCount = fill.id + 1  // offset to avoid index 0
+        const id = layers.surface.isWater(wrappedPoint) ? -idCount : idCount
+        realmGrid.set(wrappedPoint, id)
+        colorMap.set(idCount, new Color())
+        realmNameMap.set(idCount, Random.choiceFrom(WORLD_NAMES))
+    }
+
+    onFill(fill, fillPoint) {
+        const {layers, rect, realmGrid} = fill.context
+        const wrappedPoint = rect.wrap(fillPoint)
+        const idCount = fill.id + 1  // offset to avoid index 0
+        const id = layers.surface.isWater(wrappedPoint) ? -idCount : idCount
+        realmGrid.set(wrappedPoint, id)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -33,6 +56,6 @@ class RealmFill extends ConcurrentFill {
     canFill(fill, fillPoint) {
         const {rect, realmGrid} = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
-        return realmGrid.get(wrappedPoint) == EMPTY
+        return realmGrid.get(wrappedPoint) === EMPTY
     }
 }

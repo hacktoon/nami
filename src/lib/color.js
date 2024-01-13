@@ -61,6 +61,10 @@ export class Color {
         return `#${hex(this.r)}${hex(this.g)}${hex(this.b)}`
     }
 
+    toRGBA(a=1) {
+        return `rgba(${this.r},${this.g},${this.b}, ${a})`
+    }
+
     invert() {
         return new Color(SCALE - this.r, SCALE - this.g, SCALE - this.b)
     }

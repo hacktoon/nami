@@ -1,10 +1,10 @@
 import { Grid } from '/src/lib/grid'
-import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 import { PointSet, PointArraySet } from '/src/lib/point/set'
 
 import { drawCity, drawCapital } from './draw'
-import { buildRealmGrid } from './fill'
+import { buildRealms } from './fill'
+
 
 const CITY_RATIO = .08
 
@@ -12,24 +12,30 @@ const CITY_RATIO = .08
 export class CivilLayer {
     // Define locations and features and their relation
     // cities, caves, ruins, dungeons
-    #locationMap = new Map()
+    #realmNameMap = new Map()
+    #colorMap = new Map()
     #realmGrid
     #cityPoints
     #capitalPoints
-    #realmCount
 
     constructor(rect, layers, realmCount) {
-        this.#realmCount = realmCount
         this.#cityPoints = this.#buildCities(rect, layers)
-        this.#capitalPoints = this.#buildCapitals(layers, this.#cityPoints)
-        this.#realmGrid = buildRealmGrid(rect, layers, this.#capitalPoints)
+        this.#capitalPoints = this.#buildCapitals(this.#cityPoints, realmCount)
+        this.#realmGrid = buildRealms(rect, layers, {
+            capitalPoints: this.#capitalPoints,
+            colorMap: this.#colorMap,
+            realmNameMap: this.#realmNameMap,
+        })
     }
 
     #buildCities(rect, layers) {
         const candidates = new PointArraySet()
         const cityPoints = new PointSet()
         Grid.fromRect(rect, point => {
-            if (this.#isPossibleCity(layers, point)) {
+            const isLand = layers.surface.isLand(point)
+            const isBorder = layers.surface.isBorder(point)
+            const isRiver = layers.river.has(point)
+            if (isLand && (isRiver || isBorder)) {
                 candidates.add(point)
             }
         })
@@ -45,19 +51,12 @@ export class CivilLayer {
         return cityPoints
     }
 
-    #isPossibleCity(layers, point) {
-        const isLand = layers.surface.isLand(point)
-        const isBorder = layers.surface.isBorder(point)
-        const isRiver = layers.river.has(point)
-        return isLand && (isRiver || isBorder)
-    }
-
-    #buildCapitals(layers, cityPoints) {
+    #buildCapitals(cityPoints, realmCount) {
         const capitalPoints = new PointSet()
-        let realmId = this.#realmCount
+        let realmId = realmCount
         cityPoints.forEach(point => {
             // random city will become a capital
-            if (realmId >= 0)
+            if (realmId > 0)
                 capitalPoints.add(point)
             realmId--
         })
@@ -73,7 +72,7 @@ export class CivilLayer {
     }
 
     get(point) {
-        return this.#locationMap.get(point)
+        return Math.abs(this.#realmGrid.get(point))
     }
 
     getTotalCities() {
@@ -81,16 +80,23 @@ export class CivilLayer {
     }
 
     getText(point) {
-        const realm = this.#realmGrid.get(point)
+        const realm = this.get(point)
+        const name = this.#realmNameMap.get(realm)
         if (this.#cityPoints.has(point)) {
             const isCapital = this.#capitalPoints.has(point)
             const cap = isCapital ? 'capital' : 'city'
-            return `Civil(${cap},realm=${realm})`
+            return `Civil(${cap},id=${realm},realm=${name})`
         }
-        return `Civil(realm=${realm})`
+        return `Civil(id=${realm},realm=${name})`
     }
 
     draw(point, props) {
+        const {canvas, canvasPoint, tileSize} = props
+        const realm = this.#realmGrid.get(point)
+        const baseColor = this.#colorMap.get(Math.abs(realm))
+        const color = realm < 0 ? baseColor.toRGBA(.1) : baseColor.toRGBA(.6)
+        canvas.rect(canvasPoint, tileSize, color)
+
         if (this.isCity(point)) {
             if (this.isCapital(point)) {
                 drawCapital(props)
