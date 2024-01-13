@@ -3,12 +3,39 @@ import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
+import { PointSet, PointArraySet } from '/src/lib/point/set'
 import { WORLD_NAMES } from '/src/lib/names'
 
 
+const CITY_RATIO = .08
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 15  // make fill basins grow bigger than others
 const EMPTY = 0  // make fill basins grow bigger than others
+
+
+export function buildCities(rect, layers) {
+    const candidates = new PointArraySet()
+    const cityPoints = new PointSet()
+    Grid.fromRect(rect, point => {
+        const isLand = layers.surface.isLand(point)
+        const isBorder = layers.surface.isBorder(point)
+        const isRiver = layers.river.has(point)
+        if (isLand && (isRiver || isBorder)) {
+            candidates.add(point)
+        }
+    })
+    while (candidates.size > 0) {
+        const center = candidates.random()
+        // remove candidate points in a circle area
+        const radius = Math.floor(rect.width * CITY_RATIO)
+        Point.insideCircle(center, radius, point => {
+            candidates.delete(rect.wrap(point))
+        })
+        cityPoints.add(center)
+    }
+    return cityPoints
+}
+
 
 
 export function buildRealms(rect, layers, context) {
@@ -27,18 +54,23 @@ export function buildRealms(rect, layers, context) {
 
 class RealmFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
-    getGrowth(fill) { return GROWTH }
+    getGrowth(fill) { return fill.id % 2 ? GROWTH : Math.floor(GROWTH / 2) }
 
     onInitFill(fill, fillPoint) {
         const {
-            layers, rect, realmGrid, colorMap, realmNameMap
+            layers, rect, realmGrid, realmMap
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         const idCount = fill.id + 1  // offset to avoid index 0
-        const id = layers.surface.isWater(wrappedPoint) ? -idCount : idCount
+        const isWater = layers.surface.isWater(wrappedPoint)
+        const id = isWater ? -idCount : idCount
         realmGrid.set(wrappedPoint, id)
-        colorMap.set(idCount, new Color())
-        realmNameMap.set(idCount, Random.choiceFrom(WORLD_NAMES))
+        // create a realm object
+        realmMap.set(idCount, {
+            id,
+            color: new Color(),
+            name: Random.choiceFrom(WORLD_NAMES)
+        })
     }
 
     onFill(fill, fillPoint) {

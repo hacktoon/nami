@@ -29,7 +29,7 @@ export function drawCapital(props) {
         [1, 2, 1, 1, 1],
     ]
     const colorMap = {
-        1: Color.fromHex('999'),
+        1: Color.fromHex('555'),
         2: Color.BLACK,
     }
     drawIcon(props, template, colorMap)

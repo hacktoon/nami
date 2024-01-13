@@ -26,7 +26,8 @@ export class Color {
         const r = 1
         const g = 1
         const b = 1
-        return new Color(r, g, b)
+        const a = 1
+        return new Color(r, g, b, a)
     }
 
     static fromHex(value) {
@@ -50,10 +51,11 @@ export class Color {
         )
     }
 
-    constructor(r=null, g=null, b=null) {
+    constructor(r=null, g=null, b=null, a=1) {
         this.r = clamp(r ?? Random.int(SCALE), 0, SCALE)
         this.g = clamp(g ?? Random.int(SCALE), 0, SCALE)
         this.b = clamp(b ?? Random.int(SCALE), 0, SCALE)
+        this.a = clamp(a, 0, 1)
     }
 
     toHex() {
@@ -61,8 +63,12 @@ export class Color {
         return `#${hex(this.r)}${hex(this.g)}${hex(this.b)}`
     }
 
-    toRGBA(a=1) {
-        return `rgba(${this.r},${this.g},${this.b}, ${a})`
+    toRGBA() {
+        return `rgba(${this.r},${this.g},${this.b}, ${this.a})`
+    }
+
+    alpha(a=1) {
+        return new Color(this.r, this.g, this.b, a)
     }
 
     invert() {
