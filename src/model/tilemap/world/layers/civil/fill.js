@@ -67,7 +67,7 @@ class RealmFill extends ConcurrentFill {
         realmGrid.set(wrappedPoint, id)
         // create a realm object
         realmMap.set(idCount, {
-            id,
+            id: idCount,
             color: new Color(),
             name: Random.choiceFrom(WORLD_NAMES)
         })

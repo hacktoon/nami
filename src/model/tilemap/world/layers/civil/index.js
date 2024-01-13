@@ -10,6 +10,8 @@ export class CivilLayer {
     // map a realm id to a realm object
     #realmMap = new Map()
 
+    #cityTypeMap = new Map()
+
     // map a point to a realm id
     #realmGrid
     #cityPoints
