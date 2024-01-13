@@ -22,7 +22,7 @@ export class CivilLayer {
         this.#realmCount = realmCount
         this.#cityPoints = this.#buildCities(rect, layers)
         this.#capitalPoints = this.#buildCapitals(layers, this.#cityPoints)
-        // this.#realmGrid = buildRealmGrid(rect, layers, this.#capitalPoints)
+        this.#realmGrid = buildRealmGrid(rect, layers, this.#capitalPoints)
     }
 
     #buildCities(rect, layers) {
@@ -81,14 +81,13 @@ export class CivilLayer {
     }
 
     getText(point) {
-        const attrs = []
+        const realm = this.#realmGrid.get(point)
         if (this.#cityPoints.has(point)) {
             const isCapital = this.#capitalPoints.has(point)
-            attrs.push(isCapital ? `capital=` : `city=`)
+            const cap = isCapital ? 'capital' : 'city'
+            return `Civil(${cap},realm=${realm})`
         }
-        if (attrs.length > 0)
-            return `Topo(${attrs.join(',')})`
-        return ''
+        return `Civil(realm=${realm})`
     }
 
     draw(point, props) {
