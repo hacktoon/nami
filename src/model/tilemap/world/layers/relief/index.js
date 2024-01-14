@@ -8,8 +8,8 @@ import { SeaSurface } from '../surface/data'
 const TRENCH_RATIO = .65
 const OCEAN_RATIO = .47
 const PLATFORM_RATIO = .47
-const MOUNTAIN_RATIO = .4
-const HILL_RATIO = .3
+const MOUNTAIN_RATIO = .45
+const HILL_RATIO = .1
 
 
 export class ReliefLayer {
@@ -43,8 +43,9 @@ export class ReliefLayer {
     #detectLandType(layers, point) {
         const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
         if (layers.basin.isDivide(point)) {
-            if (grainedNoise < MOUNTAIN_RATIO) return Relief.HILL
-            return Relief.MOUNTAIN
+            if (grainedNoise >= MOUNTAIN_RATIO) return Relief.MOUNTAIN
+            if (grainedNoise < HILL_RATIO) return Relief.HILL
+            return Relief.PLAIN
         }
         if (! layers.river.has(point)) {
             if (grainedNoise < HILL_RATIO) return Relief.HILL
