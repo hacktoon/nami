@@ -3,7 +3,7 @@ import { Color } from '/src/lib/color'
 import { drawIcon } from '/src/ui/tilemap/draw'
 
 
-export function drawVillage(props) {
+export function drawTown(props) {
     const template = [
         [0, 0, 0, 1, 1, 0, 0, 0],
         [0, 0, 1, 4, 3, 1, 0, 0],
@@ -24,7 +24,7 @@ export function drawVillage(props) {
 }
 
 
-export function drawCity(props) {
+export function drawVillage(props) {
     const template = [
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 1, 1, 1, 1, 0, 0],

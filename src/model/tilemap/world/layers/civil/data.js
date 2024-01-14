@@ -1,32 +1,30 @@
-import { Color } from '/src/lib/color'
-
-
-class Spec {
-    static total = 0
-    static map = new Map()
-
-    static build(spec) {
-        const id = Spec.total++
-        const item = {...spec, id, color: Color.fromHex(spec.color)}
-        Spec.map.set(id, item)
-        return item
-    }
-
-    static get(id) {
-        return Spec.map.get(id)
+export class City {
+    static parse(id) {
+        return TYPE_MAP[id]
     }
 }
 
 
-export class Place {
-    static CAPITAL = Spec.build({name: 'Capital', color: '#2d4f5f'})
-    static CITY = Spec.build({name: 'City', color: '#bbbbbb'})
-    static VILLAGE = Spec.build({name: 'Village', color: '#977979'})
-    static RUINS = Spec.build({name: 'Ruins', color: '#3a472b'})
-    static CAVE = Spec.build({name: 'Cave', color: '#352727'})
-    static FORTRESS = Spec.build({name: 'Fortress', color: '#535353'})
+export class Capital extends City {
+    static id = 0
+    static name = 'Capital'
+}
 
-    static get(id) {
-        return Spec.get(id)
-    }
+
+export class Town extends City {
+    static id = 1
+    static name = 'Town'
+}
+
+
+export class Village extends City {
+    static id = 2
+    static name = 'Village'
+}
+
+
+const TYPE_MAP = {
+    0: Capital,
+    1: Town,
+    2: Village,
 }

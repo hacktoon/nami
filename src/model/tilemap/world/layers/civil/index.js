@@ -1,7 +1,10 @@
-import { PointSet } from '/src/lib/point/set'
-
-import { drawCity, drawCapital } from './draw'
-import { buildCities, buildRealms } from './fill'
+import { drawVillage, drawTown, drawCapital } from './draw'
+import { buildCityMap, buildRealms } from './fill'
+import {
+    Capital,
+    Town,
+    Village
+} from './data'
 
 
 export class CivilLayer {
@@ -9,40 +12,31 @@ export class CivilLayer {
 
     // map a realm id to a realm object
     #realmMap = new Map()
-
-    #cityTypeMap = new Map()
+    // map a point to a city object
+    #cityMap
 
     // map a point to a realm id
     #realmGrid
-    #cityPoints
-    #capitalPoints
 
     constructor(rect, layers, realmCount) {
-        this.#cityPoints = buildCities(rect, layers)
-        this.#capitalPoints = this.#buildCapitals(this.#cityPoints, realmCount)
-        this.#realmGrid = buildRealms(rect, layers, {
-            capitalPoints: this.#capitalPoints,
+        this.#cityMap = buildCityMap(rect, layers, realmCount)
+        this.#realmGrid = buildRealms({
+            rect, layers,
+            cityMap: this.#cityMap,
             realmMap: this.#realmMap,
         })
     }
 
-    #buildCapitals(cityPoints, realmCount) {
-        const capitalPoints = new PointSet()
-        let realmId = realmCount
-        cityPoints.forEach(point => {
-            // random city will become a capital
-            if (realmId > 0) capitalPoints.add(point)
-            realmId--
-        })
-        return capitalPoints
-    }
-
     isCity(point) {
-        return this.#cityPoints.has(point)
+        return this.#cityMap.has(point)
     }
 
     isCapital(point) {
-        return this.#capitalPoints.has(point)
+        return this.#cityMap.get(point).type === Capital.id
+    }
+
+    isVillage(point) {
+        return this.#cityMap.get(point).type === Village.id
     }
 
     get(point) {
@@ -51,26 +45,27 @@ export class CivilLayer {
     }
 
     getTotalCities() {
-        return this.#cityPoints.size
+        return this.#cityMap.size
     }
 
     getText(point) {
         const realm = this.get(point)
-        if (this.#cityPoints.has(point)) {
-            const isCapital = this.#capitalPoints.has(point)
-            const cap = isCapital ? 'capital' : 'city'
+        if (this.#cityMap.has(point)) {
+            const cap = this.isCapital(point) ? 'capital' : 'city'
             return `Civil(${cap},id=${realm.id},realm=${realm.name})`
         }
         return `Civil(id=${realm.id},realm=${realm.name})`
     }
 
     draw(point, props) {
-        if (this.isCity(point)) {
-            if (this.isCapital(point)) {
-                drawCapital(props)
-            } else {
-                drawCity(props)
-            }
+        if (! this.isCity(point))
+            return
+        if (this.isCapital(point)) {
+            drawCapital(props)
+        } else if (this.isVillage(point)) {
+            drawVillage(props)
+        } else {
+            drawTown(props)
         }
     }
 
