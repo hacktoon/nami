@@ -38,28 +38,35 @@ export class Relief {
     static HILL = Spec.build({
         name: 'Hill', color: '#88BB88', draw: function(props) {
             drawIcon(props, [
-                [0, 0, 0, 0, 0],
-                [0, 0, 1, 0, 0],
-                [0, 1, 0, 1, 0],
-                [0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 1, 0, 1, 0, 0, 0],
+                [0, 1, 0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 1, 0, 0],
+                [0, 0, 0, 1, 0, 0, 1, 0],
+                [0, 0, 1, 0, 0, 0, 0, 1],
                 ], {
-                1: Color.fromHex('#77a777'),
+                1: Color.fromHex('#555'),
             })
         }
     })
     static MOUNTAIN = Spec.build({
         name: 'Mountain', color: '#badfba', draw: function(props) {
             drawIcon(props, [
-                [0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0],
-                [0, 0, 1, 0, 0],
-                [0, 2, 2, 2, 0],
-                [3, 3, 3, 3, 3],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 1, 2, 1, 0, 0, 0],
+                [0, 1, 2, 3, 2, 1, 0, 0],
+                [0, 1, 4, 3, 3, 1, 0, 0],
+                [1, 4, 4, 3, 3, 1, 1, 0],
+                [1, 4, 3, 3, 1, 4, 3, 1],
+                [0, 0, 0, 1, 4, 3, 3, 1],
                 ], {
-                1: Color.fromHex('#eee'),
-                2: Color.fromHex('#BBBBBB'),
-                3: Color.fromHex('#AAAAAA'),
+                1: Color.fromHex('#444'),
+                2: Color.fromHex('#eee'),
+                3: Color.fromHex('#BBBBBB'),
+                4: Color.fromHex('#727272'),
             })
         }
     })
