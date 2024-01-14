@@ -1,9 +1,9 @@
 import { drawVillage, drawTown, drawCapital } from './draw'
 import { buildCityMap, buildRealms } from './fill'
 import {
+    City,
     Capital,
     Town,
-    Village
 } from './data'
 
 
@@ -21,7 +21,8 @@ export class CivilLayer {
     constructor(rect, layers, realmCount) {
         this.#cityMap = buildCityMap(rect, layers, realmCount)
         this.#realmGrid = buildRealms({
-            rect, layers,
+            rect,
+            layers,
             cityMap: this.#cityMap,
             realmMap: this.#realmMap,
         })
@@ -35,8 +36,8 @@ export class CivilLayer {
         return this.#cityMap.get(point).type === Capital.id
     }
 
-    isVillage(point) {
-        return this.#cityMap.get(point).type === Village.id
+    isTown(point) {
+        return this.#cityMap.get(point).type === Town.id
     }
 
     get(point) {
@@ -50,11 +51,13 @@ export class CivilLayer {
 
     getText(point) {
         const realm = this.get(point)
+        const props = [`realm=${realm.name}(${realm.id})`]
         if (this.#cityMap.has(point)) {
-            const cap = this.isCapital(point) ? 'capital' : 'city'
-            return `Civil(${cap},id=${realm.id},realm=${realm.name})`
+            const city = this.#cityMap.get(point)
+            const type = City.parse(city.type).name.toLowerCase()
+            props.push(`city="${city.name} ${type}", population=${city.population}`)
         }
-        return `Civil(id=${realm.id},realm=${realm.name})`
+        return `Civil(${props.join(",")})`
     }
 
     draw(point, props) {
@@ -62,10 +65,10 @@ export class CivilLayer {
             return
         if (this.isCapital(point)) {
             drawCapital(props)
-        } else if (this.isVillage(point)) {
-            drawVillage(props)
-        } else {
+        } else if (this.isTown(point)) {
             drawTown(props)
+        } else {
+            drawVillage(props)
         }
     }
 

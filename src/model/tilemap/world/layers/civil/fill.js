@@ -14,7 +14,7 @@ import {
 
 
 const CITY_RATIO = .08
-const VILLAGE_RATIO = .2
+const TOWN_RATIO = .6
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
 const EMPTY = 0  // make fill basins grow bigger than others
@@ -41,22 +41,6 @@ export function buildCityMap(rect, layers, realmCount) {
 }
 
 
-function buildCity(realmCount, capitalCount, cityId) {
-    // define city type
-    let type = Town
-    if (realmCount > capitalCount) {
-        type = Capital
-    } else if (Random.chance(VILLAGE_RATIO)) {
-        type = Village
-    }
-    return {
-        id: cityId,
-        name: Random.choiceFrom(WORLD_NAMES),
-        type: type.id,
-    }
-}
-
-
 function buildCityCandidates(rect, layers) {
     const candidates = new PointArraySet()
     // discover candidate cities in world grid
@@ -69,6 +53,22 @@ function buildCityCandidates(rect, layers) {
         }
     })
     return candidates
+}
+
+
+function buildCity(realmCount, capitalCount, cityId) {
+    let type = Village  // default value
+    if (realmCount > capitalCount) {
+        type = Capital
+    } else if (Random.chance(TOWN_RATIO)) {
+        type = Town
+    }
+    return {
+        id: cityId,
+        type: type.id,
+        population: Random.int(...type.populationRange),
+        name: Random.choiceFrom(WORLD_NAMES),
+    }
 }
 
 
