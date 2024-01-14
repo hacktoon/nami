@@ -1,10 +1,10 @@
 import { Climate } from './data'
 
 
-const COLD_RATIO = .15
-const TEMPERATE_RATIO = .3
-const WARM_RATIO = .4
 const HOT_RATIO = .65
+const WARM_RATIO = .5
+const TEMPERATE_RATIO = .3
+const COLD_RATIO = .1
 
 
 export class ClimateLayer {
