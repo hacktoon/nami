@@ -4,35 +4,34 @@ import { Random } from '/src/lib/random'
 import { PointMap } from '/src/lib/point/map'
 import { PointArraySet } from '/src/lib/point/set'
 import { WORLD_NAMES } from '/src/lib/names'
-import {
-    Capital,
-    Town,
-    Village
-} from './data'
+import { Capital, Town, Village } from './data'
 
 
 const CITY_RATIO = .06
 const TOWN_RATIO = .6
 
 
-export function buildCityMap(rect, layers, realmCount) {
-    const cityMap = new PointMap()
+export function buildCityPoints(rect, layers, realmCount) {
+    const cities = []
+    const capitals = []
     const candidates = buildCityCandidates(rect, layers)
-    let cityCount = 0
     let capitalCount = 0
     while (candidates.size > 0) {
-        const cityPoint = candidates.random()
+        const point = candidates.random()
         // remove candidate points in a circle area
         const radius = Math.floor(rect.width * CITY_RATIO)
-        Point.insideCircle(cityPoint, radius, point => {
+        Point.insideCircle(point, radius, point => {
             candidates.delete(rect.wrap(point))
         })
-        const city = buildCity(cityCount, realmCount, capitalCount)
-        cityMap.set(cityPoint, city)
-        capitalCount++
-        cityCount++
+        // add capital point
+        if (realmCount > capitalCount) {
+            capitals.push(point)
+            capitalCount++
+        } else {
+            cities.push(point)
+        }
     }
-    return cityMap
+    return [cities, capitals]
 }
 
 
@@ -51,13 +50,24 @@ function buildCityCandidates(rect, layers) {
 }
 
 
-function buildCity(cityId, realmCount, capitalCount) {
-    let type = Village  // default value
-    if (realmCount > capitalCount) {
-        type = Capital
-    } else if (Random.chance(TOWN_RATIO)) {
-        type = Town
+export function buildCityMap(capitalPoints, cityPoints) {
+    const cityMap = new PointMap()
+    let cityCount = 0
+    for (let point of capitalPoints) {
+        const type = Capital
+        cityMap.set(point, buildCity(cityCount, type))
+        cityCount++
     }
+    for (let point of cityPoints) {
+        const type = Random.chance(TOWN_RATIO) ? Town : Village
+        cityMap.set(point, buildCity(cityCount, type))
+        cityCount++
+    }
+    return cityMap
+}
+
+
+function buildCity(cityId, type) {
     return {
         id: cityId,
         type: type.id,
