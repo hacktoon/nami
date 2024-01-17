@@ -1,5 +1,6 @@
 import { drawVillage, drawTown, drawCapital } from './draw'
-import { buildCityMap, buildRealms } from './realm.fill'
+import { buildRealms } from './realm.fill'
+import { buildCityMap } from './city'
 import {
     City,
     Capital,

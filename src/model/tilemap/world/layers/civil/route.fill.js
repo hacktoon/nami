@@ -8,8 +8,8 @@ import { PointMap } from '/src/lib/point/map'
 const EMPTY = 0  // make fill basins grow bigger than others
 
 
-export function buildRoadMap(rect, layers) {
-    const cityMap = new PointMap()
+export function buildRoadMap(rect, layers, context) {
+    const cityPoints = context.cityPoints
 
 }
 
