@@ -1,5 +1,5 @@
 import { drawVillage, drawTown, drawCapital } from './draw'
-import { buildCityMap, buildRealms } from './fill'
+import { buildCityMap, buildRealms } from './realm.fill'
 import {
     City,
     Capital,
@@ -8,15 +8,15 @@ import {
 
 
 export class CivilLayer {
-    // Define realms, capitals and cities
+    // Define realms, cities and roads
 
+    // map a point to a realm id
+    #realmGrid
     // map a realm id to a realm object
     #realmMap = new Map()
     // map a point to a city object
     #cityMap
 
-    // map a point to a realm id
-    #realmGrid
 
     constructor(rect, layers, realmCount) {
         this.#cityMap = buildCityMap(rect, layers, realmCount)

@@ -13,7 +13,7 @@ import {
 } from './data'
 
 
-const CITY_RATIO = .08
+const CITY_RATIO = .06
 const TOWN_RATIO = .6
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
@@ -94,12 +94,13 @@ class RealmFill extends ConcurrentFill {
             layers, rect, realmGrid, realmMap
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
-        const realmId = fill.id + 1  // offset to avoid index 0
         const isWater = layers.surface.isWater(wrappedPoint)
-        // code -x for water, +x for land
+        // negative numbers on realmGrid are water tiles.
+        // offset id to avoid index 0
+        const realmId = fill.id + 1
         const id = isWater ? -realmId : realmId
-        realmGrid.set(wrappedPoint, id)
         // create a realm object
+        realmGrid.set(wrappedPoint, id)
         realmMap.set(realmId, {
             id: realmId,
             capital: wrappedPoint,
