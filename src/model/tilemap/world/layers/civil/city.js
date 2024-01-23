@@ -39,10 +39,10 @@ function buildCityCandidates(rect, layers) {
     const candidates = new PointArraySet()
     // discover candidate cities in world grid
     Grid.fromRect(rect, point => {
-        const isLand = layers.surface.isLand(point)
+        if (layers.surface.isWater(point)) return
         const isBorder = layers.surface.isBorder(point)
         const isRiver = layers.river.has(point)
-        if (isLand && (isRiver || isBorder)) {
+        if (isRiver || isBorder) {
             candidates.add(point)
         }
     })
