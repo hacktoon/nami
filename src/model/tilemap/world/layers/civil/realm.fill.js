@@ -8,16 +8,7 @@ import { WORLD_NAMES } from '/src/lib/names'
 
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
-const EMPTY = 0  // make fill basins grow bigger than others
-
-
-export function buildRealmGrid(context) {
-    const fill = new RealmFill()
-    const realmGrid = Grid.fromRect(context.rect, () => EMPTY)
-    // start fill from capitals to define realms territory
-    fill.start(context.capitalPoints, {realmGrid, ...context})
-    return realmGrid
-}
+const EMPTY = 0
 
 
 export function buildRealmMap(context) {
@@ -36,34 +27,39 @@ export function buildRealmMap(context) {
 }
 
 
+export function buildRealmGrid(context) {
+    const fill = new RealmFill()
+    const realmGrid = Grid.fromRect(context.rect, () => EMPTY)
+    // start fill from capitals to define realms territory
+    const realmIds = context.capitalPoints.map((point, index) => {
+        // negative numbers on realmGrid are water tiles.
+        // offset id to avoid index 0
+        const realmId = index + 1
+        // create a realm object
+        context.realmMap.set(realmId, {
+            id: realmId,
+            capital: point,
+            color: new Color(),
+            name: Random.choiceFrom(WORLD_NAMES)
+        })
+        return realmId
+    })
+    fill.start(context.capitalPoints, {realmIds, realmGrid, ...context})
+    return realmGrid
+}
+
+
 class RealmFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
-    onInitFill(fill, fillPoint) {
-        const {layers, rect, realmGrid, realmMap} = fill.context
-        const wrappedPoint = rect.wrap(fillPoint)
-        const isWater = layers.surface.isWater(wrappedPoint)
-        // negative numbers on realmGrid are water tiles.
-        // offset id to avoid index 0
-        const realmId = fill.id + 1
-        realmGrid.set(wrappedPoint, isWater ? -realmId : realmId)
-        // create a realm object
-        realmMap.set(realmId, {
-            id: realmId,
-            capital: wrappedPoint,
-            color: new Color(),
-            name: Random.choiceFrom(WORLD_NAMES)
-        })
-    }
-
     onFill(fill, fillPoint) {
-        const {layers, rect, realmGrid} = fill.context
+        const {layers, rect, realmIds, realmGrid} = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         const isWater = layers.surface.isWater(wrappedPoint)
         // negative numbers on realmGrid are water tiles.
         // offset id to avoid index 0
-        const realmId = fill.id + 1
+        const realmId = realmIds[fill.id]
         realmGrid.set(wrappedPoint, isWater ? -realmId : realmId)
     }
 
