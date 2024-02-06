@@ -6,23 +6,10 @@
 
 
 ## PLANNING
-- start a fill for each city,
-- Each city can have only 4 neighbours (road portals)
-  stop if found 4 neighbors
-- city has a routing table
+- start a fill for each capital, create roads for all cities found in radius
+  - repeat for towns and at last, villages
+- every city has a routing table
 - each route has a id, cities,
-
-
-### BlockLayer
-- Calculate 3x3 surface code map to distribute % of erosion
-- Start fill from river and block shore points
-
-
-### BasinLayer
-- Add basin types (plain, plateau, slope)
-- Add erosion tree for all points
-- Vary river source point for each block
-- Add Watershed tree to basin
 
 
 ### General ideas
@@ -40,10 +27,8 @@
 
 ### CivilLayer
 - Set city type using a fill from capital point
-  - the bigger the distance of capital, less development on places
   - depending on realm type, can grow less or more cities
   - Put inns/outposts at borders of city radius
-- Cities next to salt lakes are ruins
 - Each city in block map can occupy tiles as zones or neighborhoods
 - Dungeon types and levels like cat quest
   - dungeons at high level like 79

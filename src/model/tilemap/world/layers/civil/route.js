@@ -3,7 +3,7 @@ import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
 import { PointMap } from '/src/lib/point/map'
-// import { } from './data'
+
 
 const EMPTY = 0  // make fill basins grow bigger than others
 
@@ -17,11 +17,10 @@ export function buildRoadMap(rect, layers, context) {
 
 class RoadFill extends ConcurrentFill {
     onFill(fill, fillPoint) {
-        const {layers, rect, realmGrid} = fill.context
+        const {layers, rect} = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
-        const realmId = fill.id + 1  // offset to avoid index 0
-        const id = layers.surface.isWater(wrappedPoint) ? -realmId : realmId
-        realmGrid.set(wrappedPoint, id)
+        const isWater = layers.surface.isWater(wrappedPoint)
+        roadGrid.set(wrappedPoint, id)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -29,8 +28,8 @@ class RoadFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {rect, realmGrid} = fill.context
+        const {rect, roadGrid} = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
-        return realmGrid.get(wrappedPoint) === EMPTY
+        return roadGrid.get(wrappedPoint) === EMPTY
     }
 }
