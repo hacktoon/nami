@@ -1,21 +1,26 @@
 import { drawVillage, drawTown, drawCapital } from './draw'
 import { buildRealmGrid, buildRealmMap } from './realm'
 import { buildCityPoints, buildCityMap } from './city'
-import { buildRoadMap } from './route'
+import { buildRouteMap } from './route'
 import { City, Capital, Town } from './data'
 
 
 // Define realms, cities and roads
 export class CivilLayer {
     #realmGrid  // map a point to a realm id
-    #realmMap = new Map()  // map a realm id to a realm object
-    #cityMap  // map a point to a city object
+    #realmMap   // map a realm id to a realm object
+    #cityMap    // map a point to a city object
+    #routeMap   // map a point to a route object
 
     constructor(rect, layers, realmCount) {
         const [cityPoints, capitalPoints] = buildCityPoints(rect, layers, realmCount)
         this.#cityMap = buildCityMap(capitalPoints, cityPoints)
         this.#realmMap = buildRealmMap(capitalPoints)
         this.#realmGrid = buildRealmGrid({rect, layers, capitalPoints})
+        this.#routeMap = buildRouteMap({
+            rect, layers, capitalPoints, cityPoints,
+            cityMap: this.#cityMap,
+        })
     }
 
     isCity(point) {
