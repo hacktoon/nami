@@ -120,6 +120,12 @@ export class Point {
         return Point.plus(point, direction.axis)
     }
 
+    static directionBetween(sourcePoint, targetPoint) {
+        // need to get unwrapped points to get real angle
+        const angle = Point.angle(sourcePoint, targetPoint)
+        return Direction.fromAngle(angle)
+    }
+
     static atNorth(p) { return [p[0], p[1] - 1] }
     static atSouth(p) { return [p[0], p[1] + 1] }
     static atEast(p) { return [p[0] + 1, p[1]] }

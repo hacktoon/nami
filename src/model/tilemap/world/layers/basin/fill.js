@@ -44,7 +44,7 @@ class BasinFill extends ConcurrentFill {
             return layers.surface.isWater(neighbor)
         })
         // set erosion direction, use first water neighbor
-        const direction = getDirectionBetween(fillPoint, waterNeighbors[0])
+        const direction = Point.directionBetween(fillPoint, waterNeighbors[0])
         erosionMap.set(wrappedFillPoint, direction.id)
         // set basin type
         typeMap.set(fill.id, buildType(total))
@@ -77,7 +77,7 @@ class BasinFill extends ConcurrentFill {
         const {
             rect, basinMap, distanceMap, erosionMap
         } = fill.context
-        const direction = getDirectionBetween(fillPoint, parentPoint)
+        const direction = Point.directionBetween(fillPoint, parentPoint)
         const wrappedPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         // distance to source by point
@@ -105,13 +105,6 @@ function buildType(total) {
     else if (oneWaterSide)
         type = RiverBasin
     return type.id
-}
-
-
-function getDirectionBetween(sourcePoint, targetPoint) {
-    // need to get unwrapped points to get real angle
-    const angle = Point.angle(sourcePoint, targetPoint)
-    return Direction.fromAngle(angle)
 }
 
 

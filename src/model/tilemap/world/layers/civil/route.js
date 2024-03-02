@@ -1,8 +1,8 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
-import { Random } from '/src/lib/random'
-import { PairMap } from '/src/lib/map'
+import { Direction } from '/src/lib/direction'
+import { PairSet } from '/src/lib/map'
 
 
 const EMPTY = null
@@ -12,21 +12,45 @@ export function buildRouteMap(context) {
     const cities = [...context.capitalPoints, ...context.cityPoints]
     // used in block fill to detect other's fill id
     const fillGrid = Grid.fromRect(context.rect, () => EMPTY)
-    // save directions to each city to build roads later
+    // save fill directions of each origin (city) for route building
     const directionGrid = Grid.fromRect(context.rect, () => EMPTY)
+    const roadSpecs = []
     // maps a fill id to a city point
     const fillOriginMap = new Map()
-    // ?
-    const roadMiddleMap = new PairMap()
+    //
     const fill = new RoadFill()
     fill.start(cities, {
-        fillGrid,
+        roadFillSet: new PairSet(),  // used for road fill tracking
         directionGrid,
-        roadMiddleMap,
         fillOriginMap,
+        roadSpecs,
+        fillGrid,
         ...context
     })
+    buildRoadPath({roadSpecs, fillOriginMap, directionGrid, ...context})
+    console.log(roadSpecs);
     return
+}
+
+
+function buildRoadPath(context) {
+    const {directionGrid, fillOriginMap} = context
+    context.roadSpecs.forEach(params => {
+        const [blockedId, parentId, blockedPoint, parentPoint] = params
+        const blockedCityPoint = fillOriginMap.get(blockedId)
+        const parentCityPoint = fillOriginMap.get(parentId)
+        const blockedDirection = directionGrid.get(blockedPoint)
+        const parentDirection = directionGrid.get(parentPoint)
+
+        const ids = [6, 90]
+        const debug = ids.includes(blockedId) && ids.includes(parentId)
+        if (debug) {
+            console.log([
+                `parent ${parentId}: ${parentCityPoint} em ${parentPoint}: ${parentDirection.name}`,
+                `blocked ${blockedId}: ${blockedCityPoint} em ${blockedPoint}: ${blockedDirection.name}`,
+            ].join("\n"));
+        }
+    })
 }
 
 
@@ -44,16 +68,9 @@ class RoadFill extends ConcurrentFill {
 
     onFill(fill, fillPoint, parentPoint) {
         const {directionGrid, fillGrid} = fill.context
-        const direction = 1
-        // TODO ===================
+        const direction = Point.directionBetween(fillPoint, parentPoint)
         directionGrid.set(fillPoint, direction)
         fillGrid.set(fillPoint, fill.id)
-        // if (Point.equals(fillPoint, [49,58])) {
-        //     console.log("49,58", fill.id);
-        // }
-        // if (Point.equals(fillPoint, [43,56])) {
-        //     console.log("43,56", fill.id);
-        // }
     }
 
     canFill(fill, fillPoint) {
@@ -64,29 +81,19 @@ class RoadFill extends ConcurrentFill {
     }
 
     onBlockedFill(fill, blockedPoint, parentPoint) {
-        const {rect, fillGrid, fillOriginMap, roadMiddleMap} = fill.context
+        const {fillGrid, roadSpecs, roadFillSet} = fill.context
         const blockedId = fillGrid.get(blockedPoint)
         const parentId = fillGrid.get(parentPoint)
         const isSameFill = blockedId === parentId
-        const hasRoadBetween = roadMiddleMap.has(blockedId, parentId)
-        if (isSameFill || hasRoadBetween) {
-            return
-        }
-        // point on which both fills meet will be middle of road
-        const meetingPoint = rect.wrap(parentPoint)
+        const hasRoad = (
+            roadFillSet.has(blockedId, parentId)
+            || roadFillSet.has(parentId, blockedId)
+        )
+        if (blockedId === EMPTY || isSameFill || hasRoad) return
         // set same value to both ids
-        const parentCityPoint = fillOriginMap.get(parentId)
-        const blockedCityPoint = fillOriginMap.get(blockedId)
-        roadMiddleMap.set(blockedId, parentId, meetingPoint)
-        roadMiddleMap.set(parentId, blockedId, meetingPoint)
-
-        const ids = [6, 90]
-        const debug = ids.includes(blockedId) && ids.includes(parentId)
-        if (debug) {
-            // console.log([
-            //     `fill ${parentCity} e fill ${blockedCity} em ${meetingPoint}`,
-            // ].join("\n"));
-            console.log(parentCityPoint," to ", blockedCityPoint);
-        }
+        roadFillSet.add(blockedId, parentId)
+        // store road specs
+        roadSpecs.push([blockedId, parentId, blockedPoint, parentPoint])
     }
 }
+
