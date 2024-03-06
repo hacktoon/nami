@@ -36,9 +36,10 @@ export class ConcurrentFill {
         let completedFills = 0
         for(let id = 0; id < origins.length; id ++) {
             // fill one or many layers for each id
+            const origin = origins[id]
             const growth = this.#growthTable[id]
             const level = this.#levelTable[id]
-            const fill = {id, context, growth, level}
+            const fill = {id, origin, context, growth, level}
             const nextSeeds = this.#fillLayer(fill)
             // Increase number of completed fills if it has no seeds
             completedFills += nextSeeds.length === 0 ? 1 : 0

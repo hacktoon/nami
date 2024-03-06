@@ -1,6 +1,7 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
+import { PointMap } from '/src/lib/point/map'
 import { Direction } from '/src/lib/direction'
 import { PairSet } from '/src/lib/map'
 
@@ -27,30 +28,38 @@ export function buildRouteMap(context) {
         fillGrid,
         ...context
     })
-    buildRoadPath({roadSpecs, fillOriginMap, directionGrid, ...context})
-    console.log(roadSpecs);
+    buildRoads(roadSpecs, {fillOriginMap, directionGrid, ...context})
     return
 }
 
 
-function buildRoadPath(context) {
+function buildRoads(roadSpecs, context) {
+    const roads = []
+    const roadPatternMap = new PointMap()
     const {directionGrid, fillOriginMap} = context
-    context.roadSpecs.forEach(params => {
-        const [blockedId, parentId, blockedPoint, parentPoint] = params
-        const blockedCityPoint = fillOriginMap.get(blockedId)
-        const parentCityPoint = fillOriginMap.get(parentId)
-        const blockedDirection = directionGrid.get(blockedPoint)
-        const parentDirection = directionGrid.get(parentPoint)
+    roadSpecs.forEach(spec => {
+        const [idA, idB, originA, originB] = spec
+        // city points are path target
+        const targetA = fillOriginMap.get(idA)
+        const targetB = fillOriginMap.get(idB)
+        // initial directions at path origin
+        const directionA = directionGrid.get(originA)
+        const directionB = directionGrid.get(originB)
 
         const ids = [6, 90]
-        const debug = ids.includes(blockedId) && ids.includes(parentId)
+        const debug = ids.includes(idA) && ids.includes(idB)
         if (debug) {
             console.log([
-                `parent ${parentId}: ${parentCityPoint} em ${parentPoint}: ${parentDirection.name}`,
-                `blocked ${blockedId}: ${blockedCityPoint} em ${blockedPoint}: ${blockedDirection.name}`,
+                `A ${idA}: de ${originA} para ${targetA}: ${directionA.name}`,
+                `B ${idB}: de ${originB} para ${targetB}: ${directionB.name}`,
             ].join("\n"));
         }
     })
+}
+
+
+function buildRoad() {
+
 }
 
 
