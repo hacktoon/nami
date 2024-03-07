@@ -1,11 +1,12 @@
 import { PointSet } from '/src/lib/point/set'
 import { PointMap } from '/src/lib/point/map'
-import { BitMask } from '/src/lib/bitmask'
+import { DirectionBitMask } from '/src/lib/bitmask'
 import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
 import { buildRiverMap, DIRECTION_PATTERN_MAP } from './fill'
 import { RiverStretch } from './data'
+import { DirectionBitMask } from '../../../../../lib/bitmask'
 
 
 export class RiverLayer {
@@ -61,16 +62,9 @@ export class RiverLayer {
         // return a list of direction axis representing a river branch
         // at given direction on a 3x3 bitmask grid (cross)
         // for each direction, draw a point to the center
-        const axisOffsets = []
-        const layoutId = this.#layoutMap.get(point)
-        const patternBitmask = new BitMask(layoutId)
-        for(let [directionId, code] of DIRECTION_PATTERN_MAP.entries()) {
-            if (patternBitmask.has(code)) {
-                const direction = Direction.fromId(directionId)
-                axisOffsets.push(direction.axis)
-            }
-        }
-        return axisOffsets
+        const bitmaskValue = this.#layoutMap.get(point)
+        const bitmask = new DirectionBitMask(bitmaskValue)
+        return bitmask.directions.map(dir => dir.axis)
     }
 
     isMouth(point) {

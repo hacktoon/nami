@@ -1,24 +1,10 @@
 import { Point } from '/src/lib/point'
-import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
-
+import { DirectionBitMask } from '/src/lib/bitmask'
 import { HYDRO_NAMES } from '/src/lib/names'
+
 import { RiverStretch } from './data'
 
-
-// bitmask value => point in matrix 3x3
-/*
-       1(N)
- 2(W)         8 (E)
-       16(S)
-*/
-// detect matrix in source file
-export const DIRECTION_PATTERN_MAP = new Map([
-    [Direction.NORTH.id, 1],
-    [Direction.WEST.id, 2],
-    [Direction.EAST.id, 8],
-    [Direction.SOUTH.id, 16],
-])
 
 const MAX_RIVER_SIZE = 2
 const RIVER_MEANDER_MIDDLE = .5
@@ -70,7 +56,7 @@ function buildRiver(context, riverId, sourcePoint) {
         riverMeanders.set(wrappedPoint, meander)
         // set layout
         const directionBitmask = buildDirectionBitmask(context, wrappedPoint)
-        layoutMap.set(wrappedPoint, directionBitmask)
+        layoutMap.set(wrappedPoint, directionBitmask.code)
         // set river stretch by distance
         const stretch = buildStretch(context, wrappedPoint, maxDistance)
         stretchMap.set(wrappedPoint, stretch.id)
@@ -105,7 +91,7 @@ function buildDirectionBitmask(context, point) {
     const wrappedPoint = rect.wrap(point)
     const basin = layers.basin.get(wrappedPoint)
     // set the tile according to which direction is flowing
-    let flowCode = DIRECTION_PATTERN_MAP.get(basin.erosion.id)
+    const bitmask = DirectionBitMask.fromDirection(basin.erosion)
     // add flowCode for each neighbor that flows to this point
     Point.adjacents(point, (sidePoint, sideDirection) => {
         const wrappedSidePoint = rect.wrap(sidePoint)
@@ -117,10 +103,10 @@ function buildDirectionBitmask(context, point) {
         const receivesFlow = Point.equals(point, pointAtDirection)
         // if it has a pattern, it's already a river point
         if (receivesFlow && layoutMap.has(wrappedSidePoint)) {
-            flowCode += DIRECTION_PATTERN_MAP.get(sideDirection.id)
+            bitmask.set(sideDirection)
         }
     })
-    return flowCode
+    return bitmask
 }
 
 
