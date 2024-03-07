@@ -2,7 +2,7 @@ import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
 import { PointMap } from '/src/lib/point/map'
-import { Direction } from '/src/lib/direction'
+import { DirectionBitMask } from '/src/lib/bitmask'
 import { PairSet } from '/src/lib/map'
 
 
@@ -37,14 +37,21 @@ function buildRoads(roadSpecs, context) {
     const roads = []
     const roadPatternMap = new PointMap()
     const {directionGrid, fillOriginMap} = context
-    roadSpecs.forEach(spec => {
+    roadSpecs.forEach((spec) => {
         const [idA, idB, originA, originB] = spec
         // city points are path target
         const targetA = fillOriginMap.get(idA)
         const targetB = fillOriginMap.get(idB)
         // initial directions at path origin
-        const directionA = directionGrid.get(originA)
-        const directionB = directionGrid.get(originB)
+        const directionA = Point.directionBetween(originA, originB)
+        const patternA = roadPatternMap.get(originA)
+        const bitmaskA = new DirectionBitMask(patternA)
+        //
+        const directionB = Point.directionBetween(originB, originA)
+        const patternB = roadPatternMap.get(originB)
+        // const bitmaskB = new DirectionBitMask(patternB)
+
+        // buildSemiRoute(originA, targetA, context)
 
         const ids = [6, 90]
         const debug = ids.includes(idA) && ids.includes(idB)
@@ -58,8 +65,9 @@ function buildRoads(roadSpecs, context) {
 }
 
 
-function buildRoad() {
-
+function buildSemiRoute(origin, target, context) {
+    const {directionGrid, fillOriginMap} = context
+    const directionA = directionGrid.get(origin)
 }
 
 
