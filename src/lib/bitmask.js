@@ -35,7 +35,7 @@ export class DirectionBitMask {
     // bitmask code => point in matrix 3x3
     /*
         1(N)
-    2(W)         8 (E)
+    2(W)    8 (E)
         16(S)
     */
     // detect matrix in source file

@@ -16,19 +16,21 @@ export function buildRouteMap(context) {
     // save fill directions of each origin (city) for route building
     const directionGrid = Grid.fromRect(context.rect, () => EMPTY)
     const roadSpecs = []
+    // used for road fill tracking
+    const roadFillSet = new PairSet()
     // maps a fill id to a city point
     const fillOriginMap = new Map()
-    //
-    const fill = new RoadFill()
-    fill.start(cities, {
-        roadFillSet: new PairSet(),  // used for road fill tracking
+    const roadContext = {
+        roadFillSet,
         directionGrid,
         fillOriginMap,
         roadSpecs,
         fillGrid,
         ...context
-    })
-    buildRoads(roadSpecs, {fillOriginMap, directionGrid, ...context})
+    }
+    const fill = new RoadFill()
+    fill.start(cities, roadContext)
+    buildRoads(roadSpecs, roadContext)
     return
 }
 
@@ -36,29 +38,21 @@ export function buildRouteMap(context) {
 function buildRoads(roadSpecs, context) {
     const roads = []
     const roadPatternMap = new PointMap()
-    const {directionGrid, fillOriginMap} = context
     roadSpecs.forEach((spec) => {
-        const [idA, idB, originA, originB] = spec
-        // city points are path target
-        const targetA = fillOriginMap.get(idA)
-        const targetB = fillOriginMap.get(idB)
-        // initial directions at path origin
+        const [originA, targetA, originB, targetB] = spec
         const directionA = Point.directionBetween(originA, originB)
-        const patternA = roadPatternMap.get(originA)
-        const bitmaskA = new DirectionBitMask(patternA)
-        //
-        const directionB = Point.directionBetween(originB, originA)
-        const patternB = roadPatternMap.get(originB)
-        // const bitmaskB = new DirectionBitMask(patternB)
-
+        const codeA = roadPatternMap.get(originA) ?? 0
+        const bitmaskA = new DirectionBitMask(codeA)
         // buildSemiRoute(originA, targetA, context)
 
-        const ids = [6, 90]
-        const debug = ids.includes(idA) && ids.includes(idB)
-        if (debug) {
+        const directionB = Point.directionBetween(originB, originA)
+        const codeB = roadPatternMap.get(originB) ?? 0
+        const bitmaskB = new DirectionBitMask(codeB)
+        // buildSemiRoute(originA, targetA, context)
+        if (Point.equals(originA, [46,57]) && Point.equals(originB, [46,56])) {
             console.log([
-                `A ${idA}: de ${originA} para ${targetA}: ${directionA.name}`,
-                `B ${idB}: de ${originB} para ${targetB}: ${directionB.name}`,
+                `A de ${originA} para ${targetA}: ${directionA.name}`,
+                `B de ${originB} para ${targetB}: ${directionB.name}`,
             ].join("\n"));
         }
     })
@@ -97,20 +91,23 @@ class RoadFill extends ConcurrentFill {
         return isLand && isEmpty
     }
 
-    onBlockedFill(fill, blockedPoint, parentPoint) {
-        const {fillGrid, roadSpecs, roadFillSet} = fill.context
-        const blockedId = fillGrid.get(blockedPoint)
-        const parentId = fillGrid.get(parentPoint)
-        const isSameFill = blockedId === parentId
+    onBlockedFill(fill, pointA, pointB) {
+        const {fillGrid, fillOriginMap, roadSpecs, roadFillSet} = fill.context
+        const blockedFillId = fillGrid.get(pointA)
+        const parentFillId = fillGrid.get(pointB)
+        const isSameFill = blockedFillId === parentFillId
         const hasRoad = (
-            roadFillSet.has(blockedId, parentId)
-            || roadFillSet.has(parentId, blockedId)
+            roadFillSet.has(blockedFillId, parentFillId)
+            || roadFillSet.has(parentFillId, blockedFillId)
         )
-        if (blockedId === EMPTY || isSameFill || hasRoad) return
+        if (blockedFillId === EMPTY || isSameFill || hasRoad) return
         // set same value to both ids
-        roadFillSet.add(blockedId, parentId)
-        // store road specs
-        roadSpecs.push([blockedId, parentId, blockedPoint, parentPoint])
+        roadFillSet.add(blockedFillId, parentFillId)
+        // create road specs
+        const targetA = fillOriginMap.get(blockedFillId)
+        const targetB = fillOriginMap.get(parentFillId)
+        // origin a, target a, origin b, target b
+        roadSpecs.push([pointA, targetA, pointB, targetB])
     }
 }
 
