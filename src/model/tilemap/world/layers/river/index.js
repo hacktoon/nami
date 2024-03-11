@@ -1,12 +1,11 @@
 import { PointSet } from '/src/lib/point/set'
 import { PointMap } from '/src/lib/point/map'
-import { DirectionBitMask } from '/src/lib/bitmask'
-import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/point'
 
-import { buildRiverMap, DIRECTION_PATTERN_MAP } from './fill'
+import { DirectionBitMask } from '/src/model/tilemap/lib/bitmask'
+
+import { buildRiverMap } from './fill'
 import { RiverStretch } from './data'
-import { DirectionBitMask } from '../../../../../lib/bitmask'
 
 
 export class RiverLayer {

@@ -1,6 +1,6 @@
 import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
-import { DirectionBitMask } from '/src/lib/bitmask'
+import { DirectionBitMask } from '/src/model/tilemap/lib/bitmask'
 import { HYDRO_NAMES } from '/src/lib/names'
 
 import { RiverStretch } from './data'

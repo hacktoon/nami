@@ -2,8 +2,9 @@ import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
 import { PointMap } from '/src/lib/point/map'
-import { DirectionBitMask } from '/src/lib/bitmask'
 import { PairSet } from '/src/lib/map'
+
+import { DirectionBitMask } from '/src/model/tilemap/lib/bitmask'
 
 
 const EMPTY = null
