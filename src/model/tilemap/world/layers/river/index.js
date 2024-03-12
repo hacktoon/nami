@@ -2,7 +2,7 @@ import { PointSet } from '/src/lib/point/set'
 import { PointMap } from '/src/lib/point/map'
 import { Point } from '/src/lib/point'
 
-import { DirectionBitMask, DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
+import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 import { buildRiverMap } from './fill'
 import { RiverStretch } from './data'
