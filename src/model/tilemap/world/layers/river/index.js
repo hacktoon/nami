@@ -2,7 +2,7 @@ import { PointSet } from '/src/lib/point/set'
 import { PointMap } from '/src/lib/point/map'
 import { Point } from '/src/lib/point'
 
-import { DirectionBitMask } from '/src/model/tilemap/lib/bitmask'
+import { DirectionBitMask, DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 import { buildRiverMap } from './fill'
 import { RiverStretch } from './data'
@@ -13,8 +13,8 @@ export class RiverLayer {
     #riverNames = new Map()
     // map a point to an id
     #riverPoints = new PointMap()
-    // map a point to a river layout code
-    #layoutMap = new PointMap()
+    // map a point to a river direction mask
+    #directionMaskGrid
     // map a point to a fraction point [.2, .2]
     #riverMeanders = new PointMap()
     // map a river point to its river type
@@ -23,13 +23,14 @@ export class RiverLayer {
     #riverMouths = new PointSet()
 
     constructor(rect, layers) {
+        this.#directionMaskGrid = new DirectionMaskGrid(rect)
         const context = {
             rect,
             layers,
             riverNames: this.#riverNames,
             riverPoints: this.#riverPoints,
             riverMouths: this.#riverMouths,
-            layoutMap: this.#layoutMap,
+            directionMaskGrid: this.#directionMaskGrid,
             stretchMap: this.#stretchMap,
             riverMeanders: this.#riverMeanders,
         }
@@ -61,9 +62,8 @@ export class RiverLayer {
         // return a list of direction axis representing a river branch
         // at given direction on a 3x3 bitmask grid (cross)
         // for each direction, draw a point to the center
-        const bitmaskValue = this.#layoutMap.get(point)
-        const bitmask = new DirectionBitMask(bitmaskValue)
-        return bitmask.directions.map(dir => dir.axis)
+        const directions = this.#directionMaskGrid.get(point)
+        return directions.map(dir => dir.axis)
     }
 
     isMouth(point) {
