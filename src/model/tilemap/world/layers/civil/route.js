@@ -10,61 +10,28 @@ const EMPTY = null
 
 
 export function buildRouteMap(context) {
-    const cities = [...context.capitalPoints, ...context.cityPoints]
     // used in block fill to detect other's fill id
-    const fillGrid = Grid.fromRect(context.rect, () => EMPTY)
+    const {capitalPoints, cityPoints} = context
+    const fillIdGrid = Grid.fromRect(context.rect, () => EMPTY)
     // save fill directions of each origin (city) for route building
-    const directionGrid = Grid.fromRect(context.rect, () => EMPTY)
-    const roadSpecs = []
-    // used for road fill tracking
+    const fillDirectionGrid = Grid.fromRect(context.rect, () => EMPTY)
+    const directionMaskGrid = new DirectionMaskGrid(context.rect)
+    // used for road endpoints tracking
     const roadFillSet = new PairSet()
     // maps a fill id to a city point
     const fillOriginMap = new Map()
     const roadContext = {
         roadFillSet,
-        directionGrid,
+        fillDirectionGrid,
+        directionMaskGrid,
         fillOriginMap,
-        roadSpecs,
-        fillGrid,
+        fillIdGrid,
         ...context
     }
     const fill = new RoadFill()
-    fill.start(cities, roadContext)
-    buildRoads(roadSpecs, roadContext)
-}
-
-
-function buildRoads(roadSpecs, context) {
-    const roads = []
-    const directionMaskGrid = new DirectionMaskGrid(context.rect)
-    roadSpecs.forEach((spec) => {
-        const [originA, targetA, originB, targetB] = spec
-        const directionA = Point.directionBetween(originA, originB)
-        directionMaskGrid.add(originA, directionA)
-        buildSemiRoute(originA, targetA, context)
-        const directionB = Point.directionBetween(originB, originA)
-        directionMaskGrid.add(originB, directionB)
-        // buildSemiRoute(originA, targetA, context)
-        if (Point.equals(originA, [46,57]) && Point.equals(originB, [46,56])) {
-            const dirsA = directionMaskGrid.get(originA).map(d => d.name)
-            const dirsB = directionMaskGrid.get(originB).map(d => d.name)
-            console.log([
-                `A de ${originA} para ${targetA}: ${dirsA}`,
-                `B de ${originB} para ${targetB}: ${dirsB}`,
-            ].join("\n"));
-        }
-    })
-}
-
-
-function buildSemiRoute(origin, target, context) {
-    const {directionGrid, fillOriginMap} = context
-    const fillDirection = directionGrid.get(origin)
-    let nextPoint = Point.atDirection(origin, fillDirection)
-    if (Point.equals(origin, [46,57])) {
-        console.log(direction.name);
-    }
-
+    const origins = [...capitalPoints, ...cityPoints]
+    fill.start(origins, roadContext)
+    return directionMaskGrid
 }
 
 
@@ -74,43 +41,76 @@ class RoadFill extends ConcurrentFill {
     }
 
     onInitFill(fill, fillPoint) {
-        const {fillOriginMap, fillGrid} = fill.context
+        const {fillOriginMap, fillIdGrid} = fill.context
         // map the fill to the city point
         fillOriginMap.set(fill.id, fillPoint)
-        fillGrid.set(fillPoint, fill.id)
+        fillIdGrid.set(fillPoint, fill.id)
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {directionGrid, fillGrid} = fill.context
+        const {fillDirectionGrid, fillIdGrid} = fill.context
         const direction = Point.directionBetween(fillPoint, parentPoint)
-        directionGrid.set(fillPoint, direction)
-        fillGrid.set(fillPoint, fill.id)
+        fillDirectionGrid.set(fillPoint, direction)
+        fillIdGrid.set(fillPoint, fill.id)
     }
 
     canFill(fill, fillPoint) {
-        const {layers, fillGrid} = fill.context
+        const {layers, fillIdGrid} = fill.context
         const isLand = layers.surface.isLand(fillPoint)
-        const isEmpty = fillGrid.get(fillPoint) === EMPTY
+        const isEmpty = fillIdGrid.get(fillPoint) === EMPTY
         return isLand && isEmpty
     }
 
-    onBlockedFill(fill, pointA, pointB) {
-        const {fillGrid, fillOriginMap, roadSpecs, roadFillSet} = fill.context
-        const blockedFillId = fillGrid.get(pointA)
-        const parentFillId = fillGrid.get(pointB)
+    onBlockedFill(fill, fillPoint, parentPoint) {
+        const {
+            fillIdGrid, fillOriginMap, directionMaskGrid, roadFillSet
+        } = fill.context
+        const blockedFillId = fillIdGrid.get(fillPoint)
+        const parentFillId = fillIdGrid.get(parentPoint)
         const isSameFill = blockedFillId === parentFillId
         const hasRoad = (
             roadFillSet.has(blockedFillId, parentFillId)
             || roadFillSet.has(parentFillId, blockedFillId)
         )
-        if (blockedFillId === EMPTY || isSameFill || hasRoad) return
+        // return on first fill block. points are on shortest distance
+        if (blockedFillId === EMPTY || isSameFill || hasRoad) {
+            return
+        }
+        const fillTarget = fillOriginMap.get(blockedFillId)
+        const parentTarget = fillOriginMap.get(parentFillId)
+        const fillDirection = Point.directionBetween(fillPoint, parentPoint)
+        const parentDirection = Point.directionBetween(parentPoint, fillPoint)
         // set same value to both ids
         roadFillSet.add(blockedFillId, parentFillId)
-        // create road specs
-        const targetA = fillOriginMap.get(blockedFillId)
-        const targetB = fillOriginMap.get(parentFillId)
-        // origin a, target a, origin b, target b
-        roadSpecs.push([pointA, targetA, pointB, targetB])
+        // mark direction on point
+        directionMaskGrid.add(fillPoint, fillDirection)
+        directionMaskGrid.add(parentPoint, parentDirection)
+        // create road points
+        this.#buildRouteToCity(fill, fillPoint, fillTarget)
+        this.#buildRouteToCity(fill, parentPoint, parentTarget)
     }
-}
 
+    #buildRouteToCity(fill, origin, target) {
+        const {rect, fillDirectionGrid, directionMaskGrid} = fill.context
+        const points = [origin]
+        let nextPoint = origin
+        const debug = Point.equals(origin, [46,57])
+                    || Point.equals(origin, [46,56])
+        if (debug) {
+            console.log(`start from ${origin}`);
+        }
+        while (Point.differs(nextPoint, target)) {
+            const direction = fillDirectionGrid.get(nextPoint)
+            if (debug) {
+                console.log(`from ${nextPoint} to ${direction.name}`);
+            }
+            // set road at direction
+            directionMaskGrid.add(nextPoint, direction)
+            // the next point is at <direction> of current point
+            nextPoint = rect.wrap(Point.atDirection(nextPoint, direction))
+            points.push(nextPoint)
+        }
+        return points
+    }
+
+}

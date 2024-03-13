@@ -1,3 +1,5 @@
+import { Point } from '/src/lib/point'
+
 import { drawVillage, drawTown, drawCapital } from './draw'
 import { buildRealmGrid, buildRealmMap } from './realm'
 import { buildCityPoints, buildCityMap } from './city'
@@ -10,14 +12,14 @@ export class CivilLayer {
     #realmGrid  // map a point to a realm id
     #realmMap   // map a realm id to a realm object
     #cityMap    // map a point to a city object
-    #routeMap   // map a point to a route object
+    #directionMaskGrid   // map a point to a direction bitmask
 
     constructor(rect, layers, realmCount) {
         const [cityPoints, capitalPoints] = buildCityPoints(rect, layers, realmCount)
         this.#cityMap = buildCityMap(capitalPoints, cityPoints)
         this.#realmMap = buildRealmMap(capitalPoints)
         this.#realmGrid = buildRealmGrid({rect, layers, capitalPoints})
-        this.#routeMap = buildRouteMap({
+        this.#directionMaskGrid = buildRouteMap({
             rect, layers, capitalPoints, cityPoints,
             cityMap: this.#cityMap,
         })
@@ -46,7 +48,11 @@ export class CivilLayer {
 
     getText(point) {
         const realm = this.get(point)
+        const roadDirs = this.#directionMaskGrid.get(point)
         const props = [`realm=${realm.name}(${realm.id})`]
+        if (roadDirs) {
+            props.push(`roads=${roadDirs.map(d => d.name)}`)
+        }
         if (this.#cityMap.has(point)) {
             const city = this.#cityMap.get(point)
             const type = City.parse(city.type).name.toLowerCase()
@@ -56,14 +62,16 @@ export class CivilLayer {
     }
 
     draw(point, props) {
-        if (! this.isCity(point))
-            return
-        if (this.isCapital(point)) {
-            drawCapital(props)
-        } else if (this.isTown(point)) {
-            drawTown(props)
+        if (this.isCity(point)) {
+            if (this.isCapital(point)) {
+                drawCapital(props)
+            } else if (this.isTown(point)) {
+                drawTown(props)
+            } else {
+                drawVillage(props)
+            }
         } else {
-            drawVillage(props)
+            this.drawRoad(point, props)
         }
     }
 
@@ -73,5 +81,27 @@ export class CivilLayer {
         const realm = this.#realmMap.get(Math.abs(id))
         const color = id < 0 ? realm.color.alpha(.1) : realm.color.alpha(.6)
         canvas.rect(canvasPoint, tileSize, color.toRGBA())
+    }
+
+    drawRoad(point, props) {
+        const {canvas, canvasPoint, tileSize} = props
+        const width = 2
+        const midSize = Math.round(tileSize / 2)
+        const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
+        // calc meander offset point on canvas
+        const meanderOffsetPoint = Point.multiplyScalar([.4, .3], tileSize)
+        const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
+        const hexColor = "#444"
+        const roadDirections = this.#directionMaskGrid.get(point)
+        // for each neighbor with a river connection
+        for(let axisOffset of roadDirections.map(d => d.axis)) {
+            // build a point for each flow that points to this point
+            // create a midpoint at tile's square side
+            const edgeMidPoint = [
+                midCanvasPoint[0] + axisOffset[0] * midSize,
+                midCanvasPoint[1] + axisOffset[1] * midSize
+            ]
+            canvas.line(edgeMidPoint, meanderPoint, width, hexColor)
+        }
     }
 }
