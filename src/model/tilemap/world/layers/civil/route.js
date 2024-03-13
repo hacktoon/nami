@@ -62,9 +62,7 @@ class RoadFill extends ConcurrentFill {
     }
 
     onBlockedFill(fill, fillPoint, parentPoint) {
-        const {
-            fillIdGrid, fillOriginMap, directionMaskGrid, roadFillSet
-        } = fill.context
+        const { fillIdGrid, fillOriginMap, roadFillSet } = fill.context
         const blockedFillId = fillIdGrid.get(fillPoint)
         const parentFillId = fillIdGrid.get(parentPoint)
         const isSameFill = blockedFillId === parentFillId
@@ -73,31 +71,28 @@ class RoadFill extends ConcurrentFill {
             || roadFillSet.has(parentFillId, blockedFillId)
         )
         // return on first fill block. points are on shortest distance
-        if (blockedFillId === EMPTY || isSameFill || hasRoad) {
-            return
-        }
+        if (blockedFillId === EMPTY || isSameFill || hasRoad) return
+        // set same value to id pair set
+        roadFillSet.add(blockedFillId, parentFillId)
+        roadFillSet.add(parentFillId, blockedFillId)
+        // get cities points - the targets of the road
         const fillTarget = fillOriginMap.get(blockedFillId)
         const parentTarget = fillOriginMap.get(parentFillId)
-        const fillDirection = Point.directionBetween(fillPoint, parentPoint)
-        const parentDirection = Point.directionBetween(parentPoint, fillPoint)
-        // set same value to both ids
-        roadFillSet.add(blockedFillId, parentFillId)
-        // mark direction on point
-        directionMaskGrid.add(fillPoint, fillDirection)
-        directionMaskGrid.add(parentPoint, parentDirection)
-        // create road points
-        this.#buildRouteToCity(fill, fillPoint, fillTarget)
-        this.#buildRouteToCity(fill, parentPoint, parentTarget)
+        // create road points, send origin, target and previous point
+        this.#buildRouteToCity(fill, fillPoint, fillTarget, parentPoint)
+        this.#buildRouteToCity(fill, parentPoint, parentTarget, fillPoint)
     }
 
-    #buildRouteToCity(fill, origin, target) {
+    #buildRouteToCity(fill, origin, target, initialPrevPoint) {
+        // Builds a route from the middle of the road to the city point.
         const {rect, fillDirectionGrid, directionMaskGrid} = fill.context
         const points = [origin]
         let nextPoint = origin
+        let prevPoint = initialPrevPoint
         const debug = Point.equals(origin, [46,57])
                     || Point.equals(origin, [46,56])
         if (debug) {
-            console.log(`start from ${origin}`);
+            console.log(`============================`);
         }
         while (Point.differs(nextPoint, target)) {
             const direction = fillDirectionGrid.get(nextPoint)
@@ -107,6 +102,10 @@ class RoadFill extends ConcurrentFill {
             // set road at direction
             directionMaskGrid.add(nextPoint, direction)
             // the next point is at <direction> of current point
+            const prevDirection = Point.directionBetween(nextPoint, prevPoint)
+            directionMaskGrid.add(nextPoint, prevDirection)
+            // update the point references to follow the road
+            prevPoint = nextPoint
             nextPoint = rect.wrap(Point.atDirection(nextPoint, direction))
             points.push(nextPoint)
         }

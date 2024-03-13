@@ -28,14 +28,13 @@ export class ReliefLayer {
 
     #detectWaterType(layers, point) {
         const outlineNoise = layers.noise.get4D(this.rect, point, "outline")
-        const featureNoise = layers.noise.get4D(this.rect, point, "feature")
         const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
         if (layers.surface.get(point).id == SeaSurface.id) {
-            if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
+            if (outlineNoise > OCEAN_RATIO) return Relief.OCEAN
             return Relief.PLATFORM
         }
         if (outlineNoise > PLATFORM_RATIO) return Relief.PLATFORM
-        if (featureNoise > OCEAN_RATIO) return Relief.OCEAN
+        if (outlineNoise > OCEAN_RATIO) return Relief.OCEAN
         if (grainedNoise > TRENCH_RATIO) return Relief.TRENCH
         return Relief.ABYSS
     }

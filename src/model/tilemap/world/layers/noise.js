@@ -4,7 +4,6 @@ import { SimplexNoise } from '/src/lib/noise'
 const NOISE_SPEC = [
     {id: 'atmos', octaves: 6, resolution: .6, scale: .02},
     {id: 'outline', octaves: 6, resolution: .8, scale: .02},
-    {id: 'feature', octaves: 6, resolution: .8, scale: .02},
     {id: 'grained', octaves: 6, resolution: .8, scale: .08},
 ]
 
@@ -17,7 +16,7 @@ export class NoiseLayer {
             const noise = new SimplexNoise(
                 noiseSpec.octaves,
                 noiseSpec.resolution,
-                noiseSpec.scale,
+                noiseSpec.scale
             )
             this.map.set(noiseSpec.id, noise)
         }

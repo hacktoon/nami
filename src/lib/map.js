@@ -112,7 +112,7 @@ export class PairMap {
 
 
 /*
- * Maps a pair of values
+ * Stores a set of pairs independent of order
  */
 export class PairSet {
     #sources

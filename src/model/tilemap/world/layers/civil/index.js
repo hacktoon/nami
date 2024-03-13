@@ -1,4 +1,5 @@
 import { Point } from '/src/lib/point'
+import { Random } from '/src/lib/random'
 
 import { drawVillage, drawTown, drawCapital } from './draw'
 import { buildRealmGrid, buildRealmMap } from './realm'
@@ -6,6 +7,8 @@ import { buildCityPoints, buildCityMap } from './city'
 import { buildRouteMap } from './route'
 import { City, Capital, Town } from './data'
 
+
+const OFFSET_RANGE = [.2, .8]
 
 // Define realms, cities and roads
 export class CivilLayer {
@@ -89,7 +92,11 @@ export class CivilLayer {
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
-        const meanderOffsetPoint = Point.multiplyScalar([.4, .3], tileSize)
+        const [fx, fy] = [
+            Random.floatRange(...OFFSET_RANGE),
+            Random.floatRange(...OFFSET_RANGE)
+        ]
+        const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = "#444"
         const roadDirections = this.#directionMaskGrid.get(point)
