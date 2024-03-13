@@ -1,7 +1,7 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
-import { PairSet } from '/src/lib/map'
+import { Graph } from '/src/lib/graph'
 
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
@@ -17,11 +17,11 @@ export function buildRouteMap(context) {
     const fillDirectionGrid = Grid.fromRect(context.rect, () => EMPTY)
     const directionMaskGrid = new DirectionMaskGrid(context.rect)
     // used for road endpoints tracking
-    const roadFillSet = new PairSet()
+    const roadCityGraph = new Graph()
     // maps a fill id to a city point
     const fillOriginMap = new Map()
     const roadContext = {
-        roadFillSet,
+        roadCityGraph,
         fillDirectionGrid,
         directionMaskGrid,
         fillOriginMap,
@@ -62,19 +62,15 @@ class RoadFill extends ConcurrentFill {
     }
 
     onBlockedFill(fill, fillPoint, parentPoint) {
-        const { fillIdGrid, fillOriginMap, roadFillSet } = fill.context
+        const { fillIdGrid, fillOriginMap, roadCityGraph } = fill.context
         const blockedFillId = fillIdGrid.get(fillPoint)
         const parentFillId = fillIdGrid.get(parentPoint)
         const isSameFill = blockedFillId === parentFillId
-        const hasRoad = (
-            roadFillSet.has(blockedFillId, parentFillId)
-            || roadFillSet.has(parentFillId, blockedFillId)
-        )
+        const hasRoad = roadCityGraph.hasEdge(blockedFillId, parentFillId)
         // return on first fill block. points are on shortest distance
         if (blockedFillId === EMPTY || isSameFill || hasRoad) return
-        // set same value to id pair set
-        roadFillSet.add(blockedFillId, parentFillId)
-        roadFillSet.add(parentFillId, blockedFillId)
+        // set road as an edge between the blocked fill and the parent fill
+        roadCityGraph.setEdge(blockedFillId, parentFillId)
         // get cities points - the targets of the road
         const fillTarget = fillOriginMap.get(blockedFillId)
         const parentTarget = fillOriginMap.get(parentFillId)
@@ -96,16 +92,16 @@ class RoadFill extends ConcurrentFill {
         }
         while (Point.differs(nextPoint, target)) {
             const direction = fillDirectionGrid.get(nextPoint)
+            const prevDirection = Point.directionBetween(nextPoint, prevPoint)
             if (debug) {
                 console.log(`from ${nextPoint} to ${direction.name}`);
             }
-            // set road at direction
+            // set road at forward and previous direction
             directionMaskGrid.add(nextPoint, direction)
-            // the next point is at <direction> of current point
-            const prevDirection = Point.directionBetween(nextPoint, prevPoint)
             directionMaskGrid.add(nextPoint, prevDirection)
-            // update the point references to follow the road
+            // update the previous point to follow the road
             prevPoint = nextPoint
+            // the next point is at <direction> of current point
             nextPoint = rect.wrap(Point.atDirection(nextPoint, direction))
             points.push(nextPoint)
         }
