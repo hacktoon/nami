@@ -31,7 +31,7 @@ export function buildRouteMap(context) {
     const fill = new RoadFill()
     const origins = [...capitalPoints, ...cityPoints]
     fill.start(origins, roadContext)
-    return directionMaskGrid
+    return [directionMaskGrid, fillDirectionGrid]
 }
 
 
@@ -62,7 +62,9 @@ class RoadFill extends ConcurrentFill {
     }
 
     onBlockedFill(fill, fillPoint, parentPoint) {
-        const { fillIdGrid, fillOriginMap, roadCityGraph } = fill.context
+        const { fillIdGrid, fillOriginMap, roadCityGraph,
+            fillDirectionGrid
+        } = fill.context
         const blockedFillId = fillIdGrid.get(fillPoint)
         const parentFillId = fillIdGrid.get(parentPoint)
         const isSameFill = blockedFillId === parentFillId
@@ -74,9 +76,17 @@ class RoadFill extends ConcurrentFill {
         // get cities points - the targets of the road
         const fillTarget = fillOriginMap.get(blockedFillId)
         const parentTarget = fillOriginMap.get(parentFillId)
+        if (Point.equals(fillPoint, [50,0])) {
+            // console.log(
+            //     fillDirectionGrid.get([50, 0]),
+            //     fillDirectionGrid.get([50, 99]),
+            //     fillDirectionGrid.get([49, 99]),
+            // );
+            // console.log(`${fillPoint} ${parentPoint}`);
+        }
         // create road points, send origin, target and previous point
         this.#buildRouteToCity(fill, fillPoint, fillTarget, parentPoint)
-        this.#buildRouteToCity(fill, parentPoint, parentTarget, fillPoint)
+        // this.#buildRouteToCity(fill, parentPoint, parentTarget, fillPoint)
     }
 
     #buildRouteToCity(fill, origin, target, initialPrevPoint) {
@@ -85,17 +95,10 @@ class RoadFill extends ConcurrentFill {
         const points = [origin]
         let nextPoint = origin
         let prevPoint = initialPrevPoint
-        const debug = Point.equals(origin, [46,57])
-                    || Point.equals(origin, [46,56])
-        if (debug) {
-            console.log(`============================`);
-        }
         while (Point.differs(nextPoint, target)) {
             const direction = fillDirectionGrid.get(nextPoint)
             const prevDirection = Point.directionBetween(nextPoint, prevPoint)
-            if (debug) {
-                console.log(`from ${nextPoint} to ${direction.name}`);
-            }
+
             // set road at forward and previous direction
             directionMaskGrid.add(nextPoint, direction)
             directionMaskGrid.add(nextPoint, prevDirection)
@@ -103,7 +106,7 @@ class RoadFill extends ConcurrentFill {
             prevPoint = nextPoint
             // the next point is at <direction> of current point
             nextPoint = rect.wrap(Point.atDirection(nextPoint, direction))
-            points.push(nextPoint)
+            // points.push(nextPoint)
         }
         return points
     }

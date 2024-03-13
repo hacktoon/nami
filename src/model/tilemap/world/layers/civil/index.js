@@ -16,16 +16,19 @@ export class CivilLayer {
     #realmMap   // map a realm id to a realm object
     #cityMap    // map a point to a city object
     #directionMaskGrid   // map a point to a direction bitmask
+    #fillDirectionGrid   // map a point to a direction
 
     constructor(rect, layers, realmCount) {
         const [cityPoints, capitalPoints] = buildCityPoints(rect, layers, realmCount)
         this.#cityMap = buildCityMap(capitalPoints, cityPoints)
         this.#realmMap = buildRealmMap(capitalPoints)
         this.#realmGrid = buildRealmGrid({rect, layers, capitalPoints})
-        this.#directionMaskGrid = buildRouteMap({
+        const [directionMaskGrid, fillDirectionGrid] = buildRouteMap({
             rect, layers, capitalPoints, cityPoints,
             cityMap: this.#cityMap,
         })
+        this.#directionMaskGrid = directionMaskGrid
+        this.#fillDirectionGrid = fillDirectionGrid
     }
 
     isCity(point) {
@@ -42,7 +45,10 @@ export class CivilLayer {
 
     get(point) {
         const id = Math.abs(this.#realmGrid.get(point))
-        return this.#realmMap.get(id)
+        return {
+            realm: this.#realmMap.get(id),
+            dir: this.#fillDirectionGrid.get(point)
+        }
     }
 
     getTotalCities() {
@@ -50,7 +56,8 @@ export class CivilLayer {
     }
 
     getText(point) {
-        const realm = this.get(point)
+        const civil = this.get(point)
+        const realm = civil.realm
         const roadDirs = this.#directionMaskGrid.get(point)
         const props = [`realm=${realm.name}(${realm.id})`]
         if (roadDirs) {
@@ -88,13 +95,14 @@ export class CivilLayer {
 
     drawRoad(point, props) {
         const {canvas, canvasPoint, tileSize} = props
+        const fillDir = this.#fillDirectionGrid.get(point)
         const width = 2
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
         const [fx, fy] = [
-            Random.floatRange(...OFFSET_RANGE),
-            Random.floatRange(...OFFSET_RANGE)
+            .4, //Random.floatRange(...OFFSET_RANGE),
+            .4, //Random.floatRange(...OFFSET_RANGE)
         ]
         const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
@@ -109,6 +117,9 @@ export class CivilLayer {
                 midCanvasPoint[1] + axisOffset[1] * midSize
             ]
             canvas.line(edgeMidPoint, meanderPoint, width, hexColor)
+        }
+        if (fillDir) {
+            canvas.text(canvasPoint, tileSize, fillDir.symbol, "#000")
         }
     }
 }
