@@ -70,14 +70,16 @@ class RoadFill extends ConcurrentFill {
     }
 
     onBlockedFill(fill, blockedPoint, referencePoint) {
+        // when two fills block each other, a road is built between them
         const { fillIdGrid, fillOriginMap, roadCityGraph } = fill.context
         const blockedFillId = fillIdGrid.get(blockedPoint)
         const referenceFillId = fillIdGrid.get(referencePoint)
         const isSameFill = blockedFillId === referenceFillId
+        // check if there is already a road between the cities
         const hasRoad = roadCityGraph.hasEdge(blockedFillId, referenceFillId)
         // return on first fill block. points are on shortest distance
         if (blockedFillId === EMPTY || isSameFill || hasRoad) return
-        // set road as an edge between blocked and reference fills
+        // set road as an edge between blocked and reference fill ids
         roadCityGraph.setEdge(blockedFillId, referenceFillId)
         // get cities points - the targets of the road
         const blockedOrigin = fillOriginMap.get(blockedFillId)
