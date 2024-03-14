@@ -36,6 +36,14 @@ export function buildRouteMap(context) {
 
 
 class RoadFill extends ConcurrentFill {
+    getChance(fill) {
+        return .2
+    }
+
+    getGrowth(fill) {
+        return 10
+    }
+
     getNeighbors(fill, parentPoint) {
         return Point.adjacents(parentPoint)
     }
