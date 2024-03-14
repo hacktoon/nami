@@ -1,3 +1,5 @@
+import { Grid } from '/src/lib/grid'
+
 import { Rain } from './data'
 
 
@@ -10,18 +12,21 @@ const ARID_RATIO = .65
 // TODO: rain is dynamic, make noise offset and loop
 
 export class RainLayer {
+    #grid
+
     constructor(rect, layers) {
-        this.layers = layers
-        this.rect = rect
+        this.#grid = Grid.fromRect(rect, point => {
+            const noise = layers.noise.get4D(rect, point, "outline")
+            if (noise > ARID_RATIO)     return Rain.ARID
+            if (noise > DRY_RATIO)      return Rain.DRY
+            if (noise > SEASONAL_RATIO) return Rain.SEASONAL
+            if (noise > WET_RATIO)      return Rain.WET
+            return Rain.HUMID
+        })
     }
 
     get(point) {
-        const noise = this.layers.noise.get4D(this.rect, point, "outline")
-        if (noise > ARID_RATIO)     return Rain.ARID
-        if (noise > DRY_RATIO)      return Rain.DRY
-        if (noise > SEASONAL_RATIO) return Rain.SEASONAL
-        if (noise > WET_RATIO)      return Rain.WET
-        return Rain.HUMID
+        return this.#grid.get(point)
     }
 
     getColor(point) {
