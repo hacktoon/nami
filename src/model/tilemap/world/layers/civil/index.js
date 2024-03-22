@@ -3,9 +3,14 @@ import { Random } from '/src/lib/random'
 
 import { drawVillage, drawTown, drawCapital } from './draw'
 import { buildRealmGrid, buildRealmMap } from './realm'
-import { buildCityPoints, buildCityMap } from './city'
+import {
+    buildCityPoints,
+    buildCityMap,
+    Capital,
+    City,
+    Town
+} from './city'
 import { buildRouteMap } from './route'
-import { City, Capital, Town } from './data'
 
 
 const OFFSET_RANGE = [.2, .8]
