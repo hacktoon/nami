@@ -1,3 +1,4 @@
+import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
@@ -16,18 +17,18 @@ export function buildCityPoints(rect, layers, realmCount) {
     const candidates = buildCityCandidates(rect, layers)
     let capitalCount = 0
     while (candidates.size > 0) {
-        const point = candidates.random()
+        const candidatePoint = candidates.random()
         // remove candidate points in a circle area
         const radius = Math.floor(rect.width * CITY_RATIO)
-        Point.insideCircle(point, radius, point => {
-            candidates.delete(rect.wrap(point))
+        Point.insideCircle(candidatePoint, radius, candidatePoint => {
+            candidates.delete(rect.wrap(candidatePoint))
         })
-        // add capital point
+        // add capital candidatePoint
         if (realmCount > capitalCount) {
-            capitals.push(point)
+            capitals.push(candidatePoint)
             capitalCount++
         } else {
-            cities.push(point)
+            cities.push(candidatePoint)
         }
     }
     return [cities, capitals]
@@ -109,4 +110,27 @@ const TYPE_MAP = {
     0: Capital,
     1: Town,
     2: Village,
+}
+
+
+
+class CityTerritoryFill extends ConcurrentFill {
+    getChance(fill) { return CHANCE }
+    getGrowth(fill) { return GROWTH }
+
+    onFill(fill, fillPoint) {
+        const {rect, cityGrid} = fill.context
+        const wrappedPoint = rect.wrap(fillPoint)
+        cityGrid.set(wrappedPoint, fill.id)
+    }
+
+    getNeighbors(fill, parentPoint) {
+        return Point.adjacents(parentPoint)
+    }
+
+    canFill(fill, fillPoint) {
+        const {rect, cityGrid} = fill.context
+        const wrappedPoint = rect.wrap(fillPoint)
+        return cityGrid.get(wrappedPoint) === EMPTY
+    }
 }
