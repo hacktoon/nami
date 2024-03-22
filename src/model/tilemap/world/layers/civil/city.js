@@ -39,11 +39,9 @@ function buildCityCandidates(rect, layers) {
     // discover candidate cities in world grid
     Grid.fromRect(rect, point => {
         if (layers.surface.isWater(point)) return
-        const isBorder = layers.surface.isBorder(point)
-        const isRiver = layers.river.has(point)
-        if (isRiver || isBorder) {
-            candidates.add(point)
-        }
+        if (! layers.surface.isBorder(point)) return
+        if (! layers.river.has(point)) return
+        candidates.add(point)
     })
     return candidates
 }
