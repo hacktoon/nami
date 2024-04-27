@@ -15,8 +15,8 @@ export function drawCapital(props) {
     ]
     const colorMap = {
         1: Color.BLACK,
-        2: Color.fromHex('CCC'),
-        3: Color.fromHex('888'),
+        2: Color.fromHex('#CCC'),
+        3: Color.fromHex('#888'),
     }
     drawIcon(props, template, colorMap)
 }
@@ -35,8 +35,8 @@ export function drawTown(props) {
     ]
     const colorMap = {
         1: Color.BLACK,
-        2: Color.fromHex('CCC'),
-        3: Color.fromHex('fd004d'),
+        2: Color.fromHex('#CCCCCC'),
+        3: Color.fromHex('#fd004d'),
         4: Color.DARKRED,
     }
     drawIcon(props, template, colorMap)

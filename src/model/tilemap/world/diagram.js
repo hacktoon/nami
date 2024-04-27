@@ -52,11 +52,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             const text = basin.erosion.symbol
             canvas.text(canvasPoint, tileSize, text, '#000')
         }
-        if (layers.river.has(point) && showRiver) {
-            layers.river.draw(point, props, layerColor)
-        }
         if (this.params.get('showRealms')) {
             layers.civil.drawRealm(point, props)
+        }
+        if (layers.river.has(point) && showRiver) {
+            layers.river.draw(point, props, layerColor)
         }
         if (this.params.get('showLandforms')) {
             layers.relief.draw(point, props, layerColor)

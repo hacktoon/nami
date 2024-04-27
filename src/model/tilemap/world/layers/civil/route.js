@@ -21,12 +21,12 @@ export function buildRouteMap(context) {
     // maps a fill id to a city point
     const fillOriginMap = new Map()
     const roadContext = {
+        ...context,
         roadCityGraph,
         fillDirectionGrid,
         directionMaskGrid,
         fillOriginMap,
         fillIdGrid,
-        ...context
     }
     const fill = new RoadFill()
     const origins = [...capitalPoints, ...cityPoints]
