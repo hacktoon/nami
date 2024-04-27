@@ -1,10 +1,12 @@
+import { Rect } from '/src/lib/number'
+
 
 export class Grid {
+    #rect
     #cells
 
     constructor(width, height, buildCell=() => null) {
-        this.width = width
-        this.height = height
+        this.#rect = new Rect(width, height)
         this.#cells = []
 
         // sweep from left to right, top down
@@ -20,8 +22,16 @@ export class Grid {
         return new Grid(width, height, buildCell)
     }
 
+    get width() {
+        return this.#rect.width
+    }
+
+    get height() {
+        return this.#rect.height
+    }
+
     get area() {
-        return this.width * this.height
+        return this.#rect.area
     }
 
     get(point) {
@@ -56,11 +66,6 @@ export class Grid {
     }
 
     wrap(point) {
-        let [x, y] = point
-        if (x >= this.width) { x %= this.width }
-        if (y >= this.height) { y %= this.height }
-        if (x < 0) { x = this.width - 1 - Math.abs(x + 1) % this.width }
-        if (y < 0) { y = this.height - 1 - Math.abs(y + 1) % this.height }
-        return [x, y]
+        return this.#rect.wrap(point)
     }
 }
