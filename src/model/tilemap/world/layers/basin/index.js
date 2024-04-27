@@ -74,7 +74,8 @@ export class BasinLayer {
 
     getMidpoint(point) {
         const index = this.#terrainMidpointMap.get(point)
-        return this.#midpointRect.indexToPoint(index)
+        const [x, y] = this.#midpointRect.indexToPoint(index)
+        return [x / 10, y / 10]  // convert to fractions
     }
 
     getColor(point) {

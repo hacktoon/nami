@@ -15,14 +15,13 @@ export class RiverLayer {
     #riverPoints = new PointMap()
     // map a point to a river direction mask
     #directionMaskGrid
-    // map a point to a fraction point [.2, .2]
-    #riverMeanders = new PointMap()
     // map a river point to its river type
     #stretchMap = new PointMap()
 
     #riverMouths = new PointSet()
 
     constructor(rect, layers) {
+        this.layers = layers
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
         const context = {
             rect,
@@ -32,7 +31,6 @@ export class RiverLayer {
             riverMouths: this.#riverMouths,
             directionMaskGrid: this.#directionMaskGrid,
             stretchMap: this.#stretchMap,
-            riverMeanders: this.#riverMeanders,
         }
         buildRiverMap(context)
     }
@@ -54,7 +52,7 @@ export class RiverLayer {
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
-            meander: this.#riverMeanders.get(point),
+            meander: this.layers.basin.getMidpoint(point),
         }
     }
 

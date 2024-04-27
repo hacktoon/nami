@@ -13,8 +13,6 @@ import {
 import { buildRouteMap } from './route'
 
 
-const OFFSET_RANGE = [.2, .8]
-
 // Define realms, cities and roads
 export class CivilLayer {
     #realmGrid  // map a point to a realm id
@@ -24,14 +22,14 @@ export class CivilLayer {
 
     constructor(rect, layers, realmCount) {
         const [cityPoints, capitalPoints] = buildCityPoints(rect, layers, realmCount)
+        this.layers = layers
         this.#cityMap = buildCityMap(capitalPoints, cityPoints)
         this.#realmMap = buildRealmMap(capitalPoints)
         this.#realmGrid = buildRealmGrid({rect, layers, capitalPoints})
-        const directionMaskGrid = buildRouteMap({
+        this.#directionMaskGrid = buildRouteMap({
             rect, layers, capitalPoints, cityPoints,
             cityMap: this.#cityMap,
         })
-        this.#directionMaskGrid = directionMaskGrid
     }
 
     isCity(point) {
@@ -102,10 +100,7 @@ export class CivilLayer {
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
-        const [fx, fy] = [
-            Random.floatRange(...OFFSET_RANGE),
-            Random.floatRange(...OFFSET_RANGE)
-        ]
+        const [fx, fy] = this.layers.basin.getMidpoint(point)
         const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const roadDirections = this.#directionMaskGrid.get(point)

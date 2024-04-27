@@ -6,9 +6,6 @@ import { RiverStretch } from './data'
 
 
 const MAX_RIVER_SIZE = 2
-const RIVER_MEANDER_MIDDLE = .5
-const OFFSET_RANGE = [.1, .3]
-
 
 /*
     The shape fill starts from river sources
@@ -41,7 +38,7 @@ function buildRiver(context, riverId, sourcePoint) {
     // according to basin flow and builds a river.
     const {
         rect, layers, riverPoints, riverNames, riverMouths,
-        stretchMap, riverMeanders
+        stretchMap
     } = context
     let prevPoint = sourcePoint
     let currentPoint = sourcePoint
@@ -50,9 +47,6 @@ function buildRiver(context, riverId, sourcePoint) {
     if (maxDistance < MAX_RIVER_SIZE) return
     while (layers.surface.isLand(currentPoint)) {
         const wrappedPoint = rect.wrap(currentPoint)
-        // create river meander point
-        const meander = buildMeander(context, wrappedPoint)
-        riverMeanders.set(wrappedPoint, meander)
         // set direction mask grid
         buildDirectionMask(context, currentPoint)
         // set river stretch by distance
@@ -68,19 +62,6 @@ function buildRiver(context, riverId, sourcePoint) {
     // current (last) point is water, add previous as river mouth
     riverMouths.add(prevPoint)
     riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
-}
-
-
-function buildMeander(context, wrappedPoint) {
-    // direction axis ([-1, 0], [1, 1], etc)
-    const basin = context.layers.basin.get(wrappedPoint)
-    const axis = basin.erosion.axis
-    const rand = (coordAxis) => {
-        const offset = Random.floatRange(...OFFSET_RANGE)
-        const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
-        return RIVER_MEANDER_MIDDLE + (offset * axisToggle)
-    }
-    return [rand(axis[0]), rand(axis[1])]
 }
 
 
