@@ -2,6 +2,7 @@ import { PointMap } from '/src/lib/point/map'
 import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
 import { Direction } from '/src/lib/direction'
+import { Rect } from '/src/lib/number'
 
 import { buildBasin } from './fill'
 import {
@@ -22,15 +23,18 @@ export class BasinLayer {
     // map a point to a direction
     #erosionMap = new PointMap()
 
+    // the highest points of basins that borders others basins
+    #dividePoints = new PointSet()
+
+    // map basin type for creating rivers or other features
+    #typeMap = new Map()
+
     // map a point to a terrain offset point index
     // convert index to x, y in a 10 x 10 grid
     #terrainMidpointMap = new PointMap()
 
-    // the highest points of basins that borders others basins
-    #dividePoints = new PointSet()
-
-    // basin is adequate for rivers
-    #typeMap = new Map()
+    // rect for mapping stored midpoint index
+    #midpointRect = new Rect(10, 10)
 
     constructor(rect, layers) {
         const context = {
@@ -42,6 +46,7 @@ export class BasinLayer {
             dividePoints: this.#dividePoints,
             erosionMap: this.#erosionMap,
             terrainMidpointMap: this.#terrainMidpointMap,
+            midpointRect: this.#midpointRect,
         }
         // start filling from land borders
         buildBasin(layers.surface.landBorders, context)
@@ -57,7 +62,7 @@ export class BasinLayer {
             type: this.getType(point),
             distance: this.getDistance(point),
             erosion: this.getErosion(point),
-            midpoint: this.#terrainMidpointMap.get(point),
+            midpoint: this.getMidpoint(point),
         }
     }
 
@@ -65,6 +70,11 @@ export class BasinLayer {
         const id = this.#basinMap.get(point)
         const typeId = this.#typeMap.get(id)
         return Basin.parse(typeId)
+    }
+
+    getMidpoint(point) {
+        const index = this.#terrainMidpointMap.get(point)
+        return this.#midpointRect.indexToPoint(index)
     }
 
     getColor(point) {

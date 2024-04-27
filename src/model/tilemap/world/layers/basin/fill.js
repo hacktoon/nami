@@ -10,9 +10,9 @@ import {
 } from './data'
 
 
-const MIDDLE = 5
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
+const OFFSET_MIDDLE = 5
 const OFFSET_RANGE = [1, 3]
 
 
@@ -36,7 +36,7 @@ class BasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
             rect, layers, basinMap, typeMap, distanceMap, erosionMap,
-            terrainMidpointMap
+            terrainMidpointMap, midpointRect
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         // count neighbor water types
@@ -57,7 +57,7 @@ class BasinFill extends ConcurrentFill {
         // initial distance from mouth is 0
         distanceMap.set(wrappedPoint, 0)
         // terrain offset to add variance
-        const terrainMidpoint = buildTerrainMidpoint(direction)
+        const terrainMidpoint = buildTerrainMidpoint(midpointRect, direction)
         terrainMidpointMap.set(wrappedPoint, terrainMidpoint)
     }
 
@@ -82,7 +82,8 @@ class BasinFill extends ConcurrentFill {
 
     onFill(fill, fillPoint, parentPoint) {
         const {
-            rect, basinMap, distanceMap, erosionMap, terrainMidpointMap
+            rect, basinMap, distanceMap, erosionMap,
+            terrainMidpointMap, midpointRect
         } = fill.context
         const direction = Point.directionBetween(fillPoint, parentPoint)
         const wrappedPoint = rect.wrap(fillPoint)
@@ -96,7 +97,7 @@ class BasinFill extends ConcurrentFill {
         // set erosion flow to parent
         erosionMap.set(wrappedPoint, direction.id)
         // terrain offset to add variance
-        const terrainMidpoint = buildTerrainMidpoint(direction)
+        const terrainMidpoint = buildTerrainMidpoint(midpointRect, direction)
         terrainMidpointMap.set(wrappedPoint, terrainMidpoint)
     }
 }
@@ -118,14 +119,16 @@ function buildType(total) {
 }
 
 
-function buildTerrainMidpoint(direction) {
+function buildTerrainMidpoint(midpointRect, direction) {
     // direction axis ([-1, 0], [1, 1], etc)
     const rand = (coordAxis) => {
         const offset = Random.int(...OFFSET_RANGE)
         const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
-        return MIDDLE + (offset * axisToggle)
+        return OFFSET_MIDDLE + (offset * axisToggle)
     }
-    return [rand(direction.axis[0]), rand(direction.axis[1])]
+    const x = rand(direction.axis[0])
+    const y = rand(direction.axis[1])
+    return midpointRect.pointToIndex([x, y])
 }
 
 
