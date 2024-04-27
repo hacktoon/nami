@@ -33,16 +33,28 @@ export class Grid {
         return this.#rect.area
     }
 
+    set(point, value) {
+        const [x, y] = this.wrap(point)
+        const index = this.#rect.pointToIndex([x, y])
+        this.#cells[index] = value
+    }
+
     get(point) {
         const [x, y] = this.wrap(point)
         const index = this.#rect.pointToIndex([x, y])
         return this.#cells[index]
     }
 
-    set(point, value) {
+    wrapSet(point, value) {
         const [x, y] = this.wrap(point)
         const index = this.#rect.pointToIndex([x, y])
         this.#cells[index] = value
+    }
+
+    wrapGet(point) {
+        const [x, y] = this.wrap(point)
+        const index = this.#rect.pointToIndex([x, y])
+        return this.#cells[index]
     }
 
     forEach(callback) {
@@ -53,6 +65,7 @@ export class Grid {
         }
     }
 
+    // TODO: remove
     wrap(point) {
         return this.#rect.wrap(point)
     }
