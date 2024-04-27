@@ -22,6 +22,10 @@ export class BasinLayer {
     // map a point to a direction
     #erosionMap = new PointMap()
 
+    // map a point to a terrain offset point index
+    // convert index to x, y in a 10 x 10 grid
+    #terrainMidpointMap = new PointMap()
+
     // the highest points of basins that borders others basins
     #dividePoints = new PointSet()
 
@@ -37,6 +41,7 @@ export class BasinLayer {
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
             erosionMap: this.#erosionMap,
+            terrainMidpointMap: this.#terrainMidpointMap,
         }
         // start filling from land borders
         buildBasin(layers.surface.landBorders, context)
@@ -52,6 +57,7 @@ export class BasinLayer {
             type: this.getType(point),
             distance: this.getDistance(point),
             erosion: this.getErosion(point),
+            midpoint: this.#terrainMidpointMap.get(point),
         }
     }
 
@@ -103,6 +109,7 @@ export class BasinLayer {
             `id=${basin.id}`,
             `erosion=${basin.erosion.name}`,
             `distance=${basin.distance}`,
+            `midpoint=${basin.midpoint}`,
             `type=${basin.type ? basin.type.name : ''}`,
         ].join(',')
         return `Basin(${attrs})`

@@ -7,7 +7,7 @@ import { PointArraySet } from '/src/lib/point/set'
 import { WORLD_NAMES } from '/src/lib/names'
 
 
-const CITY_RATIO = .06
+const CITY_RADIUS = .04
 const TOWN_RATIO = .6
 
 
@@ -19,7 +19,7 @@ export function buildCityPoints(rect, layers, realmCount) {
     while (candidates.size > 0) {
         const candidatePoint = candidates.random()
         // remove candidate points in a circle area
-        const radius = Math.floor(rect.width * CITY_RATIO)
+        const radius = Math.floor(rect.width * CITY_RADIUS)
         Point.insideCircle(candidatePoint, radius, candidatePoint => {
             candidates.delete(rect.wrap(candidatePoint))
         })

@@ -109,7 +109,7 @@ export class CivilLayer {
         const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const roadDirections = this.#directionMaskGrid.get(point)
-        // for each neighbor with a river connection
+        // for each neighbor with a route connection
         for(let axisOffset of roadDirections.map(d => d.axis)) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side

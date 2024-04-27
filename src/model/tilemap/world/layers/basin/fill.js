@@ -1,5 +1,5 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { Direction } from '/src/lib/direction'
+import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 
 import {
@@ -9,8 +9,11 @@ import {
     RiverBasin,
 } from './data'
 
+
+const MIDDLE = 5
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
+const OFFSET_RANGE = [1, 3]
 
 
 export function buildBasin(originPoints, context) {
@@ -32,9 +35,10 @@ class BasinFill extends ConcurrentFill {
 
     onInitFill(fill, fillPoint, neighbors) {
         const {
-            rect, layers, basinMap, typeMap, distanceMap, erosionMap
+            rect, layers, basinMap, typeMap, distanceMap, erosionMap,
+            terrainMidpointMap
         } = fill.context
-        const wrappedFillPoint = rect.wrap(fillPoint)
+        const wrappedPoint = rect.wrap(fillPoint)
         // count neighbor water types
         let total = {lake: 0, sea: 0, ocean: 0}
         const waterNeighbors = neighbors.filter(neighbor => {
@@ -45,13 +49,16 @@ class BasinFill extends ConcurrentFill {
         })
         // set erosion direction, use first water neighbor
         const direction = Point.directionBetween(fillPoint, waterNeighbors[0])
-        erosionMap.set(wrappedFillPoint, direction.id)
+        erosionMap.set(wrappedPoint, direction.id)
         // set basin type
         typeMap.set(fill.id, buildType(total))
         // set basin id to spread on fill
-        basinMap.set(wrappedFillPoint, fill.id)
+        basinMap.set(wrappedPoint, fill.id)
         // initial distance from mouth is 0
-        distanceMap.set(wrappedFillPoint, 0)
+        distanceMap.set(wrappedPoint, 0)
+        // terrain offset to add variance
+        const terrainMidpoint = buildTerrainMidpoint(direction)
+        terrainMidpointMap.set(wrappedPoint, terrainMidpoint)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -75,7 +82,7 @@ class BasinFill extends ConcurrentFill {
 
     onFill(fill, fillPoint, parentPoint) {
         const {
-            rect, basinMap, distanceMap, erosionMap
+            rect, basinMap, distanceMap, erosionMap, terrainMidpointMap
         } = fill.context
         const direction = Point.directionBetween(fillPoint, parentPoint)
         const wrappedPoint = rect.wrap(fillPoint)
@@ -88,6 +95,9 @@ class BasinFill extends ConcurrentFill {
         basinMap.set(wrappedPoint, parentBasin)
         // set erosion flow to parent
         erosionMap.set(wrappedPoint, direction.id)
+        // terrain offset to add variance
+        const terrainMidpoint = buildTerrainMidpoint(direction)
+        terrainMidpointMap.set(wrappedPoint, terrainMidpoint)
     }
 }
 
@@ -105,6 +115,17 @@ function buildType(total) {
     else if (oneWaterSide)
         type = RiverBasin
     return type.id
+}
+
+
+function buildTerrainMidpoint(direction) {
+    // direction axis ([-1, 0], [1, 1], etc)
+    const rand = (coordAxis) => {
+        const offset = Random.int(...OFFSET_RANGE)
+        const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
+        return MIDDLE + (offset * axisToggle)
+    }
+    return [rand(direction.axis[0]), rand(direction.axis[1])]
 }
 
 
