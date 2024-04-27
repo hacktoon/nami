@@ -10,16 +10,15 @@ export class Grid {
         this.#cells = []
 
         // sweep from left to right, top down
-        const max = width * height
-        for (let idx = 0; idx < max; idx++) {
-            const [x, y] = this.indexToPoint(idx)
+        const max = this.#rect.area
+        for (let index = 0; index < max; index++) {
+            const [x, y] = this.#rect.indexToPoint(index)
             this.#cells.push(buildCell([x, y]))
         }
     }
 
     static fromRect(rect, buildCell) {
-        const {width, height} = rect
-        return new Grid(width, height, buildCell)
+        return new Grid(rect.width, rect.height, buildCell)
     }
 
     get width() {
@@ -36,32 +35,21 @@ export class Grid {
 
     get(point) {
         const [x, y] = this.wrap(point)
-        const index = this.pointToIndex([x, y])
+        const index = this.#rect.pointToIndex([x, y])
         return this.#cells[index]
     }
 
     set(point, value) {
         const [x, y] = this.wrap(point)
-        const index = this.pointToIndex([x, y])
+        const index = this.#rect.pointToIndex([x, y])
         this.#cells[index] = value
     }
 
-    pointToIndex([x, y]) {
-        // https://en.wikipedia.org/wiki/Row-_and_column-major_order
-        return x + this.width * y
-    }
-
-    indexToPoint(index) {
-        const y = Math.floor(index / this.width)
-        const x = index % this.width
-        return [x, y]
-    }
-
     forEach(callback) {
-        const max = this.width * this.height
-        for (let idx = 0; idx < max; idx++) {
-            const point = this.indexToPoint(idx)
-            callback(point, this.#cells[idx])
+        const max = this.#rect.area
+        for (let index = 0; index < max; index++) {
+            const point = this.#rect.indexToPoint(index)
+            callback(point, this.#cells[index])
         }
     }
 

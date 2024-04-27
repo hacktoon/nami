@@ -1,9 +1,9 @@
 
 export const interpolateNumbers = (from, to, totalItems) => {
-    var totalNumbers = to - from + 1,
-        stepValue = totalNumbers / totalItems,
-        numbers = [from],
-        currentValue = from
+    const totalNumbers = to - from + 1
+    const stepValue = totalNumbers / totalItems
+    const numbers = [from]
+    let currentValue = from
 
     for(let i=0; i<totalItems - 2; i++) {
         currentValue += stepValue
@@ -29,13 +29,28 @@ export class Rect {
         return new Rect(rect.width * factor, rect.height * factor)
     }
 
-    constructor(width, height) {
+    constructor(width=1, height) {
         this.width = width
         this.height = height ?? width
     }
 
+    hash() {
+        return `${this.width}x${this.height}`
+    }
+
     get area() {
         return this.width * this.height
+    }
+
+    pointToIndex([x, y]) {
+        // https://en.wikipedia.org/wiki/Row-_and_column-major_order
+        return x + this.width * y
+    }
+
+    indexToPoint(index) {
+        const y = Math.floor(index / this.width)
+        const x = index % this.width
+        return [x, y]
     }
 
     isInside(point) {
@@ -75,9 +90,5 @@ export class Rect {
             if (sY > tY) y = y + this.height
         }
         return [x, y]
-    }
-
-    hash() {
-        return `${this.width}x${this.height}`
     }
 }
