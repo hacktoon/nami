@@ -1,9 +1,9 @@
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
 
 import { drawVillage, drawTown, drawCapital } from './draw'
 import { buildRealmGrid, buildRealmMap } from './realm'
 import {
-    buildCityPoints,
     buildCityMap,
     buildCityGrid,
     Capital,
@@ -15,16 +15,16 @@ import { buildRouteMap } from './route'
 
 // Define realms, cities and roads
 export class CivilLayer {
-    #realmGrid  // map a point to a realm id
-    #realmMap   // map a realm id to a realm object
-    #cityMap    // map a point to a city object
-    #cityGrid    // map a point to a city object
+    #realmGrid           // map a point to a realm id
+    #realmMap            // map a realm id to a realm object
+    #cityMap             // map a point to a city object
+    #cityGrid            // map a point to a city object
     #directionMaskGrid   // map a point to a direction bitmask
 
     constructor(rect, layers, realmCount) {
         const context = {rect, layers, realmCount}
-        const [cityPoints, capitalPoints] = buildCityPoints(context)
-        const cityMap = buildCityMap(capitalPoints, cityPoints)
+        const [cityMap, cityPoints, capitalPoints] = buildCityMap(context)
+        // build a grid filling each cell with a city id
         this.#cityGrid = buildCityGrid({...context, capitalPoints, cityPoints})
         this.#realmMap = buildRealmMap(capitalPoints)
         this.#realmGrid = buildRealmGrid({...context, capitalPoints})
@@ -94,9 +94,12 @@ export class CivilLayer {
 
     drawRealm(point, props) {
         const {canvas, canvasPoint, tileSize} = props
-        const id = this.#realmGrid.get(point)
-        const realm = this.#realmMap.get(Math.abs(id))
-        const color = id < 0 ? realm.color.alpha(.1) : realm.color.alpha(.6)
+        const id = this.#cityGrid.get(point)
+        const city = this.#cityMap.get(point)
+        // const realm = this.#realmMap.get(Math.abs(id))
+        const isWater = this.layers.surface.isWater(point)
+        const c = city ? city.color : new Color(id, id, id)
+        const color = isWater ? c.alpha(.1) : c.alpha(.6)
         canvas.rect(canvasPoint, tileSize, color.toRGBA())
     }
 

@@ -17,12 +17,47 @@ const GROWTH = 5  // make fill basins grow bigger than others
 const EMPTY = 0
 
 
-export function buildCityPoints(context) {
+export function buildCityGrid(context) {
+    const fill = new CityTerritoryFill()
+    const originPoints = [...context.capitalPoints, ...context.cityPoints]
+    const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
+    fill.start(originPoints, {...context, cityGrid})
+    return cityGrid
+}
+
+
+export function buildCityMap(context) {
     const {rect, layers, realmCount} = context
-    const cities = []
-    const capitals = []
-    const candidates = buildCityCandidates(rect, layers)
+    const points = buildCityPoints(context)
+    const cityMap = new PointMap()
+    const idMap = new Map()
+    const capitalPoints = []
+    const cityPoints = []
     let capitalCount = 0
+    let cityCount = 0
+    let type
+    for (let point of points) {
+        if (realmCount > capitalCount) {
+            type = Capital
+            capitalPoints.push(point)
+            capitalCount++
+        } else {
+            type = Random.chance(TOWN_RATIO) ? Town : Village
+            cityPoints.push(point)
+        }
+        const city = buildCity(cityCount, type)
+        cityMap.set(point, city)
+        idMap.set(cityCount, city)
+        cityCount++
+    }
+    return [cityMap, cityPoints, capitalPoints]
+}
+
+
+function buildCityPoints(context) {
+    const {rect, layers} = context
+    const points = []
+    const candidates = buildCityCandidates(rect, layers)
     while (candidates.size > 0) {
         const candidatePoint = candidates.random()
         // remove candidate points in a circle area
@@ -30,15 +65,9 @@ export function buildCityPoints(context) {
         Point.insideCircle(candidatePoint, radius, candidatePoint => {
             candidates.delete(rect.wrap(candidatePoint))
         })
-        // add capital candidatePoint
-        if (realmCount > capitalCount) {
-            capitals.push(candidatePoint)
-            capitalCount++
-        } else {
-            cities.push(candidatePoint)
-        }
+        points.push(candidatePoint)
     }
-    return [cities, capitals]
+    return points
 }
 
 
@@ -52,31 +81,6 @@ function buildCityCandidates(rect, layers) {
         candidates.add(point)
     })
     return candidates
-}
-
-
-export function buildCityGrid(context) {
-    const fill = new CityTerritoryFill()
-    const originPoints = [...context.capitalPoints, ...context.cityPoints]
-    const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
-    fill.start(originPoints, {...context, cityGrid})
-    return cityGrid
-}
-
-
-export function buildCityMap(capitalPoints, cityPoints) {
-    const cityMap = new PointMap()
-    let cityCount = 0
-    for (let point of capitalPoints) {
-        cityMap.set(point, buildCity(cityCount, Capital))
-        cityCount++
-    }
-    for (let point of cityPoints) {
-        const type = Random.chance(TOWN_RATIO) ? Town : Village
-        cityMap.set(point, buildCity(cityCount, type))
-        cityCount++
-    }
-    return cityMap
 }
 
 
