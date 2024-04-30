@@ -1,6 +1,7 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
 import { PointMap } from '/src/lib/point/map'
 import { PointArraySet } from '/src/lib/point/set'
@@ -16,7 +17,8 @@ const GROWTH = 5  // make fill basins grow bigger than others
 const EMPTY = 0
 
 
-export function buildCityPoints(rect, layers, realmCount) {
+export function buildCityPoints(context) {
+    const {rect, layers, realmCount} = context
     const cities = []
     const capitals = []
     const candidates = buildCityCandidates(rect, layers)
@@ -66,8 +68,7 @@ export function buildCityMap(capitalPoints, cityPoints) {
     const cityMap = new PointMap()
     let cityCount = 0
     for (let point of capitalPoints) {
-        const type = Capital
-        cityMap.set(point, buildCity(cityCount, type))
+        cityMap.set(point, buildCity(cityCount, Capital))
         cityCount++
     }
     for (let point of cityPoints) {
@@ -84,6 +85,7 @@ function buildCity(cityId, type) {
         id: cityId,
         type: type.id,
         name: Random.choiceFrom(WORLD_NAMES),
+        color: new Color(),
     }
 }
 

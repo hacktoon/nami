@@ -22,15 +22,17 @@ export class CivilLayer {
     #directionMaskGrid   // map a point to a direction bitmask
 
     constructor(rect, layers, realmCount) {
-        const [cityPoints, capitalPoints] = buildCityPoints(rect, layers, realmCount)
-        this.layers = layers
-        this.#cityMap = buildCityMap(capitalPoints, cityPoints)
-        this.#cityGrid = buildCityGrid({rect, layers, capitalPoints, cityPoints})
+        const context = {rect, layers, realmCount}
+        const [cityPoints, capitalPoints] = buildCityPoints(context)
+        const cityMap = buildCityMap(capitalPoints, cityPoints)
+        this.#cityGrid = buildCityGrid({...context, capitalPoints, cityPoints})
         this.#realmMap = buildRealmMap(capitalPoints)
-        this.#realmGrid = buildRealmGrid({rect, layers, capitalPoints})
+        this.#realmGrid = buildRealmGrid({...context, capitalPoints})
         this.#directionMaskGrid = buildRouteMap({
-            rect, layers, capitalPoints, cityPoints
+            ...context, capitalPoints, cityPoints
         })
+        this.#cityMap = cityMap
+        this.layers = layers  // used only for basin midpoint
     }
 
     isCity(point) {
@@ -59,15 +61,15 @@ export class CivilLayer {
 
     getText(point) {
         const civil = this.get(point)
-        const realm = civil.realm
+        // const realm = civil.realm
         const roadDirs = this.#directionMaskGrid.get(point)
         const props = [
-            `realm=${realm.name}(${realm.id})`,
+            // `realm=${realm.name}(${realm.id})`,
             `city=${civil.city}`
         ]
-        if (roadDirs) {
-            props.push(`roads=${roadDirs.map(d => d.name)}`)
-        }
+        // if (roadDirs) {
+        //     props.push(`roads=${roadDirs.map(d => d.name)}`)
+        // }
         if (this.#cityMap.has(point)) {
             const city = this.#cityMap.get(point)
             const type = City.parse(city.type).name.toLowerCase()
