@@ -1,11 +1,11 @@
 import { Point } from '/src/lib/point'
-import { Random } from '/src/lib/random'
 
 import { drawVillage, drawTown, drawCapital } from './draw'
 import { buildRealmGrid, buildRealmMap } from './realm'
 import {
     buildCityPoints,
     buildCityMap,
+    buildCityGrid,
     Capital,
     City,
     Town
@@ -18,17 +18,18 @@ export class CivilLayer {
     #realmGrid  // map a point to a realm id
     #realmMap   // map a realm id to a realm object
     #cityMap    // map a point to a city object
+    #cityGrid    // map a point to a city object
     #directionMaskGrid   // map a point to a direction bitmask
 
     constructor(rect, layers, realmCount) {
         const [cityPoints, capitalPoints] = buildCityPoints(rect, layers, realmCount)
         this.layers = layers
         this.#cityMap = buildCityMap(capitalPoints, cityPoints)
+        this.#cityGrid = buildCityGrid({rect, layers, capitalPoints, cityPoints})
         this.#realmMap = buildRealmMap(capitalPoints)
         this.#realmGrid = buildRealmGrid({rect, layers, capitalPoints})
         this.#directionMaskGrid = buildRouteMap({
-            rect, layers, capitalPoints, cityPoints,
-            cityMap: this.#cityMap,
+            rect, layers, capitalPoints, cityPoints
         })
     }
 
@@ -48,6 +49,7 @@ export class CivilLayer {
         const id = Math.abs(this.#realmGrid.get(point))
         return {
             realm: this.#realmMap.get(id),
+            city: this.#cityGrid.get(point),
         }
     }
 
@@ -59,14 +61,17 @@ export class CivilLayer {
         const civil = this.get(point)
         const realm = civil.realm
         const roadDirs = this.#directionMaskGrid.get(point)
-        const props = [`realm=${realm.name}(${realm.id})`]
+        const props = [
+            `realm=${realm.name}(${realm.id})`,
+            `city=${civil.city}`
+        ]
         if (roadDirs) {
             props.push(`roads=${roadDirs.map(d => d.name)}`)
         }
         if (this.#cityMap.has(point)) {
             const city = this.#cityMap.get(point)
             const type = City.parse(city.type).name.toLowerCase()
-            props.push(`city="${city.name} ${type}", population=${city.population}`)
+            props.push(`city="${city.name} ${type}"`)
         }
         return `Civil(${props.join(",")})`
     }

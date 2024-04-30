@@ -10,6 +10,11 @@ import { WORLD_NAMES } from '/src/lib/names'
 const CITY_RADIUS = .04
 const TOWN_RATIO = .6
 
+// fill constants
+const CHANCE = .1  // chance of fill growing
+const GROWTH = 5  // make fill basins grow bigger than others
+const EMPTY = 0
+
 
 export function buildCityPoints(rect, layers, realmCount) {
     const cities = []
@@ -48,6 +53,15 @@ function buildCityCandidates(rect, layers) {
 }
 
 
+export function buildCityGrid(context) {
+    const fill = new CityTerritoryFill()
+    const originPoints = [...context.capitalPoints, ...context.cityPoints]
+    const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
+    fill.start(originPoints, {...context, cityGrid})
+    return cityGrid
+}
+
+
 export function buildCityMap(capitalPoints, cityPoints) {
     const cityMap = new PointMap()
     let cityCount = 0
@@ -70,7 +84,6 @@ function buildCity(cityId, type) {
         id: cityId,
         type: type.id,
         name: Random.choiceFrom(WORLD_NAMES),
-        population: Random.int(...type.populationRange),
     }
 }
 
@@ -85,7 +98,6 @@ export class City {
 export class Capital extends City {
     static id = 0
     static name = 'Capital'
-    static populationRange = [2001, 5000]
     static exits = 4
 }
 
@@ -93,7 +105,6 @@ export class Capital extends City {
 export class Town extends City {
     static id = 1
     static name = 'Town'
-    static populationRange = [201, 2000]
     static exits = 3
 }
 
@@ -101,7 +112,6 @@ export class Town extends City {
 export class Village extends City {
     static id = 2
     static name = 'Village'
-    static populationRange = [20, 200]
     static exits = 2
 }
 
@@ -119,9 +129,8 @@ class CityTerritoryFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     onFill(fill, fillPoint) {
-        const {rect, cityGrid} = fill.context
-        const wrappedPoint = rect.wrap(fillPoint)
-        cityGrid.set(wrappedPoint, fill.id)
+        const {cityGrid} = fill.context
+        cityGrid.wrapSet(fillPoint, fill.id)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -129,8 +138,7 @@ class CityTerritoryFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {rect, cityGrid} = fill.context
-        const wrappedPoint = rect.wrap(fillPoint)
-        return cityGrid.get(wrappedPoint) === EMPTY
+        const {cityGrid} = fill.context
+        return cityGrid.wrapGet(fillPoint) === EMPTY
     }
 }
