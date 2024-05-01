@@ -19,9 +19,8 @@ const EMPTY = 0
 
 export function buildCityGrid(context) {
     const fill = new CityTerritoryFill()
-    const originPoints = [...context.capitalPoints, ...context.cityPoints]
     const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
-    fill.start(originPoints, {...context, cityGrid})
+    fill.start(context.cityPoints, {...context, cityGrid})
     return cityGrid
 }
 
@@ -29,9 +28,7 @@ export function buildCityGrid(context) {
 export function buildCityMap(context) {
     const {rect, layers, realmCount} = context
     const points = buildCityPoints(context)
-    const cityMap = new PointMap()
-    const idMap = new Map()
-    const capitalPoints = []
+    const cityMap = new Map()
     const cityPoints = []
     let capitalCount = 0
     let cityCount = 0
@@ -39,18 +36,16 @@ export function buildCityMap(context) {
     for (let point of points) {
         if (realmCount > capitalCount) {
             type = Capital
-            capitalPoints.push(point)
             capitalCount++
         } else {
             type = Random.chance(TOWN_RATIO) ? Town : Village
-            cityPoints.push(point)
         }
         const city = buildCity(cityCount, type)
-        cityMap.set(point, city)
-        idMap.set(cityCount, city)
+        cityPoints.push(point)
+        cityMap.set(cityCount, city)
         cityCount++
     }
-    return [cityMap, cityPoints, capitalPoints]
+    return [cityMap, cityPoints]
 }
 
 
@@ -133,6 +128,12 @@ const TYPE_MAP = {
 class CityTerritoryFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
+
+    onInitFill(fill, fillPoint) {
+        const {cityGrid} = fill.context
+        // negative for actual city point
+        cityGrid.wrapSet(fillPoint, -fill.id)
+    }
 
     onFill(fill, fillPoint) {
         const {cityGrid} = fill.context

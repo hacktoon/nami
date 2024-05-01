@@ -15,7 +15,6 @@ import { buildRouteMap } from './route'
 
 // Define realms, cities and roads
 export class CivilLayer {
-    #realmGrid           // map a point to a realm id
     #realmMap            // map a realm id to a realm object
     #cityMap             // map a point to a city object
     #cityGrid            // map a point to a city object
@@ -23,35 +22,35 @@ export class CivilLayer {
 
     constructor(rect, layers, realmCount) {
         const context = {rect, layers, realmCount}
-        const [cityMap, cityPoints, capitalPoints] = buildCityMap(context)
+        const [cityMap, cityPoints] = buildCityMap(context)
         // build a grid filling each cell with a city id
-        this.#cityGrid = buildCityGrid({...context, capitalPoints, cityPoints})
-        this.#realmMap = buildRealmMap(capitalPoints)
-        this.#realmGrid = buildRealmGrid({...context, capitalPoints})
+        this.#cityGrid = buildCityGrid({...context, cityPoints})
+        // this.#realmMap = buildRealmMap(capitalPoints)
         this.#directionMaskGrid = buildRouteMap({
-            ...context, capitalPoints, cityPoints
+            ...context, cityPoints
         })
         this.#cityMap = cityMap
         this.layers = layers  // used only for basin midpoint
     }
 
     isCity(point) {
-        return this.#cityMap.has(point)
+        return this.#cityGrid.get(point) < 0
     }
 
     isCapital(point) {
-        return this.#cityMap.get(point).type === Capital.id
+        const id = this.get(point).id
+        return this.isCity(point) && this.#cityMap.get(id).type === Capital.id
     }
 
     isTown(point) {
-        return this.#cityMap.get(point).type === Town.id
+        const id = this.get(point).id
+        return this.isCity(point) && this.#cityMap.get(id).type === Town.id
     }
 
     get(point) {
-        const id = Math.abs(this.#realmGrid.get(point))
+        const id = Math.abs(this.#cityGrid.get(point))
         return {
-            realm: this.#realmMap.get(id),
-            city: this.#cityGrid.get(point),
+            id,
         }
     }
 
@@ -64,14 +63,13 @@ export class CivilLayer {
         // const realm = civil.realm
         const roadDirs = this.#directionMaskGrid.get(point)
         const props = [
-            // `realm=${realm.name}(${realm.id})`,
-            `city=${civil.city}`
+            `city=${civil.id}`
         ]
         // if (roadDirs) {
         //     props.push(`roads=${roadDirs.map(d => d.name)}`)
         // }
-        if (this.#cityMap.has(point)) {
-            const city = this.#cityMap.get(point)
+        if (this.isCity(point)) {
+            const city = this.#cityMap.get(civil.id)
             const type = City.parse(city.type).name.toLowerCase()
             props.push(`city="${city.name} ${type}"`)
         }
@@ -94,12 +92,9 @@ export class CivilLayer {
 
     drawRealm(point, props) {
         const {canvas, canvasPoint, tileSize} = props
-        const id = this.#cityGrid.get(point)
-        const city = this.#cityMap.get(point)
-        // const realm = this.#realmMap.get(Math.abs(id))
+        const city = this.#cityMap.get(this.get(point).id)
         const isWater = this.layers.surface.isWater(point)
-        const c = city ? city.color : new Color(id, id, id)
-        const color = isWater ? c.alpha(.1) : c.alpha(.6)
+        const color = isWater ? city.color.alpha(.1) : city.color.alpha(.8)
         canvas.rect(canvasPoint, tileSize, color.toRGBA())
     }
 

@@ -29,8 +29,7 @@ export function buildRouteMap(context) {
         fillIdGrid,
     }
     const fill = new RoadFill()
-    const origins = [...capitalPoints, ...cityPoints]
-    fill.start(origins, roadContext)
+    fill.start(context.cityPoints, roadContext)
     return directionMaskGrid
 }
 
