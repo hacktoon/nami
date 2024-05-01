@@ -8,21 +8,13 @@ import { PointArraySet } from '/src/lib/point/set'
 import { WORLD_NAMES } from '/src/lib/names'
 
 
-const CITY_RADIUS = .04
+const CITY_RADIUS = .03
 const TOWN_RATIO = .6
 
 // fill constants
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 5  // make fill basins grow bigger than others
 const EMPTY = 0
-
-
-export function buildCityGrid(context) {
-    const fill = new CityTerritoryFill()
-    const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
-    fill.start(context.cityPoints, {...context, cityGrid})
-    return cityGrid
-}
 
 
 export function buildCityMap(context) {
@@ -124,8 +116,15 @@ const TYPE_MAP = {
 }
 
 
+export function buildCityGrid(context) {
+    const fill = new CityGridFill()
+    const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
+    fill.start(context.cityPoints, {...context, cityGrid})
+    return cityGrid
+}
 
-class CityTerritoryFill extends ConcurrentFill {
+
+class CityGridFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 

@@ -53,7 +53,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             canvas.text(canvasPoint, tileSize, text, '#000')
         }
         if (this.params.get('showRealms')) {
-            layers.civil.drawRealm(point, props)
+            layers.civil.drawCivil(point, props)
         }
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props, layerColor)

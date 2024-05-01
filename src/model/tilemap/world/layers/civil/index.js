@@ -1,8 +1,7 @@
 import { Point } from '/src/lib/point'
-import { Color } from '/src/lib/color'
 
 import { drawVillage, drawTown, drawCapital } from './draw'
-import { buildRealmGrid, buildRealmMap } from './realm'
+import { buildRealmMap } from './realm'
 import {
     buildCityMap,
     buildCityGrid,
@@ -15,6 +14,7 @@ import { buildRouteMap } from './route'
 
 // Define realms, cities and roads
 export class CivilLayer {
+    #layers
     #realmMap            // map a realm id to a realm object
     #cityMap             // map a point to a city object
     #cityGrid            // map a point to a city object
@@ -25,33 +25,18 @@ export class CivilLayer {
         const [cityMap, cityPoints] = buildCityMap(context)
         // build a grid filling each cell with a city id
         this.#cityGrid = buildCityGrid({...context, cityPoints})
-        // this.#realmMap = buildRealmMap(capitalPoints)
-        this.#directionMaskGrid = buildRouteMap({
-            ...context, cityPoints
-        })
+        // this.#realmMap = buildRealmMap(cityPoints)
+        this.#directionMaskGrid = buildRouteMap({...context, cityPoints})
         this.#cityMap = cityMap
-        this.layers = layers  // used only for basin midpoint
-    }
-
-    isCity(point) {
-        return this.#cityGrid.get(point) < 0
-    }
-
-    isCapital(point) {
-        const id = this.get(point).id
-        return this.isCity(point) && this.#cityMap.get(id).type === Capital.id
-    }
-
-    isTown(point) {
-        const id = this.get(point).id
-        return this.isCity(point) && this.#cityMap.get(id).type === Town.id
+        this.#layers = layers  // used only for basin midpoint
     }
 
     get(point) {
-        const id = Math.abs(this.#cityGrid.get(point))
-        return {
-            id,
-        }
+        const id = this.#cityGrid.get(point)
+        const isCity = id < 0  // negative id marks the city location point
+        const absoluteId = Math.abs(id)
+        const city = isCity ? this.#cityMap.get(absoluteId) : undefined
+        return {id: absoluteId, city}
     }
 
     getTotalCities() {
@@ -60,27 +45,27 @@ export class CivilLayer {
 
     getText(point) {
         const civil = this.get(point)
+        const city = civil.city
         // const realm = civil.realm
         const roadDirs = this.#directionMaskGrid.get(point)
-        const props = [
-            `city=${civil.id}`
-        ]
+        const props = [`city=${civil.id}`]
         // if (roadDirs) {
         //     props.push(`roads=${roadDirs.map(d => d.name)}`)
         // }
-        if (this.isCity(point)) {
-            const city = this.#cityMap.get(civil.id)
+        if (city) {
             const type = City.parse(city.type).name.toLowerCase()
-            props.push(`city="${city.name} ${type}"`)
+            props.push(`${city.name} ${type}`)
         }
         return `Civil(${props.join(",")})`
     }
 
     draw(point, props) {
-        if (this.isCity(point)) {
-            if (this.isCapital(point)) {
+        const civil = this.get(point)
+        const city = civil.city
+        if (city) {
+            if (city.type === Capital.id) {
                 drawCapital(props)
-            } else if (this.isTown(point)) {
+            } else if (city.type === Town.id) {
                 drawTown(props)
             } else {
                 drawVillage(props)
@@ -90,10 +75,10 @@ export class CivilLayer {
         }
     }
 
-    drawRealm(point, props) {
+    drawCivil(point, props) {
         const {canvas, canvasPoint, tileSize} = props
         const city = this.#cityMap.get(this.get(point).id)
-        const isWater = this.layers.surface.isWater(point)
+        const isWater = this.#layers.surface.isWater(point)
         const color = isWater ? city.color.alpha(.1) : city.color.alpha(.8)
         canvas.rect(canvasPoint, tileSize, color.toRGBA())
     }
@@ -105,7 +90,7 @@ export class CivilLayer {
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
-        const [fx, fy] = this.layers.basin.getMidpoint(point)
+        const [fx, fy] = this.#layers.basin.getMidpoint(point)
         const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const roadDirections = this.#directionMaskGrid.get(point)
