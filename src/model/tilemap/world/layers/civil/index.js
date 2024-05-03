@@ -3,7 +3,7 @@ import { Point } from '/src/lib/point'
 import { drawVillage, drawTown, drawCapital } from './draw'
 import { buildRealmMap } from './realm'
 import {
-    buildCityMap,
+    buildCityRealms,
     buildCityPoints,
     buildCitySpaces,
     Capital,
@@ -23,13 +23,12 @@ export class CivilLayer {
 
     constructor(rect, layers, realmCount) {
         const context = {rect, layers, realmCount}
-        // build the cities points distributed in a rect
+        // build the citys points
         const cityPoints = buildCityPoints(context)
-        // build a grid filling each cell with a city id
-        // and a graph connecting neighbor cities by id
+        // build a city grid with a city id per flood area
+        // build a graph connecting neighbor cities by id using fill data
         const [cityGrid, cityGraph] = buildCitySpaces({...context, cityPoints})
-        const cityMap = buildCityMap({...context, cityPoints})
-        // this.#realmMap = buildRealmMap(cityPoints)
+        const [cityMap, capitalPoints] = buildCityRealms({...context, cityPoints})
         this.#directionMaskGrid = buildRouteMap({...context, cityPoints})
         this.#cityMap = cityMap
         this.#cityGrid = cityGrid
@@ -52,7 +51,7 @@ export class CivilLayer {
         const civil = this.get(point)
         const city = civil.city
         // const realm = civil.realm
-        const roadDirs = this.#directionMaskGrid.get(point)
+        // const roadDirs = this.#directionMaskGrid.get(point)
         const props = [`city=${civil.id}`]
         // if (roadDirs) {
         //     props.push(`roads=${roadDirs.map(d => d.name)}`)
@@ -83,6 +82,10 @@ export class CivilLayer {
     drawCivil(point, props) {
         const {canvas, canvasPoint, tileSize} = props
         const city = this.#cityMap.get(this.get(point).id)
+        if (! city) {
+            console.log(city, this.get(point));
+            return
+        }
         const isWater = this.#layers.surface.isWater(point)
         const color = isWater ? city.color.alpha(.1) : city.color.alpha(.8)
         canvas.rect(canvasPoint, tileSize, color.toRGBA())

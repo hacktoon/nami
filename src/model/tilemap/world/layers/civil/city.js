@@ -21,6 +21,7 @@ export function buildCityPoints(context) {
     const {rect, layers} = context
     const candidates = new PointArraySet()
     // discover candidate cities in world grid
+    // create city id grid
     Grid.fromRect(rect, point => {
         if (layers.surface.isWater(point)) return
         if (! layers.surface.isBorder(point)) return
@@ -28,48 +29,143 @@ export function buildCityPoints(context) {
         candidates.add(point)
     })
     // eliminate city points too close of already chosen
-    const points = []
+    const cityPoints = []
     while (candidates.size > 0) {
         const candidatePoint = candidates.random() // get a random candidate
         // min radius value is 1
         const radius = Math.max(Math.floor(rect.width * CITY_RADIUS), 1)
         // remove all candidate points in a circle area
         Point.insideCircle(candidatePoint, radius, inRadiusPoint => {
+            // radius can overflow grid, wrap the point
             candidates.delete(rect.wrap(inRadiusPoint))
         })
-        points.push(candidatePoint)
+        cityPoints.push(candidatePoint)
     }
-    return points
+    return cityPoints
 }
 
 
-export function buildCityMap(context) {
+export function buildCityRealms(context) {
     const {realmCount, cityPoints} = context
     const cityMap = new Map()
-    let capitalCount = 0
-    let cityCount = 0
+    const realmMap = new Map()
+    const capitalPoints = []
+    let realmId = 0
+    let cityId = 1
     let type
     for (let point of cityPoints) {
-        if (realmCount > capitalCount) {
+        if (realmCount > realmId) {
             type = Capital
-            capitalCount++
+            capitalPoints.push(point)
+            realmMap.set(realmId, {id: realmId, point})
+            realmId++
         } else {
             type = Random.chance(TOWN_RATIO) ? Town : Village
         }
-        const city = buildCity(cityCount, type)
-        cityMap.set(cityCount, city)
-        cityCount++
+        // common operations for all cities
+        const city = buildCity(cityId, point, type)
+        cityMap.set(cityId, city)
+        cityId++
     }
-    return cityMap
+    // for each capital, start a fill to get realms
+    // const realmFill = new RealmSpacesFill()
+    return [cityMap, capitalPoints]
 }
 
 
-function buildCity(cityId, type) {
+function buildCity(cityId, point, type) {
     return {
         id: cityId,
         type: type.id,
         name: Random.choiceFrom(WORLD_NAMES),
         color: new Color(),
+        point,
+    }
+}
+
+
+export function buildCitySpaces(context) {
+    const citySpacesFill = new CitySpacesFill()
+    const cityGraph = new Graph()
+    const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
+    const fillDirectionGrid = Grid.fromRect(context.rect, () => EMPTY)
+    citySpacesFill.start(context.cityPoints, {
+        ...context, cityGrid, cityGraph, fillDirectionGrid
+    })
+    return [cityGrid, cityGraph]
+}
+
+
+class CitySpacesFill extends ConcurrentFill {
+    // this fill marks the city ids grid
+    // and sets the city neighborhood graph
+    getChance(fill) { return CHANCE }
+    getGrowth(fill) { return GROWTH }
+
+    onInitFill(fill, fillPoint) {
+        // avoid zero index
+        const id = fill.id + 1
+        // negative for actual origin city point
+        fill.context.cityGrid.wrapSet(fillPoint, -id)
+    }
+
+    onFill(fill, fillPoint, parentPoint) {
+        const {cityGrid, fillDirectionGrid} = fill.context
+        // avoid zero index
+        const id = fill.id + 1
+        const direction = Point.directionBetween(fillPoint, parentPoint)
+        cityGrid.wrapSet(fillPoint, id)
+        fillDirectionGrid.wrapSet(fillPoint, direction)
+    }
+
+    onBlockedFill(fill, neighbor) {
+        // encountered another city fill, set them as neighbors
+        const {cityGrid, cityGraph} = fill.context
+        const neighborCityId = Math.abs(cityGrid.get(neighbor))
+        cityGraph.setEdge(fill.id, neighborCityId)
+    }
+
+    getNeighbors(fill, parentPoint) {
+        return Point.adjacents(parentPoint)
+    }
+
+    canFill(fill, fillPoint) {
+        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
+        return currentValue === EMPTY
+    }
+}
+
+
+
+class RealmSpacesFill extends ConcurrentFill {
+    // this fill marks the city ids grid
+    // and sets the city neighborhood graph
+    getChance(fill) { return CHANCE }
+    getGrowth(fill) { return GROWTH }
+
+    onInitFill(fill, fillPoint) {
+        // negative for actual origin city point
+        fill.context.cityMap.get(fillPoint)
+    }
+
+    onFill(fill, fillPoint) {
+        fill.context.cityGrid.wrapSet(fillPoint, fill.id)
+    }
+
+    onBlockedFill(fill, neighbor) {
+        // encountered another city fill, set them as neighbors
+        const {cityGrid, cityGraph} = fill.context
+        const neighborCityId = Math.abs(cityGrid.get(neighbor))
+        cityGraph.setEdge(fill.id, neighborCityId)
+    }
+
+    getNeighbors(fill, parentPoint) {
+        return Point.adjacents(parentPoint)
+    }
+
+    canFill(fill, fillPoint) {
+        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
+        return currentValue === EMPTY
     }
 }
 
@@ -106,47 +202,4 @@ const TYPE_MAP = {
     0: Capital,
     1: Town,
     2: Village,
-}
-
-
-export function buildCitySpaces(context) {
-    const fill = new CitySpacesFill()
-    const cityGraph = new Graph()
-    const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
-    fill.start(context.cityPoints, {...context, cityGrid, cityGraph})
-    return [cityGrid, cityGraph]
-}
-
-
-class CitySpacesFill extends ConcurrentFill {
-    // this fill marks the city ids grid
-    // and sets the city neighborhood graph
-
-    getChance(fill) { return CHANCE }
-    getGrowth(fill) { return GROWTH }
-
-    onInitFill(fill, fillPoint) {
-        // negative for actual origin city point
-        fill.context.cityGrid.wrapSet(fillPoint, -fill.id)
-    }
-
-    onFill(fill, fillPoint) {
-        fill.context.cityGrid.wrapSet(fillPoint, fill.id)
-    }
-
-    onBlockedFill(fill, neighbor) {
-        // encountered another city fill, set them as neighbors
-        const {cityGrid, cityGraph} = fill.context
-        const neighborCityId = Math.abs(cityGrid.get(neighbor))
-        cityGraph.setEdge(fill.id, neighborCityId)
-    }
-
-    getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
-    }
-
-    canFill(fill, fillPoint) {
-        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
-        return currentValue === EMPTY
-    }
 }

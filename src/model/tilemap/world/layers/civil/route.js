@@ -11,7 +11,7 @@ const EMPTY = null
 
 export function buildRouteMap(context) {
     // used in block fill to detect other's fill id
-    const {rect, capitalPoints, cityPoints} = context
+    const {rect} = context
     const fillIdGrid = Grid.fromRect(rect, () => EMPTY)
     // save fill directions of each origin (city) for route building
     const fillDirectionGrid = Grid.fromRect(rect, () => EMPTY)
@@ -23,10 +23,10 @@ export function buildRouteMap(context) {
     const roadContext = {
         ...context,
         roadCityGraph,
-        fillDirectionGrid,
         directionMaskGrid,
-        fillOriginMap,
-        fillIdGrid,
+        fillDirectionGrid,  // created with citySpaces
+        fillOriginMap,  // remove
+        fillIdGrid,  // remove
     }
     const fill = new RoadFill()
     fill.start(context.cityPoints, roadContext)
