@@ -1,5 +1,7 @@
 
 export class Graph {
+    // this graph is bi-directional
+
     constructor() {
         this.table = new Map()
     }
@@ -32,6 +34,7 @@ export class Graph {
     }
 
     setEdge(source, target) {
+        if (source === target) return
         this.addNode(source)
         this.addNode(target)
         this.table.get(source).add(target)

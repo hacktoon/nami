@@ -19,8 +19,16 @@ const EMPTY = null
 
 export function buildCityPoints(context) {
     const {rect, layers} = context
+    const candidates = new PointArraySet()
+    // discover candidate cities in world grid
+    Grid.fromRect(rect, point => {
+        if (layers.surface.isWater(point)) return
+        if (! layers.surface.isBorder(point)) return
+        if (! layers.river.has(point)) return
+        candidates.add(point)
+    })
+    // eliminate city points too close of already chosen
     const points = []
-    const candidates = buildCityCandidates(rect, layers)
     while (candidates.size > 0) {
         const candidatePoint = candidates.random() // get a random candidate
         // min radius value is 1
@@ -32,19 +40,6 @@ export function buildCityPoints(context) {
         points.push(candidatePoint)
     }
     return points
-}
-
-
-function buildCityCandidates(rect, layers) {
-    const candidates = new PointArraySet()
-    // discover candidate cities in world grid
-    Grid.fromRect(rect, point => {
-        if (layers.surface.isWater(point)) return
-        if (! layers.surface.isBorder(point)) return
-        if (! layers.river.has(point)) return
-        candidates.add(point)
-    })
-    return candidates
 }
 
 
@@ -115,26 +110,35 @@ const TYPE_MAP = {
 
 
 export function buildCitySpaces(context) {
-    const fill = new CityGridFill()
+    const fill = new CitySpacesFill()
+    const cityGraph = new Graph()
     const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
-    fill.start(context.cityPoints, {...context, cityGrid})
-    return cityGrid
+    fill.start(context.cityPoints, {...context, cityGrid, cityGraph})
+    return [cityGrid, cityGraph]
 }
 
 
-class CityGridFill extends ConcurrentFill {
+class CitySpacesFill extends ConcurrentFill {
+    // this fill marks the city ids grid
+    // and sets the city neighborhood graph
+
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
     onInitFill(fill, fillPoint) {
-        const {cityGrid} = fill.context
-        // negative for actual city point
-        cityGrid.wrapSet(fillPoint, -fill.id)
+        // negative for actual origin city point
+        fill.context.cityGrid.wrapSet(fillPoint, -fill.id)
     }
 
     onFill(fill, fillPoint) {
-        const {cityGrid} = fill.context
-        cityGrid.wrapSet(fillPoint, fill.id)
+        fill.context.cityGrid.wrapSet(fillPoint, fill.id)
+    }
+
+    onBlockedFill(fill, neighbor) {
+        // encountered another city fill, set them as neighbors
+        const {cityGrid, cityGraph} = fill.context
+        const neighborCityId = Math.abs(cityGrid.get(neighbor))
+        cityGraph.setEdge(fill.id, neighborCityId)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -142,7 +146,7 @@ class CityGridFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {cityGrid} = fill.context
-        return cityGrid.wrapGet(fillPoint) === EMPTY
+        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
+        return currentValue === EMPTY
     }
 }

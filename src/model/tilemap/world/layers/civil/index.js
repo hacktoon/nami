@@ -23,9 +23,11 @@ export class CivilLayer {
 
     constructor(rect, layers, realmCount) {
         const context = {rect, layers, realmCount}
+        // build the cities points distributed in a rect
         const cityPoints = buildCityPoints(context)
         // build a grid filling each cell with a city id
-        const cityGrid = buildCitySpaces({...context, cityPoints})
+        // and a graph connecting neighbor cities by id
+        const [cityGrid, cityGraph] = buildCitySpaces({...context, cityPoints})
         const cityMap = buildCityMap({...context, cityPoints})
         // this.#realmMap = buildRealmMap(cityPoints)
         this.#directionMaskGrid = buildRouteMap({...context, cityPoints})
