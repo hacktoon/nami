@@ -1,9 +1,9 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
+import { Graph } from '/src/lib/graph'
 import { Point } from '/src/lib/point'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
-import { PointMap } from '/src/lib/point/map'
 import { PointArraySet } from '/src/lib/point/set'
 import { WORLD_NAMES } from '/src/lib/names'
 
@@ -14,43 +14,20 @@ const TOWN_RATIO = .6
 // fill constants
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 5  // make fill basins grow bigger than others
-const EMPTY = 0
+const EMPTY = null
 
 
-export function buildCityMap(context) {
-    const {rect, layers, realmCount} = context
-    const points = buildCityPoints(context)
-    const cityMap = new Map()
-    const cityPoints = []
-    let capitalCount = 0
-    let cityCount = 0
-    let type
-    for (let point of points) {
-        if (realmCount > capitalCount) {
-            type = Capital
-            capitalCount++
-        } else {
-            type = Random.chance(TOWN_RATIO) ? Town : Village
-        }
-        const city = buildCity(cityCount, type)
-        cityPoints.push(point)
-        cityMap.set(cityCount, city)
-        cityCount++
-    }
-    return [cityMap, cityPoints]
-}
-
-
-function buildCityPoints(context) {
+export function buildCityPoints(context) {
     const {rect, layers} = context
     const points = []
     const candidates = buildCityCandidates(rect, layers)
     while (candidates.size > 0) {
-        const candidatePoint = candidates.random()
-        // remove candidate points in a circle area
-        const radius = Math.floor(rect.width * CITY_RADIUS)
-        Point.insideCircle(candidatePoint, radius, candidatePoint => {
-            candidates.delete(rect.wrap(candidatePoint))
+        const candidatePoint = candidates.random() // get a random candidate
+        // min radius value is 1
+        const radius = Math.max(Math.floor(rect.width * CITY_RADIUS), 1)
+        // remove all candidate points in a circle area
+        Point.insideCircle(candidatePoint, radius, inRadiusPoint => {
+            candidates.delete(rect.wrap(inRadiusPoint))
         })
         points.push(candidatePoint)
     }
@@ -68,6 +45,27 @@ function buildCityCandidates(rect, layers) {
         candidates.add(point)
     })
     return candidates
+}
+
+
+export function buildCityMap(context) {
+    const {realmCount, cityPoints} = context
+    const cityMap = new Map()
+    let capitalCount = 0
+    let cityCount = 0
+    let type
+    for (let point of cityPoints) {
+        if (realmCount > capitalCount) {
+            type = Capital
+            capitalCount++
+        } else {
+            type = Random.chance(TOWN_RATIO) ? Town : Village
+        }
+        const city = buildCity(cityCount, type)
+        cityMap.set(cityCount, city)
+        cityCount++
+    }
+    return cityMap
 }
 
 
@@ -116,7 +114,7 @@ const TYPE_MAP = {
 }
 
 
-export function buildCityGrid(context) {
+export function buildCitySpaces(context) {
     const fill = new CityGridFill()
     const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
     fill.start(context.cityPoints, {...context, cityGrid})

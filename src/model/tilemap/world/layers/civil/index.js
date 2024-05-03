@@ -4,7 +4,8 @@ import { drawVillage, drawTown, drawCapital } from './draw'
 import { buildRealmMap } from './realm'
 import {
     buildCityMap,
-    buildCityGrid,
+    buildCityPoints,
+    buildCitySpaces,
     Capital,
     City,
     Town
@@ -17,17 +18,19 @@ export class CivilLayer {
     #layers
     #realmMap            // map a realm id to a realm object
     #cityMap             // map a point to a city object
-    #cityGrid            // map a point to a city object
+    #cityGrid            // grid of city ids in area
     #directionMaskGrid   // map a point to a direction bitmask
 
     constructor(rect, layers, realmCount) {
         const context = {rect, layers, realmCount}
-        const [cityMap, cityPoints] = buildCityMap(context)
+        const cityPoints = buildCityPoints(context)
         // build a grid filling each cell with a city id
-        this.#cityGrid = buildCityGrid({...context, cityPoints})
+        const cityGrid = buildCitySpaces({...context, cityPoints})
+        const cityMap = buildCityMap({...context, cityPoints})
         // this.#realmMap = buildRealmMap(cityPoints)
         this.#directionMaskGrid = buildRouteMap({...context, cityPoints})
         this.#cityMap = cityMap
+        this.#cityGrid = cityGrid
         this.#layers = layers  // used only for basin midpoint
     }
 
