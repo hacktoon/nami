@@ -7,15 +7,13 @@ import { Random } from '/src/lib/random'
 import { PointArraySet } from '/src/lib/point/set'
 import { WORLD_NAMES } from '/src/lib/names'
 
-import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
-
 
 const CITY_RADIUS = .03
 const TOWN_RATIO = .6
 
 // fill constants
-const CHANCE = .1  // chance of fill growing
-const GROWTH = 5  // make fill basins grow bigger than others
+const CHANCE = .2  // chance of fill growing
+const GROWTH = 1  // make fill grow bigger than others
 const EMPTY = null
 
 
@@ -99,7 +97,7 @@ export function buildCitySpaces(context) {
         cityGraph,
         civilLevelGrid,
     })
-    return [cityGrid, cityGraph]
+    return [cityGrid, cityGraph, civilLevelGrid]
 }
 
 
@@ -114,10 +112,12 @@ class CitySpacesFill extends ConcurrentFill {
     }
 
     onInitFill(fill, fillPoint) {
+        const {cityGrid, civilLevelGrid} = fill.context
         // avoid zero index, shift values
         const id = fill.id + 1
         // negative for actual origin city point
-        fill.context.cityGrid.wrapSet(fillPoint, -id)
+        cityGrid.wrapSet(fillPoint, -id)
+        civilLevelGrid.wrapSet(fillPoint, fill.level)
     }
 
     canFill(fill, fillPoint) {

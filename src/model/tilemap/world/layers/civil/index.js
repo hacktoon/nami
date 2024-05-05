@@ -1,7 +1,6 @@
 import { Point } from '/src/lib/point'
 
 import { drawVillage, drawTown, drawCapital } from './draw'
-import { buildRealmMap } from './realm'
 import {
     buildCityRealms,
     buildCityPoints,
@@ -19,6 +18,7 @@ export class CivilLayer {
     #realmMap            // map a realm id to a realm object
     #cityMap             // map a point to a city object
     #cityGrid            // grid of city ids in area
+    #civilLevel          // grid of civil level
     #directionMaskGrid   // map a point to a direction bitmask
 
     constructor(rect, layers, realmCount) {
@@ -27,11 +27,12 @@ export class CivilLayer {
         const cityPoints = buildCityPoints(context)
         // build a city grid with a city id per flood area
         // build a graph connecting neighbor cities by id using fill data
-        const [cityGrid, cityGraph] = buildCitySpaces({...context, cityPoints})
+        const [cityGrid, cityGraph, civilLevel] = buildCitySpaces({...context, cityPoints})
         const [cityMap, capitalPoints] = buildCityRealms({...context, cityPoints})
         this.#directionMaskGrid = buildRouteMap({...context, cityPoints})
         this.#cityMap = cityMap
         this.#cityGrid = cityGrid
+        this.#civilLevel = civilLevel
         this.#layers = layers  // used only for basin midpoint
     }
 
@@ -39,8 +40,13 @@ export class CivilLayer {
         const id = this.#cityGrid.get(point)
         const isCity = id < 0  // negative id marks the city location point
         const absoluteId = Math.abs(id)
+        const civilLevel = this.#civilLevel.get(point)
         const city = isCity ? this.#cityMap.get(absoluteId) : undefined
-        return {id: absoluteId, city}
+        return {
+            id: absoluteId,
+            level: civilLevel,
+            city
+        }
     }
 
     getTotalCities() {
@@ -52,7 +58,10 @@ export class CivilLayer {
         const city = civil.city
         // const realm = civil.realm
         // const roadDirs = this.#directionMaskGrid.get(point)
-        const props = [`city=${civil.id}`]
+        const props = [
+            `city=${civil.id}`,
+            `level=${civil.level}`
+        ]
         // if (roadDirs) {
         //     props.push(`roads=${roadDirs.map(d => d.name)}`)
         // }
