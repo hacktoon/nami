@@ -7,6 +7,8 @@ import { Random } from '/src/lib/random'
 import { PointArraySet } from '/src/lib/point/set'
 import { WORLD_NAMES } from '/src/lib/names'
 
+import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
+
 
 const CITY_RADIUS = .03
 const TOWN_RATIO = .6
@@ -86,13 +88,22 @@ function buildCity(cityId, point, type) {
 
 export function buildCitySpaces(context) {
     const citySpacesFill = new CitySpacesFill()
+    const {rect, cityPoints} = context
     const cityGraph = new Graph()
-    const cityGrid = Grid.fromRect(context.rect, () => EMPTY)
-    const fillDirectionGrid = Grid.fromRect(context.rect, () => EMPTY)
-    citySpacesFill.start(context.cityPoints, {
-        ...context, cityGrid, cityGraph, fillDirectionGrid
+    const cityGrid = Grid.fromRect(rect, () => EMPTY)
+    const fillDirectionGrid = Grid.fromRect(rect, () => EMPTY)
+    const directionMaskGrid = new DirectionMaskGrid(rect)
+    // maps a fill id to a city point
+    const fillOriginMap = new Map()
+    citySpacesFill.start(cityPoints, {
+        ...context,
+        cityGrid,
+        cityGraph,
+        directionMaskGrid,
+        fillOriginMap,
+        fillDirectionGrid,
     })
-    return [cityGrid, cityGraph]
+    return [cityGrid, cityGraph, directionMaskGrid]
 }
 
 
@@ -102,11 +113,22 @@ class CitySpacesFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
+    getNeighbors(fill, parentPoint) {
+        return Point.adjacents(parentPoint)
+    }
+
     onInitFill(fill, fillPoint) {
-        // avoid zero index
+        // avoid zero index, shift values
         const id = fill.id + 1
+        const {fillOriginMap, cityGrid} = fill.context
         // negative for actual origin city point
-        fill.context.cityGrid.wrapSet(fillPoint, -id)
+        cityGrid.wrapSet(fillPoint, -id)
+        fillOriginMap.set(id, fillPoint)
+    }
+
+    canFill(fill, fillPoint) {
+        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
+        return currentValue === EMPTY
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -115,23 +137,50 @@ class CitySpacesFill extends ConcurrentFill {
         const id = fill.id + 1
         const direction = Point.directionBetween(fillPoint, parentPoint)
         cityGrid.wrapSet(fillPoint, id)
+        // wrap and store the direction of the fill growth points
         fillDirectionGrid.wrapSet(fillPoint, direction)
     }
 
-    onBlockedFill(fill, neighbor) {
-        // encountered another city fill, set them as neighbors
-        const {cityGrid, cityGraph} = fill.context
-        const neighborCityId = Math.abs(cityGrid.get(neighbor))
-        cityGraph.setEdge(fill.id, neighborCityId)
+    onBlockedFill(fill, blockedPoint, referencePoint) {
+        // when two fills block each other, a road is built between them
+        const { cityGrid, fillOriginMap, cityGraph } = fill.context
+        const blockedFillId = Math.abs(cityGrid.get(blockedPoint))
+        const referenceFillId = Math.abs(cityGrid.get(referencePoint))
+        const isSameFill = blockedFillId === referenceFillId
+        // check if there is already a road between the cities
+        const isMarked = cityGraph.hasEdge(blockedFillId, referenceFillId)
+        // return on first fill block. points are on shortest distance
+        if (blockedFillId === EMPTY || isSameFill || isMarked) return
+        // set road as an edge between blocked and reference fill ids
+        cityGraph.setEdge(blockedFillId, referenceFillId)
+        // get cities points - the targets of the road
+        const blockedOrigin = fillOriginMap.get(blockedFillId)
+        const referenceOrigin = fillOriginMap.get(referenceFillId)
+        // create road points, send origin, target and previous point
+        this.#buildCityRoute(fill, blockedPoint, blockedOrigin, referencePoint)
+        this.#buildCityRoute(fill, referencePoint, referenceOrigin, blockedPoint)
     }
 
-    getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
-    }
-
-    canFill(fill, fillPoint) {
-        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
-        return currentValue === EMPTY
+    #buildCityRoute(fill, origin, target, initialPrevPoint) {
+        // Builds a route from the middle of the road to the city point.
+        const {rect, fillDirectionGrid, directionMaskGrid} = fill.context
+        const points = [origin]
+        let nextPoint = origin
+        let prevPoint = initialPrevPoint
+        // compare the next point in real grid space with the target
+        while (Point.differs(rect.wrap(nextPoint), target)) {
+            const direction = fillDirectionGrid.get(nextPoint)
+            const prevDirection = Point.directionBetween(nextPoint, prevPoint)
+            // set road at forward and previous direction
+            directionMaskGrid.add(nextPoint, direction)
+            directionMaskGrid.add(nextPoint, prevDirection)
+            // update the previous point to follow the road
+            prevPoint = nextPoint
+            // the next point is at <direction> of current point
+            nextPoint = Point.atDirection(nextPoint, direction)
+            // points.push(nextPoint)
+        }
+        return points
     }
 }
 

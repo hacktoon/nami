@@ -27,7 +27,7 @@ export class CivilLayer {
         const cityPoints = buildCityPoints(context)
         // build a city grid with a city id per flood area
         // build a graph connecting neighbor cities by id using fill data
-        const [cityGrid, cityGraph] = buildCitySpaces({...context, cityPoints})
+        const [cityGrid, cityGraph, directionMaskGrid] = buildCitySpaces({...context, cityPoints})
         const [cityMap, capitalPoints] = buildCityRealms({...context, cityPoints})
         this.#directionMaskGrid = buildRouteMap({...context, cityPoints})
         this.#cityMap = cityMap
