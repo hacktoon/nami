@@ -90,13 +90,19 @@ export function buildCitySpaces(context) {
     const cityGraph = new Graph()
     const cityGrid = Grid.fromRect(rect, () => EMPTY)
     const civilLevelGrid = Grid.fromRect(rect, () => EMPTY)
-    // maps a fill id to a city point
-    citySpacesFill.start(cityPoints, {
+    const waterOrigins = []
+    // create map to use with fill
+    // originMap = new Map()
+    // 3 =>
+    // start with land points
+    const _context = {
         ...context,
         cityGrid,
         cityGraph,
         civilLevelGrid,
-    })
+        waterOrigins,
+    }
+    citySpacesFill.start(cityPoints, _context)
     return [cityGrid, cityGraph, civilLevelGrid]
 }
 
