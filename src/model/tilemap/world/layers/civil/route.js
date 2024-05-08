@@ -29,7 +29,7 @@ export function buildRouteMap(context) {
         fillIdGrid,  // remove
     }
     const fill = new RoadFill()
-    fill.start(context.cityPoints, roadContext)
+    fill.start(context.cityPoints.points, roadContext)
     return directionMaskGrid
 }
 

@@ -78,57 +78,43 @@ export class PointArraySet {
 
 
 export class PointSet {
-    #size = 0
-    #xMap = new Map()
+    #indexSet = new Set()
 
-    constructor(points=[]) {
+    constructor(rect, points=[]) {
+        this.rect = rect
         for(let point of points) {
             this.add(point)
         }
     }
 
     get size() {
-        return this.#size
+        return this.#indexSet.size
     }
 
     get points() {
-        const points = []
-        this.forEach(point => points.push(point))
-        return points
+        const indexes = Array.from(this.#indexSet)
+        return indexes.map(index => this.rect.indexToPoint(index))
     }
 
-    add([x, y]) {
-        if (! this.#xMap.has(x)) {
-            this.#xMap.set(x, new Set())
-        }
-        const yMap = this.#xMap.get(x)
-        if (! yMap.has(y)) {
-            yMap.add(y)
-            this.#size++
-        }
+    add(point) {
+        const index = this.rect.pointToIndex(point)
+        this.#indexSet.add(index)
     }
 
-    delete([x, y]) {
-        if (! this.#xMap.has(x)) return
-        const yMap = this.#xMap.get(x)
-        if (! yMap.has(y)) return
-        yMap.delete(y)
-        if (yMap.size === 0) {
-            this.#xMap.delete(x)
-        }
-        this.#size--
+    delete(point) {
+        const index = this.rect.pointToIndex(point)
+        this.#indexSet.delete(index)
     }
 
-    has([x, y]) {
-        if (! this.#xMap.has(x)) return false
-        return this.#xMap.get(x).has(y)
+    has(point) {
+        const index = this.rect.pointToIndex(point)
+        return this.#indexSet.has(index)
     }
 
     forEach(callback) {
-        this.#xMap.forEach((yMap, x) => {
-            yMap.forEach(y => {
-                callback([x, y])
-            })
+        this.#indexSet.forEach(index => {
+            const point = this.rect.indexToPoint(index)
+            callback(point)
         })
     }
 }

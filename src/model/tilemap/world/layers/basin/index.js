@@ -23,9 +23,6 @@ export class BasinLayer {
     // map a point to a direction
     #erosionMap = new PointMap()
 
-    // the highest points of basins that borders others basins
-    #dividePoints = new PointSet()
-
     // map basin type for creating rivers or other features
     #typeMap = new Map()
 
@@ -36,7 +33,11 @@ export class BasinLayer {
     // rect for mapping stored midpoint index
     #midpointRect = new Rect(10, 10)
 
+    // the highest points of basins that borders others basins
+    #dividePoints
+
     constructor(rect, layers) {
+        this.#dividePoints = new PointSet(rect)
         const context = {
             rect,
             layers: layers,

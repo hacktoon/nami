@@ -18,11 +18,12 @@ export class RiverLayer {
     // map a river point to its river type
     #stretchMap = new PointMap()
 
-    #riverMouths = new PointSet()
+    #riverMouths
 
     constructor(rect, layers) {
         this.layers = layers
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
+        this.#riverMouths = new PointSet(rect)
         const context = {
             rect,
             layers,

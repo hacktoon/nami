@@ -13,7 +13,7 @@ const EMPTY = 0
 
 export function buildRealmMap(capitalPoints) {
     const realmMap = new Map()
-    capitalPoints.forEach((point, index) => {
+    capitalPoints.points.forEach((point, index) => {
         // start realm id from 1
         const realmId = index + 1
         realmMap.set(realmId, {

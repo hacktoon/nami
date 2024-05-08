@@ -2,10 +2,12 @@ import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Graph } from '/src/lib/graph'
 import { Point } from '/src/lib/point'
+import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
 import { PointArraySet } from '/src/lib/point/set'
 import { WORLD_NAMES } from '/src/lib/names'
+import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 
 const CITY_RADIUS = .03
@@ -29,7 +31,7 @@ export function buildCityPoints(context) {
         candidates.add(point)
     })
     // eliminate city points too close of already chosen
-    const cityPoints = []
+    const cityPoints = new PointSet(rect)
     while (candidates.size > 0) {
         const candidatePoint = candidates.random() // get a random candidate
         // min radius value is 1
@@ -39,7 +41,7 @@ export function buildCityPoints(context) {
             // radius can overflow grid, wrap the point
             candidates.delete(rect.wrap(inRadiusPoint))
         })
-        cityPoints.push(candidatePoint)
+        cityPoints.add(candidatePoint)
     }
     return cityPoints
 }
@@ -53,7 +55,7 @@ export function buildCityRealms(context) {
     let realmId = 0
     let cityId = 1
     let type
-    for (let point of cityPoints) {
+    for (let point of cityPoints.points) {
         if (realmCount > realmId) {
             type = Capital
             capitalPoints.push(point)
@@ -88,12 +90,20 @@ export function buildCitySpaces(context) {
     const {rect, cityPoints} = context
     const continentSpacesFill = new ContinentSpacesFill()
     const oceanSpacesFill = new OceanSpacesFill()
+    const directionMaskGrid = new DirectionMaskGrid(rect)
     const cityGrid = Grid.fromRect(rect, () => EMPTY)
     const civilLevelGrid = Grid.fromRect(rect, () => EMPTY)
     const cityGraph = new Graph()
-    const fillContext = {...context, cityGrid, cityGraph, civilLevelGrid}
-    continentSpacesFill.start(cityPoints, fillContext)
-    oceanSpacesFill.start(cityPoints, fillContext)
+    const fillContext = {
+        ...context,
+        cityGrid,
+        cityGraph,
+        civilLevelGrid,
+        directionMaskGrid
+    }
+    const origins = cityPoints.points
+    continentSpacesFill.start(origins, fillContext)
+    oceanSpacesFill.start(origins, fillContext)
     return [cityGrid, cityGraph, civilLevelGrid]
 }
 
