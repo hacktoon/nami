@@ -10,6 +10,7 @@ import {
     Town
 } from './city'
 import { buildRouteMap } from './route'
+import { loadConfig } from '@babel/core/lib/config/files'
 
 
 // Define realms, cities and roads
@@ -90,8 +91,10 @@ export class CivilLayer {
 
     drawCivil(point, props) {
         const {canvas, canvasPoint, tileSize} = props
+        // console.log(this.get(point), this.get(point).id);
         const city = this.#cityMap.get(this.get(point).id)
-        if (! city) {
+        if (!city) {
+            console.log(city, point);
             return
         }
         const isWater = this.#layers.surface.isWater(point)

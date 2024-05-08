@@ -86,14 +86,14 @@ function buildCity(cityId, point, type) {
 
 export function buildCitySpaces(context) {
     const {rect, cityPoints} = context
-    const landSpacesFill = new CityLandSpacesFill()
-    const waterSpacesFill = new CityWaterSpacesFill()
+    const continentSpacesFill = new ContinentSpacesFill()
+    const oceanSpacesFill = new OceanSpacesFill()
     const cityGrid = Grid.fromRect(rect, () => EMPTY)
     const civilLevelGrid = Grid.fromRect(rect, () => EMPTY)
     const cityGraph = new Graph()
     const fillContext = {...context, cityGrid, cityGraph, civilLevelGrid}
-    landSpacesFill.start(cityPoints, fillContext)
-    waterSpacesFill.start(cityPoints, fillContext)
+    continentSpacesFill.start(cityPoints, fillContext)
+    oceanSpacesFill.start(cityPoints, fillContext)
     return [cityGrid, cityGraph, civilLevelGrid]
 }
 
@@ -104,25 +104,20 @@ class CitySpacesFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
-    getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
-    }
-
     onFill(fill, fillPoint) {
         const {cityGrid, civilLevelGrid} = fill.context
         // avoid zero index
         const id = fill.id + 1
-        civilLevelGrid.wrapSet(fillPoint, fill.level)
         cityGrid.wrapSet(fillPoint, id)
+        civilLevelGrid.wrapSet(fillPoint, fill.level)
     }
 
     onBlockedFill(fill, blockedPoint, referencePoint) {
         // when two fills block each other, a road is built between them
         const { cityGrid, cityGraph } = fill.context
-        const blockedId = cityGrid.wrapGet(blockedPoint)
+        const blockedFillId = Math.abs(cityGrid.wrapGet(blockedPoint))
         // only fill graph if there's a claimed city on blocked point
-        if (blockedId !== EMPTY) {
-            const blockedFillId = Math.abs(blockedId)
+        if (blockedFillId !== EMPTY) {
             const referenceFillId = Math.abs(cityGrid.wrapGet(referencePoint))
             // set road as an edge between blocked and reference fill ids
             cityGraph.setEdge(blockedFillId, referenceFillId)
@@ -131,7 +126,11 @@ class CitySpacesFill extends ConcurrentFill {
 }
 
 
-class CityLandSpacesFill extends CitySpacesFill {
+class ContinentSpacesFill extends CitySpacesFill {
+    getNeighbors(fill, parentPoint) {
+        return Point.adjacents(parentPoint)
+    }
+
     onInitFill(fill, fillPoint) {
         const {cityGrid, civilLevelGrid} = fill.context
         // avoid zero index, shift values
@@ -146,14 +145,14 @@ class CityLandSpacesFill extends CitySpacesFill {
         const currentValue = cityGrid.wrapGet(fillPoint)
         const isLake = layers.surface.isLake(fillPoint)
         const isSea = layers.surface.isSea(fillPoint)
-        const isContinent = layers.surface.isContinent(fillPoint)
-        const isValid = isContinent || isLake || isSea
+        const isLand = layers.surface.isLand(fillPoint)
+        const isValid = isLand || isLake || isSea
         return currentValue === EMPTY && isValid
     }
 }
 
 
-class CityWaterSpacesFill extends CitySpacesFill {
+class OceanSpacesFill extends CitySpacesFill {
     onInitFill(fill, fillPoint) {
         // do nothing on init, it's already claimed
     }
@@ -170,9 +169,6 @@ class CityWaterSpacesFill extends CitySpacesFill {
         return currentValue === EMPTY && (isIsland || isWater)
     }
 }
-
-
-
 
 
 class RealmSpacesFill extends ConcurrentFill {
