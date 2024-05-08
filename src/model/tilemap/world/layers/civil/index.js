@@ -92,11 +92,10 @@ export class CivilLayer {
         const {canvas, canvasPoint, tileSize} = props
         const city = this.#cityMap.get(this.get(point).id)
         if (! city) {
-            console.log(city, this.get(point));
             return
         }
         const isWater = this.#layers.surface.isWater(point)
-        const color = isWater ? city.color.alpha(.1) : city.color.alpha(.8)
+        const color = isWater ? city.color.alpha(.2) : city.color.alpha(.8)
         canvas.rect(canvasPoint, tileSize, color.toRGBA())
     }
 

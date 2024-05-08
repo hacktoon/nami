@@ -85,24 +85,15 @@ function buildCity(cityId, point, type) {
 
 
 export function buildCitySpaces(context) {
-    const citySpacesFill = new CitySpacesFill()
     const {rect, cityPoints} = context
-    const cityGraph = new Graph()
+    const landSpacesFill = new CityLandSpacesFill()
+    const waterSpacesFill = new CityWaterSpacesFill()
     const cityGrid = Grid.fromRect(rect, () => EMPTY)
     const civilLevelGrid = Grid.fromRect(rect, () => EMPTY)
-    const waterOrigins = []
-    // create map to use with fill
-    // originMap = new Map()
-    // 3 =>
-    // start with land points
-    const _context = {
-        ...context,
-        cityGrid,
-        cityGraph,
-        civilLevelGrid,
-        waterOrigins,
-    }
-    citySpacesFill.start(cityPoints, _context)
+    const cityGraph = new Graph()
+    const fillContext = {...context, cityGrid, cityGraph, civilLevelGrid}
+    landSpacesFill.start(cityPoints, fillContext)
+    waterSpacesFill.start(cityPoints, fillContext)
     return [cityGrid, cityGraph, civilLevelGrid]
 }
 
@@ -117,20 +108,6 @@ class CitySpacesFill extends ConcurrentFill {
         return Point.adjacents(parentPoint)
     }
 
-    onInitFill(fill, fillPoint) {
-        const {cityGrid, civilLevelGrid} = fill.context
-        // avoid zero index, shift values
-        const id = fill.id + 1
-        // negative for actual origin city point
-        cityGrid.wrapSet(fillPoint, -id)
-        civilLevelGrid.wrapSet(fillPoint, fill.level)
-    }
-
-    canFill(fill, fillPoint) {
-        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
-        return currentValue === EMPTY
-    }
-
     onFill(fill, fillPoint) {
         const {cityGrid, civilLevelGrid} = fill.context
         // avoid zero index
@@ -142,12 +119,59 @@ class CitySpacesFill extends ConcurrentFill {
     onBlockedFill(fill, blockedPoint, referencePoint) {
         // when two fills block each other, a road is built between them
         const { cityGrid, cityGraph } = fill.context
-        const blockedFillId = Math.abs(cityGrid.wrapGet(blockedPoint))
-        const referenceFillId = Math.abs(cityGrid.wrapGet(referencePoint))
-        // set road as an edge between blocked and reference fill ids
-        cityGraph.setEdge(blockedFillId, referenceFillId)
+        const blockedId = cityGrid.wrapGet(blockedPoint)
+        // only fill graph if there's a claimed city on blocked point
+        if (blockedId !== EMPTY) {
+            const blockedFillId = Math.abs(blockedId)
+            const referenceFillId = Math.abs(cityGrid.wrapGet(referencePoint))
+            // set road as an edge between blocked and reference fill ids
+            cityGraph.setEdge(blockedFillId, referenceFillId)
+        }
     }
 }
+
+
+class CityLandSpacesFill extends CitySpacesFill {
+    onInitFill(fill, fillPoint) {
+        const {cityGrid, civilLevelGrid} = fill.context
+        // avoid zero index, shift values
+        const id = fill.id + 1
+        // negative for actual origin city point
+        cityGrid.wrapSet(fillPoint, -id)
+        civilLevelGrid.wrapSet(fillPoint, fill.level)
+    }
+
+    canFill(fill, fillPoint) {
+        const {cityGrid, layers} = fill.context
+        const currentValue = cityGrid.wrapGet(fillPoint)
+        const isLake = layers.surface.isLake(fillPoint)
+        const isSea = layers.surface.isSea(fillPoint)
+        const isContinent = layers.surface.isContinent(fillPoint)
+        const isValid = isContinent || isLake || isSea
+        return currentValue === EMPTY && isValid
+    }
+}
+
+
+class CityWaterSpacesFill extends CitySpacesFill {
+    onInitFill(fill, fillPoint) {
+        // do nothing on init, it's already claimed
+    }
+
+    getNeighbors(fill, parentPoint) {
+        return Point.around(parentPoint)
+    }
+
+    canFill(fill, fillPoint) {
+        const {cityGrid, layers} = fill.context
+        const currentValue = cityGrid.wrapGet(fillPoint)
+        const isWater = layers.surface.isWater(fillPoint)
+        const isIsland = layers.surface.isIsland(fillPoint)
+        return currentValue === EMPTY && (isIsland || isWater)
+    }
+}
+
+
 
 
 
