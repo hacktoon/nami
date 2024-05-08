@@ -20,6 +20,7 @@ export class CivilLayer {
     #cityMap             // map a point to a city object
     #cityGrid            // grid of city ids in area
     #civilLevel          // grid of civil level
+    #cityPoints
     #directionMaskGrid   // map a point to a direction bitmask
 
     constructor(rect, layers, realmCount) {
@@ -32,6 +33,7 @@ export class CivilLayer {
         const [cityMap, capitalPoints] = buildCityRealms({...context, cityPoints})
         this.#directionMaskGrid = buildRouteMap({...context, cityPoints})
         this.#cityMap = cityMap
+        this.#cityPoints = cityPoints
         this.#cityGrid = cityGrid
         this.#civilLevel = civilLevel
         this.#layers = layers  // used only for basin midpoint
@@ -39,19 +41,14 @@ export class CivilLayer {
 
     get(point) {
         const id = this.#cityGrid.get(point)
-        const isCity = id < 0  // negative id marks the city location point
-        const absoluteId = Math.abs(id)
-        const civilLevel = this.#civilLevel.get(point)
-        const city = isCity ? this.#cityMap.get(absoluteId) : undefined
-        return {
-            id: absoluteId,
-            level: civilLevel,
-            city
-        }
+        const isCity = this.#cityPoints.has(point)
+        const level = this.#civilLevel.get(point)
+        const city = isCity ? this.#cityMap.get(id) : undefined
+        return {id, level, city}
     }
 
     getTotalCities() {
-        return this.#cityMap.size
+        return this.#cityPoints.size
     }
 
     getText(point) {
@@ -74,9 +71,9 @@ export class CivilLayer {
     }
 
     draw(point, props) {
-        const civil = this.get(point)
-        const city = civil.city
-        if (city) {
+        if (this.#cityPoints.has(point)) {
+            const civil = this.get(point)
+            const city = civil.city
             if (city.type === Capital.id) {
                 drawCapital(props)
             } else if (city.type === Town.id) {
@@ -91,12 +88,7 @@ export class CivilLayer {
 
     drawCivil(point, props) {
         const {canvas, canvasPoint, tileSize} = props
-        // console.log(this.get(point), this.get(point).id);
         const city = this.#cityMap.get(this.get(point).id)
-        if (!city) {
-            console.log(city, point);
-            return
-        }
         const isWater = this.#layers.surface.isWater(point)
         const color = isWater ? city.color.alpha(.2) : city.color.alpha(.8)
         canvas.rect(canvasPoint, tileSize, color.toRGBA())

@@ -14,8 +14,8 @@ const CITY_RADIUS = .03
 const TOWN_RATIO = .6
 
 // fill constants
-const CHANCE = .2  // chance of fill growing
-const GROWTH = 1  // make fill grow bigger than others
+const CHANCE = .1  // chance of fill growing
+const GROWTH = 2  // make fill grow bigger than others
 const EMPTY = null
 
 
@@ -53,7 +53,7 @@ export function buildCityRealms(context) {
     const realmMap = new Map()
     const capitalPoints = []
     let realmId = 0
-    let cityId = 1
+    let cityId = 0
     let type
     for (let point of cityPoints.points) {
         if (realmCount > realmId) {
@@ -92,19 +92,19 @@ export function buildCitySpaces(context) {
     const oceanSpacesFill = new OceanSpacesFill()
     const directionMaskGrid = new DirectionMaskGrid(rect)
     const cityGrid = Grid.fromRect(rect, () => EMPTY)
-    const civilLevelGrid = Grid.fromRect(rect, () => EMPTY)
+    const levelGrid = Grid.fromRect(rect, () => EMPTY)
     const cityGraph = new Graph()
     const fillContext = {
         ...context,
         cityGrid,
         cityGraph,
-        civilLevelGrid,
+        levelGrid,
         directionMaskGrid
     }
     const origins = cityPoints.points
     continentSpacesFill.start(origins, fillContext)
     oceanSpacesFill.start(origins, fillContext)
-    return [cityGrid, cityGraph, civilLevelGrid]
+    return [cityGrid, cityGraph, levelGrid]
 }
 
 
@@ -115,20 +115,18 @@ class CitySpacesFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     onFill(fill, fillPoint) {
-        const {cityGrid, civilLevelGrid} = fill.context
-        // avoid zero index
-        const id = fill.id + 1
-        cityGrid.wrapSet(fillPoint, id)
-        civilLevelGrid.wrapSet(fillPoint, fill.level)
+        const {cityGrid, levelGrid} = fill.context
+        cityGrid.wrapSet(fillPoint, fill.id)
+        levelGrid.wrapSet(fillPoint, fill.level)
     }
 
     onBlockedFill(fill, blockedPoint, referencePoint) {
         // when two fills block each other, a road is built between them
         const { cityGrid, cityGraph } = fill.context
-        const blockedFillId = Math.abs(cityGrid.wrapGet(blockedPoint))
+        const blockedFillId = cityGrid.wrapGet(blockedPoint)
         // only fill graph if there's a claimed city on blocked point
         if (blockedFillId !== EMPTY) {
-            const referenceFillId = Math.abs(cityGrid.wrapGet(referencePoint))
+            const referenceFillId = cityGrid.wrapGet(referencePoint)
             // set road as an edge between blocked and reference fill ids
             cityGraph.setEdge(blockedFillId, referenceFillId)
         }
@@ -142,12 +140,9 @@ class ContinentSpacesFill extends CitySpacesFill {
     }
 
     onInitFill(fill, fillPoint) {
-        const {cityGrid, civilLevelGrid} = fill.context
-        // avoid zero index, shift values
-        const id = fill.id + 1
-        // negative for actual origin city point
-        cityGrid.wrapSet(fillPoint, -id)
-        civilLevelGrid.wrapSet(fillPoint, fill.level)
+        const {cityGrid, levelGrid} = fill.context
+        cityGrid.wrapSet(fillPoint, fill.id)
+        levelGrid.wrapSet(fillPoint, fill.level)
     }
 
     canFill(fill, fillPoint) {
@@ -188,7 +183,6 @@ class RealmSpacesFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     onInitFill(fill, fillPoint) {
-        // negative for actual origin city point
         fill.context.cityMap.get(fillPoint)
     }
 
@@ -199,7 +193,7 @@ class RealmSpacesFill extends ConcurrentFill {
     onBlockedFill(fill, neighbor) {
         // encountered another city fill, set them as neighbors
         const {cityGrid, cityGraph} = fill.context
-        const neighborCityId = Math.abs(cityGrid.get(neighbor))
+        const neighborCityId = cityGrid.get(neighbor)
         cityGraph.setEdge(fill.id, neighborCityId)
     }
 
