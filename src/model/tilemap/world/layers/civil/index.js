@@ -9,8 +9,6 @@ import {
     City,
     Town
 } from './city'
-import { buildRouteMap } from './route'
-import { loadConfig } from '@babel/core/lib/config/files'
 
 
 // Define realms, cities and roads
@@ -27,15 +25,15 @@ export class CivilLayer {
         const context = {rect, layers, realmCount}
         // build the citys points
         const cityPoints = buildCityPoints(context)
+        const [cityMap, capitalPoints] = buildCityRealms({...context, cityPoints})
         // build a city grid with a city id per flood area
         // build a graph connecting neighbor cities by id using fill data
-        const [cityGrid, cityGraph, civilLevel] = buildCitySpaces({...context, cityPoints})
-        const [cityMap, capitalPoints] = buildCityRealms({...context, cityPoints})
-        this.#directionMaskGrid = buildRouteMap({...context, cityPoints})
-        this.#cityMap = cityMap
+        const citySpaces = buildCitySpaces({...context, cityPoints, cityMap})
+        this.#directionMaskGrid = citySpaces.directionMaskGrid
         this.#cityPoints = cityPoints
-        this.#cityGrid = cityGrid
-        this.#civilLevel = civilLevel
+        this.#cityMap = cityMap
+        this.#cityGrid = citySpaces.idGrid
+        this.#civilLevel = citySpaces.levelGrid
         this.#layers = layers  // used only for basin midpoint
     }
 

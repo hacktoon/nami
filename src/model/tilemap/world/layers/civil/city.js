@@ -93,18 +93,25 @@ export function buildCitySpaces(context) {
     const directionMaskGrid = new DirectionMaskGrid(rect)
     const cityGrid = Grid.fromRect(rect, () => EMPTY)
     const levelGrid = Grid.fromRect(rect, () => EMPTY)
+    const fillDirectionGrid = Grid.fromRect(rect, () => EMPTY)
     const cityGraph = new Graph()
     const fillContext = {
         ...context,
         cityGrid,
         cityGraph,
         levelGrid,
-        directionMaskGrid
+        directionMaskGrid,
+        fillDirectionGrid
     }
     const origins = cityPoints.points
     continentSpacesFill.start(origins, fillContext)
     oceanSpacesFill.start(origins, fillContext)
-    return [cityGrid, cityGraph, levelGrid]
+    return {
+        idGrid: cityGrid,
+        graph: cityGraph,
+        levelGrid: levelGrid,
+        directionMaskGrid
+    }
 }
 
 
@@ -114,22 +121,57 @@ class CitySpacesFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
-    onFill(fill, fillPoint) {
-        const {cityGrid, levelGrid} = fill.context
+    onFill(fill, fillPoint, parentPoint) {
+        const {cityGrid, levelGrid, fillDirectionGrid} = fill.context
+        const direction = Point.directionBetween(fillPoint, parentPoint)
+        // this fill point comes from a direction
+        fillDirectionGrid.set(fillPoint, direction)
         cityGrid.wrapSet(fillPoint, fill.id)
         levelGrid.wrapSet(fillPoint, fill.level)
     }
 
-    onBlockedFill(fill, blockedPoint, referencePoint) {
+    onBlockedFill(fill, blockedPoint, parentPoint) {
         // when two fills block each other, a road is built between them
-        const { cityGrid, cityGraph } = fill.context
+        const { cityGrid, cityGraph, cityMap } = fill.context
         const blockedFillId = cityGrid.wrapGet(blockedPoint)
+        const parentFillId = cityGrid.wrapGet(parentPoint)
+        // it's this fill testing itself, do nothing
+        if (blockedFillId === parentFillId) return
+        // this "city to city" road has already been created
+        if (cityGraph.hasEdge(blockedFillId, parentFillId)) return
+        // it has been blocked but it's still empty, avoid making roads
+        if (blockedFillId === EMPTY) return
         // only fill graph if there's a claimed city on blocked point
-        if (blockedFillId !== EMPTY) {
-            const referenceFillId = cityGrid.wrapGet(referencePoint)
-            // set road as an edge between blocked and reference fill ids
-            cityGraph.setEdge(blockedFillId, referenceFillId)
+        // set road as an edge between blocked and reference fill ids
+        cityGraph.setEdge(blockedFillId, parentFillId)
+        // get cities points - the targets of the road
+        const blockedOrigin = cityMap.get(blockedFillId).point
+        const referenceOrigin = cityMap.get(parentFillId).point
+        // // create road points, send origin, target and previous point
+        this.#buildCityRoute(fill, blockedPoint, blockedOrigin, parentPoint)
+        this.#buildCityRoute(fill, parentPoint, referenceOrigin, blockedPoint)
+    }
+
+    #buildCityRoute(fill, origin, target, initialPrevPoint) {
+        // Builds a route from the middle of the road to the city point.
+        const {rect, fillDirectionGrid, directionMaskGrid} = fill.context
+        const points = [origin]
+        let nextPoint = origin
+        let prevPoint = initialPrevPoint
+        // compare the next point in unwrapped grid space with the target
+        while (Point.differs(rect.wrap(nextPoint), target)) {
+            const direction = fillDirectionGrid.get(nextPoint)
+            const prevDirection = Point.directionBetween(nextPoint, prevPoint)
+            // set road at forward and previous direction
+            directionMaskGrid.add(nextPoint, direction)
+            directionMaskGrid.add(nextPoint, prevDirection)
+            // update the previous point to follow the road
+            prevPoint = nextPoint
+            // the next point is at <direction> of current point
+            nextPoint = Point.atDirection(nextPoint, direction)
+            // points.push(nextPoint)
         }
+        return points
     }
 }
 
