@@ -55,11 +55,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             layers.relief.draw(point, props, layerColor)
         }
         const showRiver = this.params.get('showRivers') && tileSize >= 8
-        if (layers.river.has(point) && showRiver) {
-            layers.river.draw(point, props, layerColor)
-        }
         if (this.params.get('showCities')) {
             layers.civil.drawCity(point, props)
+        }
+        if (layers.river.has(point) && showRiver) {
+            layers.river.draw(point, props, layerColor)
         }
         if (this.params.get('showRoutes')) {
             layers.civil.drawRoute(point, props)

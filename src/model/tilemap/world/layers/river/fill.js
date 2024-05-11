@@ -16,12 +16,10 @@ export function buildRiverMap(context) {
     let riverId = 0
     const layers = context.layers
     layers.basin.getDividePoints()
-        .filter(point => {
-            return (
-                layers.rain.canCreateRiver(point)
-                && layers.basin.canCreateRiver(point)
-            )
-        })
+        .filter(point => (
+            layers.rain.canCreateRiver(point)
+            && layers.basin.canCreateRiver(point)
+        ))
         // create a list of pairs: (point, river distance to mouth)
         .map(point => [point, layers.basin.getDistance(point)])
         // in ascendent order to get longest rivers first
