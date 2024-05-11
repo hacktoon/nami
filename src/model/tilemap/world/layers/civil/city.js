@@ -26,7 +26,6 @@ export function buildCityPoints(context) {
     // create city id grid
     Grid.fromRect(rect, point => {
         if (layers.surface.isWater(point)) return
-        if (! layers.surface.isBorder(point)) return
         if (! layers.river.has(point)) return
         candidates.add(point)
     })
@@ -54,8 +53,7 @@ export function buildCityMap(context) {
     for (let point of cityPoints.points) {
         // common operations for all cities
         const color = new Color()
-        const city = {id, color, point}
-        cityMap.set(id, city)
+        cityMap.set(id, {id, color, point})
         id++
     }
     // for each capital, start a fill to get realms

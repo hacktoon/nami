@@ -20,6 +20,7 @@ const SCHEMA = new Schema(
     Type.boolean('showErosion', 'Erosion', {default: false}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
+    Type.boolean('showCityArea', 'CityArea', {default: false}),
     Type.boolean('showRoutes', 'Routes', {default: false}),
     Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
@@ -55,11 +56,14 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             layers.relief.draw(point, props, layerColor)
         }
         const showRiver = this.params.get('showRivers') && tileSize >= 8
-        if (this.params.get('showCities')) {
-            layers.civil.drawCity(point, props)
+        if (this.params.get('showCityArea')) {
+            layers.civil.drawCityArea(point, props)
         }
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props, layerColor)
+        }
+        if (this.params.get('showCities')) {
+            layers.civil.drawCity(point, props)
         }
         if (this.params.get('showRoutes')) {
             layers.civil.drawRoute(point, props)

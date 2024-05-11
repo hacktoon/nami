@@ -75,8 +75,6 @@ class BasinFill extends ConcurrentFill {
     canFill(fill, fillPoint, parentPoint) {
         const {rect, layers, basinMap} = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
-        if (layers.surface.isWater(wrappedPoint))
-            return false
         return ! basinMap.has(wrappedPoint)
     }
 

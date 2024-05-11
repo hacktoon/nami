@@ -58,12 +58,15 @@ export class CivilLayer {
         return `Civil(${props.join(",")})`
     }
 
-    drawCity(point, props) {
+    drawCityArea(point, props) {
         const {canvas, canvasPoint, tileSize} = props
         const city = this.#cityMap.get(this.get(point).id)
         const isWater = this.#layers.surface.isWater(point)
         const color = isWater ? city.color.alpha(.2) : city.color.alpha(.8)
         canvas.rect(canvasPoint, tileSize, color.toRGBA())
+    }
+
+    drawCity(point, props) {
         if (this.#cityPoints.has(point)) {
             drawTown(props)
         }
@@ -72,7 +75,7 @@ export class CivilLayer {
     drawRoute(point, props) {
         const {canvas, canvasPoint, tileSize} = props
         const width = 3
-        const hexColor = "#444"
+        const hexColor = this.#layers.surface.isWater(point) ? "#069" : "#444"
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
