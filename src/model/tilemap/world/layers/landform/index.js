@@ -23,9 +23,10 @@ const SANDBAR_CHANCE = .1
 
 export class LandformLayer {
     // Landform is related to world feature and block layout
-    #landforms = new PointMap()
+    #landforms
 
     constructor(rect, layers) {
+        this.#landforms = new PointMap(rect)
         Grid.fromRect(rect, point => {
             const isWater = layers.surface.isWater(point)
             const type = isWater ? this.#detectWaterType(layers, point)

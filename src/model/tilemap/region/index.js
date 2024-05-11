@@ -42,8 +42,8 @@ export class RegionTileMap extends TileMap {
     }
 
     #graph = new Graph()
-    #borderMap = new PointMap()
     #colorMap = new Map()
+    #borderMap
     #centerPoints
     #regionMatrix
     #growthMatrix
@@ -60,6 +60,7 @@ export class RegionTileMap extends TileMap {
         this.#levelMatrix = Grid.fromRect(this.rect, () => 0)
         this.#centerPoints = new PointSet(this.rect, this.#origins)
         this.#regions = this.#origins.map((_, id) => id)
+        this.#borderMap = new PointMap(this.rect)
         new RegionFloodFill().start(this.#origins, {
             regionMatrix: this.#regionMatrix,
             growthMatrix: this.#growthMatrix,

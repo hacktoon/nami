@@ -14,21 +14,21 @@ import {
 
 export class BasinLayer {
     // map a point to a basin id
-    #basinMap = new PointMap()
+    #basinMap
 
     // the walk distance of each basin shore to inner
     // used to determine river stretch
-    #distanceMap = new PointMap()
+    #distanceMap
 
     // map a point to a direction
-    #erosionMap = new PointMap()
+    #erosionMap
 
     // map basin type for creating rivers or other features
     #typeMap = new Map()
 
     // map a point to a terrain offset point index
     // convert index to x, y in a 10 x 10 grid
-    #terrainMidpointMap = new PointMap()
+    #terrainMidpointMap
 
     // rect for mapping stored midpoint index
     #midpointRect = new Rect(10, 10)
@@ -38,6 +38,10 @@ export class BasinLayer {
 
     constructor(rect, layers) {
         this.#dividePoints = new PointSet(rect)
+        this.#basinMap = new PointMap(rect)
+        this.#distanceMap = new PointMap(rect)
+        this.#erosionMap = new PointMap(rect)
+        this.#terrainMidpointMap = new PointMap(rect)
         const context = {
             rect,
             layers: layers,

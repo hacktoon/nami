@@ -12,11 +12,11 @@ export class RiverLayer {
     // maps an id to a name
     #riverNames = new Map()
     // map a point to an id
-    #riverPoints = new PointMap()
+    #riverPoints
     // map a point to a river direction mask
     #directionMaskGrid
     // map a river point to its river type
-    #stretchMap = new PointMap()
+    #stretchMap
 
     #riverMouths
 
@@ -24,6 +24,8 @@ export class RiverLayer {
         this.layers = layers
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
         this.#riverMouths = new PointSet(rect)
+        this.#riverPoints = new PointMap(rect)
+        this.#stretchMap = new PointMap(rect)
         const context = {
             rect,
             layers,

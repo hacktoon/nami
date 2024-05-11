@@ -6,7 +6,6 @@
 
 
 ## PLANNING
-- migrate point map to flat array
 - simplify cities into "city seeds"
 - conclude wrapGet migration for grids
 
