@@ -105,8 +105,10 @@ class CitySpacesFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const id = fill.context.cityGrid.wrapGet(fillPoint)
-        return id === EMPTY
+        const {cityGrid, layers} = fill.context
+        const id = cityGrid.wrapGet(fillPoint)
+        const isLake = layers.surface.isLake(fillPoint)
+        return ! isLake && id === EMPTY
     }
 
     onFill(fill, fillPoint, parentPoint) {
