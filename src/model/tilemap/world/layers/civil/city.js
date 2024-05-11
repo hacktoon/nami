@@ -47,69 +47,44 @@ export function buildCityPoints(context) {
 }
 
 
-export function buildCityRealms(context) {
-    const {realmCount, cityPoints} = context
+export function buildCityMap(context) {
+    const {cityPoints} = context
     const cityMap = new Map()
-    const realmMap = new Map()
-    const capitalPoints = []
-    let realmId = 0
-    let cityId = 0
-    let type
+    let id = 0
     for (let point of cityPoints.points) {
-        if (realmCount > realmId) {
-            type = Capital
-            capitalPoints.push(point)
-            realmMap.set(realmId, {id: realmId, point})
-            realmId++
-        } else {
-            type = Random.chance(TOWN_RATIO) ? Town : Village
-        }
         // common operations for all cities
-        const city = buildCity(cityId, point, type)
-        cityMap.set(cityId, city)
-        cityId++
+        const color = new Color()
+        const city = {id, color, point}
+        cityMap.set(id, city)
+        id++
     }
     // for each capital, start a fill to get realms
     // const realmFill = new RealmSpacesFill()
-    return [cityMap, capitalPoints]
-}
-
-
-function buildCity(cityId, point, type) {
-    return {
-        id: cityId,
-        type: type.id,
-        name: Random.choiceFrom(WORLD_NAMES),
-        color: new Color(),
-        point,
-    }
+    return cityMap
 }
 
 
 export function buildCitySpaces(context) {
     const {rect, cityPoints} = context
-    const continentSpacesFill = new ContinentSpacesFill()
-    const oceanSpacesFill = new OceanSpacesFill()
     const directionMaskGrid = new DirectionMaskGrid(rect)
     const cityGrid = Grid.fromRect(rect, () => EMPTY)
-    const levelGrid = Grid.fromRect(rect, () => EMPTY)
+    const wildernessGrid = Grid.fromRect(rect, () => EMPTY)
     const fillDirectionGrid = Grid.fromRect(rect, () => EMPTY)
     const cityGraph = new Graph()
     const fillContext = {
         ...context,
         cityGrid,
         cityGraph,
-        levelGrid,
+        wildernessGrid,
         directionMaskGrid,
         fillDirectionGrid
     }
-    const origins = cityPoints.points
-    continentSpacesFill.start(origins, fillContext)
-    oceanSpacesFill.start(origins, fillContext)
+    const spacesFill = new CitySpacesFill()
+    spacesFill.start(cityPoints.points, fillContext)
     return {
-        idGrid: cityGrid,
+        cityGrid,
         graph: cityGraph,
-        levelGrid: levelGrid,
+        wildernessGrid,
         directionMaskGrid
     }
 }
@@ -121,13 +96,28 @@ class CitySpacesFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
+    getNeighbors(fill, parentPoint) {
+        return Point.adjacents(parentPoint)
+    }
+
+    onInitFill(fill, fillPoint) {
+        const {cityGrid, wildernessGrid} = fill.context
+        cityGrid.wrapSet(fillPoint, fill.id)
+        wildernessGrid.wrapSet(fillPoint, fill.level)
+    }
+
+    canFill(fill, fillPoint) {
+        const id = fill.context.cityGrid.wrapGet(fillPoint)
+        return id === EMPTY
+    }
+
     onFill(fill, fillPoint, parentPoint) {
-        const {cityGrid, levelGrid, fillDirectionGrid} = fill.context
+        const {cityGrid, wildernessGrid, fillDirectionGrid} = fill.context
         const direction = Point.directionBetween(fillPoint, parentPoint)
         // this fill point comes from a direction
         fillDirectionGrid.set(fillPoint, direction)
         cityGrid.wrapSet(fillPoint, fill.id)
-        levelGrid.wrapSet(fillPoint, fill.level)
+        wildernessGrid.wrapSet(fillPoint, fill.level)
     }
 
     onBlockedFill(fill, blockedPoint, parentPoint) {
@@ -175,48 +165,6 @@ class CitySpacesFill extends ConcurrentFill {
             // points.push(nextPoint)
         }
         return points
-    }
-}
-
-
-class ContinentSpacesFill extends CitySpacesFill {
-    getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
-    }
-
-    onInitFill(fill, fillPoint) {
-        const {cityGrid, levelGrid} = fill.context
-        cityGrid.wrapSet(fillPoint, fill.id)
-        levelGrid.wrapSet(fillPoint, fill.level)
-    }
-
-    canFill(fill, fillPoint) {
-        const {cityGrid, layers} = fill.context
-        const currentValue = cityGrid.wrapGet(fillPoint)
-        const isLake = layers.surface.isLake(fillPoint)
-        const isSea = layers.surface.isSea(fillPoint)
-        const isLand = layers.surface.isLand(fillPoint)
-        const isValid = isLand || isLake || isSea
-        return currentValue === EMPTY && isValid
-    }
-}
-
-
-class OceanSpacesFill extends CitySpacesFill {
-    onInitFill(fill, fillPoint) {
-        // do nothing on init, it's already claimed
-    }
-
-    getNeighbors(fill, parentPoint) {
-        return Point.around(parentPoint)
-    }
-
-    canFill(fill, fillPoint) {
-        const {cityGrid, layers} = fill.context
-        const currentValue = cityGrid.wrapGet(fillPoint)
-        const isWater = layers.surface.isWater(fillPoint)
-        const isIsland = layers.surface.isIsland(fillPoint)
-        return currentValue === EMPTY && (isIsland || isWater)
     }
 }
 
