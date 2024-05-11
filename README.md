@@ -6,10 +6,9 @@
 
 
 ## PLANNING
-- start a fill for each capital, create roads for all cities found in radius
-  - repeat for towns and at last, villages
-- every city has a routing table
-- each route has a id, cities,
+- migrate point map to flat array
+- simplify cities into "city seeds"
+- conclude wrapGet migration for grids
 
 
 ### General ideas

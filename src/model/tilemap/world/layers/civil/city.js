@@ -146,10 +146,13 @@ class CitySpacesFill extends ConcurrentFill {
         cityGraph.setEdge(blockedFillId, parentFillId)
         // get cities points - the targets of the road
         const blockedOrigin = cityMap.get(blockedFillId).point
-        const referenceOrigin = cityMap.get(parentFillId).point
-        // // create road points, send origin, target and previous point
+        const parentOrigin = cityMap.get(parentFillId).point
+
+        // TODO: move to another function, save points on pointMap
+
+        // create road points, send origin, target and previous point
         this.#buildCityRoute(fill, blockedPoint, blockedOrigin, parentPoint)
-        this.#buildCityRoute(fill, parentPoint, referenceOrigin, blockedPoint)
+        this.#buildCityRoute(fill, parentPoint, parentOrigin, blockedPoint)
     }
 
     #buildCityRoute(fill, origin, target, initialPrevPoint) {
@@ -214,38 +217,6 @@ class OceanSpacesFill extends CitySpacesFill {
         const isWater = layers.surface.isWater(fillPoint)
         const isIsland = layers.surface.isIsland(fillPoint)
         return currentValue === EMPTY && (isIsland || isWater)
-    }
-}
-
-
-class RealmSpacesFill extends ConcurrentFill {
-    // this fill marks the city ids grid
-    // and sets the city neighborhood graph
-    getChance(fill) { return CHANCE }
-    getGrowth(fill) { return GROWTH }
-
-    onInitFill(fill, fillPoint) {
-        fill.context.cityMap.get(fillPoint)
-    }
-
-    onFill(fill, fillPoint) {
-        fill.context.cityGrid.wrapSet(fillPoint, fill.id)
-    }
-
-    onBlockedFill(fill, neighbor) {
-        // encountered another city fill, set them as neighbors
-        const {cityGrid, cityGraph} = fill.context
-        const neighborCityId = cityGrid.get(neighbor)
-        cityGraph.setEdge(fill.id, neighborCityId)
-    }
-
-    getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
-    }
-
-    canFill(fill, fillPoint) {
-        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
-        return currentValue === EMPTY
     }
 }
 

@@ -59,3 +59,35 @@ class RealmFill extends ConcurrentFill {
         return realmGrid.get(wrappedPoint) === EMPTY
     }
 }
+
+
+class RealmSpacesFill extends ConcurrentFill {
+    // this fill marks the city ids grid
+    // and sets the city neighborhood graph
+    getChance(fill) { return CHANCE }
+    getGrowth(fill) { return GROWTH }
+
+    onInitFill(fill, fillPoint) {
+        fill.context.cityMap.get(fillPoint)
+    }
+
+    onFill(fill, fillPoint) {
+        fill.context.cityGrid.wrapSet(fillPoint, fill.id)
+    }
+
+    onBlockedFill(fill, neighbor) {
+        // encountered another city fill, set them as neighbors
+        const {cityGrid, cityGraph} = fill.context
+        const neighborCityId = cityGrid.get(neighbor)
+        cityGraph.setEdge(fill.id, neighborCityId)
+    }
+
+    getNeighbors(fill, parentPoint) {
+        return Point.adjacents(parentPoint)
+    }
+
+    canFill(fill, fillPoint) {
+        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
+        return currentValue === EMPTY
+    }
+}
