@@ -75,7 +75,8 @@ class BasinFill extends ConcurrentFill {
     canFill(fill, fillPoint, parentPoint) {
         const {rect, layers, basinMap} = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
-        return ! basinMap.has(wrappedPoint)
+        const isLand = layers.surface.isLand(fillPoint)
+        return isLand && ! basinMap.has(wrappedPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -83,7 +84,6 @@ class BasinFill extends ConcurrentFill {
             rect, basinMap, distanceMap, erosionMap,
             terrainMidpointMap, midpointRect
         } = fill.context
-        const direction = Point.directionBetween(fillPoint, parentPoint)
         const wrappedPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
         // distance to source by point
@@ -92,6 +92,7 @@ class BasinFill extends ConcurrentFill {
         // use basin value from parent point
         const parentBasin = basinMap.get(wrappedParentPoint)
         basinMap.set(wrappedPoint, parentBasin)
+        const direction = Point.directionBetween(fillPoint, parentPoint)
         // set erosion flow to parent
         erosionMap.set(wrappedPoint, direction.id)
         // terrain offset to add variance

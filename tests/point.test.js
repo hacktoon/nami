@@ -85,7 +85,7 @@ test("PointArraySet random", () => {
 
 test("PointArraySet build from Rect", () => {
     const rect = new Rect(2, 2)
-    const ptIndexSet = PointArraySet.fromRect(rect)
+    const ptIndexSet = new PointArraySet(rect)
     expect(ptIndexSet.has([0, 0])).toBe(true)
     expect(ptIndexSet.has([0, 1])).toBe(true)
     expect(ptIndexSet.has([1, 0])).toBe(true)

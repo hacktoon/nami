@@ -1,6 +1,5 @@
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
-import { PointArraySet } from './set'
 
 
 const ADJACENT_NEIGHBORHOOD = [
@@ -77,7 +76,7 @@ export class Point {
     static adjacents(center, callback=()=>{}) {
         const points = []
         for (let [x, y, direction] of ADJACENT_NEIGHBORHOOD) {
-            const point = [center[0] + x, center[1] + y]
+            const point = Point.plus(center, [x, y])
             callback(point, direction)
             points.push(point)
         }

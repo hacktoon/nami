@@ -1,27 +1,21 @@
 import { IndexMap } from '/src/lib/map'
 
 /**
- * This class represents zero ou many points [x, y] in an infinite space.
+ * This class represents zero ou many points [x, y] in a grid space.
  */
 export class PointArraySet {
+    #rect
     #size = 0
     #xIndexMap = new IndexMap()
     #xValueMap = new Map()
 
-    constructor(points=[]) {
-        for(let point of points) {
-            this.add(point)
-        }
-    }
-
-    static fromRect(rect) {
-        const pointSet = new PointArraySet()
+    constructor(rect) {
+        this.#rect = rect
         for(let x = 0; x < rect.width; x++) {
             for(let y = 0; y < rect.height; y++) {
-                pointSet.add([x, y])
+                this.add([x, y])
             }
         }
-        return pointSet
     }
 
     get size() {

@@ -13,7 +13,7 @@ export class Grid {
         const max = this.#rect.area
         for (let index = 0; index < max; index++) {
             const [x, y] = this.#rect.indexToPoint(index)
-            this.#cells.push(buildCell([x, y]))
+            this.#cells.push(buildCell([x, y], index))
         }
     }
 

@@ -175,7 +175,7 @@ export class RegionTileMap extends TileMap {
 class EvenPointSampling {
     static create(rect, radius) {
         const samples = []
-        const pointSet = PointArraySet.fromRect(rect)
+        const pointSet = new PointArraySet(rect)
 
         while(pointSet.size > 0) {
             const center = pointSet.random()

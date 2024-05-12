@@ -61,9 +61,11 @@ export class CivilLayer {
     drawCityArea(point, props) {
         const {canvas, canvasPoint, tileSize} = props
         const city = this.#cityMap.get(this.get(point).id)
-        const isWater = this.#layers.surface.isWater(point)
-        const color = isWater ? city.color.alpha(.2) : city.color.alpha(.8)
-        canvas.rect(canvasPoint, tileSize, color.toRGBA())
+        if (city) {
+            const isWater = this.#layers.surface.isWater(point)
+            const color = isWater ? city.color.alpha(.2) : city.color.alpha(.8)
+            canvas.rect(canvasPoint, tileSize, color.toRGBA())
+        }
     }
 
     drawCity(point, props) {

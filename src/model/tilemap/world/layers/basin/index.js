@@ -9,6 +9,7 @@ import {
     Basin,
     SeaBasin,
     RiverBasin,
+    LakeBasin,
 } from './data'
 
 
@@ -96,16 +97,6 @@ export class BasinLayer {
 
     isDivide(point) {
         return this.#dividePoints.has(point)
-    }
-
-    canCreateRiver(point) {
-        if (! this.#basinMap.has(point))
-            return false
-        const basin = this.get(point)
-        return (
-            basin.type.id == RiverBasin.id
-            || basin.type.id == SeaBasin.id
-        )
     }
 
     getErosion(point) {

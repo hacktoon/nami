@@ -5,13 +5,11 @@ import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
-import { PointArraySet } from '/src/lib/point/set'
-import { WORLD_NAMES } from '/src/lib/names'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 
-const CITY_RADIUS = .03
-const TOWN_RATIO = .6
+const CITY_BORDER_CHANCE = .3
+const CITY_CHANCE = .1
 
 // fill constants
 const CHANCE = .1  // chance of fill growing
@@ -21,27 +19,19 @@ const EMPTY = null
 
 export function buildCityPoints(context) {
     const {rect, layers} = context
-    const candidates = new PointArraySet()
-    // discover candidate cities in world grid
-    // create city id grid
-    Grid.fromRect(rect, point => {
-        if (layers.surface.isWater(point)) return
-        if (! layers.river.has(point)) return
-        candidates.add(point)
-    })
     // eliminate city points too close of already chosen
     const cityPoints = new PointSet(rect)
-    while (candidates.size > 0) {
-        const candidatePoint = candidates.random() // get a random candidate
-        // min radius value is 1
-        const radius = Math.max(Math.floor(rect.width * CITY_RADIUS), 1)
-        // remove all candidate points in a circle area
-        Point.insideCircle(candidatePoint, radius, inRadiusPoint => {
-            // radius can overflow grid, wrap the point
-            candidates.delete(rect.wrap(inRadiusPoint))
-        })
-        cityPoints.add(candidatePoint)
-    }
+    // create city id grid
+    Grid.fromRect(rect, point => {
+        const borderCityChance = Random.chance(CITY_BORDER_CHANCE)
+        const cityChance = Random.chance(CITY_CHANCE)
+        if (layers.surface.isWater(point)) return
+        const isBorder = layers.surface.isBorder(point) && borderCityChance
+        const isRiver = layers.river.has(point) && cityChance
+        if (isRiver || isBorder) {
+            cityPoints.add(point)
+        }
+    })
     return cityPoints
 }
 
@@ -107,8 +97,8 @@ class CitySpacesFill extends ConcurrentFill {
     canFill(fill, fillPoint) {
         const {cityGrid, layers} = fill.context
         const id = cityGrid.wrapGet(fillPoint)
-        const isLake = layers.surface.isLake(fillPoint)
-        return ! isLake && id === EMPTY
+        const isLand = layers.surface.isLand(fillPoint)
+        return isLand && id === EMPTY
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -131,6 +121,7 @@ class CitySpacesFill extends ConcurrentFill {
         if (cityGraph.hasEdge(blockedFillId, parentFillId)) return
         // it has been blocked but it's still empty, avoid making roads
         if (blockedFillId === EMPTY) return
+
         // only fill graph if there's a claimed city on blocked point
         // set road as an edge between blocked and reference fill ids
         cityGraph.setEdge(blockedFillId, parentFillId)
