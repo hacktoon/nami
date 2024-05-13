@@ -5,12 +5,7 @@ import { Direction } from '/src/lib/direction'
 import { Rect } from '/src/lib/number'
 
 import { buildBasin } from './fill'
-import {
-    Basin,
-    SeaBasin,
-    RiverBasin,
-    LakeBasin,
-} from './data'
+import { Basin } from './data'
 
 
 export class BasinLayer {

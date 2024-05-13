@@ -3,10 +3,9 @@ import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 
 import {
-    OldBasin,
     SeaBasin,
     LakeBasin,
-    RiverBasin,
+    ContinentBasin,
 } from './data'
 
 
@@ -23,16 +22,6 @@ export function buildBasin(originPoints, context) {
 
 
 class BasinFill extends ConcurrentFill {
-    getChance(fill) { return CHANCE }
-
-    getGrowth(fill) {
-        const typeId = fill.context.typeMap.get(fill.id)
-        if (typeId == OldBasin.id) return 5
-        if (typeId == LakeBasin.id) return 0
-        if (typeId == SeaBasin.id) return 0
-        return GROWTH
-    }
-
     onInitFill(fill, fillPoint, neighbors) {
         const {
             rect, layers, basinMap, typeMap, distanceMap, erosionMap,
@@ -61,6 +50,15 @@ class BasinFill extends ConcurrentFill {
         terrainMidpointMap.set(wrappedPoint, terrainMidpoint)
     }
 
+    getChance(fill) { return CHANCE }
+
+    getGrowth(fill) {
+        const typeId = fill.context.typeMap.get(fill.id)
+        if (typeId == LakeBasin.id) return 0
+        if (typeId == SeaBasin.id) return 0
+        return GROWTH
+    }
+
     getNeighbors(fill, parentPoint) {
         const {rect, dividePoints} = fill.context
         const adjacents = Point.adjacents(parentPoint)
@@ -72,7 +70,7 @@ class BasinFill extends ConcurrentFill {
         return adjacents
     }
 
-    canFill(fill, fillPoint, parentPoint) {
+    canFill(fill, fillPoint) {
         const {rect, layers, basinMap} = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         const isLand = layers.surface.isLand(fillPoint)
@@ -92,8 +90,8 @@ class BasinFill extends ConcurrentFill {
         // use basin value from parent point
         const parentBasin = basinMap.get(wrappedParentPoint)
         basinMap.set(wrappedPoint, parentBasin)
-        const direction = Point.directionBetween(fillPoint, parentPoint)
         // set erosion flow to parent
+        const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionMap.set(wrappedPoint, direction.id)
         // terrain offset to add variance
         const terrainMidpoint = buildTerrainMidpoint(midpointRect, direction)
@@ -103,17 +101,14 @@ class BasinFill extends ConcurrentFill {
 
 
 function buildType(total) {
-    let type = OldBasin
-    const oneWaterSide = total.lake == 1 || total.sea == 1 || total.ocean == 1
+    let type
     // try sea and lake first
-    if (total.ocean > 0 && oneWaterSide)
-        type = RiverBasin
-    else if (total.sea > 0)
+    if (total.sea > 0)
         type = SeaBasin
     else if (total.lake > 0)
         type = LakeBasin
-    else if (oneWaterSide)
-        type = RiverBasin
+    else
+        type = ContinentBasin
     return type.id
 }
 
