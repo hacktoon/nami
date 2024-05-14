@@ -5,8 +5,6 @@ import { HYDRO_NAMES } from '/src/lib/names'
 import { RiverStretch } from './data'
 
 
-const MAX_RIVER_SIZE = 2
-
 /*
     The shape fill starts from river sources
     following the direction and marking how much strong a
@@ -16,9 +14,7 @@ export function buildRiverMap(context) {
     let riverId = 0
     const layers = context.layers
     layers.basin.getDividePoints()
-        .filter(point => (
-            layers.rain.canCreateRiver(point)
-        ))
+        .filter(point => canBuildRiver(layers, point))
         // create a list of pairs: (point, river distance to mouth)
         .map(point => [point, layers.basin.getDistance(point)])
         // in ascendent order to get longest rivers first
@@ -27,6 +23,12 @@ export function buildRiverMap(context) {
         .forEach(([point, ]) => {
             buildRiver(context, riverId++, point)
         })
+}
+
+
+function canBuildRiver(layers, point) {
+    const isBorder = layers.surface.isBorder(point) && Random.chance(.4)
+    return isBorder || layers.rain.canCreateRiver(point)
 }
 
 
@@ -41,7 +43,10 @@ function buildRiver(context, riverId, sourcePoint) {
     let currentPoint = sourcePoint
     // follow river down following next land points
     const maxDistance = layers.basin.getDistance(sourcePoint)
-    if (maxDistance < MAX_RIVER_SIZE) return
+
+    // TODO:  calc max distance for basin types
+    // if (maxDistance < MAX_RIVER_SIZE) return
+
     while (layers.surface.isLand(currentPoint)) {
         const wrappedPoint = rect.wrap(currentPoint)
         // set direction mask grid
@@ -86,6 +91,7 @@ function buildDirectionMask(context, point) {
 
 function buildStretch(context, point, maxDistance) {
     const distance = context.layers.basin.getDistance(point)
+    if (maxDistance < 2) return RiverStretch.FAST_COURSE
     let ratio = (distance / maxDistance).toFixed(1)
     if (ratio >= .8) return RiverStretch.HEADWATERS
     if (ratio >= .5) return RiverStretch.FAST_COURSE
