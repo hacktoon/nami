@@ -6,6 +6,8 @@
 
 
 ## PLANNING
+- create option to skip until all finished on concurrent fill
+- fill water on basin map
 - simplify cities into "city seeds"
 - conclude wrapGet migration for grids
 
