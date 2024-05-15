@@ -27,7 +27,7 @@ export function buildRiverMap(context) {
 
 
 function canBuildRiver(layers, point) {
-    const isBorder = layers.surface.isBorder(point) && Random.chance(.4)
+    const isBorder = layers.surface.isBorder(point)
     return isBorder || layers.rain.canCreateRiver(point)
 }
 
@@ -42,24 +42,23 @@ function buildRiver(context, riverId, sourcePoint) {
     let prevPoint = sourcePoint
     let currentPoint = sourcePoint
     // follow river down following next land points
-    const maxDistance = layers.basin.getDistance(sourcePoint)
-
-    // TODO:  calc max distance for basin types
-    // if (maxDistance < MAX_RIVER_SIZE) return
-
+    const riverLength = layers.basin.getDistance(sourcePoint)
     while (layers.surface.isLand(currentPoint)) {
-        const wrappedPoint = rect.wrap(currentPoint)
-        // set direction mask grid
-        buildDirectionMask(context, currentPoint)
+        // max size by basin if basin.
+        const point = rect.wrap(currentPoint)
         // set river stretch by distance
-        const stretch = buildStretch(context, wrappedPoint, maxDistance)
-        stretchMap.set(wrappedPoint, stretch.id)
+        const currentDistance = layers.basin.getDistance(point)
+        const stretch = buildStretch(currentDistance, riverLength)
+        stretchMap.set(point, stretch.id)
         // overwrite previous river id at point
-        riverPoints.set(wrappedPoint, riverId)
+        riverPoints.set(point, riverId)
+        // set river directions grid
+        buildRiverPaths(context, currentPoint)
         // get next river point
-        currentPoint = getNextRiverPoint(context, wrappedPoint)
+        const erosion = layers.basin.getErosion(point)
+        currentPoint = Point.atDirection(point, erosion)
         // save previous point for mouth detection
-        prevPoint = wrappedPoint
+        prevPoint = point
     }
     // current (last) point is water, add previous as river mouth
     riverMouths.add(prevPoint)
@@ -67,7 +66,7 @@ function buildRiver(context, riverId, sourcePoint) {
 }
 
 
-function buildDirectionMask(context, point) {
+function buildRiverPaths(context, point) {
     const {rect, layers, directionMaskGrid} = context
     const wrappedPoint = rect.wrap(point)
     const basin = layers.basin.get(wrappedPoint)
@@ -89,18 +88,11 @@ function buildDirectionMask(context, point) {
 }
 
 
-function buildStretch(context, point, maxDistance) {
-    const distance = context.layers.basin.getDistance(point)
+function buildStretch(distance, maxDistance) {
     if (maxDistance < 2) return RiverStretch.FAST_COURSE
     let ratio = (distance / maxDistance).toFixed(1)
     if (ratio >= .8) return RiverStretch.HEADWATERS
     if (ratio >= .5) return RiverStretch.FAST_COURSE
     if (ratio >= .3) return RiverStretch.SLOW_COURSE
     return RiverStretch.DEPOSITIONAL
-}
-
-
-function getNextRiverPoint(context, currentPoint) {
-    const basin = context.layers.basin.get(currentPoint)
-    return Point.atDirection(currentPoint, basin.erosion)
 }

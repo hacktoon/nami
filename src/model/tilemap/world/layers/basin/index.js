@@ -73,6 +73,10 @@ export class BasinLayer {
         return Basin.parse(typeId)
     }
 
+    getThroughput(point) {
+        return this.getType(point).throughput
+    }
+
     getMidpoint(point) {
         const index = this.#terrainMidpointMap.get(point)
         const [x, y] = this.#midpointRect.indexToPoint(index)
@@ -111,7 +115,6 @@ export class BasinLayer {
             `id=${basin.id}`,
             `erosion=${basin.erosion.name}`,
             `distance=${basin.distance}`,
-            `midpoint=${basin.midpoint}`,
             `type=${basin.type ? basin.type.name : ''}`,
         ].join(',')
         return `Basin(${attrs})`

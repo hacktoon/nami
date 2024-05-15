@@ -54,7 +54,7 @@ class BasinFill extends ConcurrentFill {
 
     getGrowth(fill) {
         const typeId = fill.context.typeMap.get(fill.id)
-        if (typeId == LakeBasin.id) return 0
+        if (typeId == LakeBasin.id) { return 0 }
         if (typeId == SeaBasin.id) return 0
         return GROWTH
     }
