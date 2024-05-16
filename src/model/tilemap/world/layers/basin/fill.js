@@ -17,8 +17,8 @@ const OFFSET_RANGE = [1, 3]
 
 export function buildBasin(originPoints, context) {
     const fill = new BasinFill()
-    const basinReach = new Map()
-    fill.start(originPoints, {...context, basinReach})
+    const basinMaxReach = new Map()
+    fill.start(originPoints, {...context, basinMaxReach})
 }
 
 
@@ -26,7 +26,7 @@ class BasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
             rect, layers, basinMap, typeMap, distanceMap, erosionMap,
-            terrainMidpointMap, midpointRect, basinReach
+            terrainMidpointMap, midpointRect, basinMaxReach
         } = fill.context
         // water point where basin flows
         let basinMouth
@@ -44,7 +44,7 @@ class BasinFill extends ConcurrentFill {
         typeMap.set(fill.id, basinType)
         // set basin max reach, given by water body area
         const area = layers.surface.getArea(basinMouth)
-        basinReach.set(fill.id, area)
+        basinMaxReach.set(fill.id, area)
         // set erosion direction, use first water neighbor
         const direction = Point.directionBetween(fillPoint, basinMouth)
         erosionMap.set(fillPoint, direction.id)
@@ -71,11 +71,14 @@ class BasinFill extends ConcurrentFill {
         return adjacents
     }
 
-    canFill(fill, fillPoint) {
-        const {rect, layers, basinMap} = fill.context
-        const wrappedPoint = rect.wrap(fillPoint)
+    canFill(fill, fillPoint, parent) {
+        const {rect, layers, basinMap, distanceMap, basinMaxReach} = fill.context
+        const point = rect.wrap(fillPoint)
         const isLand = layers.surface.isLand(fillPoint)
-        return isLand && ! basinMap.has(wrappedPoint)
+        const maxReach = basinMaxReach.get(fill.id)
+        const currentDistance = distanceMap.get(parent)
+        const inBasinReach = currentDistance < maxReach
+        return inBasinReach && isLand && ! basinMap.has(point)
     }
 
     onFill(fill, fillPoint, parentPoint) {

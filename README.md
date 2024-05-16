@@ -6,7 +6,6 @@
 
 
 ## PLANNING
-- create option to skip until all finished on concurrent fill
 - fill water on basin map
 - simplify cities into "city seeds"
 - conclude wrapGet migration for grids
@@ -18,10 +17,6 @@
 	- When map fills screen entirely, snap canvas to viewport,
     	otherwise translate canvas element
 - create world types [medieval, cyberpunk, steampunk]
-- Point
-  - create a wrappedAdjacents similar to `Point.adjacents(parentPoint)` that receives a rect
-- Create ArrayGrid
-  - PointSets can be dependent on a rect to map points to indexes in a matrix, thus using integers instead of points - each index represents a point
 - Solve `[Violation] 'input' handler` message by lazy evaluating commands
 
 
