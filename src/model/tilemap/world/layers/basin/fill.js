@@ -51,13 +51,7 @@ class BasinFill extends ConcurrentFill {
     }
 
     getChance(fill) { return CHANCE }
-
-    getGrowth(fill) {
-        const typeId = fill.context.typeMap.get(fill.id)
-        if (typeId == LakeBasin.id) { return 0 }
-        if (typeId == SeaBasin.id) return 0
-        return GROWTH
-    }
+    getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
         const {rect, dividePoints} = fill.context

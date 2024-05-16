@@ -6,18 +6,15 @@ const MAX_LOOP_COUNT = 2000
 
 export class ConcurrentFill {
     #seedTable = []
-    #growthTable = []  // stores the level of growth on each point
     #levelTable = []   // stores the level of each layer for each point
 
     start(origins, context={}) {
         // Initialize data and fill origins
-        const growth = 0
         const level = 0
         for(let id = 0; id < origins.length; id ++) {
-            const fill = {id, context, growth, level}
+            const fill = {id, context, level}
             const target = origins[id]
             const neighbors = this.getNeighbors(fill, target)
-            this.#growthTable.push(growth)
             this.#levelTable.push(level)
             this.#seedTable.push([target])
             this.onInitFill(fill, target, neighbors)
@@ -37,14 +34,11 @@ export class ConcurrentFill {
         for(let id = 0; id < origins.length; id ++) {
             // fill one or many layers for each id
             const origin = origins[id]
-            const growth = this.#growthTable[id]
             const level = this.#levelTable[id]
-            const fill = {id, origin, context, growth, level}
+            const fill = {id, origin, context, level}
             const nextSeeds = this.#fillLayer(fill)
             // Increase number of completed fills if it has no seeds
             completedFills += nextSeeds.length === 0 ? 1 : 0
-            // raise fill growth if it has more seeds to spread
-            this.#growthTable[id] += nextSeeds.length > 0 ? 1 : 0
             // set seeds for next layer
             this.#seedTable[id] = nextSeeds
         }
