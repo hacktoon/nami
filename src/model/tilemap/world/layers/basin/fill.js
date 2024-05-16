@@ -17,7 +17,8 @@ const OFFSET_RANGE = [1, 3]
 
 export function buildBasin(originPoints, context) {
     const fill = new BasinFill()
-    fill.start(originPoints, context)
+    const basinReach = new Map()
+    fill.start(originPoints, {...context, basinReach})
 }
 
 
@@ -25,29 +26,35 @@ class BasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
             rect, layers, basinMap, typeMap, distanceMap, erosionMap,
-            terrainMidpointMap, midpointRect
+            terrainMidpointMap, midpointRect, basinReach
         } = fill.context
-        const wrappedPoint = rect.wrap(fillPoint)
-        // count neighbor water types
-        let total = {lake: 0, sea: 0, ocean: 0}
-        const waterNeighbors = neighbors.filter(neighbor => {
-            if (layers.surface.isOcean(neighbor)) total.ocean += 1
-            else if (layers.surface.isSea(neighbor)) total.sea += 1
-            else if (layers.surface.isLake(neighbor)) total.lake += 1
-            return layers.surface.isWater(neighbor)
-        })
-        // set erosion direction, use first water neighbor
-        const direction = Point.directionBetween(fillPoint, waterNeighbors[0])
-        erosionMap.set(wrappedPoint, direction.id)
+        // water point where basin flows
+        let basinMouth
+        let basinType
+        // check water neighbors
+        for (let neighbor of neighbors) {
+            if (layers.surface.isWater(neighbor)) {
+                // detect basin type by water surface
+                basinType = buildType(layers, neighbor)
+                basinMouth = neighbor
+                break
+            }
+        }
         // set basin type
-        typeMap.set(fill.id, buildType(total))
+        typeMap.set(fill.id, basinType)
+        // set basin max reach, given by water body area
+        const area = layers.surface.getArea(basinMouth)
+        basinReach.set(fill.id, area)
+        // set erosion direction, use first water neighbor
+        const direction = Point.directionBetween(fillPoint, basinMouth)
+        erosionMap.set(fillPoint, direction.id)
         // set basin id to spread on fill
-        basinMap.set(wrappedPoint, fill.id)
+        basinMap.set(fillPoint, fill.id)
         // initial distance from mouth is 0
-        distanceMap.set(wrappedPoint, 0)
+        distanceMap.set(fillPoint, 0)
         // terrain offset to add variance
         const terrainMidpoint = buildTerrainMidpoint(midpointRect, direction)
-        terrainMidpointMap.set(wrappedPoint, terrainMidpoint)
+        terrainMidpointMap.set(fillPoint, terrainMidpoint)
     }
 
     getChance(fill) { return CHANCE }
@@ -94,16 +101,13 @@ class BasinFill extends ConcurrentFill {
 }
 
 
-function buildType(total) {
-    let type
-    // try sea and lake first
-    if (total.sea > 0)
-        type = SeaBasin
-    else if (total.lake > 0)
-        type = LakeBasin
-    else
-        type = ContinentBasin
-    return type.id
+function buildType(layers, point) {
+    if (layers.surface.isLake(point)) {
+        return LakeBasin.id
+    } else if (layers.surface.isSea(point)) {
+        return SeaBasin.id
+    }
+    return ContinentBasin.id
 }
 
 

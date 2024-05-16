@@ -159,13 +159,12 @@ export class SurfaceLayer {
         const surface = this.get(point)
         const surfaceArea = this.getArea(point)
         const type = surface.water ? 'W' : 'L'
-        return `Surface(${surface.name}(${type}), area=${surfaceArea}%)`
+        return `Surface(${surface.name}(${type}), area=${surfaceArea})`
     }
 
     getArea(point) {
         const bodyId = Math.abs(this.#grid.get(point))
-        const area = (this.#bodyAreaMap.get(bodyId) * 100) / this.#grid.area
-        return area.toFixed(2)
+        return this.#bodyAreaMap.get(bodyId)
     }
 
     getWaterArea() {
