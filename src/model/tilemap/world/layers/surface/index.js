@@ -143,7 +143,7 @@ export class SurfaceLayer {
         return Surface.parse(this.#bodyTypeMap.get(bodyId))
     }
 
-    getChunk(point, params) {
+    getZone(point, params) {
         return new SurfaceChunk(point, params)
     }
 

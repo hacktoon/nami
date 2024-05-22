@@ -21,13 +21,13 @@ import { WorldTileMapDiagram } from './diagram'
 
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.rect('rect', 'Size', {default: '100x100', min:'2x2', max:'256x256'}),
+    Type.number('size', 'Size', {default: 100, min: 64, max: 200}),
     Type.text('seed', 'Seed', {default: ''}),
     Type.number('realms', 'Realms', {default: 10, min: 3, max: 16}),
 )
 
 
-const CHUNK_SIZE = 3
+const ZONE_SIZE = 16
 
 
 export class WorldTileMap extends TileMap {
@@ -41,10 +41,10 @@ export class WorldTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        this.layers = this.#buildLayers(params, this.rect)
         this.name = Random.choiceFrom(WORLD_NAMES)
-        this.width = this.rect.width
-        this.height = this.rect.height
+        this.layers = this.#buildLayers(params, this.rect)
+        this.width = this.size
+        this.height = this.size
     }
 
     #buildLayers(params, rect) {
@@ -85,14 +85,14 @@ export class WorldTileMap extends TileMap {
         .trim()
     }
 
-    getChunk(point) {
-        const chunkPoint = this.rect.wrap(point)
+    getZone(point) {
+        const zonePoint = this.rect.wrap(point)
         const params = {
-            world: this,
+            layers: this.layers,
             seed: this.seed,
-            chunkSize: CHUNK_SIZE,
+            zoneSize: ZONE_SIZE,
         }
-        return this.layers.surface.getChunk(chunkPoint, params)
+        return this.layers.surface.getZone(zonePoint, params)
     }
 
     getDescription() {

@@ -1,9 +1,10 @@
+import { Rect } from '/src/lib/number'
 import { Random } from '/src/lib/random'
 
 
 export class TileMap {
     constructor(params) {
-        this.rect = params.get('rect')
+        this.rect = new Rect(params.get('size'))
         this.seed = this.#buildSeed(params.get('seed'))
     }
 
