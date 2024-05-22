@@ -27,7 +27,7 @@ export class BasinLayer {
     #terrainMidpointMap
 
     // rect for mapping stored midpoint index
-    #midpointRect = new Rect(10, 10)
+    #midpointRect = new Rect(9, 9)
 
     // the highest points of basins that borders others basins
     #dividePoints
