@@ -144,7 +144,7 @@ export class SurfaceLayer {
     }
 
     getZone(point, params) {
-        return new SurfaceChunk(point, params)
+        return new ZoneSurface(point, params)
     }
 
     getColor(point) {

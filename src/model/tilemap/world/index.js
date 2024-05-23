@@ -86,13 +86,12 @@ export class WorldTileMap extends TileMap {
     }
 
     getZone(point) {
-        const zonePoint = this.rect.wrap(point)
         const params = {
             layers: this.layers,
             seed: this.seed,
             zoneSize: ZONE_SIZE,
         }
-        return this.layers.surface.getZone(zonePoint, params)
+        return this.layers.surface.getZone(point, params)
     }
 
     getDescription() {
