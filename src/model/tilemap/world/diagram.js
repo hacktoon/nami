@@ -1,5 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
+import { Point } from '/src/lib/point'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 
@@ -44,6 +45,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
 
+        if (tileSize >= 200) {
+            this.drawZone(props)
+            return
+        }
+
         canvas.rect(canvasPoint, tileSize, layerColor.toHex())
 
         const isLand = layers.surface.isLand(point)
@@ -69,4 +75,22 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             layers.civil.drawRoute(point, props)
         }
     }
+
+    drawZone(props) {
+        const {canvas, tilePoint, canvasPoint, tileSize} = props
+        const zone = this.tileMap.getZone(tilePoint)
+        const zoneSize = zone.size
+        const size = tileSize / zoneSize
+        // render zone tiles
+        for (let x=0; x < zoneSize; x++) {
+            const xSize = x * size
+            for (let y=0; y < zoneSize; y++) {
+                const ySize = y * size
+                const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
+                let surface = zone.get([y, x])
+                canvas.rect(zoneCanvasPoint, size, surface.color.toHex())
+            }
+        }
+    }
+
 }

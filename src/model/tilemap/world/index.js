@@ -27,7 +27,7 @@ const SCHEMA = new Schema(
 )
 
 
-const ZONE_SIZE = 16
+const ZONE_SIZE = 9
 
 
 export class WorldTileMap extends TileMap {

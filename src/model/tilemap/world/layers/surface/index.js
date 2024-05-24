@@ -11,6 +11,8 @@ import {
     LakeSurface
 } from './data'
 
+import { ZoneSurface } from './zone'
+
 
 // use 0 and 1 as "empty" values
 const EMPTY_LANDBODY = 0
