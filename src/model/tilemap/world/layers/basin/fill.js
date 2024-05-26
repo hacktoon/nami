@@ -25,7 +25,7 @@ export function buildBasin(originPoints, context) {
 class BasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
-            rect, layers, basinMap, typeMap, distanceMap, erosionMap,
+            layers, basinMap, typeMap, distanceMap, erosionMap,
             terrainMidpointMap, midpointRect, basinMaxReach
         } = fill.context
         // water point where basin flows

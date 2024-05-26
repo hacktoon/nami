@@ -61,7 +61,7 @@ export class Grid {
         const max = this.#rect.area
         for (let index = 0; index < max; index++) {
             const point = this.#rect.indexToPoint(index)
-            callback(point, this.#cells[index])
+            callback(point, this.#cells[index], index)
         }
     }
 

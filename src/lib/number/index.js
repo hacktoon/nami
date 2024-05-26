@@ -59,9 +59,23 @@ export class Rect {
         return x && y
     }
 
-    inEdge([x, y]) {
+    isEdge([x, y]) {
         const _x = x === 0 || x === this.width - 1
         const _y = y === 0 || y === this.height - 1
+        return _x || _y
+    }
+
+    isCorner([x, y]) {
+        const _x = x === 0 || x === this.width - 1
+        const _y = y === 0 || y === this.height - 1
+        return _x && _y
+    }
+
+    isEdgeMiddle([x, y]) {
+        const middleWidth = Math.floor(this.width / 2);
+        const middleHeight = Math.floor(this.height / 2);
+        const _x = (x === 0 || x === this.width - 1) && y === middleHeight
+        const _y = (y === 0 || y === this.height - 1) && x === middleWidth
         return _x || _y
     }
 
