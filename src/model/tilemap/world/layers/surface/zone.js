@@ -1,5 +1,7 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
+import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
+import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
 import { Rect } from '/src/lib/number'
 import { Grid } from '/src/lib/grid'
@@ -10,66 +12,66 @@ import {
 } from './data'
 
 
+const SHORE_LEVEL = 2
+
+
 export class ZoneSurface {
     #grid
+    #layers
     #rect
 
     constructor(worldPoint, {layers, zoneSize}) {
         // rect scaled to world size, for noise locality
-        this.#rect = new Rect(zoneSize, zoneSize)
-        this.#grid = this.#buildGrid(worldPoint, layers)
+        this.point = worldPoint
         this.size = zoneSize
+        this.#layers = layers
+        this.#rect = new Rect(zoneSize, zoneSize)
+        this.#grid = this.#buildGrid(layers)
     }
 
-    #buildGrid(worldPoint, layers) {
-        const isWorldPointWater = layers.surface.isWater(worldPoint)
-        // const noiseLayer = layers.noise
-        // const baseZonePoint = Point.multiplyScalar(worldPoint, zoneSize)
-        // const point = Point.plus(baseZonePoint, indexPoint)
-        // const noise = noiseLayer.get2D(point, 'grained')
-        const waterDirectionIds = this.#getWaterNeighbors(layers, worldPoint)
-        // init grid
-        const grid = Grid.fromRect(this.#rect, () => {
+    #buildGrid(layers) {
+        const isWorldPointWater = layers.surface.isWater(this.point)
+        const borderPoints = new PointSet(this.#rect)
+        const waterSideDirs = this.#getWaterNeighbors(layers)
+        const grid = Grid.fromRect(this.#rect, zonePoint => {
+            if (this.#isZoneBorderWater(zonePoint, waterSideDirs)) {
+                borderPoints.add(zonePoint)
+            }
             return isWorldPointWater ? OceanSurface.id : ContinentSurface.id
         })
-        Grid.fromRect(this.#rect, indexPoint => {
-            // check each tile in zone grid
-            if (this.#rect.isEdgeMiddle(indexPoint)) {
-                const dir = getEdgeDirection(indexPoint, this.#rect)
-                if (waterDirectionIds.has(dir.id)) {
-
-                }
-                if (Point.equals([41, 37], worldPoint)) {
-                    // console.log(indexPoint);
-                }
-                // if ()
-                //     carveShoreline(indexPoint, grid)
-                    // borderPoints.push(indexPoint)
-            }
-            //  else if (this.#rect.isEdge(indexPoint)) {
-            //     const dir = getEdgeDirection(indexPoint, this.#rect)
-            //     // if (waterDirectionIds.has(dir.id))
-            //     //     borderPoints.push(indexPoint)
-            // } else if (this.#rect.isCorner(indexPoint)) {
-            //     const dir = getCornerDirection(indexPoint, this.#rect)
-            //     if (waterDirectionIds.has(dir.id))
-            //         borderPoints.push(indexPoint)
-            // }
-            return ContinentSurface.id
-        })
+        // design the litoral outline
+        const context = {
+            worldPoint: this.point,
+            layers: this.#layers,
+            rect: this.#rect,
+            grid,
+        }
+        new ZoneLitoralFill().start(borderPoints.points, context)
         return grid
     }
 
-    #getWaterNeighbors(layers, worldPoint) {
+    #getWaterNeighbors(layers) {
         const directions = new Set()
-        if (layers.surface.isLand(worldPoint)) {
-            Point.around(worldPoint, (point, direction) => {
+        if (layers.surface.isLand(this.point)) {
+            Point.around(this.point, (point, direction) => {
                 if (layers.surface.isWater(point)) {
                     directions.add(direction.id)
                 }
             })
         }
         return directions
+    }
+
+    #isZoneBorderWater(zonePoint, waterSideDirs) {
+        let zoneDir
+        if (this.#rect.isCorner(zonePoint)) {  // is at zone grid corner?
+            zoneDir = getCornerDirection(zonePoint, this.#rect)
+        }
+        if (this.#rect.isEdge(zonePoint)) {  // is at zone grid edge?
+            zoneDir = getEdgeDirection(zonePoint, this.#rect)
+        }
+        // if zone edge is a world water side
+        return zoneDir && waterSideDirs.has(zoneDir.id)
     }
 
     get(point) {
@@ -97,32 +99,30 @@ function getEdgeDirection([x, y], rect) {
 }
 
 
-export function carveShoreline(originPoint, grid) {
-    const fill = new ZoneFill()
-    fill.start(originPoint, {grid})
-}
-
-
-class ZoneFill extends ConcurrentFill {
+class ZoneLitoralFill extends ConcurrentFill {
     onInitFill(fill, fillPoint) {
-        const {rect, grid} = fill.context
+        const {grid} = fill.context
         grid.set(fillPoint, OceanSurface.id)
     }
 
     getChance(fill) { return .1 }
-    getGrowth(fill) { return 1 }
+    getGrowth(fill) { return 2 }
 
     getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
+        const rect = fill.context.rect
+        const points = Point.adjacents(parentPoint)
+        // avoid wrapping in zone rect - carve from borders to inside
+        return points.filter(p => rect.isInside(p))
     }
 
     canFill(fill, fillPoint) {
         const {grid} = fill.context
-        return grid.get(fillPoint) == ContinentSurface.id
+        const isEmpty = grid.get(fillPoint) === ContinentSurface.id
+        return fill.level < SHORE_LEVEL && isEmpty
     }
 
     onFill(fill, fillPoint) {
-        const {rect, grid} = fill.context
-        grid.set(fillPoint, 1)
+        const {grid} = fill.context
+        grid.set(fillPoint, OceanSurface.id)
     }
 }
