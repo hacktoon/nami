@@ -62,7 +62,7 @@ export class WorldTileMap extends TileMap {
         layers.biome = new BiomeLayer(rect, layers)
         layers.civil = new CivilLayer(rect, layers, realmCount)
         const time = (performance.now() - start).toFixed(2)
-        console.log(`generated in ${time}ms`);
+        console.info(`generated in ${time}ms`);
         return layers
     }
 
@@ -86,15 +86,12 @@ export class WorldTileMap extends TileMap {
     }
 
     getZone(point) {
-        // change seed for this specific zone
+        const zone = {}
         const seed = `${this.seed}-${Point.hash(point)}`
-        Random.seed = seed
-        const params = {
-            layers: this.layers,
-            zoneSize: ZONE_SIZE,
-            seed
-        }
-        return this.layers.surface.getZone(point, params)
+        const params = {layers: this.layers, zoneSize: ZONE_SIZE, seed}
+        Random.seed = seed  // change seed for this specific zone
+        zone.surface = this.layers.surface.getZone(point, params)
+        return zone
     }
 
     getDescription() {

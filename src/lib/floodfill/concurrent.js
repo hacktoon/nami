@@ -13,9 +13,7 @@ export class ConcurrentFill {
         this.context = context
         this.#seedTable = []
         this.#levelTable = []
-    }
 
-    start() {
         // Initialize data and fill origins
         const level = 0
         for(let id = 0; id < this.origins.length; id ++) {
@@ -26,17 +24,20 @@ export class ConcurrentFill {
             this.#seedTable.push([target])
             this.onInitFill(fill, target, neighbors)
         }
+    }
+
+    completeFill() {
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
         while(loopCount-- > 0) {
-            const completedFills = this.#fillStep()
+            const completedFills = this.stepFill()
             if (completedFills === this.origins.length) {
                 break
             }
         }
     }
 
-    #fillStep() {
+    stepFill() {
         let completedFills = 0
         for(let id = 0; id < this.origins.length; id ++) {
             // fill one or many layers for each id

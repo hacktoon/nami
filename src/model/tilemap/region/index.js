@@ -70,7 +70,7 @@ export class RegionTileMap extends TileMap {
             graph: this.#graph,
             chance: params.get('chance'),
             growth: params.get('growth'),
-        }).start()
+        }).completeFill()
     }
 
     get size() {

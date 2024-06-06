@@ -46,7 +46,8 @@ export class ZoneSurface {
             rect: this.#rect,
             grid,
         }
-        new ZoneLitoralFill(borderPoints.points, context).start()
+        // run just one fill step
+        new ZoneLitoralFill(borderPoints.points, context).stepFill()
         return grid
     }
 
@@ -105,8 +106,8 @@ class ZoneLitoralFill extends ConcurrentFill {
         grid.set(fillPoint, OceanSurface.id)
     }
 
-    getChance(fill) { return .1 }
-    getGrowth(fill) { return 2 }
+    getChance(fill) { return .4 }
+    getGrowth(fill) { return 5 }
 
     getNeighbors(fill, parentPoint) {
         const rect = fill.context.rect
@@ -117,8 +118,7 @@ class ZoneLitoralFill extends ConcurrentFill {
 
     canFill(fill, fillPoint) {
         const {grid} = fill.context
-        const isEmpty = grid.get(fillPoint) === ContinentSurface.id
-        return fill.level < SHORE_LEVEL && isEmpty
+        return grid.get(fillPoint) === ContinentSurface.id
     }
 
     onFill(fill, fillPoint) {

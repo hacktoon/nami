@@ -18,7 +18,8 @@ const LAYERS = [
 const SCHEMA = new Schema(
     'WorldTileMapDiagram',
     Type.selection('showLayer', 'Layer', {default: DEFAULT_LAYER, options: LAYERS}),
-    Type.boolean('showErosion', 'Erosion', {default: false}),
+    // Type.boolean('showErosion', 'Erosion', {default: false}),
+    Type.boolean('showZones', 'Zones', {default: true}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
     Type.boolean('showCityArea', 'CityArea', {default: false}),
@@ -45,19 +46,19 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
 
-        if (tileSize >= 80) {
+        if (this.params.get('showZones') && tileSize >= 80) {
             this.drawZone(props)
             return
         }
 
         canvas.rect(canvasPoint, tileSize, layerColor.toHex())
 
-        const isLand = layers.surface.isLand(point)
-        if (isLand && this.params.get('showErosion')) {
-            const basin = layers.basin.get(point)
-            const text = basin.erosion.symbol
-            canvas.text(canvasPoint, tileSize, text, '#000')
-        }
+        // const isLand = layers.surface.isLand(point)
+        // if (isLand && this.params.get('showErosion')) {
+        //     const basin = layers.basin.get(point)
+        //     const text = basin.erosion.symbol
+        //     canvas.text(canvasPoint, tileSize, text, '#000')
+        // }
         if (this.params.get('showLandforms')) {
             layers.relief.draw(point, props, layerColor)
         }
@@ -79,7 +80,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
     drawZone(props) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
         const zone = this.tileMap.getZone(tilePoint)
-        const zoneSize = zone.size
+        const zoneSize = zone.surface.size
         const size = tileSize / zoneSize
         // render zone tiles
         for (let x=0; x < zoneSize; x++) {
@@ -87,7 +88,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             for (let y=0; y < zoneSize; y++) {
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                let surface = zone.get([y, x])
+                let surface = zone.surface.get([y, x])
                 canvas.rect(zoneCanvasPoint, size, surface.color.toHex())
             }
         }

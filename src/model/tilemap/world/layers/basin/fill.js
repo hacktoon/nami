@@ -18,7 +18,7 @@ const OFFSET_RANGE = [1, 3]
 export function buildBasin(originPoints, context) {
     const basinMaxReach = new Map()
     const fill = new BasinFill(originPoints, {...context, basinMaxReach})
-    fill.start()
+    fill.completeFill()
 }
 
 
