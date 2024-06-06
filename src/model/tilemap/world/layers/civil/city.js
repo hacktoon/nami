@@ -67,8 +67,8 @@ export function buildCitySpaces(context) {
         directionMaskGrid,
         fillDirectionGrid
     }
-    const spacesFill = new CitySpacesFill()
-    spacesFill.start(cityPoints.points, fillContext)
+    const spacesFill = new CitySpacesFill(cityPoints.points, fillContext)
+    spacesFill.start()
     return {
         cityGrid,
         graph: cityGraph,

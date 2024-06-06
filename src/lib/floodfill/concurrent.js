@@ -5,15 +5,22 @@ const MAX_LOOP_COUNT = 2000
 
 
 export class ConcurrentFill {
-    #seedTable = []
-    #levelTable = []   // stores the level of each layer for each point
+    #seedTable
+    #levelTable   // stores the level of each layer for each point
 
-    start(origins, context={}) {
+    constructor(origins, context={}) {
+        this.origins = origins
+        this.context = context
+        this.#seedTable = []
+        this.#levelTable = []
+    }
+
+    start() {
         // Initialize data and fill origins
         const level = 0
-        for(let id = 0; id < origins.length; id ++) {
-            const fill = {id, context, level}
-            const target = origins[id]
+        for(let id = 0; id < this.origins.length; id ++) {
+            const fill = {id, context: this.context, level}
+            const target = this.origins[id]
             const neighbors = this.getNeighbors(fill, target)
             this.#levelTable.push(level)
             this.#seedTable.push([target])
@@ -22,20 +29,20 @@ export class ConcurrentFill {
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
         while(loopCount-- > 0) {
-            const completedFills = this.#fillStep(origins, context)
-            if (completedFills === origins.length) {
+            const completedFills = this.#fillStep()
+            if (completedFills === this.origins.length) {
                 break
             }
         }
     }
 
-    #fillStep(origins, context) {
+    #fillStep() {
         let completedFills = 0
-        for(let id = 0; id < origins.length; id ++) {
+        for(let id = 0; id < this.origins.length; id ++) {
             // fill one or many layers for each id
-            const origin = origins[id]
+            const origin = this.origins[id]
             const level = this.#levelTable[id]
-            const fill = {id, origin, context, level}
+            const fill = {id, origin, context: this.context, level}
             const nextSeeds = this.#fillLayer(fill)
             // Increase number of completed fills if it has no seeds
             completedFills += nextSeeds.length === 0 ? 1 : 0

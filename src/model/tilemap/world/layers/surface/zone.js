@@ -46,7 +46,7 @@ export class ZoneSurface {
             rect: this.#rect,
             grid,
         }
-        new ZoneLitoralFill().start(borderPoints.points, context)
+        new ZoneLitoralFill(borderPoints.points, context).start()
         return grid
     }
 

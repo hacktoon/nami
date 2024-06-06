@@ -18,7 +18,7 @@ import { RegionTileMapDiagram } from './diagram'
 const EMPTY = null
 const SCHEMA = new Schema(
     'RegionTileMap',
-    Type.rect('rect', 'Size', {default: '100x100'}),
+    Type.number('size', 'Size', {default: 100, min: 64, max: 200}),
     Type.number('scale', 'Scale', {default: 10, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),
@@ -61,7 +61,7 @@ export class RegionTileMap extends TileMap {
         this.#centerPoints = new PointSet(this.rect, this.#origins)
         this.#regions = this.#origins.map((_, id) => id)
         this.#borderMap = new PointMap(this.rect)
-        new RegionFloodFill().start(this.#origins, {
+        new RegionFloodFill(this.#origins, {
             regionMatrix: this.#regionMatrix,
             growthMatrix: this.#growthMatrix,
             colorMap: this.#colorMap,
@@ -70,7 +70,7 @@ export class RegionTileMap extends TileMap {
             graph: this.#graph,
             chance: params.get('chance'),
             growth: params.get('growth'),
-        })
+        }).start()
     }
 
     get size() {
