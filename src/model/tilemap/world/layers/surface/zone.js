@@ -12,9 +12,6 @@ import {
 } from './data'
 
 
-const SHORE_LEVEL = 2
-
-
 export class ZoneSurface {
     #grid
     #layers
@@ -64,15 +61,15 @@ export class ZoneSurface {
     }
 
     #isZoneBorderWater(zonePoint, waterSideDirs) {
-        let zoneDir
         if (this.#rect.isCorner(zonePoint)) {  // is at zone grid corner?
-            zoneDir = getCornerDirection(zonePoint, this.#rect)
+            const zoneDir = getCornerDirection(zonePoint, this.#rect)
+            return waterSideDirs.has(zoneDir.id)
         }
         if (this.#rect.isEdge(zonePoint)) {  // is at zone grid edge?
-            zoneDir = getEdgeDirection(zonePoint, this.#rect)
+            const zoneDir = getEdgeDirection(zonePoint, this.#rect)
+            return waterSideDirs.has(zoneDir.id)
         }
-        // if zone edge is a world water side
-        return zoneDir && waterSideDirs.has(zoneDir.id)
+        return false
     }
 
     get(point) {
@@ -107,7 +104,7 @@ class ZoneLitoralFill extends ConcurrentFill {
     }
 
     getChance(fill) { return .4 }
-    getGrowth(fill) { return 5 }
+    getGrowth(fill) { return 4 }
 
     getNeighbors(fill, parentPoint) {
         const rect = fill.context.rect
