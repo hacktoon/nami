@@ -46,13 +46,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
 
-        if (this.params.get('showZones') && tileSize >= 60) {
-            this.drawZone(props)
-            return
+        if (this.params.get('showZones') && tileSize >= 30) {
+            this.drawZone(props, layerColor)
+        } else {
+            canvas.rect(canvasPoint, tileSize, layerColor.toHex())
         }
-
-        canvas.rect(canvasPoint, tileSize, layerColor.toHex())
-
         // const isLand = layers.surface.isLand(point)
         // if (isLand && this.params.get('showErosion')) {
         //     const basin = layers.basin.get(point)
@@ -77,7 +75,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         }
     }
 
-    drawZone(props) {
+    drawZone(props, layerColor) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
         const zone = this.tileMap.getZone(tilePoint)
         const zoneSize = zone.surface.size
@@ -89,7 +87,8 @@ export class WorldTileMapDiagram extends TileMapDiagram {
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 let surface = zone.surface.get([y, x])
-                canvas.rect(zoneCanvasPoint, size, surface.color.toHex())
+                const color = surface.water ? surface.color : layerColor
+                canvas.rect(zoneCanvasPoint, size, color.toHex())
             }
         }
     }

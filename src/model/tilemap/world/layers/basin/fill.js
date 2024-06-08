@@ -73,12 +73,11 @@ class BasinFill extends ConcurrentFill {
 
     canFill(fill, fillPoint, parent) {
         const {rect, layers, basinMap, distanceMap, basinMaxReach} = fill.context
-        const point = rect.wrap(fillPoint)
         const isLand = layers.surface.isLand(fillPoint)
         const maxReach = basinMaxReach.get(fill.id)
         const currentDistance = distanceMap.get(parent)
         const inBasinReach = currentDistance < maxReach
-        return inBasinReach && isLand && ! basinMap.has(point)
+        return inBasinReach && isLand && ! basinMap.has(rect.wrap(fillPoint))
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -128,13 +127,13 @@ function buildTerrainMidpoint(midpointRect, direction) {
 
 
 function isDivide(context, neighbors) {
-    const {rect, layers, erosionMap} = context
+    const {rect, layers, basinMap} = context
     // it's a river source if every neighbor is water
     let waterNeighborCount = 0
     let blockedCount = 0
     for(let neighbor of neighbors) {
         const isNeighborWater = layers.surface.isWater(neighbor)
-        const isOccupied = erosionMap.has(rect.wrap(neighbor))
+        const isOccupied = basinMap.has(rect.wrap(neighbor))
         waterNeighborCount += isNeighborWater ? 1 : 0
         blockedCount += (isNeighborWater || isOccupied) ? 1 : 0
     }

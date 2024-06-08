@@ -1,4 +1,5 @@
 import { PointMap } from '/src/lib/point/map'
+import { Grid } from '/src/lib/grid'
 import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
 import { Direction } from '/src/lib/direction'
@@ -16,7 +17,7 @@ export class BasinLayer {
     // used to determine river stretch
     #distanceMap
 
-    // map a point to a direction
+    // grid of direction ids
     #erosionMap
 
     // map basin type for creating rivers or other features
@@ -36,7 +37,7 @@ export class BasinLayer {
         this.#dividePoints = new PointSet(rect)
         this.#basinMap = new PointMap(rect)
         this.#distanceMap = new PointMap(rect)
-        this.#erosionMap = new PointMap(rect)
+        this.#erosionMap = Grid.fromRect(rect, () => null)
         this.#terrainMidpointMap = new PointMap(rect)
         const context = {
             rect,

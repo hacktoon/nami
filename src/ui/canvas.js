@@ -83,9 +83,12 @@ class CanvasContext {
 
     cursor(size, point) {
         const [x, y] = point
+        const lineWidth = Math.floor(size / 15)
+        const half = Math.floor(lineWidth / 2)
+        const cSize = size - lineWidth
         this.#ctx.strokeStyle = '#FFF'
-        this.#ctx.lineWidth = Math.floor(size / 10)
-        this.#ctx.strokeRect(x, y, size, size)
+        this.#ctx.lineWidth = lineWidth
+        this.#ctx.strokeRect(x+half, y+half, cSize, cSize)
     }
 }
 

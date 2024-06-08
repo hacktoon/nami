@@ -6,12 +6,11 @@
 
 
 ## PLANNING
-- surface anchor (move from basin midpoint)
-- create zone surface (below zoom 200)
-  - 9 x 9 grid
+- fill basin map on water
+  - allow filling rivers even on lake negative margins
+
 - create basin anchors for shore and erosion
   - two per shore for each water side
-- fill water on basin map ?
 - simplify cities into "city seeds"
 - conclude wrapGet migration for grids
 
