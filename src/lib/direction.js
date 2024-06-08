@@ -9,15 +9,15 @@ import { Random } from '/src/lib/random'
 
 // these id counts starts from east, anti-clockwise
 const DIRECTIONS = {
-    // MIDDLE:    { id: 0, name: '',   symbol: '\u2192', axis: [ 0,  0]},
-    EAST:      { id: 0, name: 'E',  symbol: '\u2192', axis: [ 1,  0]},
-    NORTHEAST: { id: 1, name: 'NE', symbol: '\u2197', axis: [ 1, -1]},
-    NORTH:     { id: 2, name: 'N',  symbol: '\u2191', axis: [ 0, -1]},
-    NORTHWEST: { id: 3, name: 'NW', symbol: '\u2196', axis: [-1, -1]},
-    WEST:      { id: 4, name: 'W',  symbol: '\u2190', axis: [-1,  0]},
-    SOUTHWEST: { id: 5, name: 'SW', symbol: '\u2199', axis: [-1,  1]},
-    SOUTH:     { id: 6, name: 'S',  symbol: '\u2193', axis: [ 0,  1]},
-    SOUTHEAST: { id: 7, name: 'SE', symbol: '\u2198', axis: [ 1,  1]},
+    MIDDLE:    { id: 0, name: '',   symbol: '\u2192', axis: [ 0,  0]},
+    EAST:      { id: 1, name: 'E',  symbol: '\u2192', axis: [ 1,  0]},
+    NORTHEAST: { id: 2, name: 'NE', symbol: '\u2197', axis: [ 1, -1]},
+    NORTH:     { id: 3, name: 'N',  symbol: '\u2191', axis: [ 0, -1]},
+    NORTHWEST: { id: 4, name: 'NW', symbol: '\u2196', axis: [-1, -1]},
+    WEST:      { id: 5, name: 'W',  symbol: '\u2190', axis: [-1,  0]},
+    SOUTHWEST: { id: 6, name: 'SW', symbol: '\u2199', axis: [-1,  1]},
+    SOUTH:     { id: 7, name: 'S',  symbol: '\u2193', axis: [ 0,  1]},
+    SOUTHEAST: { id: 8, name: 'SE', symbol: '\u2198', axis: [ 1,  1]},
 }
 
 const DIRECTION_MAP = (() => {
@@ -36,7 +36,7 @@ const CARDINAL_DIRECTIONS = new Set([
 ])
 
 export class Direction {
-    // static get MIDDLE () { return DIRECTIONS.NONE }
+    static get MIDDLE () { return DIRECTIONS.MIDDLE }
     static get NORTH () { return DIRECTIONS.NORTH }
     static get EAST () { return DIRECTIONS.EAST }
     static get SOUTH () { return DIRECTIONS.SOUTH }
@@ -66,14 +66,6 @@ export class Direction {
         const [x1, y1] = dir1.axis
         const [x2, y2] = dir2.axis
         return x1 * x2 + y1 * y2
-    }
-
-    static fromAngle(angle) {
-        const degreePerDirection = 360 / 8
-        const offsetAngle = angle + degreePerDirection / 2
-        const wrappedAngle = offsetAngle > 360 ? offsetAngle - 360 : offsetAngle
-        const angleIndex = Math.floor(wrappedAngle / degreePerDirection)
-        return DIRECTION_MAP[angleIndex]
     }
 
     static random () {
