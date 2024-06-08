@@ -54,8 +54,10 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const isLand = layers.surface.isLand(point)
         if (isLand && this.params.get('showErosion')) {
             const basin = layers.basin.get(point)
-            const text = basin.erosion.symbol
-            canvas.text(canvasPoint, tileSize, text, '#000')
+            if (basin.erosion) {
+                const text = basin.erosion.symbol
+                canvas.text(canvasPoint, tileSize, text, '#000')
+            }
         }
         if (this.params.get('showLandforms')) {
             layers.relief.draw(point, props, layerColor)

@@ -62,17 +62,6 @@ export class Point {
         return [point[0] * x, point[1] * (y ?? x)]
     }
 
-    static angle(p1, p2) {
-        // normalize vectors
-        const deltaY = p1[1] - p2[1]  // for y getting bigger to the south
-        const deltaX = p2[0] - p1[0]
-        // get angle between vectors
-        let result = Math.atan2(deltaY, deltaX)
-        // convert from radians to degrees
-        result *= 180 / Math.PI
-        return Math.round((result < 0) ? (360 + result) : result)
-    }
-
     static adjacents(center, callback=()=>{}) {
         const points = []
         for (let [x, y, direction] of ADJACENT_NEIGHBORHOOD) {
@@ -119,10 +108,18 @@ export class Point {
         return Point.plus(point, direction.axis)
     }
 
-    static directionBetween(sourcePoint, targetPoint) {
+    static directionBetween(source, target) {
         // need to get unwrapped points to get real angle
-        const angle = Point.angle(sourcePoint, targetPoint)
-        return Direction.fromAngle(angle)
+        const [sx, sy] = source
+        const [tx, ty] = target
+        if (tx == sx + 1 && ty == sy) return Direction.EAST
+        if (tx == sx - 1 && ty == sy) return Direction.WEST
+        if (ty == sy - 1 && tx == sx) return Direction.NORTH
+        if (ty == sy + 1 && tx == sx) return Direction.SOUTH
+        if (tx == sx + 1 && ty == sy - 1) return Direction.NORTHEAST;
+        if (tx == sx - 1 && ty == sy - 1) return Direction.NORTHWEST;
+        if (tx == sx + 1 && ty == sy + 1) return Direction.SOUTHEAST;
+        if (tx == sx - 1 && ty == sy + 1) return Direction.SOUTHWEST;
     }
 
     static atNorth(p) { return [p[0], p[1] - 1] }

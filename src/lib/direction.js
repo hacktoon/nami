@@ -9,6 +9,7 @@ import { Random } from '/src/lib/random'
 
 // these id counts starts from east, anti-clockwise
 const DIRECTIONS = {
+    // MIDDLE:    { id: 0, name: '',   symbol: '\u2192', axis: [ 0,  0]},
     EAST:      { id: 0, name: 'E',  symbol: '\u2192', axis: [ 1,  0]},
     NORTHEAST: { id: 1, name: 'NE', symbol: '\u2197', axis: [ 1, -1]},
     NORTH:     { id: 2, name: 'N',  symbol: '\u2191', axis: [ 0, -1]},
@@ -35,6 +36,7 @@ const CARDINAL_DIRECTIONS = new Set([
 ])
 
 export class Direction {
+    // static get MIDDLE () { return DIRECTIONS.NONE }
     static get NORTH () { return DIRECTIONS.NORTH }
     static get EAST () { return DIRECTIONS.EAST }
     static get SOUTH () { return DIRECTIONS.SOUTH }

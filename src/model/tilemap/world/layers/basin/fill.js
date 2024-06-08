@@ -28,15 +28,14 @@ class LandBasinFill extends ConcurrentFill {
             layers, basinMap, typeMap, distanceMap, erosionMap,
             terrainMidpointMap, midpointRect, basinMaxReach
         } = fill.context
-        // water point where basin flows
-        let basinMouth
+        let basinWaterMouth  // water point where basin flows
         let basinType
         // check water neighbors
         for (let neighbor of neighbors) {
             if (layers.surface.isWater(neighbor)) {
                 // detect basin type by water surface
                 basinType = buildType(layers, neighbor)
-                basinMouth = neighbor
+                basinWaterMouth = neighbor
                 break
             }
         }
@@ -44,10 +43,10 @@ class LandBasinFill extends ConcurrentFill {
         typeMap.set(fill.id, basinType)
         // set basin max reach, given by water body area
         // lakes have a small reach, oceans have no limit
-        const area = layers.surface.getArea(basinMouth)
+        const area = layers.surface.getArea(basinWaterMouth)
         basinMaxReach.set(fill.id, area)
         // set erosion direction, use first water neighbor
-        const direction = Point.directionBetween(fillPoint, basinMouth)
+        const direction = Point.directionBetween(fillPoint, basinWaterMouth)
         erosionMap.set(fillPoint, direction.id)
         // set basin id to spread on fill
         basinMap.set(fillPoint, fill.id)
