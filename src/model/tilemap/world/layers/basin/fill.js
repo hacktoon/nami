@@ -17,12 +17,12 @@ const OFFSET_RANGE = [1, 3]
 
 export function buildBasin(originPoints, context) {
     const basinMaxReach = new Map()
-    const fill = new BasinFill(originPoints, {...context, basinMaxReach})
+    const fill = new LandBasinFill(originPoints, {...context, basinMaxReach})
     fill.completeFill()
 }
 
 
-class BasinFill extends ConcurrentFill {
+class LandBasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
             layers, basinMap, typeMap, distanceMap, erosionMap,
@@ -43,6 +43,7 @@ class BasinFill extends ConcurrentFill {
         // set basin type
         typeMap.set(fill.id, basinType)
         // set basin max reach, given by water body area
+        // lakes have a small reach, oceans have no limit
         const area = layers.surface.getArea(basinMouth)
         basinMaxReach.set(fill.id, area)
         // set erosion direction, use first water neighbor
