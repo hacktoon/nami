@@ -8,10 +8,10 @@ export class Basin {
 }
 
 
-export class ContinentBasin extends Basin {
+export class Ocean extends Basin {
     static id = 0
     static throughput = 0
-    static name = 'Continent'
+    static name = 'Ocean'
     static color = Color.fromHex('#51a2d1')
 }
 
@@ -33,7 +33,7 @@ export class LakeBasin extends Basin {
 
 
 const BASIN_MAP = {
-    0: ContinentBasin,
+    0: Ocean,
     1: SeaBasin,
     2: LakeBasin,
 }

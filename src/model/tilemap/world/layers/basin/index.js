@@ -10,6 +10,8 @@ import { Basin } from './data'
 
 
 export class BasinLayer {
+    #zoneRect
+
     // map a point to a basin id
     #basinMap
 
@@ -27,13 +29,11 @@ export class BasinLayer {
     // convert index to x, y in a 10 x 10 grid
     #terrainMidpointMap
 
-    // rect for mapping stored midpoint index
-    #midpointRect = new Rect(9, 9)
-
     // the highest points of basins that borders others basins
     #dividePoints
 
-    constructor(rect, layers) {
+    constructor(rect, layers, zoneRect) {
+        this.#zoneRect = zoneRect
         this.#dividePoints = new PointSet(rect)
         this.#basinMap = new PointMap(rect)
         this.#distanceMap = new PointMap(rect)
@@ -48,7 +48,7 @@ export class BasinLayer {
             dividePoints: this.#dividePoints,
             erosionMap: this.#erosionMap,
             terrainMidpointMap: this.#terrainMidpointMap,
-            midpointRect: this.#midpointRect,
+            zoneRect: this.#zoneRect
         }
         // start filling from land borders
         buildBasin(layers.surface.landBorders, context)
@@ -80,7 +80,7 @@ export class BasinLayer {
 
     getMidpoint(point) {
         const index = this.#terrainMidpointMap.get(point)
-        const [x, y] = this.#midpointRect.indexToPoint(index)
+        const [x, y] = this.#zoneRect.indexToPoint(index)
         return [x / 10, y / 10]  // convert to fractions
     }
 

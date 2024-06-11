@@ -94,18 +94,19 @@ export class RiverLayer {
         const river = this.get(point)
         const riverWidth = Math.round(river.stretch.width * tileSize)
         const midSize = Math.round(tileSize / 2)
+        const offset = Math.round(tileSize / 10)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
         const meanderOffsetPoint = Point.multiplyScalar(river.meander, tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
-        for(let axisOffset of river.flowDirections) {
+        for(let flowAxis of river.flowDirections) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
-                midCanvasPoint[0] + axisOffset[0] * midSize,
-                midCanvasPoint[1] + axisOffset[1] * midSize
+                midCanvasPoint[0] + flowAxis[0] * midSize,
+                midCanvasPoint[1] + flowAxis[1] * midSize
             ]
             canvas.line(edgeMidPoint, meanderPoint, riverWidth, hexColor)
         }

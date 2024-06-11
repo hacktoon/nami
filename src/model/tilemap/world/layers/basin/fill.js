@@ -5,7 +5,7 @@ import { Point } from '/src/lib/point'
 import {
     SeaBasin,
     LakeBasin,
-    ContinentBasin,
+    Ocean,
 } from './data'
 
 
@@ -26,7 +26,7 @@ class LandBasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
             layers, basinMap, typeMap, distanceMap, erosionMap,
-            terrainMidpointMap, midpointRect, basinMaxReach
+            terrainMidpointMap, zoneRect, basinMaxReach
         } = fill.context
         let basinWaterMouth  // water point where basin flows
         let basinType
@@ -53,7 +53,7 @@ class LandBasinFill extends ConcurrentFill {
         // initial distance from mouth is 0
         distanceMap.set(fillPoint, 0)
         // terrain offset to add variance
-        const terrainMidpoint = buildTerrainMidpoint(midpointRect, direction)
+        const terrainMidpoint = buildTerrainMidpoint(zoneRect, direction)
         terrainMidpointMap.set(fillPoint, terrainMidpoint)
     }
 
@@ -83,7 +83,7 @@ class LandBasinFill extends ConcurrentFill {
     onFill(fill, fillPoint, parentPoint) {
         const {
             rect, basinMap, distanceMap, erosionMap,
-            terrainMidpointMap, midpointRect
+            terrainMidpointMap, zoneRect
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
@@ -97,7 +97,7 @@ class LandBasinFill extends ConcurrentFill {
         const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionMap.set(wrappedPoint, direction.id)
         // terrain offset to add variance
-        const terrainMidpoint = buildTerrainMidpoint(midpointRect, direction)
+        const terrainMidpoint = buildTerrainMidpoint(zoneRect, direction)
         terrainMidpointMap.set(wrappedPoint, terrainMidpoint)
     }
 }
@@ -109,11 +109,11 @@ function buildType(layers, point) {
     } else if (layers.surface.isSea(point)) {
         return SeaBasin.id
     }
-    return ContinentBasin.id
+    return Ocean.id
 }
 
 
-function buildTerrainMidpoint(midpointRect, direction) {
+function buildTerrainMidpoint(zoneRect, direction) {
     // direction axis ([-1, 0], [1, 1], etc)
     const rand = (coordAxis) => {
         const offset = Random.int(...OFFSET_RANGE)
@@ -122,7 +122,7 @@ function buildTerrainMidpoint(midpointRect, direction) {
     }
     const x = rand(direction.axis[0])
     const y = rand(direction.axis[1])
-    return midpointRect.pointToIndex([x, y])
+    return zoneRect.pointToIndex([x, y])
 }
 
 

@@ -1,5 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
+import { Rect } from '/src/lib/number'
 import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
 import { WORLD_NAMES } from '/src/lib/names'
@@ -28,6 +29,7 @@ const SCHEMA = new Schema(
 
 
 const ZONE_SIZE = 9
+const ZONE_RECT = new Rect(ZONE_SIZE, ZONE_SIZE)
 
 
 export class WorldTileMap extends TileMap {
@@ -56,7 +58,7 @@ export class WorldTileMap extends TileMap {
         layers.surface = new SurfaceLayer(rect, layers)
         layers.climate = new ClimateLayer(rect, layers)
         layers.rain = new RainLayer(rect, layers)
-        layers.basin = new BasinLayer(rect, layers)
+        layers.basin = new BasinLayer(rect, layers, ZONE_RECT)
         layers.river = new RiverLayer(rect, layers)
         layers.relief = new ReliefLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
@@ -88,7 +90,12 @@ export class WorldTileMap extends TileMap {
     getZone(point) {
         const zone = {}
         const seed = `${this.seed}-${Point.hash(point)}`
-        const params = {layers: this.layers, zoneSize: ZONE_SIZE, seed}
+        const params = {
+            layers: this.layers,
+            zoneSize: ZONE_SIZE,
+            zoneRect: ZONE_RECT,
+            seed
+        }
         Random.seed = seed  // change seed for this specific zone
         zone.surface = this.layers.surface.getZone(point, params)
         return zone
