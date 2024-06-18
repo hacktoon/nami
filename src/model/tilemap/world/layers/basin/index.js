@@ -4,6 +4,7 @@ import { Grid } from '/src/lib/grid'
 import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
 import { Direction } from '/src/lib/direction'
+import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 import { buildBasin } from './fill'
 import { Basin } from './data'
@@ -21,10 +22,13 @@ export class BasinLayer {
     #distanceMap
 
     // grid of direction ids
-    #erosionMap
+    #erosionGrid
 
     // map basin type for creating rivers or other features
     #typeMap = new Map()
+
+    // map a point to a basin zone paths
+    #directionMaskGrid
 
     // map a point to a point index in a zone rect
     // convert index to x, y in a 10 x 10 grid
@@ -36,9 +40,10 @@ export class BasinLayer {
     constructor(rect, layers, zoneRect) {
         this.#zoneRect = zoneRect
         this.#dividePoints = new PointSet(rect)
-        this.#basinGrid = Grid.fromRect(rect, () => null)
         this.#distanceMap = Grid.fromRect(rect, () => 0)
-        this.#erosionMap = Grid.fromRect(rect, () => null)
+        this.#basinGrid = Grid.fromRect(rect, () => null)
+        this.#erosionGrid = Grid.fromRect(rect, () => null)
+        this.#directionMaskGrid = new DirectionMaskGrid(rect)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         const context = {
             rect,
@@ -47,7 +52,8 @@ export class BasinLayer {
             typeMap: this.#typeMap,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
-            erosionMap: this.#erosionMap,
+            erosionGrid: this.#erosionGrid,
+            directionMaskGrid: this.#directionMaskGrid,
             midpointIndexGrid: this.#midpointIndexGrid,
             zoneRect: this.#zoneRect
         }
@@ -101,7 +107,7 @@ export class BasinLayer {
     }
 
     getErosion(point) {
-        const directionId = this.#erosionMap.get(point)
+        const directionId = this.#erosionGrid.get(point)
         return Direction.fromId(directionId)
     }
 
@@ -124,24 +130,26 @@ export class BasinLayer {
 
     draw(point, props, baseColor) {
         const {canvas, canvasPoint, tileSize} = props
-        const river = this.get(point)
-        const riverWidth = Math.round(river.stretch.width * tileSize)
+        const basin = this.get(point)
+        const lineWidth = 1
         const midSize = Math.round(tileSize / 2)
         const offset = Math.round(tileSize / 10)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-        // calc meander offset point on canvas
-        const meanderOffsetPoint = Point.multiplyScalar(river.meander, tileSize)
-        const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-        const hexColor = river.stretch.color.toHex()
-        // for each neighbor with a river connection
-        for(let flowAxis of river.flowDirections) {
+        // calc midpoint point on canvas
+        const canvasMidpoint = Point.multiplyScalar(basin.midpoint, tileSize)
+        const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
+        const hexColor = "#069"
+        const directions = this.#directionMaskGrid.get(point)
+        const flowDirections = directions.map(dir => dir.axis)
+        // for each neighbor with a basin connection
+        for(let flowAxis of flowDirections) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
                 midCanvasPoint[0] + flowAxis[0] * midSize,
                 midCanvasPoint[1] + flowAxis[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, riverWidth, hexColor)
+            canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor)
         }
     }
 }
