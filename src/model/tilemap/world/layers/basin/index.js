@@ -1,9 +1,9 @@
 import { PointMap } from '/src/lib/point/map'
+import { Point } from '/src/lib/point'
 import { Grid } from '/src/lib/grid'
 import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
 import { Direction } from '/src/lib/direction'
-import { Rect } from '/src/lib/number'
 
 import { buildBasin } from './fill'
 import { Basin } from './data'
@@ -12,8 +12,8 @@ import { Basin } from './data'
 export class BasinLayer {
     #zoneRect
 
-    // map a point to a basin id
-    #basinMap
+    // grid of basin ids
+    #basinGrid
 
     // the walk distance of each basin shore to inner
     // used to determine river stretch
@@ -25,9 +25,9 @@ export class BasinLayer {
     // map basin type for creating rivers or other features
     #typeMap = new Map()
 
-    // map a point to a terrain offset point index
+    // map a point to a point index in a zone rect
     // convert index to x, y in a 10 x 10 grid
-    #terrainMidpointMap
+    #midpointIndexGrid
 
     // the highest points of basins that borders others basins
     #dividePoints
@@ -35,19 +35,19 @@ export class BasinLayer {
     constructor(rect, layers, zoneRect) {
         this.#zoneRect = zoneRect
         this.#dividePoints = new PointSet(rect)
-        this.#basinMap = new PointMap(rect)
+        this.#basinGrid = Grid.fromRect(rect, () => null)
         this.#distanceMap = new PointMap(rect)
         this.#erosionMap = Grid.fromRect(rect, () => null)
-        this.#terrainMidpointMap = new PointMap(rect)
+        this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         const context = {
             rect,
             layers: layers,
-            basinMap: this.#basinMap,
+            basinGrid: this.#basinGrid,
             typeMap: this.#typeMap,
             distanceMap: this.#distanceMap,
             dividePoints: this.#dividePoints,
             erosionMap: this.#erosionMap,
-            terrainMidpointMap: this.#terrainMidpointMap,
+            midpointIndexGrid: this.#midpointIndexGrid,
             zoneRect: this.#zoneRect
         }
         // start filling from land borders
@@ -55,12 +55,12 @@ export class BasinLayer {
     }
 
     get count() {
-        return this.#basinMap.size
+        return 2 //this.#basinGrid.size
     }
 
     get(point) {
         return {
-            id: this.#basinMap.get(point),
+            id: this.#basinGrid.get(point),
             type: this.getType(point),
             distance: this.getDistance(point),
             erosion: this.getErosion(point),
@@ -69,7 +69,7 @@ export class BasinLayer {
     }
 
     getType(point) {
-        const id = this.#basinMap.get(point)
+        const id = this.#basinGrid.get(point)
         const typeId = this.#typeMap.get(id)
         return Basin.parse(typeId)
     }
@@ -79,13 +79,13 @@ export class BasinLayer {
     }
 
     getMidpoint(point) {
-        const index = this.#terrainMidpointMap.get(point)
+        const index = this.#midpointIndexGrid.get(point)
         const [x, y] = this.#zoneRect.indexToPoint(index)
         return [x / 10, y / 10]  // convert to fractions
     }
 
     getColor(point) {
-        if (! this.#basinMap.has(point)) {
+        if (! this.#basinGrid.get(point)) {
             return Color.DARKBLUE
         }
         return this.getType(point).color
@@ -109,8 +109,8 @@ export class BasinLayer {
     }
 
     getText(point) {
-        if (! this.#basinMap.has(point))
-            return ''
+        if (! this.#basinGrid.get(point))
+            return 'submarine'
         const basin = this.get(point)
         const attrs = [
             `id=${basin.id}`,
@@ -119,5 +119,28 @@ export class BasinLayer {
             `type=${basin.type ? basin.type.name : ''}`,
         ].join(',')
         return `Basin(${attrs})`
+    }
+
+    draw(point, props, baseColor) {
+        const {canvas, canvasPoint, tileSize} = props
+        const river = this.get(point)
+        const riverWidth = Math.round(river.stretch.width * tileSize)
+        const midSize = Math.round(tileSize / 2)
+        const offset = Math.round(tileSize / 10)
+        const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
+        // calc meander offset point on canvas
+        const meanderOffsetPoint = Point.multiplyScalar(river.meander, tileSize)
+        const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
+        const hexColor = river.stretch.color.toHex()
+        // for each neighbor with a river connection
+        for(let flowAxis of river.flowDirections) {
+            // build a point for each flow that points to this point
+            // create a midpoint at tile's square side
+            const edgeMidPoint = [
+                midCanvasPoint[0] + flowAxis[0] * midSize,
+                midCanvasPoint[1] + flowAxis[1] * midSize
+            ]
+            canvas.line(edgeMidPoint, meanderPoint, riverWidth, hexColor)
+        }
     }
 }

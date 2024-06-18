@@ -25,8 +25,8 @@ export function buildBasin(originPoints, context) {
 class LandBasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
-            layers, basinMap, typeMap, distanceMap, erosionMap,
-            terrainMidpointMap, zoneRect, basinMaxReach
+            layers, basinGrid, typeMap, distanceMap, erosionMap,
+            midpointIndexGrid, zoneRect, basinMaxReach
         } = fill.context
         let basinWaterMouth  // water point where basin flows
         let basinType
@@ -49,12 +49,12 @@ class LandBasinFill extends ConcurrentFill {
         const direction = Point.directionBetween(fillPoint, basinWaterMouth)
         erosionMap.set(fillPoint, direction.id)
         // set basin id to spread on fill
-        basinMap.set(fillPoint, fill.id)
+        basinGrid.set(fillPoint, fill.id)
         // initial distance from mouth is 0
         distanceMap.set(fillPoint, 0)
         // terrain offset to add variance
-        const terrainMidpoint = buildTerrainMidpoint(zoneRect, direction)
-        terrainMidpointMap.set(fillPoint, terrainMidpoint)
+        const midpointIndex = buildTerrainMidpoint(zoneRect, direction)
+        midpointIndexGrid.set(fillPoint, midpointIndex)
     }
 
     getChance(fill) { return CHANCE }
@@ -72,18 +72,18 @@ class LandBasinFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint, parent) {
-        const {rect, layers, basinMap, distanceMap, basinMaxReach} = fill.context
+        const {rect, layers, basinGrid, distanceMap, basinMaxReach} = fill.context
         const isLand = layers.surface.isLand(fillPoint)
         const maxReach = basinMaxReach.get(fill.id)
         const currentDistance = distanceMap.get(parent)
         const inBasinReach = currentDistance < maxReach
-        return inBasinReach && isLand && ! basinMap.has(rect.wrap(fillPoint))
+        return inBasinReach && isLand && ! basinGrid.get(fillPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
         const {
-            rect, basinMap, distanceMap, erosionMap,
-            terrainMidpointMap, zoneRect
+            rect, basinGrid, distanceMap, erosionMap,
+            midpointIndexGrid, zoneRect
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
         const wrappedParentPoint = rect.wrap(parentPoint)
@@ -91,14 +91,14 @@ class LandBasinFill extends ConcurrentFill {
         const currentDistance = distanceMap.get(wrappedParentPoint)
         distanceMap.set(wrappedPoint, currentDistance + 1)
         // use basin value from parent point
-        const parentBasin = basinMap.get(wrappedParentPoint)
-        basinMap.set(wrappedPoint, parentBasin)
+        const parentBasin = basinGrid.get(parentPoint)
+        basinGrid.set(wrappedPoint, parentBasin)
         // set erosion flow to parent
         const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionMap.set(wrappedPoint, direction.id)
         // terrain offset to add variance
-        const terrainMidpoint = buildTerrainMidpoint(zoneRect, direction)
-        terrainMidpointMap.set(wrappedPoint, terrainMidpoint)
+        const midpointIndex = buildTerrainMidpoint(zoneRect, direction)
+        midpointIndexGrid.set(wrappedPoint, midpointIndex)
     }
 }
 
@@ -127,13 +127,13 @@ function buildTerrainMidpoint(zoneRect, direction) {
 
 
 function isDivide(context, neighbors) {
-    const {rect, layers, basinMap} = context
+    const {rect, layers, basinGrid} = context
     // it's a river source if every neighbor is water
     let waterNeighborCount = 0
     let blockedCount = 0
     for(let neighbor of neighbors) {
         const isNeighborWater = layers.surface.isWater(neighbor)
-        const isOccupied = basinMap.has(rect.wrap(neighbor))
+        const isOccupied = Boolean(basinGrid.wrapGet(neighbor))
         waterNeighborCount += isNeighborWater ? 1 : 0
         blockedCount += (isNeighborWater || isOccupied) ? 1 : 0
     }
