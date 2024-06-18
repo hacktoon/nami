@@ -15,8 +15,9 @@ export class BasinLayer {
     // grid of basin ids
     #basinGrid
 
-    // the walk distance of each basin shore to inner
-    // used to determine river stretch
+    // the walk distance of each basin starting from 0 (shore)
+    // base value is 0
+    // is used to determine river stretch
     #distanceMap
 
     // grid of direction ids
@@ -36,7 +37,7 @@ export class BasinLayer {
         this.#zoneRect = zoneRect
         this.#dividePoints = new PointSet(rect)
         this.#basinGrid = Grid.fromRect(rect, () => null)
-        this.#distanceMap = new PointMap(rect)
+        this.#distanceMap = Grid.fromRect(rect, () => 0)
         this.#erosionMap = Grid.fromRect(rect, () => null)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         const context = {

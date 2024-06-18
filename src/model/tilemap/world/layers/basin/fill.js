@@ -25,7 +25,7 @@ export function buildBasin(originPoints, context) {
 class LandBasinFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {
-            layers, basinGrid, typeMap, distanceMap, erosionMap,
+            layers, basinGrid, typeMap, erosionMap,
             midpointIndexGrid, zoneRect, basinMaxReach
         } = fill.context
         let basinWaterMouth  // water point where basin flows
@@ -50,10 +50,8 @@ class LandBasinFill extends ConcurrentFill {
         erosionMap.set(fillPoint, direction.id)
         // set basin id to spread on fill
         basinGrid.set(fillPoint, fill.id)
-        // initial distance from mouth is 0
-        distanceMap.set(fillPoint, 0)
-        // terrain offset to add variance
-        const midpointIndex = buildTerrainMidpoint(zoneRect, direction)
+        // create midpoint index in zone rect to add variance
+        const midpointIndex = buildMidpoint(zoneRect, direction)
         midpointIndexGrid.set(fillPoint, midpointIndex)
     }
 
@@ -86,9 +84,8 @@ class LandBasinFill extends ConcurrentFill {
             midpointIndexGrid, zoneRect
         } = fill.context
         const wrappedPoint = rect.wrap(fillPoint)
-        const wrappedParentPoint = rect.wrap(parentPoint)
         // distance to source by point
-        const currentDistance = distanceMap.get(wrappedParentPoint)
+        const currentDistance = distanceMap.wrapGet(parentPoint)
         distanceMap.set(wrappedPoint, currentDistance + 1)
         // use basin value from parent point
         const parentBasin = basinGrid.get(parentPoint)
@@ -97,7 +94,7 @@ class LandBasinFill extends ConcurrentFill {
         const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionMap.set(wrappedPoint, direction.id)
         // terrain offset to add variance
-        const midpointIndex = buildTerrainMidpoint(zoneRect, direction)
+        const midpointIndex = buildMidpoint(zoneRect, direction)
         midpointIndexGrid.set(wrappedPoint, midpointIndex)
     }
 }
@@ -113,7 +110,7 @@ function buildType(layers, point) {
 }
 
 
-function buildTerrainMidpoint(zoneRect, direction) {
+function buildMidpoint(zoneRect, direction) {
     // direction axis ([-1, 0], [1, 1], etc)
     const rand = (coordAxis) => {
         const offset = Random.int(...OFFSET_RANGE)
