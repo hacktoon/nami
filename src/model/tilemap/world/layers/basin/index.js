@@ -19,7 +19,7 @@ export class BasinLayer {
     // the walk distance of each basin starting from 0 (shore)
     // base value is 0
     // is used to determine river stretch
-    #distanceMap
+    #distanceGrid
 
     // grid of direction ids
     #erosionGrid
@@ -34,13 +34,13 @@ export class BasinLayer {
     // convert index to x, y in a 10 x 10 grid
     #midpointIndexGrid
 
-    // the highest points of basins that borders others basins
+    // the points of basins that borders others basins
     #dividePoints
 
     constructor(rect, layers, zoneRect) {
         this.#zoneRect = zoneRect
         this.#dividePoints = new PointSet(rect)
-        this.#distanceMap = Grid.fromRect(rect, () => 0)
+        this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#basinGrid = Grid.fromRect(rect, () => null)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
@@ -50,7 +50,7 @@ export class BasinLayer {
             layers: layers,
             basinGrid: this.#basinGrid,
             typeMap: this.#typeMap,
-            distanceMap: this.#distanceMap,
+            distanceGrid: this.#distanceGrid,
             dividePoints: this.#dividePoints,
             erosionGrid: this.#erosionGrid,
             directionMaskGrid: this.#directionMaskGrid,
@@ -59,6 +59,7 @@ export class BasinLayer {
         }
         // start filling from land borders
         buildBasin(layers.surface.landBorders, context)
+        // buildBasin(layers.surface.waterBorders, context)
     }
 
     get count() {
@@ -112,7 +113,7 @@ export class BasinLayer {
     }
 
     getDistance(point) {
-        return this.#distanceMap.get(point)
+        return this.#distanceGrid.get(point)
     }
 
     getText(point) {
