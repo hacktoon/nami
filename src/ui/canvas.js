@@ -16,11 +16,23 @@ export function Canvas({viewport, onInit, className='Canvas'}) {
 
 class CanvasContext {
     #ctx
+    #clipPath
 
     constructor(canvas) {
         this.#ctx = canvas.getContext('2d')
         this.width = canvas.width
         this.height = canvas.height
+    }
+
+    clip(x, y, w, h) {
+        let path = new Path2D()
+        path.rect(x, y, w, h)
+        this.#ctx.save()
+        this.#ctx.clip(path)
+    }
+
+    restore() {
+        this.#ctx.restore()
     }
 
     rect(point, size, color) {
@@ -37,12 +49,14 @@ class CanvasContext {
     }
 
     line(sourcePoint, targetPoint, size, color) {
+        const [sx, sy] = sourcePoint
+        const [tx, ty] = targetPoint
         this.#ctx.strokeStyle = color
         this.#ctx.lineCap = "round"
         this.#ctx.lineWidth = size
         this.#ctx.beginPath()
-        this.#ctx.moveTo(sourcePoint[0], sourcePoint[1])
-        this.#ctx.lineTo(targetPoint[0], targetPoint[1])
+        this.#ctx.moveTo(sx, sy)
+        this.#ctx.lineTo(tx, ty)
         this.#ctx.stroke()
     }
 

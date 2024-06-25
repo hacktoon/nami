@@ -123,16 +123,17 @@ export class BasinLayer {
     drawPath(point, props, baseColor) {
         const {canvas, canvasPoint, tileSize} = props
         const basin = this.get(point)
-        const lineWidth = 1
         const midSize = Math.round(tileSize / 2)
-        const offset = Math.round(tileSize / 10)
+        const lineWidth = Math.round(tileSize / 3)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc midpoint point on canvas
         const canvasMidpoint = Point.multiplyScalar(basin.midpoint, tileSize)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
-        const hexColor = "#069"
+        const hexColor = baseColor.darken(20).toHex()
         const flowDirections = this.#directionMaskGrid.getAxis(point)
-        // for each neighbor with a basin connection
+        const [x, y] = canvasPoint
+        canvas.clip(x, y, x + tileSize, y + tileSize)
+        // draw line for each neighbor with a basin connection
         for(let flowAxis of flowDirections) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
@@ -140,7 +141,8 @@ export class BasinLayer {
                 midCanvasPoint[0] + flowAxis[0] * midSize,
                 midCanvasPoint[1] + flowAxis[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor)
+            canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor, true)
         }
+        canvas.restore()
     }
 }
