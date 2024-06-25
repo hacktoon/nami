@@ -9,15 +9,15 @@ import { Random } from '/src/lib/random'
 
 // these id counts starts from east, anti-clockwise
 const DIRECTIONS = {
-    MIDDLE:    { id: 0, name: '',   symbol: '\u2192', axis: [ 0,  0]},
-    EAST:      { id: 1, name: 'E',  symbol: '\u2192', axis: [ 1,  0]},
-    NORTHEAST: { id: 2, name: 'NE', symbol: '\u2197', axis: [ 1, -1]},
-    NORTH:     { id: 3, name: 'N',  symbol: '\u2191', axis: [ 0, -1]},
-    NORTHWEST: { id: 4, name: 'NW', symbol: '\u2196', axis: [-1, -1]},
-    WEST:      { id: 5, name: 'W',  symbol: '\u2190', axis: [-1,  0]},
-    SOUTHWEST: { id: 6, name: 'SW', symbol: '\u2199', axis: [-1,  1]},
-    SOUTH:     { id: 7, name: 'S',  symbol: '\u2193', axis: [ 0,  1]},
-    SOUTHEAST: { id: 8, name: 'SE', symbol: '\u2198', axis: [ 1,  1]},
+    MIDDLE:    { id: 0, code: 1,   name: '',   symbol: '\u2192', axis: [ 0,  0]},
+    EAST:      { id: 1, code: 2,   name: 'E',  symbol: '\u2192', axis: [ 1,  0]},
+    NORTHEAST: { id: 2, code: 4,   name: 'NE', symbol: '\u2197', axis: [ 1, -1]},
+    NORTH:     { id: 3, code: 8,   name: 'N',  symbol: '\u2191', axis: [ 0, -1]},
+    NORTHWEST: { id: 4, code: 16,  name: 'NW', symbol: '\u2196', axis: [-1, -1]},
+    WEST:      { id: 5, code: 32,  name: 'W',  symbol: '\u2190', axis: [-1,  0]},
+    SOUTHWEST: { id: 6, code: 64,  name: 'SW', symbol: '\u2199', axis: [-1,  1]},
+    SOUTH:     { id: 7, code: 128, name: 'S',  symbol: '\u2193', axis: [ 0,  1]},
+    SOUTHEAST: { id: 8, code: 256, name: 'SE', symbol: '\u2198', axis: [ 1,  1]},
 }
 
 const DIRECTION_MAP = (() => {
@@ -68,8 +68,8 @@ export class Direction {
         return x1 * x2 + y1 * y2
     }
 
-    static random () {
-        return Random.choice(
+    static getAll() {
+        return [
             Direction.NORTH,
             Direction.EAST,
             Direction.SOUTH,
@@ -78,7 +78,11 @@ export class Direction {
             Direction.NORTHWEST,
             Direction.SOUTHEAST,
             Direction.SOUTHWEST,
-        )
+        ]
+    }
+
+    static random() {
+        return Random.choiceFrom(Direction.getAll())
     }
 
     static randomCardinal () {
