@@ -68,7 +68,7 @@ export class ConcurrentFill {
             // for each seed, try to fill its neighbors
             const neighbors = this.getNeighbors(fill, source)
             for(let target of neighbors) {
-                // I'm seed, can I fill my neighbor?
+                // I'm a full seed, can I fill my neighbor?
                 if (this.canFill(fill, target, source, neighbors)) {
                     // update level if can be filled
                     const newLevelFill = {...fill, level: nextLevel}

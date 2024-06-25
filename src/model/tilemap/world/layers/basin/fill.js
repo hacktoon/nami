@@ -44,21 +44,16 @@ export function buildBasin(context) {
 
 
 class BasinFill extends ConcurrentFill {
+    getChance(fill) { return CHANCE }
+    getGrowth(fill) { return GROWTH }
+
     onInitFill(fill, fillPoint, neighbors) {
-        const {layers, typeMap, originMap, basinMaxReach} = fill.context
-        let startPoint = this.findBasinStart(layers, neighbors)
-        const id = originMap.get(fill.origin)
-        typeMap.set(id, this.buildType(layers, startPoint))
-        // set basin max reach, given by water body area
-        // lakes have a small reach, oceans have no limit
-        const area = layers.surface.getArea(startPoint)
-        basinMaxReach.set(id, area)
+        const {layers, typeMap, originMap} = fill.context
+        let startPoint = this.findBasinStart(fill, neighbors)
+        const basinId = originMap.get(fill.origin)
+        typeMap.set(basinId, this.buildType(layers, startPoint))
         this.fillBaseData(fill, fillPoint, startPoint)
     }
-
-    findBasinStart(layers, neighbors) {}
-
-    buildType(layers, point) {}
 
     onFill(fill, fillPoint, parentPoint) {
         const {distanceGrid} = fill.context
@@ -92,10 +87,8 @@ class BasinFill extends ConcurrentFill {
         midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
     }
 
-    getChance(fill) { return CHANCE }
-    getGrowth(fill) { return GROWTH }
-    getNeighbors(fill, parentPoint) {}
-    canFill(fill, fillPoint, parent) {}
+    findBasinStart(fill, neighbors) {}
+    buildType(layers, point) {}
 }
 
 
@@ -111,10 +104,17 @@ class LandBasinFill extends BasinFill {
         return adjacents
     }
 
-    findBasinStart(layers, neighbors) {
+    findBasinStart(fill, neighbors) {
+        const {layers, originMap, basinMaxReach} = fill.context
+        const basinId = originMap.get(fill.origin)
         // land point where basin flows
         for (let neighbor of neighbors) {
             if (layers.surface.isWater(neighbor)) {
+                // set basin max reach, given by water body area
+                // lakes have a small reach, oceans have no limit
+                // start from zero
+                const area = layers.surface.getArea(neighbor) - 1
+                basinMaxReach.set(basinId, area)
                 return neighbor
             }
         }
@@ -148,10 +148,16 @@ class WaterBasinFill extends BasinFill {
         return Point.around(parentPoint)
     }
 
-    findBasinStart(layers, neighbors) {
-        // land point where basin flows
+    findBasinStart(fill, neighbors) {
+        const {layers, basinGrid, originMap, basinMaxReach} = fill.context
+        const id = originMap.get(fill.origin)
+        // water point from where basin flows
         for (let neighbor of neighbors) {
             if (layers.surface.isLand(neighbor)) {
+                const neighborBasinId = basinGrid.get(neighbor)
+                // make reach same as land neighbor
+                const reach = basinMaxReach.get(neighborBasinId)
+                basinMaxReach.set(id, reach)
                 return neighbor
             }
         }
