@@ -51,20 +51,12 @@ export class RiverLayer {
         const stretchId = this.#stretchMap.get(point)
         return {
             id,
-            flowDirections: this.#getRiverDirections(point),
+            flowDirections: this.#directionMaskGrid.getAxis(point),
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
             meander: this.layers.basin.getMidpoint(point),
         }
-    }
-
-    #getRiverDirections(point) {
-        // return a list of direction axis representing a river branch
-        // at given direction on a 3x3 bitmask grid (cross)
-        // for each direction, draw a point to the center
-        const directions = this.#directionMaskGrid.get(point)
-        return directions.map(dir => dir.axis)
     }
 
     isMouth(point) {

@@ -108,7 +108,6 @@ export class BasinLayer {
     }
 
     getText(point) {
-        console.log(this.#basinGrid.get(point));
         if (! this.#basinGrid.get(point))
             return 'submarine'
         const basin = this.get(point)
@@ -121,7 +120,7 @@ export class BasinLayer {
         return `Basin(${attrs})`
     }
 
-    draw(point, props, baseColor) {
+    drawPath(point, props, baseColor) {
         const {canvas, canvasPoint, tileSize} = props
         const basin = this.get(point)
         const lineWidth = 1
@@ -132,8 +131,7 @@ export class BasinLayer {
         const canvasMidpoint = Point.multiplyScalar(basin.midpoint, tileSize)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         const hexColor = "#069"
-        const directions = this.#directionMaskGrid.get(point)
-        const flowDirections = directions.map(dir => dir.axis)
+        const flowDirections = this.#directionMaskGrid.getAxis(point)
         // for each neighbor with a basin connection
         for(let flowAxis of flowDirections) {
             // build a point for each flow that points to this point

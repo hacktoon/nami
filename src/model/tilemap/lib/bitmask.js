@@ -12,7 +12,7 @@ export class DirectionMaskGrid {
         16(S)
     */
     // detect matrix in source file
-    #map = new Map([
+    #dirMap = new Map([
         [Direction.NORTH.id, 1],
         [Direction.WEST.id, 2],
         [Direction.EAST.id, 8],
@@ -26,9 +26,10 @@ export class DirectionMaskGrid {
 
     get(point) {
         const dirs = []
-        const bitmask = new BitMask(this.#grid.get(point))
+        const code = this.#grid.get(point)
+        const bitmask = new BitMask(code)
         // select flagged directions only
-        for(let [directionId, flag] of this.#map.entries()) {
+        for(let [directionId, flag] of this.#dirMap.entries()) {
             if (bitmask.has(flag)) {
                 dirs.push(Direction.fromId(directionId))
             }
@@ -36,15 +37,20 @@ export class DirectionMaskGrid {
         return dirs
     }
 
+    getAxis(point) {
+        return this.get(point).map(dir => dir.axis)
+    }
+
     add(point, direction) {
-        const bitmask = new BitMask(this.#grid.get(point))
-        bitmask.set(this.#map.get(direction.id))
+        const code = this.#grid.get(point)
+        const bitmask = new BitMask(code)
+        bitmask.set(this.#dirMap.get(direction.id))
         this.#grid.set(point, bitmask.code)
     }
 
     has(point, direction) {
         const bitmask = new BitMask(this.#grid.get(point))
-        const flag = this.#map.get(direction.id)
+        const flag = this.#dirMap.get(direction.id)
         return bitmask.has(flag)
     }
 }

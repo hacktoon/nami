@@ -1,5 +1,6 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
+import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 import { PointMap } from '/src/lib/point/map'
@@ -52,7 +53,7 @@ class BasinFill extends ConcurrentFill {
         // lakes have a small reach, oceans have no limit
         const area = layers.surface.getArea(startPoint)
         basinMaxReach.set(id, area)
-        this.buildBasinData(fill, fillPoint, startPoint)
+        this.fillBaseData(fill, fillPoint, startPoint)
     }
 
     findBasinStart(layers, neighbors) {}
@@ -64,25 +65,32 @@ class BasinFill extends ConcurrentFill {
         // distance to source by point
         const currentDistance = distanceGrid.wrapGet(parentPoint)
         distanceGrid.wrapSet(fillPoint, currentDistance + 1)
-        this.buildBasinData(fill, fillPoint, parentPoint)
+        this.fillBaseData(fill, fillPoint, parentPoint)
     }
 
-    buildBasinData(fill, fillPoint, startPoint) {
+    fillBaseData(fill, fillPoint, parentPoint) {
         const {
-            basinGrid, erosionGrid, originMap,
+            basinGrid, erosionGrid, originMap, directionMaskGrid,
             midpointIndexGrid, zoneRect
         } = fill.context
         const basinId = originMap.get(fill.origin)
         // set basin id to spread on fill
         basinGrid.wrapSet(fillPoint, basinId)
         // set erosion flow to parent
-        const direction = Point.directionBetween(fillPoint, startPoint)
+        const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionGrid.wrapSet(fillPoint, direction.id)
+        // update erosion path
+        directionMaskGrid.add(fillPoint, direction)
+        // update parent point erosion path
+        if (Point.differs(fillPoint, fill.origin)) {
+            const upstream = Point.directionBetween(parentPoint, fillPoint)
+            directionMaskGrid.add(parentPoint, upstream)
+        }
         // terrain offset to add variance
         const midpoint = buildMidpoint(direction)
         const midpointIndex = zoneRect.pointToIndex(midpoint)
         midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
-        buildErosionPaths(fill.context, fillPoint)
+        // this.updateErosionPath(fill.context, fillPoint, parentPoint)
     }
 
     getChance(fill) { return CHANCE }
@@ -91,6 +99,23 @@ class BasinFill extends ConcurrentFill {
     getNeighbors(fill, parentPoint) {}
 
     canFill(fill, fillPoint, parent) {}
+
+    updateErosionPath(context, point, parentPoint) {
+        const {rect, layers, erosionGrid, directionMaskGrid} = context
+        const erosion = erosionGrid.wrapGet(point)
+        // set first tile according to which direction is flowing
+        // directionMaskGrid.add(point, Direction.fromId(erosion))
+        // // add flowCode for each neighbor that flows to this point
+        // ignore adjacent water tiles
+        // if (layers.surface.isWater(sidePoint)) return
+        // neighbor basin flows here?
+        const sideErosion = Direction.fromId(erosionGrid.wrapGet(parentPoint))
+        // does side point points to this current point?
+        const flowTargetPoint = Point.atDirection(parentPoint, sideErosion)
+        if (Point.equals(point, flowTargetPoint)) {
+            // directionMaskGrid.add(point, sideDirection)
+        }
+    }
 }
 
 
@@ -161,26 +186,6 @@ class WaterBasinFill extends BasinFill {
         const isWater = layers.surface.isWater(fillPoint)
         return isWater && basinGrid.get(fillPoint) === null
     }
-}
-
-function buildErosionPaths(context, point) {
-    // const {rect, layers, erosionGrid, directionMaskGrid} = context
-    // const erosion = erosionGrid.wrapGet(point)
-    // // set the tile according to which direction is flowing
-    // directionMaskGrid.add(point, erosion)
-    // console.log(directionMaskGrid.get(point), erosion);
-    // // add flowCode for each neighbor that flows to this point
-    // Point.adjacents(point, (sidePoint, sideDirection) => {
-    //     // ignore adjacent water tiles
-    //     if (layers.surface.isWater(sidePoint)) return
-    //     // neighbor basin flows here?
-    //     const sideErosion = erosionGrid.wrapGet(sidePoint)
-    //     // does side point points to this current point?
-    //     const flowTargetPoint = Point.atDirection(sidePoint, sideErosion)
-    //     if (Point.equals(point, flowTargetPoint)) {
-    //         directionMaskGrid.add(point, sideDirection)
-    //     }
-    // })
 }
 
 
