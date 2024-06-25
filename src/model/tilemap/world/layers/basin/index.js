@@ -1,4 +1,3 @@
-import { PointMap } from '/src/lib/point/map'
 import { Point } from '/src/lib/point'
 import { Grid } from '/src/lib/grid'
 import { PointSet } from '/src/lib/point/set'
@@ -41,14 +40,12 @@ export class BasinLayer {
         this.#zoneRect = zoneRect
         this.#dividePoints = new PointSet(rect)
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
-        this.#basinGrid = Grid.fromRect(rect, () => null)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         const context = {
             rect,
-            layers: layers,
-            basinGrid: this.#basinGrid,
+            layers,
             typeMap: this.#typeMap,
             distanceGrid: this.#distanceGrid,
             dividePoints: this.#dividePoints,
@@ -57,9 +54,7 @@ export class BasinLayer {
             midpointIndexGrid: this.#midpointIndexGrid,
             zoneRect: this.#zoneRect
         }
-        // start filling from land borders
-        buildBasin(layers.surface.landBorders, context)
-        // buildBasin(layers.surface.waterBorders, context)
+        this.#basinGrid = buildBasin(context)
     }
 
     get count() {
@@ -80,10 +75,6 @@ export class BasinLayer {
         const id = this.#basinGrid.get(point)
         const typeId = this.#typeMap.get(id)
         return Basin.parse(typeId)
-    }
-
-    getThroughput(point) {
-        return this.getType(point).throughput
     }
 
     getMidpoint(point) {
@@ -117,6 +108,7 @@ export class BasinLayer {
     }
 
     getText(point) {
+        console.log(this.#basinGrid.get(point));
         if (! this.#basinGrid.get(point))
             return 'submarine'
         const basin = this.get(point)

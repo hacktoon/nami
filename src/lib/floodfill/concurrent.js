@@ -17,12 +17,12 @@ export class ConcurrentFill {
         // Initialize data and fill origins
         const level = 0
         for(let id = 0; id < this.origins.length; id ++) {
-            const fill = {id, context: this.context, level}
-            const target = this.origins[id]
-            const neighbors = this.getNeighbors(fill, target)
+            const origin = this.origins[id]
+            const fill = {id, origin, context: this.context, level}
+            const neighbors = this.getNeighbors(fill, origin)
             this.#levelTable.push(level)
-            this.#seedTable.push([target])
-            this.onInitFill(fill, target, neighbors)
+            this.#seedTable.push([origin])
+            this.onInitFill(fill, origin, neighbors)
         }
     }
 

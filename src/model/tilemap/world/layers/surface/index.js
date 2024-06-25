@@ -38,12 +38,11 @@ export class SurfaceLayer {
 
     #bodyIdCount = FIRST_BODY_ID
 
-    landBorders = []
-
     constructor(rect, layers) {
         this.#detectSurfaceBodies(rect, layers)
         this.#detectSurfaceType()
         this.#detectBorders()
+
     }
 
     #detectSurfaceBodies(rect, layers) {
@@ -116,13 +115,11 @@ export class SurfaceLayer {
         // surface body matrix already defined, update it by setting
         // water/land borders as negative ids
         this.#grid.forEach(point => {
-            const isWater = this.isWater(point)
+            const isWater = this.get(point).water
             const bodyId = this.#grid.get(point)
             if (this.#isBorder(point, isWater)) {
                 // negative bodyId's are surface borders
                 this.#grid.set(point, -bodyId)
-                // store borders for other layers to use
-                if (!isWater) this.landBorders.push(point)
             }
             // update water tile area
             if (isWater) this.#waterArea++
@@ -131,7 +128,7 @@ export class SurfaceLayer {
 
     #isBorder(point, isWater) {
         for (let sidePoint of Point.adjacents(point)) {
-            const isSideWater = this.isWater(sidePoint)
+            const isSideWater = this.get(sidePoint).water
             if (isWater && ! isSideWater || ! isWater && isSideWater) {
                 return true
             }

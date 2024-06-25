@@ -8,9 +8,8 @@ export class Basin {
 }
 
 
-export class Ocean extends Basin {
+export class OceanBasin extends Basin {
     static id = 0
-    static throughput = 0
     static name = 'Ocean'
     static color = Color.fromHex('#51a2d1')
 }
@@ -18,7 +17,6 @@ export class Ocean extends Basin {
 
 export class SeaBasin extends Basin {
     static id = 1
-    static throughput = 4
     static name = 'Sea'
     static color = Color.fromHex('#7fc3c5')
 }
@@ -26,14 +24,21 @@ export class SeaBasin extends Basin {
 
 export class LakeBasin extends Basin {
     static id = 2
-    static throughput = 1
     static name = 'Lake'
     static color = Color.fromHex('#6caca1')
 }
 
 
+export class RiverBedBasin extends Basin {
+    static id = 3
+    static name = 'RiverBed'
+    static color = Color.fromHex('#244f6b')
+}
+
+
 const BASIN_MAP = {
-    0: Ocean,
+    0: OceanBasin,
     1: SeaBasin,
     2: LakeBasin,
+    3: RiverBedBasin,
 }
