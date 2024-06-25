@@ -21,22 +21,31 @@ const OFFSET_RANGE = [1, 3]
 
 export function buildBasin(context) {
     const basinMaxReach = new Map()
+    const basinMaxDistance = new Map()
     const layers = context.layers
     const landBorders = []
     const waterBorders = []
     const originMap = new PointMap(context.rect)
-    let id = 0
+    let basinId = 0
     const basinGrid = Grid.fromRect(context.rect, point => {
         if (layers.surface.isBorder(point)) {
             if (layers.surface.isLand(point))
                 landBorders.push(point)
             else
                 waterBorders.push(point)
-            originMap.set(point, id++)
+            basinMaxDistance.set(basinId, 0)
+            originMap.set(point, basinId)
+            basinId++
         }
         return null
     })
-    const ctx = {...context, basinGrid, originMap, basinMaxReach}
+    const ctx = {
+        ...context,
+        basinGrid,
+        originMap,
+        basinMaxReach,
+        basinMaxDistance
+    }
     new LandBasinFill(landBorders, ctx).completeFill()
     new WaterBasinFill(waterBorders, ctx).completeFill()
     return basinGrid
@@ -56,10 +65,15 @@ class BasinFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {distanceGrid} = fill.context
+        const {distanceGrid, originMap, basinMaxDistance} = fill.context
         // distance to source by point
+        const basinId = originMap.get(fill.origin)
         const currentDistance = distanceGrid.wrapGet(parentPoint)
-        distanceGrid.wrapSet(fillPoint, currentDistance + 1)
+        const newDistance = currentDistance + 1
+        distanceGrid.wrapSet(fillPoint, newDistance)
+        if (newDistance > basinMaxDistance.get(basinId)) {
+            basinMaxDistance.set(basinId, newDistance)
+        }
         this.fillBaseData(fill, fillPoint, parentPoint)
     }
 
@@ -95,7 +109,7 @@ class BasinFill extends ConcurrentFill {
 class LandBasinFill extends BasinFill {
     getNeighbors(fill, parentPoint) {
         const {rect, dividePoints} = fill.context
-        const adjacents = Point.adjacents(parentPoint)
+        const adjacents = Point.around(parentPoint)
         // is basin divide (is fill border)?
         if (isDivide(fill.context, adjacents)) {
             const wrappedParentPoint = rect.wrap(parentPoint)
@@ -134,8 +148,8 @@ class LandBasinFill extends BasinFill {
             layers, basinGrid, distanceGrid, originMap, basinMaxReach
         } = fill.context
         const isLand = layers.surface.isLand(fillPoint)
-        const id = originMap.get(fill.origin)
-        const maxReach = basinMaxReach.get(id)
+        const basinId = originMap.get(fill.origin)
+        const maxReach = basinMaxReach.get(basinId)
         const currentDistance = distanceGrid.get(parent)
         const inBasinReach = currentDistance < maxReach
         return inBasinReach && isLand && basinGrid.get(fillPoint) === null
@@ -149,15 +163,18 @@ class WaterBasinFill extends BasinFill {
     }
 
     findBasinStart(fill, neighbors) {
-        const {layers, basinGrid, originMap, basinMaxReach} = fill.context
-        const id = originMap.get(fill.origin)
+        const {
+            layers, basinGrid, originMap, basinMaxReach, basinMaxDistance
+        } = fill.context
+        const basinId = originMap.get(fill.origin)
         // water point from where basin flows
         for (let neighbor of neighbors) {
             if (layers.surface.isLand(neighbor)) {
                 const neighborBasinId = basinGrid.get(neighbor)
-                // make reach same as land neighbor
+                // make reach the size of the land neighbor basin
+                const basinSize = basinMaxDistance.get(neighborBasinId)
                 const reach = basinMaxReach.get(neighborBasinId)
-                basinMaxReach.set(id, reach)
+                basinMaxReach.set(basinId, basinSize > 2 ? reach : basinSize)
                 return neighbor
             }
         }
@@ -168,9 +185,15 @@ class WaterBasinFill extends BasinFill {
     }
 
     canFill(fill, fillPoint, parent) {
-        const {layers, basinGrid} = fill.context
+        const {
+            layers, basinGrid, distanceGrid, originMap, basinMaxReach
+        } = fill.context
         const isWater = layers.surface.isWater(fillPoint)
-        return isWater && basinGrid.get(fillPoint) === null
+        const basinId = originMap.get(fill.origin)
+        const maxReach = basinMaxReach.get(basinId)
+        const currentDistance = distanceGrid.get(parent)
+        const inBasinReach = currentDistance < maxReach
+        return inBasinReach && isWater && basinGrid.get(fillPoint) === null
     }
 }
 

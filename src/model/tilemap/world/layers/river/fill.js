@@ -67,18 +67,16 @@ function buildRiver(context, riverId, sourcePoint) {
 
 
 function buildRiverPaths(context, point) {
-    const {rect, layers, directionMaskGrid} = context
-    const wrappedPoint = rect.wrap(point)
-    const basin = layers.basin.get(wrappedPoint)
+    const {layers, directionMaskGrid} = context
+    const basin = layers.basin.get(point)
     // set the tile according to which direction is flowing
     directionMaskGrid.add(point, basin.erosion)
     // add flowCode for each neighbor that flows to this point
-    Point.adjacents(point, (sidePoint, sideDirection) => {
-        const wrappedSidePoint = rect.wrap(sidePoint)
+    Point.around(point, (sidePoint, sideDirection) => {
         // ignore adjacent water tiles
         if (layers.surface.isWater(sidePoint)) return
         // neighbor basin flows here?
-        const basin = context.layers.basin.get(wrappedSidePoint)
+        const basin = context.layers.basin.get(sidePoint)
         // does side point points to this current point?
         const flowTargetPoint = Point.atDirection(sidePoint, basin.erosion)
         if (Point.equals(point, flowTargetPoint)) {
