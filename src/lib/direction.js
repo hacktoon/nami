@@ -93,8 +93,4 @@ export class Direction {
             Direction.WEST
         )
     }
-
-    static isCardinal(direction) {
-        return CARDINAL_DIRECTIONS.has(direction.id)
-    }
 }

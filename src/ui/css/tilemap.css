@@ -3,7 +3,7 @@
 .UITileMap {
     display: grid;
     grid-template-rows: min-content auto;
-    grid-template-columns: auto 20%;
+    grid-template-columns: auto 300px;
 }
 
 .UITileMap .UITileMapForm {
@@ -18,6 +18,37 @@
     display: flex;
     gap: 1rem;
     align-items: stretch;
+}
+
+/* SCENE ==================================================== */
+.UITileMap .UITileMapScene {
+    display: grid;
+    grid-template-rows: 40px auto;
+    overflow: hidden;
+}
+
+.UITileMap .UITileMapScene .UITileMapSceneDashboard {
+    background-color: #333;
+    color: #FFF;
+    display: flex;
+    align-items: center;
+    padding: 0 .5rem;
+}
+
+.UITileMap .UITileMapScene .UITileMapSceneContent {
+    background-color: #FFF;
+    background-image: linear-gradient(45deg, #E8E8E8 25%, transparent 25%),
+        linear-gradient(-45deg, #E8E8E8 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #E8E8E8 75%),
+        linear-gradient(-45deg, transparent 75%, #E8E8E8 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    position: relative;
+}
+
+
+.UITileMap .UITileMapScene .MouseTrack {
+    box-shadow: inset 0 0 .5rem #000;
 }
 
 
@@ -52,22 +83,3 @@
     color: #AAA;
     background-color: #373737;
 }
-
-
-/* SCENE ==================================================== */
-.UITileMap .UITileMapScene {
-    background-color: #FFF;
-    background-image: linear-gradient(45deg, #E8E8E8 25%, transparent 25%),
-        linear-gradient(-45deg, #E8E8E8 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #E8E8E8 75%),
-        linear-gradient(-45deg, transparent 75%, #E8E8E8 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-    position: relative;
-}
-
-
-.UITileMap .UITileMapScene .MouseTrack {
-    box-shadow: inset 0 0 .5rem #000;
-}
-

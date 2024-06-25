@@ -4,6 +4,7 @@ import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Point } from '/src/lib/point'
 import { Canvas } from '/src/ui/canvas'
+import { Text } from '/src/ui'
 import { useResize } from '/src/ui'
 
 import { UITileMapMouse } from './mouse'
@@ -16,6 +17,9 @@ export function UITileMapScene(props) {
     const viewportRef = useRef(null)
     const viewport = useResize(viewportRef)
     return <section className="UITileMapScene" ref={viewportRef}>
+        <section className="UITileMapSceneDashboard">
+            <Text>Seed: {props.tileMap.seed}, {props.tileMap.getDescription()}</Text>
+        </section>
         <UITileMapSceneContent viewport={viewport} {...props} />
     </section>
 }
@@ -37,7 +41,7 @@ function UITileMapSceneContent({diagram, viewport, ...props}) {
     const handleClick = point => props.handleClick(point)
     const handleInit = canvas => scene.render(canvas)
 
-    return <>
+    return <section className="UITileMapSceneContent">
         <UITileMapMouse
             scene={scene}
             onDrag={handleDrag}
@@ -46,7 +50,7 @@ function UITileMapSceneContent({diagram, viewport, ...props}) {
             onDragStart={handleDragStart}
         />
         <Canvas viewport={viewport} onInit={handleInit}/>
-    </>
+    </section>
 }
 
 

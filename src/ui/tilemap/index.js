@@ -40,13 +40,13 @@ function UITileMapDiagram({diagram, tileMap}) {
     return <>
         <UITileMapScene
             diagram={mapDiagram}
+            tileMap={tileMap}
             sceneData={sceneData}
             handleDrag={handleDrag}
             handleWheel={handleWheel}
             handleClick={handleClick}
         />
         <section className="UITileMapSidebar">
-            <Text>Seed: {tileMap.seed}, {tileMap.getDescription()}</Text>
             <Form className="MapSceneForm"
                 data={sceneData}
                 onSubmit={setSceneData}>
