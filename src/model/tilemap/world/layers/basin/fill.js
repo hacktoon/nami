@@ -90,32 +90,12 @@ class BasinFill extends ConcurrentFill {
         const midpoint = buildMidpoint(direction)
         const midpointIndex = zoneRect.pointToIndex(midpoint)
         midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
-        // this.updateErosionPath(fill.context, fillPoint, parentPoint)
     }
 
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
-
     getNeighbors(fill, parentPoint) {}
-
     canFill(fill, fillPoint, parent) {}
-
-    updateErosionPath(context, point, parentPoint) {
-        const {rect, layers, erosionGrid, directionMaskGrid} = context
-        const erosion = erosionGrid.wrapGet(point)
-        // set first tile according to which direction is flowing
-        // directionMaskGrid.add(point, Direction.fromId(erosion))
-        // // add flowCode for each neighbor that flows to this point
-        // ignore adjacent water tiles
-        // if (layers.surface.isWater(sidePoint)) return
-        // neighbor basin flows here?
-        const sideErosion = Direction.fromId(erosionGrid.wrapGet(parentPoint))
-        // does side point points to this current point?
-        const flowTargetPoint = Point.atDirection(parentPoint, sideErosion)
-        if (Point.equals(point, flowTargetPoint)) {
-            // directionMaskGrid.add(point, sideDirection)
-        }
-    }
 }
 
 

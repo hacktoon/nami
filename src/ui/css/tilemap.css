@@ -3,7 +3,7 @@
 .UITileMap {
     display: grid;
     grid-template-rows: min-content auto;
-    grid-template-columns: auto 300px;
+    grid-template-columns: auto 25%;
 }
 
 .UITileMap .UITileMapForm {
@@ -56,22 +56,22 @@
 .UITileMap .UITileMapSidebar {
     background: #111;
     color: #FFF;
-    padding: .4rem;
-}
-
-
-.UITileMap .UITileMapSidebar .Text {
-    border: 1px solid #555;
-    margin-bottom: .5rem;
     padding: .5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .UITileMap .UITileMapSidebar .Form {
     display: grid;
     gap: 1rem;
-    padding: .5rem;
-    border: 1px solid #555;
-    margin-bottom: .5rem;
+    border-top: 1px solid #444;
+    padding-top: 1rem;
+
+}
+.UITileMap .UITileMapSidebar .Form:first-child {
+    border: none;
+    padding: 0;
 }
 
 .UITileMap .UITileMapSidebar input {
