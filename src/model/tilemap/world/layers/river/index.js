@@ -24,18 +24,16 @@ export class RiverLayer {
         this.layers = layers
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
         this.#riverMouths = new PointSet(rect)
-        this.#riverPoints = new PointMap(rect)
         this.#stretchMap = new PointMap(rect)
         const context = {
             rect,
             layers,
             riverNames: this.#riverNames,
-            riverPoints: this.#riverPoints,
             riverMouths: this.#riverMouths,
             directionMaskGrid: this.#directionMaskGrid,
             stretchMap: this.#stretchMap,
         }
-        buildRiverMap(context)
+        this.#riverPoints = buildRiverMap(context)
     }
 
     get count() {
@@ -43,7 +41,7 @@ export class RiverLayer {
     }
 
     has(point) {
-        return this.#riverPoints.has(point)
+        return this.#riverPoints.get(point) !== null
     }
 
     get(point) {
@@ -51,7 +49,7 @@ export class RiverLayer {
         const stretchId = this.#stretchMap.get(point)
         return {
             id,
-            flowDirections: this.#directionMaskGrid.getAxis(point),
+            erosionAxis: this.layers.basin.getErosionPathAxis(point),
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
@@ -64,13 +62,15 @@ export class RiverLayer {
     }
 
     is(point, type) {
-        if (! this.#riverPoints.has(point)) return false
+        if (this.#riverPoints.get(point) == null) {
+            return false
+        }
         const river = this.get(point)
         return river.stretch.id == type.id
     }
 
     getText(point) {
-        if (! this.has(point))
+        if (this.#riverPoints.get(point) == null)
             return ''
         const river = this.get(point)
         const attrs = [
@@ -93,7 +93,7 @@ export class RiverLayer {
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
-        for(let flowAxis of river.flowDirections) {
+        for(let flowAxis of river.erosionAxis) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [

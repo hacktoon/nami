@@ -100,14 +100,9 @@ class BasinFill extends ConcurrentFill {
 
 class LandBasinFill extends BasinFill {
     getNeighbors(fill, parentPoint) {
-        const {rect, dividePoints} = fill.context
-        const adjacents = Point.around(parentPoint)
-        // is basin divide (is fill border)?
-        if (isDivide(fill.context, adjacents)) {
-            const wrappedParentPoint = rect.wrap(parentPoint)
-            dividePoints.add(wrappedParentPoint)
-        }
-        return adjacents
+        return Point.around(parentPoint)
+        // if (fill.id % 2 === 0)
+        // return Point.adjacents(parentPoint)
     }
 
     findBasinStart(fill, neighbors) {
@@ -183,9 +178,7 @@ function buildMidpoint(direction) {
         const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
         return OFFSET_MIDDLE + (offset * axisToggle)
     }
-    const x = rand(direction.axis[0])
-    const y = rand(direction.axis[1])
-    return [x, y]
+    return direction.axis.map(coord => rand(coord))
 }
 
 

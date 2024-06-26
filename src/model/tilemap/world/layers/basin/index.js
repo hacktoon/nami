@@ -1,6 +1,5 @@
 import { Point } from '/src/lib/point'
 import { Grid } from '/src/lib/grid'
-import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
 import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
@@ -33,12 +32,8 @@ export class BasinLayer {
     // convert index to x, y in a 10 x 10 grid
     #midpointIndexGrid
 
-    // the points of basins that borders others basins
-    #dividePoints
-
     constructor(rect, layers, zoneRect) {
         this.#zoneRect = zoneRect
-        this.#dividePoints = new PointSet(rect)
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
@@ -48,7 +43,6 @@ export class BasinLayer {
             layers,
             typeMap: this.#typeMap,
             distanceGrid: this.#distanceGrid,
-            dividePoints: this.#dividePoints,
             erosionGrid: this.#erosionGrid,
             directionMaskGrid: this.#directionMaskGrid,
             midpointIndexGrid: this.#midpointIndexGrid,
@@ -84,18 +78,15 @@ export class BasinLayer {
     }
 
     getColor(point) {
-        if (! this.#basinGrid.get(point)) {
-            return Color.DARKBLUE
-        }
         return this.getType(point).color
     }
 
-    getDividePoints() {
-        return this.#dividePoints.points
+    getErosionPathAxis(point) {
+        return this.#directionMaskGrid.getAxis(point)
     }
 
     isDivide(point) {
-        return this.#dividePoints.has(point)
+        return this.#directionMaskGrid.get(point).length === 1
     }
 
     getErosion(point) {
@@ -108,8 +99,6 @@ export class BasinLayer {
     }
 
     getText(point) {
-        if (! this.#basinGrid.get(point))
-            return 'submarine'
         const basin = this.get(point)
         const attrs = [
             `id=${basin.id}`,
@@ -132,7 +121,7 @@ export class BasinLayer {
         const hexColor = baseColor.darken(20).toHex()
         const flowDirections = this.#directionMaskGrid.getAxis(point)
         const [x, y] = canvasPoint
-        canvas.clip(x, y, x + tileSize, y + tileSize)
+        // canvas.clip(x, y, x + tileSize, y + tileSize)
         // draw line for each neighbor with a basin connection
         for(let flowAxis of flowDirections) {
             // build a point for each flow that points to this point
@@ -141,8 +130,8 @@ export class BasinLayer {
                 midCanvasPoint[0] + flowAxis[0] * midSize,
                 midCanvasPoint[1] + flowAxis[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor, true)
+            canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor)
         }
-        canvas.restore()
+        // canvas.restore()
     }
 }

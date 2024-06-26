@@ -32,7 +32,7 @@ export class LakeBasin extends Basin {
 export class RiverBedBasin extends Basin {
     static id = 3
     static name = 'RiverBed'
-    static color = Color.fromHex('#244f6b')
+    static color = Color.fromHex('#285879')
 }
 
 

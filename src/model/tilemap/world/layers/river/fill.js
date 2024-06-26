@@ -1,5 +1,6 @@
 import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
+import { Grid } from '/src/lib/grid'
 import { HYDRO_NAMES } from '/src/lib/names'
 
 import { RiverStretch } from './data'
@@ -12,23 +13,25 @@ import { RiverStretch } from './data'
 */
 export function buildRiverMap(context) {
     let riverId = 0
-    const layers = context.layers
-    layers.basin.getDividePoints()
-        .filter(point => canBuildRiver(layers, point))
-        // create a list of pairs: (point, river distance to mouth)
-        .map(point => [point, layers.basin.getDistance(point)])
+    const {rect, layers} = context
+    const sources = []
+    const riverPoints = Grid.fromRect(rect, point => {
+        const isDivide = layers.basin.isDivide(point)
+        if (isDivide && layers.rain.canCreateRiver(point)) {
+            sources.push(point)
+        }
+        return null
+    })
+    const ctx = {...context, riverPoints}
+    // create a list of pairs: (point, river distance to mouth)
+    sources.map(point => [point, layers.basin.getDistance(point)])
         // in ascendent order to get longest rivers first
         // for starting rivers on basin divides
         .sort((a, b) => a[1] - b[1])
         .forEach(([point, ]) => {
-            buildRiver(context, riverId++, point)
+            buildRiver(ctx, riverId++, point)
         })
-}
-
-
-function canBuildRiver(layers, point) {
-    const isBorder = layers.surface.isBorder(point)
-    return isBorder || layers.rain.canCreateRiver(point)
+    return riverPoints
 }
 
 
@@ -52,8 +55,7 @@ function buildRiver(context, riverId, sourcePoint) {
         stretchMap.set(point, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(point, riverId)
-        // set river directions grid
-        buildRiverPaths(context, currentPoint)
+
         // get next river point
         const erosion = layers.basin.getErosion(point)
         currentPoint = Point.atDirection(point, erosion)
@@ -63,26 +65,6 @@ function buildRiver(context, riverId, sourcePoint) {
     // current (last) point is water, add previous as river mouth
     riverMouths.add(prevPoint)
     riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
-}
-
-
-function buildRiverPaths(context, point) {
-    const {layers, directionMaskGrid} = context
-    const basin = layers.basin.get(point)
-    // set the tile according to which direction is flowing
-    directionMaskGrid.add(point, basin.erosion)
-    // add flowCode for each neighbor that flows to this point
-    Point.around(point, (sidePoint, sideDirection) => {
-        // ignore adjacent water tiles
-        if (layers.surface.isWater(sidePoint)) return
-        // neighbor basin flows here?
-        const basin = context.layers.basin.get(sidePoint)
-        // does side point points to this current point?
-        const flowTargetPoint = Point.atDirection(sidePoint, basin.erosion)
-        if (Point.equals(point, flowTargetPoint)) {
-            directionMaskGrid.add(point, sideDirection)
-        }
-    })
 }
 
 
