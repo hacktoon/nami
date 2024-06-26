@@ -69,6 +69,10 @@ class BasinFill extends ConcurrentFill {
         this.fillBaseData(fill, fillPoint, parentPoint)
     }
 
+    getNeighbors(fill, parentPoint) {
+        return Point.around(parentPoint)
+    }
+
     fillBaseData(fill, fillPoint, parentPoint) {
         const {
             basinGrid, erosionGrid, originMap, directionMaskGrid,
@@ -103,19 +107,12 @@ class BasinFill extends ConcurrentFill {
         return direction.axis.map(coord => rand(coord))
     }
 
-
     findBasinStart(fill, neighbors) {}
     buildType(layers, point) {}
 }
 
 
 class LandBasinFill extends BasinFill {
-    getNeighbors(fill, parentPoint) {
-        return Point.around(parentPoint)
-        // if (fill.id % 2 === 0)
-        // return Point.adjacents(parentPoint)
-    }
-
     findBasinStart(fill, neighbors) {
         const {layers, originMap, basinMaxReach} = fill.context
         const basinId = originMap.get(fill.origin)
@@ -156,10 +153,6 @@ class LandBasinFill extends BasinFill {
 
 
 class WaterBasinFill extends BasinFill {
-    getNeighbors(fill, parentPoint) {
-        return Point.around(parentPoint)
-    }
-
     findBasinStart(fill, neighbors) {
         const {layers} = fill.context
         // water point from where basin flows
