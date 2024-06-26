@@ -21,7 +21,6 @@ const OFFSET_RANGE = [1, 3]
 
 export function buildBasin(context) {
     const basinMaxReach = new Map()
-    const basinMaxDistance = new Map()
     const layers = context.layers
     const landBorders = []
     const waterBorders = []
@@ -33,7 +32,6 @@ export function buildBasin(context) {
                 landBorders.push(point)
             else
                 waterBorders.push(point)
-            basinMaxDistance.set(basinId, 0)
             originMap.set(point, basinId)
             basinId++
         }
@@ -44,7 +42,6 @@ export function buildBasin(context) {
         basinGrid,
         originMap,
         basinMaxReach,
-        basinMaxDistance
     }
     new LandBasinFill(landBorders, ctx).completeFill()
     new WaterBasinFill(waterBorders, ctx).completeFill()
@@ -65,15 +62,10 @@ class BasinFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {distanceGrid, originMap, basinMaxDistance} = fill.context
+        const {distanceGrid} = fill.context
         // distance to source by point
-        const basinId = originMap.get(fill.origin)
         const currentDistance = distanceGrid.wrapGet(parentPoint)
-        const newDistance = currentDistance + 1
-        distanceGrid.wrapSet(fillPoint, newDistance)
-        if (newDistance > basinMaxDistance.get(basinId)) {
-            basinMaxDistance.set(basinId, newDistance)
-        }
+        distanceGrid.wrapSet(fillPoint, currentDistance + 1)
         this.fillBaseData(fill, fillPoint, parentPoint)
     }
 
@@ -163,18 +155,10 @@ class WaterBasinFill extends BasinFill {
     }
 
     findBasinStart(fill, neighbors) {
-        const {
-            layers, basinGrid, originMap, basinMaxReach, basinMaxDistance
-        } = fill.context
-        const basinId = originMap.get(fill.origin)
+        const {layers} = fill.context
         // water point from where basin flows
         for (let neighbor of neighbors) {
             if (layers.surface.isLand(neighbor)) {
-                const neighborBasinId = basinGrid.get(neighbor)
-                // make reach the size of the land neighbor basin
-                const basinSize = basinMaxDistance.get(neighborBasinId)
-                const reach = basinMaxReach.get(neighborBasinId)
-                basinMaxReach.set(basinId, basinSize > 2 ? reach : basinSize)
                 return neighbor
             }
         }
@@ -185,15 +169,9 @@ class WaterBasinFill extends BasinFill {
     }
 
     canFill(fill, fillPoint, parent) {
-        const {
-            layers, basinGrid, distanceGrid, originMap, basinMaxReach
-        } = fill.context
+        const {layers, basinGrid} = fill.context
         const isWater = layers.surface.isWater(fillPoint)
-        const basinId = originMap.get(fill.origin)
-        const maxReach = basinMaxReach.get(basinId)
-        const currentDistance = distanceGrid.get(parent)
-        const inBasinReach = currentDistance < maxReach
-        return inBasinReach && isWater && basinGrid.get(fillPoint) === null
+        return isWater && basinGrid.get(fillPoint) === null
     }
 }
 
