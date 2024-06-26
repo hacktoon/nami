@@ -88,10 +88,21 @@ class BasinFill extends ConcurrentFill {
             directionMaskGrid.add(parentPoint, upstream)
         }
         // terrain offset to add variance
-        const midpoint = buildMidpoint(direction)
+        const midpoint = this.buildMidpoint(direction)
         const midpointIndex = zoneRect.pointToIndex(midpoint)
         midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
     }
+
+    buildMidpoint(direction) {
+        // direction axis ([-1, 0], [1, 1], etc)
+        const rand = (coordAxis) => {
+            const offset = Random.int(...OFFSET_RANGE)
+            const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
+            return OFFSET_MIDDLE + (offset * axisToggle)
+        }
+        return direction.axis.map(coord => rand(coord))
+    }
+
 
     findBasinStart(fill, neighbors) {}
     buildType(layers, point) {}
@@ -168,32 +179,4 @@ class WaterBasinFill extends BasinFill {
         const isWater = layers.surface.isWater(fillPoint)
         return isWater && basinGrid.get(fillPoint) === null
     }
-}
-
-
-function buildMidpoint(direction) {
-    // direction axis ([-1, 0], [1, 1], etc)
-    const rand = (coordAxis) => {
-        const offset = Random.int(...OFFSET_RANGE)
-        const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
-        return OFFSET_MIDDLE + (offset * axisToggle)
-    }
-    return direction.axis.map(coord => rand(coord))
-}
-
-
-function isDivide(context, neighbors) {
-    const {rect, layers, basinGrid} = context
-    // it's a river source if every neighbor is water
-    let waterNeighborCount = 0
-    let blockedCount = 0
-    for(let neighbor of neighbors) {
-        const isNeighborWater = layers.surface.isWater(neighbor)
-        const isOccupied = Boolean(basinGrid.wrapGet(neighbor))
-        waterNeighborCount += isNeighborWater ? 1 : 0
-        blockedCount += (isNeighborWater || isOccupied) ? 1 : 0
-    }
-    const allNeighborsWater = waterNeighborCount === neighbors.length
-    const allNeighborsBlocked = blockedCount === neighbors.length
-    return allNeighborsWater || allNeighborsBlocked
 }
