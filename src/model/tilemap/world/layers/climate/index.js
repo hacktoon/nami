@@ -23,7 +23,11 @@ export class ClimateLayer {
     }
 
     getColor(point) {
-        return this.get(point).color
+        if (this.layers.surface.isLand(point)) {
+            return this.get(point).color
+        }
+        return this.layers.surface.getColor(point)
+
     }
 
     is(point, type) {

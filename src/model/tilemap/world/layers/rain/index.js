@@ -15,6 +15,7 @@ export class RainLayer {
     #grid
 
     constructor(rect, layers) {
+        this.layers = layers
         this.#grid = Grid.fromRect(rect, point => {
             const noise = layers.noise.get4D(rect, point, "atmos")
             if (noise > ARID_RATIO)     return Rain.ARID
@@ -30,7 +31,11 @@ export class RainLayer {
     }
 
     getColor(point) {
-        return this.get(point).color
+        const color = this.get(point).color
+        if (this.layers.surface.isLand(point)) {
+            return color
+        }
+        return this.layers.surface.getColor(point)
     }
 
     canCreateRiver(point) {
