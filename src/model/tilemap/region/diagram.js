@@ -10,8 +10,6 @@ const SCHEMA = new Schema(
     Type.boolean('showBorders', 'Borders', {default: true}),
     Type.boolean('selectRegion', 'Select region', {default: false}),
     Type.number('selectedRegion', 'Region', {default: 0, min: 0, step: 1}),
-    Type.boolean('showGrowth', 'Growth', {default: true}),
-    Type.number('selectedGrowth', 'Growth', {default: 1, min: 0}),
     Type.boolean('showLevels', 'Levels', {default: true}),
     Type.number('selectedLevel', 'Level', {default: 1, min: 0}),
 )
@@ -28,10 +26,8 @@ export class RegionTileMapDiagram extends TileMapDiagram {
         this.params = params
         this.showBorders = params.get('showBorders')
         this.showOrigins = params.get('showOrigins')
-        this.selectedGrowth = params.get('selectedGrowth')
         this.selectedLevel = params.get('selectedLevel')
         this.showLevels = params.get('showLevels')
-        this.showGrowth = params.get('showGrowth')
     }
 
     draw(props) {
@@ -43,7 +39,6 @@ export class RegionTileMapDiagram extends TileMapDiagram {
 
     getColor(point) {
         const regionId = this.tileMap.getRegion(point)
-        const growth = this.tileMap.getGrowth(point)
         const color = this.tileMap.getColor(point, this.showBorders)
 
         if (this.showOrigins && this.tileMap.isOrigin(point)) {
@@ -56,12 +51,6 @@ export class RegionTileMapDiagram extends TileMapDiagram {
                 return Color.WHITE
             }
             return color.darken(level * 1.5)
-        }
-        if (this.showGrowth) {
-            if (growth >= this.selectedGrowth) {
-                return Color.WHITE
-            }
-            return color.darken(growth * 1.5)
         }
         if (this.params.get('selectRegion')) {
             const toggle = (point[0] + point[1]) % 2 === 0

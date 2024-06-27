@@ -22,30 +22,28 @@ export class RegionFloodFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         // center is the seed at center
         // point is neighbor being filled
-        fill.context.regionMatrix.set(fillPoint, fill.id)
-        fill.context.growthMatrix.set(fillPoint, fill.growth)
-        fill.context.levelMatrix.set(fillPoint, fill.level)
+        fill.context.regionGrid.set(fillPoint, fill.id)
+        fill.context.levelGrid.set(fillPoint, fill.level)
         fill.context.colorMap.set(fill.id, new Color())
     }
 
     canFill(fill, point, center) {
-        return fill.context.regionMatrix.get(point) === EMPTY
+        return fill.context.regionGrid.get(point) === EMPTY
     }
 
     onFill(fill, point, center) {
         // center is the seed at center
         // point is neighbor being filled
-        fill.context.regionMatrix.set(point, fill.id)
-        fill.context.growthMatrix.set(point, fill.growth)
-        fill.context.levelMatrix.set(point, fill.level)
+        fill.context.regionGrid.set(point, fill.id)
+        fill.context.levelGrid.set(point, fill.level)
     }
 
     onBlockedFill(fill, neighbor, center) {
-        const {borderMap, regionMatrix, graph} = fill.context
-        const neighborRegionId = regionMatrix.get(neighbor)
+        const {borderMap, regionGrid, graph} = fill.context
+        const neighborRegionId = regionGrid.get(neighbor)
         // it's same fill, do nothing
         if (fill.id === neighborRegionId) { return }
-        const wrappedCenter = regionMatrix.wrap(center)
+        const wrappedCenter = regionGrid.wrap(center)
         // create new set of neighbor regions by id
         // set the center as border since the neighbor isn't same fill
         if (! borderMap.has(wrappedCenter)) {

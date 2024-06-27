@@ -45,32 +45,33 @@ export class RegionTileMap extends TileMap {
     #colorMap = new Map()
     #borderMap
     #centerPoints
-    #regionMatrix
-    #growthMatrix
-    #levelMatrix
+    #regionGrid
+    #levelGrid
     #regions
     #origins
 
     constructor(params) {
         super(params)
+        const fillMap = new Map()
         const scale = params.get('scale')
         this.#origins = EvenPointSampling.create(this.rect, scale)
-        this.#regionMatrix = Grid.fromRect(this.rect, () => EMPTY)
-        this.#growthMatrix = Grid.fromRect(this.rect, () => 0)
-        this.#levelMatrix = Grid.fromRect(this.rect, () => 0)
+        this.#regionGrid = Grid.fromRect(this.rect, () => EMPTY)
+        this.#levelGrid = Grid.fromRect(this.rect, () => 0)
         this.#centerPoints = new PointSet(this.rect, this.#origins)
-        this.#regions = this.#origins.map((_, id) => id)
         this.#borderMap = new PointMap(this.rect)
-        new RegionFloodFill(this.#origins, {
-            regionMatrix: this.#regionMatrix,
-            growthMatrix: this.#growthMatrix,
+        this.#regions = this.#origins.map((origin, id) => {
+            fillMap.set(id, origin)
+            return id
+        })
+        new RegionFloodFill(fillMap, {
+            regionGrid: this.#regionGrid,
             colorMap: this.#colorMap,
-            levelMatrix: this.#levelMatrix,
+            levelGrid: this.#levelGrid,
             borderMap: this.#borderMap,
             graph: this.#graph,
             chance: params.get('chance'),
             growth: params.get('growth'),
-        }).completeFill()
+        }).complete()
     }
 
     get size() {
@@ -107,15 +108,11 @@ export class RegionTileMap extends TileMap {
     }
 
     getRegion(point) {
-        return this.#regionMatrix.get(point)
-    }
-
-    getGrowth(point) {
-        return this.#growthMatrix.get(point)
+        return this.#regionGrid.get(point)
     }
 
     getLevel(point) {
-        return this.#levelMatrix.get(point)
+        return this.#levelGrid.get(point)
     }
 
     getRegions() {
@@ -138,7 +135,7 @@ export class RegionTileMap extends TileMap {
     distanceBetween(region0, region1) {
         const point0 = this.getOriginById(region0)
         const point1 = this.getOriginById(region1)
-        const unwrappedPoint1 = this.#regionMatrix.rect.unwrapFrom(point0, point1)
+        const unwrappedPoint1 = this.#regionGrid.rect.unwrapFrom(point0, point1)
         return Point.distance(point0, unwrappedPoint1)
     }
 

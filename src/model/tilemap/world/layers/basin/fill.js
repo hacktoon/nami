@@ -1,9 +1,7 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
-import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
-import { PointMap } from '/src/lib/point/map'
 
 import {
     SeaBasin,
@@ -17,34 +15,29 @@ const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
 const OFFSET_MIDDLE = 5
 const OFFSET_RANGE = [1, 3]
+const EMPTY = null
 
 
 export function buildBasin(context) {
-    const basinMaxReach = new Map()
     const layers = context.layers
-    const landBorders = []
-    const waterBorders = []
-    const originMap = new PointMap(context.rect)
+    // const basin = new Map()
+    const landBorders = new Map()
+    const waterBorders = new Map()
+    const maxReach = new Map()
     let basinId = 0
     const basinGrid = Grid.fromRect(context.rect, point => {
         if (layers.surface.isBorder(point)) {
             if (layers.surface.isLand(point))
-                landBorders.push(point)
+                landBorders.set(basinId, point)
             else
-                waterBorders.push(point)
-            originMap.set(point, basinId)
+                waterBorders.set(basinId, point)
             basinId++
         }
-        return null
+        return EMPTY
     })
-    const ctx = {
-        ...context,
-        basinGrid,
-        originMap,
-        basinMaxReach,
-    }
-    new LandBasinFill(landBorders, ctx).completeFill()
-    new WaterBasinFill(waterBorders, ctx).completeFill()
+    const ctx = {...context, basinGrid, maxReach}
+    new LandBasinFill(landBorders, ctx).complete()
+    new WaterBasinFill(waterBorders, ctx).complete()
     return basinGrid
 }
 
@@ -54,10 +47,9 @@ class BasinFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     onInitFill(fill, fillPoint, neighbors) {
-        const {layers, typeMap, originMap} = fill.context
+        const {layers, typeMap} = fill.context
         let startPoint = this.findBasinStart(fill, neighbors)
-        const basinId = originMap.get(fill.origin)
-        typeMap.set(basinId, this.buildType(layers, startPoint))
+        typeMap.set(fill.id, this.buildType(layers, startPoint))
         this.fillBaseData(fill, fillPoint, startPoint)
     }
 
@@ -75,12 +67,11 @@ class BasinFill extends ConcurrentFill {
 
     fillBaseData(fill, fillPoint, parentPoint) {
         const {
-            basinGrid, erosionGrid, originMap, directionMaskGrid,
+            basinGrid, erosionGrid, directionMaskGrid,
             midpointIndexGrid, zoneRect
         } = fill.context
-        const basinId = originMap.get(fill.origin)
         // set basin id to spread on fill
-        basinGrid.wrapSet(fillPoint, basinId)
+        basinGrid.wrapSet(fillPoint, fill.id)
         // set erosion flow to parent
         const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionGrid.wrapSet(fillPoint, direction.id)
@@ -114,16 +105,14 @@ class BasinFill extends ConcurrentFill {
 
 class LandBasinFill extends BasinFill {
     findBasinStart(fill, neighbors) {
-        const {layers, originMap, basinMaxReach} = fill.context
-        const basinId = originMap.get(fill.origin)
-        // land point where basin flows
+        const {layers, maxReach} = fill.context
         for (let neighbor of neighbors) {
             if (layers.surface.isWater(neighbor)) {
-                // set basin max reach, given by water body area
-                // lakes have a small reach, oceans have no limit
-                // start from zero
+                // Set basin max reach, given by water body area.
+                // Lakes have a small reach, oceans have no limit
+                // subtract 1 to start from zero
                 const area = layers.surface.getArea(neighbor) - 1
-                basinMaxReach.set(basinId, area)
+                maxReach.set(fill.id, area)
                 return neighbor
             }
         }
@@ -140,14 +129,12 @@ class LandBasinFill extends BasinFill {
 
     canFill(fill, fillPoint, parent) {
         const {
-            layers, basinGrid, distanceGrid, originMap, basinMaxReach
+            layers, basinGrid, distanceGrid, maxReach
         } = fill.context
         const isLand = layers.surface.isLand(fillPoint)
-        const basinId = originMap.get(fill.origin)
-        const maxReach = basinMaxReach.get(basinId)
         const currentDistance = distanceGrid.get(parent)
-        const inBasinReach = currentDistance < maxReach
-        return inBasinReach && isLand && basinGrid.get(fillPoint) === null
+        const inBasinReach = currentDistance < maxReach.get(fill.id)
+        return inBasinReach && isLand && basinGrid.get(fillPoint) === EMPTY
     }
 }
 
@@ -170,6 +157,6 @@ class WaterBasinFill extends BasinFill {
     canFill(fill, fillPoint, parent) {
         const {layers, basinGrid} = fill.context
         const isWater = layers.surface.isWater(fillPoint)
-        return isWater && basinGrid.get(fillPoint) === null
+        return isWater && basinGrid.get(fillPoint) === EMPTY
     }
 }

@@ -5,65 +5,64 @@ const MAX_LOOP_COUNT = 2000
 
 
 export class ConcurrentFill {
-    #seedTable
-    #levelTable   // stores the level of each layer for each point
+    #seedTable = new Map()
+    // stores the level of each layer for each point
+    #levelTable = new Map()
 
-    constructor(origins, context={}) {
-        this.origins = origins
+    constructor(originMap, context={}) {
+        this.originMap = originMap
         this.context = context
-        this.#seedTable = []
-        this.#levelTable = []
 
         // Initialize data and fill origins
         const level = 0
-        for(let id = 0; id < this.origins.length; id ++) {
-            const origin = this.origins[id]
-            const fill = {id, origin, context: this.context, level}
+        for(let [id, origin] of this.originMap) {
+            const fill = {id, origin, level, context}
             const neighbors = this.getNeighbors(fill, origin)
-            this.#levelTable.push(level)
-            this.#seedTable.push([origin])
+            this.#levelTable.set(id, level)
+            this.#seedTable.set(id, [origin])
             this.onInitFill(fill, origin, neighbors)
         }
     }
 
-    completeFill() {
+    complete() {
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
         while(loopCount-- > 0) {
-            const completedFills = this.stepFill()
-            if (completedFills === this.origins.length) {
+            const completedFills = this.step()
+            if (completedFills === this.originMap.size) {
                 break
             }
         }
     }
 
-    stepFill() {
+    step() {
         let completedFills = 0
-        for(let id = 0; id < this.origins.length; id ++) {
+        for(let [id, origin] of this.originMap) {
             // fill one or many layers for each id
-            const origin = this.origins[id]
-            const level = this.#levelTable[id]
-            const fill = {id, origin, context: this.context, level}
+            const level = this.#levelTable.get(id)
+            const fill = {id, origin, level, context: this.context}
             const nextSeeds = this.#fillLayer(fill)
             // Increase number of completed fills if it has no seeds
             completedFills += nextSeeds.length === 0 ? 1 : 0
             // set seeds for next layer
-            this.#seedTable[id] = nextSeeds
+            this.#seedTable.set(id, nextSeeds)
         }
         return completedFills
     }
 
     #fillLayer(fill) {
-        const nextSeeds = this.#fillSingleLayer(fill, this.#seedTable[fill.id])
+        const seeds = this.#seedTable.get(fill.id)
+        const nextSeeds = this.#fillSingleLayer(fill, seeds)
         // update level on fill context
-        const newLevelFill = {...fill, level: this.#levelTable[fill.id]}
+        const level = this.#levelTable.get(fill.id)
+        const newLevelFill = {...fill, level}
         return this.#fillExtraRandomLayers(newLevelFill, nextSeeds)
     }
 
     #fillSingleLayer(fill, seeds) {
         // for each seed, get its neighbors and try to fill
         const nextSeeds = []
-        const nextLevel = this.#levelTable[fill.id] + 1
+        const nextLevel = this.#levelTable.get(fill.id) + 1
         for(let source of seeds) {
             // for each seed, try to fill its neighbors
             const neighbors = this.getNeighbors(fill, source)
@@ -83,7 +82,9 @@ export class ConcurrentFill {
             }
         }
         // set new level if has filled seeds
-        if (nextSeeds.length > 0) this.#levelTable[fill.id] = nextLevel
+        if (nextSeeds.length > 0) {
+            this.#levelTable.set(fill.id, nextLevel)
+        }
         return nextSeeds
     }
 
@@ -96,7 +97,8 @@ export class ConcurrentFill {
             const [next, cached] = this.#splitSeeds(fill, extraSeeds, chance)
             // fill an extra layer using a fraction of given seeds
             // update level on fill context
-            const newLevelFill = {...fill, level: this.#levelTable[fill.id]}
+            const level = this.#levelTable.get(fill.id)
+            const newLevelFill = {...fill, level}
             const filled = this.#fillSingleLayer(newLevelFill, next)
             // sum up filled & deferred seeds for next iteration
             extraSeeds = cached.concat(filled)

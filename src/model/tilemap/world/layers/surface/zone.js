@@ -44,9 +44,11 @@ export class ZoneSurface {
             rect: this.#rect,
             grid,
         }
+        const entries = borderPoints.points.map((point, id) => [id, point])
+        const fillMap = new Map(entries)
         // run just one fill step
-        const zoneFill = new ZoneLitoralFill(borderPoints.points, context)
-        zoneFill.stepFill()
+        const zoneFill = new ZoneLitoralFill(fillMap, context)
+        zoneFill.step()
         return grid
     }
 
