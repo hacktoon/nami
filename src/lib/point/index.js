@@ -3,8 +3,8 @@ import { Random } from '/src/lib/random'
 
 
 const ADJACENT_NEIGHBORHOOD = [
-    [-1,  0, Direction.WEST],
     [ 1,  0, Direction.EAST],
+    [-1,  0, Direction.WEST],
     [ 0, -1, Direction.NORTH],
     [ 0,  1, Direction.SOUTH]
 ]

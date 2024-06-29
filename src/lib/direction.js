@@ -28,12 +28,6 @@ const DIRECTION_MAP = (() => {
     return _map
 })()
 
-const CARDINAL_DIRECTIONS = new Set([
-    DIRECTIONS.NORTH.id,
-    DIRECTIONS.EAST.id,
-    DIRECTIONS.SOUTH.id,
-    DIRECTIONS.WEST.id
-])
 
 export class Direction {
     static get MIDDLE () { return DIRECTIONS.MIDDLE }

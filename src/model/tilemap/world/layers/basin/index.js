@@ -1,6 +1,6 @@
 import { Point } from '/src/lib/point'
 import { Grid } from '/src/lib/grid'
-import { Color } from '/src/lib/color'
+import { Random } from '/src/lib/random'
 import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
@@ -28,6 +28,9 @@ export class BasinLayer {
     // map a point to a basin zone paths
     #directionMaskGrid
 
+    // value used to distort basin wireframe
+    #weightGrid
+
     // map a point to a point index in a zone rect
     // convert index to x, y in a 10 x 10 grid
     #midpointIndexGrid
@@ -36,6 +39,7 @@ export class BasinLayer {
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
+        this.#weightGrid = Grid.fromRect(rect, () => Random.float())
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         const context = {
@@ -43,6 +47,7 @@ export class BasinLayer {
             layers,
             typeMap: this.#typeMap,
             distanceGrid: this.#distanceGrid,
+            weightGrid: this.#weightGrid,
             erosionGrid: this.#erosionGrid,
             directionMaskGrid: this.#directionMaskGrid,
             midpointIndexGrid: this.#midpointIndexGrid,
