@@ -118,10 +118,10 @@ export class BasinLayer {
         // calc midpoint point on canvas
         const canvasMidpoint = Point.multiplyScalar(basin.midpoint, tileSize)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
-        const hexColor = baseColor.darken(20).toHex()
+        const hexColor = baseColor.darken(15).toHex()
         const flowDirections = this.#directionMaskGrid.getAxis(point)
         const [x, y] = canvasPoint
-        // canvas.clip(x, y, x + tileSize, y + tileSize)
+        canvas.clip(x, y, x + tileSize, y + tileSize)
         // draw line for each neighbor with a basin connection
         for(let flowAxis of flowDirections) {
             // build a point for each flow that points to this point
@@ -132,6 +132,6 @@ export class BasinLayer {
             ]
             canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor)
         }
-        // canvas.restore()
+        canvas.restore()
     }
 }

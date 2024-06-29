@@ -51,24 +51,25 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         } else {
             canvas.rect(canvasPoint, tileSize, layerColor.toHex())
         }
-        if (this.params.get('showErosion')) {
-            const basin = layers.basin.get(point)
-            if (basin.erosion) {
-                const text = basin.erosion.symbol
-                layers.basin.drawPath(point, props, layerColor)
-                const textColor = layerColor.invert().toHex()
-                // canvas.text(canvasPoint, tileSize, text, textColor)
-            }
+        const basin = layers.basin.get(point)
+        const showErosion = this.params.get('showErosion') && basin.erosion
+        if (showErosion) {
+            layers.basin.drawPath(point, props, layerColor)
+        }
+        if (this.params.get('showCityArea')) {
+            layers.civil.drawCityArea(point, props)
         }
         if (this.params.get('showLandforms')) {
             layers.relief.draw(point, props, layerColor)
         }
         const showRiver = this.params.get('showRivers') && tileSize >= 8
-        if (this.params.get('showCityArea')) {
-            layers.civil.drawCityArea(point, props)
-        }
         if (layers.river.has(point) && showRiver) {
             layers.river.draw(point, props, layerColor)
+        }
+        if (showErosion) {
+            const text = basin.erosion.symbol
+            const textColor = layerColor.invert().toHex()
+            canvas.text(canvasPoint, tileSize, text, textColor)
         }
         if (this.params.get('showCities')) {
             layers.civil.drawCity(point, props)

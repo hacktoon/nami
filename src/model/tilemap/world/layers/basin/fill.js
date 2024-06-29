@@ -104,6 +104,15 @@ class BasinFill extends ConcurrentFill {
 
 
 class LandBasinFill extends BasinFill {
+    getNeighbors(fill, parentPoint) {
+        const neighbors = Point.around(parentPoint)
+        // survey neighbors to avoid many branches
+        // for(let neighbor of neighbors) {
+
+        // }
+        return neighbors
+    }
+
     findBasinStart(fill, neighbors) {
         const {layers, maxReach} = fill.context
         for (let neighbor of neighbors) {
@@ -129,9 +138,10 @@ class LandBasinFill extends BasinFill {
 
     canFill(fill, fillPoint, parent) {
         const {
-            layers, basinGrid, distanceGrid, maxReach
+            layers, basinGrid, distanceGrid, maxReach, directionMaskGrid
         } = fill.context
         const isLand = layers.surface.isLand(fillPoint)
+        const parentDir = directionMaskGrid.get(parent)
         const currentDistance = distanceGrid.get(parent)
         const inBasinReach = currentDistance < maxReach.get(fill.id)
         return inBasinReach && isLand && basinGrid.get(fillPoint) === EMPTY

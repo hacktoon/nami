@@ -20,7 +20,7 @@ class Spec {
 
 export class RiverStretch {
     static HEADWATERS = Spec.build({
-        name: 'Headwaters', width: .05, color: '#63a5c7'
+        name: 'Headwaters', width: .05, color: '#2893c1'
     })
     static FAST_COURSE = Spec.build({
         name: 'Fast course', width: .1, color: '#2a83af'
