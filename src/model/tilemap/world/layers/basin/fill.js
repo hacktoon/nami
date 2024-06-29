@@ -83,7 +83,8 @@ class BasinFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
-        return Point.around(parentPoint)
+        const chance = Random.chance(fill.id % 2 === 0 ? .4 : .8)
+        return chance ? Point.around(parentPoint) : Point.adjacents(parentPoint)
     }
 
     fillBaseData(fill, fillPoint, parentPoint) {
