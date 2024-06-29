@@ -29,7 +29,7 @@ export class ZoneSurface {
     #buildGrid(layers) {
         const isWorldPointWater = layers.surface.isWater(this.point)
         const borderPoints = new PointSet(this.#rect)
-        const waterSideDirs = this.#getWaterNeighbors(layers)
+        const waterSideDirs = this.#getWaterSideDirections(layers)
         const grid = Grid.fromRect(this.#rect, zonePoint => {
             if (this.#isZoneBorderWater(zonePoint, waterSideDirs)) {
                 borderPoints.add(zonePoint)
@@ -52,7 +52,7 @@ export class ZoneSurface {
         return grid
     }
 
-    #getWaterNeighbors(layers) {
+    #getWaterSideDirections(layers) {
         const directions = new Set()
         if (layers.surface.isLand(this.point)) {
             Point.around(this.point, (point, direction) => {

@@ -48,25 +48,20 @@ class BasinFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     onInitFill(fill, fillPoint, neighbors) {
-        const {layers, typeMap} = fill.context
+        const {layers, typeMap, maxReach} = fill.context
         let basinStartNeighbor = this.findBasinStart(fill, fillPoint, neighbors)
-        typeMap.set(fill.id, this.buildType(layers, basinStartNeighbor))
+        const type = this.buildType(layers, basinStartNeighbor)
+        typeMap.set(fill.id, type.id)
+        maxReach.set(fill.id, type.maxReach)
         this.fillBaseData(fill, fillPoint, basinStartNeighbor)
     }
 
     findBasinStart(fill, fillPoint, neighbors) {
-        const {layers, maxReach} = fill.context
+        const {layers} = fill.context
         const isLand = layers.surface.isLand(fillPoint)
         for (let neighbor of neighbors) {
-            if (isLand && layers.surface.isWater(neighbor)) {
-                // Set basin max reach, given by water body area.
-                // Lakes have a small reach, oceans have no limit
-                // subtract 1 to start from zero
-                const area = layers.surface.getArea(neighbor) - 1
-                maxReach.set(fill.id, area)
-                return neighbor
-            }
-            if (! isLand && layers.surface.isLand(neighbor)) {
+            const isNeighborLand = layers.surface.isLand(neighbor)
+            if (isLand && ! isNeighborLand || ! isLand && isNeighborLand) {
                 return neighbor
             }
         }
@@ -127,11 +122,11 @@ class BasinFill extends ConcurrentFill {
 class LandBasinFill extends BasinFill {
     buildType(layers, point) {
         if (layers.surface.isLake(point)) {
-            return LakeBasin.id
+            return LakeBasin
         } else if (layers.surface.isSea(point)) {
-            return SeaBasin.id
+            return SeaBasin
         }
-        return OceanBasin.id
+        return OceanBasin
     }
 
     canFill(fill, fillPoint, parent) {
@@ -149,7 +144,7 @@ class LandBasinFill extends BasinFill {
 
 class WaterBasinFill extends BasinFill {
     buildType(layers, point) {
-        return RiverBedBasin.id
+        return RiverBedBasin
     }
 
     canFill(fill, fillPoint, parent) {
