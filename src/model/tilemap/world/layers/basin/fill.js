@@ -24,6 +24,7 @@ export function buildBasin(context) {
     const landBorders = new Map()
     const waterBorders = new Map()
     const maxReach = new Map()
+    const branchCount = Grid.fromRect(context.rect, () => 0)
     let basinId = 0
     const basinGrid = Grid.fromRect(context.rect, point => {
         if (layers.surface.isBorder(point)) {
@@ -35,7 +36,7 @@ export function buildBasin(context) {
         }
         return EMPTY
     })
-    const ctx = {...context, basinGrid, maxReach}
+    const ctx = {...context, basinGrid, maxReach, branchCount}
     new LandBasinFill(landBorders, ctx).complete()
     new WaterBasinFill(waterBorders, ctx).complete()
     return basinGrid
@@ -48,16 +49,36 @@ class BasinFill extends ConcurrentFill {
 
     onInitFill(fill, fillPoint, neighbors) {
         const {layers, typeMap} = fill.context
-        let startPoint = this.findBasinStart(fill, neighbors)
-        typeMap.set(fill.id, this.buildType(layers, startPoint))
-        this.fillBaseData(fill, fillPoint, startPoint)
+        let basinStartNeighbor = this.findBasinStart(fill, fillPoint, neighbors)
+        typeMap.set(fill.id, this.buildType(layers, basinStartNeighbor))
+        this.fillBaseData(fill, fillPoint, basinStartNeighbor)
+    }
+
+    findBasinStart(fill, fillPoint, neighbors) {
+        const {layers, maxReach} = fill.context
+        const isLand = layers.surface.isLand(fillPoint)
+        for (let neighbor of neighbors) {
+            if (isLand && layers.surface.isWater(neighbor)) {
+                // Set basin max reach, given by water body area.
+                // Lakes have a small reach, oceans have no limit
+                // subtract 1 to start from zero
+                const area = layers.surface.getArea(neighbor) - 1
+                maxReach.set(fill.id, area)
+                return neighbor
+            }
+            if (! isLand && layers.surface.isLand(neighbor)) {
+                return neighbor
+            }
+        }
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {distanceGrid} = fill.context
+        const {distanceGrid, branchCount} = fill.context
         // distance to source by point
         const currentDistance = distanceGrid.wrapGet(parentPoint)
         distanceGrid.wrapSet(fillPoint, currentDistance + 1)
+        // update the parent point with one more branch
+        branchCount.set(parentPoint, branchCount.get(parentPoint) + 1)
         this.fillBaseData(fill, fillPoint, parentPoint)
     }
 
@@ -98,35 +119,11 @@ class BasinFill extends ConcurrentFill {
         return direction.axis.map(coord => rand(coord))
     }
 
-    findBasinStart(fill, neighbors) {}
     buildType(layers, point) {}
 }
 
 
 class LandBasinFill extends BasinFill {
-    getNeighbors(fill, parentPoint) {
-        const neighbors = Point.around(parentPoint)
-        // survey neighbors to avoid many branches
-        // for(let neighbor of neighbors) {
-
-        // }
-        return neighbors
-    }
-
-    findBasinStart(fill, neighbors) {
-        const {layers, maxReach} = fill.context
-        for (let neighbor of neighbors) {
-            if (layers.surface.isWater(neighbor)) {
-                // Set basin max reach, given by water body area.
-                // Lakes have a small reach, oceans have no limit
-                // subtract 1 to start from zero
-                const area = layers.surface.getArea(neighbor) - 1
-                maxReach.set(fill.id, area)
-                return neighbor
-            }
-        }
-    }
-
     buildType(layers, point) {
         if (layers.surface.isLake(point)) {
             return LakeBasin.id
@@ -138,28 +135,18 @@ class LandBasinFill extends BasinFill {
 
     canFill(fill, fillPoint, parent) {
         const {
-            layers, basinGrid, distanceGrid, maxReach, directionMaskGrid
+            layers, basinGrid, distanceGrid, maxReach, branchCount
         } = fill.context
-        const isLand = layers.surface.isLand(fillPoint)
-        const parentDir = directionMaskGrid.get(parent)
+        if (basinGrid.get(fillPoint) !== EMPTY) return false
+        if (layers.surface.isWater(fillPoint)) return false
+        if (branchCount.get(parent) >= 3) return false
         const currentDistance = distanceGrid.get(parent)
-        const inBasinReach = currentDistance < maxReach.get(fill.id)
-        return inBasinReach && isLand && basinGrid.get(fillPoint) === EMPTY
+        return currentDistance < maxReach.get(fill.id)
     }
 }
 
 
 class WaterBasinFill extends BasinFill {
-    findBasinStart(fill, neighbors) {
-        const {layers} = fill.context
-        // water point from where basin flows
-        for (let neighbor of neighbors) {
-            if (layers.surface.isLand(neighbor)) {
-                return neighbor
-            }
-        }
-    }
-
     buildType(layers, point) {
         return RiverBedBasin.id
     }
