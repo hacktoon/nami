@@ -80,7 +80,6 @@ export class CivilLayer {
         const hexColor = this.#layers.surface.isWater(point) ? "#069" : "#444"
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-        // calc meander offset point on canvas
         const [fx, fy] = this.#layers.basin.getMidpoint(point)
         const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)

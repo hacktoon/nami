@@ -56,10 +56,6 @@ export class BasinLayer {
         this.#basinGrid = buildBasin(context)
     }
 
-    get count() {
-        return 2 //this.#basinGrid.size
-    }
-
     get(point) {
         return {
             id: this.#basinGrid.get(point),

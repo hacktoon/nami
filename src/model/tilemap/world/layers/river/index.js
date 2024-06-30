@@ -53,7 +53,6 @@ export class RiverLayer {
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
-            meander: this.layers.basin.getMidpoint(point),
         }
     }
 
@@ -89,7 +88,8 @@ export class RiverLayer {
         const offset = Math.round(tileSize / 10)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
-        const meanderOffsetPoint = Point.multiplyScalar(river.meander, tileSize)
+        const meander = this.layers.basin.getMidpoint(point)
+        const meanderOffsetPoint = Point.multiplyScalar(meander, tileSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection

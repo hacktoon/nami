@@ -1,77 +1,78 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
-import { PointSet } from '/src/lib/point/set'
 import { Direction } from '/src/lib/direction'
-import { Rect } from '/src/lib/number'
 import { Grid } from '/src/lib/grid'
 import {
     Surface,
     ContinentSurface,
     OceanSurface,
+    SeaSurface,
+    LakeSurface,
+    IslandSurface,
 } from './data'
 
 
 export class ZoneSurface {
     #grid
-    #layers
     #rect
 
-    constructor(worldPoint, {layers, zoneSize}) {
+    constructor(worldPoint, params) {
         // rect scaled to world size, for noise locality
         this.point = worldPoint
-        this.size = zoneSize
-        this.#layers = layers
-        this.#rect = new Rect(zoneSize, zoneSize)
-        this.#grid = this.#buildGrid(layers)
+        this.size = params.zoneSize
+        this.#rect = params.zoneRect
+        this.#grid = this.#buildGrid({...params, worldPoint})
     }
 
-    #buildGrid(layers) {
-        const isWorldPointWater = layers.surface.isWater(this.point)
-        const borderPoints = new PointSet(this.#rect)
-        const waterSideDirs = this.#getWaterSideDirections(layers)
-        const grid = Grid.fromRect(this.#rect, zonePoint => {
-            if (this.#isZoneBorderWater(zonePoint, waterSideDirs)) {
-                borderPoints.add(zonePoint)
+    #buildGrid(params) {
+        const {worldPoint, layers, zoneRect} = params
+        // survey neighbors and directions
+        const neighborSurvey = this.#surveyNeighbors(params)
+        let fillId = 0
+        const fillMap = new Map()
+        const grid = Grid.fromRect(zoneRect, zonePoint => {
+            let type = layers.surface.get(worldPoint)
+            if (layers.surface.isLand(worldPoint)) {
+                if (this.#isZoneBorderOcean(zonePoint, neighborSurvey)) {
+                    // fill origins are the rect border points
+                    fillMap.set(fillId++, zonePoint)
+                }
+            } else if (layers.surface.isLake(worldPoint)) {
+
+            } else if (layers.surface.isSea(worldPoint)) {
+
             }
-            return isWorldPointWater ? OceanSurface.id : ContinentSurface.id
+            return type.id
         })
-        // design the litoral outline
-        const context = {
-            worldPoint: this.point,
-            layers: this.#layers,
-            zoneSize: this.size,
-            rect: this.#rect,
-            grid,
-        }
-        const entries = borderPoints.points.map((point, id) => [id, point])
-        const fillMap = new Map(entries)
-        // run just one fill step
-        const zoneFill = new ZoneLitoralFill(fillMap, context)
-        zoneFill.step()
+        const ctx = {...params, grid}
+        new ContinentErosionFill(fillMap, ctx).step()  // run just one fill step
         return grid
     }
 
-    #getWaterSideDirections(layers) {
-        const directions = new Set()
-        if (layers.surface.isLand(this.point)) {
-            Point.around(this.point, (point, direction) => {
-                if (layers.surface.isWater(point)) {
-                    directions.add(direction.id)
+    #surveyNeighbors(params) {
+        const {worldPoint, layers} = params
+        let hasOceanNeighbor = false
+        const waterSideDirs = new Set()
+        if (layers.surface.isLand(worldPoint)) {
+            Point.around(worldPoint, (neighbor, direction) => {
+                hasOceanNeighbor = !hasOceanNeighbor && layers.surface.isOcean(neighbor)
+                if (layers.surface.isWater(neighbor)) {
+                    waterSideDirs.add(direction.id)
                 }
             })
         }
-        return directions
+        return {waterSideDirs, hasOceanNeighbor}
     }
 
-    #isZoneBorderWater(zonePoint, waterSideDirs) {
+    #isZoneBorderOcean(zonePoint, neighborSurvey) {
         if (this.#rect.isCorner(zonePoint)) {  // is at zone grid corner?
             const zoneDir = getCornerDirection(zonePoint, this.#rect)
-            return waterSideDirs.has(zoneDir.id)
+            return neighborSurvey.waterSideDirs.has(zoneDir.id)
         }
         if (this.#rect.isEdge(zonePoint)) {  // is at zone grid edge?
             const zoneDir = getEdgeDirection(zonePoint, this.#rect)
-            return waterSideDirs.has(zoneDir.id)
+            return neighborSurvey.waterSideDirs.has(zoneDir.id)
         }
         return false
     }
@@ -101,7 +102,7 @@ function getEdgeDirection([x, y], rect) {
 }
 
 
-class ZoneLitoralFill extends ConcurrentFill {
+class ContinentErosionFill extends ConcurrentFill {
     onInitFill(fill, fillPoint) {
         const {grid} = fill.context
         grid.set(fillPoint, OceanSurface.id)
@@ -111,7 +112,7 @@ class ZoneLitoralFill extends ConcurrentFill {
     getGrowth(fill) { return Random.int(1, 6) }
 
     getNeighbors(fill, parentPoint) {
-        const rect = fill.context.rect
+        const rect = fill.context.zoneRect
         const points = Point.adjacents(parentPoint)
         // avoid wrapping in zone rect - carve from borders to inside
         return points.filter(p => rect.isInside(p))
@@ -119,7 +120,7 @@ class ZoneLitoralFill extends ConcurrentFill {
 
     canFill(fill, fillPoint) {
         const {grid} = fill.context
-        return grid.get(fillPoint) === ContinentSurface.id
+        return [IslandSurface.id, ContinentSurface.id].includes(grid.get(fillPoint))
     }
 
     onFill(fill, fillPoint) {
