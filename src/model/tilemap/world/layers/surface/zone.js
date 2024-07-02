@@ -27,30 +27,34 @@ export class ZoneSurface {
 
     #buildGrid(params) {
         const {worldPoint, layers, zoneRect} = params
-        // survey neighbors and directions
+        const type = layers.surface.get(worldPoint)
+        const baseGrid = Grid.fromRect(zoneRect, () => type.id)
         const neighborSurvey = this.#surveyNeighbors(params)
-        let fillId = 0
+        const ctx = {...params, baseGrid, neighborSurvey}
+        this.#buildContinentZoneGrid(ctx)
+        return baseGrid
+    }
+
+    #buildContinentZoneGrid(context) {
+        const {worldPoint, layers, zoneRect, neighborSurvey} = context
+        const isLand = layers.surface.isLand(worldPoint)
         const fillMap = new Map()
-        const grid = Grid.fromRect(zoneRect, zonePoint => {
-            let type = layers.surface.get(worldPoint)
-            if (layers.surface.isLand(worldPoint)) {
-                if (this.#isZoneBorderOcean(zonePoint, neighborSurvey)) {
+        let fillId = 0
+        Grid.fromRect(zoneRect, zonePoint => {
+            if (isLand) {
+                if (this.#isZonePointBorder(zonePoint, neighborSurvey)) {
                     // fill origins are the rect border points
                     fillMap.set(fillId++, zonePoint)
                 }
-            } else if (layers.surface.isLake(worldPoint)) {
-
-            } else if (layers.surface.isSea(worldPoint)) {
+            } else {
 
             }
-            return type.id
         })
-        const ctx = {...params, grid}
-        new ContinentErosionFill(fillMap, ctx).step()  // run just one fill step
-        return grid
+        new ContinentErosionFill(fillMap, context).step()  // run just one fill step
     }
 
     #surveyNeighbors(params) {
+        // survey neighbors and directions
         const {worldPoint, layers} = params
         let hasOceanNeighbor = false
         const waterSideDirs = new Set()
@@ -65,7 +69,7 @@ export class ZoneSurface {
         return {waterSideDirs, hasOceanNeighbor}
     }
 
-    #isZoneBorderOcean(zonePoint, neighborSurvey) {
+    #isZonePointBorder(zonePoint, neighborSurvey) {
         if (this.#rect.isCorner(zonePoint)) {  // is at zone grid corner?
             const zoneDir = getCornerDirection(zonePoint, this.#rect)
             return neighborSurvey.waterSideDirs.has(zoneDir.id)
@@ -104,8 +108,8 @@ function getEdgeDirection([x, y], rect) {
 
 class ContinentErosionFill extends ConcurrentFill {
     onInitFill(fill, fillPoint) {
-        const {grid} = fill.context
-        grid.set(fillPoint, OceanSurface.id)
+        const {baseGrid} = fill.context
+        baseGrid.set(fillPoint, OceanSurface.id)
     }
 
     getChance(fill) { return Random.float(.3, .6) }
@@ -119,12 +123,13 @@ class ContinentErosionFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {grid} = fill.context
-        return [IslandSurface.id, ContinentSurface.id].includes(grid.get(fillPoint))
+        const {baseGrid} = fill.context
+        const id = baseGrid.get(fillPoint)
+        return [IslandSurface.id, ContinentSurface.id].includes(id)
     }
 
     onFill(fill, fillPoint) {
-        const {grid} = fill.context
-        grid.set(fillPoint, OceanSurface.id)
+        const {baseGrid} = fill.context
+        baseGrid.set(fillPoint, OceanSurface.id)
     }
 }
