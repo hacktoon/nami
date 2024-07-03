@@ -8,7 +8,7 @@ export class ConcurrentFill {
     #seedTable = new Map()
     // stores the level of each layer for each point
     #levelTable = new Map()
-    // the 'skip' controls the level where a fill should skip growing
+    // the 'skip' controls how many times a fill should skip after first step
     #skipTable = new Map()
 
     constructor(originMap, context={}) {
@@ -23,6 +23,7 @@ export class ConcurrentFill {
             this.#levelTable.set(id, level)
             this.#seedTable.set(id, [origin])
             this.#skipTable.set(id, this.getSkip(fill))
+            // first fill step
             this.onInitFill(fill, origin, neighbors)
         }
     }
@@ -41,6 +42,11 @@ export class ConcurrentFill {
     step() {
         let completedFills = 0
         for(let [id, origin] of this.originMap) {
+            const skipCount = this.#skipTable.get(id)
+            if (skipCount > 0) {
+                this.#skipTable.set(id, skipCount - 1)
+                continue
+            }
             // fill one or many layers for each id
             const level = this.#levelTable.get(id)
             const fill = {id, origin, level, context: this.context}

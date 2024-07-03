@@ -3,7 +3,6 @@ import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
 import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
-import { Color } from '/src/lib/color'
 
 import { buildBasin } from './fill'
 import { Basin } from './data'
@@ -80,10 +79,6 @@ export class BasinLayer {
     }
 
     getColor(point) {
-        const type = this.getType(point)
-        if (!type) {
-            return Color.RED
-        }
         return this.getType(point).color
     }
 
