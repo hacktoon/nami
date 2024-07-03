@@ -8,6 +8,8 @@ export class ConcurrentFill {
     #seedTable = new Map()
     // stores the level of each layer for each point
     #levelTable = new Map()
+    // the 'skip' controls the level where a fill should skip growing
+    #skipTable = new Map()
 
     constructor(originMap, context={}) {
         this.originMap = originMap
@@ -20,6 +22,7 @@ export class ConcurrentFill {
             const neighbors = this.getNeighbors(fill, origin)
             this.#levelTable.set(id, level)
             this.#seedTable.set(id, [origin])
+            this.#skipTable.set(id, this.getSkip(fill))
             this.onInitFill(fill, origin, neighbors)
         }
     }
@@ -125,4 +128,5 @@ export class ConcurrentFill {
     getNeighbors(fill, target) { return [] }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }
+    getSkip(fill) { return 0 }
 }

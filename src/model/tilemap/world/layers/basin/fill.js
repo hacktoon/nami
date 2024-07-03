@@ -23,7 +23,7 @@ export function buildBasin(context) {
     // const basin = new Map()
     const landBorders = new Map()
     const waterBorders = new Map()
-    const maxReach = new Map()
+    const reachMap = new Map()
     const branchCount = Grid.fromRect(context.rect, () => 0)
     let basinId = 0
     const basinGrid = Grid.fromRect(context.rect, point => {
@@ -36,7 +36,7 @@ export function buildBasin(context) {
         }
         return EMPTY
     })
-    const ctx = {...context, basinGrid, maxReach, branchCount}
+    const ctx = {...context, basinGrid, reachMap, branchCount}
     new LandBasinFill(landBorders, ctx).complete()
     new WaterBasinFill(waterBorders, ctx).complete()
     return basinGrid
@@ -46,13 +46,14 @@ export function buildBasin(context) {
 class BasinFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
+    getReach(fill) { return Infinity }
 
     onInitFill(fill, fillPoint, neighbors) {
-        const {layers, typeMap, maxReach} = fill.context
+        const {layers, typeMap, reachMap} = fill.context
         let basinStartNeighbor = this.findBasinStart(fill, fillPoint, neighbors)
         const type = this.buildType(layers, basinStartNeighbor)
         typeMap.set(fill.id, type.id)
-        maxReach.set(fill.id, type.maxReach)
+        reachMap.set(fill.id, type.reach)
         this.fillBaseData(fill, fillPoint, basinStartNeighbor)
     }
 
@@ -131,13 +132,13 @@ class LandBasinFill extends BasinFill {
 
     canFill(fill, fillPoint, parent) {
         const {
-            layers, basinGrid, distanceGrid, maxReach, branchCount
+            layers, basinGrid, distanceGrid, reachMap, branchCount
         } = fill.context
         if (basinGrid.get(fillPoint) !== EMPTY) return false
         if (layers.surface.isWater(fillPoint)) return false
         if (branchCount.get(parent) >= 3) return false
         const currentDistance = distanceGrid.get(parent)
-        return currentDistance < maxReach.get(fill.id)
+        return currentDistance < reachMap.get(fill.id)
     }
 }
 
