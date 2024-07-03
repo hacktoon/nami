@@ -37,48 +37,46 @@ export class ZoneSurface {
 
     #buildContinentZoneGrid(context) {
         const {worldPoint, layers, zoneRect, neighborSurvey} = context
-        const isLand = layers.surface.isLand(worldPoint)
+        const isWorldLand = layers.surface.isLand(worldPoint)
         const fillMap = new Map()
-        let fillId = 0
+        const rectEdges = []
+        // survey points
         Grid.fromRect(zoneRect, zonePoint => {
-            if (isLand) {
-                if (this.#isZonePointBorder(zonePoint, neighborSurvey)) {
-                    // fill origins are the rect border points
+            if (this.#rect.isCorner(zonePoint)) {
+                const direction = getCornerDirection(zonePoint, this.#rect)
+                const worldSidePoint = Point.atDirection(worldPoint, direction)
+                rectEdges.push([zonePoint, worldSidePoint])
+            } else if (this.#rect.isEdge(zonePoint)) {
+                const direction = getEdgeDirection(zonePoint, this.#rect)
+                const worldSidePoint = Point.atDirection(worldPoint, direction)
+                rectEdges.push([zonePoint, worldSidePoint])
+            }
+        })
+        // generate fill origins
+        let fillId = 0
+        for(let [zonePoint, worldSidePoint] of rectEdges) {
+            if (isWorldLand) {
+                // fill origins are the rect border points
+                if (layers.surface.isOcean(worldSidePoint)) {
                     fillMap.set(fillId++, zonePoint)
                 }
             } else {
 
             }
-        })
+        }
         new ContinentErosionFill(fillMap, context).step()  // run just one fill step
     }
 
     #surveyNeighbors(params) {
         // survey neighbors and directions
         const {worldPoint, layers} = params
-        let hasOceanNeighbor = false
         const waterSideDirs = new Set()
-        if (layers.surface.isLand(worldPoint)) {
-            Point.around(worldPoint, (neighbor, direction) => {
-                hasOceanNeighbor = !hasOceanNeighbor && layers.surface.isOcean(neighbor)
-                if (layers.surface.isWater(neighbor)) {
-                    waterSideDirs.add(direction.id)
-                }
-            })
-        }
-        return {waterSideDirs, hasOceanNeighbor}
-    }
+        // if (layers.surface.isLand(worldPoint)) {
+        //     Point.around(worldPoint, (neighbor, direction) => {
 
-    #isZonePointBorder(zonePoint, neighborSurvey) {
-        if (this.#rect.isCorner(zonePoint)) {  // is at zone grid corner?
-            const zoneDir = getCornerDirection(zonePoint, this.#rect)
-            return neighborSurvey.waterSideDirs.has(zoneDir.id)
-        }
-        if (this.#rect.isEdge(zonePoint)) {  // is at zone grid edge?
-            const zoneDir = getEdgeDirection(zonePoint, this.#rect)
-            return neighborSurvey.waterSideDirs.has(zoneDir.id)
-        }
-        return false
+        //     })
+        // }
+        return {waterSideDirs}
     }
 
     get(point) {
