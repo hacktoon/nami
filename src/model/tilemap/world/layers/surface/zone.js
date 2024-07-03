@@ -36,9 +36,8 @@ export class ZoneSurface {
     }
 
     #buildContinentZoneGrid(context) {
-        const {worldPoint, layers, zoneRect, neighborSurvey} = context
-        const isWorldLand = layers.surface.isLand(worldPoint)
-        const fillMap = new Map()
+        const {worldPoint, layers, baseGrid, zoneSize, zoneRect} = context
+        const type = layers.surface.get(worldPoint)
         const rectEdges = []
         // survey points
         Grid.fromRect(zoneRect, zonePoint => {
@@ -52,19 +51,37 @@ export class ZoneSurface {
                 rectEdges.push([zonePoint, worldSidePoint])
             }
         })
-        // generate fill origins
+        // generate fill origins for points in zone edges
         let fillId = 0
+        const fillMap = new Map()
+        const isWorldLand = layers.surface.isLand(worldPoint)
+        const isLakeSea = layers.surface.isLake(worldPoint) || layers.surface.isSea(worldPoint)
         for(let [zonePoint, worldSidePoint] of rectEdges) {
             if (isWorldLand) {
                 // fill origins are the rect border points
                 if (layers.surface.isOcean(worldSidePoint)) {
                     fillMap.set(fillId++, zonePoint)
                 }
-            } else {
-
+            } else if (isLakeSea) {
+                if (layers.surface.isContinent(worldSidePoint)) {
+                    fillMap.set(fillId++, zonePoint)
+                }
             }
         }
-        new ContinentErosionFill(fillMap, context).step()  // run just one fill step
+        const [mx, my] = layers.basin.getMidpoint(worldPoint)
+        const middle = [mx, my].map(p => Math.floor((p * 100) / zoneSize))
+        if (isWorldLand) {
+            new ContinentErosionFill(fillMap, context).step()  // run just one fill step
+
+            // fill one blob in zone rect midpoint
+            const postFillMap = new Map([[0, middle]])
+            const postFill = new PostErosionFill(postFillMap, {...context, active: true})
+            postFill.step()
+            postFill.step()
+
+        } else if (isLakeSea) {
+            new LakeSeaErosionFill(fillMap, context).step()
+        }
     }
 
     #surveyNeighbors(params) {
@@ -104,22 +121,20 @@ function getEdgeDirection([x, y], rect) {
 }
 
 
-class ContinentErosionFill extends ConcurrentFill {
-    onInitFill(fill, fillPoint) {
-        const {baseGrid} = fill.context
-        baseGrid.set(fillPoint, OceanSurface.id)
-    }
-
-    getChance(fill) { return Random.float(.3, .6) }
-    getGrowth(fill) { return Random.int(1, 6) }
-
+class ErosionFill extends ConcurrentFill {
+    getChance(fill) { return Random.float(.1, .5) }
+    getGrowth(fill) { return Random.int(3, 6) }
+    canFill(fill, fillPoint) { return true }
     getNeighbors(fill, parentPoint) {
         const rect = fill.context.zoneRect
         const points = Point.adjacents(parentPoint)
         // avoid wrapping in zone rect - carve from borders to inside
         return points.filter(p => rect.isInside(p))
     }
+}
 
+
+class ContinentErosionFill extends ErosionFill {
     canFill(fill, fillPoint) {
         const {baseGrid} = fill.context
         const id = baseGrid.get(fillPoint)
@@ -129,5 +144,32 @@ class ContinentErosionFill extends ConcurrentFill {
     onFill(fill, fillPoint) {
         const {baseGrid} = fill.context
         baseGrid.set(fillPoint, OceanSurface.id)
+    }
+}
+
+
+class LakeSeaErosionFill extends ErosionFill {
+    getChance(fill) { return Random.choice(.1, .5) }
+    getGrowth(fill) { return 3 }
+
+    onFill(fill, fillPoint) {
+        const {baseGrid} = fill.context
+        baseGrid.set(fillPoint, ContinentSurface.id)
+    }
+}
+
+
+class PostErosionFill extends ErosionFill {
+    getChance(fill) { return Random.choice(.1, .6) }
+    getGrowth(fill) { return 1 }
+
+    canFill(fill, fillPoint, parentPoint) {
+        const {zoneRect} = fill.context
+        return fill.context.active
+    }
+
+    onFill(fill, fillPoint) {
+        const {baseGrid} = fill.context
+        baseGrid.set(fillPoint, ContinentSurface.id)
     }
 }

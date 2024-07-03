@@ -91,7 +91,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 let surface = zone.surface.get([y, x])
-                const color = surface.water ? surface.color : layerColor
+                const color = surface.color
                 canvas.rect(zoneCanvasPoint, size, color.toHex())
             }
         }
