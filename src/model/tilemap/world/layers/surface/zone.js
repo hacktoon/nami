@@ -77,7 +77,6 @@ export class ZoneSurface {
             const postFillMap = new Map([[0, middle]])
             const postFill = new PostErosionFill(postFillMap, {...context, active: true})
             postFill.step()
-            postFill.step()
 
         } else if (isLakeSea) {
             new LakeSeaErosionFill(fillMap, context).step()
@@ -135,12 +134,6 @@ class ErosionFill extends ConcurrentFill {
 
 
 class ContinentErosionFill extends ErosionFill {
-    canFill(fill, fillPoint) {
-        const {baseGrid} = fill.context
-        const id = baseGrid.get(fillPoint)
-        return [IslandSurface.id, ContinentSurface.id].includes(id)
-    }
-
     onFill(fill, fillPoint) {
         const {baseGrid} = fill.context
         baseGrid.set(fillPoint, OceanSurface.id)
