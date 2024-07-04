@@ -87,13 +87,16 @@ class BasinFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {distanceGrid, branchCount} = fill.context
+        const {distanceGrid, branchCount, directionMaskGrid} = fill.context
         // distance to source by point
         const currentDistance = distanceGrid.wrapGet(parentPoint)
         distanceGrid.wrapSet(fillPoint, currentDistance + 1)
         // update the parent point with one more branch
         branchCount.set(parentPoint, branchCount.get(parentPoint) + 1)
         this.fillBaseData(fill, fillPoint, parentPoint)
+        // update parent point erosion path
+        const upstream = Point.directionBetween(parentPoint, fillPoint)
+        directionMaskGrid.add(parentPoint, upstream)
     }
 
     getNeighbors(fill, parentPoint) {
@@ -113,11 +116,6 @@ class BasinFill extends ConcurrentFill {
         erosionGrid.wrapSet(fillPoint, direction.id)
         // update erosion path
         directionMaskGrid.add(fillPoint, direction)
-        // update parent point erosion path
-        if (Point.differs(fillPoint, fill.origin)) {
-            const upstream = Point.directionBetween(parentPoint, fillPoint)
-            directionMaskGrid.add(parentPoint, upstream)
-        }
         // terrain offset to add variance
         const midpoint = this.buildMidpoint(direction)
         const midpointIndex = zoneRect.pointToIndex(midpoint)
