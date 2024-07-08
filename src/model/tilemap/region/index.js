@@ -5,7 +5,7 @@ import { PointSet } from '/src/lib/point/set'
 import { Grid } from '/src/lib/grid'
 import { Color } from '/src/lib/color'
 import { Graph } from '/src/lib/graph'
-import { PointArraySet } from '/src/lib/point/set'
+import { EvenPointSampling } from '/src/lib/point/sampling'
 import { PointMap } from '/src/lib/point/map'
 
 import { TileMap } from '/src/model/tilemap/lib'
@@ -18,7 +18,7 @@ import { RegionTileMapDiagram } from './diagram'
 const EMPTY = null
 const SCHEMA = new Schema(
     'RegionTileMap',
-    Type.number('size', 'Size', {default: 100, min: 64, max: 200}),
+    Type.number('size', 'Size', {default: 100, min: 9, max: 200}),
     Type.number('scale', 'Scale', {default: 10, step: 1, min: 1, max: 100}),
     Type.number('growth', 'Growth', {default: 10, step: 1, min: 0, max: 100}),
     Type.number('chance', 'Chance', {default: .1, step: .05, min: 0, max: 1}),
@@ -165,28 +165,5 @@ export class RegionTileMap extends TileMap {
 
     getDescription() {
         return `Regions: ${this.#regions.length}`
-    }
-}
-
-
-class EvenPointSampling {
-    static create(rect, radius) {
-        const samples = []
-        const pointSet = new PointArraySet(rect)
-
-        while(pointSet.size > 0) {
-            const center = pointSet.random()
-            Point.insideCircle(center, radius, point => {
-                pointSet.delete(rect.wrap(point))
-            })
-            samples.push(center)
-        }
-        if (samples.length === 1) {
-            const point = samples[0]
-            const x = point[0] + Math.round(rect.width / 2)
-            const y = point[1] + Math.round(rect.height / 2)
-            samples.push(rect.wrap([x, y]))
-        }
-        return samples
     }
 }
