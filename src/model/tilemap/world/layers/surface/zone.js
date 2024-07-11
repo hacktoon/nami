@@ -52,49 +52,56 @@ export class ZoneSurface {
 
     #buildZoneGrid(context) {
         const {worldPoint, layers, zoneSize} = context
-
-        const zoneEdges = this.#getZoneAnchors(context)
+        const baseGrid = this.#buildBaseGrid(context)
         // generate fill origins for points in zone edges
         let fillId = 0
-        const fillMap = new Map()
         const isWorldLand = layers.surface.isLand(worldPoint)
         const isLakeSea = layers.surface.isLake(worldPoint) || layers.surface.isSea(worldPoint)
-        for(let [zonePoint, worldSidePoint] of zoneEdges) {
-            // const regionId =  regionGrid.get(zonePoint)
-            if (isWorldLand) {
-                // fill origins are the rect border points
-                if (layers.surface.isOcean(worldSidePoint)) {
-                    fillMap.set(fillId++, zonePoint)
-                }
-            } else if (isLakeSea) {
-                if (layers.surface.isContinent(worldSidePoint)) {
-                    fillMap.set(fillId++, zonePoint)
-                }
-            }
-        }
+
         const [mx, my] = layers.basin.getMidpoint(worldPoint)
         const middle = [mx, my].map(p => Math.floor((p * 100) / zoneSize))
-        if (isWorldLand) {
-            // new ContinentErosionFill(fillMap, context).step()  // run just one fill step
-        }
+
+        return baseGrid
     }
 
-    #getZoneAnchors(context) {
-        const {worldPoint, zoneRect, regionGrid} = context
-        const rectEdges = []
+    #buildBaseGrid(context) {
+        const {layers, worldPoint, zoneRect, regionGrid} = context
+        const typeMap = new Map()
+        // set type from world point
+        let type = layers.surface.get(worldPoint)
+        const isWorldLand = layers.surface.isLand(worldPoint)
+        const isLakeSea = layers.surface.isLake(worldPoint) || layers.surface.isSea(worldPoint)
         const grid = Grid.fromRect(zoneRect, zonePoint => {
-            const regionId =  regionGrid.get(zonePoint)
-            if (this.#rect.isCorner(zonePoint)) {
+            const isZoneCorner = this.#rect.isCorner(zonePoint)
+            const isZoneEdge = this.#rect.isEdge(zonePoint)
+            const regionId = regionGrid.get(zonePoint)
+            if (isZoneCorner) {
                 const direction = getCornerDirection(zonePoint, this.#rect)
                 const worldSidePoint = Point.atDirection(worldPoint, direction)
-                rectEdges.push([zonePoint, worldSidePoint])
-            } else if (this.#rect.isEdge(zonePoint)) {
+                if (isWorldLand) {
+                    if (layers.surface.isOcean(worldSidePoint)) {
+
+                    }
+                    type = OceanSurface
+                } else {
+                    if (layers.surface.isIsland(worldPoint)) {
+                        type = IslandSurface
+                    }
+                }
+                typeMap.set(regionId, type.id)
+                return type.id
+            } else if (isZoneEdge) {
                 const direction = getEdgeDirection(zonePoint, this.#rect)
                 const worldSidePoint = Point.atDirection(worldPoint, direction)
-                rectEdges.push([zonePoint, worldSidePoint])
+                type = ContinentSurface
+                typeMap.set(regionId, type.id)
+                return type.id
+            } else {
+                typeMap.set(regionId, type.id)
             }
+            return type.id
         })
-        return rectEdges
+        return grid
     }
 
     get(point) {

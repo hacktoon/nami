@@ -39,29 +39,29 @@ export class SurfaceLayer {
     #bodyIdCount = FIRST_BODY_ID
 
     constructor(rect, layers) {
-        this.#detectSurfaceBodies(rect, layers)
-        this.#detectSurfaceType()
-        this.#detectBorders()
-
+        const grid = this.#detectSurfaceBodies(rect, layers)
+        this.#detectSurfaceType(grid)
+        this.#detectBorders(grid)
+        this.#grid = grid
     }
 
     #detectSurfaceBodies(rect, layers) {
         // init points as land/water according to noise map
-        this.#grid = Grid.fromRect(rect, point => {
+        return Grid.fromRect(rect, point => {
             const noise = layers.noise.get4D(rect, point, "outline")
             const isWaterBody = noise < SURFACE_RATIO
             return isWaterBody ? EMPTY_WATERBODY : EMPTY_LANDBODY
         })
     }
 
-    #detectSurfaceType() {
+    #detectSurfaceType(grid) {
         // flood fill "empty" points and determine body type by total area
-        this.#grid.forEach(originPoint => {
-            if (! this.#isEmptyBody(originPoint)) return
+        grid.forEach(originPoint => {
+            if (! this.#isEmptyBody(grid, originPoint)) return
             // detect empty type before filling
-            const isEmptyWaterBody = this.#isEmptyWaterBody(originPoint)
-            const area = this.#fillBodyArea(originPoint, this.#bodyIdCount)
-            const surfaceAreaRatio = (area * 100) / this.#grid.area
+            const isEmptyWaterBody = this.#isEmptyWaterBody(grid, originPoint)
+            const area = this.#fillBodyArea(grid, originPoint, this.#bodyIdCount)
+            const surfaceAreaRatio = (area * 100) / grid.area
             // set continent as default type
             let type = ContinentSurface
             // area is filled; decide type
@@ -82,58 +82,64 @@ export class SurfaceLayer {
         })
     }
 
-    #isEmptyBody(point) {
-        const bodyId = this.#grid.get(point)
+    #isEmptyBody(grid, point) {
+        const bodyId = grid.get(point)
         return bodyId === EMPTY_LANDBODY || bodyId === EMPTY_WATERBODY
     }
 
-    #isEmptyWaterBody(point) {
-        return this.#grid.get(point) === EMPTY_WATERBODY
+    #isEmptyWaterBody(grid, point) {
+        return grid.get(point) === EMPTY_WATERBODY
     }
 
-    #fillBodyArea(originPoint, bodyId) {
+    #fillBodyArea(grid, originPoint, bodyId) {
         // discover all points of same type ( water | land )
         let area = 0
-        const isOriginWater = this.#isEmptyWaterBody(originPoint)
+        const isOriginWater = this.#isEmptyWaterBody(grid, originPoint)
         const canFill = targetPoint => {
-            const isTargetWater = this.#isEmptyWaterBody(targetPoint)
+            const isTargetWater = this.#isEmptyWaterBody(grid, targetPoint)
             const isSameMaterial = isOriginWater === isTargetWater
-            return this.#isEmptyBody(targetPoint) && isSameMaterial
+            return this.#isEmptyBody(grid, targetPoint) && isSameMaterial
         }
         const onFill = point => {
-            this.#grid.set(point, bodyId)
+            grid.set(point, bodyId)
             area++
         }
-        const wrapPoint = point => this.#grid.wrap(point)
+        const wrapPoint = point => grid.wrap(point)
         // belowRation is water; search all sidepoints (water fills)
         const Fill = isOriginWater ? ScanlineFill8 : ScanlineFill
         new Fill(originPoint, {canFill, wrapPoint, onFill}).fill()
         return area
     }
 
-    #detectBorders() {
+    #detectBorders(grid) {
         // surface body matrix already defined, update it by setting
         // water/land borders as negative ids
-        this.#grid.forEach(point => {
-            const isWater = this.get(point).water
-            const bodyId = this.#grid.get(point)
-            if (this.#isBorder(point, isWater)) {
+        grid.forEach(point => {
+            const isWater = this.#get(grid, point).water
+            const bodyId = grid.get(point)
+            if (this.#isBorder(grid, point, isWater)) {
                 // negative bodyId's are surface borders
-                this.#grid.set(point, -bodyId)
+                grid.set(point, -bodyId)
             }
             // update water tile area
             if (isWater) this.#waterArea++
         })
     }
 
-    #isBorder(point, isWater) {
+    #isBorder(grid, point, isWater) {
         for (let sidePoint of Point.adjacents(point)) {
-            const isSideWater = this.get(sidePoint).water
+            const isSideWater = this.#get(grid, sidePoint).water
             if (isWater && ! isSideWater || ! isWater && isSideWater) {
                 return true
             }
         }
         return false
+    }
+
+    #get(grid, point) {
+        // negative bodyId's are surface borders
+        const bodyId = Math.abs(grid.get(point))
+        return Surface.parse(this.#bodyTypeMap.get(bodyId))
     }
 
     get(point) {
