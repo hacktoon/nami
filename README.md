@@ -6,11 +6,6 @@
 
 
 ## PLANNING
-- fill basin map on water
-  - allow filling rivers even on lake negative margins
-
-- create basin anchors for shore and erosion
-  - two per shore for each water side
 - simplify cities into "city seeds"
 - conclude wrapGet migration for grids
 

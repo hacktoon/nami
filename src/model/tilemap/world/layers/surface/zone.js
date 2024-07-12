@@ -31,11 +31,11 @@ export class ZoneSurface {
         this.#grid = this.#buildGrid({...params, worldPoint})
     }
 
-    #buildGrid(params) {
-        const {worldPoint, layers, zoneRect} = params
+    #buildGrid(context) {
+        const {worldPoint, layers, zoneRect} = context
         const type = layers.surface.get(worldPoint)
-        const regionGrid = this.#buildRegionGrid(params)
-        const ctx = {...params, regionGrid}
+        const regionGrid = this.#buildRegionGrid(context)
+        const ctx = {...context, regionGrid}
         this.#buildZoneGrid(ctx)
         const baseGrid = Grid.fromRect(zoneRect, () => type.id)
         return baseGrid
@@ -52,7 +52,7 @@ export class ZoneSurface {
 
     #buildZoneGrid(context) {
         const {worldPoint, layers, zoneSize} = context
-        const baseGrid = this.#buildBaseGrid(context)
+        const regionMap = this.#buildRegionMap(context)
         // generate fill origins for points in zone edges
         let fillId = 0
         const isWorldLand = layers.surface.isLand(worldPoint)
@@ -61,71 +61,43 @@ export class ZoneSurface {
         const [mx, my] = layers.basin.getMidpoint(worldPoint)
         const middle = [mx, my].map(p => Math.floor((p * 100) / zoneSize))
 
-        return baseGrid
+        return regionMap
     }
 
-    #buildBaseGrid(context) {
+    #buildRegionMap(context) {
         const {layers, worldPoint, zoneRect, regionGrid} = context
         const typeMap = new Map()
         // set type from world point
         let type = layers.surface.get(worldPoint)
-        const isWorldLand = layers.surface.isLand(worldPoint)
-        const isLakeSea = layers.surface.isLake(worldPoint) || layers.surface.isSea(worldPoint)
-        const grid = Grid.fromRect(zoneRect, zonePoint => {
-            const isZoneCorner = this.#rect.isCorner(zonePoint)
-            const isZoneEdge = this.#rect.isEdge(zonePoint)
+        iterateOuterPoints(zoneRect, (zonePoint, direction) => {
             const regionId = regionGrid.get(zonePoint)
-            if (isZoneCorner) {
-                const direction = getCornerDirection(zonePoint, this.#rect)
-                const worldSidePoint = Point.atDirection(worldPoint, direction)
-                if (isWorldLand) {
-                    if (layers.surface.isOcean(worldSidePoint)) {
+            const worldSidePoint = Point.atDirection(worldPoint, direction)
+            type = this.#buildGridType(context, zonePoint, worldSidePoint)
+            typeMap.set(regionId, type.id)
+            // if (Point.equals(worldPoint, [51, 38]))
+            //     console.log(zonePoint, worldSidePoint, direction.name, regionId)
 
-                    }
-                    type = OceanSurface
-                } else {
-                    if (layers.surface.isIsland(worldPoint)) {
-                        type = IslandSurface
-                    }
-                }
-                typeMap.set(regionId, type.id)
-                return type.id
-            } else if (isZoneEdge) {
-                const direction = getEdgeDirection(zonePoint, this.#rect)
-                const worldSidePoint = Point.atDirection(worldPoint, direction)
-                type = ContinentSurface
-                typeMap.set(regionId, type.id)
-                return type.id
-            } else {
-                typeMap.set(regionId, type.id)
-            }
-            return type.id
         })
-        return grid
+        return typeMap
+    }
+
+    #buildGridType(context, zonePoint, worldSidePoint) {
+        const {layers, worldPoint} = context
+        if (layers.surface.isContinent(worldPoint)) {
+            if (layers.surface.isOcean(worldSidePoint)) return OceanSurface
+
+        } else {
+            if (layers.surface.isIsland(worldPoint)) {
+                type = IslandSurface
+            }
+        }
+        return type
     }
 
     get(point) {
         const surfaceId = this.#grid.get(point)
         return Surface.parse(surfaceId)
     }
-}
-
-
-function getCornerDirection([x, y], rect) {
-    const xEdge = rect.width - 1
-    const yEdge = rect.height - 1
-    if (x === 0 && y === 0) return Direction.NORTHWEST
-    if (x === 0 && y === yEdge) return Direction.SOUTHWEST
-    if (x === xEdge && y === 0) return Direction.NORTHEAST
-    if (x === xEdge && y === yEdge) return Direction.SOUTHEAST
-}
-
-
-function getEdgeDirection([x, y], rect) {
-    if (y === 0) return Direction.NORTH
-    if (x === 0) return Direction.WEST
-    if (y === rect.height - 1) return Direction.SOUTH
-    if (x === rect.width - 1) return Direction.EAST
 }
 
 
@@ -149,5 +121,27 @@ export class RegionFloodFill extends ConcurrentFill {
 
     onFill(fill, point, center) {
         fill.context.regionGrid.set(point, fill.id)
+    }
+}
+
+
+function iterateOuterPoints(rect, callback) {
+    const wMax = rect.width - 1
+    const hMax = rect.height - 1
+    // horizontal sweep
+    for (let x = 0; x < rect.width; x++) {
+        // top points
+        const topDir = x == 0 ? Direction.NORTHWEST : (x == wMax ? Direction.NORTHEAST : Direction.NORTH)
+        callback([x, 0], topDir)
+        // bottom points
+        const bottomDir = x == 0 ? Direction.SOUTHWEST : (x == wMax ? Direction.SOUTHEAST : Direction.SOUTH)
+        callback([x, hMax], bottomDir)
+    }
+    // vertical sweep (avoid visited corners)
+    for (let y = 1; y < hMax; y++) {
+        // left points
+        callback([0, y], Direction.EAST)
+        // right points
+        callback([wMax, y], Direction.WEST)
     }
 }

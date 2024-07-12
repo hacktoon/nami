@@ -34,12 +34,12 @@ export class Rect {
         this.height = height ?? width
     }
 
-    hash() {
-        return `${this.width}x${this.height}`
-    }
-
     get area() {
         return this.width * this.height
+    }
+
+    hash() {
+        return `${this.width}x${this.height}`
     }
 
     pointToIndex([x, y]) {
