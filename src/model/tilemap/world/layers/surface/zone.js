@@ -1,5 +1,3 @@
-import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 import { EvenPointSampling } from '/src/lib/point/sampling'
 import { Direction } from '/src/lib/direction'
@@ -12,6 +10,7 @@ import {
     LakeSurface,
     IslandSurface,
 } from './data'
+import { RegionFloodFill } from './fill'
 
 
 
@@ -21,13 +20,11 @@ const EMPTY = null
 
 export class ZoneSurface {
     #grid
-    #rect
 
     constructor(worldPoint, params) {
         // rect scaled to world size, for noise locality
         this.point = worldPoint
         this.size = params.zoneSize
-        this.#rect = params.zoneRect
         this.#grid = this.#buildGrid({...params, worldPoint})
     }
 
@@ -69,10 +66,12 @@ export class ZoneSurface {
         const typeMap = new Map()
         // set type from world point
         let type = layers.surface.get(worldPoint)
+        // Read points on edges of zone rect.
+        // Mark the region by regionGrid that is in the region area
         iterateOuterPoints(zoneRect, (zonePoint, direction) => {
             const regionId = regionGrid.get(zonePoint)
             const worldSidePoint = Point.atDirection(worldPoint, direction)
-            type = this.#buildGridType(context, zonePoint, worldSidePoint)
+            // type = this.#buildGridType(context, zonePoint, worldSidePoint)
             typeMap.set(regionId, type.id)
             // if (Point.equals(worldPoint, [51, 38]))
             //     console.log(zonePoint, worldSidePoint, direction.name, regionId)
@@ -97,30 +96,6 @@ export class ZoneSurface {
     get(point) {
         const surfaceId = this.#grid.get(point)
         return Surface.parse(surfaceId)
-    }
-}
-
-
-export class RegionFloodFill extends ConcurrentFill {
-    getNeighbors(fill, parentPoint) {
-        const rect = fill.context.zoneRect
-        const points = Point.adjacents(parentPoint)
-        // avoid wrapping in zone rect - carve from borders to inside
-        return points.filter(p => rect.isInside(p))
-    }
-    getChance(fill) { return 0.2 }
-    getGrowth(fill) { return 1 }
-
-    onInitFill(fill, fillPoint, neighbors) {
-        fill.context.regionGrid.set(fillPoint, fill.id)
-    }
-
-    canFill(fill, point, center) {
-        return fill.context.regionGrid.get(point) === EMPTY
-    }
-
-    onFill(fill, point, center) {
-        fill.context.regionGrid.set(point, fill.id)
     }
 }
 
