@@ -6,6 +6,10 @@
 
 
 ## PLANNING
+- ZoneMap
+  - Create basin midpoint offset
+  - steps after region fill - setting regions' surface type by priority:
+    - Order of zone steps: roads > rivers > erosion
 - simplify cities into "city seeds"
 - conclude wrapGet migration for grids
 
