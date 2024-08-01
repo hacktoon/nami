@@ -118,14 +118,12 @@ export class BasinLayer {
         const {canvas, canvasPoint, tileSize} = props
         const basin = this.get(point)
         const midSize = Math.round(tileSize / 2)
-        const lineWidth = Math.round(tileSize / 3)
+        const lineWidth = Math.round(tileSize / 10)
         const canvasCenterPoint = Point.plusScalar(canvasPoint, midSize)
         // calc midpoint point on canvas
         const canvasMidpoint = Point.multiplyScalar(basin.midpoint, tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
-        const hexColor = baseColor.darken(15).toHex()
-        const [x, y] = canvasPoint
-        canvas.clip(x, y, x + tileSize, y + tileSize)
+        const hexColor = baseColor.darken(20).toHex()
         // draw line for each neighbor with a basin connection
         const flowDirections = this.#directionMaskGrid.getAxis(point)
         for(let flowAxis of flowDirections) {
@@ -137,6 +135,5 @@ export class BasinLayer {
             ]
             canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor)
         }
-        canvas.restore()
     }
 }
