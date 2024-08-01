@@ -14,7 +14,7 @@ import { RegionFloodFill } from './fill'
 
 
 
-const SCALE = null
+const SCALE = 2
 const EMPTY = null
 
 
@@ -29,73 +29,77 @@ export class ZoneSurface {
     }
 
     #buildGrid(context) {
-        const {worldPoint, layers, zoneRect} = context
-        const type = layers.surface.get(worldPoint)
-        const regionGrid = this.#buildRegionGrid(context)
-        const ctx = {...context, regionGrid}
-        this.#buildZoneGrid(ctx)
-        const baseGrid = Grid.fromRect(zoneRect, () => type.id)
-        return baseGrid
+        // const {worldPoint, layers} = context
+        const [regionGrid, regionTypeMap] = this.#buildRegionGrid(context)
+        // const regionTypeMap = this.#buildRegionTypeMap({...context, regionGrid})
+        const zoneGrid = this.#buildZoneGrid({...context, regionGrid, regionTypeMap})
+        return zoneGrid
     }
 
     #buildRegionGrid(context) {
         const regionGrid = Grid.fromRect(context.zoneRect, () => EMPTY)
         const origins = EvenPointSampling.create(context.zoneRect, SCALE)
         const fillMap = new Map(origins.map((origin, id) => [id, origin]))
-        const ctx = {...context, regionGrid}
+        const regionTypeMap = new Map()
+        const ctx = {...context, regionGrid, regionTypeMap}
         new RegionFloodFill(fillMap, ctx).complete()
-        return regionGrid
+        return [regionGrid, regionTypeMap]
     }
 
-    #buildZoneGrid(context) {
-        const {worldPoint, layers, zoneSize} = context
-        const regionMap = this.#buildRegionMap(context)
-        // generate fill origins for points in zone edges
-        let fillId = 0
-        const isWorldLand = layers.surface.isLand(worldPoint)
-        const isLakeSea = layers.surface.isLake(worldPoint) || layers.surface.isSea(worldPoint)
-
-        const [mx, my] = layers.basin.getMidpoint(worldPoint)
-
-        return regionMap
-    }
-
-    #buildRegionMap(context) {
+    #buildRegionTypeMap(context) {
         const {layers, worldPoint, zoneRect, regionGrid} = context
-        const typeMap = new Map()
+        const regionTypeMap = new Map()
         // set type from world point
-        let type = layers.surface.get(worldPoint)
-        // Read points on edges of zone rect.
-        // Mark the region by regionGrid that is in the region area
-        iterateOuterPoints(zoneRect, (zonePoint, direction) => {
-            const regionId = regionGrid.get(zonePoint)
-            const worldSidePoint = Point.atDirection(worldPoint, direction)
-            // type = this.#buildGridType(context, zonePoint, worldSidePoint)
-            typeMap.set(regionId, type.id)
-            // if (Point.equals(worldPoint, [51, 38]))
-            //     console.log(zonePoint, worldSidePoint, direction.name, regionId)
-
+        Point.around(worldPoint, (worldSidePoint, direction) => {
+            const isSideWater = layers.surface.isWater(worldSidePoint)
+            if (layers.surface.isLand(worldPoint) && isSideWater) {
+                // type = layers.surface.get(worldPoint)
+            }
         })
-        return typeMap
+        // iterateOuterPoints(zoneRect, (zonePoint, direction) => {
+        //     const regionId = regionGrid.get(zonePoint)
+        //     const worldSidePoint = Point.atDirection(worldPoint, direction)
+        //     const type = this.#buildGridType(context, zonePoint, worldSidePoint)
+        //     regionTypeMap.set(regionId, type)
+        //     if (Point.equals(worldPoint, [40, 16])) {
+        //         console.log(zonePoint, worldSidePoint, direction.name, type.name, regionId)
+        //     }
+        // })
+        return regionTypeMap
     }
 
     #buildGridType(context, zonePoint, worldSidePoint) {
         const {layers, worldPoint} = context
-        if (layers.surface.isContinent(worldPoint)) {
-            if (layers.surface.isOcean(worldSidePoint)) return OceanSurface
-
-        } else {
-            if (layers.surface.isIsland(worldPoint)) {
-                type = IslandSurface
-            }
+        let type = layers.surface.get(worldPoint)
+        if (layers.surface.isWater(worldSidePoint)) {
+            type = layers.surface.get(worldSidePoint)
         }
         return type
+    }
+
+    #buildZoneGrid(context) {
+        const {worldPoint, layers, regionGrid, regionTypeMap, zoneRect} = context
+        const zoneGrid = Grid.fromRect(zoneRect, zonePoint => {
+            const regionId = regionGrid.get(zonePoint)
+            // default type
+            let type = layers.surface.get(worldPoint)
+            if (regionTypeMap.has(regionId)) {
+                type = regionTypeMap.get(regionId)
+            }
+            return type.id
+        })
+        return zoneGrid
     }
 
     get(point) {
         const surfaceId = this.#grid.get(point)
         return Surface.parse(surfaceId)
     }
+}
+
+
+function getZoneEdgePoints(rect, worldPoint, direction) {
+
 }
 
 

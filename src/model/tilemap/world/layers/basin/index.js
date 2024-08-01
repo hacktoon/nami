@@ -26,7 +26,7 @@ export class BasinLayer {
     #typeMap = new Map()
 
     // map a point to a basin zone paths
-    #directionMaskGrid
+    #erosionGridMask
 
     // Float used to connect with adjacent tiles
     #jointGrid
@@ -40,7 +40,7 @@ export class BasinLayer {
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#jointGrid = Grid.fromRect(rect, () => Random.float())
-        this.#directionMaskGrid = new DirectionMaskGrid(rect)
+        this.#erosionGridMask = new DirectionMaskGrid(rect)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         const context = {
             rect,
@@ -48,7 +48,7 @@ export class BasinLayer {
             typeMap: this.#typeMap,
             distanceGrid: this.#distanceGrid,
             erosionGrid: this.#erosionGrid,
-            directionMaskGrid: this.#directionMaskGrid,
+            erosionGridMask: this.#erosionGridMask,
             midpointIndexGrid: this.#midpointIndexGrid,
             zoneRect: this.#zoneRect
         }
@@ -86,11 +86,11 @@ export class BasinLayer {
     }
 
     getErosionPathAxis(point) {
-        return this.#directionMaskGrid.getAxis(point)
+        return this.#erosionGridMask.getAxis(point)
     }
 
     isDivide(point) {
-        return this.#directionMaskGrid.get(point).length === 1
+        return this.#erosionGridMask.get(point).length === 1
     }
 
     getErosion(point) {
@@ -116,22 +116,22 @@ export class BasinLayer {
 
     drawPath(point, props, baseColor) {
         const {canvas, canvasPoint, tileSize} = props
-        const basin = this.get(point)
         const midSize = Math.round(tileSize / 2)
         const lineWidth = Math.round(tileSize / 10)
         const canvasCenterPoint = Point.plusScalar(canvasPoint, midSize)
         // calc midpoint point on canvas
-        const canvasMidpoint = Point.multiplyScalar(basin.midpoint, tileSize / this.#zoneRect.width)
+        const midpoint = this.getMidpoint(point)
+        const canvasMidpoint = Point.multiplyScalar(midpoint, tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         const hexColor = baseColor.darken(20).toHex()
         // draw line for each neighbor with a basin connection
-        const flowDirections = this.#directionMaskGrid.getAxis(point)
-        for(let flowAxis of flowDirections) {
+        const erosionDirections = this.#erosionGridMask.getAxis(point)
+        for(let erosionAxis of erosionDirections) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
-                canvasCenterPoint[0] + flowAxis[0] * midSize,
-                canvasCenterPoint[1] + flowAxis[1] * midSize
+                canvasCenterPoint[0] + erosionAxis[0] * midSize,
+                canvasCenterPoint[1] + erosionAxis[1] * midSize
             ]
             canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor)
         }

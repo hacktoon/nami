@@ -6,14 +6,15 @@ const EMPTY = null
 
 
 export class RegionFloodFill extends ConcurrentFill {
+    getChance(fill) { return 0.2 }
+    getGrowth(fill) { return 3 }
+
     getNeighbors(fill, parentPoint) {
         const rect = fill.context.zoneRect
         const points = Point.adjacents(parentPoint)
         // avoid wrapping in zone rect - carve from borders to inside
         return points.filter(p => rect.isInside(p))
     }
-    getChance(fill) { return 0.2 }
-    getGrowth(fill) { return 1 }
 
     onInitFill(fill, fillPoint, neighbors) {
         fill.context.regionGrid.set(fillPoint, fill.id)
@@ -25,5 +26,11 @@ export class RegionFloodFill extends ConcurrentFill {
 
     onFill(fill, point, center) {
         fill.context.regionGrid.set(point, fill.id)
+    }
+
+    onBlockedFill(fill, fillPoint, parentPoint) {
+        const {regionGrid, regionTypeMap} = fill.context
+        // regionTypeMap.set(fill.id)
+        // regionGrid.set(fillPoint, fill.id)
     }
 }
