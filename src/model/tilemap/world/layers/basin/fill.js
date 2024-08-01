@@ -92,11 +92,12 @@ class BasinFill extends ConcurrentFill {
         const currentDistance = distanceGrid.wrapGet(parentPoint)
         distanceGrid.wrapSet(fillPoint, currentDistance + 1)
         // update the parent point with one more branch
-        branchCount.set(parentPoint, branchCount.get(parentPoint) + 1)
-        this.fillBaseData(fill, fillPoint, parentPoint)
+        const parentBranchCount = branchCount.get(parentPoint)
+        branchCount.set(parentPoint, parentBranchCount + 1)
         // update parent point erosion path
         const upstream = Point.directionBetween(parentPoint, fillPoint)
         directionMaskGrid.add(parentPoint, upstream)
+        this.fillBaseData(fill, fillPoint, parentPoint)
     }
 
     getNeighbors(fill, parentPoint) {

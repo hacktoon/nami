@@ -9,6 +9,7 @@ import { RiverStretch } from './data'
 
 
 export class RiverLayer {
+    #zoneRect
     // maps an id to a name
     #riverNames = new Map()
     // map a point to an id
@@ -20,7 +21,8 @@ export class RiverLayer {
 
     #riverMouths
 
-    constructor(rect, layers) {
+    constructor(rect, layers, zoneRect) {
+        this.#zoneRect = zoneRect
         this.layers = layers
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
         this.#riverMouths = new PointSet(rect)
@@ -89,7 +91,7 @@ export class RiverLayer {
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
         const meander = this.layers.basin.getMidpoint(point)
-        const meanderOffsetPoint = Point.multiplyScalar(meander, tileSize)
+        const meanderOffsetPoint = Point.multiplyScalar(meander, tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection

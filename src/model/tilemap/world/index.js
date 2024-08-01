@@ -59,10 +59,10 @@ export class WorldTileMap extends TileMap {
         layers.climate = new ClimateLayer(rect, layers)
         layers.rain = new RainLayer(rect, layers)
         layers.basin = new BasinLayer(rect, layers, ZONE_RECT)
-        layers.river = new RiverLayer(rect, layers)
+        layers.river = new RiverLayer(rect, layers, ZONE_RECT)
         layers.relief = new ReliefLayer(rect, layers)
         layers.biome = new BiomeLayer(rect, layers)
-        layers.civil = new CivilLayer(rect, layers, realmCount)
+        layers.civil = new CivilLayer(rect, layers, ZONE_RECT, realmCount)
         const time = (performance.now() - start).toFixed(2)
         console.info(`generated in ${time}ms`);
         return layers

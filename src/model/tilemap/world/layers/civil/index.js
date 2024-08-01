@@ -11,6 +11,7 @@ import {
 
 // Define realms, cities and roads
 export class CivilLayer {
+    #zoneRect
     #layers
     #realmMap            // map a realm id to a realm object
     #cityMap             // map a point to a city object
@@ -19,7 +20,7 @@ export class CivilLayer {
     #cityPoints
     #directionMaskGrid   // map a point to a direction bitmask
 
-    constructor(rect, layers, realmCount) {
+    constructor(rect, layers, zoneRect, realmCount) {
         const context = {rect, layers, realmCount}
         // build the citys points
         const cityPoints = buildCityPoints(context)
@@ -27,6 +28,7 @@ export class CivilLayer {
         // build a city grid with a city id per flood area
         // build a graph connecting neighbor cities by id using fill data
         const citySpaces = buildCitySpaces({...context, cityPoints, cityMap})
+        this.#zoneRect = zoneRect
         this.#directionMaskGrid = citySpaces.directionMaskGrid
         this.#cityPoints = cityPoints
         this.#cityMap = cityMap
@@ -81,7 +83,7 @@ export class CivilLayer {
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         const [fx, fy] = this.#layers.basin.getMidpoint(point)
-        const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize)
+        const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const roadDirections = this.#directionMaskGrid.getAxis(point)
         // for each neighbor with a route connection

@@ -28,8 +28,8 @@ export class BasinLayer {
     // map a point to a basin zone paths
     #directionMaskGrid
 
-    // value used to distort basin wireframe
-    #weightGrid
+    // Float used to connect with adjacent tiles
+    #jointGrid
 
     // map a point to a point index in a zone rect
     // convert index to x, y in a 10 x 10 grid
@@ -39,7 +39,7 @@ export class BasinLayer {
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
-        this.#weightGrid = Grid.fromRect(rect, () => Random.float())
+        this.#jointGrid = Grid.fromRect(rect, () => Random.float())
         this.#directionMaskGrid = new DirectionMaskGrid(rect)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         const context = {
@@ -47,7 +47,6 @@ export class BasinLayer {
             layers,
             typeMap: this.#typeMap,
             distanceGrid: this.#distanceGrid,
-            weightGrid: this.#weightGrid,
             erosionGrid: this.#erosionGrid,
             directionMaskGrid: this.#directionMaskGrid,
             midpointIndexGrid: this.#midpointIndexGrid,
@@ -63,6 +62,7 @@ export class BasinLayer {
             distance: this.getDistance(point),
             erosion: this.getErosion(point),
             midpoint: this.getMidpoint(point),
+            joint: this.getJoint(point)
         }
     }
 
@@ -72,10 +72,13 @@ export class BasinLayer {
         return Basin.parse(typeId)
     }
 
+    getJoint(point) {
+        return this.#jointGrid.get(point)
+    }
+
     getMidpoint(point) {
         const index = this.#midpointIndexGrid.get(point)
-        const [x, y] = this.#zoneRect.indexToPoint(index)
-        return [x / 10, y / 10]  // convert to fractions
+        return this.#zoneRect.indexToPoint(index)
     }
 
     getColor(point) {
@@ -105,6 +108,7 @@ export class BasinLayer {
             `id=${basin.id}`,
             `erosion=${basin.erosion.name}`,
             `distance=${basin.distance}`,
+            `joint=${basin.joint}`,
             `type=${basin.type ? basin.type.name : ''}`,
         ].join(',')
         return `Basin(${attrs})`
@@ -115,21 +119,21 @@ export class BasinLayer {
         const basin = this.get(point)
         const midSize = Math.round(tileSize / 2)
         const lineWidth = Math.round(tileSize / 3)
-        const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
+        const canvasCenterPoint = Point.plusScalar(canvasPoint, midSize)
         // calc midpoint point on canvas
-        const canvasMidpoint = Point.multiplyScalar(basin.midpoint, tileSize)
+        const canvasMidpoint = Point.multiplyScalar(basin.midpoint, tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         const hexColor = baseColor.darken(15).toHex()
-        const flowDirections = this.#directionMaskGrid.getAxis(point)
         const [x, y] = canvasPoint
         canvas.clip(x, y, x + tileSize, y + tileSize)
         // draw line for each neighbor with a basin connection
+        const flowDirections = this.#directionMaskGrid.getAxis(point)
         for(let flowAxis of flowDirections) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
-                midCanvasPoint[0] + flowAxis[0] * midSize,
-                midCanvasPoint[1] + flowAxis[1] * midSize
+                canvasCenterPoint[0] + flowAxis[0] * midSize,
+                canvasCenterPoint[1] + flowAxis[1] * midSize
             ]
             canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor)
         }

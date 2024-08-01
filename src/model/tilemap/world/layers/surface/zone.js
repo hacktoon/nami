@@ -56,7 +56,6 @@ export class ZoneSurface {
         const isLakeSea = layers.surface.isLake(worldPoint) || layers.surface.isSea(worldPoint)
 
         const [mx, my] = layers.basin.getMidpoint(worldPoint)
-        const middle = [mx, my].map(p => Math.floor((p * 100) / zoneSize))
 
         return regionMap
     }
