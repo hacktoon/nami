@@ -10,7 +10,7 @@ export class DirectionMaskGrid {
 
     constructor(rect) {
         // start with bitmask code = 0 (no directions flagged)
-        this.#grid = Grid.fromRect(rect, () => Direction.MIDDLE.id)
+        this.#grid = Grid.fromRect(rect, () => Direction.CENTER.id)
     }
 
     get(point) {

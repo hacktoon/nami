@@ -29,21 +29,35 @@ export class ZoneSurface {
     }
 
     #buildGrid(context) {
-        // const {worldPoint, layers} = context
-        const [regionGrid, regionTypeMap] = this.#buildRegionGrid(context)
-        // const regionTypeMap = this.#buildRegionTypeMap({...context, regionGrid})
-        const zoneGrid = this.#buildZoneGrid({...context, regionGrid, regionTypeMap})
+        const [regionGrid, regionSidesMap] = this.#buildRegionGrid(context)
+        const zoneGrid = this.#buildZoneGrid({...context, regionGrid, regionSidesMap})
         return zoneGrid
     }
 
     #buildRegionGrid(context) {
+        // create a grid with many regions fragmenting the zone map
         const regionGrid = Grid.fromRect(context.zoneRect, () => EMPTY)
         const origins = EvenPointSampling.create(context.zoneRect, SCALE)
         const fillMap = new Map(origins.map((origin, id) => [id, origin]))
-        const regionTypeMap = new Map()
-        const ctx = {...context, regionGrid, regionTypeMap}
+        const regionSidesMap = new Map()
+        const ctx = {...context, regionGrid, regionSidesMap}
         new RegionFloodFill(fillMap, ctx).complete()
-        return [regionGrid, regionTypeMap]
+        return [regionGrid, regionSidesMap]
+    }
+
+    #buildZoneGrid(context) {
+        const {worldPoint, layers, regionGrid, regionSidesMap, zoneRect} = context
+        const zoneGrid = Grid.fromRect(zoneRect, zonePoint => {
+            // default type
+            let type = layers.surface.get(worldPoint)
+            const regionId = regionGrid.get(zonePoint)
+            const sideDirectionSet = regionSidesMap.get(regionId)
+            // if (Point.equals(worldPoint, [40, 16])) {
+            //     console.log(zonePoint, regionId, sideDirectionSet)
+            // }
+            return type.id
+        })
+        return zoneGrid
     }
 
     #buildRegionTypeMap(context) {
@@ -77,29 +91,10 @@ export class ZoneSurface {
         return type
     }
 
-    #buildZoneGrid(context) {
-        const {worldPoint, layers, regionGrid, regionTypeMap, zoneRect} = context
-        const zoneGrid = Grid.fromRect(zoneRect, zonePoint => {
-            const regionId = regionGrid.get(zonePoint)
-            // default type
-            let type = layers.surface.get(worldPoint)
-            if (regionTypeMap.has(regionId)) {
-                type = regionTypeMap.get(regionId)
-            }
-            return type.id
-        })
-        return zoneGrid
-    }
-
     get(point) {
         const surfaceId = this.#grid.get(point)
         return Surface.parse(surfaceId)
     }
-}
-
-
-function getZoneEdgePoints(rect, worldPoint, direction) {
-
 }
 
 
