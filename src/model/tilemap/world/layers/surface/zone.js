@@ -46,18 +46,20 @@ export class ZoneSurface {
     }
 
     #buildZoneGrid(context) {
+        // final grid generator
         const {worldPoint, layers, regionGrid, regionSidesMap, zoneRect} = context
-        const zoneGrid = Grid.fromRect(zoneRect, zonePoint => {
-            // default type
-            let type = layers.surface.get(worldPoint)
+        return Grid.fromRect(zoneRect, zonePoint => {
+            // for each point in zone grid,
             const regionId = regionGrid.get(zonePoint)
+            // default type
             const sideDirectionSet = regionSidesMap.get(regionId)
+            let type = layers.surface.get(worldPoint)
+
             // if (Point.equals(worldPoint, [40, 16])) {
             //     console.log(zonePoint, regionId, sideDirectionSet)
             // }
             return type.id
         })
-        return zoneGrid
     }
 
     #buildRegionTypeMap(context) {

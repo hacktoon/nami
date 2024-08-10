@@ -5,7 +5,10 @@
 [https://hacktoon.github.io/nami/](https://hacktoon.github.io/nami/)
 
 
-## PLANNING
+## ROADMAP
+- finish rivers and roads to determine surface
+  - draw rivers
+  - draw roads
 - ZoneMap
   - Create basin midpoint offset
   - steps after region fill - setting regions' surface type by priority:
@@ -30,7 +33,6 @@
 - Dungeon types and levels like cat quest
   - dungeons at high level like 79
 - Add city ruins on dry rivers or dry land
-- Start a fill to determine city area
 - create junction points between two route points to set midpath detours
   - follow road and calc nearest junction start
 
