@@ -71,11 +71,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             const textColor = layerColor.invert().toHex()
             canvas.text(canvasPoint, tileSize, text, textColor)
         }
-        if (this.params.get('showCities')) {
-            layers.civil.drawCity(point, props)
-        }
         if (this.params.get('showRoutes')) {
             layers.civil.drawRoute(point, props)
+        }
+        if (this.params.get('showCities')) {
+            layers.civil.drawCity(point, props)
         }
     }
 

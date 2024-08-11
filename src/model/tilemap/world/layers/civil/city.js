@@ -5,6 +5,7 @@ import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
+import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 
@@ -54,7 +55,7 @@ export function buildCityMap(context) {
 
 export function buildCitySpaces(context) {
     const {rect, cityPoints} = context
-    const directionMaskGrid = new DirectionMaskGrid(rect)
+    const routeMaskGrid = new DirectionMaskGrid(rect)
     const cityGrid = Grid.fromRect(rect, () => EMPTY)
     const wildernessGrid = Grid.fromRect(rect, () => EMPTY)
     const fillDirectionGrid = Grid.fromRect(rect, () => EMPTY)
@@ -64,7 +65,7 @@ export function buildCitySpaces(context) {
         cityGrid,
         cityGraph,
         wildernessGrid,
-        directionMaskGrid,
+        routeMaskGrid,
         fillDirectionGrid
     }
     const fillMap = new Map(cityPoints.points.map((point, id) => [id, point]))
@@ -74,7 +75,7 @@ export function buildCitySpaces(context) {
         cityGrid,
         graph: cityGraph,
         wildernessGrid,
-        directionMaskGrid
+        routeMaskGrid
     }
 }
 
@@ -82,11 +83,12 @@ export function buildCitySpaces(context) {
 class CitySpacesFill extends ConcurrentFill {
     // this fill marks the city ids grid
     // and sets the city neighborhood graph
+    // along with routes
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
+        return Point.around(parentPoint)
     }
 
     onInitFill(fill, fillPoint) {
@@ -96,7 +98,7 @@ class CitySpacesFill extends ConcurrentFill {
     }
 
     canFill(fill, fillPoint) {
-        const {cityGrid, layers} = fill.context
+        const {layers, cityGrid} = fill.context
         const id = cityGrid.wrapGet(fillPoint)
         const isLand = layers.surface.isLand(fillPoint)
         return isLand && id === EMPTY
@@ -116,7 +118,7 @@ class CitySpacesFill extends ConcurrentFill {
         const { cityGrid, cityGraph, cityMap } = fill.context
         const blockedFillId = cityGrid.wrapGet(blockedPoint)
         const parentFillId = cityGrid.wrapGet(parentPoint)
-        // it's this fill testing itself, do nothing
+        // this fill is testing itself, do nothing
         if (blockedFillId === parentFillId) return
         // this "city to city" road has already been created
         if (cityGraph.hasEdge(blockedFillId, parentFillId)) return
@@ -139,23 +141,26 @@ class CitySpacesFill extends ConcurrentFill {
 
     #buildCityRoute(fill, origin, target, initialPrevPoint) {
         // Builds a route from the middle of the road to the city point.
-        const {rect, fillDirectionGrid, directionMaskGrid} = fill.context
+        const {rect, fillDirectionGrid, routeMaskGrid} = fill.context
         const points = [origin]
         let nextPoint = origin
         let prevPoint = initialPrevPoint
-        // compare the next point in unwrapped grid space with the target
+        let prevDirection = Point.directionBetween(nextPoint, prevPoint)
+        // compare the next point in wrapped grid space with the target
         while (Point.differs(rect.wrap(nextPoint), target)) {
             const direction = fillDirectionGrid.get(nextPoint)
-            const prevDirection = Point.directionBetween(nextPoint, prevPoint)
             // set road at forward and previous direction
-            directionMaskGrid.add(nextPoint, direction)
-            directionMaskGrid.add(nextPoint, prevDirection)
+            routeMaskGrid.add(nextPoint, direction)
+            routeMaskGrid.add(nextPoint, prevDirection)
             // update the previous point to follow the road
             prevPoint = nextPoint
             // the next point is at <direction> of current point
             nextPoint = Point.atDirection(nextPoint, direction)
+            prevDirection = Point.directionBetween(nextPoint, prevPoint)
             // points.push(nextPoint)
         }
+        // add road to city point
+        routeMaskGrid.add(target, prevDirection)
         return points
     }
 }

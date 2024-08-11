@@ -18,7 +18,7 @@ export class CivilLayer {
     #cityGrid            // grid of city ids in area
     #wildernessGrid          // grid of civil wilderness
     #cityPoints
-    #directionMaskGrid   // map a point to a direction bitmask
+    #routeMaskGrid   // map a point to a direction bitmask
 
     constructor(rect, layers, zoneRect, realmCount) {
         const context = {rect, layers, realmCount}
@@ -29,7 +29,7 @@ export class CivilLayer {
         // build a graph connecting neighbor cities by id using fill data
         const citySpaces = buildCitySpaces({...context, cityPoints, cityMap})
         this.#zoneRect = zoneRect
-        this.#directionMaskGrid = citySpaces.directionMaskGrid
+        this.#routeMaskGrid = citySpaces.routeMaskGrid
         this.#cityPoints = cityPoints
         this.#cityMap = cityMap
         this.#cityGrid = citySpaces.cityGrid
@@ -51,7 +51,7 @@ export class CivilLayer {
 
     getText(point) {
         const civil = this.get(point)
-        const roadDirections = this.#directionMaskGrid.get(point)
+        const roadDirections = this.#routeMaskGrid.get(point)
         const props = [
             `city=${civil.id}`,
             `wilderness=${civil.wilderness}`,
@@ -85,7 +85,7 @@ export class CivilLayer {
         const [fx, fy] = this.#layers.basin.getMidpoint(point)
         const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-        const roadDirections = this.#directionMaskGrid.getAxis(point)
+        const roadDirections = this.#routeMaskGrid.getAxis(point)
         // for each neighbor with a route connection
         for(let axisOffset of roadDirections) {
             // build a point for each flow that points to this point
