@@ -13,7 +13,6 @@ import {
 import { RegionFloodFill } from './fill'
 
 
-
 const SCALE = 2
 const EMPTY = null
 

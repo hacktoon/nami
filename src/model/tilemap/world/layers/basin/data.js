@@ -12,6 +12,7 @@ export class OceanBasin extends Basin {
     static id = 0
     static name = 'Ocean'
     static reach = 0
+    static water = false
     static color = Color.fromHex('#51a2d1')
 }
 
@@ -20,6 +21,7 @@ export class SeaBasin extends Basin {
     static id = 1
     static name = 'Sea'
     static reach = 2
+    static water = false
     static color = Color.fromHex('#7fc3c5')
 }
 
@@ -28,6 +30,7 @@ export class LakeBasin extends Basin {
     static id = 2
     static name = 'Lake'
     static reach = 3
+    static water = false
     static color = Color.fromHex('#6caca1')
 }
 
@@ -36,6 +39,7 @@ export class RiverBedBasin extends Basin {
     static id = 3
     static name = 'RiverBed'
     static reach = 0
+    static water = true
     static color = Color.fromHex('#285879')
 }
 

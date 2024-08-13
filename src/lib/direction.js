@@ -101,4 +101,13 @@ export class Direction {
             Direction.WEST
         )
     }
+
+    static isCardinal(direction) {
+        return [
+            Direction.NORTH.id,
+            Direction.EAST.id,
+            Direction.SOUTH.id,
+            Direction.WEST.id
+        ].includes(direction.id)
+    }
 }

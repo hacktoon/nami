@@ -122,37 +122,41 @@ export class BasinLayer {
         return `Basin(${attrs})`
     }
 
-    drawPath(point, props, baseColor) {
-        const {canvas, canvasPoint, tileSize} = props
+    drawWireframe(point, props, baseColor) {
+        const basinType = this.getType(point)
+        const directions = this.#wireGridMask.getAxis(point)
+        const color = basinType.water ? "#AAF" : "#C00"
+        const lineWidth = 1
+        const _props = {...props, color, lineWidth, directions}
+        this.#drawDirectionGrid(point, _props)
+    }
+
+    drawErosion(point, props, baseColor) {
+        const directions = this.#erosionGridMask.getAxis(point)
+        const color = baseColor.darken(20).toHex()
+        const lineWidth = Math.round(props.tileSize / 8)
+        const _props = {...props, color, lineWidth, directions}
+        this.#drawDirectionGrid(point, _props)
+    }
+
+    #drawDirectionGrid(point, props) {
+        const {canvas, canvasPoint, tileSize, color, lineWidth} = props
         const midSize = Math.round(tileSize / 2)
-        const lineWidth = Math.round(tileSize / 10)
         const canvasCenterPoint = Point.plusScalar(canvasPoint, midSize)
         // calc midpoint point on canvas
         const midpoint = this.getMidpoint(point)
         const canvasMidpoint = Point.multiplyScalar(midpoint, tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
-        const hexColor = baseColor.darken(20).toHex()
-        // draw line for each neighbor with a basin connection
-        const erosionDirections = this.#erosionGridMask.getAxis(point)
-        const wireDirections = this.#wireGridMask.getAxis(point)
 
-        for(let erosionAxis of erosionDirections) {
+        // draw line for each neighbor with a basin connection
+        for(let directionAxis of props.directions) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
-                canvasCenterPoint[0] + erosionAxis[0] * midSize,
-                canvasCenterPoint[1] + erosionAxis[1] * midSize
+                canvasCenterPoint[0] + directionAxis[0] * midSize,
+                canvasCenterPoint[1] + directionAxis[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor)
-        }
-        for(let erosionAxis of wireDirections) {
-            // build a point for each flow that points to this point
-            // create a midpoint at tile's square side
-            const edgeMidPoint = [
-                canvasCenterPoint[0] + erosionAxis[0] * midSize,
-                canvasCenterPoint[1] + erosionAxis[1] * midSize
-            ]
-            canvas.line(edgeMidPoint, meanderPoint, 1, "#F00")
+            canvas.line(edgeMidPoint, meanderPoint, lineWidth, color)
         }
     }
 }

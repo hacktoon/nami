@@ -1,5 +1,6 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
+import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 
@@ -144,12 +145,12 @@ class LandBasinFill extends BasinFill {
         const {layers, basinGrid, branchCount, wireGridMask} = fill.context
         const isLand = layers.surface.isLand(fillPoint)
         const isSideLand = layers.surface.isLand(parentPoint)
-        if (isLand && isSideLand) {
-            const direction = Point.directionBetween(fillPoint, parentPoint)
+        const direction = Point.directionBetween(fillPoint, parentPoint)
+        if (isLand && isSideLand && Direction.isCardinal(direction)) {
             wireGridMask.add(fillPoint, direction)
         }
         if (basinGrid.get(fillPoint) !== EMPTY) return false
-        if (! isLand) return false
+        if (! layers.surface.isLand(fillPoint)) return false
         if (branchCount.get(parentPoint) >= 3) return false
         return true
     }
@@ -161,9 +162,9 @@ class WaterBasinFill extends BasinFill {
         const {layers, basinGrid, wireGridMask} = fill.context
         const isWater = layers.surface.isWater(fillPoint)
         const isSideWater = layers.surface.isWater(parentPoint)
-        if (isWater && isSideWater) {
-            const direction = Point.directionBetween(fillPoint, parentPoint)
-            // wireGridMask.add(fillPoint, direction)
+        const direction = Point.directionBetween(fillPoint, parentPoint)
+        if (isWater && isSideWater && Direction.isCardinal(direction)) {
+            wireGridMask.add(fillPoint, direction)
         }
         return isWater && basinGrid.get(fillPoint) === EMPTY
     }
