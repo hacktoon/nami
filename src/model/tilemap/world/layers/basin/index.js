@@ -28,6 +28,8 @@ export class BasinLayer {
     // map a point to a basin zone paths
     #erosionGridMask
 
+    #wireGridMask
+
     // Float used to connect with adjacent tiles
     #jointGrid
 
@@ -41,6 +43,7 @@ export class BasinLayer {
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#jointGrid = Grid.fromRect(rect, () => Random.float())
         this.#erosionGridMask = new DirectionMaskGrid(rect)
+        this.#wireGridMask = new DirectionMaskGrid(rect)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         const context = {
             rect,
@@ -49,6 +52,7 @@ export class BasinLayer {
             distanceGrid: this.#distanceGrid,
             erosionGrid: this.#erosionGrid,
             erosionGridMask: this.#erosionGridMask,
+            wireGridMask: this.#wireGridMask,
             midpointIndexGrid: this.#midpointIndexGrid,
             zoneRect: this.#zoneRect
         }
@@ -89,6 +93,10 @@ export class BasinLayer {
         return this.#erosionGridMask.getAxis(point)
     }
 
+    getWirePathAxis(point) {
+        return this.#wireGridMask.getAxis(point)
+    }
+
     isDivide(point) {
         return this.#erosionGridMask.get(point).length === 1
     }
@@ -126,6 +134,8 @@ export class BasinLayer {
         const hexColor = baseColor.darken(20).toHex()
         // draw line for each neighbor with a basin connection
         const erosionDirections = this.#erosionGridMask.getAxis(point)
+        const wireDirections = this.#wireGridMask.getAxis(point)
+
         for(let erosionAxis of erosionDirections) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
@@ -134,6 +144,15 @@ export class BasinLayer {
                 canvasCenterPoint[1] + erosionAxis[1] * midSize
             ]
             canvas.line(edgeMidPoint, meanderPoint, lineWidth, hexColor)
+        }
+        for(let erosionAxis of wireDirections) {
+            // build a point for each flow that points to this point
+            // create a midpoint at tile's square side
+            const edgeMidPoint = [
+                canvasCenterPoint[0] + erosionAxis[0] * midSize,
+                canvasCenterPoint[1] + erosionAxis[1] * midSize
+            ]
+            canvas.line(edgeMidPoint, meanderPoint, 1, "#F00")
         }
     }
 }
