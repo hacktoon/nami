@@ -143,10 +143,8 @@ class LandBasinFill extends BasinFill {
 
     canFill(fill, fillPoint, parentPoint) {
         const {layers, basinGrid, branchCount, wireGridMask} = fill.context
-        const isLand = layers.surface.isLand(fillPoint)
-        const isSideLand = layers.surface.isLand(parentPoint)
         const direction = Point.directionBetween(fillPoint, parentPoint)
-        if (isLand && isSideLand && Direction.isCardinal(direction)) {
+        if (Direction.isCardinal(direction)) {
             wireGridMask.add(fillPoint, direction)
         }
         if (basinGrid.get(fillPoint) !== EMPTY) return false
@@ -161,9 +159,8 @@ class WaterBasinFill extends BasinFill {
     canFill(fill, fillPoint, parentPoint) {
         const {layers, basinGrid, wireGridMask} = fill.context
         const isWater = layers.surface.isWater(fillPoint)
-        const isSideWater = layers.surface.isWater(parentPoint)
         const direction = Point.directionBetween(fillPoint, parentPoint)
-        if (isWater && isSideWater && Direction.isCardinal(direction)) {
+        if (Direction.isCardinal(direction)) {
             wireGridMask.add(fillPoint, direction)
         }
         return isWater && basinGrid.get(fillPoint) === EMPTY
