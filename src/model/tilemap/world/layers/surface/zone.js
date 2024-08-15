@@ -86,17 +86,6 @@ export class ZoneSurface {
 }
 
 
-// #buildWirePoints(context) {
-//     // reads the wire data and create points for zone grid
-//     const {layers, worldPoint, regionGrid, zoneRect} = context
-//     const midpoint = layers.basin.getMidpoint(worldPoint)
-//     const directions = layers.basin.getWirePathAxis(worldPoint)
-//     for(let directionAxis of directions) {
-//         // const regionId = regionGrid.get(zonePoint)
-//     }
-// }
-
-
 function iterateEdgePoints(rect, callback) {
     const wMax = rect.width - 1
     const hMax = rect.height - 1

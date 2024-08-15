@@ -88,6 +88,9 @@ export class TileMapScene {
 
     render(canvas) {
         const {origin, target} = this.frame.tileWindow(this.focus)
+        if (this.frame.width == 0 || this.frame.height == 0) {
+            return
+        }
         for(let i = origin[0], x = 0; i <= target[0]; i++, x += this.zoom) {
             for(let j = origin[1], y = 0; j <= target[1]; j++, y += this.zoom) {
                 const canvasPoint = Point.minus([x, y], this.frame.offset)

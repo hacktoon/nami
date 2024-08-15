@@ -46,8 +46,9 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const point = this.rect.wrap(tilePoint)
         const layerName = this.params.get('showLayer')
         const layerColor = layers[layerName].getColor(point)
+        const showZones = this.params.get('showZones') && tileSize >= 30
 
-        if (this.params.get('showZones') && tileSize >= 30) {
+        if (showZones) {
             this.drawZone(props, layerColor)
         } else {
             canvas.rect(canvasPoint, tileSize, layerColor.toHex())

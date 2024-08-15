@@ -93,8 +93,8 @@ export class BasinLayer {
         return this.#erosionGridMask.getAxis(point)
     }
 
-    getWirePathAxis(point) {
-        return this.#wireGridMask.getAxis(point)
+    getWirePath(point) {
+        return this.#wireGridMask.get(point)
     }
 
     isDivide(point) {
