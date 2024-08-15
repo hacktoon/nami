@@ -1,6 +1,6 @@
 import { Point } from '/src/lib/point'
 import { PointSet } from '/src/lib/point/set'
-import { Direction } from '/src/lib/direction'
+import { Random } from '/src/lib/random'
 
 
 export class ZoneRiver {
@@ -28,15 +28,21 @@ export class ZoneRiver {
             const tx = midSize + (midSize * axis[0])
             const ty = midSize + (midSize * axis[1])
             let [x, y] = [tx, ty]
-            // if (Point.equals(worldPoint, [38, 18])) {
-            //     console.log(x, y, midpoint);
-            //     let [mx, my] = midpoint
-            //     console.log(x + (tx > mx ? -1 : (tx == mx ? 0 : 1)));
-            // }
             while(Point.differs([x, y], midpoint)) {
                 points.add([x, y])
-                x += x > mx ? -1 : (x < mx ? 1 : 0)
-                y += y > my ? -1 : (y < my ? 1 : 0)
+                if (Random.chance(.5)) {
+                    if (x > mx) {
+                        x--
+                    } else if (x < mx) {
+                        x++
+                    }
+                } else {
+                    if (y < my) {
+                        y++
+                    } else if (y > my) {
+                        y--
+                    }
+                }
             }
         }
         points.add(midpoint)
