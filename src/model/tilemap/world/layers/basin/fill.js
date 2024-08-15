@@ -102,6 +102,10 @@ class BasinFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
+        const {layers} = fill.context
+        if (layers.surface.isWater(parentPoint)) {
+            return Point.around(parentPoint)
+        }
         const chance = Random.chance(fill.id % 2 === 0 ? .4 : .8)
         return chance ? Point.around(parentPoint) : Point.adjacents(parentPoint)
     }
@@ -144,11 +148,11 @@ class LandBasinFill extends BasinFill {
     canFill(fill, fillPoint, parentPoint) {
         const {layers, basinGrid, branchCount, wireGridMask} = fill.context
         const direction = Point.directionBetween(fillPoint, parentPoint)
+        if (! layers.surface.isLand(fillPoint)) return false
         if (Direction.isCardinal(direction)) {
             wireGridMask.add(fillPoint, direction)
         }
         if (basinGrid.get(fillPoint) !== EMPTY) return false
-        if (! layers.surface.isLand(fillPoint)) return false
         if (branchCount.get(parentPoint) >= 3) return false
         return true
     }
@@ -159,10 +163,10 @@ class WaterBasinFill extends BasinFill {
     canFill(fill, fillPoint, parentPoint) {
         const {layers, basinGrid, wireGridMask} = fill.context
         const isWater = layers.surface.isWater(fillPoint)
+        if (! isWater) return false
         const direction = Point.directionBetween(fillPoint, parentPoint)
-        if (Direction.isCardinal(direction)) {
-            wireGridMask.add(fillPoint, direction)
-        }
-        return isWater && basinGrid.get(fillPoint) === EMPTY
+        const isEmpty = isWater && basinGrid.get(fillPoint) === EMPTY
+        wireGridMask.add(fillPoint, direction)
+        return isEmpty
     }
 }

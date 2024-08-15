@@ -126,7 +126,7 @@ export class BasinLayer {
         const basinType = this.getType(point)
         const directions = this.#wireGridMask.getAxis(point)
         const color = basinType.water ? "#AAF" : "#C00"
-        const lineWidth = 1
+        const lineWidth = basinType.water ? 2 : 5
         const _props = {...props, color, lineWidth, directions}
         this.#drawDirectionGrid(point, _props)
     }

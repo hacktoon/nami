@@ -2,18 +2,13 @@ import { Point } from '/src/lib/point'
 import { EvenPointSampling } from '/src/lib/point/sampling'
 import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
-import {
-    Surface,
-    ContinentSurface,
-    OceanSurface,
-    SeaSurface,
-    LakeSurface,
-    IslandSurface,
-} from './data'
+import { Surface } from './data'
 import { RegionFloodFill } from './fill'
 
 
 const SCALE = 2
+const CHANCE = .1
+const GROWTH = 4
 const EMPTY = null
 
 
@@ -28,8 +23,10 @@ export class ZoneSurface {
     }
 
     #buildGrid(context) {
-        const [regionGrid, regionSidesMap] = this.#buildRegionGrid(context)
-        const zoneGrid = this.#buildZoneGrid({...context, regionGrid, regionSidesMap})
+        const regionGrid = this.#buildRegionGrid(context)
+        // const wirePoints = this.#buildWirePoints({...context, regionGrid, regionTypeMap})
+        const regionTypeMap = this.#buildRegionTypeMap({...context, regionGrid})
+        const zoneGrid = this.#buildZoneGrid({...context, regionGrid, regionTypeMap})
         return zoneGrid
     }
 
@@ -38,58 +35,51 @@ export class ZoneSurface {
         const regionGrid = Grid.fromRect(context.zoneRect, () => EMPTY)
         const origins = EvenPointSampling.create(context.zoneRect, SCALE)
         const fillMap = new Map(origins.map((origin, id) => [id, origin]))
-        const regionSidesMap = new Map()
-        const ctx = {...context, regionGrid, regionSidesMap}
+        const ctx = {...context, regionGrid, chance: CHANCE, growth: GROWTH}
         new RegionFloodFill(fillMap, ctx).complete()
-        return [regionGrid, regionSidesMap]
-    }
-
-    #buildZoneGrid(context) {
-        // final grid generator
-        const {worldPoint, layers, regionGrid, regionSidesMap, zoneRect} = context
-        return Grid.fromRect(zoneRect, zonePoint => {
-            // for each point in zone grid,
-            const regionId = regionGrid.get(zonePoint)
-            // default type
-            const sideDirectionSet = regionSidesMap.get(regionId)
-            let type = layers.surface.get(worldPoint)
-
-            // if (Point.equals(worldPoint, [40, 16])) {
-            //     console.log(zonePoint, regionId, sideDirectionSet)
-            // }
-            return type.id
-        })
+        return regionGrid
     }
 
     #buildRegionTypeMap(context) {
         const {layers, worldPoint, zoneRect, regionGrid} = context
         const regionTypeMap = new Map()
-        // set type from world point
-        Point.around(worldPoint, (worldSidePoint, direction) => {
-            const isSideWater = layers.surface.isWater(worldSidePoint)
-            if (layers.surface.isLand(worldPoint) && isSideWater) {
-                // type = layers.surface.get(worldPoint)
+        const isLand = layers.surface.isLand(worldPoint)
+        const isLake = layers.surface.isLake(worldPoint)
+        iterateEdgePoints(zoneRect, (zonePoint, direction) => {
+            const regionId = regionGrid.get(zonePoint)
+            const worldSidePoint = Point.atDirection(worldPoint, direction)
+            const sideSurface = layers.surface.get(worldSidePoint)
+            // rule for lake zones
+            if (isLake && layers.surface.isLand(worldSidePoint)) {
+                regionTypeMap.set(regionId, sideSurface)
+            }
+            // rule for general land zones
+            const isSideOcean = layers.surface.isOcean(worldSidePoint)
+            const isSideSea = layers.surface.isSea(worldSidePoint)
+            if (isLand && (isSideOcean || isSideSea)) {
+                regionTypeMap.set(regionId, sideSurface)
             }
         })
-        // iterateOuterPoints(zoneRect, (zonePoint, direction) => {
-        //     const regionId = regionGrid.get(zonePoint)
-        //     const worldSidePoint = Point.atDirection(worldPoint, direction)
-        //     const type = this.#buildGridType(context, zonePoint, worldSidePoint)
-        //     regionTypeMap.set(regionId, type)
-        //     if (Point.equals(worldPoint, [40, 16])) {
-        //         console.log(zonePoint, worldSidePoint, direction.name, type.name, regionId)
-        //     }
-        // })
         return regionTypeMap
     }
 
-    #buildGridType(context, zonePoint, worldSidePoint) {
-        const {layers, worldPoint} = context
-        let type = layers.surface.get(worldPoint)
-        if (layers.surface.isWater(worldSidePoint)) {
-            type = layers.surface.get(worldSidePoint)
-        }
-        return type
+    #buildZoneGrid(context) {
+        // final grid generator
+        const {worldPoint, layers, regionGrid, zoneRect, regionTypeMap} = context
+        const midpoint = layers.basin.getMidpoint(worldPoint)
+        return Grid.fromRect(zoneRect, zonePoint => {
+            const regionId = regionGrid.get(zonePoint)
+            // default surface type
+            let surface = layers.surface.get(worldPoint)
+            if (regionTypeMap.has(regionId)) {
+                surface = regionTypeMap.get(regionId)
+            }
+            if (Point.equals(midpoint, zonePoint)) {
+                surface = layers.surface.get(worldPoint)
+            }
+
+            return surface.id
+        })
     }
 
     get(point) {
@@ -98,8 +88,17 @@ export class ZoneSurface {
     }
 }
 
+// #buildWirePoints(context) {
+//     // reads the wire data and create points for zone grid
+//     const {layers, worldPoint, regionGrid, zoneRect} = context
+//     const midpoint = layers.basin.getMidpoint(worldPoint)
+//     const directions = layers.basin.getWirePathAxis(worldPoint)
+//     for(let directionAxis of directions) {
+//         // const regionId = regionGrid.get(zonePoint)
+//     }
+// }
 
-function iterateOuterPoints(rect, callback) {
+function iterateEdgePoints(rect, callback) {
     const wMax = rect.width - 1
     const hMax = rect.height - 1
     // horizontal sweep
@@ -114,8 +113,8 @@ function iterateOuterPoints(rect, callback) {
     // vertical sweep (avoid visited corners)
     for (let y = 1; y < hMax; y++) {
         // left points
-        callback([0, y], Direction.EAST)
+        callback([0, y], Direction.WEST)
         // right points
-        callback([wMax, y], Direction.WEST)
+        callback([wMax, y], Direction.EAST)
     }
 }
