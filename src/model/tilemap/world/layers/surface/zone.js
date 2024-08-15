@@ -1,15 +1,8 @@
 import { Point } from '/src/lib/point'
-import { EvenPointSampling } from '/src/lib/point/sampling'
 import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
 import { Surface } from './data'
-import { RegionFloodFill } from './fill'
-
-
-const SCALE = 2
-const CHANCE = .1
-const GROWTH = 4
-const EMPTY = null
+import { buildRegionGrid } from './fill'
 
 
 export class ZoneSurface {
@@ -22,55 +15,51 @@ export class ZoneSurface {
     }
 
     #buildGrid(context) {
-        const regionGrid = this.#buildRegionGrid(context)
-        const regionTypeMap = this.#buildRegionTypeMap({...context, regionGrid})
-        const zoneGrid = this.#buildZoneGrid({...context, regionGrid, regionTypeMap})
+        const regionGrid = buildRegionGrid(context)
+        const regionSurfaceMap = this.#buildRegionSurfaceMap({...context, regionGrid})
+        const zoneGrid = this.#buildZoneGrid({...context, regionGrid, regionSurfaceMap})
         return zoneGrid
     }
 
-    #buildRegionGrid(context) {
-        // create a grid with many regions fragmenting the zone map
-        const regionGrid = Grid.fromRect(context.zoneRect, () => EMPTY)
-        const origins = EvenPointSampling.create(context.zoneRect, SCALE)
-        const fillMap = new Map(origins.map((origin, id) => [id, origin]))
-        const ctx = {...context, regionGrid, chance: CHANCE, growth: GROWTH}
-        new RegionFloodFill(fillMap, ctx).complete()
-        return regionGrid
-    }
-
-    #buildRegionTypeMap(context) {
+    #buildRegionSurfaceMap(context) {
         const {layers, worldPoint, zoneRect, regionGrid} = context
-        const regionTypeMap = new Map()
+        const regionSurfaceMap = new Map()
         const isLand = layers.surface.isLand(worldPoint)
         const isLake = layers.surface.isLake(worldPoint)
-        iterateEdgePoints(zoneRect, (zonePoint, direction) => {
+        // read first edges, then corners
+        const gridPoints = [...getEdgePoints(zoneRect), ...getCornerPoints(zoneRect)]
+        // if (Point.equals(worldPoint, [41, 15])) {
+        //     console.log(getEdgePoints(zoneRect))
+        // }
+        for (let [zonePoint, direction] of gridPoints) {
+            // let debug = Point.equals(worldPoint, [41, 15]) && Point.equals(zonePoint, [0, 8])
             const regionId = regionGrid.get(zonePoint)
             const worldSidePoint = Point.atDirection(worldPoint, direction)
             const sideSurface = layers.surface.get(worldSidePoint)
             // rule for lake zones
             if (isLake && layers.surface.isLand(worldSidePoint)) {
-                regionTypeMap.set(regionId, sideSurface)
+                regionSurfaceMap.set(regionId, sideSurface)
             }
             // rule for general land zones
             const isSideOcean = layers.surface.isOcean(worldSidePoint)
             const isSideSea = layers.surface.isSea(worldSidePoint)
             if (isLand && (isSideOcean || isSideSea)) {
-                regionTypeMap.set(regionId, sideSurface)
+                regionSurfaceMap.set(regionId, sideSurface)
             }
-        })
-        return regionTypeMap
+        }
+        return regionSurfaceMap
     }
 
     #buildZoneGrid(context) {
         // final grid generator
-        const {worldPoint, layers, regionGrid, zoneRect, regionTypeMap} = context
+        const {worldPoint, layers, regionGrid, zoneRect, regionSurfaceMap} = context
         const midpoint = layers.basin.getMidpoint(worldPoint)
         return Grid.fromRect(zoneRect, zonePoint => {
             const regionId = regionGrid.get(zonePoint)
             // default surface type
             let surface = layers.surface.get(worldPoint)
-            if (regionTypeMap.has(regionId)) {
-                surface = regionTypeMap.get(regionId)
+            if (regionSurfaceMap.has(regionId)) {
+                surface = regionSurfaceMap.get(regionId)
             }
             if (Point.equals(midpoint, zonePoint)) {
                 surface = layers.surface.get(worldPoint)
@@ -86,23 +75,31 @@ export class ZoneSurface {
 }
 
 
-function iterateEdgePoints(rect, callback) {
-    const wMax = rect.width - 1
-    const hMax = rect.height - 1
+function getCornerPoints(rect) {
+    const xMax = rect.width - 1
+    const yMax = rect.height - 1
+    return [
+        [[0, 0], Direction.NORTHWEST],
+        [[xMax, 0], Direction.NORTHEAST],
+        [[0, yMax], Direction.SOUTHWEST],
+        [[xMax, yMax], Direction.SOUTHEAST],
+    ]
+}
+
+
+function getEdgePoints(rect) {
+    const xMax = rect.width - 1
+    const yMax = rect.height - 1
+    const points = []
     // horizontal sweep
-    for (let x = 0; x < rect.width; x++) {
-        // top points
-        const topDir = x == 0 ? Direction.NORTHWEST : (x == wMax ? Direction.NORTHEAST : Direction.NORTH)
-        callback([x, 0], topDir)
-        // bottom points
-        const bottomDir = x == 0 ? Direction.SOUTHWEST : (x == wMax ? Direction.SOUTHEAST : Direction.SOUTH)
-        callback([x, hMax], bottomDir)
+    for (let x = 0; x <= xMax; x++) {
+        points.push([[x, 0], Direction.NORTH])
+        points.push([[x, yMax], Direction.SOUTH])
     }
     // vertical sweep (avoid visited corners)
-    for (let y = 1; y < hMax; y++) {
-        // left points
-        callback([0, y], Direction.WEST)
-        // right points
-        callback([wMax, y], Direction.EAST)
+    for (let y = 0; y <= yMax; y++) {
+        points.push([[0, y], Direction.WEST])
+        points.push([[xMax, y], Direction.EAST])
     }
+    return points
 }

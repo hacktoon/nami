@@ -1,6 +1,7 @@
 import { Point } from '/src/lib/point'
 import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
+import { PointMap } from '/src/lib/point/map'
 import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
@@ -49,12 +50,12 @@ export class BasinLayer {
             rect,
             layers,
             typeMap: this.#typeMap,
-            distanceGrid: this.#distanceGrid,
+            zoneRect: this.#zoneRect,
             erosionGrid: this.#erosionGrid,
-            erosionGridMask: this.#erosionGridMask,
+            distanceGrid: this.#distanceGrid,
             wireGridMask: this.#wireGridMask,
+            erosionGridMask: this.#erosionGridMask,
             midpointIndexGrid: this.#midpointIndexGrid,
-            zoneRect: this.#zoneRect
         }
         this.#basinGrid = buildBasin(context)
     }
@@ -68,6 +69,37 @@ export class BasinLayer {
             midpoint: this.getMidpoint(point),
             joint: this.getJoint(point)
         }
+    }
+
+    getZone(point) {
+        // reads the wire data and create points for zone grid
+        const pointDirectionMap = new PointMap(this.#zoneRect)
+        const midpoint = this.getMidpoint(point)
+        const midSize = Math.floor(this.#zoneRect.width / 2)
+        let [mx, my] = midpoint
+        for(let axis of this.#wireGridMask.getAxis(point)) {
+            const tx = midSize + (midSize * axis[0])
+            const ty = midSize + (midSize * axis[1])
+            let [x, y] = [tx, ty]
+            while(Point.differs([x, y], midpoint)) {
+                pointDirectionMap.add([x, y])
+                if (Random.chance(.5)) {
+                    if (x > mx) {
+                        x--
+                    } else if (x < mx) {
+                        x++
+                    }
+                } else {
+                    if (y < my) {
+                        y++
+                    } else if (y > my) {
+                        y--
+                    }
+                }
+            }
+        }
+        pointDirectionMap.add(midpoint)
+        return pointDirectionMap
     }
 
     getType(point) {
@@ -91,10 +123,6 @@ export class BasinLayer {
 
     getErosionPathAxis(point) {
         return this.#erosionGridMask.getAxis(point)
-    }
-
-    getWirePath(point) {
-        return this.#wireGridMask.get(point)
     }
 
     isDivide(point) {
