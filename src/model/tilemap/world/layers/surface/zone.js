@@ -17,14 +17,12 @@ export class ZoneSurface {
 
     constructor(worldPoint, params) {
         // rect scaled to world size, for noise locality
-        this.point = worldPoint
         this.size = params.zoneSize
         this.#grid = this.#buildGrid({...params, worldPoint})
     }
 
     #buildGrid(context) {
         const regionGrid = this.#buildRegionGrid(context)
-        // const wirePoints = this.#buildWirePoints({...context, regionGrid, regionTypeMap})
         const regionTypeMap = this.#buildRegionTypeMap({...context, regionGrid})
         const zoneGrid = this.#buildZoneGrid({...context, regionGrid, regionTypeMap})
         return zoneGrid
@@ -77,7 +75,6 @@ export class ZoneSurface {
             if (Point.equals(midpoint, zonePoint)) {
                 surface = layers.surface.get(worldPoint)
             }
-
             return surface.id
         })
     }
@@ -88,6 +85,7 @@ export class ZoneSurface {
     }
 }
 
+
 // #buildWirePoints(context) {
 //     // reads the wire data and create points for zone grid
 //     const {layers, worldPoint, regionGrid, zoneRect} = context
@@ -97,6 +95,7 @@ export class ZoneSurface {
 //         // const regionId = regionGrid.get(zonePoint)
 //     }
 // }
+
 
 function iterateEdgePoints(rect, callback) {
     const wMax = rect.width - 1

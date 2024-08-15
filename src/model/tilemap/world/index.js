@@ -88,17 +88,19 @@ export class WorldTileMap extends TileMap {
     }
 
     getZone(point) {
-        const zone = {}
         const seed = `${this.seed}-${Point.hash(point)}`
+        const zoneLayers = {}
         const params = {
             layers: this.layers,
             zoneSize: ZONE_SIZE,
             zoneRect: ZONE_RECT,
+            zoneLayers,
             seed
         }
         Random.seed = seed  // change seed for this specific zone
-        zone.surface = this.layers.surface.getZone(point, params)
-        return zone
+        zoneLayers.surface = this.layers.surface.getZone(point, params)
+        zoneLayers.river = this.layers.river.getZone(point, params)
+        return zoneLayers
     }
 
     getDescription() {
