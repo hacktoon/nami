@@ -61,7 +61,7 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             layers.relief.draw(point, props, layerColor)
         }
         const showRiver = this.params.get('showRivers') && tileSize >= 8
-        if (layers.river.has(point) && showRiver) {
+        if (!showZones && layers.river.has(point) && showRiver) {
             layers.river.draw(point, props, layerColor)
         }
         if (this.params.get('showErosion')) {
@@ -83,18 +83,23 @@ export class WorldTileMapDiagram extends TileMapDiagram {
 
     drawZone(props, layerColor) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
-        // const layers = this.tileMap.layers
+        const layers = this.tileMap.layers
         const zone = this.tileMap.getZone(tilePoint)
         const zoneSize = zone.surface.size
         const size = tileSize / zoneSize
         // render zone tiles
+        const showRiver = this.params.get('showRivers') && tileSize >= 8
+        const river = layers.river.get(tilePoint)
         for (let x=0; x < zoneSize; x++) {
             const xSize = x * size
             for (let y=0; y < zoneSize; y++) {
+                const zonePoint = [y, x]
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                let surface = zone.surface.get([y, x])
-                const color = surface.color
+                const surface = zone.surface.get(zonePoint)
+                const color = showRiver && zone.river.has(zonePoint) && ! surface.water
+                              ? river.stretch.color
+                              : surface.color
                 canvas.rect(zoneCanvasPoint, size, color.toHex())
             }
         }

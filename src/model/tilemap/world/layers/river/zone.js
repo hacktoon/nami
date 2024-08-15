@@ -7,31 +7,43 @@ export class ZoneRiver {
     #points
 
     constructor(worldPoint, params) {
-        // rect scaled to world size, for noise locality
         const ctx = {...params, worldPoint}
-        // const points = new PointSet()
-        this.#buildPoints(ctx)
+        this.#points = this.#buildPoints(ctx)
     }
 
     #buildPoints(context) {
         // reads the wire data and create points for zone grid
         const {layers, worldPoint, zoneRect} = context
-        const midSize = Math.floor(zoneRect.width / 2)
+        const points = new PointSet(zoneRect)
+        // console.log(worldPoint, " - ", context);
+
+        if (! layers.river.has(worldPoint)) {
+            return points
+        }
+        const river = layers.river.get(worldPoint)
         const midpoint = layers.basin.getMidpoint(worldPoint)
-        const directions = layers.basin.getWirePath(worldPoint)
-        let x = midSize
-        let y = midSize
-        for(let direction of directions) {
-            const [xa, ya] = direction.axis
-            const xf = x + midSize * xa
-            const yf = y + midSize * ya
-            if (Point.equals(worldPoint, [38, 18])) {
-                console.log('from ', xf, yf, " to ", midpoint);
+        const midSize = Math.floor(zoneRect.width / 2)
+        let [mx, my] = midpoint
+        for(let axis of river.erosionAxis) {
+            const tx = midSize + (midSize * axis[0])
+            const ty = midSize + (midSize * axis[1])
+            let [x, y] = [tx, ty]
+            // if (Point.equals(worldPoint, [38, 18])) {
+            //     console.log(x, y, midpoint);
+            //     let [mx, my] = midpoint
+            //     console.log(x + (tx > mx ? -1 : (tx == mx ? 0 : 1)));
+            // }
+            while(Point.differs([x, y], midpoint)) {
+                points.add([x, y])
+                x += x > mx ? -1 : (x < mx ? 1 : 0)
+                y += y > my ? -1 : (y < my ? 1 : 0)
             }
         }
+        points.add(midpoint)
+        return points
     }
 
     has(point) {
-
+        return this.#points.has(point)
     }
 }
