@@ -1,6 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Rect } from '/src/lib/number'
+import { Rect } from '/src/lib/geometry/rect'
 import { Point } from '/src/lib/point'
 import { Random } from '/src/lib/random'
 import { WORLD_NAMES } from '/src/lib/names'

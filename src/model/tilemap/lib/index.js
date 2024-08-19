@@ -1,4 +1,4 @@
-import { Rect } from '/src/lib/number'
+import { Rect } from '/src/lib/geometry/rect'
 import { Random } from '/src/lib/random'
 
 

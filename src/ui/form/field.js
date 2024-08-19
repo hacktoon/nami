@@ -1,6 +1,6 @@
 import { React, useMemo, useState, useEffect } from 'react'
 
-import { Rect } from '/src/lib/number'
+import { Rect } from '/src/lib/geometry/rect'
 import { Color } from '/src/lib/color'
 import { Point } from '/src/lib/point'
 

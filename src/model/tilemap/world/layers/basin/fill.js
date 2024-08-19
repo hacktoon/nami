@@ -1,4 +1,4 @@
-import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
+import { ConcurrentGridFill } from '/src/lib/floodfill/concurrent_grid'
 import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
@@ -17,38 +17,28 @@ const GROWTH = 10  // make fill basins grow bigger than others
 const OFFSET_MIDDLE = 5
 const OFFSET_RANGE = [1, 3]
 const JOINT_RANGE = [0, .3]
-const EMPTY = null
 
 
-export function buildBasin(context) {
-    const {rect, layers, typeMap, jointGrid} = context
-    const landBorders = new Map()
-    const waterBorders = new Map()
+export function buildBasinGrid(baseContext) {
+    const {rect, layers, typeMap, jointGrid} = baseContext
+    const fillMap = new Map()
     const referenceMap = new Map()
-    const skipMap = new Map()
     let basinId = 0
-    // init grid with basin id
-    const basinGrid = Grid.fromRect(rect, point => {
+    // get surface border points and setup basin fill
+    Grid.fromRect(rect, point => {
         jointGrid.set(point, Random.floatRange(...JOINT_RANGE))
         if (layers.surface.isBorder(point)) {
-            if (layers.surface.isLand(point)) {
-                landBorders.set(basinId, point)
-            } else {
-                waterBorders.set(basinId, point)
-            }
-            const reference = getBasinReference(point, context)
-            const type = buildType(point, {...context, reference})
+            const reference = getBasinReference(point, baseContext)
+            const type = buildType(point, {...baseContext, reference})
             referenceMap.set(basinId, reference)
-            skipMap.set(basinId, type.reach)
+            fillMap.set(basinId, point)
             typeMap.set(basinId, type.id)
             basinId++
         }
-        return EMPTY
     })
-    const ctx = {...context, basinGrid, skipMap, referenceMap}
-    new LandBasinFill(landBorders, ctx).complete()
-    new WaterBasinFill(waterBorders, ctx).complete()
-    return basinGrid
+    const context = {...baseContext, referenceMap}
+    // returns a grid storing basin ids
+    return new BasinGridFill(fillMap, rect, context).complete()
 }
 
 
@@ -77,7 +67,7 @@ function buildType(point, context) {
 }
 
 
-class BasinFill extends ConcurrentFill {
+class BasinGridFill extends ConcurrentGridFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
@@ -109,11 +99,9 @@ class BasinFill extends ConcurrentFill {
 
     fillBaseData(fill, fillPoint, parentPoint) {
         const {
-            basinGrid, erosionGrid, erosionGridMask,
+            erosionGrid, erosionGridMask,
             midpointIndexGrid, zoneRect
         } = fill.context
-        // set basin id to spread on fill
-        basinGrid.wrapSet(fillPoint, fill.id)
         // set erosion flow to parent
         const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionGrid.wrapSet(fillPoint, direction.id)
@@ -125,6 +113,12 @@ class BasinFill extends ConcurrentFill {
         midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
     }
 
+    canFill(fill, fillPoint, parentPoint) {
+        const surfaceLayer = fill.context.layers.surface
+        const sameType = surfaceLayer.get(fillPoint) === surfaceLayer.get(parentPoint)
+        return sameType
+    }
+
     buildMidpoint(direction) {
         // direction axis ([-1, 0], [1, 1], etc)
         const rand = (coordAxis) => {
@@ -133,28 +127,5 @@ class BasinFill extends ConcurrentFill {
             return OFFSET_MIDDLE + (offset * axisToggle)
         }
         return direction.axis.map(coord => rand(coord))
-    }
-}
-
-
-class LandBasinFill extends BasinFill {
-    getSkip(fill) {
-        return fill.context.skipMap.get(fill.id) ?? 0
-    }
-
-    canFill(fill, fillPoint, parentPoint) {
-        const {layers, basinGrid} = fill.context
-        if (! layers.surface.isLand(fillPoint)) return false
-        if (basinGrid.get(fillPoint) !== EMPTY) return false
-        return true
-    }
-}
-
-
-class WaterBasinFill extends BasinFill {
-    canFill(fill, fillPoint, parentPoint) {
-        const {layers, basinGrid} = fill.context
-        if (! layers.surface.isWater(fillPoint)) return false
-        return basinGrid.get(fillPoint) === EMPTY
     }
 }

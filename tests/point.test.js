@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
-import { Rect } from '/src/lib/number'
+import { Rect } from '/src/lib/geometry/rect'
 import { PointArraySet } from '/src/lib/point/set'
 
 

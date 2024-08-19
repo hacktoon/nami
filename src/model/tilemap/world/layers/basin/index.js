@@ -5,7 +5,7 @@ import { PointMap } from '/src/lib/point/map'
 import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
-import { buildBasin } from './fill'
+import { buildBasinGrid } from './fill'
 import { Basin } from './data'
 
 
@@ -53,7 +53,7 @@ export class BasinLayer {
             erosionGridMask: this.#erosionGridMask,
             midpointIndexGrid: this.#midpointIndexGrid,
         }
-        this.#basinGrid = buildBasin(context)
+        this.#basinGrid = buildBasinGrid(context)
     }
 
     get(point) {
