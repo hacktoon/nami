@@ -19,7 +19,6 @@ const SCHEMA = new Schema(
     'WorldTileMapDiagram',
     Type.selection('showLayer', 'Layer', {default: DEFAULT_LAYER, options: LAYERS}),
     Type.boolean('showErosion', 'Erosion', {default: false}),
-    Type.boolean('showWireframe', 'Wireframe', {default: false}),
     Type.boolean('showZones', 'Zones', {default: true}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
@@ -60,21 +59,18 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         if (this.params.get('showLandforms')) {
             layers.relief.draw(point, props, layerColor)
         }
-        const showRiver = this.params.get('showRivers') && tileSize >= 8
-        if (!showZones && layers.river.has(point) && showRiver) {
-            layers.river.draw(point, props, layerColor)
-        }
         if (this.params.get('showErosion')) {
             const text = basin.erosion.symbol
             const textColor = layerColor.invert().toHex()
             layers.basin.drawErosion(point, props, layerColor)
             canvas.text(canvasPoint, tileSize, text, textColor)
         }
+        const showRiver = this.params.get('showRivers') && tileSize >= 8
+        if (!showZones && layers.river.has(point) && showRiver) {
+            layers.river.draw(point, props, layerColor)
+        }
         if (this.params.get('showRoutes')) {
             layers.civil.drawRoute(point, props)
-        }
-        if (this.params.get('showWireframe')) {
-            layers.basin.drawWireframe(point, props, layerColor)
         }
         if (this.params.get('showCities')) {
             layers.civil.drawCity(point, props)

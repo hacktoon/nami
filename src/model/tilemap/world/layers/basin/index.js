@@ -29,31 +29,27 @@ export class BasinLayer {
     // map a point to a basin zone paths
     #erosionGridMask
 
-    #wireGridMask
-
     // Float used to connect with adjacent tiles
     #jointGrid
 
     // map a point to a point index in a zone rect
-    // convert index to x, y in a 10 x 10 grid
     #midpointIndexGrid
 
     constructor(rect, layers, zoneRect) {
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
-        this.#jointGrid = Grid.fromRect(rect, () => Random.float())
-        this.#erosionGridMask = new DirectionMaskGrid(rect)
-        this.#wireGridMask = new DirectionMaskGrid(rect)
+        this.#jointGrid = Grid.fromRect(rect, () => 0)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
+        this.#erosionGridMask = new DirectionMaskGrid(rect)
         const context = {
             rect,
             layers,
             typeMap: this.#typeMap,
             zoneRect: this.#zoneRect,
+            jointGrid: this.#jointGrid,
             erosionGrid: this.#erosionGrid,
             distanceGrid: this.#distanceGrid,
-            wireGridMask: this.#wireGridMask,
             erosionGridMask: this.#erosionGridMask,
             midpointIndexGrid: this.#midpointIndexGrid,
         }
@@ -77,7 +73,7 @@ export class BasinLayer {
         const midpoint = this.getMidpoint(point)
         const midSize = Math.floor(this.#zoneRect.width / 2)
         let [mx, my] = midpoint
-        for(let axis of this.#wireGridMask.getAxis(point)) {
+        for(let axis of this.#erosionGridMask.getAxis(point)) {
             const tx = midSize + (midSize * axis[0])
             const ty = midSize + (midSize * axis[1])
             let [x, y] = [tx, ty]
@@ -148,15 +144,6 @@ export class BasinLayer {
             `type=${basin.type ? basin.type.name : ''}`,
         ].join(',')
         return `Basin(${attrs})`
-    }
-
-    drawWireframe(point, props, baseColor) {
-        const basinType = this.getType(point)
-        const directions = this.#wireGridMask.getAxis(point)
-        const color = basinType.water ? "#AAF" : "#C00"
-        const lineWidth = basinType.water ? 2 : 5
-        const _props = {...props, color, lineWidth, directions}
-        this.#drawDirectionGrid(point, _props)
     }
 
     drawErosion(point, props, baseColor) {

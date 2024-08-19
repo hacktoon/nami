@@ -16,11 +16,12 @@ const CHANCE = .1  // chance of fill growing
 const GROWTH = 10  // make fill basins grow bigger than others
 const OFFSET_MIDDLE = 5
 const OFFSET_RANGE = [1, 3]
+const JOINT_RANGE = [0, .3]
 const EMPTY = null
 
 
 export function buildBasin(context) {
-    const {layers, typeMap, rect} = context
+    const {rect, layers, typeMap, jointGrid} = context
     // const basin = new Map()
     const landBorders = new Map()
     const waterBorders = new Map()
@@ -30,6 +31,7 @@ export function buildBasin(context) {
     let basinId = 0
     // init grid with basin id
     const basinGrid = Grid.fromRect(rect, point => {
+        jointGrid.set(point, Random.floatRange(...JOINT_RANGE))
         if (layers.surface.isBorder(point)) {
             if (layers.surface.isLand(point)) {
                 landBorders.set(basinId, point)
@@ -41,7 +43,6 @@ export function buildBasin(context) {
             referenceMap.set(basinId, reference)
             skipMap.set(basinId, type.reach)
             typeMap.set(basinId, type.id)
-            // set parentPoint for origin
             basinId++
         }
         return EMPTY
@@ -82,6 +83,8 @@ class BasinFill extends ConcurrentFill {
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
+    //if (Random.chance(fill.id % 2 === 0 ? .5 : .8))
+
     onInitFill(fill, fillPoint, neighbors) {
         const parentPoint = fill.context.referenceMap.get(fill.id)
         this.fillBaseData(fill, fillPoint, parentPoint)
@@ -106,8 +109,7 @@ class BasinFill extends ConcurrentFill {
         if (layers.surface.isWater(parentPoint)) {
             return Point.around(parentPoint)
         }
-        const chance = Random.chance(fill.id % 2 === 0 ? .4 : .8)
-        return chance ? Point.around(parentPoint) : Point.adjacents(parentPoint)
+        return Point.adjacents(parentPoint)
     }
 
     fillBaseData(fill, fillPoint, parentPoint) {
@@ -146,11 +148,7 @@ class LandBasinFill extends BasinFill {
     }
 
     canFill(fill, fillPoint, parentPoint) {
-        const {layers, basinGrid, branchCount, wireGridMask} = fill.context
-        const direction = Point.directionBetween(fillPoint, parentPoint)
-        if (Direction.isCardinal(direction)) {
-            wireGridMask.add(fillPoint, direction)
-        }
+        const {layers, basinGrid, branchCount} = fill.context
         if (! layers.surface.isLand(fillPoint)) return false
         if (basinGrid.get(fillPoint) !== EMPTY) return false
         if (branchCount.get(parentPoint) >= 3) return false
@@ -161,10 +159,8 @@ class LandBasinFill extends BasinFill {
 
 class WaterBasinFill extends BasinFill {
     canFill(fill, fillPoint, parentPoint) {
-        const {layers, basinGrid, wireGridMask} = fill.context
-        const direction = Point.directionBetween(fillPoint, parentPoint)
+        const {layers, basinGrid} = fill.context
         if (! layers.surface.isWater(fillPoint)) return false
-        wireGridMask.add(fillPoint, direction)
         return basinGrid.get(fillPoint) === EMPTY
     }
 }
