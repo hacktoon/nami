@@ -22,12 +22,10 @@ const EMPTY = null
 
 export function buildBasin(context) {
     const {rect, layers, typeMap, jointGrid} = context
-    // const basin = new Map()
     const landBorders = new Map()
     const waterBorders = new Map()
     const referenceMap = new Map()
     const skipMap = new Map()
-    const branchCount = Grid.fromRect(rect, () => 0)
     let basinId = 0
     // init grid with basin id
     const basinGrid = Grid.fromRect(rect, point => {
@@ -47,7 +45,7 @@ export function buildBasin(context) {
         }
         return EMPTY
     })
-    const ctx = {...context, basinGrid, skipMap, referenceMap, branchCount}
+    const ctx = {...context, basinGrid, skipMap, referenceMap}
     new LandBasinFill(landBorders, ctx).complete()
     new WaterBasinFill(waterBorders, ctx).complete()
     return basinGrid
@@ -91,13 +89,10 @@ class BasinFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {distanceGrid, branchCount, erosionGridMask} = fill.context
+        const {distanceGrid, erosionGridMask} = fill.context
         // distance to source by point
         const currentDistance = distanceGrid.wrapGet(parentPoint)
         distanceGrid.wrapSet(fillPoint, currentDistance + 1)
-        // update the parent point with one more branch
-        const parentBranchCount = branchCount.get(parentPoint)
-        branchCount.set(parentPoint, parentBranchCount + 1)
         // update parent point erosion path
         const upstream = Point.directionBetween(parentPoint, fillPoint)
         erosionGridMask.add(parentPoint, upstream)
@@ -148,10 +143,9 @@ class LandBasinFill extends BasinFill {
     }
 
     canFill(fill, fillPoint, parentPoint) {
-        const {layers, basinGrid, branchCount} = fill.context
+        const {layers, basinGrid} = fill.context
         if (! layers.surface.isLand(fillPoint)) return false
         if (basinGrid.get(fillPoint) !== EMPTY) return false
-        if (branchCount.get(parentPoint) >= 3) return false
         return true
     }
 }
