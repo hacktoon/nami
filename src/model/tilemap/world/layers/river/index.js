@@ -52,7 +52,7 @@ export class RiverLayer {
         const stretchId = this.#stretchMap.get(point)
         return {
             id,
-            erosionAxis: this.layers.basin.getErosionPathAxis(point),
+            flows: this.layers.basin.getFlows(point),
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
@@ -100,12 +100,12 @@ export class RiverLayer {
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
-        for(let flowAxis of river.erosionAxis) {
+        for(let direction of river.flows) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
-                midCanvasPoint[0] + flowAxis[0] * midSize,
-                midCanvasPoint[1] + flowAxis[1] * midSize
+                midCanvasPoint[0] + direction.axis[0] * midSize,
+                midCanvasPoint[1] + direction.axis[1] * midSize
             ]
             canvas.line(edgeMidPoint, meanderPoint, riverWidth, hexColor)
         }

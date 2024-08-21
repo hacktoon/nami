@@ -117,6 +117,10 @@ export class BasinLayer {
         return this.getType(point).color
     }
 
+    getFlows(point) {
+        return this.#erosionGridMask.get(point)
+    }
+
     getErosionPathAxis(point) {
         return this.#erosionGridMask.getAxis(point)
     }

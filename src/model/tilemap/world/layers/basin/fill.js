@@ -1,4 +1,4 @@
-import { ConcurrentGridFill } from '/src/lib/floodfill/concurrent_grid'
+import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
@@ -12,11 +12,13 @@ import {
 } from './data'
 
 
-const CHANCE = .1  // chance of fill growing
-const GROWTH = 10  // make fill basins grow bigger than others
-const OFFSET_MIDDLE = 5
+const FILL_CHANCE = .1  // chance of fill growing
+const JOINT_CHANCE = .5  // chance of increase or decrease
+const FILL_GROWTH = 10  // make fill basins grow bigger than others
+const ZONE_MIDDLE = 5
+const EMPTY = null
 const OFFSET_RANGE = [1, 3]
-const JOINT_RANGE = [0, .3]
+const JOINT_RANGE = [0, 3]
 
 
 export function buildBasinGrid(baseContext) {
@@ -25,8 +27,9 @@ export function buildBasinGrid(baseContext) {
     const referenceMap = new Map()
     let basinId = 0
     // get surface border points and setup basin fill
-    Grid.fromRect(rect, point => {
-        jointGrid.set(point, Random.floatRange(...JOINT_RANGE))
+    const basinGrid = Grid.fromRect(rect, point => {
+        const jointValue = Random.int(...JOINT_RANGE) * Random.chance(JOINT_CHANCE) ? 1 : -1
+        jointGrid.set(point, jointValue)
         if (layers.surface.isBorder(point)) {
             const reference = getBasinReference(point, baseContext)
             const type = buildType(point, {...baseContext, reference})
@@ -35,10 +38,12 @@ export function buildBasinGrid(baseContext) {
             typeMap.set(basinId, type.id)
             basinId++
         }
+        return EMPTY
     })
-    const context = {...baseContext, referenceMap}
+    const context = {...baseContext, basinGrid, referenceMap}
     // returns a grid storing basin ids
-    return new BasinGridFill(fillMap, rect, context).complete()
+    new BasinGridFill(fillMap, context).complete()
+    return basinGrid
 }
 
 
@@ -67,9 +72,9 @@ function buildType(point, context) {
 }
 
 
-class BasinGridFill extends ConcurrentGridFill {
-    getChance(fill) { return CHANCE }
-    getGrowth(fill) { return GROWTH }
+class BasinGridFill extends ConcurrentFill {
+    getChance(fill) { return FILL_CHANCE }
+    getGrowth(fill) { return FILL_GROWTH }
 
     //if (Random.chance(fill.id % 2 === 0 ? .5 : .8))
 
@@ -99,7 +104,7 @@ class BasinGridFill extends ConcurrentGridFill {
 
     fillBaseData(fill, fillPoint, parentPoint) {
         const {
-            erosionGrid, erosionGridMask,
+            erosionGrid, erosionGridMask, basinGrid,
             midpointIndexGrid, zoneRect
         } = fill.context
         // set erosion flow to parent
@@ -107,6 +112,7 @@ class BasinGridFill extends ConcurrentGridFill {
         erosionGrid.wrapSet(fillPoint, direction.id)
         // update erosion path
         erosionGridMask.add(fillPoint, direction)
+        basinGrid.set(fillPoint, fill.id)
         // terrain offset to add variance
         const midpoint = this.buildMidpoint(direction)
         const midpointIndex = zoneRect.pointToIndex(midpoint)
@@ -114,9 +120,11 @@ class BasinGridFill extends ConcurrentGridFill {
     }
 
     canFill(fill, fillPoint, parentPoint) {
-        const surfaceLayer = fill.context.layers.surface
+        const {layers, basinGrid} = fill.context
+        const surfaceLayer = layers.surface
         const sameType = surfaceLayer.get(fillPoint) === surfaceLayer.get(parentPoint)
-        return sameType
+        const isEmpty = basinGrid.get(fillPoint) === EMPTY
+        return isEmpty && sameType
     }
 
     buildMidpoint(direction) {
@@ -124,7 +132,7 @@ class BasinGridFill extends ConcurrentGridFill {
         const rand = (coordAxis) => {
             const offset = Random.int(...OFFSET_RANGE)
             const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
-            return OFFSET_MIDDLE + (offset * axisToggle)
+            return ZONE_MIDDLE + (offset * axisToggle)
         }
         return direction.axis.map(coord => rand(coord))
     }
