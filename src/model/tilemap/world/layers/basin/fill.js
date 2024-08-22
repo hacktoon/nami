@@ -5,10 +5,10 @@ import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 
 import {
-    SeaBasin,
-    LakeBasin,
-    OceanBasin,
-    RiverBedBasin,
+    EndorheicSeaBasin,
+    EndorheicLakeBasin,
+    ExorheicBasin,
+    OceanicBasin,
 } from './data'
 
 
@@ -62,11 +62,11 @@ function getBasinReference(point, context) {
 function buildType(point, context) {
     const {layers, reference} = context
     const isLand = layers.surface.isLand(point)
-    let type = isLand ? OceanBasin : RiverBedBasin
+    let type = isLand ? ExorheicBasin : OceanicBasin
     if (layers.surface.isLake(reference)) {
-        type = LakeBasin
+        type = EndorheicLakeBasin
     } else if (layers.surface.isSea(reference)) {
-        type = SeaBasin
+        type = EndorheicSeaBasin
     }
     return type
 }
