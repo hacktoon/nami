@@ -6,7 +6,7 @@ import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 import { buildBasinGrid } from './fill'
-import { Basin } from './data'
+import { Basin, ExorheicBasin } from './data'
 
 
 export class BasinLayer {
@@ -100,7 +100,7 @@ export class BasinLayer {
 
     getType(point) {
         const id = this.#basinGrid.get(point)
-        const typeId = this.#typeMap.get(id)
+        const typeId = this.#typeMap.get(id) ?? ExorheicBasin.id
         return Basin.parse(typeId)
     }
 

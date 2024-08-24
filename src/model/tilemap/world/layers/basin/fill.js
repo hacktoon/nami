@@ -24,6 +24,11 @@ const JOINT_RANGE = [0, 3]
 export function buildBasinGrid(baseContext) {
     const {rect, layers, typeMap, jointGrid} = baseContext
     const fillMap = new Map()
+    // maps the endorheic types for the total of fill skips
+    const fillSkipMap = new Map([
+        [EndorheicSeaBasin.id, 4],
+        [EndorheicLakeBasin.id, 5],
+    ])
     const referenceMap = new Map()
     let basinId = 0
     // get surface border points and setup basin fill
@@ -40,7 +45,7 @@ export function buildBasinGrid(baseContext) {
         }
         return EMPTY
     })
-    const context = {...baseContext, basinGrid, referenceMap}
+    const context = {...baseContext, fillSkipMap, basinGrid, referenceMap}
     // returns a grid storing basin ids
     new BasinGridFill(fillMap, context).complete()
     return basinGrid
@@ -75,8 +80,11 @@ function buildType(point, context) {
 class BasinGridFill extends ConcurrentFill {
     getChance(fill) { return FILL_CHANCE }
     getGrowth(fill) { return FILL_GROWTH }
-
-    //if (Random.chance(fill.id % 2 === 0 ? .5 : .8))
+    getSkip(fill) {
+        const {typeMap, fillSkipMap} = fill.context
+        const typeId = typeMap.get(fill.id)  // fill.id is basinId
+        return fillSkipMap.get(typeId) ?? 0
+    }
 
     onInitFill(fill, fillPoint, neighbors) {
         const parentPoint = fill.context.referenceMap.get(fill.id)
@@ -121,10 +129,11 @@ class BasinGridFill extends ConcurrentFill {
 
     canFill(fill, fillPoint, parentPoint) {
         const {layers, basinGrid} = fill.context
-        const surfaceLayer = layers.surface
-        const sameType = surfaceLayer.get(fillPoint) === surfaceLayer.get(parentPoint)
+        const target = layers.surface.get(fillPoint)
+        const parent = layers.surface.get(parentPoint)
+        if (target.water != parent.water) return false
         const isEmpty = basinGrid.get(fillPoint) === EMPTY
-        return isEmpty && sameType
+        return isEmpty
     }
 
     buildMidpoint(direction) {

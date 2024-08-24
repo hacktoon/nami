@@ -6,6 +6,10 @@
 
 
 ## ROADMAP
+- set biome as {
+    temp > x
+    rain > 4
+}
 - finish rivers and roads to determine surface
   - draw rivers
   - draw roads
