@@ -26,8 +26,8 @@ export function buildBasinGrid(baseContext) {
     const fillMap = new Map()
     // maps the endorheic types for the total of fill skips
     const fillSkipMap = new Map([
-        [EndorheicSeaBasin.id, 4],
-        [EndorheicLakeBasin.id, 5],
+        [EndorheicSeaBasin.id, 5],
+        [EndorheicLakeBasin.id, 6],
     ])
     const referenceMap = new Map()
     let basinId = 0
@@ -81,6 +81,7 @@ class BasinGridFill extends ConcurrentFill {
     getChance(fill) { return FILL_CHANCE }
     getGrowth(fill) { return FILL_GROWTH }
     getSkip(fill) {
+        // skip fill n times on endorheic basins (lake, sea)
         const {typeMap, fillSkipMap} = fill.context
         const typeId = typeMap.get(fill.id)  // fill.id is basinId
         return fillSkipMap.get(typeId) ?? 0
@@ -127,13 +128,15 @@ class BasinGridFill extends ConcurrentFill {
         midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
     }
 
+    isEmpty(fill, fillPoint) {
+        return fill.context.basinGrid.get(fillPoint) === EMPTY
+    }
+
     canFill(fill, fillPoint, parentPoint) {
-        const {layers, basinGrid} = fill.context
+        const {layers} = fill.context
         const target = layers.surface.get(fillPoint)
         const parent = layers.surface.get(parentPoint)
-        if (target.water != parent.water) return false
-        const isEmpty = basinGrid.get(fillPoint) === EMPTY
-        return isEmpty
+        return target.water === parent.water
     }
 
     buildMidpoint(direction) {

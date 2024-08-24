@@ -51,8 +51,7 @@ class RealmSpacesFill extends ConcurrentFill {
         return Point.adjacents(parentPoint)
     }
 
-    canFill(fill, fillPoint) {
-        const currentValue = fill.context.cityGrid.wrapGet(fillPoint)
-        return currentValue === EMPTY
+    isEmpty(fill, fillPoint) {
+        return fill.context.cityGrid.wrapGet(fillPoint) === EMPTY
     }
 }

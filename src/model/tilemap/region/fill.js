@@ -27,8 +27,8 @@ export class RegionFloodFill extends ConcurrentFill {
         fill.context.colorMap.set(fill.id, new Color())
     }
 
-    canFill(fill, point, center) {
-        return fill.context.regionGrid.get(point) === EMPTY
+    isEmpty(fill, fillPoint) {
+        return fill.context.regionGrid.get(fillPoint) === EMPTY
     }
 
     onFill(fill, point, center) {

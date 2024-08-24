@@ -96,5 +96,6 @@ export class CivilLayer {
             ]
             canvas.line(edgeMidPoint, meanderPoint, width, hexColor)
         }
+
     }
 }

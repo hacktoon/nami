@@ -40,8 +40,8 @@ export class RegionFloodFill extends ConcurrentFill {
         return points.filter(p => rect.isInside(p))
     }
 
-    canFill(fill, point, center) {
-        return fill.context.regionGrid.get(point) === EMPTY
+    isEmpty(fill, fillPoint) {
+        return fill.context.regionGrid.get(fillPoint) === EMPTY
     }
 
     onFill(fill, point, center) {

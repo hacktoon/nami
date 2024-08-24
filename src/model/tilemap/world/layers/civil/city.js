@@ -69,8 +69,7 @@ export function buildCitySpaces(context) {
         fillDirectionGrid
     }
     const fillMap = new Map(cityPoints.points.map((point, id) => [id, point]))
-    const spacesFill = new CitySpacesFill(fillMap, fillContext)
-    spacesFill.complete()
+    new CitySpacesFill(fillMap, fillContext).complete()
     return {
         cityGrid,
         graph: cityGraph,
@@ -97,11 +96,33 @@ class CitySpacesFill extends ConcurrentFill {
         wildernessGrid.wrapSet(fillPoint, fill.level)
     }
 
-    canFill(fill, fillPoint) {
+    isEmpty(fill, fillPoint) {
         const {layers, cityGrid} = fill.context
         const id = cityGrid.wrapGet(fillPoint)
         const isLand = layers.surface.isLand(fillPoint)
         return isLand && id === EMPTY
+    }
+
+    onFilled(fill, target, source) {
+        // when two fills block each other, a road is built between them
+        const { cityGrid, cityGraph, cityMap } = fill.context
+        const blockedFillId = cityGrid.wrapGet(target)
+        const parentFillId = cityGrid.wrapGet(source)
+        if (blockedFillId === parentFillId) return
+        // this "city to city" road has already been created
+        if (cityGraph.hasEdge(blockedFillId, parentFillId)) return
+        // only fill graph if there's a claimed city on blocked point
+        // set road as an edge between blocked and reference fill ids
+        cityGraph.setEdge(blockedFillId, parentFillId)
+        // get cities points - the targets of the road
+        const blockedOrigin = cityMap.get(blockedFillId).point
+        const parentOrigin = cityMap.get(parentFillId).point
+
+        // TODO: move to another function, save points on pointMap
+        console.log(target, blockedOrigin, source);
+        // create road points, send origin, target and previous point
+        this.#buildCityRoute(fill, target, blockedOrigin, source)
+        this.#buildCityRoute(fill, source, parentOrigin, target)
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -111,32 +132,6 @@ class CitySpacesFill extends ConcurrentFill {
         fillDirectionGrid.set(fillPoint, direction)
         cityGrid.wrapSet(fillPoint, fill.id)
         wildernessGrid.wrapSet(fillPoint, fill.level)
-    }
-
-    onBlockedFill(fill, blockedPoint, parentPoint) {
-        // when two fills block each other, a road is built between them
-        const { cityGrid, cityGraph, cityMap } = fill.context
-        const blockedFillId = cityGrid.wrapGet(blockedPoint)
-        const parentFillId = cityGrid.wrapGet(parentPoint)
-        // this fill is testing itself, do nothing
-        if (blockedFillId === parentFillId) return
-        // this "city to city" road has already been created
-        if (cityGraph.hasEdge(blockedFillId, parentFillId)) return
-        // it has been blocked but it's still empty, avoid making roads
-        if (blockedFillId === EMPTY) return
-
-        // only fill graph if there's a claimed city on blocked point
-        // set road as an edge between blocked and reference fill ids
-        cityGraph.setEdge(blockedFillId, parentFillId)
-        // get cities points - the targets of the road
-        const blockedOrigin = cityMap.get(blockedFillId).point
-        const parentOrigin = cityMap.get(parentFillId).point
-
-        // TODO: move to another function, save points on pointMap
-
-        // create road points, send origin, target and previous point
-        this.#buildCityRoute(fill, blockedPoint, blockedOrigin, parentPoint)
-        this.#buildCityRoute(fill, parentPoint, parentOrigin, blockedPoint)
     }
 
     #buildCityRoute(fill, origin, target, initialPrevPoint) {
