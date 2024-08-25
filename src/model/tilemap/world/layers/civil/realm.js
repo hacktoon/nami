@@ -40,18 +40,18 @@ class RealmSpacesFill extends ConcurrentFill {
         fill.context.cityGrid.wrapSet(fillPoint, fill.id)
     }
 
-    onBlockedFill(fill, neighbor) {
-        // encountered another city fill, set them as neighbors
-        const {cityGrid, cityGraph} = fill.context
-        const neighborCityId = cityGrid.get(neighbor)
-        cityGraph.setEdge(fill.id, neighborCityId)
-    }
-
     getNeighbors(fill, parentPoint) {
         return Point.adjacents(parentPoint)
     }
 
     isEmpty(fill, fillPoint) {
         return fill.context.cityGrid.wrapGet(fillPoint) === EMPTY
+    }
+
+    notEmpty(fill, neighbor) {
+        // encountered another city fill, set them as neighbors
+        const {cityGrid, cityGraph} = fill.context
+        const neighborCityId = cityGrid.get(neighbor)
+        cityGraph.setEdge(fill.id, neighborCityId)
     }
 }

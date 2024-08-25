@@ -51,23 +51,16 @@ export class ConcurrentFill {
             }
             // fill one or many layers for each id
             const level = this.#levelMap.get(id)
+            const seeds = this.#seedMap.get(id)
             const fill = {id, origin, level, context: this.context}
-            const nextSeeds = this.#fillLayer(fill)
+            const nextSeeds = this.#fillSingleLayer(fill, seeds)
+            const extraSeeds = this.#randomFillExtraLayers(fill, nextSeeds)
             // Increase number of completed fills if it has no seeds
             completedFills += nextSeeds.length === 0 ? 1 : 0
             // set seeds for next layer
-            this.#seedMap.set(id, nextSeeds)
+            this.#seedMap.set(id, [...nextSeeds, ...extraSeeds])
         }
         return completedFills
-    }
-
-    #fillLayer(fill) {
-        const seeds = this.#seedMap.get(fill.id)
-        const nextSeeds = this.#fillSingleLayer(fill, seeds)
-        // update level on fill context
-        const level = this.#levelMap.get(fill.id)
-        const newLevelFill = {...fill, level}
-        return this.#fillExtraRandomLayers(newLevelFill, nextSeeds)
     }
 
     #fillSingleLayer(fill, seeds) {
@@ -78,19 +71,17 @@ export class ConcurrentFill {
             // for each seed, try to fill its neighbors
             const neighbors = this.getNeighbors(fill, source)
             for(let target of neighbors) {
-                if (! this.isEmpty(fill, target, source)) {
-                    continue
-                }
-                if (this.canFill(fill, target, source, neighbors)) {
+                if (this.isEmpty(fill, target, source)) {
                     // update level if can be filled
                     const newLevelFill = {...fill, level: nextLevel}
                     // fill this neighbor
                     this.onFill(newLevelFill, target, source, neighbors)
                     // make the filled neighbor a seed for next iteration
                     nextSeeds.push(target)
+                    if (this.canFill(fill, target, source, neighbors)) {
+                    }
                 } else {
-                    // can't fill, do something about that cell
-                    this.onBlockedFill(fill, target, source, neighbors)
+                    this.notEmpty(fill, target, source)
                 }
             }
         }
@@ -101,7 +92,7 @@ export class ConcurrentFill {
         return nextSeeds
     }
 
-    #fillExtraRandomLayers(fill, seeds) {
+    #randomFillExtraLayers(fill, seeds) {
         const growth = this.getGrowth(fill)
         let extraSeeds = seeds
         for(let i = 0; i < growth; i++) {
@@ -134,12 +125,12 @@ export class ConcurrentFill {
         this.onFill(fill, target, null, neighbors)
     }
     isEmpty(fill, target, source) { return true }
+    notEmpty(fill, target, source) {  }
     canFill(fill, target, source, neighbors) {
         // default is true; method used to delay fill to last phase
         return true
     }
     onFill(fill, target, source, neighbors) { }
-    onBlockedFill(fill, target, source, neighbors) { }
     getNeighbors(fill, target) { return [] }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }

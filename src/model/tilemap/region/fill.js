@@ -38,7 +38,7 @@ export class RegionFloodFill extends ConcurrentFill {
         fill.context.levelGrid.set(point, fill.level)
     }
 
-    onBlockedFill(fill, neighbor, center) {
+    notEmpty(fill, neighbor, center) {
         const {borderMap, regionGrid, graph} = fill.context
         const neighborRegionId = regionGrid.get(neighbor)
         // it's same fill, do nothing

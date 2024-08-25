@@ -1,6 +1,5 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
-import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/point'
 
@@ -19,40 +18,44 @@ const ZONE_MIDDLE = 5
 const EMPTY = null
 const OFFSET_RANGE = [1, 3]
 const JOINT_RANGE = [0, 3]
+const BRANCH_CHANCE = .5  // chance of erosion branching
 
 
 export function buildBasinGrid(baseContext) {
     const {rect, layers, typeMap, jointGrid} = baseContext
-    const fillMap = new Map()
+    const oppositeBorderMap = new Map()
     // maps the endorheic types for the total of fill skips
     const fillSkipMap = new Map([
         [EndorheicSeaBasin.id, 5],
-        [EndorheicLakeBasin.id, 6],
+        [EndorheicLakeBasin.id, 7],
     ])
-    const referenceMap = new Map()
+    const fillMap = new Map()
+    // init basin id counter
     let basinId = 0
     // get surface border points and setup basin fill
     const basinGrid = Grid.fromRect(rect, point => {
         const jointValue = Random.int(...JOINT_RANGE) * Random.chance(JOINT_CHANCE) ? 1 : -1
         jointGrid.set(point, jointValue)
         if (layers.surface.isBorder(point)) {
-            const reference = getBasinReference(point, baseContext)
-            const type = buildType(point, {...baseContext, reference})
-            referenceMap.set(basinId, reference)
+            const oppositeBorder = getOppositeBorder(point, baseContext)
+            const type = buildType(point, {...baseContext, oppositeBorder})
+            oppositeBorderMap.set(basinId, oppositeBorder)
             fillMap.set(basinId, point)
             typeMap.set(basinId, type.id)
             basinId++
         }
         return EMPTY
     })
-    const context = {...baseContext, fillSkipMap, basinGrid, referenceMap}
+    const context = {...baseContext, fillSkipMap, basinGrid, oppositeBorderMap}
     // returns a grid storing basin ids
+    // ocean and lake/sea borders must grow at same time
+    // but lakes/seas are delayed to grow less
     new BasinGridFill(fillMap, context).complete()
     return basinGrid
 }
 
 
-function getBasinReference(point, context) {
+function getOppositeBorder(point, context) {
     const {layers} = context
     const isLand = layers.surface.isLand(point)
     for (let neighbor of Point.adjacents(point)) {
@@ -65,12 +68,13 @@ function getBasinReference(point, context) {
 
 
 function buildType(point, context) {
-    const {layers, reference} = context
+    const {layers, oppositeBorder} = context
     const isLand = layers.surface.isLand(point)
     let type = isLand ? ExorheicBasin : OceanicBasin
-    if (layers.surface.isLake(reference)) {
+    if (layers.surface.isLake(oppositeBorder)) {
         type = EndorheicLakeBasin
-    } else if (layers.surface.isSea(reference)) {
+    }
+    if (layers.surface.isSea(oppositeBorder)) {
         type = EndorheicSeaBasin
     }
     return type
@@ -88,7 +92,7 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     onInitFill(fill, fillPoint, neighbors) {
-        const parentPoint = fill.context.referenceMap.get(fill.id)
+        const parentPoint = fill.context.oppositeBorderMap.get(fill.id)
         this.fillBaseData(fill, fillPoint, parentPoint)
     }
 
@@ -104,11 +108,7 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
-        const {layers} = fill.context
-        if (layers.surface.isWater(parentPoint)) {
-            return Point.around(parentPoint)
-        }
-        return Point.adjacents(parentPoint)
+        return Point.adjacents(parentPoint).filter(_=>Random.chance(BRANCH_CHANCE))
     }
 
     fillBaseData(fill, fillPoint, parentPoint) {
@@ -128,15 +128,11 @@ class BasinGridFill extends ConcurrentFill {
         midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
     }
 
-    isEmpty(fill, fillPoint) {
-        return fill.context.basinGrid.get(fillPoint) === EMPTY
-    }
-
-    canFill(fill, fillPoint, parentPoint) {
-        const {layers} = fill.context
+    isEmpty(fill, fillPoint, parentPoint) {
+        const {layers, basinGrid} = fill.context
         const target = layers.surface.get(fillPoint)
         const parent = layers.surface.get(parentPoint)
-        return target.water === parent.water
+        return target.water === parent.water && basinGrid.get(fillPoint) === EMPTY
     }
 
     buildMidpoint(direction) {

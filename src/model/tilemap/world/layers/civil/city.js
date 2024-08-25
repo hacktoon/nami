@@ -87,7 +87,7 @@ class CitySpacesFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        return Point.around(parentPoint)
+        return Point.adjacents(parentPoint)
     }
 
     onInitFill(fill, fillPoint) {
@@ -103,13 +103,16 @@ class CitySpacesFill extends ConcurrentFill {
         return isLand && id === EMPTY
     }
 
-    onFilled(fill, target, source) {
+    notEmpty(fill, fillPoint, source) {
         // when two fills block each other, a road is built between them
-        const { cityGrid, cityGraph, cityMap } = fill.context
-        const blockedFillId = cityGrid.wrapGet(target)
+        const { layers, cityGrid, cityGraph, cityMap } = fill.context
+        const blockedFillId = cityGrid.wrapGet(fillPoint)
         const parentFillId = cityGrid.wrapGet(source)
-        if (blockedFillId === parentFillId) return
-        // this "city to city" road has already been created
+        // avoid water fillPoints
+        if (layers.surface.isWater(fillPoint)) return
+        // blocked fills are the same type, ignore
+        if (blockedFillId == parentFillId) return
+        // this "city to city" road has already been created, ignore
         if (cityGraph.hasEdge(blockedFillId, parentFillId)) return
         // only fill graph if there's a claimed city on blocked point
         // set road as an edge between blocked and reference fill ids
@@ -117,12 +120,10 @@ class CitySpacesFill extends ConcurrentFill {
         // get cities points - the targets of the road
         const blockedOrigin = cityMap.get(blockedFillId).point
         const parentOrigin = cityMap.get(parentFillId).point
-
         // TODO: move to another function, save points on pointMap
-        console.log(target, blockedOrigin, source);
-        // create road points, send origin, target and previous point
-        this.#buildCityRoute(fill, target, blockedOrigin, source)
-        this.#buildCityRoute(fill, source, parentOrigin, target)
+        // create road points, send origin, fillPoint and previous point
+        this.#buildCityRoute(fill, fillPoint, blockedOrigin, source)
+        this.#buildCityRoute(fill, source, parentOrigin, fillPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
