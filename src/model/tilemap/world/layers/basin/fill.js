@@ -111,7 +111,7 @@ class BasinGridFill extends ConcurrentFill {
         erosionGridMask.add(fillPoint, direction)
         basinGrid.set(fillPoint, fill.id)
         // terrain offset to add variance
-        const midpoint = this.buildMidpoint(direction)
+        const midpoint = buildMidpoint(direction)
         const midpointIndex = zoneRect.pointToIndex(midpoint)
         midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
     }
@@ -122,19 +122,24 @@ class BasinGridFill extends ConcurrentFill {
         const target = layers.surface.get(fillPoint)
         const parent = layers.surface.get(parentPoint)
         if (basinGrid.get(fillPoint) != EMPTY) return false
+        // avoid fill if different types
         if (target.water != parent.water) return false
-        if (fill.level >= basin.reach) return false
-        if (Random.chance(BRANCH_CHANCE)) return false
+        // vary fill only on land surfaces
+        if (! target.water) {
+            if (fill.level >= basin.reach) return false
+            if (Random.chance(BRANCH_CHANCE)) return false
+        }
         return true
     }
+}
 
-    buildMidpoint(direction) {
-        // direction axis ([-1, 0], [1, 1], etc)
-        const rand = (coordAxis) => {
-            const offset = Random.int(...ZONE_OFFSET_RANGE)
-            const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
-            return ZONE_MIDDLE + (offset * axisToggle)
-        }
-        return direction.axis.map(coord => rand(coord))
+
+function buildMidpoint(direction) {
+    // direction axis ([-1, 0], [1, 1], etc)
+    const rand = (coordAxis) => {
+        const offset = Random.int(...ZONE_OFFSET_RANGE)
+        const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
+        return ZONE_MIDDLE + (offset * axisToggle)
     }
+    return direction.axis.map(coord => rand(coord))
 }
