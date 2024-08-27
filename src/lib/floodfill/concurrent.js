@@ -8,9 +8,6 @@ export class ConcurrentFill {
     #seedMap = new Map()
     // stores the level of each layer for each point
     #levelMap = new Map()
-    // the 'skip' controls how many times a fill should skip
-    // a filling step after starting
-    #skipMap = new Map()
 
     constructor(originMap, context={}) {
         this.originMap = originMap
@@ -23,7 +20,6 @@ export class ConcurrentFill {
             const neighbors = this.getNeighbors(fill, origin)
             this.#levelMap.set(id, level)
             this.#seedMap.set(id, [origin])
-            this.#skipMap.set(id, this.getSkip(fill))
             // first fill step
             this.onInitFill(fill, origin, neighbors)
         }
@@ -43,12 +39,6 @@ export class ConcurrentFill {
     step() {
         let completedFills = 0
         for(let [id, origin] of this.originMap) {
-            // count skips and decrement when skipped
-            const skipCount = this.#skipMap.get(id)
-            if (skipCount > 0) {
-                this.#skipMap.set(id, skipCount - 1)
-                continue
-            }
             // fill one or many layers for each id
             const level = this.#levelMap.get(id)
             const seeds = this.#seedMap.get(id)
@@ -78,8 +68,6 @@ export class ConcurrentFill {
                     this.onFill(newLevelFill, target, source, neighbors)
                     // make the filled neighbor a seed for next iteration
                     nextSeeds.push(target)
-                    if (this.canFill(fill, target, source, neighbors)) {
-                    }
                 } else {
                     this.notEmpty(fill, target, source)
                 }
@@ -126,13 +114,8 @@ export class ConcurrentFill {
     }
     isEmpty(fill, target, source) { return true }
     notEmpty(fill, target, source) {  }
-    canFill(fill, target, source, neighbors) {
-        // default is true; method used to delay fill to last phase
-        return true
-    }
     onFill(fill, target, source, neighbors) { }
     getNeighbors(fill, target) { return [] }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }
-    getSkip(fill) { return 0 }
 }

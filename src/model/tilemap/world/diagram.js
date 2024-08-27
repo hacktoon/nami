@@ -52,14 +52,14 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         } else {
             canvas.rect(canvasPoint, tileSize, layerColor.toHex())
         }
-        const basin = layers.basin.get(point)
         if (this.params.get('showCityArea')) {
             layers.civil.drawCityArea(point, props)
         }
         if (this.params.get('showLandforms')) {
             layers.relief.draw(point, props, layerColor)
         }
-        if (basin.erosion && this.params.get('showErosion')) {
+        if (layers.basin.has(point) && this.params.get('showErosion')) {
+            const basin = layers.basin.get(point)
             const text = basin.erosion.symbol
             const textColor = layerColor.invert().toHex()
             layers.basin.drawErosion(point, props, layerColor)

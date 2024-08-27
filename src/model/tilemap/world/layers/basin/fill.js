@@ -8,16 +8,15 @@ import {
     EndorheicLakeBasin,
     ExorheicBasin,
     OceanicBasin,
+    Basin,
+    EMPTY,
 } from './data'
 
 
 const FILL_CHANCE = .1  // chance of fill growing
-const JOINT_CHANCE = .5  // chance of increase or decrease
 const FILL_GROWTH = 10  // make fill basins grow bigger than others
 const ZONE_MIDDLE = 5
-const EMPTY = null
-const OFFSET_RANGE = [1, 3]
-const JOINT_RANGE = [0, 3]
+const ZONE_OFFSET_RANGE = [1, 3]
 const BRANCH_CHANCE = .5  // chance of erosion branching
 
 
@@ -25,17 +24,12 @@ export function buildBasinGrid(baseContext) {
     const {rect, layers, typeMap, jointGrid} = baseContext
     const oppositeBorderMap = new Map()
     // maps the endorheic types for the total of fill skips
-    const fillSkipMap = new Map([
-        [EndorheicSeaBasin.id, 5],
-        [EndorheicLakeBasin.id, 7],
-    ])
     const fillMap = new Map()
     // init basin id counter
     let basinId = 0
     // get surface border points and setup basin fill
     const basinGrid = Grid.fromRect(rect, point => {
-        const jointValue = Random.int(...JOINT_RANGE) * Random.chance(JOINT_CHANCE) ? 1 : -1
-        jointGrid.set(point, jointValue)
+        jointGrid.set(point, Random.float())
         if (layers.surface.isBorder(point)) {
             const oppositeBorder = getOppositeBorder(point, baseContext)
             const type = buildType(point, {...baseContext, oppositeBorder})
@@ -46,7 +40,7 @@ export function buildBasinGrid(baseContext) {
         }
         return EMPTY
     })
-    const context = {...baseContext, fillSkipMap, basinGrid, oppositeBorderMap}
+    const context = {...baseContext, basinGrid, oppositeBorderMap}
     // returns a grid storing basin ids
     // ocean and lake/sea borders must grow at same time
     // but lakes/seas are delayed to grow less
@@ -84,12 +78,6 @@ function buildType(point, context) {
 class BasinGridFill extends ConcurrentFill {
     getChance(fill) { return FILL_CHANCE }
     getGrowth(fill) { return FILL_GROWTH }
-    getSkip(fill) {
-        // skip fill n times on endorheic basins (lake, sea)
-        const {typeMap, fillSkipMap} = fill.context
-        const typeId = typeMap.get(fill.id)  // fill.id is basinId
-        return fillSkipMap.get(typeId) ?? 0
-    }
 
     onInitFill(fill, fillPoint, neighbors) {
         const parentPoint = fill.context.oppositeBorderMap.get(fill.id)
@@ -108,7 +96,7 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint).filter(_=>Random.chance(BRANCH_CHANCE))
+        return Point.adjacents(parentPoint)
     }
 
     fillBaseData(fill, fillPoint, parentPoint) {
@@ -129,16 +117,21 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     isEmpty(fill, fillPoint, parentPoint) {
-        const {layers, basinGrid} = fill.context
+        const {layers, typeMap, basinGrid} = fill.context
+        const basin = Basin.parse(typeMap.get(fill.id))
         const target = layers.surface.get(fillPoint)
         const parent = layers.surface.get(parentPoint)
-        return target.water === parent.water && basinGrid.get(fillPoint) === EMPTY
+        if (basinGrid.get(fillPoint) != EMPTY) return false
+        if (target.water != parent.water) return false
+        if (fill.level >= basin.reach) return false
+        if (Random.chance(BRANCH_CHANCE)) return false
+        return true
     }
 
     buildMidpoint(direction) {
         // direction axis ([-1, 0], [1, 1], etc)
         const rand = (coordAxis) => {
-            const offset = Random.int(...OFFSET_RANGE)
+            const offset = Random.int(...ZONE_OFFSET_RANGE)
             const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
             return ZONE_MIDDLE + (offset * axisToggle)
         }

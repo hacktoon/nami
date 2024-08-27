@@ -6,7 +6,7 @@ import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 import { buildBasinGrid } from './fill'
-import { Basin, ExorheicBasin } from './data'
+import { Basin, EMPTY } from './data'
 
 
 export class BasinLayer {
@@ -56,10 +56,16 @@ export class BasinLayer {
         this.#basinGrid = buildBasinGrid(context)
     }
 
+    has(point) {
+        return this.#basinGrid.get(point) != EMPTY
+    }
+
     get(point) {
+        const id = this.#basinGrid.get(point)
+        const typeId = this.#typeMap.get(id) ?? Basin.id
         return {
-            id: this.#basinGrid.get(point),
-            type: this.getType(point),
+            id,
+            type: Basin.parse(typeId),
             distance: this.getDistance(point),
             erosion: this.getErosion(point),
             midpoint: this.getMidpoint(point),
@@ -98,12 +104,6 @@ export class BasinLayer {
         return pointDirectionMap
     }
 
-    getType(point) {
-        const id = this.#basinGrid.get(point)
-        const typeId = this.#typeMap.get(id) ?? ExorheicBasin.id
-        return Basin.parse(typeId)
-    }
-
     getJoint(point) {
         return this.#jointGrid.get(point)
     }
@@ -114,7 +114,8 @@ export class BasinLayer {
     }
 
     getColor(point) {
-        return this.getType(point).color
+        if (! this.has(point)) return Basin.color
+        return this.get(point).type.color
     }
 
     getFlows(point) {
@@ -139,13 +140,14 @@ export class BasinLayer {
     }
 
     getText(point) {
+        if (! this.has(point)) return ''
         const basin = this.get(point)
         const attrs = [
             `id=${basin.id}`,
+            `type=${basin.type ? basin.type.name : ''}`,
             `erosion=${basin.erosion.name}`,
             `distance=${basin.distance}`,
             `joint=${basin.joint}`,
-            `type=${basin.type ? basin.type.name : ''}`,
         ].join(',')
         return `Basin(${attrs})`
     }
