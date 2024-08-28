@@ -9,13 +9,13 @@ export class ConcurrentFill {
     // stores the level of each layer for each point
     #levelMap = new Map()
 
-    constructor(originMap, context={}) {
-        this.originMap = originMap
+    constructor(fillMap, context={}) {
+        this.fillMap = fillMap
         this.context = context
 
         // Initialize data and fill origins
         const level = 0
-        for(let [id, origin] of this.originMap) {
+        for(let [id, origin] of this.fillMap) {
             const fill = {id, origin, level, context}
             const neighbors = this.getNeighbors(fill, origin)
             this.#levelMap.set(id, level)
@@ -30,7 +30,7 @@ export class ConcurrentFill {
         let loopCount = MAX_LOOP_COUNT
         while(loopCount-- > 0) {
             const completedFills = this.step()
-            if (completedFills === this.originMap.size) {
+            if (completedFills === this.fillMap.size) {
                 break
             }
         }
@@ -38,11 +38,15 @@ export class ConcurrentFill {
 
     step() {
         let completedFills = 0
-        for(let [id, origin] of this.originMap) {
+        for(let [id, params] of this.fillMap) {
+            const {origin, skip = false} = params
             // fill one or many layers for each id
             const level = this.#levelMap.get(id)
             const seeds = this.#seedMap.get(id)
             const fill = {id, origin, level, context: this.context}
+            // if (this.isDelayed(fill)) {
+            //     continue
+            // }
             const nextSeeds = this.#fillSingleLayer(fill, seeds)
             const extraSeeds = this.#randomFillExtraLayers(fill, nextSeeds)
             // Increase number of completed fills if it has no seeds
@@ -112,6 +116,7 @@ export class ConcurrentFill {
     onInitFill(fill, target, neighbors) {
         this.onFill(fill, target, null, neighbors)
     }
+    isDelayed(fill) { return false }
     isEmpty(fill, target, source) { return true }
     notEmpty(fill, target, source) {  }
     onFill(fill, target, source, neighbors) { }

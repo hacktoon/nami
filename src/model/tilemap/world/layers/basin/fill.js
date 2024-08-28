@@ -23,8 +23,6 @@ const BRANCH_CHANCE = .5  // chance of erosion branching
 export function buildBasinGrid(baseContext) {
     const {rect, layers, typeMap} = baseContext
     const oppositeBorderMap = new Map()
-    // maps the endorheic types for the total of fill skips
-    const endorheicMaxReached = new Map()
     // init basin id counter
     let basinId = 0
     // get surface border points and setup basin types and fill
@@ -41,7 +39,7 @@ export function buildBasinGrid(baseContext) {
         }
         return EMPTY
     })
-    const context = {...baseContext, basinGrid, oppositeBorderMap, endorheicMaxReached}
+    const context = {...baseContext, basinGrid, oppositeBorderMap}
     // returns a grid storing basin ids
     // ocean and lake/sea borders must grow at same time
     // but lakes/seas are delayed to grow less
@@ -54,10 +52,16 @@ class BasinGridFill extends ConcurrentFill {
     getChance(fill) { return FILL_CHANCE }
     getGrowth(fill) { return FILL_GROWTH }
 
+    isDelayed(fill) {
+        const {typeMap} = fill.context
+        const basin = Basin.parse(typeMap.get(fill.id))
+        return fill.level >= basin.reach
+    }
+
     onInitFill(fill, fillPoint, neighbors) {
         const {oppositeBorderMap} = fill.context
         const oppositeBorder = oppositeBorderMap.get(fill.id)
-        this.fillBaseData(fill, fillPoint, oppositeBorder)
+        this.fillBasin(fill, fillPoint, oppositeBorder)
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -68,31 +72,39 @@ class BasinGridFill extends ConcurrentFill {
         // update parent point erosion path
         const upstream = Point.directionBetween(parentPoint, fillPoint)
         erosionGridMask.add(parentPoint, upstream)
-        this.fillBaseData(fill, fillPoint, parentPoint)
+        this.fillBasin(fill, fillPoint, parentPoint)
     }
 
     getNeighbors(fill, parentPoint) {
-        const {layers, typeMap, basinGrid} = fill.context
+        const {layers, basinGrid, typeMap} = fill.context
         // get only empty neighbors
         const allSides = Point.adjacents(parentPoint)
         const emptySides = allSides.filter(pt => basinGrid.get(pt) === EMPTY)
-        if (emptySides.length == 0 || layers.surface.isWater(parentPoint)) {
+        // return if there are no points empty or parent point is water
+        if (emptySides.length === 0 || layers.surface.isWater(parentPoint)) {
             return emptySides
         }
         // parent is land, check random sides to vary erosion paths
-        const parentBasin = Basin.parse(typeMap.get(fill.id))
-        // get only land neighbors
         // if choose enough random neighbors, return them
-        const maxReached = fill.level < parentBasin.reach
-        const randomEmptySides = emptySides.filter(_ => {
-            return maxReached && Random.chance(BRANCH_CHANCE)
-        })
-        if (randomEmptySides.length > 0) return randomEmptySides
+        // randomize branches to reduce erosion range
+        // mark fill if it reached max distance
+        const parentBasin = Basin.parse(typeMap.get(fill.id))
+        const hasReachedMax = fill.level >= parentBasin.reach
+
+        if (fill.level >= parentBasin.reach) {
+            // if (fill.level %2==0 && emptySides.length === 1)
+            //     return emptySides
+            return []
+        } else {
+            const randomEmptySides = emptySides.filter(_ => Random.chance(BRANCH_CHANCE))
+            if (randomEmptySides.length > 0)
+                return randomEmptySides
+        }
         // otherwise, return at least one of the empty neighbors
         return [Random.choiceFrom(emptySides)]
     }
 
-    fillBaseData(fill, fillPoint, parentPoint) {
+    fillBasin(fill, fillPoint, parentPoint) {
         const {
             erosionGrid, erosionGridMask, basinGrid,
             midpointIndexGrid, zoneRect

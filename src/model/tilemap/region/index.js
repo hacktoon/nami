@@ -60,7 +60,7 @@ export class RegionTileMap extends TileMap {
         this.#centerPoints = new PointSet(this.rect, this.#origins)
         this.#borderMap = new PointMap(this.rect)
         this.#regions = this.#origins.map((origin, id) => {
-            fillMap.set(id, origin)
+            fillMap.set(id, {origin})
             return id
         })
         new RegionFloodFill(fillMap, {
