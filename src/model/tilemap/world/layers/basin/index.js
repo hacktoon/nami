@@ -39,7 +39,7 @@ export class BasinLayer {
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
-        this.#jointGrid = Grid.fromRect(rect, () => 0)
+        this.#jointGrid = Grid.fromRect(rect, () => Random.float())
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         this.#erosionGridMask = new DirectionMaskGrid(rect)
         const context = {
@@ -47,7 +47,6 @@ export class BasinLayer {
             layers,
             typeMap: this.#typeMap,
             zoneRect: this.#zoneRect,
-            jointGrid: this.#jointGrid,
             erosionGrid: this.#erosionGrid,
             distanceGrid: this.#distanceGrid,
             erosionGridMask: this.#erosionGridMask,

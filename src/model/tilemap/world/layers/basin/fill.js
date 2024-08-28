@@ -6,7 +6,7 @@ import { Point } from '/src/lib/point'
 import {
     EndorheicSeaBasin,
     EndorheicLakeBasin,
-    ExorheicBasin,
+    ExorheicRiverBasin,
     OceanicBasin,
     Basin,
     EMPTY,
@@ -21,21 +21,27 @@ const BRANCH_CHANCE = .5  // chance of erosion branching
 
 
 export function buildBasinGrid(baseContext) {
-    const {rect, layers, jointGrid} = baseContext
+    const {rect, layers, typeMap} = baseContext
     const oppositeBorderMap = new Map()
     // maps the endorheic types for the total of fill skips
-    const fillMap = new Map()
+    const endorheicMaxReached = new Map()
     // init basin id counter
     let basinId = 0
-    // get surface border points and setup basin fill
+    // get surface border points and setup basin types and fill
+    const fillMap = new Map()
     const basinGrid = Grid.fromRect(rect, point => {
-        jointGrid.set(point, Random.float())
         if (layers.surface.isBorder(point)) {
-            fillMap.set(basinId++, point)
+            const oppositeBorder = getOppositeBorder(point, baseContext)
+            oppositeBorderMap.set(basinId, oppositeBorder)
+            // typeMap must be initialized before fill
+            const type = buildType(point, {...baseContext, oppositeBorder})
+            typeMap.set(basinId, type.id)
+            fillMap.set(basinId, point)
+            basinId++
         }
         return EMPTY
     })
-    const context = {...baseContext, basinGrid, oppositeBorderMap}
+    const context = {...baseContext, basinGrid, oppositeBorderMap, endorheicMaxReached}
     // returns a grid storing basin ids
     // ocean and lake/sea borders must grow at same time
     // but lakes/seas are delayed to grow less
@@ -49,10 +55,8 @@ class BasinGridFill extends ConcurrentFill {
     getGrowth(fill) { return FILL_GROWTH }
 
     onInitFill(fill, fillPoint, neighbors) {
-        const {typeMap} = fill.context
-        const oppositeBorder = getOppositeBorder(fillPoint, fill.context)
-        const type = buildType(fillPoint, {...fill.context, oppositeBorder})
-        typeMap.set(fill.id, type.id)
+        const {oppositeBorderMap} = fill.context
+        const oppositeBorder = oppositeBorderMap.get(fill.id)
         this.fillBaseData(fill, fillPoint, oppositeBorder)
     }
 
@@ -68,7 +72,24 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
+        const {layers, typeMap, basinGrid} = fill.context
+        // get only empty neighbors
+        const allSides = Point.adjacents(parentPoint)
+        const emptySides = allSides.filter(pt => basinGrid.get(pt) === EMPTY)
+        if (emptySides.length == 0 || layers.surface.isWater(parentPoint)) {
+            return emptySides
+        }
+        // parent is land, check random sides to vary erosion paths
+        const parentBasin = Basin.parse(typeMap.get(fill.id))
+        // get only land neighbors
+        // if choose enough random neighbors, return them
+        const maxReached = fill.level < parentBasin.reach
+        const randomEmptySides = emptySides.filter(_ => {
+            return maxReached && Random.chance(BRANCH_CHANCE)
+        })
+        if (randomEmptySides.length > 0) return randomEmptySides
+        // otherwise, return at least one of the empty neighbors
+        return [Random.choiceFrom(emptySides)]
     }
 
     fillBaseData(fill, fillPoint, parentPoint) {
@@ -89,18 +110,12 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     isEmpty(fill, fillPoint, parentPoint) {
-        const {layers, typeMap, basinGrid} = fill.context
-        const basin = Basin.parse(typeMap.get(fill.id))
+        const {layers, typeMap} = fill.context
+        // const basin = Basin.parse(typeMap.get(fill.id))
         const target = layers.surface.get(fillPoint)
         const parent = layers.surface.get(parentPoint)
-        if (basinGrid.get(fillPoint) != EMPTY) return false
         // avoid fill if different types
         if (target.water != parent.water) return false
-        // vary fill only on land surfaces
-        if (! target.water) {
-            if (fill.level >= basin.reach) return false
-            if (Random.chance(BRANCH_CHANCE)) return false
-        }
         return true
     }
 }
@@ -121,7 +136,7 @@ function getOppositeBorder(point, context) {
 function buildType(point, context) {
     const {layers, oppositeBorder} = context
     const isLand = layers.surface.isLand(point)
-    let type = isLand ? ExorheicBasin : OceanicBasin
+    let type = isLand ? ExorheicRiverBasin : OceanicBasin
     if (layers.surface.isLake(oppositeBorder)) {
         type = EndorheicLakeBasin
     }

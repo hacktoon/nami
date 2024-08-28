@@ -13,7 +13,7 @@ export class Basin {
 }
 
 
-export class ExorheicBasin extends Basin {
+export class ExorheicRiverBasin extends Basin {
     static id = 0
     static name = 'Exorheic river'
     static reach = Infinity
@@ -50,7 +50,7 @@ export class OceanicBasin extends Basin {
 
 
 const BASIN_MAP = {
-    0: ExorheicBasin,
+    0: ExorheicRiverBasin,
     1: EndorheicSeaBasin,
     2: EndorheicLakeBasin,
     3: OceanicBasin,
