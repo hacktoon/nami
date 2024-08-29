@@ -50,9 +50,12 @@ export class ConcurrentFill {
             const nextSeeds = this.#fillSingleLayer(fill, seeds)
             const extraSeeds = this.#randomFillExtraLayers(fill, nextSeeds)
             // Increase number of completed fills if it has no seeds
-            completedFills += nextSeeds.length === 0 ? 1 : 0
-            // set seeds for next layer
-            this.#seedMap.set(id, [...nextSeeds, ...extraSeeds])
+            if (nextSeeds.length === 0) {
+                completedFills++
+            } else {
+                // set seeds for next layer
+                this.#seedMap.set(id, [...nextSeeds, ...extraSeeds])
+            }
         }
         return completedFills
     }
