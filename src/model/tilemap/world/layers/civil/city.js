@@ -68,7 +68,9 @@ export function buildCitySpaces(context) {
         routeMaskGrid,
         fillDirectionGrid
     }
-    const fillMap = new Map(cityPoints.points.map((point, id) => [id, point]))
+    const fillMap = new Map(cityPoints.points.map((origin, id) => {
+        return [id, {origin}]
+    }))
     new CitySpacesFill(fillMap, fillContext).complete()
     return {
         cityGrid,

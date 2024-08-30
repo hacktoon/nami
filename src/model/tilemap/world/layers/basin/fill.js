@@ -15,9 +15,9 @@ import {
 
 const FILL_CHANCE = .1  // chance of fill growing
 const FILL_GROWTH = 10  // make fill basins grow bigger than others
+const FILL_SKIP_COUNT = 5
 const ZONE_MIDDLE = 5
 const ZONE_OFFSET_RANGE = [1, 3]
-const BRANCH_CHANCE = .5  // chance of erosion branching
 
 
 export function buildBasinGrid(baseContext) {
@@ -29,12 +29,15 @@ export function buildBasinGrid(baseContext) {
     const fillMap = new Map()
     const basinGrid = Grid.fromRect(rect, point => {
         if (layers.surface.isBorder(point)) {
-            const oppositeBorder = getOppositeBorder(point, baseContext)
+            const oppositeBorder = getOppositeBorder(baseContext, point)
             oppositeBorderMap.set(basinId, oppositeBorder)
             // typeMap must be initialized before fill
             const type = buildType(point, {...baseContext, oppositeBorder})
+            if (Point.equals(point, [7, 35]))
+                console.log(oppositeBorder);
+
             typeMap.set(basinId, type.id)
-            fillMap.set(basinId, point)
+            fillMap.set(basinId, {'origin': point})
             basinId++
         }
         return EMPTY
@@ -50,12 +53,17 @@ export function buildBasinGrid(baseContext) {
 
 class BasinGridFill extends ConcurrentFill {
     getChance(fill) { return FILL_CHANCE }
-    getGrowth(fill) { return FILL_GROWTH }
-
-    isDelayed(fill) {
+    getGrowth(fill) {
         const {typeMap} = fill.context
         const basin = Basin.parse(typeMap.get(fill.id))
-        return fill.level >= basin.reach
+        if (basin.isEndorheic) return 1
+        return FILL_GROWTH
+    }
+
+    getSkip(fill) {
+        const {typeMap} = fill.context
+        const basin = Basin.parse(typeMap.get(fill.id))
+        return fill.level >= basin.reach ? FILL_SKIP_COUNT : 0
     }
 
     onInitFill(fill, fillPoint, neighbors) {
@@ -76,32 +84,7 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
-        const {layers, basinGrid, typeMap} = fill.context
-        // get only empty neighbors
-        const allSides = Point.adjacents(parentPoint)
-        const emptySides = allSides.filter(pt => basinGrid.get(pt) === EMPTY)
-        // return if there are no points empty or parent point is water
-        if (emptySides.length === 0 || layers.surface.isWater(parentPoint)) {
-            return emptySides
-        }
-        // parent is land, check random sides to vary erosion paths
-        // if choose enough random neighbors, return them
-        // randomize branches to reduce erosion range
-        // mark fill if it reached max distance
-        const parentBasin = Basin.parse(typeMap.get(fill.id))
-        const hasReachedMax = fill.level >= parentBasin.reach
-
-        if (fill.level >= parentBasin.reach) {
-            // if (fill.level %2==0 && emptySides.length === 1)
-            //     return emptySides
-            return []
-        } else {
-            const randomEmptySides = emptySides.filter(_ => Random.chance(BRANCH_CHANCE))
-            if (randomEmptySides.length > 0)
-                return randomEmptySides
-        }
-        // otherwise, return at least one of the empty neighbors
-        return [Random.choiceFrom(emptySides)]
+        return Point.adjacents(parentPoint)
     }
 
     fillBasin(fill, fillPoint, parentPoint) {
@@ -122,10 +105,10 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     isEmpty(fill, fillPoint, parentPoint) {
-        const {layers, typeMap} = fill.context
-        // const basin = Basin.parse(typeMap.get(fill.id))
+        const {layers, basinGrid} = fill.context
         const target = layers.surface.get(fillPoint)
         const parent = layers.surface.get(parentPoint)
+        if (basinGrid.get(fillPoint) !== EMPTY) return false
         // avoid fill if different types
         if (target.water != parent.water) return false
         return true
@@ -133,11 +116,14 @@ class BasinGridFill extends ConcurrentFill {
 }
 
 
-function getOppositeBorder(point, context) {
+function getOppositeBorder(context, point) {
     const {layers} = context
     const isLand = layers.surface.isLand(point)
     for (let neighbor of Point.adjacents(point)) {
         const isNeighborLand = layers.surface.isLand(neighbor)
+        const isNeighborSea = layers.surface.isSea(neighbor)
+        const isNeighborLake = layers.surface.isLake(neighbor)
+        // if (isLand && (isNeighborSea || isNeighborLake)) {}
         if (isLand && ! isNeighborLand || ! isLand && isNeighborLand) {
             return neighbor
         }
