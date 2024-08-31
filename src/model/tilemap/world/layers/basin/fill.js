@@ -22,27 +22,19 @@ const ZONE_OFFSET_RANGE = [1, 3]
 
 export function buildBasinGrid(baseContext) {
     const {rect, layers, typeMap} = baseContext
-    const oppositeBorderMap = new Map()
+
     // init basin id counter
     let basinId = 0
     // get surface border points and setup basin types and fill
     const fillMap = new Map()
     const basinGrid = Grid.fromRect(rect, point => {
         if (layers.surface.isBorder(point)) {
-            const oppositeBorder = getOppositeBorder(baseContext, point)
-            oppositeBorderMap.set(basinId, oppositeBorder)
-            // typeMap must be initialized before fill
-            const type = buildType(point, {...baseContext, oppositeBorder})
-            if (Point.equals(point, [7, 35]))
-                console.log(oppositeBorder);
-
-            typeMap.set(basinId, type.id)
-            fillMap.set(basinId, {'origin': point})
+            fillMap.set(basinId, {origin: point})
             basinId++
         }
         return EMPTY
     })
-    const context = {...baseContext, basinGrid, oppositeBorderMap}
+    const context = {...baseContext, basinGrid}
     // returns a grid storing basin ids
     // ocean and lake/sea borders must grow at same time
     // but lakes/seas are delayed to grow less
@@ -67,8 +59,12 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     onInitFill(fill, fillPoint, neighbors) {
-        const {oppositeBorderMap} = fill.context
-        const oppositeBorder = oppositeBorderMap.get(fill.id)
+        const {typeMap} = fill.context
+        // discover parentPoint - the basin opposite border
+        const oppositeBorder = getOppositeBorder(fill.context, neighbors, fillPoint)
+        // set type on init
+        const type = buildType(fillPoint, {...fill.context, oppositeBorder})
+        typeMap.set(fill.id, type.id)
         this.fillBasin(fill, fillPoint, oppositeBorder)
     }
 
@@ -106,28 +102,31 @@ class BasinGridFill extends ConcurrentFill {
 
     isEmpty(fill, fillPoint, parentPoint) {
         const {layers, basinGrid} = fill.context
+        if (basinGrid.get(fillPoint) !== EMPTY) {
+            return false
+        }
         const target = layers.surface.get(fillPoint)
         const parent = layers.surface.get(parentPoint)
-        if (basinGrid.get(fillPoint) !== EMPTY) return false
         // avoid fill if different types
-        if (target.water != parent.water) return false
-        return true
+        return target.water == parent.water
     }
 }
 
 
-function getOppositeBorder(context, point) {
+function getOppositeBorder(context, neighbors, point) {
     const {layers} = context
     const isLand = layers.surface.isLand(point)
-    for (let neighbor of Point.adjacents(point)) {
+    let border = null
+    for (let neighbor of neighbors) {
         const isNeighborLand = layers.surface.isLand(neighbor)
-        const isNeighborSea = layers.surface.isSea(neighbor)
-        const isNeighborLake = layers.surface.isLake(neighbor)
-        // if (isLand && (isNeighborSea || isNeighborLake)) {}
-        if (isLand && ! isNeighborLand || ! isLand && isNeighborLand) {
+        if (isLand === isNeighborLand) continue
+        if (layers.surface.isOcean(neighbor)) {
             return neighbor
+        } else {
+            border = neighbor
         }
     }
+    return border
 }
 
 

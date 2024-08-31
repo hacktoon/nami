@@ -17,7 +17,7 @@ export class ConcurrentFill {
         // Initialize data and fill origins
         const level = 0
         for(let [id, params] of fillMap) {
-            const {origin, skip = false} = params
+            const {origin} = params
             const fill = {id, origin, level, context}
             const neighbors = this.getNeighbors(fill, origin)
             this.#levelMap.set(id, level)
@@ -39,14 +39,14 @@ export class ConcurrentFill {
     }
 
     #step(fillMap) {
+        // fill one or many layers for each fill
         let completedFills = 0
         for(let [id, params] of fillMap) {
             const {origin} = params
-            // fill one or many layers for each id
             const level = this.#levelMap.get(id)
             const seeds = this.#seedMap.get(id)
             const fill = {id, origin, level, context: this.context}
-            if (this.#willSkip(fill)) {
+            if (this.#shouldSkip(fill)) {
                 continue
             }
             const nextSeeds = this.#fillSingleLayer(fill, seeds)
@@ -62,7 +62,7 @@ export class ConcurrentFill {
         return completedFills
     }
 
-    #willSkip(fill) {
+    #shouldSkip(fill) {
         const skipCount = this.#skipMap.get(fill.id) ?? this.getSkip(fill)
         if (skipCount > 0) {  // there are fill to skip
             // decrement count

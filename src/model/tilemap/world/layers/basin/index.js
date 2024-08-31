@@ -36,10 +36,11 @@ export class BasinLayer {
     #midpointIndexGrid
 
     constructor(rect, layers, zoneRect) {
+        window.Random = Random
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
-        this.#jointGrid = Grid.fromRect(rect, () => Random.float())
+        this.#jointGrid = Grid.fromRect(rect, () => Random.floatRange(-1, 1))
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         this.#erosionGridMask = new DirectionMaskGrid(rect)
         const context = {
@@ -152,7 +153,7 @@ export class BasinLayer {
     }
 
     drawErosion(point, props, baseColor) {
-        const directions = this.#erosionGridMask.getAxis(point)
+        const directions = this.#erosionGridMask.get(point)
         const color = baseColor.darken(20).toHex()
         const lineWidth = Math.round(props.tileSize / 8)
         const _props = {...props, color, lineWidth, directions}
@@ -167,14 +168,21 @@ export class BasinLayer {
         const midpoint = this.getMidpoint(point)
         const canvasMidpoint = Point.multiplyScalar(midpoint, tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
-
+        const joint = this.getJoint(point)
         // draw line for each neighbor with a basin connection
-        for(let directionAxis of props.directions) {
+        for(let direction of props.directions) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
+            const sidePoint = Point.atDirection(point, direction)
+            const sideJoint = this.getJoint(sidePoint)
+            const avgJoint = (joint + sideJoint) / 2
+            const offset = [
+                midSize * avgJoint * direction.axis[1] != 0 ? 0 : 1,
+                midSize * avgJoint * direction.axis[0] != 0 ? 0 : 1,
+            ]
             const edgeMidPoint = [
-                canvasCenterPoint[0] + directionAxis[0] * midSize,
-                canvasCenterPoint[1] + directionAxis[1] * midSize
+                canvasCenterPoint[0] + direction.axis[0] * midSize,
+                canvasCenterPoint[1] + direction.axis[1] * midSize
             ]
             canvas.line(edgeMidPoint, meanderPoint, lineWidth, color)
         }

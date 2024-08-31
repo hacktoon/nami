@@ -16,7 +16,7 @@ export function buildRegionGrid(context) {
     // create a grid with many regions fragmenting the zone map
     const regionGrid = Grid.fromRect(zoneRect, () => EMPTY)
     const origins = EvenPointSampling.create(zoneRect, REGION_SCALE)
-    const fillMap = new Map(origins.map((origin, id) => [id, origin]))
+    const fillMap = new Map(origins.map((origin, id) => [id, {origin}]))
     const ctx = {...context, regionGrid}
     new RegionFloodFill(fillMap, ctx).complete()
     return regionGrid
