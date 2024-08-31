@@ -40,7 +40,7 @@ export class BasinLayer {
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
-        this.#jointGrid = Grid.fromRect(rect, () => Random.floatRange(-1, 1))
+        this.#jointGrid = Grid.fromRect(rect, () => Random.float())
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         this.#erosionGridMask = new DirectionMaskGrid(rect)
         const context = {
@@ -155,15 +155,13 @@ export class BasinLayer {
     drawErosion(point, props, baseColor) {
         const directions = this.#erosionGridMask.get(point)
         const color = baseColor.darken(20).toHex()
-        const lineWidth = Math.round(props.tileSize / 8)
+        const lineWidth = Math.round(props.tileSize / 20)
         const _props = {...props, color, lineWidth, directions}
         this.#drawDirectionGrid(point, _props)
     }
 
     #drawDirectionGrid(point, props) {
         const {canvas, canvasPoint, tileSize, color, lineWidth} = props
-        const midSize = Math.round(tileSize / 2)
-        const canvasCenterPoint = Point.plusScalar(canvasPoint, midSize)
         // calc midpoint point on canvas
         const midpoint = this.getMidpoint(point)
         const canvasMidpoint = Point.multiplyScalar(midpoint, tileSize / this.#zoneRect.width)
@@ -174,17 +172,18 @@ export class BasinLayer {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const sidePoint = Point.atDirection(point, direction)
+            // get average between this point and neighbor
             const sideJoint = this.getJoint(sidePoint)
             const avgJoint = (joint + sideJoint) / 2
-            const offset = [
-                midSize * avgJoint * direction.axis[1] != 0 ? 0 : 1,
-                midSize * avgJoint * direction.axis[0] != 0 ? 0 : 1,
-            ]
-            const edgeMidPoint = [
-                canvasCenterPoint[0] + direction.axis[0] * midSize,
-                canvasCenterPoint[1] + direction.axis[1] * midSize
-            ]
-            canvas.line(edgeMidPoint, meanderPoint, lineWidth, color)
+            // map each axis coordinate to random value in zone
+            // summing values from origin [0, 0] bottom-right oriented
+            const axisModifier = direction.axis.map(c => {
+                if (c < 0) return 0
+                if (c > 0) return tileSize
+                return Math.floor(tileSize * avgJoint)
+            })
+            const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
+            canvas.line(canvasEdgePoint, meanderPoint, lineWidth, color)
         }
     }
 }
