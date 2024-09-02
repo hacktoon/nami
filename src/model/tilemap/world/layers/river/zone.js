@@ -15,7 +15,6 @@ export class ZoneRiver {
         // reads the wire data and create points for zone grid
         const {layers, worldPoint, zoneRect} = context
         const points = new PointSet(zoneRect)
-        // console.log(worldPoint, " - ", context);
 
         if (! layers.river.has(worldPoint)) {
             return points

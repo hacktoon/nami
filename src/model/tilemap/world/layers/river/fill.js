@@ -24,7 +24,7 @@ export function buildRiverMap(context) {
     })
     const ctx = {...context, riverPoints}
     // create a list of pairs: (point, river distance to mouth)
-    sources.map(point => [point, layers.basin.getDistance(point)])
+    sources.map(point => [point, layers.basin.get(point).distance])
         // in ascendent order to get longest rivers first
         // for starting rivers on basin divides
         .sort((a, b) => a[1] - b[1])
@@ -45,20 +45,19 @@ function buildRiver(context, riverId, sourcePoint) {
     let prevPoint = sourcePoint
     let currentPoint = sourcePoint
     // follow river down following next land points
-    const riverLength = layers.basin.getDistance(sourcePoint)
+    const riverLength = layers.basin.get(sourcePoint).distance
     while (layers.surface.isLand(currentPoint)) {
         // max size by basin if basin.
         const point = rect.wrap(currentPoint)
         // set river stretch by distance
-        const currentDistance = layers.basin.getDistance(point)
-        const stretch = buildStretch(currentDistance, riverLength)
+        const basin = layers.basin.get(point)
+        const stretch = buildStretch(basin.distance, riverLength)
         stretchMap.set(point, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(point, riverId)
 
         // get next river point
-        const erosion = layers.basin.getErosion(point)
-        currentPoint = Point.atDirection(point, erosion)
+        currentPoint = Point.atDirection(point, basin.erosion)
         // save previous point for mouth detection
         prevPoint = point
     }

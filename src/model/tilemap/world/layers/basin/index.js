@@ -40,7 +40,7 @@ export class BasinLayer {
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
-        this.#jointGrid = Grid.fromRect(rect, () => Random.float())
+        this.#jointGrid = Grid.fromRect(rect, () => Random.floatRange(.2, .8))
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         this.#erosionGridMask = new DirectionMaskGrid(rect)
         const context = {
@@ -63,11 +63,12 @@ export class BasinLayer {
     get(point) {
         const id = this.#basinGrid.get(point)
         const typeId = this.#typeMap.get(id) ?? Basin.id
+        const directionId = this.#erosionGrid.get(point)
         return {
             id,
             type: Basin.parse(typeId),
-            distance: this.getDistance(point),
-            erosion: this.getErosion(point),
+            distance: this.#distanceGrid.get(point),
+            erosion: Direction.fromId(directionId),
             midpoint: this.getMidpoint(point),
             joint: this.getJoint(point)
         }
@@ -79,12 +80,12 @@ export class BasinLayer {
         const midpoint = this.getMidpoint(point)
         const midSize = Math.floor(this.#zoneRect.width / 2)
         let [mx, my] = midpoint
-        for(let axis of this.#erosionGridMask.getAxis(point)) {
-            const tx = midSize + (midSize * axis[0])
-            const ty = midSize + (midSize * axis[1])
+        for(let direction of this.#erosionGridMask.get(point)) {
+            const tx = midSize + midSize * direction.axis[0]
+            const ty = midSize + midSize * direction.axis[1]
             let [x, y] = [tx, ty]
             while(Point.differs([x, y], midpoint)) {
-                pointDirectionMap.add([x, y])
+                pointDirectionMap.set([x, y])
                 if (Random.chance(.5)) {
                     if (x > mx) {
                         x--
@@ -114,7 +115,6 @@ export class BasinLayer {
     }
 
     getColor(point) {
-        if (! this.has(point)) return Basin.color
         return this.get(point).type.color
     }
 
@@ -122,21 +122,8 @@ export class BasinLayer {
         return this.#erosionGridMask.get(point)
     }
 
-    getErosionPathAxis(point) {
-        return this.#erosionGridMask.getAxis(point)
-    }
-
     isDivide(point) {
         return this.#erosionGridMask.get(point).length === 1
-    }
-
-    getErosion(point) {
-        const directionId = this.#erosionGrid.get(point)
-        return Direction.fromId(directionId)
-    }
-
-    getDistance(point) {
-        return this.#distanceGrid.get(point)
     }
 
     getText(point) {
@@ -175,7 +162,7 @@ export class BasinLayer {
             // get average between this point and neighbor
             const sideJoint = this.getJoint(sidePoint)
             const avgJoint = (joint + sideJoint) / 2
-            // map each axis coordinate to random value in zone
+            // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented
             const axisModifier = direction.axis.map(c => {
                 if (c < 0) return 0
