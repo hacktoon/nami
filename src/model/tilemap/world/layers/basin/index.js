@@ -140,28 +140,35 @@ export class BasinLayer {
     }
 
     drawErosion(point, props, baseColor) {
-        const directions = this.#erosionGridMask.get(point)
-        const color = baseColor.darken(20).toHex()
-        const lineWidth = Math.round(props.tileSize / 20)
-        const _props = {...props, color, lineWidth, directions}
+        const _props = {
+            ...props,
+            zoneRect: this.#zoneRect,
+            joint: this.getJoint(point),
+            midpoint: this.getMidpoint(point),
+            color: baseColor.darken(20).toHex(),
+            lineWidth: Math.round(props.tileSize / 20),
+            directions: this.#erosionGridMask.get(point),
+        }
         this.#drawDirectionGrid(point, _props)
     }
 
     #drawDirectionGrid(point, props) {
-        const {canvas, canvasPoint, tileSize, color, lineWidth} = props
+        const {
+            canvasPoint, tileSize, color, lineWidth
+        } = props
         // calc midpoint point on canvas
-        const midpoint = this.getMidpoint(point)
-        const canvasMidpoint = Point.multiplyScalar(midpoint, tileSize / this.#zoneRect.width)
+        const pixelsPerZonePoint = tileSize / props.zoneRect.width
+        const canvasMidpoint = Point.multiplyScalar(props.midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
-        const joint = this.getJoint(point)
         // draw line for each neighbor with a basin connection
+        const lines = []
         for(let direction of props.directions) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const sidePoint = Point.atDirection(point, direction)
             // get average between this point and neighbor
             const sideJoint = this.getJoint(sidePoint)
-            const avgJoint = (joint + sideJoint) / 2
+            const avgJoint = (props.joint + sideJoint) / 2
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented
             const axisModifier = direction.axis.map(c => {
@@ -170,7 +177,11 @@ export class BasinLayer {
                 return Math.floor(tileSize * avgJoint)
             })
             const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
-            canvas.line(canvasEdgePoint, meanderPoint, lineWidth, color)
+            lines.push([canvasEdgePoint, meanderPoint, lineWidth, color])
+
+        }
+        for(let line of lines) {
+            props.canvas.line(...line)
         }
     }
 }
