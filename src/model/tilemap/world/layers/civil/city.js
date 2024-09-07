@@ -9,8 +9,8 @@ import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 
-const CITY_BORDER_CHANCE = .3
-const CITY_CHANCE = .1
+const CITY_BORDER_CHANCE = .4
+const CITY_CHANCE = .3
 
 // fill constants
 const CHANCE = .1  // chance of fill growing
@@ -24,12 +24,13 @@ export function buildCityPoints(context) {
     const cityPoints = new PointSet(rect)
     // create city id grid
     Grid.fromRect(rect, point => {
-        const borderCityChance = Random.chance(CITY_BORDER_CHANCE)
-        const cityChance = Random.chance(CITY_CHANCE)
         if (layers.surface.isWater(point)) return
+        const borderCityChance = Random.chance(CITY_BORDER_CHANCE)
         const isBorder = layers.surface.isBorder(point) && borderCityChance
-        const isRiver = layers.river.has(point) && cityChance
-        if (isRiver || isBorder) {
+        const isRiver = layers.river.has(point) && Random.chance(CITY_CHANCE)
+        // avoid too close cities
+        const isEvenFilter = (point[0] + point[1]) % 2 == 0
+        if ((isRiver || isBorder) && isEvenFilter) {
             cityPoints.add(point)
         }
     })
@@ -89,7 +90,8 @@ class CitySpacesFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        return Point.adjacents(parentPoint)
+        const isWater = fill.context.layers.surface.isWater(parentPoint)
+        return isWater ? Point.around(parentPoint) : Point.adjacents(parentPoint)
     }
 
     onInitFill(fill, fillPoint) {
@@ -99,10 +101,9 @@ class CitySpacesFill extends ConcurrentFill {
     }
 
     isEmpty(fill, fillPoint) {
-        const {layers, cityGrid} = fill.context
+        const {cityGrid} = fill.context
         const id = cityGrid.wrapGet(fillPoint)
-        const isLand = layers.surface.isLand(fillPoint)
-        return isLand && id === EMPTY
+        return id === EMPTY
     }
 
     notEmpty(fill, fillPoint, source) {
@@ -110,8 +111,6 @@ class CitySpacesFill extends ConcurrentFill {
         const { layers, cityGrid, cityGraph, cityMap } = fill.context
         const blockedFillId = cityGrid.wrapGet(fillPoint)
         const parentFillId = cityGrid.wrapGet(source)
-        // avoid water fillPoints
-        if (layers.surface.isWater(fillPoint)) return
         // blocked fills are the same type, ignore
         if (blockedFillId == parentFillId) return
         // this "city to city" road has already been created, ignore
@@ -157,7 +156,7 @@ class CitySpacesFill extends ConcurrentFill {
             prevDirection = Point.directionBetween(nextPoint, prevPoint)
             // points.push(nextPoint)
         }
-        // add road to city point
+        // add route direction to grid mask
         routeMaskGrid.add(target, prevDirection)
         return points
     }

@@ -118,6 +118,29 @@ export class BasinLayer {
         return this.get(point).type.color
     }
 
+    getNeighborhood(point) {
+        const neighbors = []
+        const directions = this.#erosionGridMask.get(point)
+        for(let direction of directions) {
+            // build a point for each flow that points to this point
+            // create a midpoint at tile's square side
+            const sidePoint = Point.atDirection(point, direction)
+            // get average between this point and neighbor
+            const sideJoint = this.getJoint(sidePoint)
+            const avgJoint = (props.joint + sideJoint) / 2
+            // map each axis coordinate to random value in zone's rect edge
+            // summing values from origin [0, 0] bottom-right oriented
+            const axisModifier = direction.axis.map(c => {
+                if (c < 0) return 0
+                if (c > 0) return tileSize
+                return Math.floor(tileSize * avgJoint)
+            })
+            const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
+            neighbors.push([canvasEdgePoint, meanderPoint, lineWidth, color])
+        }
+        return neighbors
+    }
+
     getFlows(point) {
         return this.#erosionGridMask.get(point)
     }
@@ -149,10 +172,10 @@ export class BasinLayer {
             lineWidth: Math.round(props.tileSize / 20),
             directions: this.#erosionGridMask.get(point),
         }
-        this.#drawDirectionGrid(point, _props)
+        this.#drawLines(point, _props)
     }
 
-    #drawDirectionGrid(point, props) {
+    #drawLines(point, props) {
         const {
             canvasPoint, tileSize, color, lineWidth
         } = props
@@ -178,7 +201,6 @@ export class BasinLayer {
             })
             const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
             lines.push([canvasEdgePoint, meanderPoint, lineWidth, color])
-
         }
         for(let line of lines) {
             props.canvas.line(...line)
