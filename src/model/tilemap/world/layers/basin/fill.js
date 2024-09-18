@@ -61,11 +61,11 @@ class BasinGridFill extends ConcurrentFill {
     onInitFill(fill, fillPoint, neighbors) {
         const {typeMap} = fill.context
         // discover parentPoint - the basin opposite border
-        const oppositeBorder = getOppositeBorder(fill.context, neighbors, fillPoint)
+        const survey = surveyNeighbors(fill.context, neighbors, fillPoint)
         // set type on init
-        const type = buildType(fillPoint, {...fill.context, oppositeBorder})
+        const type = buildType(fillPoint, {...fill.context, survey})
         typeMap.set(fill.id, type.id)
-        this.fillBasin(fill, fillPoint, oppositeBorder)
+        this._fillBasin(fill, fillPoint, survey)
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -76,14 +76,14 @@ class BasinGridFill extends ConcurrentFill {
         // update parent point erosion path
         const upstream = Point.directionBetween(parentPoint, fillPoint)
         erosionGridMask.add(parentPoint, upstream)
-        this.fillBasin(fill, fillPoint, parentPoint)
+        this._fillBasin(fill, fillPoint, parentPoint)
     }
 
     getNeighbors(fill, parentPoint) {
         return Point.adjacents(parentPoint)
     }
 
-    fillBasin(fill, fillPoint, parentPoint) {
+    _fillBasin(fill, fillPoint, parentPoint) {
         const {
             erosionGrid, erosionGridMask, basinGrid,
             midpointIndexGrid, zoneRect
@@ -113,7 +113,7 @@ class BasinGridFill extends ConcurrentFill {
 }
 
 
-function getOppositeBorder(context, neighbors, point) {
+function surveyNeighbors(context, neighbors, point) {
     const {layers} = context
     const isLand = layers.surface.isLand(point)
     let border = null
@@ -131,13 +131,13 @@ function getOppositeBorder(context, neighbors, point) {
 
 
 function buildType(point, context) {
-    const {layers, oppositeBorder} = context
+    const {layers, survey} = context
     const isLand = layers.surface.isLand(point)
     let type = isLand ? ExorheicRiverBasin : OceanicBasin
-    if (layers.surface.isLake(oppositeBorder)) {
+    if (layers.surface.isLake(survey)) {
         type = EndorheicLakeBasin
     }
-    if (layers.surface.isSea(oppositeBorder)) {
+    if (layers.surface.isSea(survey)) {
         type = EndorheicSeaBasin
     }
     return type
