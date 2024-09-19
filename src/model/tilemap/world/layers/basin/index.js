@@ -6,7 +6,7 @@ import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 import { buildBasinGrid } from './fill'
-import { Basin, EMPTY } from './data'
+import { Basin, EMPTY, OceanicBasin } from './data'
 
 
 export class BasinLayer {
@@ -36,7 +36,6 @@ export class BasinLayer {
     #midpointIndexGrid
 
     constructor(rect, layers, zoneRect) {
-        window.Random = Random
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
@@ -62,7 +61,7 @@ export class BasinLayer {
 
     get(point) {
         const id = this.#basinGrid.get(point)
-        const typeId = this.#typeMap.get(id) ?? Basin.id
+        const typeId = this.#typeMap.get(id)
         const directionId = this.#erosionGrid.get(point)
         return {
             id,
@@ -114,38 +113,35 @@ export class BasinLayer {
         return this.#zoneRect.indexToPoint(index)
     }
 
-    getColor(point) {
-        return this.get(point).type.color
-    }
-
-    getNeighborhood(point) {
-        const neighbors = []
-        const directions = this.#erosionGridMask.get(point)
-        for(let direction of directions) {
-            // build a point for each flow that points to this point
-            // create a midpoint at tile's square side
-            const sidePoint = Point.atDirection(point, direction)
-            // get average between this point and neighbor
-            const sideJoint = this.getJoint(sidePoint)
-            const avgJoint = (props.joint + sideJoint) / 2
-            // map each axis coordinate to random value in zone's rect edge
-            // summing values from origin [0, 0] bottom-right oriented
-            const axisModifier = direction.axis.map(c => {
-                if (c < 0) return 0
-                if (c > 0) return tileSize
-                return Math.floor(tileSize * avgJoint)
-            })
-            const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
-            neighbors.push([canvasEdgePoint, meanderPoint, lineWidth, color])
-        }
-        return neighbors
-    }
+    // getNeighborhood(point) {
+    //     const neighbors = []
+    //     const directions = this.#erosionGridMask.get(point)
+    //     for(let direction of directions) {
+    //         // build a point for each flow that points to this point
+    //         // create a midpoint at tile's square side
+    //         const sidePoint = Point.atDirection(point, direction)
+    //         // get average between this point and neighbor
+    //         const sideJoint = this.getJoint(sidePoint)
+    //         const avgJoint = (props.joint + sideJoint) / 2
+    //         // map each axis coordinate to random value in zone's rect edge
+    //         // summing values from origin [0, 0] bottom-right oriented
+    //         const axisModifier = direction.axis.map(c => {
+    //             if (c < 0) return 0
+    //             if (c > 0) return tileSize
+    //             return Math.floor(tileSize * avgJoint)
+    //         })
+    //         const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
+    //         neighbors.push([canvasEdgePoint, meanderPoint, lineWidth, color])
+    //     }
+    //     return neighbors
+    // }
 
     getFlows(point) {
         return this.#erosionGridMask.get(point)
     }
 
     isDivide(point) {
+        if (! this.has(point)) return false
         return this.#erosionGridMask.get(point).length === 1
     }
 
@@ -162,17 +158,29 @@ export class BasinLayer {
         return `Basin(${attrs})`
     }
 
-    drawErosion(point, props, baseColor) {
-        const _props = {
-            ...props,
-            zoneRect: this.#zoneRect,
-            joint: this.getJoint(point),
-            midpoint: this.getMidpoint(point),
-            color: baseColor.darken(20).toHex(),
-            lineWidth: Math.round(props.tileSize / 20),
-            directions: this.#erosionGridMask.get(point),
+    draw(props, params) {
+        let color = OceanicBasin.color
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        if (this.has(tilePoint)) {
+            color = this.get(tilePoint).type.color
         }
-        this.#drawLines(point, _props)
+        canvas.rect(canvasPoint, tileSize, color.toHex())
+        if (this.has(tilePoint) && params.get('showErosion')) {
+            const basin = this.get(tilePoint)
+            const text = basin.erosion.symbol
+            const textColor = color.invert().toHex()
+            canvas.text(canvasPoint, tileSize, text, textColor)
+            const _props = {
+                ...props,
+                zoneRect: this.#zoneRect,
+                joint: this.getJoint(tilePoint),
+                midpoint: this.getMidpoint(tilePoint),
+                color: color.darken(30).toHex(),
+                lineWidth: Math.round(props.tileSize / 20),
+                directions: this.#erosionGridMask.get(tilePoint),
+            }
+            this.#drawLines(tilePoint, _props)
+        }
     }
 
     #drawLines(point, props) {

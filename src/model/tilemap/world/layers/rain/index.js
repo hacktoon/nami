@@ -1,4 +1,5 @@
 import { Grid } from '/src/lib/grid'
+import { Color } from '/src/lib/color'
 
 import { Rain } from './data'
 
@@ -31,11 +32,7 @@ export class RainLayer {
     }
 
     getColor(point) {
-        const color = this.get(point).color
-        if (this.layers.surface.isLand(point)) {
-            return color
-        }
-        return this.layers.surface.getColor(point)
+
     }
 
     canCreateRiver(point) {
@@ -54,5 +51,14 @@ export class RainLayer {
     getText(point) {
         const rain = this.get(point)
         return `Rain(${rain.name})`
+    }
+
+    draw(props, params) {
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        let color = this.get(tilePoint).color
+        if (this.layers.surface.isWater(tilePoint)) {
+            color = Color.DARKBLUE
+        }
+        canvas.rect(canvasPoint, tileSize, color.toHex())
     }
 }

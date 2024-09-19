@@ -109,4 +109,10 @@ export class BiomeLayer {
         const biome = this.get(point)
         return `Biome(${biome.name})`
     }
+
+    draw(props, params) {
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        let color = this.get(tilePoint).color
+        canvas.rect(canvasPoint, tileSize, color.toHex())
+    }
 }

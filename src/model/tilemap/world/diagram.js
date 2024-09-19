@@ -13,6 +13,8 @@ const LAYERS = [
     {value: 'basin', label: 'Basin'},
     {value: 'relief', label: 'Relief'},
     {value: 'biome', label: 'Biome'},
+    {value: 'civil', label: 'Civil'},
+    {value: 'river', label: 'River'},
 ]
 
 const SCHEMA = new Schema(
@@ -24,7 +26,6 @@ const SCHEMA = new Schema(
     Type.boolean('showCities', 'Cities', {default: false}),
     Type.boolean('showCityArea', 'CityArea', {default: false}),
     Type.boolean('showRoutes', 'Routes', {default: false}),
-    Type.boolean('showLandforms', 'Landforms', {default: false}),
 )
 
 export class WorldTileMapDiagram extends TileMapDiagram {
@@ -40,44 +41,18 @@ export class WorldTileMapDiagram extends TileMapDiagram {
     }
 
     draw(props) {
-        const {canvas, canvasPoint, tileSize, tilePoint} = props
         const layers = this.tileMap.layers
-        const point = this.rect.wrap(tilePoint)
         const layerName = this.params.get('showLayer')
-        const layerColor = layers[layerName].getColor(point)
-        const showZones = this.params.get('showZones') && tileSize >= 30
+        const showZones = this.params.get('showZones') && props.tileSize >= 30
 
         if (showZones) {
-            this.drawZone(props, layerColor)
+            this.drawZone(props)
         } else {
-            canvas.rect(canvasPoint, tileSize, layerColor.toHex())
-        }
-        if (this.params.get('showCityArea')) {
-            layers.civil.drawCityArea(point, props)
-        }
-        if (this.params.get('showLandforms')) {
-            layers.relief.draw(point, props, layerColor)
-        }
-        if (layers.basin.has(point) && this.params.get('showErosion')) {
-            const basin = layers.basin.get(point)
-            const text = basin.erosion.symbol
-            const textColor = layerColor.invert().toHex()
-            layers.basin.drawErosion(point, props, layerColor)
-            canvas.text(canvasPoint, tileSize, text, textColor)
-        }
-        const showRiver = this.params.get('showRivers') && tileSize >= 8
-        if (!showZones && layers.river.has(point) && showRiver) {
-            layers.river.draw(point, props, layerColor)
-        }
-        if (this.params.get('showRoutes')) {
-            layers.civil.drawRoute(point, props)
-        }
-        if (this.params.get('showCities')) {
-            layers.civil.drawCity(point, props)
+            layers[layerName].draw({...props, layers}, this.params)
         }
     }
 
-    drawZone(props, layerColor) {
+    drawZone(props) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
         const layers = this.tileMap.layers
         const zone = this.tileMap.getZone(tilePoint)

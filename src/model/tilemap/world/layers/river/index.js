@@ -87,15 +87,19 @@ export class RiverLayer {
         return `River(${attrs})`
     }
 
-    draw(point, props, baseColor) {
-        const {canvas, canvasPoint, tileSize} = props
-        const river = this.get(point)
+    draw(props, params) {
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        props.layers.biome.draw(props, params)
+        if (! this.has(tilePoint)) {
+            return
+        }
+        const river = this.get(tilePoint)
         const riverWidth = Math.round(river.stretch.width * tileSize)
         const midSize = Math.round(tileSize / 2)
         const offset = Math.round(tileSize / 10)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
-        const meander = this.layers.basin.getMidpoint(point)
+        const meander = this.layers.basin.getMidpoint(tilePoint)
         const meanderOffsetPoint = Point.multiplyScalar(meander, tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = river.stretch.color.toHex()

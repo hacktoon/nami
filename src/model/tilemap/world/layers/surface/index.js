@@ -152,14 +152,6 @@ export class SurfaceLayer {
         return new ZoneSurface(point, params)
     }
 
-    getColor(point) {
-        const color = this.get(point).color
-        if (this.isBorder(point)) {
-            return color.darken(40)
-        }
-        return color
-    }
-
     getText(point) {
         const surface = this.get(point)
         const surfaceArea = this.getArea(point)
@@ -208,5 +200,14 @@ export class SurfaceLayer {
     isBorder(point) {
         // negative bodyId's are surface borders
         return this.#grid.get(point) < 0
+    }
+
+    draw(props, params) {
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        let color = this.get(tilePoint).color
+        if (this.isBorder(tilePoint)) {
+            color = color.darken(20)
+        }
+        canvas.rect(canvasPoint, tileSize, color.toHex())
     }
 }

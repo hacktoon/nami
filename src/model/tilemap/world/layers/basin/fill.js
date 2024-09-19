@@ -28,7 +28,7 @@ export function buildBasinGrid(baseContext) {
     // get surface border points and setup basin types and fill
     const fillMap = new Map()
     const basinGrid = Grid.fromRect(rect, point => {
-        if (layers.surface.isBorder(point)) {
+        if (layers.surface.isLand(point) && layers.surface.isBorder(point)) {
             fillMap.set(basinId, {origin: point})
             basinId++
         }
@@ -62,10 +62,12 @@ class BasinGridFill extends ConcurrentFill {
         const {typeMap} = fill.context
         // discover parentPoint - the basin opposite border
         const survey = surveyNeighbors(fill.context, neighbors, fillPoint)
+        const parentPoint = survey.oppositeBorder
         // set type on init
         const type = buildType(fillPoint, {...fill.context, survey})
         typeMap.set(fill.id, type.id)
-        this._fillBasin(fill, fillPoint, survey)
+        // update erosion path
+        this._fillBasin(fill, fillPoint, parentPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -91,7 +93,6 @@ class BasinGridFill extends ConcurrentFill {
         // set erosion flow to parent
         const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionGrid.wrapSet(fillPoint, direction.id)
-        // update erosion path
         erosionGridMask.add(fillPoint, direction)
         basinGrid.set(fillPoint, fill.id)
         // terrain offset to add variance
@@ -116,17 +117,15 @@ class BasinGridFill extends ConcurrentFill {
 function surveyNeighbors(context, neighbors, point) {
     const {layers} = context
     const isLand = layers.surface.isLand(point)
-    let border = null
+    let oppositeBorder = null
+    let waterNeighbors = 0
     for (let neighbor of neighbors) {
         const isNeighborLand = layers.surface.isLand(neighbor)
+        if (! isNeighborLand) waterNeighbors++
         if (isLand === isNeighborLand) continue
-        if (layers.surface.isOcean(neighbor)) {
-            return neighbor
-        } else {
-            border = neighbor
-        }
+        oppositeBorder = neighbor
     }
-    return border
+    return {oppositeBorder}
 }
 
 
@@ -134,10 +133,10 @@ function buildType(point, context) {
     const {layers, survey} = context
     const isLand = layers.surface.isLand(point)
     let type = isLand ? ExorheicRiverBasin : OceanicBasin
-    if (layers.surface.isLake(survey)) {
+    if (layers.surface.isLake(survey.oppositeBorder)) {
         type = EndorheicLakeBasin
     }
-    if (layers.surface.isSea(survey)) {
+    if (layers.surface.isSea(survey.oppositeBorder)) {
         type = EndorheicSeaBasin
     }
     return type

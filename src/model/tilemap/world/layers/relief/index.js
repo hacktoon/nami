@@ -69,18 +69,16 @@ export class ReliefLayer {
         return `Relief(${relief.name})`
     }
 
-    getColor(point) {
-        return this.get(point).color
-    }
-
     is(point, type) {
         const id = this.#grid.get(point)
         return id === type.id
     }
 
-    draw(point, props, baseColor) {
-        const relief = this.get(point)
-        const color = baseColor.average(relief.color).toHex()
-        relief.draw({...props, color, canvasPoint: props.canvasPoint})
+    draw(props, params) {
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        const relief = this.get(tilePoint)
+        const color = relief.color
+        canvas.rect(canvasPoint, tileSize, color.toHex())
+        relief.draw({...props, color})
     }
 }

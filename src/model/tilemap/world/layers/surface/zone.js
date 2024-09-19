@@ -28,11 +28,7 @@ export class ZoneSurface {
         const isLake = layers.surface.isLake(worldPoint)
         // read first edges, then corners
         const gridPoints = [...getEdgePoints(zoneRect), ...getCornerPoints(zoneRect)]
-        // if (Point.equals(worldPoint, [41, 15])) {
-        //     console.log(getEdgePoints(zoneRect))
-        // }
         for (let [zonePoint, direction] of gridPoints) {
-            // let debug = Point.equals(worldPoint, [41, 15]) && Point.equals(zonePoint, [0, 8])
             const regionId = regionGrid.get(zonePoint)
             const worldSidePoint = Point.atDirection(worldPoint, direction)
             const sideSurface = layers.surface.get(worldSidePoint)

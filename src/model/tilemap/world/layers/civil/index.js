@@ -1,4 +1,6 @@
 import { Point } from '/src/lib/point'
+import { Color } from '/src/lib/color'
+import { Grid } from '/src/lib/grid'
 
 import { drawVillage, drawTown, drawCapital } from './draw'
 import {
@@ -19,22 +21,26 @@ export class CivilLayer {
     #wildernessGrid          // grid of civil wilderness
     #cityPoints
     #routeMaskGrid   // map a point to a direction bitmask
+    // map a point to a point index in a zone rect
+    #midpointIndexGrid
 
     constructor(rect, layers, zoneRect, realmCount) {
-        const context = {rect, layers, realmCount}
+        const context = {rect, zoneRect, layers, realmCount}
         // build the citys points
         const cityPoints = buildCityPoints(context)
         const cityMap = buildCityMap({...context, cityPoints})
         // build a city grid with a city id per flood area
         // build a graph connecting neighbor cities by id using fill data
-        const citySpaces = buildCitySpaces({...context, cityPoints, cityMap})
+        const midpointIndexGrid = Grid.fromRect(rect, () => null)
+        const citySpaces = buildCitySpaces({...context, midpointIndexGrid, cityPoints, cityMap})
+        // TODO: remove
         this.#zoneRect = zoneRect
         this.#routeMaskGrid = citySpaces.routeMaskGrid
         this.#cityPoints = cityPoints
         this.#cityMap = cityMap
         this.#cityGrid = citySpaces.cityGrid
         this.#wildernessGrid = citySpaces.wildernessGrid
-        this.#layers = layers  // used only for basin midpoint
+        this.#midpointIndexGrid = midpointIndexGrid
     }
 
     get(point) {
@@ -60,32 +66,48 @@ export class CivilLayer {
         return `Civil(${props.join(",")})`
     }
 
-    drawCityArea(point, props) {
-        const {canvas, canvasPoint, tileSize} = props
-        const city = this.#cityMap.get(this.get(point).id)
-        if (city) {
-            const isWater = this.#layers.surface.isWater(point)
-            const color = isWater ? city.color.alpha(.2) : city.color.alpha(.8)
-            canvas.rect(canvasPoint, tileSize, color.toRGBA())
+    draw(props, params) {
+        const {layers, tilePoint} = props
+        layers.surface.draw(props, params)
+        if (params.get("showCityArea")) {
+            this.#drawCityArea(tilePoint, props)
         }
-    }
-
-    drawCity(point, props) {
-        if (this.#cityPoints.has(point)) {
+        if (params.get("showRivers")) {
+            layers.river.draw(props, params)
+        }
+        if (params.get('showRoutes')) {
+            this.#drawRoute(tilePoint, props)
+        }
+        if (params.get('showCities') && this.#cityPoints.has(tilePoint)) {
             drawTown(props)
         }
     }
 
-    drawRoute(point, props) {
+    #drawCityArea(point, props) {
         const {canvas, canvasPoint, tileSize} = props
+        const city = this.#cityMap.get(this.get(point).id)
+        if (city) {
+            const isWater = props.layers.surface.isWater(point)
+            const color = isWater
+                ? Color.DARKBLUE.average(city.color.darken(200))
+                : city.color
+            canvas.rect(canvasPoint, tileSize, color.toRGBA())
+        }
+    }
+
+    #drawRoute(point, props) {
+        const {layers, canvas, canvasPoint, tileSize} = props
+        const roadDirections = this.#routeMaskGrid.getAxis(point)
+        if (roadDirections.length == 0) return
         const width = 3
-        const hexColor = this.#layers.surface.isWater(point) ? "#069" : "#444"
+        const hexColor = layers.surface.isWater(point) ? "#036" : "#444"
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-        const [fx, fy] = this.#layers.basin.getMidpoint(point)
-        const meanderOffsetPoint = Point.multiplyScalar([fx, fy], tileSize / this.#zoneRect.width)
+        const tileRatio = tileSize / this.#zoneRect.width
+        const midpointIndex = this.#midpointIndexGrid.get(point)
+        const midpoint = this.#zoneRect.indexToPoint(midpointIndex)
+        const meanderOffsetPoint = Point.multiplyScalar(midpoint, tileRatio)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
-        const roadDirections = this.#routeMaskGrid.getAxis(point)
         // for each neighbor with a route connection
         for(let axisOffset of roadDirections) {
             // build a point for each flow that points to this point
@@ -96,6 +118,5 @@ export class CivilLayer {
             ]
             canvas.line(edgeMidPoint, meanderPoint, width, hexColor)
         }
-
     }
 }

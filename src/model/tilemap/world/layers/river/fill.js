@@ -14,17 +14,17 @@ import { RiverStretch } from './data'
 export function buildRiverMap(context) {
     let riverId = 0
     const {rect, layers} = context
-    const sources = []
+    const riverSources = []
     const riverPoints = Grid.fromRect(rect, point => {
         const isDivide = layers.basin.isDivide(point)
         if (isDivide && layers.rain.canCreateRiver(point)) {
-            sources.push(point)
+            riverSources.push(point)
         }
         return null
     })
     const ctx = {...context, riverPoints}
     // create a list of pairs: (point, river distance to mouth)
-    sources.map(point => [point, layers.basin.get(point).distance])
+    riverSources.map(point => [point, layers.basin.get(point).distance])
         // in ascendent order to get longest rivers first
         // for starting rivers on basin divides
         .sort((a, b) => a[1] - b[1])

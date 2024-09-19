@@ -69,6 +69,7 @@ export function buildCitySpaces(context) {
         routeMaskGrid,
         fillDirectionGrid
     }
+    // city will be identified by numeric id
     const fillMap = new Map(cityPoints.points.map((origin, id) => {
         return [id, {origin}]
     }))
@@ -83,32 +84,37 @@ export function buildCitySpaces(context) {
 
 
 class CitySpacesFill extends ConcurrentFill {
-    // this fill marks the city ids grid
+    // this fills the city id grid
     // and sets the city neighborhood graph
     // along with routes
     getChance(fill) { return CHANCE }
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        const isWater = fill.context.layers.surface.isWater(parentPoint)
-        return isWater ? Point.around(parentPoint) : Point.adjacents(parentPoint)
+        const {layers} = fill.context
+        const surfaceLayer = layers.surface
+        const isOrigin = Point.equals(parentPoint, fill.origin)
+        if (isOrigin || surfaceLayer.isBorder(parentPoint)) {
+            return Point.adjacents(parentPoint)
+        }
+        return Point.around(parentPoint)
     }
 
     onInitFill(fill, fillPoint) {
-        const {cityGrid, wildernessGrid} = fill.context
+        const {zoneRect, cityGrid, wildernessGrid, midpointIndexGrid} = fill.context
         cityGrid.wrapSet(fillPoint, fill.id)
         wildernessGrid.wrapSet(fillPoint, fill.level)
+        midpointIndexGrid.wrapSet(fillPoint, buildMidpointIndex(zoneRect))
     }
 
     isEmpty(fill, fillPoint) {
-        const {cityGrid} = fill.context
-        const id = cityGrid.wrapGet(fillPoint)
-        return id === EMPTY
+        return EMPTY === fill.context.cityGrid.wrapGet(fillPoint)
     }
 
     notEmpty(fill, fillPoint, source) {
         // when two fills block each other, a road is built between them
-        const { layers, cityGrid, cityGraph, cityMap } = fill.context
+        // going back to each city point
+        const {cityGrid, cityGraph, cityMap} = fill.context
         const blockedFillId = cityGrid.wrapGet(fillPoint)
         const parentFillId = cityGrid.wrapGet(source)
         // blocked fills are the same type, ignore
@@ -138,7 +144,9 @@ class CitySpacesFill extends ConcurrentFill {
 
     #buildCityRoute(fill, origin, target, initialPrevPoint) {
         // Builds a route from the middle of the road to the city point.
-        const {rect, fillDirectionGrid, routeMaskGrid} = fill.context
+        const {
+            rect, zoneRect, fillDirectionGrid, routeMaskGrid, midpointIndexGrid
+        } = fill.context
         const points = [origin]
         let nextPoint = origin
         let prevPoint = initialPrevPoint
@@ -149,6 +157,8 @@ class CitySpacesFill extends ConcurrentFill {
             // set road at forward and previous direction
             routeMaskGrid.add(nextPoint, direction)
             routeMaskGrid.add(nextPoint, prevDirection)
+            // set midpoint
+            midpointIndexGrid.wrapSet(nextPoint, buildMidpointIndex(zoneRect))
             // update the previous point to follow the road
             prevPoint = nextPoint
             // the next point is at <direction> of current point
@@ -156,7 +166,6 @@ class CitySpacesFill extends ConcurrentFill {
             prevDirection = Point.directionBetween(nextPoint, prevPoint)
             // points.push(nextPoint)
         }
-        // add route direction to grid mask
         routeMaskGrid.add(target, prevDirection)
         return points
     }
@@ -195,4 +204,15 @@ const TYPE_MAP = {
     0: Capital,
     1: Town,
     2: Village,
+}
+
+
+const ZONE_OFFSET_RANGE = [0, 3]
+
+function buildMidpointIndex(zoneRect) {
+    const offsetX = Random.int(...ZONE_OFFSET_RANGE) * Random.choice(1, -1)
+    const offsetY = Random.int(...ZONE_OFFSET_RANGE) * Random.choice(1, -1)
+    const middle = Math.round(zoneRect.width / 2)
+    const midpoint = [middle + offsetX, middle + offsetY]
+    return zoneRect.pointToIndex(midpoint)
 }

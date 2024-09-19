@@ -39,4 +39,10 @@ export class ClimateLayer {
         const climate = this.get(point)
         return `Climate(${climate.name})`
     }
+
+    draw(props, params) {
+        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        let color = this.get(tilePoint).color
+        canvas.rect(canvasPoint, tileSize, color.toHex())
+    }
 }
