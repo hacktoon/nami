@@ -1,7 +1,8 @@
 import { Point } from '/src/lib/point'
 import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
-import { Surface } from './data'
+import { Rect } from '/src/lib/geometry/rect'
+import { ContinentSurface, OceanSurface, Surface } from './data'
 import { buildRegionGrid } from './fill'
 
 
@@ -48,18 +49,27 @@ export class ZoneSurface {
 
     #buildZoneGrid(context) {
         // final grid generator
-        const {worldPoint, layers, regionGrid, zoneRect, regionSurfaceMap} = context
+        const {worldPoint, layers, rect, zoneRect, regionGrid, regionSurfaceMap} = context
         const midpoint = layers.basin.getMidpoint(worldPoint)
         return Grid.fromRect(zoneRect, zonePoint => {
-            const regionId = regionGrid.get(zonePoint)
-            // default surface type
-            let surface = layers.surface.get(worldPoint)
-            if (regionSurfaceMap.has(regionId)) {
-                surface = regionSurfaceMap.get(regionId)
+            // const regionId = regionGrid.get(zonePoint)
+            // // default surface type
+            // let surface = layers.surface.get(worldPoint)
+            // if (regionSurfaceMap.has(regionId)) {
+            //     surface = regionSurfaceMap.get(regionId)
+            // }
+            // if (Point.equals(midpoint, zonePoint)) {
+            //     surface = layers.surface.get(worldPoint)
+            // }
+            const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
+            const noiseRect = Rect.multiply(rect, zoneRect.width)
+            const noisePoint = Point.plus(relativePoint, zonePoint)
+            const noise = layers.noise.get4D(noiseRect, noisePoint, "outline")
+            if (noise > 0.5) {
+                return ContinentSurface.id
             }
-            if (Point.equals(midpoint, zonePoint)) {
-                surface = layers.surface.get(worldPoint)
-            }
+            return OceanSurface.id
+
             return surface.id
         })
     }

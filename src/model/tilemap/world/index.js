@@ -91,6 +91,7 @@ export class WorldTileMap extends TileMap {
         const seed = `${this.seed}-${Point.hash(point)}`
         const zoneLayers = {}
         const params = {
+            rect: this.rect,
             layers: this.layers,
             zoneSize: ZONE_SIZE,
             zoneRect: ZONE_RECT,
