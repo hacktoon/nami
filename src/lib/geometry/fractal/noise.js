@@ -78,7 +78,7 @@ export class SimplexNoise {
         return clamp((noise + 1) / 2, 0, 1)
     }
 
-    wrapped4D(rect, [x, y]) {
+    wrapped4D(rect, [x, y], args) {
         //https://gamedev.stackexchange.com/questions/23625/how-do-you-generate-tileable-perlin-noise/23639#23639
         // Basically, map the X coordinate of your pixel to a 2D circle, and the Y coordinate of your pixel to a second 2D circle, and place those two circles orthogonal to each other in 4D space. The resulting texture is tileable, has no obvious distortion, and doesn't repeat in the way that a mirrored texture would.
         const s = x / rect.width
@@ -89,18 +89,18 @@ export class SimplexNoise {
         const ny = y1 + Math.cos(t * 2 * Math.PI) * dy / (2 * Math.PI)
         const nz = x1 + Math.sin(s * 2 * Math.PI) * dx / (2 * Math.PI)
         const nw = y1 + Math.sin(t * 2 * Math.PI) * dy / (2 * Math.PI)
-        return this.noise4D(nx, ny, nz, nw)
+        return this.noise4D(nx, ny, nz, nw, args)
     }
 
-    noise4D(nx, ny, nz, nw) {
+    noise4D(nx, ny, nz, nw, args) {
         let amp = 1
-        let freq = this.scale
+        let freq = args.scale
         let noise = 0
         //add successively smaller, higher-frequency terms
-        for(let i = 0; i < this.octaves; ++i) {
+        for(let i = 0; i < args.octaves; ++i) {
             let p = [nx * freq, ny * freq, nz * freq, nw * freq]
             noise += this.#calcNoise4D(...p) * amp
-            amp *= this.persistence
+            amp *= args.resolution
             freq *= 2
         }
         // remap from [-1, 1] to [0, 1]
