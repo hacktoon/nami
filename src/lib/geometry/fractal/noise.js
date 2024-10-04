@@ -36,10 +36,7 @@ const GRAD4 = [
 
 // Simplex noise in 2D, 3D and 4D
 export class SimplexNoise {
-    constructor(octaves, persistence, scale) {
-        this.octaves = octaves
-        this.persistence = persistence
-        this.scale = scale
+    constructor() {
         const points = []
         for (let i=0; i<256; i++) {
             points[i] = Random.int(255)
@@ -63,15 +60,15 @@ export class SimplexNoise {
         this.G4 = (5.0-Math.sqrt(5.0)) / 20.0
     }
 
-    noise2D(point) {
+    noise2D(rect, point, args) {
         const [x, y] = point
         let amp = 1
-        let freq = this.scale
+        let freq = args.scale
         let noise = 0
         //add successively smaller, higher-frequency terms
-        for(let i = 0; i < this.octaves; ++i) {
+        for(let i = 0; i < args.octaves; ++i) {
             noise += this.#calcNoise2D(x * freq, y * freq) * amp
-            amp *= this.persistence
+            amp *= args.resolution
             freq *= 2
         }
         // remap from [-1, 1] to [0, 1]

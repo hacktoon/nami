@@ -37,9 +37,8 @@ export class NoiseTileMap extends TileMap {
 
     constructor(params) {
         super(params)
-        const keys = ['octaves', 'resolution', 'scale']
-        const [octaves, resolution, scale] = params.get(...keys)
-        this.#simplex = new SimplexNoise(octaves, resolution, scale)
+        this.params = params
+        this.#simplex = new SimplexNoise()
     }
 
     get(point) {
@@ -50,6 +49,9 @@ export class NoiseTileMap extends TileMap {
     }
 
     getNoise(point) {
-        return this.#simplex.wrapped4D(this.rect, point)
+        const keys = ['octaves', 'resolution', 'scale']
+        const [octaves, resolution, scale] = this.params.get(...keys)
+        const args = {octaves, resolution, scale}
+        return this.#simplex.wrapped4D(this.rect, point, args)
     }
 }
