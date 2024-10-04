@@ -1,6 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 

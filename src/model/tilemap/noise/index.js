@@ -1,7 +1,7 @@
 import { SimplexNoise } from '/src/lib/noise'
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { TileMap } from '/src/model/tilemap/lib'
 import { UITileMap } from '/src/ui/tilemap'
 

@@ -1,4 +1,4 @@
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
 import { Surface } from './data'

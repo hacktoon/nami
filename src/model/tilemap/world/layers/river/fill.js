@@ -1,4 +1,4 @@
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 import { HYDRO_NAMES } from '/src/lib/names'

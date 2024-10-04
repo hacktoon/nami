@@ -1,5 +1,5 @@
 import { Grid } from '/src/lib/grid'
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { ScanlineFill, ScanlineFill8 } from '/src/lib/floodfill/scanline'
 
 import {

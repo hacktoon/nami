@@ -1,4 +1,4 @@
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { Color } from '/src/lib/color'
 import { Rect } from '/src/lib/geometry/rect'
 import { clamp } from '/src/lib/number'

@@ -1,7 +1,7 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Rect } from '/src/lib/geometry/rect'
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { Random } from '/src/lib/random'
 import { WORLD_NAMES } from '/src/lib/names'
 import { TileMap } from '/src/model/tilemap/lib'

@@ -1,6 +1,6 @@
-import { PointSet } from '/src/lib/point/set'
-import { PointMap } from '/src/lib/point/map'
-import { Point } from '/src/lib/point'
+import { PointSet } from '/src/lib/geometry/point/set'
+import { PointMap } from '/src/lib/geometry/point/map'
+import { Point } from '/src/lib/geometry/point'
 
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 

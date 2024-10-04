@@ -1,8 +1,8 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { Random } from '/src/lib/random'
-import { EvenPointSampling } from '/src/lib/point/sampling'
+import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
 
 
 const REGION_SCALE = 2

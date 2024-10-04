@@ -1,6 +1,6 @@
 import { React, useState } from 'react'
 
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { MouseTrack } from '/src/ui/mouse'
 import { Canvas } from '/src/ui/canvas'
 

@@ -1,7 +1,7 @@
 import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
-import { Point } from '/src/lib/point'
-import { PointMap } from '/src/lib/point/map'
+import { Point } from '/src/lib/geometry/point'
+import { PointMap } from '/src/lib/geometry/point/map'
 
 import { Landform } from './data'
 import { Biome } from '../biome/data'

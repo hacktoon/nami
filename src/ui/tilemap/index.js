@@ -1,6 +1,6 @@
 import { React, useState } from 'react'
 
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { Form } from '/src/ui/form'
 import { Button } from '/src/ui/form/button'
 import { Text } from '/src/ui'

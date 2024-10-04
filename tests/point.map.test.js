@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { PointMap } from '/src/lib/point/map'
+import { PointMap } from '/src/lib/geometry/point/map'
 import { Rect } from '/src/lib/geometry/rect'
 
 

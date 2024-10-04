@@ -1,5 +1,5 @@
-import { Point } from '/src/lib/point'
-import { PointSet } from '/src/lib/point/set'
+import { Point } from '/src/lib/geometry/point'
+import { PointSet } from '/src/lib/geometry/point/set'
 import { Random } from '/src/lib/random'
 
 

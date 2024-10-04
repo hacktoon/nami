@@ -2,7 +2,7 @@ import { React, useState, useRef } from 'react'
 
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { Canvas } from '/src/ui/canvas'
 import { Text } from '/src/ui'
 import { useResize } from '/src/ui'

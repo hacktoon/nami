@@ -1,7 +1,7 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 
 import {
     EndorheicSeaBasin,

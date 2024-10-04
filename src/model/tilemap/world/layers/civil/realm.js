@@ -1,5 +1,5 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
 import { WORLD_NAMES } from '/src/lib/names'

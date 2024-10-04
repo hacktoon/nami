@@ -1,7 +1,7 @@
-import { Point } from '/src/lib/point'
+import { Point } from '/src/lib/geometry/point'
 import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
-import { PointMap } from '/src/lib/point/map'
+import { PointMap } from '/src/lib/geometry/point/map'
 import { Direction } from '/src/lib/direction'
 import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
