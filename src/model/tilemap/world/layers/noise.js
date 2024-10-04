@@ -1,4 +1,4 @@
-import { SimplexNoise } from '/src/lib/noise'
+import { SimplexNoise } from '/src/lib/geometry/fractal/noise'
 
 
 const NOISE_SPEC = [
