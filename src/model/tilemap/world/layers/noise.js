@@ -4,6 +4,7 @@ import { SimplexNoise } from '/src/lib/noise'
 const NOISE_SPEC = [
     {id: 'atmos', octaves: 6, resolution: .6, scale: .02},
     {id: 'outline', octaves: 6, resolution: .8, scale: .02},
+    {id: 'zone', octaves: 6, resolution: .8, scale: .03},
     {id: 'grained', octaves: 6, resolution: .8, scale: .08},
 ]
 
