@@ -1,5 +1,5 @@
 
-export class LRUPointMapCache {
+export class PointMapLRUCache {
     #indexMap = new Map()
     #countMap = new Map()
 
