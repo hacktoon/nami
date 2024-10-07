@@ -52,23 +52,23 @@ export class ZoneSurface {
         const {worldPoint, layers, rect, zoneRect, regionGrid, regionSurfaceMap} = context
         const midpoint = layers.basin.getMidpoint(worldPoint)
         return Grid.fromRect(zoneRect, zonePoint => {
-            // const regionId = regionGrid.get(zonePoint)
-            // // default surface type
-            // let surface = layers.surface.get(worldPoint)
-            // if (regionSurfaceMap.has(regionId)) {
-            //     surface = regionSurfaceMap.get(regionId)
-            // }
-            // if (Point.equals(midpoint, zonePoint)) {
-            //     surface = layers.surface.get(worldPoint)
-            // }
-            const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
-            const noiseRect = Rect.multiply(rect, zoneRect.width)
-            const noisePoint = Point.plus(relativePoint, zonePoint)
-            const noise = layers.noise.get4D(noiseRect, noisePoint, "outline")
-            if (noise > 0.6) {
-                return ContinentSurface.id
+            const regionId = regionGrid.get(zonePoint)
+            // default surface type
+            let surface = layers.surface.get(worldPoint)
+            if (regionSurfaceMap.has(regionId)) {
+                surface = regionSurfaceMap.get(regionId)
             }
-            return OceanSurface.id
+            if (Point.equals(midpoint, zonePoint)) {
+                surface = layers.surface.get(worldPoint)
+            }
+            // const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
+            // const noiseRect = Rect.multiply(rect, zoneRect.width)
+            // const noisePoint = Point.plus(relativePoint, zonePoint)
+            // const noise = layers.noise.get4D(noiseRect, noisePoint, "zone")
+            // if (noise > 0.6) {
+            //     return ContinentSurface.id
+            // }
+            // return OceanSurface.id
 
             return surface.id
         })

@@ -36,11 +36,16 @@ const GRAD4 = [
 
 // Simplex noise in 2D, 3D and 4D
 export class SimplexNoise {
-    constructor() {
+    static buildTable() {
         const points = []
         for (let i=0; i<256; i++) {
             points[i] = Random.int(255)
         }
+        return points
+    }
+
+    constructor(permTable=null) {
+        const points = permTable ?? SimplexNoise.buildTable()
         this.perm = []
         this.permMod12 = []
 

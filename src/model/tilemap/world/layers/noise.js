@@ -2,20 +2,45 @@ import { SimplexNoise } from '/src/lib/geometry/fractal/noise'
 
 
 const NOISE_SPEC = [
-    {id: 'atmos', args: {octaves: 6, resolution: .6, scale: .02}},
-    {id: 'outline', args: {octaves: 6, resolution: .8, scale: .02}},
-    {id: 'zone', args: {octaves: 6, resolution: .8, scale: .03}},
-    {id: 'grained', args: {octaves: 6, resolution: .8, scale: .08}},
+    {
+        id: 'outline',
+        group: 1,
+        args: {octaves: 6, resolution: .8, scale: .02}
+    },
+    {
+        id: 'zone',
+        group: 1,
+        args: {octaves: 6, resolution: .8, scale: .02}
+    },
+    {
+        id: 'atmos',
+        group: 2,
+        args: {octaves: 6, resolution: .6, scale: .02}
+    },
+    {
+        id: 'grained',
+        group: 2,
+        args: {octaves: 6, resolution: .8, scale: .08}
+    },
 ]
 
 
 export class NoiseLayer {
     #presetMap = new Map()
+    #permTableMap = new Map()
 
     constructor(rect) {
         this.rect = rect
-        for(let noiseSpec of Object.values(NOISE_SPEC)) {
-            const noise = new SimplexNoise()
+        let permTable
+        for(let noiseSpec of NOISE_SPEC) {
+            if (this.#permTableMap.has(noiseSpec.group)) {
+                permTable = this.#permTableMap.get(noiseSpec.group)
+            } else {
+                permTable = SimplexNoise.buildTable()
+                this.#permTableMap.set(noiseSpec.group, permTable)
+            }
+
+            const noise = new SimplexNoise(permTable)
             this.#presetMap.set(noiseSpec.id, {noise, args: noiseSpec.args})
         }
     }
