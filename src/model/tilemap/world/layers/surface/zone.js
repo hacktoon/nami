@@ -64,7 +64,7 @@ export class ZoneSurface {
             // const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
             // const noiseRect = Rect.multiply(rect, zoneRect.width)
             // const noisePoint = Point.plus(relativePoint, zonePoint)
-            // const noise = layers.noise.get4D(noiseRect, noisePoint, "zone")
+            // const noise = layers.noise.get4D(noiseRect, noisePoint, "outline")
             // if (noise > 0.6) {
             //     return ContinentSurface.id
             // }
