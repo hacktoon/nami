@@ -9,7 +9,7 @@ import {
     ContinentSurface,
     IslandSurface,
     LakeSurface
-} from './data'
+} from './type'
 
 import { ZoneSurface } from './zone'
 

@@ -6,6 +6,8 @@
 
 
 ## ROADMAP
+- set surface border types
+    - create more type of surfaces (w/ borders)
 - set biome as {
     temp > x
     rain > 4

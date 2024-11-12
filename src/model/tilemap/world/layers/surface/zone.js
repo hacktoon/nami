@@ -2,8 +2,8 @@ import { Point } from '/src/lib/geometry/point'
 import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
-import { ContinentSurface, OceanSurface, Surface } from './data'
-import { buildRegionGrid } from './fill'
+import { ContinentSurface, OceanSurface, Surface } from './type'
+import { buildRegionGrid } from './grid'
 
 
 export class ZoneSurface {

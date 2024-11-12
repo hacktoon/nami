@@ -21,7 +21,7 @@ const ZONE_OFFSET_RANGE = [1, 3]
 
 
 export function buildBasinGrid(baseContext) {
-    const {rect, layers, typeMap} = baseContext
+    const {rect, layers} = baseContext
 
     // init basin id counter
     let basinId = 0

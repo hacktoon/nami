@@ -2,7 +2,7 @@ import { Grid } from '/src/lib/grid'
 
 import { Relief } from './data'
 import { RiverStretch } from '../river/data'
-import { SeaSurface } from '../surface/data'
+import { SeaSurface } from '../surface/type'
 
 
 const TRENCH_RATIO = .65
