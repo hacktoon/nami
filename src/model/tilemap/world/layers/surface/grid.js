@@ -23,7 +23,7 @@ export function buildRegionGrid(context) {
 
 export class RegionFloodFill extends ConcurrentFill {
     getChance() {
-        return .3 //Random.choice(.6, .4, .2, .1)
+        return Random.choice(.3, .2, .1)
     }
 
     getGrowth() {
@@ -45,3 +45,25 @@ export class RegionFloodFill extends ConcurrentFill {
         fill.context.regionGrid.set(point, fill.id)
     }
 }
+
+
+// export class RegionSurveyFloodFill extends ConcurrentFill {
+//     getChance() {
+//         return Random.choice(.3, .2, .1)
+//     }
+
+//     getNeighbors(fill, parentPoint) {
+//         const rect = fill.context.zoneRect
+//         const points = Point.adjacents(parentPoint)
+//         // avoid wrapping in zone rect - carve from borders to inside
+//         return points.filter(p => rect.isInside(p))
+//     }
+
+//     isEmpty(fill, fillPoint) {
+//         return fill.context.regionGrid.get(fillPoint) === EMPTY
+//     }
+
+//     onFill(fill, point, center) {
+//         fill.context.regionGrid.set(point, fill.id)
+//     }
+// }

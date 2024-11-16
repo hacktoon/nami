@@ -10,7 +10,6 @@ export class ZoneSurface {
     #grid
 
     constructor(worldPoint, params) {
-        // rect scaled to world size, for noise locality
         this.size = params.zoneSize
         this.#grid = this.#buildGrid({...params, worldPoint})
     }
