@@ -15,9 +15,8 @@ export class BasinLayer {
     // grid of basin ids
     #basinGrid
 
-    // the walk distance of each basin starting from 0 (shore)
-    // base value is 0
-    // is used to determine river stretch
+    // the walk distance of each basin starting from shore
+    // initial value is 0, used to determine river stretch
     #distanceGrid
 
     // grid of direction ids
@@ -169,30 +168,29 @@ export class BasinLayer {
             const basin = this.get(tilePoint)
             const text = basin.erosion.symbol
             const textColor = color.invert().toHex()
+            const joint = this.getJoint(tilePoint)
             canvas.text(canvasPoint, tileSize, text, textColor)
+            // canvas.text(canvasPoint, tileSize/5, joint.toFixed(2), '#000')
             const _props = {
                 ...props,
                 zoneRect: this.#zoneRect,
-                joint: this.getJoint(tilePoint),
+                joint,
                 midpoint: this.getMidpoint(tilePoint),
                 color: color.darken(30).toHex(),
                 lineWidth: Math.round(props.tileSize / 20),
                 directions: this.#erosionGridMask.get(tilePoint),
             }
-            this.#drawLines(tilePoint, _props)
+            this.#drawErosionLines(tilePoint, _props)
         }
     }
 
-    #drawLines(point, props) {
-        const {
-            canvasPoint, tileSize, color, lineWidth
-        } = props
+    #drawErosionLines(point, props) {
+        const {canvasPoint, tileSize, color, lineWidth} = props
         // calc midpoint point on canvas
         const pixelsPerZonePoint = tileSize / props.zoneRect.width
         const canvasMidpoint = Point.multiplyScalar(props.midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         // draw line for each neighbor with a basin connection
-        const lines = []
         for(let direction of props.directions) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
@@ -208,10 +206,7 @@ export class BasinLayer {
                 return Math.floor(tileSize * avgJoint)
             })
             const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
-            lines.push([canvasEdgePoint, meanderPoint, lineWidth, color])
-        }
-        for(let line of lines) {
-            props.canvas.line(...line)
+            props.canvas.line(canvasEdgePoint, meanderPoint, lineWidth, color)
         }
     }
 }
