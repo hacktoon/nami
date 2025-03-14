@@ -10,6 +10,7 @@ import { Basin, EMPTY, OceanicBasin } from './data'
 
 
 export class BasinLayer {
+    #layers
     #zoneRect
 
     // grid of basin ids
@@ -28,17 +29,14 @@ export class BasinLayer {
     // map a point to a basin zone paths
     #erosionGridMask
 
-    // Float used to connect with adjacent tiles
-    #jointGrid
-
     // map a point to a point index in a zone rect
     #midpointIndexGrid
 
     constructor(rect, layers, zoneRect) {
+        this.#layers = layers
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
-        this.#jointGrid = Grid.fromRect(rect, () => Random.floatRange(.2, .8))
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         this.#erosionGridMask = new DirectionMaskGrid(rect)
         const context = {
@@ -68,72 +66,13 @@ export class BasinLayer {
             distance: this.#distanceGrid.get(point),
             erosion: Direction.fromId(directionId),
             midpoint: this.getMidpoint(point),
-            joint: this.getJoint(point)
         }
-    }
-
-    // getZone(point) {
-    //     // reads the wire data and create points for zone grid
-    //     const pointDirectionMap = new PointMap(this.#zoneRect)
-    //     const midpoint = this.getMidpoint(point)
-    //     const midSize = Math.floor(this.#zoneRect.width / 2)
-    //     let [mx, my] = midpoint
-    //     for(let direction of this.#erosionGridMask.get(point)) {
-    //         const tx = midSize + midSize * direction.axis[0]
-    //         const ty = midSize + midSize * direction.axis[1]
-    //         let [x, y] = [tx, ty]
-    //         while(Point.differs([x, y], midpoint)) {
-    //             pointDirectionMap.set([x, y])
-    //             if (Random.chance(.5)) {
-    //                 if (x > mx) {
-    //                     x--
-    //                 } else if (x < mx) {
-    //                     x++
-    //                 }
-    //             } else {
-    //                 if (y < my) {
-    //                     y++
-    //                 } else if (y > my) {
-    //                     y--
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     pointDirectionMap.add(midpoint)
-    //     return pointDirectionMap
-    // }
-
-    getJoint(point) {
-        return this.#jointGrid.get(point)
     }
 
     getMidpoint(point) {
         const index = this.#midpointIndexGrid.get(point)
         return this.#zoneRect.indexToPoint(index)
     }
-
-    // getNeighborhood(point) {
-    //     const neighbors = []
-    //     const directions = this.#erosionGridMask.get(point)
-    //     for(let direction of directions) {
-    //         // build a point for each flow that points to this point
-    //         // create a midpoint at tile's square side
-    //         const sidePoint = Point.atDirection(point, direction)
-    //         // get average between this point and neighbor
-    //         const sideJoint = this.getJoint(sidePoint)
-    //         const avgJoint = (props.joint + sideJoint) / 2
-    //         // map each axis coordinate to random value in zone's rect edge
-    //         // summing values from origin [0, 0] bottom-right oriented
-    //         const axisModifier = direction.axis.map(c => {
-    //             if (c < 0) return 0
-    //             if (c > 0) return tileSize
-    //             return Math.floor(tileSize * avgJoint)
-    //         })
-    //         const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
-    //         neighbors.push([canvasEdgePoint, meanderPoint, lineWidth, color])
-    //     }
-    //     return neighbors
-    // }
 
     getFlows(point) {
         return this.#erosionGridMask.get(point)
@@ -168,7 +107,7 @@ export class BasinLayer {
             const basin = this.get(tilePoint)
             const text = basin.erosion.symbol
             const textColor = color.invert().toHex()
-            const joint = this.getJoint(tilePoint)
+            const joint = this.#layers.topology.getJoint(tilePoint)
             canvas.text(canvasPoint, tileSize, text, textColor)
             // canvas.text(canvasPoint, tileSize/5, joint.toFixed(2), '#000')
             const _props = {
@@ -196,7 +135,7 @@ export class BasinLayer {
             // create a midpoint at tile's square side
             const sidePoint = Point.atDirection(point, direction)
             // get average between this point and neighbor
-            const sideJoint = this.getJoint(sidePoint)
+            const sideJoint = this.#layers.topology.getJoint(sidePoint)
             const avgJoint = (props.joint + sideJoint) / 2
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented

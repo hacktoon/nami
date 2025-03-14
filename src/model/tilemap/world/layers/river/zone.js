@@ -21,13 +21,13 @@ export class ZoneRiver {
         }
         const river = layers.river.get(worldPoint)
         const midpoint = layers.basin.getMidpoint(worldPoint)
-        const joint = layers.basin.getJoint(worldPoint)
+        const joint = layers.topology.getJoint(worldPoint)
         const midSize = Math.floor(zoneRect.width / 2)
         let [mx, my] = midpoint
         for(let direction of river.flows) {
             const axis = direction.axis
             const worldSidePoint = Point.atDirection(worldPoint, direction)
-            const sideJoint = layers.basin.getJoint(worldSidePoint)
+            const sideJoint = layers.topology.getJoint(worldSidePoint)
             const signal = (joint < 0 || sideJoint < 0) ? -1 : 1
             const offset = Math.round((joint + sideJoint) / 2) * signal
             const offsetX = axis[0] === 0 ? offset : 0
