@@ -5,8 +5,7 @@ import { Point } from '/src/lib/geometry/point'
 import { PointSet } from '/src/lib/geometry/point/set'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
-import { Direction } from '/src/lib/direction'
-import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
+import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 
 const CITY_BORDER_CHANCE = .4
@@ -56,7 +55,7 @@ export function buildCityMap(context) {
 
 export function buildCitySpaces(context) {
     const {rect, cityPoints} = context
-    const routeMaskGrid = new DirectionMaskGrid(rect)
+    const routeMaskGrid = new DirectionBitMaskGrid(rect)
     const cityGrid = Grid.fromRect(rect, () => EMPTY)
     const wildernessGrid = Grid.fromRect(rect, () => EMPTY)
     const fillDirectionGrid = Grid.fromRect(rect, () => EMPTY)

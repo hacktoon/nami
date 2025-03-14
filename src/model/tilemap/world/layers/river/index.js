@@ -2,7 +2,7 @@ import { PointSet } from '/src/lib/geometry/point/set'
 import { PointMap } from '/src/lib/geometry/point/map'
 import { Point } from '/src/lib/geometry/point'
 
-import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
+import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 import { ZoneRiver } from './zone'
 import { buildRiverMap } from './fill'
@@ -25,7 +25,7 @@ export class RiverLayer {
     constructor(rect, layers, zoneRect) {
         this.#zoneRect = zoneRect
         this.layers = layers
-        this.#directionMaskGrid = new DirectionMaskGrid(rect)
+        this.#directionMaskGrid = new DirectionBitMaskGrid(rect)
         this.#riverMouths = new PointSet(rect)
         this.#stretchMap = new PointMap(rect)
         const context = {

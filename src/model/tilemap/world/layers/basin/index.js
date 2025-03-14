@@ -1,9 +1,7 @@
 import { Point } from '/src/lib/geometry/point'
 import { Grid } from '/src/lib/grid'
-import { Random } from '/src/lib/random'
-import { PointMap } from '/src/lib/geometry/point/map'
 import { Direction } from '/src/lib/direction'
-import { DirectionMaskGrid } from '/src/model/tilemap/lib/bitmask'
+import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 import { buildBasinGrid } from './fill'
 import { Basin, EMPTY, OceanicBasin } from './data'
@@ -26,7 +24,7 @@ export class BasinLayer {
     // map basin type for creating rivers or other features
     #typeMap = new Map()
 
-    // map a point to a basin zone paths
+    // map a point to a basin zone direction bitmask
     #erosionGridMask
 
     // map a point to a point index in a zone rect
@@ -38,7 +36,7 @@ export class BasinLayer {
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
-        this.#erosionGridMask = new DirectionMaskGrid(rect)
+        this.#erosionGridMask = new DirectionBitMaskGrid(rect)
         const context = {
             rect,
             layers,
@@ -57,6 +55,7 @@ export class BasinLayer {
     }
 
     get(point) {
+        if (! this.has(point)) return null
         const id = this.#basinGrid.get(point)
         const typeId = this.#typeMap.get(id)
         const directionId = this.#erosionGrid.get(point)
@@ -91,52 +90,43 @@ export class BasinLayer {
             `type=${basin.type ? basin.type.name : ''}`,
             `erosion=${basin.erosion.name}`,
             `distance=${basin.distance}`,
-            `joint=${basin.joint}`,
         ].join(',')
         return `Basin(${attrs})`
     }
 
     draw(props, params) {
-        let color = OceanicBasin.color
         const {canvas, canvasPoint, tileSize, tilePoint} = props
-        if (this.has(tilePoint)) {
-            color = this.get(tilePoint).type.color
-        }
+        const basin = this.get(tilePoint)
+        let color = basin ? basin.type.color : OceanicBasin.color
         canvas.rect(canvasPoint, tileSize, color.toHex())
-        if (this.has(tilePoint) && params.get('showErosion')) {
-            const basin = this.get(tilePoint)
+        if (basin && params.get('showErosion')) {
             const text = basin.erosion.symbol
             const textColor = color.invert().toHex()
-            const joint = this.#layers.topology.getJoint(tilePoint)
             canvas.text(canvasPoint, tileSize, text, textColor)
             // canvas.text(canvasPoint, tileSize/5, joint.toFixed(2), '#000')
-            const _props = {
-                ...props,
-                zoneRect: this.#zoneRect,
-                joint,
-                midpoint: this.getMidpoint(tilePoint),
-                color: color.darken(30).toHex(),
-                lineWidth: Math.round(props.tileSize / 20),
-                directions: this.#erosionGridMask.get(tilePoint),
-            }
-            this.#drawErosionLines(tilePoint, _props)
+            this.#drawErosionLines(props, basin)
         }
     }
 
-    #drawErosionLines(point, props) {
-        const {canvasPoint, tileSize, color, lineWidth} = props
+    #drawErosionLines(props, basin) {
+        const {canvasPoint, tilePoint, tileSize} = props
+        const color = basin.type.color.darken(30).toHex()
+        const lineWidth = Math.round(props.tileSize / 20)
         // calc midpoint point on canvas
-        const pixelsPerZonePoint = tileSize / props.zoneRect.width
-        const canvasMidpoint = Point.multiplyScalar(props.midpoint, pixelsPerZonePoint)
+        const pixelsPerZonePoint = tileSize / this.#zoneRect.width
+        const midpoint = this.getMidpoint(tilePoint)
+        const canvasMidpoint = Point.multiplyScalar(midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
+        const joint = this.#layers.topology.getJoint(tilePoint)
         // draw line for each neighbor with a basin connection
-        for(let direction of props.directions) {
+        const directions = this.#erosionGridMask.get(tilePoint)
+        for(let direction of directions) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
-            const sidePoint = Point.atDirection(point, direction)
+            const sidePoint = Point.atDirection(tilePoint, direction)
             // get average between this point and neighbor
             const sideJoint = this.#layers.topology.getJoint(sidePoint)
-            const avgJoint = (props.joint + sideJoint) / 2
+            const avgJoint = (joint + sideJoint) / 2
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented
             const axisModifier = direction.axis.map(c => {

@@ -3,7 +3,7 @@ import { Grid } from '/src/lib/grid'
 import { BitMask } from '/src/lib/bitmask'
 
 
-export class DirectionMaskGrid {
+export class DirectionBitMaskGrid {
     // bitmask code grid => each point is a bitmask code
     // mapping zero or many directions in one integer
     #grid
