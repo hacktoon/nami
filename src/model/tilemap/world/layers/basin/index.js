@@ -72,36 +72,36 @@ export class BasinLayer {
         }
     }
 
-    getZone(point) {
-        // reads the wire data and create points for zone grid
-        const pointDirectionMap = new PointMap(this.#zoneRect)
-        const midpoint = this.getMidpoint(point)
-        const midSize = Math.floor(this.#zoneRect.width / 2)
-        let [mx, my] = midpoint
-        for(let direction of this.#erosionGridMask.get(point)) {
-            const tx = midSize + midSize * direction.axis[0]
-            const ty = midSize + midSize * direction.axis[1]
-            let [x, y] = [tx, ty]
-            while(Point.differs([x, y], midpoint)) {
-                pointDirectionMap.set([x, y])
-                if (Random.chance(.5)) {
-                    if (x > mx) {
-                        x--
-                    } else if (x < mx) {
-                        x++
-                    }
-                } else {
-                    if (y < my) {
-                        y++
-                    } else if (y > my) {
-                        y--
-                    }
-                }
-            }
-        }
-        pointDirectionMap.add(midpoint)
-        return pointDirectionMap
-    }
+    // getZone(point) {
+    //     // reads the wire data and create points for zone grid
+    //     const pointDirectionMap = new PointMap(this.#zoneRect)
+    //     const midpoint = this.getMidpoint(point)
+    //     const midSize = Math.floor(this.#zoneRect.width / 2)
+    //     let [mx, my] = midpoint
+    //     for(let direction of this.#erosionGridMask.get(point)) {
+    //         const tx = midSize + midSize * direction.axis[0]
+    //         const ty = midSize + midSize * direction.axis[1]
+    //         let [x, y] = [tx, ty]
+    //         while(Point.differs([x, y], midpoint)) {
+    //             pointDirectionMap.set([x, y])
+    //             if (Random.chance(.5)) {
+    //                 if (x > mx) {
+    //                     x--
+    //                 } else if (x < mx) {
+    //                     x++
+    //                 }
+    //             } else {
+    //                 if (y < my) {
+    //                     y++
+    //                 } else if (y > my) {
+    //                     y--
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     pointDirectionMap.add(midpoint)
+    //     return pointDirectionMap
+    // }
 
     getJoint(point) {
         return this.#jointGrid.get(point)

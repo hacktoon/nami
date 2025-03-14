@@ -9,6 +9,7 @@ import { UITileMap } from '/src/ui/tilemap'
 
 import { NoiseLayer } from './layers/noise'
 import { SurfaceLayer } from './layers/surface'
+import { TopologyLayer } from './layers/topology'
 import { BasinLayer } from './layers/basin'
 import { ReliefLayer } from './layers/relief'
 import { ClimateLayer } from './layers/climate'
@@ -56,6 +57,7 @@ export class WorldTileMap extends TileMap {
         // The layers creation follows order below
         layers.noise = new NoiseLayer(rect)
         layers.surface = new SurfaceLayer(rect, layers)
+        layers.topology = new TopologyLayer(rect, layers)
         layers.climate = new ClimateLayer(rect, layers)
         layers.rain = new RainLayer(rect, layers)
         layers.basin = new BasinLayer(rect, layers, ZONE_RECT)
@@ -73,6 +75,7 @@ export class WorldTileMap extends TileMap {
         return [
             `Point(${Point.hash(point)})`,
             this.layers.surface.getText(wrappedPoint),
+            this.layers.topology.getText(wrappedPoint),
             this.layers.climate.getText(wrappedPoint),
             this.layers.rain.getText(wrappedPoint),
             this.layers.basin.getText(wrappedPoint),
