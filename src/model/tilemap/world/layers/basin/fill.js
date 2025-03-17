@@ -29,8 +29,7 @@ export function buildBasinGrid(baseContext) {
     const fillMap = new Map()
     const basinGrid = Grid.fromRect(rect, point => {
         if (layers.surface.isLand(point) && layers.surface.isBorder(point)) {
-            fillMap.set(basinId, {origin: point})
-            basinId++
+            fillMap.set(basinId++, {origin: point})
         }
         return EMPTY
     })
@@ -44,6 +43,17 @@ export function buildBasinGrid(baseContext) {
 
 
 class BasinGridFill extends ConcurrentFill {
+    onInitFill(fill, fillPoint, neighbors) {
+        const {typeMap} = fill.context
+        const survey = surveyNeighbors(fill.context, neighbors, fillPoint)
+        // set type on init
+        const type = buildBasinType(fillPoint, {...fill.context, survey})
+        typeMap.set(fill.id, type.id)
+        // the basin opposite border is the parentPoint
+        // update erosion path
+        this._fillBasin(fill, fillPoint, survey.oppositeBorder)
+    }
+
     getChance(fill) { return FILL_CHANCE }
     getGrowth(fill) {
         const {typeMap} = fill.context
@@ -56,18 +66,6 @@ class BasinGridFill extends ConcurrentFill {
         const {typeMap} = fill.context
         const basin = Basin.parse(typeMap.get(fill.id))
         return fill.level >= basin.reach ? FILL_SKIP_COUNT : 0
-    }
-
-    onInitFill(fill, fillPoint, neighbors) {
-        const {typeMap} = fill.context
-        // discover parentPoint - the basin opposite border
-        const survey = surveyNeighbors(fill.context, neighbors, fillPoint)
-        const parentPoint = survey.oppositeBorder
-        // set type on init
-        const type = buildType(fillPoint, {...fill.context, survey})
-        typeMap.set(fill.id, type.id)
-        // update erosion path
-        this._fillBasin(fill, fillPoint, parentPoint)
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -129,7 +127,7 @@ function surveyNeighbors(context, neighbors, point) {
 }
 
 
-function buildType(point, context) {
+function buildBasinType(point, context) {
     const {layers, survey} = context
     const isLand = layers.surface.isLand(point)
     let type = isLand ? ExorheicRiverBasin : OceanicBasin
