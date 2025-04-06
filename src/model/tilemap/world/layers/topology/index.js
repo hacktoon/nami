@@ -1,22 +1,19 @@
 import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
+import { buildMidpoint } from './model'
 
 
 export class TopologyLayer {
     // Float used to connect with adjacent tiles
     #jointGrid
+    // Float to define the midpoint
+    #midpointGrid
 
-    constructor(rect, layers) {
+    constructor(rect, layers, zoneRect) {
+        this.zoneRect = zoneRect
         this.#jointGrid = Grid.fromRect(rect, () => Random.floatRange(.2, .8))
-
-    }
-
-    #buildJoints(rect, layers) {
-        // init points as land/water according to noise map
-        return Grid.fromRect(rect, point => {
-
-        })
+        this.#midpointGrid = Grid.fromRect(rect, () => buildMidpoint())
     }
 
     get(point) {
@@ -27,6 +24,10 @@ export class TopologyLayer {
 
     getJoint(point) {
         return this.#jointGrid.get(point)
+    }
+
+    getMidpoint(point) {
+        return this.#midpointGrid.get(point)
     }
 
     getText(point) {

@@ -49,6 +49,7 @@ export class Random {
         if (lower > upper) {
             [lower, upper] = [upper, lower]
         }
+        // normalize to 0..1 range
         return lower + num * (upper - lower)
     }
 

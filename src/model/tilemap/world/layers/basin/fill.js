@@ -7,7 +7,6 @@ import {
     EndorheicSeaBasin,
     EndorheicLakeBasin,
     ExorheicRiverBasin,
-    OceanicBasin,
     Basin,
     EMPTY,
 } from './data'
@@ -47,7 +46,7 @@ class BasinGridFill extends ConcurrentFill {
         const {typeMap} = fill.context
         const survey = surveyNeighbors(fill.context, neighbors, fillPoint)
         // set type on init
-        const type = buildBasinType(fillPoint, {...fill.context, survey})
+        const type = buildBasinType(fill.context.layers, survey)
         typeMap.set(fill.id, type.id)
         // the basin opposite border is the parentPoint
         // update erosion path
@@ -55,11 +54,11 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     getChance(fill) { return FILL_CHANCE }
+
     getGrowth(fill) {
         const {typeMap} = fill.context
         const basin = Basin.parse(typeMap.get(fill.id))
-        if (basin.isEndorheic) return 1
-        return FILL_GROWTH
+        return basin.isEndorheic ? 1 : FILL_GROWTH
     }
 
     getSkip(fill) {
@@ -127,10 +126,8 @@ function surveyNeighbors(context, neighbors, point) {
 }
 
 
-function buildBasinType(point, context) {
-    const {layers, survey} = context
-    const isLand = layers.surface.isLand(point)
-    let type = isLand ? ExorheicRiverBasin : OceanicBasin
+function buildBasinType(layers, survey) {
+    let type = ExorheicRiverBasin
     if (layers.surface.isLake(survey.oppositeBorder)) {
         type = EndorheicLakeBasin
     }
@@ -141,12 +138,10 @@ function buildBasinType(point, context) {
 }
 
 
-function buildMidpoint(direction) {
-    // direction axis ([-1, 0], [1, 1], etc)
-    const rand = (coordAxis) => {
+function buildMidpoint() {
+    const rand = () => {
         const offset = Random.int(...ZONE_OFFSET_RANGE)
-        const axisToggle = coordAxis === 0 ? Random.choice(-1, 1) : coordAxis
-        return ZONE_MIDDLE + (offset * axisToggle)
+        return ZONE_MIDDLE + (offset * Random.choice(-1, 1))
     }
-    return direction.axis.map(coord => rand(coord))
+    return [rand(), rand()]
 }
