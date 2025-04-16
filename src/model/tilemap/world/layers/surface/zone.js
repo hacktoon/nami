@@ -16,8 +16,15 @@ export class ZoneSurface {
 
     #buildGrid(context) {
         const regionGrid = buildRegionGrid(context)
-        const regionSurfaceMap = this.#buildRegionSurfaceMap({...context, regionGrid})
-        const zoneGrid = this.#buildZoneGrid({...context, regionGrid, regionSurfaceMap})
+        const regionSurfaceMap = this.#buildRegionSurfaceMap({
+            ...context,
+            regionGrid
+        })
+        const zoneGrid = this.#buildZoneGrid({
+            ...context,
+            regionGrid,
+            regionSurfaceMap
+        })
         return zoneGrid
     }
 

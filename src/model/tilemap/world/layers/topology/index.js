@@ -1,19 +1,19 @@
-import { Grid } from '/src/lib/grid'
-import { Random } from '/src/lib/random'
-import { Point } from '/src/lib/geometry/point'
-import { buildMidpoint } from './model'
+import {
+    buildMidpointGrid,
+    buildJointGrid,
+ } from './model'
 
 
 export class TopologyLayer {
     // Float used to connect with adjacent tiles
     #jointGrid
-    // Float to define the midpoint
+    // Float to define the midpoint in a zone grid
     #midpointGrid
 
     constructor(rect, layers, zoneRect) {
         this.zoneRect = zoneRect
-        this.#jointGrid = Grid.fromRect(rect, () => Random.floatRange(.2, .8))
-        this.#midpointGrid = Grid.fromRect(rect, () => buildMidpoint())
+        this.#jointGrid = buildJointGrid(rect)
+        this.#midpointGrid = buildMidpointGrid()
     }
 
     get(point) {
