@@ -17,13 +17,16 @@ export function buildJointGrid(rect) {
 }
 
 
-export function buildMidpointGrid() {
-    const rand = () => {
-        const mod = Random.choice(-1, 1)
-        const offset = Random.floatRange(...OFFSET_RANGE) * mod
+export function buildMidpointGrid(rect) {
+    const randPosition = () => {
+        const value = Random.floatRange(...OFFSET_RANGE)
+        const offset = value * Random.choice(-1, 1)
         return ZONE_MIDDLE + offset
     }
-    return [rand(), rand()]
+    return Grid.fromRect(rect, () => {
+        const midpoint = [randPosition(), randPosition()]
+        return zoneRect.pointToIndex(midpoint)
+    })
 }
 
 
@@ -51,7 +54,7 @@ class RegionFloodFill extends ConcurrentFill {
     getNeighbors(fill, parentPoint) {
         const rect = fill.context.zoneRect
         const points = Point.adjacents(parentPoint)
-        // avoid wrapping in zone rect - carve from borders to inside
+        // avoid wrapping in zone rect - flood fill from borders to center
         return points.filter(p => rect.isInside(p))
     }
 

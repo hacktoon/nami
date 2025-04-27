@@ -13,7 +13,7 @@ export class TopologyLayer {
     constructor(rect, layers, zoneRect) {
         this.zoneRect = zoneRect
         this.#jointGrid = buildJointGrid(rect)
-        this.#midpointGrid = buildMidpointGrid()
+        this.#midpointGrid = buildMidpointGrid(rect)
     }
 
     get(point) {

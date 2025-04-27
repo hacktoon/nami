@@ -93,7 +93,7 @@ class BasinGridFill extends ConcurrentFill {
         erosionGridMask.add(fillPoint, direction)
         basinGrid.set(fillPoint, fill.id)
         // terrain offset to add variance
-        const midpoint = buildMidpoint(direction)
+        const midpoint = buildMidpoint()
         const midpointIndex = zoneRect.pointToIndex(midpoint)
         midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
     }
