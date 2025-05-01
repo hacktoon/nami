@@ -17,7 +17,8 @@ export function buildJointGrid(rect) {
 }
 
 
-export function buildMidpointGrid(rect) {
+export function buildMidpointGrid(context) {
+    const {zoneRect, rect} = context
     const randPosition = () => {
         const value = Random.floatRange(...OFFSET_RANGE)
         const offset = value * Random.choice(-1, 1)

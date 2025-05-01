@@ -87,11 +87,12 @@ class BasinGridFill extends ConcurrentFill {
             erosionGrid, erosionGridMask, basinGrid,
             midpointIndexGrid, zoneRect
         } = fill.context
+        // basin id is the same as fill id
+        basinGrid.set(fillPoint, fill.id)
         // set erosion flow to parent
         const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionGrid.wrapSet(fillPoint, direction.id)
         erosionGridMask.add(fillPoint, direction)
-        basinGrid.set(fillPoint, fill.id)
         // terrain offset to add variance
         const midpoint = buildMidpoint()
         const midpointIndex = zoneRect.pointToIndex(midpoint)
