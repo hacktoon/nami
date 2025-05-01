@@ -13,7 +13,8 @@ const ICECAP_NOISE = .4
 export class BiomeLayer {
     #grid
 
-    constructor(rect, layers) {
+    constructor(context) {
+        const {rect, layers} = context
         this.rect = rect
         this.layers = layers
 

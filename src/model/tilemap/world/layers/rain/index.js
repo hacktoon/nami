@@ -15,7 +15,8 @@ const ARID_RATIO = .65
 export class RainLayer {
     #grid
 
-    constructor(rect, layers) {
+    constructor(context) {
+        const {layers, rect} = context
         this.layers = layers
         this.#grid = Grid.fromRect(rect, point => {
             const noise = layers.noise.get4D(rect, point, "atmos")

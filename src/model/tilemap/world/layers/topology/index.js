@@ -10,7 +10,8 @@ export class TopologyLayer {
     // Float to define the midpoint in a zone grid
     #midpointGrid
 
-    constructor(rect, layers, zoneRect) {
+    constructor(context) {
+        const {rect, zoneRect} = context
         this.zoneRect = zoneRect
         this.#jointGrid = buildJointGrid(rect)
         this.#midpointGrid = buildMidpointGrid({rect, zoneRect})

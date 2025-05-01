@@ -25,7 +25,8 @@ export class LandformLayer {
     // Landform is related to world feature and block layout
     #landforms
 
-    constructor(rect, layers) {
+    constructor(context) {
+        const {layers, rect} = context
         this.#landforms = new PointMap(rect)
         Grid.fromRect(rect, point => {
             const isWater = layers.surface.isWater(point)

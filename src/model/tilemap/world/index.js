@@ -55,16 +55,22 @@ export class WorldTileMap extends TileMap {
         const realmCount = params.get('realms')
         const start = performance.now()
         // The layers creation follows order below
-        layers.noise = new NoiseLayer(rect)
-        layers.surface = new SurfaceLayer(rect, layers)
-        layers.topology = new TopologyLayer(rect, layers, ZONE_RECT)
-        layers.climate = new ClimateLayer(rect, layers)
-        layers.rain = new RainLayer(rect, layers)
-        layers.basin = new BasinLayer(rect, layers, ZONE_RECT)
-        layers.river = new RiverLayer(rect, layers, ZONE_RECT)
-        layers.relief = new ReliefLayer(rect, layers)
-        layers.biome = new BiomeLayer(rect, layers)
-        layers.civil = new CivilLayer(rect, layers, ZONE_RECT, realmCount)
+        const context = {
+            layers,
+            rect,
+            zoneRect: ZONE_RECT,
+            realmCount,
+        }
+        layers.noise = new NoiseLayer(context)
+        layers.surface = new SurfaceLayer(context)
+        layers.topology = new TopologyLayer(context)
+        layers.climate = new ClimateLayer(context)
+        layers.rain = new RainLayer(context)
+        layers.basin = new BasinLayer(context)
+        layers.river = new RiverLayer(context)
+        layers.relief = new ReliefLayer(context)
+        layers.biome = new BiomeLayer(context)
+        layers.civil = new CivilLayer(context)
         const time = (performance.now() - start).toFixed(2)
         console.info(`generated in ${time}ms`);
         return layers

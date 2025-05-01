@@ -38,7 +38,8 @@ export class SurfaceLayer {
 
     #bodyIdCount = FIRST_BODY_ID
 
-    constructor(rect, layers) {
+    constructor(context) {
+        const {rect, layers} = context
         const grid = this.#detectSurfaceBodies(rect, layers)
         this.#detectSurfaceType(grid)
         this.#detectBorders(grid)

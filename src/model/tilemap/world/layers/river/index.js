@@ -22,21 +22,21 @@ export class RiverLayer {
 
     #riverMouths
 
-    constructor(rect, layers, zoneRect) {
+    constructor(context) {
+        const {rect, layers, zoneRect} = context
         this.#zoneRect = zoneRect
         this.layers = layers
         this.#directionMaskGrid = new DirectionBitMaskGrid(rect)
         this.#riverMouths = new PointSet(rect)
         this.#stretchMap = new PointMap(rect)
-        const context = {
-            rect,
-            layers,
+        const _context = {
+            ...context,
             riverNames: this.#riverNames,
             riverMouths: this.#riverMouths,
             directionMaskGrid: this.#directionMaskGrid,
             stretchMap: this.#stretchMap,
         }
-        this.#riverPoints = buildRiverMap(context)
+        this.#riverPoints = buildRiverMap(_context)
     }
 
     get count() {

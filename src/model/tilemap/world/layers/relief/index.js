@@ -16,7 +16,8 @@ export class ReliefLayer {
     // Relief is related to large geologic features
     #grid
 
-    constructor(rect, layers) {
+    constructor(context) {
+        const {layers, rect} = context
         this.rect = rect
         this.#grid = Grid.fromRect(rect, point => {
             const isWater = layers.surface.isWater(point)

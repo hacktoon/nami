@@ -30,24 +30,23 @@ export class BasinLayer {
     // map a point to a point index in a zone rect
     #midpointIndexGrid
 
-    constructor(rect, layers, zoneRect) {
+    constructor(context) {
+        const {rect, layers, zoneRect} = context
         this.#layers = layers
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         this.#erosionGridMask = new DirectionBitMaskGrid(rect)
-        const context = {
-            rect,
-            layers,
+        const _context = {
+            ...context,
             typeMap: this.#typeMap,
-            zoneRect: this.#zoneRect,
             erosionGrid: this.#erosionGrid,
             distanceGrid: this.#distanceGrid,
             erosionGridMask: this.#erosionGridMask,
             midpointIndexGrid: this.#midpointIndexGrid,
         }
-        this.#basinGrid = buildBasinGrid(context)
+        this.#basinGrid = buildBasinGrid(_context)
     }
 
     has(point) {

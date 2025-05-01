@@ -8,9 +8,9 @@ const COLD_RATIO = .1
 
 
 export class ClimateLayer {
-    constructor(rect, layers) {
-        this.layers = layers
-        this.rect = rect
+    constructor(context) {
+        this.layers = context.layers
+        this.rect = context.rect
     }
 
     get(point) {

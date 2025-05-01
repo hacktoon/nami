@@ -20,8 +20,8 @@ const NOISE_SPEC = [
 export class NoiseLayer {
     #presetMap = new Map()
 
-    constructor(rect) {
-        this.rect = rect
+    constructor(context) {
+        this.rect = context.rect
         for(let noiseSpec of NOISE_SPEC) {
             const noise = new SimplexNoise()
             this.#presetMap.set(noiseSpec.id, {noise, args: noiseSpec.args})

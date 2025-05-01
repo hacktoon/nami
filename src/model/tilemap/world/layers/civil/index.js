@@ -24,17 +24,16 @@ export class CivilLayer {
     // map a point to a point index in a zone rect
     #midpointIndexGrid
 
-    constructor(rect, layers, zoneRect, realmCount) {
-        const context = {rect, zoneRect, layers, realmCount}
+    constructor(context) {
         // build the citys points
         const cityPoints = buildCityPoints(context)
         const cityMap = buildCityMap({...context, cityPoints})
         // build a city grid with a city id per flood area
         // build a graph connecting neighbor cities by id using fill data
-        const midpointIndexGrid = Grid.fromRect(rect, () => null)
+        const midpointIndexGrid = Grid.fromRect(context.rect, () => null)
         const citySpaces = buildCitySpaces({...context, midpointIndexGrid, cityPoints, cityMap})
         // TODO: remove
-        this.#zoneRect = zoneRect
+        this.#zoneRect = context.zoneRect
         this.#routeMaskGrid = citySpaces.routeMaskGrid
         this.#cityPoints = cityPoints
         this.#cityMap = cityMap
