@@ -51,16 +51,16 @@ export class WorldTileMap extends TileMap {
     }
 
     #buildLayers(params, rect) {
-        const layers = {}
-        const realmCount = params.get('realms')
         const start = performance.now()
-        // The layers creation follows order below
+        // set a global struct for layers
+        const layers = {}
         const context = {
             layers,
             rect,
             zoneRect: ZONE_RECT,
-            realmCount,
+            realmCount: params.get('realms')
         }
+        // The layers creation follows order below
         layers.noise = new NoiseLayer(context)
         layers.surface = new SurfaceLayer(context)
         layers.topology = new TopologyLayer(context)
