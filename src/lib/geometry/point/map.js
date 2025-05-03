@@ -16,22 +16,26 @@ export class PointMap {
     }
 
     get(point) {
-        const index = this.rect.pointToIndex(point)
+        const [x, y] = this.rect.wrap(point)
+        const index = this.rect.pointToIndex([x, y])
         return this.#indexMap.get(index)
     }
 
     set(point, value) {
-        const index = this.rect.pointToIndex(point)
+        const [x, y] = this.rect.wrap(point)
+        const index = this.rect.pointToIndex([x, y])
         this.#indexMap.set(index, value)
     }
 
     has(point) {
-        const index = this.rect.pointToIndex(point)
+        const [x, y] = this.rect.wrap(point)
+        const index = this.rect.pointToIndex([x, y])
         return this.#indexMap.has(index)
     }
 
     delete(point) {
-        const index = this.rect.pointToIndex(point)
+        const [x, y] = this.rect.wrap(point)
+        const index = this.rect.pointToIndex([x, y])
         return this.#indexMap.delete(index)
     }
 

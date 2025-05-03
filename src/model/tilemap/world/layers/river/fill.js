@@ -52,6 +52,7 @@ function buildRiver(context, riverId, sourcePoint) {
         // set river stretch by distance
         const basin = layers.basin.get(point)
         const stretch = buildStretch(basin.distance, riverLength)
+
         stretchMap.set(point, stretch.id)
         // overwrite previous river id at point
         riverPoints.set(point, riverId)

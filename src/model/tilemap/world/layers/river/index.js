@@ -14,7 +14,7 @@ export class RiverLayer {
     // maps an id to a name
     #riverNames = new Map()
     // map a point to an id
-    #riverPoints
+    #riverPointGrid
     // map a point to a river direction mask
     #directionMaskGrid
     // map a river point to its river type
@@ -36,7 +36,7 @@ export class RiverLayer {
             directionMaskGrid: this.#directionMaskGrid,
             stretchMap: this.#stretchMap,
         }
-        this.#riverPoints = buildRiverMap(_context)
+        this.#riverPointGrid = buildRiverMap(_context)
     }
 
     get count() {
@@ -44,12 +44,15 @@ export class RiverLayer {
     }
 
     has(point) {
-        return this.#riverPoints.get(point) !== null
+        return this.#riverPointGrid.get(point) !== null
     }
 
     get(point) {
-        const id = this.#riverPoints.get(point)
+        const id = this.#riverPointGrid.get(point)
         const stretchId = this.#stretchMap.get(point)
+        // if ( RiverStretch.get(stretchId) == null) {
+        //     debugger
+        // }
         return {
             id,
             flows: this.layers.basin.getFlows(point),
@@ -68,7 +71,7 @@ export class RiverLayer {
     }
 
     is(point, type) {
-        if (this.#riverPoints.get(point) == null) {
+        if (this.#riverPointGrid.get(point) == null) {
             return false
         }
         const river = this.get(point)
@@ -76,7 +79,7 @@ export class RiverLayer {
     }
 
     getText(point) {
-        if (this.#riverPoints.get(point) == null)
+        if (this.#riverPointGrid.get(point) == null)
             return ''
         const river = this.get(point)
         const attrs = [
@@ -94,6 +97,7 @@ export class RiverLayer {
             return
         }
         const river = this.get(tilePoint)
+        if (river.stretch == undefined) debugger
         const riverWidth = Math.round(river.stretch.width * tileSize)
         const midSize = Math.round(tileSize / 2)
         const offset = Math.round(tileSize / 10)

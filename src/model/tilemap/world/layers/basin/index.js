@@ -25,7 +25,7 @@ export class BasinLayer {
     #typeMap = new Map()
 
     // map a point to a basin zone direction bitmask
-    #erosionGridMask
+    #erosionMaskGrid
 
     // map a point to a point index in a zone rect
     #midpointIndexGrid
@@ -37,13 +37,13 @@ export class BasinLayer {
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
-        this.#erosionGridMask = new DirectionBitMaskGrid(rect)
+        this.#erosionMaskGrid = new DirectionBitMaskGrid(rect)
         const _context = {
             ...context,
             typeMap: this.#typeMap,
             erosionGrid: this.#erosionGrid,
             distanceGrid: this.#distanceGrid,
-            erosionGridMask: this.#erosionGridMask,
+            erosionMaskGrid: this.#erosionMaskGrid,
             midpointIndexGrid: this.#midpointIndexGrid,
         }
         this.#basinGrid = buildBasinGrid(_context)
@@ -73,12 +73,12 @@ export class BasinLayer {
     }
 
     getFlows(point) {
-        return this.#erosionGridMask.get(point)
+        return this.#erosionMaskGrid.get(point)
     }
 
     isDivide(point) {
         if (! this.has(point)) return false
-        return this.#erosionGridMask.get(point).length === 1
+        return this.#erosionMaskGrid.get(point).length === 1
     }
 
     getText(point) {
@@ -118,7 +118,7 @@ export class BasinLayer {
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         const joint = this.#layers.topology.getJoint(tilePoint)
         // draw line for each neighbor with a basin connection
-        const directions = this.#erosionGridMask.get(tilePoint)
+        const directions = this.#erosionMaskGrid.get(tilePoint)
         for(let direction of directions) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
