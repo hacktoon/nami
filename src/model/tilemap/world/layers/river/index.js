@@ -50,9 +50,6 @@ export class RiverLayer {
     get(point) {
         const id = this.#riverPointGrid.get(point)
         const stretchId = this.#stretchMap.get(point)
-        // if ( RiverStretch.get(stretchId) == null) {
-        //     debugger
-        // }
         return {
             id,
             flows: this.layers.basin.getFlows(point),
@@ -97,7 +94,6 @@ export class RiverLayer {
             return
         }
         const river = this.get(tilePoint)
-        if (river.stretch == undefined) debugger
         const riverWidth = Math.round(river.stretch.width * tileSize)
         const midSize = Math.round(tileSize / 2)
         const offset = Math.round(tileSize / 10)

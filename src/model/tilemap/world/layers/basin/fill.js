@@ -20,19 +20,29 @@ const ZONE_OFFSET_RANGE = [1, 3]
 
 
 export function buildBasinGrid(baseContext) {
-    const {rect, layers} = baseContext
+    const {rect, layers, typeMap} = baseContext
 
     // init basin id counter
     let basinId = 0
     // get surface border points and setup basin types and fill
     const fillMap = new Map()
+    const surveyMap = new Map()
     const basinGrid = Grid.fromRect(rect, point => {
-        if (layers.surface.isLand(point) && layers.surface.isBorder(point)) {
-            fillMap.set(basinId++, {origin: point})
+        // reuse the process of basinGrid creation to determine river mouths
+        // is this point an erosion path (possible river mouth)?
+        const survey = surveyNeighbors(baseContext, point)
+        const isLandBorder = layers.surface.isLand(point) && layers.surface.isBorder(point)
+        if (isLandBorder && survey.isRiverCapable) {
+            // set type on init
+            const type = buildBasinType(layers, survey)
+            typeMap.set(basinId, type.id)
+            surveyMap.set(basinId, survey)
+            fillMap.set(basinId, {origin: point})
+            basinId++
         }
         return EMPTY
     })
-    const context = {...baseContext, basinGrid}
+    const context = {...baseContext, basinGrid, surveyMap}
     // returns a grid storing basin ids
     // ocean and lake/sea borders must grow at same time
     // but lakes/seas are delayed to grow less
@@ -42,12 +52,9 @@ export function buildBasinGrid(baseContext) {
 
 
 class BasinGridFill extends ConcurrentFill {
-    onInitFill(fill, fillPoint, neighbors) {
-        const {typeMap} = fill.context
-        const survey = surveyNeighbors(fill.context, neighbors, fillPoint)
-        // set type on init
-        const type = buildBasinType(fill.context.layers, survey)
-        typeMap.set(fill.id, type.id)
+    onInitFill(fill, fillPoint) {
+        const {surveyMap} = fill.context
+        const survey = surveyMap.get(fill.id)
         // the basin opposite border is the parentPoint
         // update erosion path
         this._fillBasin(fill, fillPoint, survey.oppositeBorder)
@@ -112,18 +119,22 @@ class BasinGridFill extends ConcurrentFill {
 }
 
 
-function surveyNeighbors(context, neighbors, point) {
+function surveyNeighbors(context, point) {
+    // point is on land
     const {layers} = context
-    const isLand = layers.surface.isLand(point)
-    let oppositeBorder = null
     let waterNeighbors = 0
+    let oppositeBorder = null
+    const neighbors = Point.adjacents(point)
     for (let neighbor of neighbors) {
-        const isNeighborLand = layers.surface.isLand(neighbor)
-        if (! isNeighborLand) waterNeighbors++
-        if (isLand === isNeighborLand) continue
-        oppositeBorder = neighbor
+        const isNeighborWater = layers.surface.isWater(neighbor)
+        if (isNeighborWater) {
+            waterNeighbors++
+            // parent point for erosion algorithm
+            oppositeBorder = neighbor
+        }
     }
-    return {oppositeBorder}
+    let isRiverCapable = waterNeighbors === 1
+    return {oppositeBorder, isRiverCapable}
 }
 
 
