@@ -71,7 +71,7 @@ export class ZoneSurface {
             const noiseRect = Rect.multiply(rect, zoneRect.width)
             const noisePoint = Point.plus(relativePoint, zonePoint)
             const noise = layers.noise.get4D(noiseRect, noisePoint, "zoneOutline")
-            if (noise > 0.6) {
+            if (noise > 0.62) {
                 return ContinentSurface.id
             }
             return OceanSurface.id

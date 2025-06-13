@@ -14,7 +14,7 @@ export class ClimateLayer {
     }
 
     get(point) {
-        const noise = this.layers.noise.get4D(this.rect, point, "atmos")
+        const noise = this.layers.noise.get4D(this.rect, point, "climate")
         if (noise > HOT_RATIO)       return Climate.HOT
         if (noise > WARM_RATIO)      return Climate.WARM
         if (noise > TEMPERATE_RATIO) return Climate.TEMPERATE
