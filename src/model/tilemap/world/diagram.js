@@ -61,16 +61,17 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         // render zone tiles
         const showRiver = this.params.get('showRivers') && tileSize >= 8
         const river = layers.river.get(tilePoint)
+        const biome = layers.biome.get(tilePoint)
         for (let x=0; x < zoneSize; x++) {
             const xSize = x * size
             for (let y=0; y < zoneSize; y++) {
                 const zonePoint = [y, x]
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const surface = zone.surface.get(zonePoint)
-                const color = showRiver && zone.river.has(zonePoint) && ! surface.water
+                const zoneSurface = zone.surface.get(zonePoint)
+                const color = showRiver && zone.river.has(zonePoint) && ! zoneSurface.water
                               ? river.stretch.color
-                              : surface.color
+                              : zoneSurface.water ? zoneSurface.color : biome.color
                 canvas.rect(zoneCanvasPoint, size, color.toHex())
             }
         }

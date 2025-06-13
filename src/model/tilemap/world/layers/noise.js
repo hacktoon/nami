@@ -1,40 +1,31 @@
+import { Point } from '/src/lib/geometry/point'
 import { SimplexNoise } from '/src/lib/geometry/fractal/noise'
 
 
-const NOISE_SPEC = [
-    {
-        id: 'outline',
-        args: {octaves: 6, resolution: .8, scale: .02}
-    },
-    {
-        id: 'atmos',
-        args: {octaves: 6, resolution: .6, scale: .02}
-    },
-    {
-        id: 'grained',
-        args: {octaves: 6, resolution: .8, scale: .08}
-    },
-]
+const NOISE_SPEC = {
+    'outline': {offset: [0, 0], octaves: 6, resolution: .8, scale: .02},
+    'zoneOutline': {offset: [-5, -5], octaves: 6, resolution: .8, scale: .02},
+    'atmos': {offset: [50, 100], octaves: 6, resolution: .65, scale: .02},
+    'rain': {offset: [250, 10], octaves: 6, resolution: .65, scale: .03},
+    'grained': {offset: [150, 200], octaves: 6, resolution: .8, scale: .08},
+}
 
 
 export class NoiseLayer {
-    #presetMap = new Map()
-
     constructor(context) {
         this.rect = context.rect
-        for(let noiseSpec of NOISE_SPEC) {
-            const noise = new SimplexNoise()
-            this.#presetMap.set(noiseSpec.id, {noise, args: noiseSpec.args})
-        }
+        this.noise = new SimplexNoise()
     }
 
     get2D(point, preset_id) {
-        const preset = this.#presetMap.get(preset_id)
-        return preset.noise.noise2D(point, preset.args)
+        const specs = NOISE_SPEC[preset_id]
+        const pt = Point.plus(point, specs.offset)
+        return this.noise.noise2D(pt, specs)
     }
 
     get4D(rect, point, preset_id) {
-        const preset = this.#presetMap.get(preset_id)
-        return preset.noise.wrapped4D(rect, point, preset.args)
+        const specs = NOISE_SPEC[preset_id]
+        const pt = Point.plus(point, specs.offset)
+        return this.noise.wrapped4D(rect, pt, specs)
     }
 }

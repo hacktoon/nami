@@ -19,7 +19,7 @@ export class RainLayer {
         const {layers, rect} = context
         this.layers = layers
         this.#grid = Grid.fromRect(rect, point => {
-            const noise = layers.noise.get4D(rect, point, "atmos")
+            const noise = layers.noise.get4D(rect, point, "rain")
             if (noise > ARID_RATIO)     return Rain.ARID
             if (noise > DRY_RATIO)      return Rain.DRY
             if (noise > SEASONAL_RATIO) return Rain.SEASONAL
