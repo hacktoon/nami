@@ -4,7 +4,7 @@ import { Direction } from '/src/lib/direction'
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 import { buildBasinGrid } from './fill'
-import { Basin, EMPTY, OceanicBasin } from './data'
+import { Basin, EMPTY, OceanicBasin } from './type'
 
 
 export class BasinLayer {

@@ -1,5 +1,5 @@
 import { Point } from '/src/lib/geometry/point'
-import { SimplexNoise } from '/src/lib/geometry/fractal/noise'
+import { SimplexNoise } from '/src/lib/geometry/noise'
 
 
 const NOISE_SPEC = {

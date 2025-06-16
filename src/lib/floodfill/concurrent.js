@@ -8,7 +8,6 @@ export class ConcurrentFill {
     #seedMap = new Map()
     // stores the level of each layer for each point
     #levelMap = new Map()
-    #skipMap = new Map()
 
     constructor(fillMap, context={}) {
         this.fillMap = fillMap
@@ -46,9 +45,7 @@ export class ConcurrentFill {
             const level = this.#levelMap.get(id)
             const seeds = this.#seedMap.get(id)
             const fill = {id, origin, level, context: this.context}
-            if (this.#shouldSkip(fill)) {
-                continue
-            }
+
             const nextSeeds = this.#fillSingleLayer(fill, seeds)
             // Increase number of completed fills if it has no seeds
             if (nextSeeds.length === 0) {
@@ -60,16 +57,6 @@ export class ConcurrentFill {
             }
         }
         return completedFills
-    }
-
-    #shouldSkip(fill) {
-        const skipCount = this.#skipMap.get(fill.id) ?? this.getSkip(fill)
-        if (skipCount > 0) {  // there are fill to skip
-            // decrement count
-            this.#skipMap.set(fill.id, skipCount - 1)
-            return true
-        }
-        return false
     }
 
     #fillSingleLayer(fill, seeds) {
@@ -135,7 +122,6 @@ export class ConcurrentFill {
     notEmpty(fill, target, source) {  }
     onFill(fill, target, source, neighbors) { }
     getNeighbors(fill, target) { return [] }
-    getSkip(fill) { return 0 }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }
 }

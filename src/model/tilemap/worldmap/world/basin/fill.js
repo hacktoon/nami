@@ -7,14 +7,14 @@ import {
     EndorheicSeaBasin,
     EndorheicLakeBasin,
     ExorheicRiverBasin,
+    EphemeralBasin,
     Basin,
     EMPTY,
-} from './data'
+} from './type'
 
 
 const FILL_CHANCE = .1  // chance of fill growing
 const FILL_GROWTH = 10  // make fill basins grow bigger than others
-const FILL_SKIP_COUNT = 5
 const ZONE_MIDDLE = 5
 const ZONE_OFFSET_RANGE = [1, 3]
 
@@ -32,7 +32,7 @@ export function buildBasinGrid(baseContext) {
         // is this point an erosion path (possible river mouth)?
         const survey = surveyNeighbors(baseContext, point)
         const isLandBorder = world.surface.isLand(point) && world.surface.isBorder(point)
-        if (isLandBorder && survey.isRiverCapable) {
+        if (isLandBorder) {
             // set type on init
             const type = buildBasinType(world, survey)
             typeMap.set(basinId, type.id)
@@ -68,12 +68,6 @@ class BasinGridFill extends ConcurrentFill {
         return basin.isEndorheic ? 1 : FILL_GROWTH
     }
 
-    getSkip(fill) {
-        const {typeMap} = fill.context
-        const basin = Basin.parse(typeMap.get(fill.id))
-        return fill.level >= basin.reach ? FILL_SKIP_COUNT : 0
-    }
-
     onFill(fill, fillPoint, parentPoint) {
         const {distanceGrid, erosionMaskGrid} = fill.context
         // distance to source by point
@@ -107,7 +101,11 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     isEmpty(fill, fillPoint, parentPoint) {
-        const {world, basinGrid} = fill.context
+        const {world, basinGrid, typeMap} = fill.context
+        const basin = Basin.parse(typeMap.get(fill.id))
+        if (fill.level >= basin.reach) {
+            return false
+        }
         if (basinGrid.get(fillPoint) !== EMPTY) {
             return false
         }
@@ -146,7 +144,10 @@ function buildBasinType(world, survey) {
     if (world.surface.isSea(survey.oppositeBorder)) {
         type = EndorheicSeaBasin
     }
-    return type
+    if (survey.isRiverCapable) {
+        return type
+    }
+    return EphemeralBasin
 }
 
 
