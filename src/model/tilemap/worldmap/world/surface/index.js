@@ -11,8 +11,6 @@ import {
     LakeSurface
 } from './type'
 
-import { ZoneSurface } from './zone'
-
 
 // use 0 and 1 as "empty" values
 const EMPTY_LANDBODY = 0
@@ -147,10 +145,6 @@ export class SurfaceLayer {
         // negative bodyId's are surface borders
         const bodyId = Math.abs(this.#grid.get(point))
         return Surface.parse(this.#bodyTypeMap.get(bodyId))
-    }
-
-    getZone(point, params) {
-        return new ZoneSurface(point, params)
     }
 
     getText(point) {

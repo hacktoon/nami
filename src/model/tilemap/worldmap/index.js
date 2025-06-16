@@ -19,6 +19,8 @@ import { BiomeLayer } from './world/biome'
 import { CivilLayer } from './world/civil'
 
 import { WorldTileMapDiagram } from './diagram'
+
+import { SurfaceZone } from './zones/surface'
 import { TopologyZone } from './zones/topology'
 
 
@@ -107,12 +109,13 @@ export class WorldTileMap extends TileMap {
             world: this.world,
             zoneSize: ZONE_SIZE,
             zoneRect: ZONE_RECT,
+            worldPoint,
             zones,
             seed
         }
         Random.seed = seed  // change seed for this specific zone
-        zones.surface = this.world.surface.getZone(worldPoint, params)
-        zones.topology = new TopologyZone({...params, worldPoint})
+        zones.surface = new SurfaceZone(params)
+        zones.topology = new TopologyZone(params)
         zones.river = this.world.river.getZone(worldPoint, params)
         return zones
     }
