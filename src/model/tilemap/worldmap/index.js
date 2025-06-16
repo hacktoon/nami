@@ -65,8 +65,8 @@ export class WorldTileMap extends TileMap {
         }
         // The world creation follows order below
         world.noise = new NoiseLayer(context)
-        world.surface = new SurfaceLayer(context)
         world.topology = new TopologyLayer(context)
+        world.surface = new SurfaceLayer(context)
         world.climate = new ClimateLayer(context)
         world.rain = new RainLayer(context)
         world.basin = new BasinLayer(context)
@@ -83,8 +83,8 @@ export class WorldTileMap extends TileMap {
         const wrappedPoint = this.rect.wrap(point)
         return [
             `Point(${Point.hash(point)})`,
-            this.world.surface.getText(wrappedPoint),
             this.world.topology.getText(wrappedPoint),
+            this.world.surface.getText(wrappedPoint),
             this.world.climate.getText(wrappedPoint),
             this.world.rain.getText(wrappedPoint),
             this.world.basin.getText(wrappedPoint),

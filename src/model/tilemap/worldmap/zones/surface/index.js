@@ -10,12 +10,36 @@ export class SurfaceZone {
 
     constructor(context) {
         this.size = context.zoneSize
+        this.zones = context.zones
+        this.world = context.world
         this.#grid = buildGrid(context)
     }
 
     get(point) {
         const surfaceId = this.#grid.get(point)
         return Surface.parse(surfaceId)
+    }
+
+    draw(props) {
+        const {canvas, tilePoint, canvasPoint, tileSize} = props
+        const size = tileSize / this.size
+        // render zone tiles
+        const showRiver = this.params.get('showRivers') && tileSize >= 8
+        const river = this.world.river.get(tilePoint)
+        const biome = this.world.biome.get(tilePoint)
+        for (let x=0; x < this.size; x++) {
+            const xSize = x * size
+            for (let y=0; y < this.size; y++) {
+                const zonePoint = [y, x]
+                const ySize = y * size
+                const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
+                const zoneSurface = zones.surface.get(zonePoint)
+                const color = showRiver && zones.river.has(zonePoint) && ! zoneSurface.water
+                              ? river.stretch.color
+                              : zoneSurface.water ? zoneSurface.color : biome.color
+                canvas.rect(zoneCanvasPoint, size, color.toHex())
+            }
+        }
     }
 }
 
@@ -36,8 +60,7 @@ function  buildRegionSurfaceMap(context) {
     const isLand = world.surface.isLand(worldPoint)
     const isLake = world.surface.isLake(worldPoint)
     // read first edges, then corners
-    const gridPoints = [...getEdgePoints(zoneRect), ...getCornerPoints(zoneRect)]
-    console.log(zones.topology);
+    // const gridPoints = [...getEdgePoints(zoneRect), ...getCornerPoints(zoneRect)]
     // for (let [zonePoint, direction] of gridPoints) {
     //     const regionId = zones.topology.getRegion(zonePoint)
 

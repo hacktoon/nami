@@ -20,6 +20,7 @@ export class TopologyLayer {
     get(point) {
         return {
             joint: this.#jointGrid.get(point),
+            midpoint: this.#midpointGrid.get(point),
         }
     }
 
@@ -33,7 +34,7 @@ export class TopologyLayer {
 
     getText(point) {
         const topology = this.get(point)
-        return `Topology(joint=${topology.joint})`
+        return `TopologyWorld(joint=${topology.joint},midpoint=${topology.midpoint})`
     }
 
     draw(props, params) {

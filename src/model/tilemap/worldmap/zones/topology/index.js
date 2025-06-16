@@ -26,15 +26,14 @@ export class TopologyZone {
     }
 
     getText(point) {
-        const topology = this.get(point)
-        return `Topology(region=${topology.region})`
+        const region = this.getRegion(point)
+        return `Topology(region=${region})`
     }
 
-    drawZone(props) {
-        const {canvas, tilePoint, canvasPoint, tileSize} = props
+    draw(props) {
+        const {canvas, tilePoint, canvasPoint, zones, tileSize} = props
         const zone = this.#regionGrid.get(tilePoint)
-        const zoneSize = zone.surface.size
-        const size = tileSize / zoneSize
+        const size = tileSize / this.zoneSize
         // render zone tiles
         const showRiver = this.params.get('showRivers') && tileSize >= 8
         const river = this.world.river.get(tilePoint)
@@ -45,8 +44,8 @@ export class TopologyZone {
                 const zonePoint = [y, x]
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const zoneSurface = zone.surface.get(zonePoint)
-                const color = showRiver && zone.river.has(zonePoint) && ! zoneSurface.water
+                const zoneSurface = zones.surface.get(zonePoint)
+                const color = showRiver && zones.river.has(zonePoint) && ! zoneSurface.water
                                 ? river.stretch.color
                                 : zoneSurface.water ? zoneSurface.color : biome.color
                 canvas.rect(zoneCanvasPoint, size, color.toHex())
