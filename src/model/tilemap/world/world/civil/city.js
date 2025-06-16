@@ -18,15 +18,15 @@ const EMPTY = null
 
 
 export function buildCityPoints(context) {
-    const {rect, layers} = context
+    const {rect, world} = context
     // eliminate city points too close of already chosen
     const cityPoints = new PointSet(rect)
     // create city id grid
     Grid.fromRect(rect, point => {
-        if (layers.surface.isWater(point)) return
+        if (world.surface.isWater(point)) return
         const borderCityChance = Random.chance(CITY_BORDER_CHANCE)
-        const isBorder = layers.surface.isBorder(point) && borderCityChance
-        const isRiver = layers.river.has(point) && Random.chance(CITY_CHANCE)
+        const isBorder = world.surface.isBorder(point) && borderCityChance
+        const isRiver = world.river.has(point) && Random.chance(CITY_CHANCE)
         // avoid too close cities
         const isEvenFilter = (point[0] + point[1]) % 2 == 0
         if ((isRiver || isBorder) && isEvenFilter) {
@@ -90,10 +90,9 @@ class CitySpacesFill extends ConcurrentFill {
     getGrowth(fill) { return GROWTH }
 
     getNeighbors(fill, parentPoint) {
-        const {layers} = fill.context
-        const surfaceLayer = layers.surface
+        const {world} = fill.context
         const isOrigin = Point.equals(parentPoint, fill.origin)
-        if (isOrigin || surfaceLayer.isBorder(parentPoint)) {
+        if (isOrigin || world.surface.isBorder(parentPoint)) {
             return Point.adjacents(parentPoint)
         }
         return Point.around(parentPoint)

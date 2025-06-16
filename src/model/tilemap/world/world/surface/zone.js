@@ -29,23 +29,23 @@ export class ZoneSurface {
     }
 
     #buildRegionSurfaceMap(context) {
-        const {layers, worldPoint, zoneRect, regionGrid} = context
+        const {world, worldPoint, zoneRect, regionGrid} = context
         const regionSurfaceMap = new Map()
-        const isLand = layers.surface.isLand(worldPoint)
-        const isLake = layers.surface.isLake(worldPoint)
+        const isLand = world.surface.isLand(worldPoint)
+        const isLake = world.surface.isLake(worldPoint)
         // read first edges, then corners
         const gridPoints = [...getEdgePoints(zoneRect), ...getCornerPoints(zoneRect)]
         for (let [zonePoint, direction] of gridPoints) {
             const regionId = regionGrid.get(zonePoint)
             const worldSidePoint = Point.atDirection(worldPoint, direction)
-            const sideSurface = layers.surface.get(worldSidePoint)
+            const sideSurface = world.surface.get(worldSidePoint)
             // rule for lake zones
-            if (isLake && layers.surface.isLand(worldSidePoint)) {
+            if (isLake && world.surface.isLand(worldSidePoint)) {
                 regionSurfaceMap.set(regionId, sideSurface)
             }
             // rule for general land zones
-            const isSideOcean = layers.surface.isOcean(worldSidePoint)
-            const isSideSea = layers.surface.isSea(worldSidePoint)
+            const isSideOcean = world.surface.isOcean(worldSidePoint)
+            const isSideSea = world.surface.isSea(worldSidePoint)
             if (isLand && (isSideOcean || isSideSea)) {
                 regionSurfaceMap.set(regionId, sideSurface)
             }
@@ -55,13 +55,13 @@ export class ZoneSurface {
 
     #buildZoneGrid(context) {
         // final grid generator
-        const {worldPoint, layers, rect, zoneRect, regionGrid, regionSurfaceMap} = context
-        const midpoint = layers.basin.getMidpoint(worldPoint)
+        const {worldPoint, world, rect, zoneRect, regionGrid, regionSurfaceMap} = context
+        const midpoint = world.basin.getMidpoint(worldPoint)
         const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
         const noiseRect = Rect.multiply(rect, zoneRect.width)
         return Grid.fromRect(zoneRect, zonePoint => {
             const noisePoint = Point.plus(relativePoint, zonePoint)
-            const noise = layers.noise.get4D(noiseRect, noisePoint, "zoneOutline")
+            const noise = world.noise.get4D(noiseRect, noisePoint, "zoneOutline")
             if (noise > 0.62) {
                 return ContinentSurface.id
             }

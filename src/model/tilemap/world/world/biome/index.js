@@ -14,12 +14,12 @@ export class BiomeLayer {
     #grid
 
     constructor(context) {
-        const {rect, layers} = context
+        const {rect, world} = context
         this.rect = rect
-        this.layers = layers
+        this.world = world
 
         this.#grid = Grid.fromRect(rect, point => {
-            const isWater = this.layers.surface.isWater(point)
+            const isWater = world.surface.isWater(point)
             let biome = isWater
                 ? this.#buildWaterBiome(point)
                 : this.#buildLandBiome(point)
@@ -28,8 +28,8 @@ export class BiomeLayer {
     }
 
     #buildLandBiome(point) {
-        const {rain, climate} = this.layers
-        const layers = this.layers
+        const {rain, climate} = this.world
+        const world = this.world
 
         if (climate.is(point, Climate.FROZEN)) {
             return Biome.TUNDRA
@@ -50,7 +50,7 @@ export class BiomeLayer {
         }
 
         if (climate.is(point, Climate.WARM)) {
-            const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
+            const isDepositional = world.river.is(point, RiverStretch.DEPOSITIONAL)
             if (isDepositional) return Biome.MANGROVE
             if (rain.is(point, Rain.HUMID)) return Biome.JUNGLE
             if (rain.is(point, Rain.WET)) {
@@ -61,8 +61,8 @@ export class BiomeLayer {
         }
 
         if (climate.is(point, Climate.HOT)) {
-            const isDepositional = layers.river.is(point, RiverStretch.DEPOSITIONAL)
-            const isSlowCourse = layers.river.is(point, RiverStretch.SLOW_COURSE)
+            const isDepositional = world.river.is(point, RiverStretch.DEPOSITIONAL)
+            const isSlowCourse = world.river.is(point, RiverStretch.SLOW_COURSE)
             if (isDepositional || isSlowCourse) return Biome.MANGROVE
             const isJungle = rain.is(point, Rain.HUMID) || rain.is(point, Rain.WET)
             if (isJungle) return Biome.JUNGLE
@@ -73,18 +73,18 @@ export class BiomeLayer {
     }
 
     #buildWaterBiome(point) {
-        const layers = this.layers
-        const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
-        const isFrozen = layers.climate.is(point, Climate.FROZEN)
+        const world = this.world
+        const grainedNoise = world.noise.get4D(this.rect, point, "grained")
+        const isFrozen = world.climate.is(point, Climate.FROZEN)
         if (isFrozen && grainedNoise > ICECAP_NOISE) {
             return Biome.ICECAP
         }
-        if (layers.relief.is(point, Relief.TRENCH)) return Biome.TRENCH
-        if (layers.relief.is(point, Relief.PLATFORM)) {
-            const isReefTemp = layers.climate.is(point, Climate.WARM)
-                               || layers.climate.is(point, Climate.HOT)
+        if (world.relief.is(point, Relief.TRENCH)) return Biome.TRENCH
+        if (world.relief.is(point, Relief.PLATFORM)) {
+            const isReefTemp = world.climate.is(point, Climate.WARM)
+                               || world.climate.is(point, Climate.HOT)
             const isReefNoise = grainedNoise > CORAL_CORAL_NOISE
-            const isBorder = layers.surface.isBorder(point)
+            const isBorder = world.surface.isBorder(point)
             if (!isBorder && isReefTemp && isReefNoise)
                 return Biome.CORAL
             return Biome.SEA

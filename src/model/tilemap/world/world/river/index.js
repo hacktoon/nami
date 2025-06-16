@@ -23,9 +23,9 @@ export class RiverLayer {
     #riverMouths
 
     constructor(context) {
-        const {rect, layers, zoneRect} = context
+        const {rect, world, zoneRect} = context
         this.#zoneRect = zoneRect
-        this.layers = layers
+        this.world = world
         this.#directionMaskGrid = new DirectionBitMaskGrid(rect)
         this.#riverMouths = new PointSet(rect)
         this.#stretchMap = new PointMap(rect)
@@ -52,7 +52,7 @@ export class RiverLayer {
         const stretchId = this.#stretchMap.get(point)
         return {
             id,
-            flows: this.layers.basin.getFlows(point),
+            flows: this.world.basin.getFlows(point),
             name: this.#riverNames.get(id),
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
@@ -89,7 +89,7 @@ export class RiverLayer {
 
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
-        props.layers.biome.draw(props, params)
+        props.world.biome.draw(props, params)
         if (! this.has(tilePoint)) {
             return
         }
@@ -99,7 +99,7 @@ export class RiverLayer {
         const offset = Math.round(tileSize / 10)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
-        const meander = this.layers.basin.getMidpoint(tilePoint)
+        const meander = this.world.basin.getMidpoint(tilePoint)
         const meanderOffsetPoint = Point.multiplyScalar(meander, tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = river.stretch.color.toHex()

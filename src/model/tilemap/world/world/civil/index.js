@@ -14,7 +14,7 @@ import {
 // Define realms, cities and roads
 export class CivilLayer {
     #zoneRect
-    #layers
+    #world
     #realmMap            // map a realm id to a realm object
     #cityMap             // map a point to a city object
     #cityGrid            // grid of city ids in area
@@ -66,13 +66,13 @@ export class CivilLayer {
     }
 
     draw(props, params) {
-        const {layers, tilePoint} = props
-        layers.surface.draw(props, params)
+        const {world, tilePoint} = props
+        world.surface.draw(props, params)
         if (params.get("showCityArea")) {
             this.#drawCityArea(tilePoint, props)
         }
         if (params.get("showRivers")) {
-            layers.river.draw(props, params)
+            world.river.draw(props, params)
         }
         if (params.get('showRoutes')) {
             this.#drawRoute(tilePoint, props)
@@ -86,7 +86,7 @@ export class CivilLayer {
         const {canvas, canvasPoint, tileSize} = props
         const city = this.#cityMap.get(this.get(point).id)
         if (city) {
-            const isWater = props.layers.surface.isWater(point)
+            const isWater = props.world.surface.isWater(point)
             const color = isWater
                 ? Color.DARKBLUE.average(city.color.darken(200))
                 : city.color
@@ -95,11 +95,11 @@ export class CivilLayer {
     }
 
     #drawRoute(point, props) {
-        const {layers, canvas, canvasPoint, tileSize} = props
+        const {world, canvas, canvasPoint, tileSize} = props
         const roadDirections = this.#routeMaskGrid.getAxis(point)
         if (roadDirections.length == 0) return
         const width = 3
-        const hexColor = layers.surface.isWater(point) ? "#036" : "#444"
+        const hexColor = world.surface.isWater(point) ? "#036" : "#444"
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         const tileRatio = tileSize / this.#zoneRect.width

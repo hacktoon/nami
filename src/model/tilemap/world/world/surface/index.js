@@ -39,17 +39,17 @@ export class SurfaceLayer {
     #bodyIdCount = FIRST_BODY_ID
 
     constructor(context) {
-        const {rect, layers} = context
-        const grid = this.#detectSurfaceBodies(rect, layers)
+        const {rect, world} = context
+        const grid = this.#detectSurfaceBodies(rect, world)
         this.#detectSurfaceType(grid)
         this.#detectBorders(grid)
         this.#grid = grid
     }
 
-    #detectSurfaceBodies(rect, layers) {
+    #detectSurfaceBodies(rect, world) {
         // init points as land/water according to noise map
         return Grid.fromRect(rect, point => {
-            const noise = layers.noise.get4D(rect, point, "outline")
+            const noise = world.noise.get4D(rect, point, "outline")
             const isWaterBody = noise < SURFACE_RATIO
             return isWaterBody ? EMPTY_WATERBODY : EMPTY_LANDBODY
         })

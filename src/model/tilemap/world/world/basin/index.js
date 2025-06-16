@@ -8,7 +8,7 @@ import { Basin, EMPTY, OceanicBasin } from './data'
 
 
 export class BasinLayer {
-    #layers
+    #world
     #zoneRect
 
     // grid of basin ids
@@ -31,13 +31,15 @@ export class BasinLayer {
     #midpointIndexGrid
 
     constructor(context) {
-        const {rect, layers, zoneRect} = context
-        this.#layers = layers
+        const {rect, world, zoneRect} = context
+        this.#world = world
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         this.#erosionMaskGrid = new DirectionBitMaskGrid(rect)
+        console.log(world);
+
         const _context = {
             ...context,
             typeMap: this.#typeMap,
@@ -116,7 +118,7 @@ export class BasinLayer {
         const midpoint = this.getMidpoint(tilePoint)
         const canvasMidpoint = Point.multiplyScalar(midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
-        const joint = this.#layers.topology.getJoint(tilePoint)
+        const joint = this.#world.topology.getJoint(tilePoint)
         // draw line for each neighbor with a basin connection
         const directions = this.#erosionMaskGrid.get(tilePoint)
         for(let direction of directions) {
@@ -124,7 +126,7 @@ export class BasinLayer {
             // create a midpoint at tile's square side
             const sidePoint = Point.atDirection(tilePoint, direction)
             // get average between this point and neighbor
-            const sideJoint = this.#layers.topology.getJoint(sidePoint)
+            const sideJoint = this.#world.topology.getJoint(sidePoint)
             const avgJoint = (joint + sideJoint) / 2
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented

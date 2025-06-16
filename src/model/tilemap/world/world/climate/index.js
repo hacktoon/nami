@@ -9,12 +9,12 @@ const COLD_RATIO = .1
 
 export class ClimateLayer {
     constructor(context) {
-        this.layers = context.layers
+        this.world = context.world
         this.rect = context.rect
     }
 
     get(point) {
-        const noise = this.layers.noise.get4D(this.rect, point, "climate")
+        const noise = this.world.noise.get4D(this.rect, point, "climate")
         if (noise > HOT_RATIO)       return Climate.HOT
         if (noise > WARM_RATIO)      return Climate.WARM
         if (noise > TEMPERATE_RATIO) return Climate.TEMPERATE
@@ -23,10 +23,10 @@ export class ClimateLayer {
     }
 
     getColor(point) {
-        if (this.layers.surface.isLand(point)) {
+        if (this.world.surface.isLand(point)) {
             return this.get(point).color
         }
-        return this.layers.surface.getColor(point)
+        return this.world.surface.getColor(point)
 
     }
 

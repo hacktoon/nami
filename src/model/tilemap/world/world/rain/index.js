@@ -16,10 +16,10 @@ export class RainLayer {
     #grid
 
     constructor(context) {
-        const {layers, rect} = context
-        this.layers = layers
+        const {world, rect} = context
+        this.world = world
         this.#grid = Grid.fromRect(rect, point => {
-            const noise = layers.noise.get4D(rect, point, "rain")
+            const noise = world.noise.get4D(rect, point, "rain")
             if (noise > ARID_RATIO)     return Rain.ARID
             if (noise > DRY_RATIO)      return Rain.DRY
             if (noise > SEASONAL_RATIO) return Rain.SEASONAL
@@ -57,7 +57,7 @@ export class RainLayer {
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
         let color = this.get(tilePoint).color
-        if (this.layers.surface.isWater(tilePoint)) {
+        if (this.world.surface.isWater(tilePoint)) {
             color = Color.DARKBLUE
         }
         canvas.rect(canvasPoint, tileSize, color.toHex())

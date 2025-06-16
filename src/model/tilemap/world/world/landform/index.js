@@ -26,20 +26,20 @@ export class LandformLayer {
     #landforms
 
     constructor(context) {
-        const {layers, rect} = context
+        const {world, rect} = context
         this.#landforms = new PointMap(rect)
         Grid.fromRect(rect, point => {
-            const isWater = layers.surface.isWater(point)
-            const type = isWater ? this.#detectWaterType(layers, point)
-                                 : this.#detectLandType(layers, point)
+            const isWater = world.surface.isWater(point)
+            const type = isWater ? this.#detectWaterType(world, point)
+                                 : this.#detectLandType(world, point)
             if (type) {
                 this.#landforms.set(point, type.id)
             }
         })
     }
 
-    #detectLandType(layers, point) {
-        const isMountain = layers.relief.is(point, Relief.MOUNTAIN)
+    #detectLandType(world, point) {
+        const isMountain = world.relief.is(point, Relief.MOUNTAIN)
         // VOLCANO ---------------
         if (Random.chance(VOLCANO_CHANCE) && isMountain) {
             return Landform.VOLCANO
@@ -47,7 +47,7 @@ export class LandformLayer {
 
         // DUNES ---------------
         if (Random.chance(DUNE_CHANCE)) {
-            const isDesert = layers.biome.is(point, Biome.DESERT)
+            const isDesert = world.biome.is(point, Biome.DESERT)
             if (isDesert && ! isMountain) return Landform.DUNES
         }
 
@@ -55,15 +55,15 @@ export class LandformLayer {
         return
     }
 
-    #detectWaterType(layers, point) {
-        const isBorder = layers.surface.isBorder(point)
-        const isPlatform = layers.relief.is(point, Relief.PLATFORM)
-        const isCoral = layers.biome.is(point, Biome.CORAL)
+    #detectWaterType(world, point) {
+        const isBorder = world.surface.isBorder(point)
+        const isPlatform = world.relief.is(point, Relief.PLATFORM)
+        const isCoral = world.biome.is(point, Biome.CORAL)
 
         // HYDROTHERMAL VENTS ---------------
         if (Random.chance(VENTS_CHANCE)) {
-            const isOcean = layers.surface.is(point, WaterSurface)
-            if (isOcean && !isBorder && layers.relief.is(point, Relief.TRENCH))
+            const isOcean = world.surface.is(point, WaterSurface)
+            if (isOcean && !isBorder && world.relief.is(point, Relief.TRENCH))
                 return Landform.HYDROTHERMAL_VENTS
         }
 
@@ -77,14 +77,14 @@ export class LandformLayer {
 
         // ICEBERGS ---------------
         if (Random.chance(ICEBERG_CHANCE)) {
-            const isFrozen = layers.biome.is(point, Biome.ICECAP)
-                          || layers.biome.is(point, Biome.TUNDRA)
+            const isFrozen = world.biome.is(point, Biome.ICECAP)
+                          || world.biome.is(point, Biome.TUNDRA)
             if (isFrozen) return Landform.ICEBERGS
         }
 
         // SANDBARS ---------------
         if (Random.chance(SANDBAR_CHANCE)) {
-            const isSandBarClimate = ! layers.climate.is(point, Climate.FROZEN)
+            const isSandBarClimate = ! world.climate.is(point, Climate.FROZEN)
             if (isPlatform && isSandBarClimate) return Landform.SANDBARS
         }
 

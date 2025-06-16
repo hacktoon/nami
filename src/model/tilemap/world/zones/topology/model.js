@@ -6,39 +6,30 @@ import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
 
 
 const EMPTY = null
-const ZONE_MIDDLE = .5
-const OFFSET_RANGE = [.1, .3]
-const JOINT_RANGE = [.2, .8]
 const REGION_SCALE = [2, 3]
 
-
-export function buildJointGrid(rect) {
-    return Grid.fromRect(rect, () => Random.floatRange(...JOINT_RANGE))
-}
-
-
-export function buildMidpointGrid(context) {
-    const {zoneRect, rect} = context
-    const randPosition = () => {
-        const value = Random.floatRange(...OFFSET_RANGE)
-        const offset = value * Random.choice(-1, 1)
-        return ZONE_MIDDLE + offset
-    }
-    return Grid.fromRect(rect, () => {
-        const midpoint = [randPosition(), randPosition()]
-        return zoneRect.pointToIndex(midpoint)
-    })
-}
+const ZONE_CACHE = new Map()
+const ZONE_CACHE_RESET_SIZE = 100
 
 
 export function buildRegionGrid(context) {
-    const {zoneRect} = context
+    const {zoneRect, worldPoint} = context
     // create a grid with many regions fragmenting the zone map
     const regionGrid = Grid.fromRect(zoneRect, () => EMPTY)
     const origins = EvenPointSampling.create(zoneRect, Random.choiceFrom(REGION_SCALE))
     const fillMap = new Map(origins.map((origin, id) => [id, {origin}]))
     const ctx = {...context, regionGrid}
     new RegionFloodFill(fillMap, ctx).complete()
+    const hash = Point.hash(worldPoint)
+    if (ZONE_CACHE.has(hash)) {
+        return ZONE_CACHE.get(hash)
+    }
+    if (ZONE_CACHE.size >= ZONE_CACHE_RESET_SIZE) {
+        console.log('cache clear');
+
+        ZONE_CACHE.clear()
+    }
+    ZONE_CACHE.set(hash, regionGrid)
     return regionGrid
 }
 

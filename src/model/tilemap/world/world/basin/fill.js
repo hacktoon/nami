@@ -20,7 +20,7 @@ const ZONE_OFFSET_RANGE = [1, 3]
 
 
 export function buildBasinGrid(baseContext) {
-    const {rect, layers, typeMap} = baseContext
+    const {rect, world, typeMap} = baseContext
 
     // init basin id counter
     let basinId = 0
@@ -31,10 +31,10 @@ export function buildBasinGrid(baseContext) {
         // reuse the process of basinGrid creation to determine river mouths
         // is this point an erosion path (possible river mouth)?
         const survey = surveyNeighbors(baseContext, point)
-        const isLandBorder = layers.surface.isLand(point) && layers.surface.isBorder(point)
+        const isLandBorder = world.surface.isLand(point) && world.surface.isBorder(point)
         if (isLandBorder && survey.isRiverCapable) {
             // set type on init
-            const type = buildBasinType(layers, survey)
+            const type = buildBasinType(world, survey)
             typeMap.set(basinId, type.id)
             surveyMap.set(basinId, survey)
             fillMap.set(basinId, {origin: point})
@@ -107,12 +107,12 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     isEmpty(fill, fillPoint, parentPoint) {
-        const {layers, basinGrid} = fill.context
+        const {world, basinGrid} = fill.context
         if (basinGrid.get(fillPoint) !== EMPTY) {
             return false
         }
-        const target = layers.surface.get(fillPoint)
-        const parent = layers.surface.get(parentPoint)
+        const target = world.surface.get(fillPoint)
+        const parent = world.surface.get(parentPoint)
         // avoid fill if different types
         return target.water == parent.water
     }
@@ -121,12 +121,12 @@ class BasinGridFill extends ConcurrentFill {
 
 function surveyNeighbors(context, point) {
     // point is on land
-    const {layers} = context
+    const {world} = context
     let waterNeighbors = 0
     let oppositeBorder = null
     const neighbors = Point.adjacents(point)
     for (let neighbor of neighbors) {
-        const isNeighborWater = layers.surface.isWater(neighbor)
+        const isNeighborWater = world.surface.isWater(neighbor)
         if (isNeighborWater) {
             waterNeighbors++
             // parent point for erosion algorithm
@@ -138,12 +138,12 @@ function surveyNeighbors(context, point) {
 }
 
 
-function buildBasinType(layers, survey) {
+function buildBasinType(world, survey) {
     let type = ExorheicRiverBasin
-    if (layers.surface.isLake(survey.oppositeBorder)) {
+    if (world.surface.isLake(survey.oppositeBorder)) {
         type = EndorheicLakeBasin
     }
-    if (layers.surface.isSea(survey.oppositeBorder)) {
+    if (world.surface.isSea(survey.oppositeBorder)) {
         type = EndorheicSeaBasin
     }
     return type

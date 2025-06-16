@@ -7,25 +7,26 @@ import { WORLD_NAMES } from '/src/lib/names'
 import { TileMap } from '/src/model/tilemap/lib'
 import { UITileMap } from '/src/ui/tilemap'
 
-import { NoiseLayer } from './layers/noise'
-import { SurfaceLayer } from './layers/surface'
-import { TopologyLayer } from './layers/topology'
-import { BasinLayer } from './layers/basin'
-import { ReliefLayer } from './layers/relief'
-import { ClimateLayer } from './layers/climate'
-import { RainLayer } from './layers/rain'
-import { RiverLayer } from './layers/river'
-import { BiomeLayer } from './layers/biome'
-import { CivilLayer } from './layers/civil'
+import { NoiseLayer } from './world/noise'
+import { SurfaceLayer } from './world/surface'
+import { TopologyLayer } from './world/topology'
+import { BasinLayer } from './world/basin'
+import { ReliefLayer } from './world/relief'
+import { ClimateLayer } from './world/climate'
+import { RainLayer } from './world/rain'
+import { RiverLayer } from './world/river'
+import { BiomeLayer } from './world/biome'
+import { CivilLayer } from './world/civil'
 
 import { WorldTileMapDiagram } from './diagram'
+import { TopologyZone } from './zones/topology'
 
 
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.number('size', 'Size', {default: 100, min: 64, max: 200}),
-    Type.text('seed', 'Seed', {default: ''}),
-    Type.number('realms', 'Realms', {default: 10, min: 3, max: 16}),
+    Type.number('size', 'Size', { default: 100, min: 64, max: 200 }),
+    Type.text('seed', 'Seed', { default: '' }),
+    Type.number('realms', 'Realms', { default: 10, min: 3, max: 16 }),
 )
 
 
@@ -45,80 +46,83 @@ export class WorldTileMap extends TileMap {
     constructor(params) {
         super(params)
         this.name = Random.choiceFrom(WORLD_NAMES)
-        this.layers = this.#buildLayers(params, this.rect)
+        this.world = this.#buildWorld(params, this.rect)
         this.width = this.size
         this.height = this.size
     }
 
-    #buildLayers(params, rect) {
+    #buildWorld(params, rect) {
         const start = performance.now()
-        // set a global struct for layers
-        const layers = {}
+        // set a global struct for world
+        const world = {}
         const context = {
-            layers,
+            world,
             rect,
             zoneRect: ZONE_RECT,
             realmCount: params.get('realms')
         }
-        // The layers creation follows order below
-        layers.noise = new NoiseLayer(context)
-        layers.surface = new SurfaceLayer(context)
-        layers.topology = new TopologyLayer(context)
-        layers.climate = new ClimateLayer(context)
-        layers.rain = new RainLayer(context)
-        layers.basin = new BasinLayer(context)
-        layers.river = new RiverLayer(context)
-        layers.relief = new ReliefLayer(context)
-        layers.biome = new BiomeLayer(context)
-        layers.civil = new CivilLayer(context)
+        // The world creation follows order below
+        world.noise = new NoiseLayer(context)
+        world.surface = new SurfaceLayer(context)
+        world.topology = new TopologyLayer(context)
+        world.climate = new ClimateLayer(context)
+        world.rain = new RainLayer(context)
+        world.basin = new BasinLayer(context)
+        world.river = new RiverLayer(context)
+        world.relief = new ReliefLayer(context)
+        world.biome = new BiomeLayer(context)
+        world.civil = new CivilLayer(context)
         const time = (performance.now() - start).toFixed(2)
         console.info(`generated in ${time}ms`);
-        return layers
+        return world
     }
 
     get(point) {
         const wrappedPoint = this.rect.wrap(point)
         return [
             `Point(${Point.hash(point)})`,
-            this.layers.surface.getText(wrappedPoint),
-            this.layers.topology.getText(wrappedPoint),
-            this.layers.climate.getText(wrappedPoint),
-            this.layers.rain.getText(wrappedPoint),
-            this.layers.basin.getText(wrappedPoint),
-            this.layers.river.getText(wrappedPoint),
-            this.layers.biome.getText(wrappedPoint),
-            // this.layers.lake.getText(wrappedPoint),
-            this.layers.relief.getText(wrappedPoint),
-            // this.layers.landform.getText(wrappedPoint),
-            this.layers.civil.getText(wrappedPoint),
+            this.world.surface.getText(wrappedPoint),
+            this.world.topology.getText(wrappedPoint),
+            this.world.climate.getText(wrappedPoint),
+            this.world.rain.getText(wrappedPoint),
+            this.world.basin.getText(wrappedPoint),
+            this.world.river.getText(wrappedPoint),
+            this.world.biome.getText(wrappedPoint),
+            // this.world.lake.getText(wrappedPoint),
+            this.world.relief.getText(wrappedPoint),
+            // this.world.landform.getText(wrappedPoint),
+            this.world.civil.getText(wrappedPoint),
         ].filter(x => x != '')
-        .join('\n')
-        .trim()
+            .join('\n')
+            .trim()
     }
 
-    getZone(point) {
-        const seed = `${this.seed}-${Point.hash(point)}`
-        const zoneLayers = {}
+    getZone(worldPoint) {
+        // geração de seed específica para a zona
+        // para evitar que zonas adjacentes tenham o mesmo conteúdo
+        const seed = `${this.seed}-${Point.hash(worldPoint)}`
+        const zones = {}
         const params = {
             rect: this.rect,
-            layers: this.layers,
+            world: this.world,
             zoneSize: ZONE_SIZE,
             zoneRect: ZONE_RECT,
-            zoneLayers,
+            zones,
             seed
         }
         Random.seed = seed  // change seed for this specific zone
-        zoneLayers.surface = this.layers.surface.getZone(point, params)
-        zoneLayers.river = this.layers.river.getZone(point, params)
-        return zoneLayers
+        zones.surface = this.world.surface.getZone(worldPoint, params)
+        zones.topology = new TopologyZone({...params, worldPoint})
+        zones.river = this.world.river.getZone(worldPoint, params)
+        return zones
     }
 
     getDescription() {
         return [
             `World: ${this.name}`,
-            `${this.layers.surface.getWaterArea()}% water`,
-            `Rivers: ${this.layers.river.count}`,
-            `Cities: ${this.layers.civil.getTotalCities()}`,
+            `${this.world.surface.getWaterArea()}% water`,
+            `Rivers: ${this.world.river.count}`,
+            `Cities: ${this.world.civil.getTotalCities()}`,
         ].join(', ').trim()
     }
 }

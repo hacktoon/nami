@@ -17,20 +17,20 @@ export class ReliefLayer {
     #grid
 
     constructor(context) {
-        const {layers, rect} = context
+        const {world, rect} = context
         this.rect = rect
         this.#grid = Grid.fromRect(rect, point => {
-            const isWater = layers.surface.isWater(point)
-            const type = isWater ? this.#detectWaterType(layers, point)
-                                 : this.#detectLandType(layers, point)
+            const isWater = world.surface.isWater(point)
+            const type = isWater ? this.#detectWaterType(world, point)
+                                 : this.#detectLandType(world, point)
             return type.id
         })
     }
 
-    #detectWaterType(layers, point) {
-        const outlineNoise = layers.noise.get4D(this.rect, point, "outline")
-        const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
-        if (layers.surface.get(point).id == SeaSurface.id) {
+    #detectWaterType(world, point) {
+        const outlineNoise = world.noise.get4D(this.rect, point, "outline")
+        const grainedNoise = world.noise.get4D(this.rect, point, "grained")
+        if (world.surface.get(point).id == SeaSurface.id) {
             if (outlineNoise > OCEAN_RATIO) return Relief.OCEAN
             return Relief.PLATFORM
         }
@@ -40,19 +40,19 @@ export class ReliefLayer {
         return Relief.ABYSS
     }
 
-    #detectLandType(layers, point) {
-        const grainedNoise = layers.noise.get4D(this.rect, point, "grained")
-        if (layers.basin.isDivide(point)) {
+    #detectLandType(world, point) {
+        const grainedNoise = world.noise.get4D(this.rect, point, "grained")
+        if (world.basin.isDivide(point)) {
             if (grainedNoise >= MOUNTAIN_RATIO) return Relief.MOUNTAIN
             if (grainedNoise < HILL_RATIO) return Relief.HILL
             return Relief.PLAIN
         }
-        if (! layers.river.has(point)) {
+        if (! world.river.has(point)) {
             if (grainedNoise < HILL_RATIO) return Relief.HILL
             return Relief.PLAIN
         }
-        const isHeadWaters = layers.river.is(point, RiverStretch.HEADWATERS)
-        const isFastCourse = layers.river.is(point, RiverStretch.FAST_COURSE)
+        const isHeadWaters = world.river.is(point, RiverStretch.HEADWATERS)
+        const isFastCourse = world.river.is(point, RiverStretch.FAST_COURSE)
         // Set type according to river stretch.
         // Headwaters and fast courses will appear on hills
         if (isFastCourse || isHeadWaters) return Relief.HILL

@@ -13,18 +13,18 @@ import { RiverStretch } from './data'
 */
 export function buildRiverMap(context) {
     let riverId = 0
-    const {rect, layers} = context
+    const {rect, world} = context
     const riverSources = []
     const riverPoints = Grid.fromRect(rect, point => {
-        const isDivide = layers.basin.isDivide(point)
-        if (isDivide && layers.rain.canCreateRiver(point)) {
+        const isDivide = world.basin.isDivide(point)
+        if (isDivide && world.rain.canCreateRiver(point)) {
             riverSources.push(point)
         }
         return null
     })
     const ctx = {...context, riverPoints}
     // create a list of pairs: (point, river distance to mouth)
-    riverSources.map(point => [point, layers.basin.get(point).distance])
+    riverSources.map(point => [point, world.basin.get(point).distance])
         // in ascendent order to get longest rivers first
         // for starting rivers on basin divides
         .sort((a, b) => a[1] - b[1])
@@ -39,18 +39,18 @@ function buildRiver(context, riverId, sourcePoint) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const {
-        rect, layers, riverPoints, riverNames, riverMouths,
+        rect, world, riverPoints, riverNames, riverMouths,
         stretchMap
     } = context
     let prevPoint = sourcePoint
     let currentPoint = sourcePoint
     // follow river down following next land points
-    const riverLength = layers.basin.get(sourcePoint).distance
-    while (layers.surface.isLand(currentPoint)) {
+    const riverLength = world.basin.get(sourcePoint).distance
+    while (world.surface.isLand(currentPoint)) {
         // max size by basin if basin.
         const point = rect.wrap(currentPoint)
         // set river stretch by distance
-        const basin = layers.basin.get(point)
+        const basin = world.basin.get(point)
         const stretch = buildStretch(basin.distance, riverLength)
 
         stretchMap.set(point, stretch.id)

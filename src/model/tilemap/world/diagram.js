@@ -41,27 +41,27 @@ export class WorldTileMapDiagram extends TileMapDiagram {
     }
 
     draw(props) {
-        const layers = this.tileMap.layers
+        const world = this.tileMap.world
         const layerName = this.params.get('showLayer')
         const showZones = this.params.get('showZones') && props.tileSize >= 30
 
         if (showZones) {
             this.drawZone(props)
         } else {
-            layers[layerName].draw({...props, layers}, this.params)
+            world[layerName].draw({...props, world}, this.params)
         }
     }
 
     drawZone(props) {
         const {canvas, tilePoint, canvasPoint, tileSize} = props
-        const layers = this.tileMap.layers
+        const world = this.tileMap.world
         const zone = this.tileMap.getZone(tilePoint)
         const zoneSize = zone.surface.size
         const size = tileSize / zoneSize
         // render zone tiles
         const showRiver = this.params.get('showRivers') && tileSize >= 8
-        const river = layers.river.get(tilePoint)
-        const biome = layers.biome.get(tilePoint)
+        const river = world.river.get(tilePoint)
+        const biome = world.biome.get(tilePoint)
         for (let x=0; x < zoneSize; x++) {
             const xSize = x * size
             for (let y=0; y < zoneSize; y++) {
