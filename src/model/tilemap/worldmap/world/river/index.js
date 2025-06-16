@@ -4,7 +4,6 @@ import { Point } from '/src/lib/geometry/point'
 
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
-import { ZoneRiver } from './zone'
 import { buildRiverMap } from './fill'
 import { RiverStretch } from './data'
 
@@ -57,10 +56,6 @@ export class RiverLayer {
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
         }
-    }
-
-    getZone(point, params) {
-        return new ZoneRiver(point, params)
     }
 
     isMouth(point) {

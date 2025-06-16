@@ -3,12 +3,11 @@ import { PointSet } from '/src/lib/geometry/point/set'
 import { Random } from '/src/lib/random'
 
 
-export class ZoneRiver {
+export class RiverZone {
     #points
 
-    constructor(worldPoint, params) {
-        const ctx = {...params, worldPoint}
-        this.#points = this.#buildPoints(ctx)
+    constructor(context) {
+        this.#points = this.#buildPoints(context)
     }
 
     #buildPoints(context) {

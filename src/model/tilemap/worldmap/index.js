@@ -22,6 +22,7 @@ import { WorldTileMapDiagram } from './diagram'
 
 import { SurfaceZone } from './zones/surface'
 import { TopologyZone } from './zones/topology'
+import { RiverZone } from './zones/river'
 
 
 const SCHEMA = new Schema(
@@ -114,9 +115,9 @@ export class WorldTileMap extends TileMap {
             seed
         }
         Random.seed = seed  // change seed for this specific zone
-        zones.surface = new SurfaceZone(params)
         zones.topology = new TopologyZone(params)
-        zones.river = this.world.river.getZone(worldPoint, params)
+        zones.surface = new SurfaceZone(params)
+        zones.river = new RiverZone(params)
         return zones
     }
 
