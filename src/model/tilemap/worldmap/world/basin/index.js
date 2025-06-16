@@ -38,17 +38,14 @@ export class BasinLayer {
         this.#erosionGrid = Grid.fromRect(rect, () => null)
         this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         this.#erosionMaskGrid = new DirectionBitMaskGrid(rect)
-        console.log(world);
-
-        const _context = {
+        this.#basinGrid = buildBasinGrid({
             ...context,
             typeMap: this.#typeMap,
             erosionGrid: this.#erosionGrid,
             distanceGrid: this.#distanceGrid,
             erosionMaskGrid: this.#erosionMaskGrid,
             midpointIndexGrid: this.#midpointIndexGrid,
-        }
-        this.#basinGrid = buildBasinGrid(_context)
+        })
     }
 
     has(point) {

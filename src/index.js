@@ -9,9 +9,9 @@ import { Type } from '/src/lib/type'
 import { Form } from '/src/ui/form'
 import { Title } from '/src/ui'
 
-import { NoiseTileMap } from '/src/model/tilemap/noise'
-import { RegionTileMap } from '/src/model/tilemap/region'
-import { WorldTileMap } from '/src/model/tilemap/world'
+import { NoiseTileMap } from '/src/model/tilemap/noisemap'
+import { RegionTileMap } from '/src/model/tilemap/regionmap'
+import { WorldTileMap } from '/src/model/tilemap/worldmap'
 
 
 const APPS = [
