@@ -16,7 +16,7 @@ export function buildRiverMap(context) {
     const {rect, world} = context
     const riverSources = []
     const riverPoints = Grid.fromRect(rect, point => {
-        const isDivide = world.basin.isDivide(point)
+        const isDivide = world.basin.canCreateRiver(point)
         if (isDivide && world.rain.canCreateRiver(point)) {
             riverSources.push(point)
         }

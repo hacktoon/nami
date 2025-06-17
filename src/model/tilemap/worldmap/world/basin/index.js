@@ -75,9 +75,14 @@ export class BasinLayer {
         return this.#erosionMaskGrid.get(point)
     }
 
-    isDivide(point) {
-        if (! this.has(point)) return false
-        return this.#erosionMaskGrid.get(point).length === 1
+    canCreateRiver(point) {
+        if (! this.has(point))
+            return false
+        const id = this.#basinGrid.get(point)
+        const typeId = this.#typeMap.get(id)
+        const type = Basin.parse(typeId)
+        const isDivide = this.#erosionMaskGrid.get(point).length === 1
+        return type.hasPermanentRivers && isDivide
     }
 
     getText(point) {

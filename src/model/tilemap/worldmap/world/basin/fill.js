@@ -7,7 +7,7 @@ import {
     EndorheicSeaBasin,
     EndorheicLakeBasin,
     ExorheicRiverBasin,
-    EphemeralBasin,
+    DiffuseBasin,
     Basin,
     EMPTY,
 } from './type'
@@ -147,7 +147,7 @@ function buildBasinType(world, survey) {
     if (survey.isRiverCapable) {
         return type
     }
-    return EphemeralBasin
+    return DiffuseBasin
 }
 
 
