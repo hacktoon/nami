@@ -84,7 +84,7 @@ function  buildRegionSurfaceMap(context) {
 function buildZoneGrid(context) {
     // final grid generator
     const {worldPoint, world, rect, zoneRect, regionGrid} = context
-    const midpoint = world.basin.getMidpoint(worldPoint)
+    const midpoint = world.topology.getMidpoint(worldPoint)
     const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
     const noiseRect = Rect.multiply(rect, zoneRect.width)
     return Grid.fromRect(zoneRect, zonePoint => {

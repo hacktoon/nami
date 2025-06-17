@@ -84,20 +84,13 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     _fillBasin(fill, fillPoint, parentPoint) {
-        const {
-            erosionGrid, erosionMaskGrid, basinGrid,
-            midpointIndexGrid, zoneRect
-        } = fill.context
+        const {erosionGrid, erosionMaskGrid, basinGrid} = fill.context
         // basin id is the same as fill id
         basinGrid.set(fillPoint, fill.id)
         // set erosion flow to parent
         const direction = Point.directionBetween(fillPoint, parentPoint)
         erosionGrid.wrapSet(fillPoint, direction.id)
         erosionMaskGrid.add(fillPoint, direction)
-        // terrain offset to add variance
-        const midpoint = buildMidpoint()
-        const midpointIndex = zoneRect.pointToIndex(midpoint)
-        midpointIndexGrid.wrapSet(fillPoint, midpointIndex)
     }
 
     isEmpty(fill, fillPoint, parentPoint) {
@@ -148,13 +141,4 @@ function buildBasinType(world, survey) {
         return type
     }
     return DiffuseBasin
-}
-
-
-function buildMidpoint() {
-    const rand = () => {
-        const offset = Random.int(...ZONE_OFFSET_RANGE)
-        return ZONE_MIDDLE + (offset * Random.choice(-1, 1))
-    }
-    return [rand(), rand()]
 }

@@ -19,8 +19,7 @@ export class RiverZone {
             return points
         }
         const river = world.river.get(worldPoint)
-        const midpoint = world.basin.getMidpoint(worldPoint)
-        const joint = world.topology.getJoint(worldPoint)
+        const {midpoint, joint} = world.topology.get(worldPoint)
         const midSize = Math.floor(zoneRect.width / 2)
         let [mx, my] = midpoint
         for(let direction of river.flows) {

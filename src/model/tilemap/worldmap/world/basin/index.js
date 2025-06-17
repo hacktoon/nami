@@ -27,16 +27,12 @@ export class BasinLayer {
     // map a point to a basin zone direction bitmask
     #erosionMaskGrid
 
-    // map a point to a point index in a zone rect
-    #midpointIndexGrid
-
     constructor(context) {
         const {rect, world, zoneRect} = context
         this.#world = world
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
-        this.#midpointIndexGrid = Grid.fromRect(rect, () => null)
         this.#erosionMaskGrid = new DirectionBitMaskGrid(rect)
         this.#basinGrid = buildBasinGrid({
             ...context,
@@ -44,7 +40,6 @@ export class BasinLayer {
             erosionGrid: this.#erosionGrid,
             distanceGrid: this.#distanceGrid,
             erosionMaskGrid: this.#erosionMaskGrid,
-            midpointIndexGrid: this.#midpointIndexGrid,
         })
     }
 
@@ -62,13 +57,7 @@ export class BasinLayer {
             type: Basin.parse(typeId),
             distance: this.#distanceGrid.get(point),
             erosion: Direction.fromId(directionId),
-            midpoint: this.getMidpoint(point),
         }
-    }
-
-    getMidpoint(point) {
-        const index = this.#midpointIndexGrid.get(point)
-        return this.#zoneRect.indexToPoint(index)
     }
 
     getFlows(point) {
@@ -117,7 +106,7 @@ export class BasinLayer {
         const lineWidth = Math.round(props.tileSize / 20)
         // calc midpoint point on canvas
         const pixelsPerZonePoint = tileSize / this.#zoneRect.width
-        const midpoint = this.getMidpoint(tilePoint)
+        const midpoint = this.#world.topology.getMidpoint(tilePoint)
         const canvasMidpoint = Point.multiplyScalar(midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         const joint = this.#world.topology.getJoint(tilePoint)
