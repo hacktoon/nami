@@ -2,14 +2,14 @@ import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/geometry/point'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Random } from '/src/lib/random'
+import { FIFOCache } from '/src/lib/cache'
 import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
 
 
 const EMPTY = null
 const REGION_SCALE = [2, 3]
 
-const ZONE_CACHE = new Map()
-const ZONE_CACHE_RESET_SIZE = 100
+const ZONE_CACHE = new FIFOCache(128)
 
 
 export function buildRegionGrid(context) {
@@ -21,15 +21,10 @@ export function buildRegionGrid(context) {
     const ctx = {...context, regionGrid}
     new RegionFloodFill(fillMap, ctx).complete()
     const hash = Point.hash(worldPoint)
-    if (ZONE_CACHE.has(hash)) {
-        return ZONE_CACHE.get(hash)
-    }
-    if (ZONE_CACHE.size >= ZONE_CACHE_RESET_SIZE) {
-        console.log('cache clear');
-
-        ZONE_CACHE.clear()
-    }
-    ZONE_CACHE.set(hash, regionGrid)
+    // if (ZONE_CACHE.has(hash)) {
+    //     return ZONE_CACHE.get(hash)
+    // }
+    // ZONE_CACHE.set(hash, regionGrid)
     return regionGrid
 }
 

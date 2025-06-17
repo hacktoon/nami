@@ -5,7 +5,6 @@ import {
 
 
 export class TopologyZone {
-    //
     #regionGrid
 
     constructor(context) {
