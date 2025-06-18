@@ -15,7 +15,7 @@ import {
     OceanBorderSurface,
     IslandBorderSurface,
     ContinentBorderSurface,
-} from '/src/model/tilemap/worldmap/world/surface/type'
+} from '../type'
 
 
 export class SurfaceZone {
@@ -23,7 +23,7 @@ export class SurfaceZone {
 
     constructor(context) {
         this.size = context.zoneSize
-        this.zones = context.zones
+        this.zone = context.zone
         this.world = context.world
         this.#grid = buildGrid(context)
     }
@@ -46,8 +46,8 @@ export class SurfaceZone {
                 const zonePoint = [y, x]
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const zoneSurface = zones.surface.get(zonePoint)
-                const color = showRiver && zones.river.has(zonePoint) && ! zoneSurface.isWater
+                const zoneSurface = this.zone.surface.get(zonePoint)
+                const color = showRiver && zone.river.has(zonePoint) && ! zoneSurface.isWater
                               ? river.stretch.color
                               : zoneSurface.isWater ? biome.color : zoneSurface.color
                 canvas.rect(zoneCanvasPoint, size, color.toHex())
@@ -68,22 +68,22 @@ function buildGrid(context) {
 
 
 function  buildRegionSurfaceMap(context) {
-    const {world, worldPoint, zones, zoneRect} = context
+    const {world, worldPoint, zone, zoneRect} = context
     const regionSurfaceMap = new Map()
     const isLand = world.surface.isLand(worldPoint)
     const isLake = world.surface.isLake(worldPoint)
     // read first edges, then corners
     // const gridPoints = [...getEdgePoints(zoneRect), ...getCornerPoints(zoneRect)]
     // for (let [zonePoint, direction] of gridPoints) {
-    //     const regionId = zones.topology.getRegion(zonePoint)
+    //     const regionId = zone.topology.getRegion(zonePoint)
 
     //     const worldSidePoint = Point.atDirection(worldPoint, direction)
     //     const sideSurface = world.surface.get(worldSidePoint)
-    //     // rule for lake zones
+    //     // rule for lake zone
     //     if (isLake && world.surface.isLand(worldSidePoint)) {
     //         regionSurfaceMap.set(regionId, sideSurface)
     //     }
-    //     // rule for general land zones
+    //     // rule for general land zone
     //     const isSideOcean = world.surface.isOcean(worldSidePoint)
     //     const isSideSea = world.surface.isSea(worldSidePoint)
     //     if (isLand && (isSideOcean || isSideSea)) {

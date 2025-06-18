@@ -8,9 +8,9 @@ export class TopologyZone {
     #regionGrid
 
     constructor(context) {
-        const {world, zones, zoneRect} = context
+        const {world, zone, zoneRect} = context
         this.world = world
-        this.zones = zones
+        this.zone = zone
         this.zoneRect = zoneRect
         this.#regionGrid = buildRegionGrid(context)
     }
@@ -31,8 +31,8 @@ export class TopologyZone {
     }
 
     draw(props) {
-        const {canvas, tilePoint, canvasPoint, zones, tileSize} = props
-        const zone = this.#regionGrid.get(tilePoint)
+        const {canvas, tilePoint, canvasPoint, tileSize} = props
+        const regionId = this.#regionGrid.get(tilePoint)
         const size = tileSize / this.zoneSize
         const color = Color.RED
         // render zone tiles

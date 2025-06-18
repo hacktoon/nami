@@ -20,9 +20,9 @@ import { CivilLayer } from './world/civil'
 
 import { WorldTileMapDiagram } from './diagram'
 
-import { SurfaceZone } from './zones/surface'
-import { TopologyZone } from './zones/topology'
-import { RiverZone } from './zones/river'
+import { SurfaceZone } from './world/surface/zone'
+import { TopologyZone } from './world/topology/zone'
+import { RiverZone } from './world/river/zone'
 
 
 const SCHEMA = new Schema(
@@ -104,21 +104,21 @@ export class WorldTileMap extends TileMap {
         // geração de seed específica para a zona
         // para evitar que zonas adjacentes tenham o mesmo conteúdo
         const seed = `${this.seed}-${Point.hash(worldPoint)}`
-        const zones = {}
-        const params = {
+        const zone = {}
+        const context = {
             rect: this.rect,
             world: this.world,
             zoneSize: ZONE_SIZE,
             zoneRect: ZONE_RECT,
             worldPoint,
-            zones,
+            zone,
             seed
         }
         Random.seed = seed  // change seed for this specific zone
-        zones.topology = new TopologyZone(params)
-        zones.surface = new SurfaceZone(params)
-        zones.river = new RiverZone(params)
-        return zones
+        zone.topology = new TopologyZone(context)
+        zone.surface = new SurfaceZone(context)
+        zone.river = new RiverZone(context)
+        return zone
     }
 
     getDescription() {
