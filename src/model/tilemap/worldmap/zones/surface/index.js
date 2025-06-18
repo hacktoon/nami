@@ -2,7 +2,20 @@ import { Point } from '/src/lib/geometry/point'
 import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
-import { ContinentSurface, OceanSurface, Surface } from './type'
+
+import {
+    Surface,
+    LakeSurface,
+    SeaSurface,
+    OceanSurface,
+    IslandSurface,
+    ContinentSurface,
+    LakeBorderSurface,
+    SeaBorderSurface,
+    OceanBorderSurface,
+    IslandBorderSurface,
+    ContinentBorderSurface,
+} from '/src/model/tilemap/worldmap/world/surface/type'
 
 
 export class SurfaceZone {
@@ -36,7 +49,7 @@ export class SurfaceZone {
                 const zoneSurface = zones.surface.get(zonePoint)
                 const color = showRiver && zones.river.has(zonePoint) && ! zoneSurface.isWater
                               ? river.stretch.color
-                              : zoneSurface.isWater ? zoneSurface.color : biome.color
+                              : zoneSurface.isWater ? biome.color : zoneSurface.color
                 canvas.rect(zoneCanvasPoint, size, color.toHex())
             }
         }

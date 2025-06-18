@@ -1,11 +1,16 @@
 import { buildSurfaceGrid } from './model'
 import {
     Surface,
-    OceanSurface,
+    LakeSurface,
     SeaSurface,
-    ContinentSurface,
+    OceanSurface,
     IslandSurface,
-    LakeSurface
+    ContinentSurface,
+    LakeBorderSurface,
+    SeaBorderSurface,
+    OceanBorderSurface,
+    IslandBorderSurface,
+    ContinentBorderSurface,
 } from './type'
 
 

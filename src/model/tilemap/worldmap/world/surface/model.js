@@ -8,7 +8,12 @@ import {
     SeaSurface,
     ContinentSurface,
     IslandSurface,
-    LakeSurface
+    LakeSurface,
+    LakeBorderSurface,
+    SeaBorderSurface,
+    OceanBorderSurface,
+    IslandBorderSurface,
+    ContinentBorderSurface,
 } from './type'
 
 
@@ -22,7 +27,6 @@ const SURFACE_RATIO = .6
 const MINIMUN_OCEAN_RATIO = 2
 const MINIMUN_SEA_RATIO = .05
 const MINIMUN_CONTINENT_RATIO = 1
-
 
 
 export function buildSurfaceGrid(baseContext) {
@@ -75,7 +79,26 @@ function detectSurfaceType(context, grid) {
         }
         context.bodyTypeMap.set(context.bodyId, type.id)
         context.bodyAreaMap.set(context.bodyId, area)
+        // update water tile area
+        context.waterArea += type.isWater ? 1 : 0
         context.bodyId++
+    })
+}
+
+
+function detectBorders(context, grid) {
+    // surface body matrix already defined, update it by setting
+    // water/land borders as negative ids
+    grid.forEach(point => {
+        const isWater = isSurfaceWater(context, grid, point)
+        const bodyId = grid.get(point)
+        for (let sidePoint of Point.adjacents(point)) {
+            const isSideWater = isSurfaceWater(context, grid, sidePoint)
+            if (isWater && ! isSideWater || ! isWater && isSideWater) {
+                // negative bodyId's are surface borders
+                grid.set(point, -bodyId)
+            }
+        }
     })
 }
 
@@ -111,24 +134,6 @@ function fillBodyArea(context, grid, originPoint) {
     return area
 }
 
-
-function detectBorders(context, grid) {
-    // surface body matrix already defined, update it by setting
-    // water/land borders as negative ids
-    grid.forEach(point => {
-        const isWater = isSurfaceWater(context, grid, point)
-        const bodyId = grid.get(point)
-        for (let sidePoint of Point.adjacents(point)) {
-            const isSideWater = isSurfaceWater(context, grid, sidePoint)
-            if (isWater && ! isSideWater || ! isWater && isSideWater) {
-                // negative bodyId's are surface borders
-                grid.set(point, -bodyId)
-            }
-        }
-        // update water tile area
-        if (isWater) context.waterArea++
-    })
-}
 
 
 function isSurfaceWater(context, grid, point) {
