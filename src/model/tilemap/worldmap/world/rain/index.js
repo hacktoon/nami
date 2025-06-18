@@ -4,10 +4,10 @@ import { Color } from '/src/lib/color'
 import { Rain } from './data'
 
 
-const WET_RATIO = .3
+const WET_RATIO = .2
 const SEASONAL_RATIO = .4
-const DRY_RATIO = .5
-const ARID_RATIO = .65
+const DRY_RATIO = .6
+const ARID_RATIO = .8
 
 
 // TODO: rain is dynamic, make noise offset and loop
@@ -32,10 +32,6 @@ export class RainLayer {
         return this.#grid.get(point)
     }
 
-    getColor(point) {
-
-    }
-
     canCreateRiver(point) {
         const rain = this.get(point)
         const riverSourceOpts = [
@@ -57,9 +53,6 @@ export class RainLayer {
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
         let color = this.get(tilePoint).color
-        if (this.world.surface.isWater(tilePoint)) {
-            color = Color.DARKBLUE
-        }
         canvas.rect(canvasPoint, tileSize, color.toHex())
     }
 }

@@ -20,9 +20,9 @@ import { CivilLayer } from './world/civil'
 
 import { WorldTileMapDiagram } from './diagram'
 
-import { SurfaceZone } from './world/surface/zone'
-import { TopologyZone } from './world/topology/zone'
-import { RiverZone } from './world/river/zone'
+import { SurfaceZone } from './zone/surface'
+import { TopologyZone } from './zone/topology'
+import { RiverZone } from './zone/river'
 
 
 const SCHEMA = new Schema(

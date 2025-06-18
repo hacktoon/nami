@@ -15,7 +15,7 @@ import {
     OceanBorderSurface,
     IslandBorderSurface,
     ContinentBorderSurface,
-} from '../type'
+} from '../../world/surface/type'
 
 
 export class SurfaceZone {
@@ -33,23 +33,24 @@ export class SurfaceZone {
         return Surface.parse(surfaceId)
     }
 
-    draw(props) {
-        const {canvas, tilePoint, canvasPoint, tileSize} = props
-        const size = tileSize / this.size
+    draw(props, params) {
+        const {canvas, tilePoint, canvasPoint, tileSize, world, zone} = props
+        const zoneSize = zone.surface.size
+        const size = tileSize / zoneSize
         // render zone tiles
-        const showRiver = this.params.get('showRivers') && tileSize >= 8
-        const river = this.world.river.get(tilePoint)
-        const biome = this.world.biome.get(tilePoint)
-        for (let x=0; x < this.size; x++) {
+        const showRiver = params.get('showRivers') && tileSize >= 8
+        const river = world.river.get(tilePoint)
+        for (let x=0; x < zoneSize; x++) {
             const xSize = x * size
-            for (let y=0; y < this.size; y++) {
+            for (let y=0; y < zoneSize; y++) {
                 const zonePoint = [y, x]
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const zoneSurface = this.zone.surface.get(zonePoint)
-                const color = showRiver && zone.river.has(zonePoint) && ! zoneSurface.isWater
-                              ? river.stretch.color
-                              : zoneSurface.isWater ? biome.color : zoneSurface.color
+                const zoneSurface = zone.surface.get(zonePoint)
+                let color = zoneSurface.color
+                if (world.surface.isBorder(tilePoint)) {
+                    color = color.darken(20)
+                }
                 canvas.rect(zoneCanvasPoint, size, color.toHex())
             }
         }
@@ -103,10 +104,19 @@ function buildZoneGrid(context) {
     return Grid.fromRect(zoneRect, zonePoint => {
         const noisePoint = Point.plus(relativePoint, zonePoint)
         const noise = world.noise.get4D(noiseRect, noisePoint, "zoneOutline")
+        const worldSurface = world.surface.get(worldPoint)
         if (noise > 0.62) {
             return ContinentSurface.id
         }
-        return OceanSurface.id
+        // handle zonePoints on water that are world surface borders
+        if (world.surface.isBorder(worldPoint)) {
+            if (noise > 0.55) {
+                return SeaSurface.id
+            }
+            return OceanSurface.id
+        }
+
+        return worldSurface.id
     })
 }
 

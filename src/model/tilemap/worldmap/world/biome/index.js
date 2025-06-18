@@ -3,10 +3,10 @@ import { Rain } from '../rain/data'
 import { Grid } from '/src/lib/grid'
 import { Relief } from '../relief/data'
 import { RiverStretch } from '../river/data'
-import { Biome } from './data'
+import { Biome } from './type'
 
 
-const CORAL_CORAL_NOISE = .7
+const CORAL_NOISE = .7
 const ICECAP_NOISE = .4
 
 
@@ -17,19 +17,28 @@ export class BiomeLayer {
         const {rect, world} = context
         this.rect = rect
         this.world = world
+        this.#grid = this.buildBiomeGrid(context)
+    }
 
-        this.#grid = Grid.fromRect(rect, point => {
-            const isWater = world.surface.isWater(point)
-            let biome = isWater
-                ? this.#buildWaterBiome(point)
-                : this.#buildLandBiome(point)
+    buildBiomeGrid(context) {
+        const {rect, world} = context
+
+        return Grid.fromRect(rect, point => {
+            const isBorder = world.surface.isBorder(point)
+            let biome = this.#buildBiome(point)
+
+            if (world.surface.isWater(point)) {
+                biome = Biome.OCEAN
+            } else {
+
+            }
             return biome.id
         })
     }
 
-    #buildLandBiome(point) {
+    #buildBiome(point) {
+        // Determine the biome based on climate and rain only
         const {rain, climate} = this.world
-        const world = this.world
 
         if (climate.is(point, Climate.FROZEN)) {
             return Biome.TUNDRA
@@ -37,8 +46,11 @@ export class BiomeLayer {
 
         if (climate.is(point, Climate.COLD)) {
             if (rain.is(point, Rain.HUMID)) return Biome.TUNDRA
-            if (rain.is(point, Rain.ARID)) return Biome.GRASSLANDS
-            return Biome.TAIGA
+            if (rain.is(point, Rain.WET)) return Biome.TAIGA
+            if (rain.is(point, Rain.SEASONAL)) return Biome.TAIGA
+            if (rain.is(point, Rain.DRY)) return Biome.TAIGA
+            if (rain.is(point, Rain.ARID)) return Biome.WOODLANDS
+
         }
 
         if (climate.is(point, Climate.TEMPERATE)) {
@@ -46,28 +58,21 @@ export class BiomeLayer {
             if (rain.is(point, Rain.WET)) return Biome.WOODLANDS
             if (rain.is(point, Rain.SEASONAL)) return Biome.WOODLANDS
             if (rain.is(point, Rain.DRY)) return Biome.GRASSLANDS
-            if (rain.is(point, Rain.ARID)) return Biome.SAVANNA
+            return Biome.SAVANNA
         }
 
         if (climate.is(point, Climate.WARM)) {
-            const isDepositional = world.river.is(point, RiverStretch.DEPOSITIONAL)
-            if (isDepositional) return Biome.MANGROVE
             if (rain.is(point, Rain.HUMID)) return Biome.JUNGLE
-            if (rain.is(point, Rain.WET)) {
-                return Biome.WOODLANDS
-            }
+            if (rain.is(point, Rain.WET)) return Biome.JUNGLE
             if (rain.is(point, Rain.SEASONAL)) return Biome.GRASSLANDS
-            if (rain.is(point, Rain.DRY)) return Biome.SAVANNA
+            return Biome.SAVANNA
         }
 
         if (climate.is(point, Climate.HOT)) {
-            const isDepositional = world.river.is(point, RiverStretch.DEPOSITIONAL)
-            const isSlowCourse = world.river.is(point, RiverStretch.SLOW_COURSE)
-            if (isDepositional || isSlowCourse) return Biome.MANGROVE
-            const isJungle = rain.is(point, Rain.HUMID) || rain.is(point, Rain.WET)
-            if (isJungle) return Biome.JUNGLE
-            if (rain.is(point, Rain.SEASONAL)) return Biome.JUNGLE
-            if (rain.is(point, Rain.DRY)) return Biome.SAVANNA
+            if (rain.is(point, Rain.HUMID)) return Biome.JUNGLE
+            if (rain.is(point, Rain.WET)) return Biome.WOODLANDS
+            if (rain.is(point, Rain.SEASONAL)) return Biome.SAVANNA
+
         }
         return Biome.DESERT
     }
@@ -83,7 +88,7 @@ export class BiomeLayer {
         if (world.relief.is(point, Relief.PLATFORM)) {
             const isReefTemp = world.climate.is(point, Climate.WARM)
                                || world.climate.is(point, Climate.HOT)
-            const isReefNoise = grainedNoise > CORAL_CORAL_NOISE
+            const isReefNoise = grainedNoise > CORAL_NOISE
             const isBorder = world.surface.isBorder(point)
             if (!isBorder && isReefTemp && isReefNoise)
                 return Biome.CORAL

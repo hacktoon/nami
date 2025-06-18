@@ -6,7 +6,7 @@ const NOISE_SPEC = {
     'outline': {offset: [0, 0], octaves: 6, resolution: .8, scale: .02},
     'zoneOutline': {offset: [-3, -3], octaves: 7, resolution: .7, scale: .02},
     'climate': {offset: [50, 100], octaves: 6, resolution: .65, scale: .02},
-    'rain': {offset: [250, 10], octaves: 6, resolution: .65, scale: .03},
+    'rain': {offset: [250, 10], octaves: 6, resolution: .8, scale: .02},
     'grained': {offset: [150, 200], octaves: 6, resolution: .8, scale: .08},
 }
 
