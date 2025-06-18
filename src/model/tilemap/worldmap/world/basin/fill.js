@@ -105,7 +105,7 @@ class BasinGridFill extends ConcurrentFill {
         const target = world.surface.get(fillPoint)
         const parent = world.surface.get(parentPoint)
         // avoid fill if different types
-        return target.water == parent.water
+        return target.isWater == parent.isWater
     }
 }
 

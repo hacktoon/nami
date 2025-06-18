@@ -94,8 +94,8 @@ export class RiverLayer {
         const offset = Math.round(tileSize / 10)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
-        const meander = this.world.topology.getMidpoint(tilePoint)
-        const meanderOffsetPoint = Point.multiplyScalar(meander, tileSize / this.#zoneRect.width)
+        const midpoint = this.world.topology.getMidpoint(tilePoint)
+        const meanderOffsetPoint = Point.multiplyScalar(midpoint, tileSize / this.#zoneRect.width)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
