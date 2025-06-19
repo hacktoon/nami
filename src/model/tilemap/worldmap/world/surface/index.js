@@ -19,18 +19,17 @@ export class SurfaceLayer {
     // stores surface body id for each point
     #grid
     // maps a body id to its surface type
-    #bodyTypeMap = new Map()
+    #bodyTypeMap
     // maps a body id to its surface area
-    #bodyAreaMap = new Map()
-    #waterArea = 0
+    #bodyAreaMap
+    #waterArea
 
     constructor(context) {
-        this.#grid = buildSurfaceGrid({
-            ...context,
-            bodyTypeMap: this.#bodyTypeMap,
-            bodyAreaMap: this.#bodyAreaMap,
-            waterArea: this.#waterArea,
-        })
+        const surfaceData = buildSurfaceGrid(context)
+        this.#bodyTypeMap = surfaceData.bodyTypeMap
+        this.#bodyAreaMap = surfaceData.bodyAreaMap
+        this.#waterArea = surfaceData.waterArea
+        this.#grid = surfaceData.grid
     }
 
     get(point) {

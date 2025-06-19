@@ -38,7 +38,7 @@ export class TopologyLayer {
     }
 
     getText(point) {
-        const joint = this.#jointGrid.get(point).toPrecision(2)
+        const joint = this.#jointGrid.get(point).toFixed(2)
         const midpoint = this.getMidpoint(point)
         return `Topology(joint=${joint},midpoint=${midpoint})`
     }

@@ -9,11 +9,6 @@ import {
     ContinentSurface,
     IslandSurface,
     LakeSurface,
-    LakeBorderSurface,
-    SeaBorderSurface,
-    OceanBorderSurface,
-    IslandBorderSurface,
-    ContinentBorderSurface,
 } from './type'
 
 
@@ -31,17 +26,25 @@ const MINIMUN_CONTINENT_RATIO = 1
 
 export function buildSurfaceGrid(baseContext) {
     const {rect, world} = baseContext
+    // maps a body id to its surface area
     const context = {
         ...baseContext,
-        bodyId: FIRST_BODY_ID
+        bodyId: FIRST_BODY_ID,
+        bodyTypeMap: new Map(),
+        bodyAreaMap: new Map(),
     }
     // detect land or water tiles in the grid
     const grid = detectLandWater(rect, world)
     // detect surface type by filling empty bodies
-    detectSurfaceType(context, grid)
+    const waterArea = detectSurfaceAreas(context, grid)
     // // detect borders and set them as negative ids
     detectBorders(context, grid)
-    return grid
+    return {
+        grid,
+        waterArea,
+        bodyTypeMap: context.bodyTypeMap,
+        bodyAreaMap: context.bodyAreaMap,
+    }
 }
 
 
@@ -55,7 +58,8 @@ function detectLandWater(rect, world) {
 }
 
 
-function detectSurfaceType(context, grid) {
+function detectSurfaceAreas(context, grid) {
+    let waterArea = 0
     // flood fill "empty" points and determine body type by total area
     grid.forEach(originPoint => {
         if (! isEmptyBody(grid, originPoint)) return
@@ -79,10 +83,11 @@ function detectSurfaceType(context, grid) {
         }
         context.bodyTypeMap.set(context.bodyId, type.id)
         context.bodyAreaMap.set(context.bodyId, area)
-        // update water tile area
-        context.waterArea += type.isWater ? 1 : 0
         context.bodyId++
+        // update world water area
+        waterArea += type.isWater ? area : 0
     })
+    return waterArea
 }
 
 
