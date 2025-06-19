@@ -58,8 +58,8 @@ export class Point {
         ]
     }
 
-    static multiplyScalar(point, x, y) {
-        return [point[0] * x, point[1] * (y ?? x)]
+    static multiplyScalar(point, xValue, yValue) {
+        return [point[0] * xValue, point[1] * (yValue ?? xValue)]
     }
 
     static adjacents(center, callback=()=>{}) {
