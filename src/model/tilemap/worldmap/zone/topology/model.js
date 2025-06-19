@@ -7,7 +7,7 @@ import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
 
 
 const EMPTY = null
-const REGION_SCALE = [2, 3]
+const REGION_SCALE = [1, 2]
 
 const ZONE_CACHE = new FIFOCache(128)
 
@@ -20,7 +20,7 @@ export function buildRegionGrid(context) {
     const fillMap = new Map(origins.map((origin, id) => [id, {origin}]))
     const ctx = {...context, regionGrid}
     new RegionFloodFill(fillMap, ctx).complete()
-    const hash = Point.hash(worldPoint)
+    // const hash = Point.hash(worldPoint)
     // if (ZONE_CACHE.has(hash)) {
     //     return ZONE_CACHE.get(hash)
     // }
@@ -30,13 +30,8 @@ export function buildRegionGrid(context) {
 
 
 class RegionFloodFill extends ConcurrentFill {
-    getChance() {
-        return Random.choice(.3, .2, .1)
-    }
-
-    getGrowth() {
-        return Random.choice(3, 2)
-    }
+    getGrowth() { return 1 }
+    getChance() { return Random.choice(.3, .2, .1) }
 
     getNeighbors(fill, parentPoint) {
         const rect = fill.context.zoneRect
