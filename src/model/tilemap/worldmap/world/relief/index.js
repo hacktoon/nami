@@ -28,8 +28,8 @@ export class ReliefLayer {
     }
 
     #detectWaterType(world, point) {
-        const outlineNoise = world.noise.get4D(this.rect, point, "outline")
-        const grainedNoise = world.noise.get4D(this.rect, point, "grained")
+        const outlineNoise = world.noise.get4DOutline(this.rect, point)
+        const grainedNoise = world.noise.get4DGrained(this.rect, point)
         if (world.surface.get(point).id == SeaSurface.id) {
             if (outlineNoise > OCEAN_RATIO) return Relief.OCEAN
             return Relief.PLATFORM
@@ -41,7 +41,7 @@ export class ReliefLayer {
     }
 
     #detectLandType(world, point) {
-        const grainedNoise = world.noise.get4D(this.rect, point, "grained")
+        const grainedNoise = world.noise.get4DGrained(this.rect, point)
         if (world.basin.canCreateRiver(point)) {
             if (grainedNoise >= MOUNTAIN_RATIO) return Relief.MOUNTAIN
             if (grainedNoise < HILL_RATIO) return Relief.HILL

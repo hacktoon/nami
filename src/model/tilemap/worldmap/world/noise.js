@@ -23,6 +23,26 @@ export class NoiseLayer {
         return this.noise.noise2D(pt, specs)
     }
 
+    get4DGrained(rect, point) {
+        return this.get4D(rect, point, "grained")
+    }
+
+    get4DOutline(rect, point) {
+        return this.get4D(rect, point, "outline")
+    }
+
+    get4DZoneOutline(rect, point) {
+        return this.get4D(rect, point, "zoneOutline")
+    }
+
+    get4DClimate(rect, point) {
+        return this.get4D(rect, point, "climate")
+    }
+
+    get4DRain(rect, point) {
+        return this.get4D(rect, point, "rain")
+    }
+
     get4D(rect, point, preset_id) {
         const specs = NOISE_SPEC[preset_id]
         const pt = Point.plus(point, specs.offset)

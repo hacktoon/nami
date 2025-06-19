@@ -4,28 +4,25 @@ import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
 
 
-const ZONE_SURFACE_RATIO = .62
+const SURFACE_NOISE_RATIO = .62
 
 
 export function buildGrid(context) {
     // const regionSurfaceMap = buildRegionSurfaceMap(context)
-    const landWaterGrid = buildLandWaterGrid({
-        ...context,
-        // regionSurfaceMap
-    })
+    const landWaterGrid = buildLandWaterGrid(context)
     return landWaterGrid
 }
 
 
 function buildLandWaterGrid(context) {
-    // final grid generator
+    // generate a grid with (land or water) information in bool
     const {worldPoint, world, rect, zoneRect} = context
     const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
     const noiseRect = Rect.multiply(rect, zoneRect.width)
     return Grid.fromRect(zoneRect, zonePoint => {
         const noisePoint = Point.plus(relativePoint, zonePoint)
-        const noise = world.noise.get4D(noiseRect, noisePoint, "zoneOutline")
-        return noise > ZONE_SURFACE_RATIO
+        const noise = world.noise.get4DZoneOutline(noiseRect, noisePoint)
+        return noise > SURFACE_NOISE_RATIO
     })
 }
 

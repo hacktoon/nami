@@ -51,7 +51,7 @@ export function buildSurfaceGrid(baseContext) {
 function detectLandWater(rect, world) {
     // init points as land/water according to noise map
     return Grid.fromRect(rect, point => {
-        const noise = world.noise.get4D(rect, point, "outline")
+        const noise = world.noise.get4DOutline(rect, point)
         const isWaterBody = noise < SURFACE_RATIO
         return isWaterBody ? EMPTY_WATERBODY : EMPTY_LANDBODY
     })
