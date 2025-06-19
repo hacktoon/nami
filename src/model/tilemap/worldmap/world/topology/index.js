@@ -41,8 +41,6 @@ export class TopologyLayer {
     }
 
     draw(props, params) {
-        const {canvas, canvasPoint, tileSize, tilePoint} = props
-        let color = this.get(tilePoint).color
-        canvas.rect(canvasPoint, tileSize, color.toHex())
+        props.world.surface.draw(props, params)
     }
 }

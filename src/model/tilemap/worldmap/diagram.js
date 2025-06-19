@@ -15,6 +15,7 @@ const LAYERS = [
     {value: 'biome', label: 'Biome'},
     {value: 'civil', label: 'Civil'},
     {value: 'river', label: 'River'},
+    {value: 'topology', label: 'Topology'},
 ]
 
 const SCHEMA = new Schema(
@@ -44,10 +45,15 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const world = this.tileMap.world
         const layerName = this.params.get('showLayer')
         const showZones = this.params.get('showZones') && props.tileSize >= 30
+        if (showZones) {
+            const zone = this.tileMap.getZone(props.tilePoint)
+            try {
+                zone[layerName].draw({...props, world, zone}, this.params)
+            } catch (error) {
+                console.log(`Error drawing layer "${layerName}" for zone at ${props.tilePoint}:`, error);
 
-        const zone = this.tileMap.getZone(props.tilePoint)
-        if (showZones && zone.hasOwnProperty(layerName)) {
-            zone[layerName].draw({...props, world, zone}, this.params)
+                world[layerName].draw({...props, world}, this.params)
+            }
         } else {
             world[layerName].draw({...props, world}, this.params)
         }
