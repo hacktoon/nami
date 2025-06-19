@@ -1,3 +1,6 @@
+import { Point } from '/src/lib/geometry/point'
+import { Color } from '/src/lib/color.js'
+
 import {
     buildMidpointIndexGrid,
     buildJointGrid,
@@ -41,6 +44,20 @@ export class TopologyLayer {
     }
 
     draw(props, params) {
-        props.world.surface.draw(props, params)
+        const { canvas, canvasPoint, world, zone, tileSize, tilePoint } = props
+        const size = tileSize / this.#zoneRect.width
+        const midpoint = world.topology.getMidpoint(tilePoint)
+        const isBorder = world.surface.isBorder(tilePoint)
+        const worldSurface = world.surface.get(tilePoint)
+        const zoneMod = Point.multiplyScalar(midpoint, size)
+        const zoneCanvasPoint = Point.plus(canvasPoint, zoneMod)
+        world.surface.draw(props, params)
+        let color
+        if (worldSurface.isWater) {
+            color = isBorder ? Color.BLUE : Color.PURPLE
+        } else {
+            color = isBorder ? Color.RED : Color.DARKRED
+        }
+        canvas.rect(zoneCanvasPoint, size, color.toHex())
     }
 }
