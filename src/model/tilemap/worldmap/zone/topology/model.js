@@ -1,4 +1,5 @@
 import { Grid } from '/src/lib/grid'
+import { Color } from '/src/lib/color'
 import { Point } from '/src/lib/geometry/point'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Random } from '/src/lib/random'
@@ -7,7 +8,7 @@ import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
 
 
 const EMPTY = null
-const REGION_SCALE = [1, 2]
+const REGION_SCALE = [2, 3]
 
 const ZONE_CACHE = new FIFOCache(128)
 

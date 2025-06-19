@@ -27,28 +27,21 @@ export class TopologyZone {
         return this.#regionGrid.get(point)
     }
 
-    getText(point) {
-        const region = this.getRegion(point)
-        return `Topology(region=${region})`
-    }
-
     draw(props, params) {
-        const {canvas, tilePoint, canvasPoint, tileSize, world, zone} = props
-        const regionId = this.#regionGrid.get(tilePoint)
-        const size = tileSize / this.size
         // render zone tiles
+        const {canvas, tilePoint, canvasPoint, tileSize, world, zone} = props
+        const regionId = this.getRegion(tilePoint)
+        const size = tileSize / this.size
         const midpoint = world.topology.getMidpoint(tilePoint)
-        const isBorder = world.surface.isBorder(tilePoint)
-        const worldSurface = world.surface.get(tilePoint)
         const zoneMod = Point.multiplyScalar(midpoint, size)
         const zoneCanvasPoint = Point.plus(canvasPoint, zoneMod)
-        let color = worldSurface.color.brighten(40)
-        if (worldSurface.isWater) {
-            color = isBorder ? Color.BLUE : Color.PURPLE
-        } else {
-            color = isBorder ? Color.RED : Color.DARKRED
-        }
+        const isBorder = world.surface.isBorder(tilePoint)
+        let color = world.surface.isWater(tilePoint)
+                    ? isBorder ? Color.BLUE : Color.PURPLE
+                    : isBorder ? Color.RED : Color.DARKRED
+
         zone.surface.draw(props, params)
+
         canvas.rect(zoneCanvasPoint, size, color.toHex())
     }
 }

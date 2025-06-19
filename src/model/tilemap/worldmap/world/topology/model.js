@@ -2,7 +2,7 @@ import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
 
 
-const JOINT_RANGE = [.2, .8]
+const JOINT_RANGE = [.15, .85]
 
 
 export function buildJointGrid(rect) {
