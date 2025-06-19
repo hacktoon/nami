@@ -4,6 +4,9 @@ import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
 
 
+const ZONE_SURFACE_RATIO = .62
+
+
 export function buildGrid(context) {
     // const regionSurfaceMap = buildRegionSurfaceMap(context)
     const landWaterGrid = buildLandWaterGrid({
@@ -22,7 +25,7 @@ function buildLandWaterGrid(context) {
     return Grid.fromRect(zoneRect, zonePoint => {
         const noisePoint = Point.plus(relativePoint, zonePoint)
         const noise = world.noise.get4D(noiseRect, noisePoint, "zoneOutline")
-        return noise > 0.62
+        return noise > ZONE_SURFACE_RATIO
     })
 }
 

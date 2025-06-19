@@ -44,7 +44,7 @@ export class TopologyLayer {
     }
 
     draw(props, params) {
-        const { canvas, canvasPoint, world, zone, tileSize, tilePoint } = props
+        const { canvas, canvasPoint, tileSize, tilePoint, world } = props
         const size = tileSize / this.#zoneRect.width
         const midpoint = world.topology.getMidpoint(tilePoint)
         const isBorder = world.surface.isBorder(tilePoint)
@@ -52,12 +52,9 @@ export class TopologyLayer {
         const zoneMod = Point.multiplyScalar(midpoint, size)
         const zoneCanvasPoint = Point.plus(canvasPoint, zoneMod)
         world.surface.draw(props, params)
-        let color
-        if (worldSurface.isWater) {
-            color = isBorder ? Color.BLUE : Color.PURPLE
-        } else {
-            color = isBorder ? Color.RED : Color.DARKRED
-        }
+        let color = worldSurface.isWater
+                    ? (isBorder ? Color.BLUE : Color.PURPLE)
+                    : (isBorder ? Color.RED : Color.DARKRED)
         canvas.rect(zoneCanvasPoint, size, color.toHex())
     }
 }
