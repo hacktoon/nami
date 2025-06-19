@@ -1,8 +1,36 @@
-import { Point } from '/src/lib/geometry/point'
 import { Random } from '/src/lib/random'
 
 
-export const MidpointDisplacement = (source, target, roughness, callback=()=>{}) => {
+export function midpointDisplacement([x1, y1], [x2, y2], roughness) {
+    const points = [[x1, y1], [x2, y2]];
+
+    function displace(p1, p2, depth) {
+        if (depth <= 0) return;
+
+        const midX = Math.floor((p1[0] + p2[0]) / 2);
+        const midYBase = Math.floor((p1[1] + p2[1]) / 2);
+        const offset = Random.choice(1, 2)
+
+        const midY = midYBase + offset;
+        const mid = [midX, midY];
+
+        points.push(mid);
+
+        displace(p1, mid, depth - 1);
+        displace(mid, p2, depth - 1);
+    }
+
+    displace([x1, y1], [x2, y2], depth);
+
+    return points
+}
+
+
+
+
+export const midpointDisplacement2 = (source, target, roughness, callback=()=>{}) => {
+    // MidpointDisplacement algorithm generates a series of points between two points
+    // using a roughness factor to create a fractal-like displacement.
     const deltaX = Math.abs(source[0] - target[0])
     const deltaY = Math.abs(source[1] - target[1])
     const fixedAxis = deltaX > deltaY ? 'x' : 'y'
@@ -17,7 +45,6 @@ export const MidpointDisplacement = (source, target, roughness, callback=()=>{})
         const displacedValue = (p1[displacedAxis] + p2[displacedAxis]) / 2
         const variance = Random.int(-displacement, displacement)
         const point = [0, 0]
-
         point[fixedAxis] = Math.floor((p1[fixedAxis] + p2[fixedAxis]) / 2)
         point[displacedAxis] = Math.round(displacedValue + variance)
         return point

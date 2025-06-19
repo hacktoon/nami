@@ -1,5 +1,5 @@
-import { Color } from '/src/lib/color.js'
-import { Grid } from '/src/lib/grid.js'
+import { Color } from '/src/lib/color'
+import { midpointDisplacement } from '/src/lib/geometry/fractal/midpointdisplacement.js'
 import { Random } from '/src/lib/random.js'
 import { Point } from '/src/lib/geometry/point'
 
@@ -73,44 +73,65 @@ export class TopologyZone {
         // })
         zone.surface.draw(props, params)
 
-        // render topology lines
-        for (let [jointPoint, _] of this.getJointPoints(tilePoint)) {
-            const surface = zone.surface.get(jointPoint)
-            const zoneCanvasPoint = Point.plus(canvasPoint, Point.multiplyScalar(jointPoint, size))
-
-            // canvas.rect(zoneCanvasPoint, size, surface.color.darken(50).toHex())
-
-            for (let point of this.#drawLine(jointPoint, midpoint)) {
-                const surface = zone.surface.get(point)
-                const zoneCanvasPoint = Point.plus(canvasPoint, Point.multiplyScalar(point, size))
-                canvas.rect(zoneCanvasPoint, size, surface.color.darken(20).toHex())
-            }
-
-        }
+        this.#drawLines(props, midpoint)
 
         // render the zone midpoint
-        const zoneCanvasPoint = Point.plus(canvasPoint, Point.multiplyScalar(midpoint, size))
-        canvas.rect(zoneCanvasPoint, size, midpointColor.toHex())
+        const drawPoint = Point.plus(canvasPoint, Point.multiplyScalar(midpoint, size))
+        canvas.rect(drawPoint, size, midpointColor.toHex())
+    }
+
+    #drawLines(props, midpoint) {
+        const {canvas, tilePoint, canvasPoint, tileSize, world, zone} = props
+        const size = tileSize / this.zoneSize
+        // render topology lines
+        for (let [jointPoint, direction] of this.getJointPoints(tilePoint)) {
+            const surface = zone.surface.get(jointPoint)
+            const zoneCanvasPoint = Point.plus(canvasPoint, Point.multiplyScalar(jointPoint, size))
+            // if (Point.equals(tilePoint, [40, 25])) {
+            //     console.log(points);
+
+            // }
+            // const points = midpointDisplacement(midpoint, jointPoint)
+            const startPoint = Point.plus(midpoint, direction.axis)
+            const midLine = perturbedMidpoint(startPoint, jointPoint)
+            const points = this.#drawLine(startPoint, midLine)
+            const points2 = this.#drawLine(midLine, jointPoint)
+            for (let point of points.concat(points2)) {
+                const surface = zone.surface.get(point)
+                const drawPoint = Point.plus(canvasPoint, Point.multiplyScalar(point, size))
+                canvas.rect(drawPoint, size, surface.color.darken(30).toHex())
+            }
+            // draw the joints at edges
+            // canvas.rect(zoneCanvasPoint, size, surface.color.darken(50).toHex())
+        }
     }
 
     #drawLine(src, target) {
         // do not include the target point in the path
-        const points = [src]
+        const points = []
         let current = [...src]
+
         while (Point.differs(current, target)) {
             let [cx, cy] = current
             const [tx, ty] = target
-            if (Random.chance(.5)) {
-                if (cx < tx) cx++
-                else if (cx > tx) cx--
-            } else {
-                if (cy < ty) cy++
-                else if (cy > ty) cy--
-            }
-            current = [cx, cy]
             points.push([cx, cy])
+
+            if (cx < tx) cx++
+            else if (cx > tx) cx--
+
+            if (cy < ty) cy++
+            else if (cy > ty) cy--
+
+            current = [cx, cy]
         }
         points.push(target)
         return points
     }
+}
+
+
+function perturbedMidpoint([x1, y1], [x2, y2]) {
+    const midX = Math.floor((x1 + x2) / 2) + Random.choice(1, 2)
+    const midY = Math.floor((y1 + y2) / 2) + Random.choice(1, 2)
+    return [midX, midY];
 }
