@@ -7,20 +7,20 @@ const SCALE = 255
 
 
 export class Color {
-    static WHITE = Color.fromHex('FFF')
-    static YELLOW = Color.fromHex('FF0')
-    static RED = Color.fromHex('F00')
-    static DARKRED = Color.fromHex('8b0000')
+    static WHITE = Color.fromHex('#FFF')
+    static YELLOW = Color.fromHex('#FF0')
+    static RED = Color.fromHex('#F00')
+    static DARKRED = Color.fromHex('#8b0000')
     static LIGHTGREEN = Color.fromHex('#90cc5e')
-    static GREEN = Color.fromHex('0F0')
-    static DARKGREEN = Color.fromHex('71b13e')
-    static PURPLE = Color.fromHex('808')
-    static BLUE = Color.fromHex('00F')
-    static DARKBLUE = Color.fromHex('235')
+    static GREEN = Color.fromHex('#0F0')
+    static DARKGREEN = Color.fromHex('#71b13e')
+    static PURPLE = Color.fromHex('#808')
+    static BLUE = Color.fromHex('#00F')
+    static DARKBLUE = Color.fromHex('#235')
     static BROWN = Color.fromHex('#6b573e')
-    static BLACK = Color.fromHex('000')
-    static GRAY = Color.fromHex('666')
-    static LIGHTGRAY = Color.fromHex('d3d3d3')
+    static BLACK = Color.fromHex('#000')
+    static GRAY = Color.fromHex('#666')
+    static LIGHTGRAY = Color.fromHex('#d3d3d3')
 
     static fromInteger(id) {
         const r = 1
