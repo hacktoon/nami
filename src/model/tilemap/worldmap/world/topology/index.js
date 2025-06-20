@@ -1,22 +1,13 @@
-import { Point } from '/src/lib/geometry/point'
-import { Color } from '/src/lib/color.js'
 
-import {
-    buildMidpointIndexGrid,
-    buildJointGrid,
- } from './model'
+import { buildJointGrid } from './model'
 
 
 export class TopologyLayer {
     // Float used to connect with adjacent tiles
     #jointGrid
-    // Grid of index of the midpoint in a zone rect
-    #midpointIndexGrid
-    #zoneRect
 
     constructor(context) {
-        const {rect, zoneRect} = context
-        this.#zoneRect = zoneRect
+        const {rect} = context
         this.#jointGrid = buildJointGrid(rect)
     }
 

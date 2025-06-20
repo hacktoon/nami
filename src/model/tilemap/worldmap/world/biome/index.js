@@ -1,8 +1,9 @@
+import { Grid } from '/src/lib/grid'
+
+import { Relief } from '../relief/data'
 import { Climate } from '../climate/data'
 import { Rain } from '../rain/data'
-import { Grid } from '/src/lib/grid'
-import { Relief } from '../relief/data'
-import { RiverStretch } from '../river/data'
+
 import { Biome } from './type'
 
 
