@@ -6,12 +6,13 @@
 
 
 ## ROADMAP
-- set surface border types
-    - create more type of surfaces (w/ borders)
+- draw zone regions by horizontal and vertical lines, not topology
 - set biome as {
     temp > x
     rain > 4
-}
+  }
+- create secondary biomes
+
 - finish rivers and roads to determine surface
   - draw rivers
   - draw roads

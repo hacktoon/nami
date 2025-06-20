@@ -106,7 +106,11 @@ export class BasinLayer {
         const lineWidth = Math.round(props.tileSize / 20)
         // calc midpoint point on canvas
         const pixelsPerZonePoint = tileSize / this.#zoneRect.width
-        const midpoint = this.#world.topology.getMidpoint(tilePoint)
+        const zoneSize = this.#zoneRect.width
+        const midpoint = [
+            Math.floor(zoneSize / 2),
+            Math.floor(zoneSize / 2),
+        ]
         const canvasMidpoint = Point.multiplyScalar(midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         const joint = this.#world.topology.getJoint(tilePoint)

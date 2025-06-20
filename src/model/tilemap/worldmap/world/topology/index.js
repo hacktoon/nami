@@ -18,13 +18,11 @@ export class TopologyLayer {
         const {rect, zoneRect} = context
         this.#zoneRect = zoneRect
         this.#jointGrid = buildJointGrid(rect)
-        this.#midpointIndexGrid = buildMidpointIndexGrid({rect, zoneRect})
     }
 
     get(point) {
         return {
             joint: this.#jointGrid.get(point),
-            midpoint: this.getMidpoint(point),
         }
     }
 
@@ -32,29 +30,13 @@ export class TopologyLayer {
         return this.#jointGrid.get(point)
     }
 
-    getMidpoint(point) {
-        const index = this.#midpointIndexGrid.get(point)
-        return this.#zoneRect.indexToPoint(index)
-    }
-
     getText(point) {
         const joint = this.#jointGrid.get(point).toFixed(2)
-        const midpoint = this.getMidpoint(point)
-        return `Topology(joint=${joint},midpoint=${midpoint})`
+        return `Topology(joint=${joint})`
     }
 
     draw(props, params) {
-        const { canvas, canvasPoint, tileSize, tilePoint, world } = props
-        const size = tileSize / this.#zoneRect.width
-        const midpoint = world.topology.getMidpoint(tilePoint)
-        const isBorder = world.surface.isBorder(tilePoint)
-        const worldSurface = world.surface.get(tilePoint)
-        const zoneMod = Point.multiplyScalar(midpoint, size)
-        const zoneCanvasPoint = Point.plus(canvasPoint, zoneMod)
+        const { world } = props
         world.surface.draw(props, params)
-        let color = worldSurface.isWater
-                    ? (isBorder ? Color.BLUE : Color.PURPLE)
-                    : (isBorder ? Color.RED : Color.DARKRED)
-        canvas.rect(zoneCanvasPoint, size, color.toHex())
     }
 }

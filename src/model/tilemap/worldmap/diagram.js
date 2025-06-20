@@ -1,6 +1,5 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/geometry/point'
 
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 
@@ -50,47 +49,8 @@ export class WorldTileMapDiagram extends TileMapDiagram {
             if (zone[layerName]) {
                 zone[layerName].draw({...props, world, zone}, this.params)
             }
-            // try {
-            // } catch (error) {
-            //     console.log(`Error drawing layer "${layerName}" for zone at ${props.tilePoint}:`, error);
-
-            //     world[layerName].draw({...props, world}, this.params)
-            // }
         } else {
             world[layerName].draw({...props, world}, this.params)
         }
     }
-
-    // drawZone(props) {
-    //     const {canvas, tilePoint, canvasPoint, tileSize} = props
-    //     const world = this.tileMap.world
-
-    //     const zoneSize = zone.surface.size
-    //     const size = tileSize / zoneSize
-    //     // render zone tiles
-    //     const showRiver = this.params.get('showRivers') && tileSize >= 8
-    //     const river = world.river.get(tilePoint)
-    //     const biome = world.biome.get(tilePoint)
-    //     for (let x=0; x < zoneSize; x++) {
-    //         const xSize = x * size
-    //         for (let y=0; y < zoneSize; y++) {
-    //             const zonePoint = [y, x]
-    //             const ySize = y * size
-    //             const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-    //             const zoneSurface = zone.surface.get(zonePoint)
-    //             let color = biome.color
-    //             if (showRiver && zone.river.has(zonePoint)) {
-    //                 color = river.stretch.color
-    //             } else {
-    //                 if (zoneSurface.isWater) {
-    //                     color = zoneSurface.color
-    //                 } else if (world.surface.isWater(tilePoint) && world.surface.isBorder(tilePoint)) {
-    //                     color = biome.color
-    //                 }
-    //             }
-    //             canvas.rect(zoneCanvasPoint, size, color.toHex())
-    //         }
-    //     }
-    // }
-
 }
