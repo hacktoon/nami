@@ -4,7 +4,7 @@ import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
 
 
-const SURFACE_NOISE_RATIO = .62
+const SURFACE_NOISE_RATIO = .6
 
 
 export function buildGrid(context) {

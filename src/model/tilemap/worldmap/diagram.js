@@ -47,13 +47,15 @@ export class WorldTileMapDiagram extends TileMapDiagram {
         const showZones = this.params.get('showZones') && props.tileSize >= 30
         if (showZones) {
             const zone = this.tileMap.getZone(props.tilePoint)
-            try {
+            if (zone[layerName]) {
                 zone[layerName].draw({...props, world, zone}, this.params)
-            } catch (error) {
-                console.log(`Error drawing layer "${layerName}" for zone at ${props.tilePoint}:`, error);
-
-                world[layerName].draw({...props, world}, this.params)
             }
+            // try {
+            // } catch (error) {
+            //     console.log(`Error drawing layer "${layerName}" for zone at ${props.tilePoint}:`, error);
+
+            //     world[layerName].draw({...props, world}, this.params)
+            // }
         } else {
             world[layerName].draw({...props, world}, this.params)
         }

@@ -33,7 +33,7 @@ const SCHEMA = new Schema(
 )
 
 
-const ZONE_SIZE = 9
+const ZONE_SIZE = 17
 const ZONE_RECT = new Rect(ZONE_SIZE, ZONE_SIZE)
 
 

@@ -93,10 +93,8 @@ export class TopologyZone {
             // }
             // const points = midpointDisplacement(midpoint, jointPoint)
             const startPoint = Point.plus(midpoint, direction.axis)
-            const midLine = perturbedMidpoint(startPoint, jointPoint)
-            const points = this.#drawLine(startPoint, midLine)
-            const points2 = this.#drawLine(midLine, jointPoint)
-            for (let point of points.concat(points2)) {
+            const points = this.#drawPath(midpoint, jointPoint)
+            for (let point of points) {
                 const surface = zone.surface.get(point)
                 const drawPoint = Point.plus(canvasPoint, Point.multiplyScalar(point, size))
                 canvas.rect(drawPoint, size, surface.color.darken(30).toHex())
@@ -104,6 +102,13 @@ export class TopologyZone {
             // draw the joints at edges
             // canvas.rect(zoneCanvasPoint, size, surface.color.darken(50).toHex())
         }
+    }
+
+    #drawPath(src, target) {
+        const midpoint = perturbedMidpoint(src, target)
+        const p1 = this.#drawLine(src, midpoint)
+        const p2 = this.#drawLine(midpoint, target)
+        return [...p1, ...p2]
     }
 
     #drawLine(src, target) {
@@ -115,13 +120,13 @@ export class TopologyZone {
             let [cx, cy] = current
             const [tx, ty] = target
             points.push([cx, cy])
-
-            if (cx < tx) cx++
-            else if (cx > tx) cx--
-
-            if (cy < ty) cy++
-            else if (cy > ty) cy--
-
+            if (Random.chance(.5)) {
+                if (cx < tx) cx++
+                else if (cx > tx) cx--
+            } else {
+                if (cy < ty) cy++
+                else if (cy > ty) cy--
+            }
             current = [cx, cy]
         }
         points.push(target)
@@ -131,7 +136,17 @@ export class TopologyZone {
 
 
 function perturbedMidpoint([x1, y1], [x2, y2]) {
-    const midX = Math.floor((x1 + x2) / 2) + Random.choice(1, 2)
-    const midY = Math.floor((y1 + y2) / 2) + Random.choice(1, 2)
+    const diff = 2
+    const deltaX = x2 - x1;
+    const deltaY = y2 - y1;
+    let modX = 0
+    let modY = 0
+    if (deltaX > deltaY) {
+        modY = Random.int(-diff, diff)
+    } else {
+        modX = Random.int(-diff, diff)
+    }
+    const midX = Math.floor((x1 + x2) / 2) + modY
+    const midY = Math.floor((y1 + y2) / 2) + modX
     return [midX, midY];
 }
