@@ -60,13 +60,12 @@ class CanvasContext {
         this.#ctx.stroke()
     }
 
-    outline(point, size, color='#00F') {
+    outline(point, size, lineWidth, color='#00F') {
         const [x, y] = point
-        const lineSize = Math.ceil(size / 10)
         this.#ctx.strokeStyle = color
-        this.#ctx.lineWidth = lineSize
-        const offsetSize = size - lineSize * 2
-        this.#ctx.strokeRect(x+lineSize, y+lineSize, offsetSize, offsetSize)
+        this.#ctx.lineWidth = lineWidth
+        const offsetSize = size - (lineWidth * 2)
+        this.#ctx.strokeRect(x+lineWidth, y+lineWidth, offsetSize, offsetSize)
     }
 
     circle(point, radius, color='#00F') {
@@ -97,10 +96,10 @@ class CanvasContext {
 
     cursor(size, point) {
         const [x, y] = point
-        const lineWidth = Math.floor(size / 15)
+        const lineWidth = Math.floor(size / 17)
         const half = Math.floor(lineWidth / 2)
         const cSize = size - lineWidth
-        this.#ctx.strokeStyle = '#FFF'
+        this.#ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)'
         this.#ctx.lineWidth = lineWidth
         this.#ctx.strokeRect(x+half, y+half, cSize, cSize)
     }

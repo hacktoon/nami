@@ -9,7 +9,7 @@ const REGION_SCALE = [2, 2, 3]
 const EMPTY = null
 
 
-export function buildRegionGrid(context) {
+export function buildRegionGridMap(context) {
     const {zoneRect} = context
     // create a grid with many regions fragmenting the zone map
     const regionGrid = Grid.fromRect(zoneRect, () => EMPTY)

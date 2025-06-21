@@ -8,31 +8,43 @@ import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
 
 
 const EMPTY = null
-const REGION_SCALE = [2, 3]
+const REGION_SCALE = [2, 3]  // distance between region origins
+const REGION_GROWTH = [2, 1]
 
 const ZONE_CACHE = new FIFOCache(128)
 
 
-export function buildRegionGrid(context) {
+export function buildRegionGridMap(context) {
     const {zoneRect, worldPoint} = context
     // create a grid with many regions fragmenting the zone map
     const regionGrid = Grid.fromRect(zoneRect, () => EMPTY)
     const origins = EvenPointSampling.create(zoneRect, Random.choiceFrom(REGION_SCALE))
-    const fillMap = new Map(origins.map((origin, id) => [id, {origin}]))
-    const ctx = {...context, regionGrid}
-    new RegionFloodFill(fillMap, ctx).complete()
+    // map a region id to its tags
+    // inner | outer |
+    const originMap = new Map()
+    // prepare fill map with fill id => fill origin
+    // it's also a map of all regions
+    const regionColorMap = new Map()
+    const regionIdMap = new Map(origins.map((origin, id) => {
+        regionColorMap.set(id, new Color())
+        originMap.set(id, origin)
+        return [id, {origin}]
+    }))
+    const ctx = {...context, regionIdMap, regionGrid}
+    new RegionFloodFill(regionIdMap, ctx).complete()
     // const hash = Point.hash(worldPoint)
     // if (ZONE_CACHE.has(hash)) {
     //     return ZONE_CACHE.get(hash)
     // }
     // ZONE_CACHE.set(hash, regionGrid)
-    return regionGrid
+
+    return {regionGrid, originMap, regionColorMap}
 }
 
 
 class RegionFloodFill extends ConcurrentFill {
-    getGrowth() { return 1 }
-    getChance() { return Random.choice(.3, .2, .1) }
+    getGrowth() { return Random.choiceFrom(REGION_GROWTH) }
+    getChance() { return .1 }
 
     getNeighbors(fill, parentPoint) {
         const rect = fill.context.zoneRect

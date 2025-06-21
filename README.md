@@ -11,15 +11,26 @@
     temp > x
     rain > 4
   }
-- create secondary biomes
+- create secondary biomes for zones
 
-- finish rivers and roads to determine surface
+- detect regions by position
+if worldPoint is land border {
+  if worldPoint has river and border
+    - regions at lateral axis
+    - if erosion.dir(NORTH) is water -> regions at vertical axis north are water
+} else worldPoint is water {
+  for all water sides
+}
+
+
+  if point is lake
+    all inner regions
+
+
   - draw rivers
   - draw roads
 - ZoneMap
   - steps after region fill - setting regions' surface type by priority:
-    - Order of zone steps: roads > rivers > erosion
-- simplify cities into "city seeds"
 - conclude wrapGet migration for grids
 
 
