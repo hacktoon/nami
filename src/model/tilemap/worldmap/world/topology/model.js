@@ -2,11 +2,17 @@ import { Grid } from '/src/lib/grid'
 import { Random } from '/src/lib/random'
 
 
-const JOINT_RANGE = [.2, .8]
+const ROAD_JOINT_RANGE = [.1, .9]
+const RIVER_JOINT_RANGE = [.2, .8]
 
 
-export function buildJointGrid(rect) {
-    return Grid.fromRect(rect, () => Random.floatRange(...JOINT_RANGE))
+export function buildRoadJointGrid(rect) {
+    return Grid.fromRect(rect, () => Random.floatRange(...ROAD_JOINT_RANGE))
+}
+
+
+export function buildRiverJointGrid(rect) {
+    return Grid.fromRect(rect, () => Random.floatRange(...RIVER_JOINT_RANGE))
 }
 
 

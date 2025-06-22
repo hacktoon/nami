@@ -1,29 +1,29 @@
 
-import { buildJointGrid } from './model'
+import { buildRoadJointGrid, buildRiverJointGrid } from './model'
 
 
 export class TopologyLayer {
     // Float used to connect with adjacent tiles
-    #jointGrid
+    #roadJointGrid
+    #riverJointGrid
 
     constructor(context) {
         const {rect} = context
-        this.#jointGrid = buildJointGrid(rect)
+        this.#roadJointGrid = buildRoadJointGrid(rect)
+        this.#riverJointGrid = buildRiverJointGrid(rect)
     }
 
     get(point) {
         return {
-            joint: this.#jointGrid.get(point),
+            road: this.#roadJointGrid.get(point),
+            river: this.#riverJointGrid.get(point),
         }
     }
 
-    getJoint(point) {
-        return this.#jointGrid.get(point)
-    }
-
     getText(point) {
-        const joint = this.#jointGrid.get(point).toFixed(2)
-        return `Topology(joint=${joint})`
+        const road = this.#roadJointGrid.get(point).toFixed(1)
+        const river = this.#riverJointGrid.get(point).toFixed(1)
+        return `Topology(roadJoint=${road},riverJoint=${river})`
     }
 
     draw(props, params) {

@@ -40,10 +40,10 @@ export class TopologyZone {
     getJointPoints(worldPoint) {
         // return the 4 zone points at edges with adjacent zone points
         const points = []
-        const joint = this.world.topology.getJoint(worldPoint)
+        const topology = this.world.topology.get(worldPoint)
         Point.adjacents(worldPoint, (sidePoint, direction) => {
-            const sideJoint = this.world.topology.getJoint(sidePoint)
-            const sideAverage = (joint + sideJoint) / 2  // percentage of the side's length
+            const sideTopology = this.world.topology.get(sidePoint)
+            let jointRatio = Math.min(topology.road, sideTopology.road)  // they both choose the lower number
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented
             // convert direction axis pairs to edges in a rectx+half
@@ -53,7 +53,7 @@ export class TopologyZone {
                 if (dir < 0) return 0
                 if (dir > 0) return maxZoneIndex
                 // choose the random point in the edge if axis is 0 (it varies along this edge)
-                return Math.floor(sideAverage * maxZoneIndex)
+                return Math.floor(jointRatio * maxZoneIndex)
             })
             points.push([pointInEdge, direction])
             // if (Point.equals(worldPoint, [44, 30]) ||  Point.equals(worldPoint, [45, 30])) {
@@ -92,6 +92,15 @@ export class TopologyZone {
             const zoneCanvasPoint = Point.plus(canvasPoint, [x, y])
             const color = world.surface.isLand(tilePoint) ? '#D13131' : '#5231D1'
             canvas.rect(zoneCanvasPoint, zoneTileSize, color)
+
+            for (let pathPoint of connectPoints(this.#midpoint, jointPoint)) {
+                const x = pathPoint[0] * zoneTileSize
+                const y = pathPoint[1] * zoneTileSize
+                const pathCanvasPoint = Point.plus(canvasPoint, [x, y])
+                const color = 'rgba(255, 255, 255, .1)'
+                canvas.rect(pathCanvasPoint, zoneTileSize, color)
+
+            }
         }
 
         // draw midpoint
@@ -133,4 +142,26 @@ export class TopologyZone {
 }
 
 
-// 1 2 4 8 16 32
+function connectPoints(p1, p2) {
+    const [x1, y1] = p1;
+    const [x2, y2] = p2;
+    const points = [];
+    let x = x1, y = y1;
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const stepX = Math.sign(dx);
+    const stepY = Math.sign(dy);
+
+    while (x !== x2 || y !== y2) {
+        if (x !== x2 && y !== y2) {
+            x += stepX;
+            y += stepY;
+        } else if (x !== x2) {
+            x += stepX;
+        } else if (y !== y2) {
+            y += stepY;
+        }
+        points.push([x, y]);
+    }
+    return points;
+}

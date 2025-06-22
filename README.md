@@ -11,6 +11,7 @@
     temp > x
     rain > 4
   }
+  - zone river follows an independent path from downstream to each tributary joint
 - create secondary biomes for zones
 
 - detect regions by position

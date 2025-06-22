@@ -12,16 +12,16 @@ export function buildRiverPoints(context) {
         return points
     }
     const river = world.river.get(worldPoint)
-    const {joint} = world.topology.get(worldPoint)
+    const topology = world.topology.get(worldPoint)
     const midSize = Math.floor(zoneRect.width / 2)
     const midpoint = buildMidpoint(zoneRect)
     let [mx, my] = midpoint
     for(let direction of river.flows) {
         const axis = direction.axis
         const worldSidePoint = Point.atDirection(worldPoint, direction)
-        const sideJoint = world.topology.getJoint(worldSidePoint)
-        const signal = (joint < 0 || sideJoint < 0) ? -1 : 1
-        const offset = Math.round((joint + sideJoint) / 2) * signal
+        const sideTopology = world.topology.get(worldSidePoint)
+        const signal = (topology.river < 0 || sideTopology.joint < 0) ? -1 : 1
+        const offset = Math.round((topology.river + sideTopology.river) / 2) * signal
         const offsetX = axis[0] === 0 ? offset : 0
         const offsetY = axis[1] === 0 ? offset : 0
         const targetX = midSize + (midSize * axis[0]) + offsetX
