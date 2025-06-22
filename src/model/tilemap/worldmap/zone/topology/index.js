@@ -41,27 +41,41 @@ export class TopologyZone {
         // return the 4 zone points at edges with adjacent zone points
         const points = []
         const topology = this.world.topology.get(worldPoint)
-        Point.adjacents(worldPoint, (sidePoint, direction) => {
-            const sideTopology = this.world.topology.get(sidePoint)
-            let jointRatio = Math.min(topology.road, sideTopology.road)  // they both choose the lower number
+        const maxZoneIndex = this.zoneSize - 1
+
+        const convertPoint = (direction, jointRatio) => {
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented
             // convert direction axis pairs to edges in a rectx+half
-            const maxZoneIndex = this.zoneSize - 1
-            const pointInEdge = direction.axis.map(dir => {
+            return direction.axis.map(dir => {
                 // map negative axis to 0 for multiplication
                 if (dir < 0) return 0
                 if (dir > 0) return maxZoneIndex
                 // choose the random point in the edge if axis is 0 (it varies along this edge)
                 return Math.floor(jointRatio * maxZoneIndex)
             })
-            points.push([pointInEdge, direction])
+        }
+
+        Point.adjacents(worldPoint, (sidePoint, direction) => {
+            const sideTopology = this.world.topology.get(sidePoint)
+            // they both choose the lower number
+            let roadJointRatio = Math.min(topology.road, sideTopology.road)
+            let riverJointRatio = Math.min(topology.river, sideTopology.river)
+            // if (roadJointRatio > riverJointRatio) {
+
+            // } else if (roadJointRatio < riverJointRatio) {
+
+            // } else {
+
+            // }
+            const roadPoint = convertPoint(direction, roadJointRatio)
+            const riverPoint = convertPoint(direction, riverJointRatio)
+            points.push([riverPoint, roadPoint, direction])
             // if (Point.equals(worldPoint, [44, 30]) ||  Point.equals(worldPoint, [45, 30])) {
             //     console.log(
-            //         `${worldPoint}, ${pointInEdge}, ${direction.name} \n${joint.toFixed(2)} avg ${sideJoint.toFixed(2)} = ${sideAverage.toFixed(2)}, `);
+            //         `${worldPoint}, ${riverPoint}, ${direction.name} \n${joint.toFixed(2)} avg ${sideJoint.toFixed(2)} = ${sideAverage.toFixed(2)}, `);
             // }
         })
-
         return points
     }
 
@@ -86,20 +100,21 @@ export class TopologyZone {
         this.drawZoneTiles(props, zoneSize, zoneTileSize)
 
         // render joints
-        for (let [jointPoint, direction] of this.getJointPoints(tilePoint)) {
-            const x = jointPoint[0] * zoneTileSize
-            const y = jointPoint[1] * zoneTileSize
-            const zoneCanvasPoint = Point.plus(canvasPoint, [x, y])
-            const color = world.surface.isLand(tilePoint) ? '#D13131' : '#5231D1'
-            canvas.rect(zoneCanvasPoint, zoneTileSize, color)
+        for (let [riverPoint, roadPoint, direction] of this.getJointPoints(tilePoint)) {
+            const riverCanvasPoint = Point.plus(canvasPoint, Point.multiplyScalar(riverPoint, zoneTileSize))
+            const riverColor = world.surface.isLand(tilePoint) ? '#D13131' : '#5231D1'
+            canvas.rect(riverCanvasPoint, zoneTileSize, riverColor)
+            const roadCanvasPoint = Point.plus(canvasPoint, Point.multiplyScalar(roadPoint, zoneTileSize))
+            const roadColor = world.surface.isLand(tilePoint) ? '#696262' : '#40C3FF'
+            canvas.rect(roadCanvasPoint, zoneTileSize, roadColor)
 
-            for (let pathPoint of connectPoints(this.#midpoint, jointPoint)) {
+            // desenha rota de midpoint pra cada joint
+            for (let pathPoint of connectPoints(this.#midpoint, riverPoint)) {
                 const x = pathPoint[0] * zoneTileSize
                 const y = pathPoint[1] * zoneTileSize
                 const pathCanvasPoint = Point.plus(canvasPoint, [x, y])
                 const color = 'rgba(255, 255, 255, .1)'
                 canvas.rect(pathCanvasPoint, zoneTileSize, color)
-
             }
         }
 
