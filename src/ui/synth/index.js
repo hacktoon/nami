@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { Point } from '/src/lib/geometry/point'
 import { Form } from '/src/ui/form'
 import { Button } from '/src/ui/form/button'
 import { Text } from '/src/ui'
+// import { start as ToneStart, Synth } from 'tone'
 
 
 const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -14,18 +15,37 @@ const hasBlack = {
     'G': ['G#', 'Ab'],
     'A': ['A#', 'Bb']
 }
-const octaves = [1, 2, 3, 4, 5]
+const octaves = [2, 3, 4, 5, 6]
 
 
 export function UIAudioSynth({modelClass}) {
-    // const [data, setData] = useState(modelClass.schema.build())
-    // const tileMap = modelClass.create(data)
+    const synthRef = useRef(null);
+
+    const playNote = async (note) => {
+        // workaround for AudioContext initialization
+        if (! synthRef.current) {
+            const Tone = await import('tone');
+            await Tone.start()
+            synthRef.current = new Tone.Synth().toDestination();
+
+        }
+        const synth = synthRef.current
+        synth.triggerAttackRelease(note, "8n");
+    };
+
+    const ctx = {
+        playNote
+    }
 
     return <section className='UIAudioSynth'>
-        <Keyboard />
-        {/* <section className="channels">
-        </section> */}
+        <Keyboard ctx={ctx} />
         <section className="channels">
+            <select id="exampleSelect1">
+                <option value="">-- Select a melody --</option>
+                <option value="C4 4n E4 4n G4 4n">C major arpeggio</option>
+                <option value="C4 4n D4 4n E4 4n F4 4n G4 4n">Scale</option>
+                <option value="E3 8n G3 8n A3 8n Bb3 8n G3 4n E3 8n G3 8n B3 8n A3 4n F3 8n G3 8n C4 8n Bb3 4n A3 8n G3 8n E3 4n">Dark forest</option>
+            </select>
             <h2>Channel 1</h2>
             <textarea className="channel channel1" defaultValue="teste"></textarea>
 
@@ -36,36 +56,50 @@ export function UIAudioSynth({modelClass}) {
 }
 
 
-function Octave({ octave }) {
-  return (
-    <div className="octave">
-      <div className="white-container">
-        {notes.map(note => (
-          <button key={note + octave} className="white-key">{note + octave}</button>
-        ))}
-      </div>
-      {notes.map((note, i) =>
-        hasBlack[note] ? (
-          <button
-            key={note + '#' + octave}
-            className="black-key"
-            style={{ left: `${(i + 1) * 40 - 10}px` }}
-          >
-            {hasBlack[note].map(n => n + octave).join('\n')}
-          </button>
-        ) : null
-      )}
-    </div>
-  )
-}
-
-
-function Keyboard() {
-  return (
-    <div className="keyboard">
-      {octaves.map(octave => (
-        <Octave key={octave} octave={octave} />
-      ))}
-    </div>
-  );
+function Keyboard({ctx}) {
+    return (
+        <div className="keyboard">
+            {octaves.map(octave => (
+                <Octave key={octave} ctx={ctx} octave={octave} />
+            ))}
+        </div>
+    );
 };
+
+
+function Octave({ ctx, octave }) {
+    const btnClick = async (event) => {
+        const note = event.target.getAttribute('data-key')
+        ctx.playNote(note)
+    }
+
+    return (
+        <div className="octave">
+        <div className="white-container">
+            {notes.map((note, i) => (
+                <button
+                    key={`${note} + ${i}`}
+                    className="white-key"
+                    data-key={note + octave}
+                    onClick={btnClick}
+                >
+                    {note + octave}
+                </button>
+            ))}
+        </div>
+        {notes.map((note, i) => {
+            if (! hasBlack[note]) return null
+            const value = hasBlack[note].map(n => n + octave).join('\n')
+            return <button
+                    key={`${note} + ${i}`}
+                    data-key={value}
+                    className="black-key"
+                    style={{ left: `${(i + 1) * 40}px` }}
+                    onClick={btnClick}
+                >
+                {value}
+            </button>
+        })}
+        </div>
+    )
+}

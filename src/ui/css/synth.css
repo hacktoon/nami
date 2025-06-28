@@ -24,7 +24,7 @@ KEYBOARD
     height: 160px;
     background: white;
     border: 1px solid #000;
-    border-bottom: 4px solid #aaa;
+    border-bottom: 5px solid #000;
     position: relative;
     z-index: 1;
     display: flex;
@@ -43,9 +43,9 @@ KEYBOARD
 .UIAudioSynth .black-key {
     width: 28px;
     height: 100px;
-    background: black;
+    background: #444;
     color: white;
-    border-bottom: 3px solid #444;
+    border-bottom: 3px solid #000;
     position: absolute;
     margin-left: -14px;
     z-index: 2;
