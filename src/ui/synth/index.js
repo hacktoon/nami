@@ -4,7 +4,6 @@ import { Point } from '/src/lib/geometry/point'
 import { Form } from '/src/ui/form'
 import { Button } from '/src/ui/form/button'
 import { Text } from '/src/ui'
-// import { start as ToneStart, Synth } from 'tone'
 
 
 const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -23,13 +22,16 @@ export function UIAudioSynth({modelClass}) {
 
     const playNote = async (note) => {
         // workaround for AudioContext initialization
+        // to avoid autoplay warning in browsers
         if (! synthRef.current) {
-            const Tone = await import('tone');
-            await Tone.start()
-            synthRef.current = new Tone.Synth().toDestination();
-
+            // dynamically import Tone.js
+            const ToneLib = await import('tone');
+            await ToneLib.start()
+            const synth = new ToneLib.Synth().toDestination()
+            synthRef.current = [ToneLib, synth]
         }
-        const synth = synthRef.current
+        const [Tone, synth] = synthRef.current
+        // const now = Tone.now()
         synth.triggerAttackRelease(note, "8n");
     };
 
