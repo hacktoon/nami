@@ -1,4 +1,4 @@
-import { React, useState } from 'react'
+import { useState } from 'react'
 
 import { Point } from '/src/lib/geometry/point'
 import { Form } from '/src/ui/form'
@@ -8,9 +8,9 @@ import { Text } from '/src/ui'
 import { TileMapScene, UITileMapScene } from './scene'
 
 
-export function UITileMap({TileMap}) {
-    const [data, setData] = useState(TileMap.schema.build())
-    const tileMap = TileMap.create(data)
+export function UITileMap({modelClass}) {
+    const [data, setData] = useState(modelClass.schema.build())
+    const tileMap = modelClass.create(data)
 
     return <section className='UITileMap'>
         <section className="UITileMapForm">
@@ -19,7 +19,7 @@ export function UITileMap({TileMap}) {
             </Form>
         </section>
         <UITileMapDiagram
-            diagram={TileMap.diagram}
+            diagram={modelClass.diagram}
             tileMap={tileMap}
         />
     </section>

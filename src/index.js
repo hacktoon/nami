@@ -1,5 +1,6 @@
 import "/src/ui/css/base.css"
 import "/src/ui/css/tilemap.css"
+import "/src/ui/css/synth.css"
 
 import { useState } from 'react'
 import * as ReactDOM from 'react-dom/client';
@@ -12,17 +13,19 @@ import { Title } from '/src/ui'
 import { NoiseTileMap } from '/src/model/tilemap/noisemap'
 import { RegionTileMap } from '/src/model/tilemap/regionmap'
 import { WorldTileMap } from '/src/model/tilemap/worldmap'
+import { AudioSynth } from '/src/model/synth'
 
 
 const APPS = [
-    {value: 'WorldMap', label: 'WorldMap', TileMapClass: WorldTileMap},
-    {value: 'NoiseMap', label: 'NoiseMap', TileMapClass: NoiseTileMap},
-    {value: 'RegionMap', label: 'RegionMap', TileMapClass: RegionTileMap},
+    {value: 'WorldMap', label: 'WorldMap', AppModelClass: WorldTileMap},
+    {value: 'NoiseMap', label: 'NoiseMap', AppModelClass: NoiseTileMap},
+    {value: 'RegionMap', label: 'RegionMap', AppModelClass: RegionTileMap},
+    {value: 'AudioSynth', label: 'AudioSynth', AppModelClass: AudioSynth},
 ]
 
-const UI_APP_COMPONENT_MAP = new Map(APPS.map(({value, TileMapClass}) => {
-    const UITileMap = TileMapClass.ui
-    const renderComponent = () => <UITileMap TileMap={TileMapClass} />
+const UI_APP_COMPONENT_MAP = new Map(APPS.map(({value, AppModelClass}) => {
+    const UIModelComponent = AppModelClass.ui
+    const renderComponent = () => <UIModelComponent modelClass={AppModelClass} />
     return [value, renderComponent]
 }))
 

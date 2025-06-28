@@ -1,6 +1,6 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
-import { Point } from '/src/lib/geometry/point'
+import { UIAudioSynth } from '/src/ui/synth'
 
 
 const SCHEMA = new Schema(
@@ -9,12 +9,12 @@ const SCHEMA = new Schema(
 )
 
 
-export class Audio {
+export class AudioSynth {
     static schema = SCHEMA
-    static ui = UITileMap
+    static ui = UIAudioSynth
 
     static create(params) {
-        return new NoiseTileMap(params)
+        return new AudioSynth(params)
     }
 
     static fromData(data) {
@@ -24,7 +24,6 @@ export class Audio {
     }
 
     constructor(params) {
-        super(params)
         this.params = params
     }
 
