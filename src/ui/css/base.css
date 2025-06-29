@@ -179,13 +179,13 @@ canvas { display: block; }
 /* APPS ======================================= */
 .App {
     color: #333;
-    background: #111;
     display: grid;
     grid-template-rows: min-content auto;
     height: 100vh;
 }
 
 .AppHeader {
+    background: #111;
     display: grid;
     grid-template-columns: min-content auto;
     padding: .5rem;
