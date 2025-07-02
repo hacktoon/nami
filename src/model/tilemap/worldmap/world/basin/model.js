@@ -1,13 +1,12 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
-import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
 
 import {
     EndorheicSeaBasin,
     EndorheicLakeBasin,
-    ExorheicRiverBasin,
-    DiffuseBasin,
+    ExorheicBasin,
+    DiffuseLandBasin,
     Basin,
     EMPTY,
 } from './type'
@@ -15,8 +14,6 @@ import {
 
 const FILL_CHANCE = .1  // chance of fill growing
 const FILL_GROWTH = 10  // make fill basins grow bigger than others
-const ZONE_MIDDLE = 5
-const ZONE_OFFSET_RANGE = [1, 3]
 
 
 export function buildBasinGrid(baseContext) {
@@ -31,14 +28,15 @@ export function buildBasinGrid(baseContext) {
         // reuse the process of basinGrid creation to determine river mouths
         // is this point an erosion path (possible river mouth)?
         const survey = surveyNeighbors(baseContext, point)
-        const isLandBorder = world.surface.isLand(point) && world.surface.isBorder(point)
-        if (isLandBorder) {
-            // set type on init
-            const type = buildBasinType(world, survey)
-            typeMap.set(basinId, type.id)
-            surveyMap.set(basinId, survey)
-            fillMap.set(basinId, {origin: point})
-            basinId++
+        if (world.surface.isLand(point)) {
+            if (world.surface.isBorder(point)) {
+                // set type on init
+                const type = buildBasinType(world, survey)
+                typeMap.set(basinId, type.id)
+                surveyMap.set(basinId, survey)
+                fillMap.set(basinId, {origin: point})
+                basinId++
+            }
         }
         return EMPTY
     })
@@ -96,12 +94,10 @@ class BasinGridFill extends ConcurrentFill {
     isEmpty(fill, fillPoint, parentPoint) {
         const {world, basinGrid, typeMap} = fill.context
         const basin = Basin.parse(typeMap.get(fill.id))
-        if (fill.level >= basin.reach) {
-            return false
-        }
-        if (basinGrid.get(fillPoint) !== EMPTY) {
-            return false
-        }
+        if (basinGrid.get(fillPoint) !== EMPTY) return false
+        if (world.surface.isBorder(fillPoint)) return false
+        if (fill.level >= basin.reach) return false
+        // avoid erosion flow on land borders
         const target = world.surface.get(fillPoint)
         const parent = world.surface.get(parentPoint)
         // avoid fill if different types
@@ -113,6 +109,7 @@ class BasinGridFill extends ConcurrentFill {
 function surveyNeighbors(context, point) {
     // point is on land
     const {world} = context
+    const [x, y] = point
     let waterNeighbors = 0
     let oppositeBorder = null
     const neighbors = Point.adjacents(point)
@@ -124,13 +121,15 @@ function surveyNeighbors(context, point) {
             oppositeBorder = neighbor
         }
     }
-    let isRiverCapable = waterNeighbors === 1
+    // chess pattern to avoid rivers getting too close
+    const onMinDistance = (x + y) % 2 === 0
+    const isRiverCapable = waterNeighbors === 1 && onMinDistance
     return {oppositeBorder, isRiverCapable}
 }
 
 
 function buildBasinType(world, survey) {
-    let type = ExorheicRiverBasin
+    let type = ExorheicBasin
     if (world.surface.isLake(survey.oppositeBorder)) {
         type = EndorheicLakeBasin
     }
@@ -140,5 +139,5 @@ function buildBasinType(world, survey) {
     if (survey.isRiverCapable) {
         return type
     }
-    return DiffuseBasin
+    return DiffuseLandBasin
 }

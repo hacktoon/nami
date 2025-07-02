@@ -13,12 +13,12 @@ export class Basin {
 }
 
 
-export class ExorheicRiverBasin extends Basin {
+export class ExorheicBasin extends Basin {
     static id = 0
     static name = 'Exorheic river'
     static reach = Infinity
     static isEndorheic = false
-    static hasPermanentRivers = true
+    static hasRivers = true
     static color = Color.fromHex('#51a2d1')
 }
 
@@ -28,7 +28,7 @@ export class EndorheicSeaBasin extends Basin {
     static name = 'Endorheic sea'
     static reach = 1
     static isEndorheic = true
-    static hasPermanentRivers = true
+    static hasRivers = true
     static color = Color.fromHex('#7fc3c5')
 }
 
@@ -38,35 +38,35 @@ export class EndorheicLakeBasin extends Basin {
     static name = 'Endorheic lake'
     static reach = 0
     static isEndorheic = true
-    static hasPermanentRivers = true
+    static hasRivers = true
     static color = Color.fromHex('#6caca1')
 }
 
 
-export class OceanicBasin extends Basin {
+export class WaterBasin extends Basin {
     static id = 3
-    static name = 'Oceanic'
+    static name = 'Water'
     static reach = Infinity
     static isEndorheic = false
-    static hasPermanentRivers = true
+    static hasRivers = false
     static color = Color.fromHex('#285879')
 }
 
 
-export class DiffuseBasin extends Basin {
+export class DiffuseLandBasin extends Basin {
     static id = 4
     static name = 'Diffuse'
     static reach = 0
     static isEndorheic = false
-    static hasPermanentRivers = false
-    static color = Color.fromHex('#9b8d49')
+    static hasRivers = false
+    static color = Color.fromHex('#929292')
 }
 
 
 const BASIN_MAP = {
-    0: ExorheicRiverBasin,
+    0: ExorheicBasin,
     1: EndorheicSeaBasin,
     2: EndorheicLakeBasin,
-    3: OceanicBasin,
-    4: DiffuseBasin
+    3: WaterBasin,
+    4: DiffuseLandBasin
 }

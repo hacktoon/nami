@@ -5,12 +5,7 @@ import {
     SeaSurface,
     OceanSurface,
     IslandSurface,
-    ContinentSurface,
-    LakeBorderSurface,
-    SeaBorderSurface,
-    OceanBorderSurface,
-    IslandBorderSurface,
-    ContinentBorderSurface,
+    ContinentSurface
 } from './type'
 
 
@@ -25,11 +20,13 @@ export class SurfaceLayer {
     #waterArea
 
     constructor(context) {
-        const surfaceData = buildSurfaceGrid(context)
-        this.#bodyTypeMap = surfaceData.bodyTypeMap
-        this.#bodyAreaMap = surfaceData.bodyAreaMap
-        this.#waterArea = surfaceData.waterArea
-        this.#grid = surfaceData.grid
+        const {
+            bodyTypeMap, bodyAreaMap, waterArea, grid
+        } = buildSurfaceGrid(context)
+        this.#bodyTypeMap = bodyTypeMap
+        this.#bodyAreaMap = bodyAreaMap
+        this.#waterArea = waterArea
+        this.#grid = grid
     }
 
     get(point) {

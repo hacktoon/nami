@@ -3,8 +3,13 @@ import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/direction'
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
-import { buildBasinGrid } from './fill'
-import { Basin, EMPTY, OceanicBasin } from './type'
+import { buildBasinGrid } from './model'
+import {
+    Basin,
+    EMPTY,
+    DiffuseLandBasin,
+    WaterBasin,
+} from './type'
 
 
 export class BasinLayer {
@@ -71,7 +76,7 @@ export class BasinLayer {
         const typeId = this.#typeMap.get(id)
         const type = Basin.parse(typeId)
         const isDivide = this.#erosionMaskGrid.get(point).length === 1
-        return type.hasPermanentRivers && isDivide
+        return type.hasRivers && isDivide
     }
 
     getText(point) {
@@ -89,7 +94,12 @@ export class BasinLayer {
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
         const basin = this.get(tilePoint)
-        let color = basin ? basin.type.color : OceanicBasin.color
+        let color
+        if (this.#world.surface.isLand(tilePoint)) {
+            color = basin ? basin.type.color : DiffuseLandBasin.color
+        } else {
+            color = WaterBasin.color
+        }
         canvas.rect(canvasPoint, tileSize, color.toHex())
         if (basin && params.get('showErosion')) {
             const text = basin.erosion.symbol
