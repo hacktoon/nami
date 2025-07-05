@@ -74,8 +74,8 @@ export class WorldTileMap extends TileMap {
         world.relief = new ReliefLayer(context)
         world.biome = new BiomeLayer(context)
         world.civil = new CivilLayer(context)
-        const time = (performance.now() - start).toFixed(2)
-        console.info(`generated in ${time}ms`);
+        const time = (performance.now() - start) | 0
+        console.info(`Generated in ${time}ms`);
         return world
     }
 

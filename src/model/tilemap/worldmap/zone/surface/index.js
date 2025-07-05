@@ -1,7 +1,6 @@
 import { Point } from '/src/lib/geometry/point'
 
-import { buildGrid } from './model'
-
+import { buildModel } from './model'
 import {
     OceanSurface,
     ContinentSurface,
@@ -9,17 +8,25 @@ import {
 
 
 export class SurfaceZone {
-    #grid
+    #landMaskGrid
 
     constructor(context) {
         this.size = context.zoneSize
         this.world = context.world
-        this.#grid = buildGrid(context)
+        const {landMaskGrid, regionGrid, originMap, regionColorMap} = buildModel(context)
+        this.#landMaskGrid = landMaskGrid
+        // DEBUG
+        this._regionGrid = regionGrid
+        this._regionColorMap = regionColorMap
     }
 
-    get(point) {
-        const hasSurface = this.#grid.get(point)
-        return hasSurface ? ContinentSurface : OceanSurface
+    get(zonePoint) {
+        const isLand = this.#landMaskGrid.get(zonePoint)
+        const surface = isLand ? ContinentSurface : OceanSurface
+        let color = surface.color
+        return {
+            color
+        }
     }
 
     draw(props, params) {
@@ -35,6 +42,11 @@ export class SurfaceZone {
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const surface = this.get(zonePoint)
                 let color = surface.color
+                if (Point.equals(tilePoint, [39, 8])) {
+                    const regionId = this._regionGrid.get(zonePoint)
+                    const regionColor = this._regionColorMap.get(regionId)
+                    color = regionColor.average(color).average(color)
+                }
 
                 // if (world.surface.isBorder(tilePoint)) {
                 //     color = color.darken(20)

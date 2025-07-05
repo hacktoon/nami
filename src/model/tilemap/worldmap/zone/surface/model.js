@@ -1,5 +1,6 @@
 import { Point } from '/src/lib/geometry/point'
 import { Direction } from '/src/lib/direction'
+import { FIFOCache } from '/src/lib/cache'
 import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
 
@@ -7,13 +8,20 @@ import { buildRegionGridMap } from './region'
 
 
 const SURFACE_NOISE_RATIO = .6
+const SURFACE_GRID_CACHE = new FIFOCache(256)
 
 
-export function buildGrid(context) {
-    // const regionSurfaceMap = buildRegionSurfaceMap(context)
+export function buildModel(context) {
+    const hash = Point.hash(context.worldPoint)
+    // cache de zone grid noise
+    if (SURFACE_GRID_CACHE.has(hash)) {
+        return SURFACE_GRID_CACHE.get(hash)
+    }
+    const {regionGrid, originMap, regionColorMap} = buildRegionGridMap(context)
     const landMaskGrid = buildLandMaskGrid(context)
-    const regionGrid = buildRegionGridMap(context)
-    return landMaskGrid
+    const model = {landMaskGrid, regionGrid, originMap, regionColorMap}
+    SURFACE_GRID_CACHE.set(hash, model)
+    return model
 }
 
 
