@@ -21,7 +21,6 @@ import { CivilLayer } from './world/civil'
 import { WorldTileMapDiagram } from './diagram'
 
 import { SurfaceZone } from './zone/surface'
-import { TopologyZone } from './zone/topology'
 import { RiverZone } from './zone/river'
 
 
@@ -115,7 +114,6 @@ export class WorldTileMap extends TileMap {
             seed
         }
         Random.seed = seed  // change seed for this specific zone
-        zone.topology = new TopologyZone(context)
         zone.surface = new SurfaceZone(context)
         zone.river = new RiverZone(context)
         return zone

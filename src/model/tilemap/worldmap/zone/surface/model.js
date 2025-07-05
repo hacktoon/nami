@@ -3,18 +3,21 @@ import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
 
+import { buildRegionGridMap } from './region'
+
 
 const SURFACE_NOISE_RATIO = .6
 
 
 export function buildGrid(context) {
     // const regionSurfaceMap = buildRegionSurfaceMap(context)
-    const landWaterGrid = buildLandWaterGrid(context)
-    return landWaterGrid
+    const landMaskGrid = buildLandMaskGrid(context)
+    const regionGrid = buildRegionGridMap(context)
+    return landMaskGrid
 }
 
 
-function buildLandWaterGrid(context) {
+function buildLandMaskGrid(context) {
     // generate a grid with (land or water) information in bool
     const {worldPoint, world, rect, zoneRect} = context
     const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
