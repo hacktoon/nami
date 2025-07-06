@@ -27,7 +27,9 @@ export function buildRegionGridMap(context) {
     // prepare fill map with fill id => fill origin
     // it's also a map of all regions
     const regionIdMap = new Map(origins.map((origin, id) => {
+        // set a color for each region
         regionColorMap.set(id, new Color())
+        // set the origin for each region
         originMap.set(id, origin)
         return [id, {origin}]
     }))
@@ -49,13 +51,13 @@ class RegionFloodFill extends ConcurrentFill {
     }
 
     isEmpty(fill, fillPoint) {
-        if (Point.equals(fillPoint, [39, 8])) {
-
-        }
         return fill.context.regionGrid.get(fillPoint) === EMPTY
     }
 
-    onFill(fill, point, center) {
-        fill.context.regionGrid.set(point, fill.id)
+    onFill(fill, fillPoint, center) {
+        if (Point.equals(fillPoint, [39, 8])) {
+
+        }
+        fill.context.regionGrid.set(fillPoint, fill.id)
     }
 }

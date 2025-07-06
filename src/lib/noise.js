@@ -1,5 +1,5 @@
 import { Random } from '/src/lib/random'
-import { clamp } from '/src/lib/number'
+import { clamp } from '/src/lib/function'
 
 /*
  * A speed-improved simplex noise algorithm for 2D, 3D and 4D.

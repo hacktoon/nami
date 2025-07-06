@@ -1,4 +1,4 @@
-import { clamp, sum } from '/src/lib/number'
+import { clamp, sum } from '/src/lib/function'
 
 import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/geometry/point'

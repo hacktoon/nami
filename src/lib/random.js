@@ -65,6 +65,7 @@ export class Random {
     }
 }
 
+
 function _hash(seed) {
     let h = 61 ^ seed ^ seed >>> 16
     h += h << 3
@@ -75,7 +76,7 @@ function _hash(seed) {
 
 
 function _hashString(string) {
-    var h = 0, len = string.length, i = 0
+    let h = 0, len = string.length, i = 0
     if (len > 0)
         while (i < len)
             h = (h << 5) - h + string.charCodeAt(i++) | 0

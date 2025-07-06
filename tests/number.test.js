@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { interpolateNumbers, clamp, sum, Rect } from '/src/lib/number'
+import { interpolateNumbers, clamp, sum, Rect } from '/src/lib/function'
 
 
 test('int array sum', () => {

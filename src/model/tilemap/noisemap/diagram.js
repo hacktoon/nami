@@ -1,7 +1,7 @@
 import { Schema } from '/src/lib/schema'
 import { Type } from '/src/lib/type'
 import { Color } from '/src/lib/color'
-import { clamp } from '/src/lib/number'
+import { clamp } from '/src/lib/function'
 import { TileMapDiagram } from '/src/model/tilemap/lib'
 
 
