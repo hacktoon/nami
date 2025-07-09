@@ -59,6 +59,22 @@ export class Rect {
         return _x || _y
     }
 
+    isLeftEdge([x, y]) {
+        return x === 0 && y >= 0 && y < this.height
+    }
+
+    isRightEdge([x, y]) {
+        return x === this.width - 1 && y >= 0 && y < this.height
+    }
+
+    isTopEdge([x, y]) {
+        return y === 0 && x >= 0 && x < this.width
+    }
+
+    isBottomEdge([x, y]) {
+        return y === this.height - 1 && x >= 0 && x < this.width
+    }
+
     wrap(point) {
         let [x, y] = point
         if (x >= this.width) { x %= this.width }

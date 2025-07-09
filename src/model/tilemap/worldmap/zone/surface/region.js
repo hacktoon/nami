@@ -1,5 +1,6 @@
 import { Grid } from '/src/lib/grid'
 import { Color } from '/src/lib/color'
+import { Direction } from '/src/lib/direction'
 import { Rect } from '/src/lib/geometry/rect'
 import { Point } from '/src/lib/geometry/point'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
@@ -20,20 +21,24 @@ export function buildRegionGridMap(context) {
     const origins = EvenPointSampling.create(zoneRect, Random.choiceFrom(REGION_SCALE))
     const originMap = new Map()
     const regionColorMap = new Map()
-    // region ids that must be land
-    const landRegions = new Set()
-    // region ids that must be water
-    const waterRegions = new Set()
+    // region type  {id: water | land}
+    const regionTypes = new Map()
     // prepare fill map with fill id => fill origin
     // it's also a map of all regions
     const regionIdMap = new Map(origins.map((origin, id) => {
         // set a color for each region
         regionColorMap.set(id, new Color())
+
         // set the origin for each region
         originMap.set(id, origin)
         return [id, {origin}]
     }))
-    const fillContext = {...context, regionIdMap, regionGrid, landRegions, waterRegions}
+    const fillContext = {
+        ...context,
+        regionIdMap,
+        regionGrid,
+        regionTypes,
+    }
     new RegionFloodFill(regionIdMap, fillContext).complete()
     return {regionGrid, originMap, regionColorMap}
 }
@@ -55,9 +60,12 @@ class RegionFloodFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint, center) {
-        if (Point.equals(fillPoint, [39, 8])) {
+        const {zoneRect, regionGrid, worldPoint, regionTypes} = fill.context
+        if (Point.equals(worldPoint, [39, 8])) {
 
         }
-        fill.context.regionGrid.set(fillPoint, fill.id)
+        regionGrid.set(fillPoint, fill.id)
     }
+
+
 }
