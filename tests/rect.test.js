@@ -10,15 +10,15 @@ test('rect wrapping', () => {
 
 
 test('rect wrapping negative point', () => {
-    const point = new Rect(10, 10).wrap([-2, -1])
-    expect(point[0]).toBe(8)
-    expect(point[1]).toBe(9)
+    const rect = new Rect(10, 10).wrap([-2, -1])
+    expect(rect[0]).toBe(8)
+    expect(rect[1]).toBe(9)
 })
 
 
 test('rect area', () => {
-    const point = new Rect(10, 12)
-    expect(point.area).toBe(120)
+    const rect = new Rect(10, 12)
+    expect(rect.area).toBe(120)
 })
 
 
@@ -41,10 +41,3 @@ test('rect wrapping', () => {
     expect(rect.wrap([-2, 3])).toStrictEqual([8, 3])
 })
 
-
-test('rect nearest unwrapping', () => {
-    const rect = new Rect(10, 10)
-    expect(rect.unwrapFrom([9, 9], [1, 1])).toStrictEqual([11, 11])
-    expect(rect.unwrapFrom([2, 4], [9, 1])).toStrictEqual([-1, 1])
-    expect(rect.unwrapFrom([5, 1], [9, 8])).toStrictEqual([9, -2])
-})
