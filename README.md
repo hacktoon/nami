@@ -14,16 +14,6 @@
   - zone river follows an independent path from downstream to each tributary joint
 - create secondary biomes for zones
 
-- detect regions by position
-if worldPoint is land border {
-  if worldPoint has river and border
-    - regions at lateral axis
-    - if erosion.dir(NORTH) is water -> regions at vertical axis north are water
-} else worldPoint is water {
-  for all water sides
-}
-
-
   if point is lake
     all inner regions
 

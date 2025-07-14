@@ -1,23 +1,22 @@
 import { Random } from '/src/lib/random'
 
+//  128     1      2
+//     NW   N   NE
+//  64 W    .    E 4
+//     SW   S   SE
+//   32     16     8
 
-//    135°   90°    45°
-//       NW   N   NE
-// 180°  W    .   E  0°
-//       SW   S   SE
-//    225°   270°    360°
-
-// these id counts starts from east, anti-clockwise
+// these id counts starts from north, clockwise
 const DIRECTIONS = {
-    CENTER:    { id: 0, code: 1,   name: '',   symbol: '\u2192', axis: [ 0,  0]},
-    EAST:      { id: 1, code: 2,   name: 'E',  symbol: '\u2192', axis: [ 1,  0]},
-    NORTHEAST: { id: 2, code: 4,   name: 'NE', symbol: '\u2197', axis: [ 1, -1]},
-    NORTH:     { id: 3, code: 8,   name: 'N',  symbol: '\u2191', axis: [ 0, -1]},
-    NORTHWEST: { id: 4, code: 16,  name: 'NW', symbol: '\u2196', axis: [-1, -1]},
-    WEST:      { id: 5, code: 32,  name: 'W',  symbol: '\u2190', axis: [-1,  0]},
-    SOUTHWEST: { id: 6, code: 64,  name: 'SW', symbol: '\u2199', axis: [-1,  1]},
-    SOUTH:     { id: 7, code: 128, name: 'S',  symbol: '\u2193', axis: [ 0,  1]},
-    SOUTHEAST: { id: 8, code: 256, name: 'SE', symbol: '\u2198', axis: [ 1,  1]},
+    CENTER:    { id: 0, code: 0,   name: 'C',  symbol: 'o',      axis: [ 0,  0], components: []},
+    NORTH:     { id: 1, code: 1,   name: 'N',  symbol: '\u2191', axis: [ 0, -1], components: [1]},
+    NORTHEAST: { id: 2, code: 2,   name: 'NE', symbol: '\u2197', axis: [ 1, -1], components: [1, 3]},
+    EAST:      { id: 3, code: 4,   name: 'E',  symbol: '\u2192', axis: [ 1,  0], components: [3]},
+    SOUTHEAST: { id: 4, code: 8,   name: 'SE', symbol: '\u2198', axis: [ 1,  1], components: [5, 3]},
+    SOUTH:     { id: 5, code: 16,  name: 'S',  symbol: '\u2193', axis: [ 0,  1], components: [5]},
+    SOUTHWEST: { id: 6, code: 32,  name: 'SW', symbol: '\u2199', axis: [-1,  1], components: [5, 7]},
+    WEST:      { id: 7, code: 64,  name: 'W',  symbol: '\u2190', axis: [-1,  0], components: [7]},
+    NORTHWEST: { id: 8, code: 128, name: 'NW', symbol: '\u2196', axis: [-1, -1], components: [1, 7]},
 }
 
 
@@ -64,9 +63,9 @@ export class Direction {
         return DIRECTION_MAP[id]
     }
 
-    static fromAxis([x, y]) {
-        return AXIS_MAP.get(x).get(y)
-    }
+    // static fromAxis([x, y]) {
+    //     return AXIS_MAP.get(x).get(y)
+    // }
 
     static getName(direction) {
         return DIRECTION_MAP[direction.id].name
@@ -109,5 +108,9 @@ export class Direction {
             Direction.SOUTH.id,
             Direction.WEST.id
         ].includes(direction.id)
+    }
+
+    static getComponents(direction) {
+        return direction.components.map(dir => Direction.fromId(dir))
     }
 }

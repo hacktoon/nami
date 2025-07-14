@@ -1,3 +1,5 @@
+import { Direction } from '/src/lib/direction'
+
 
 export class Rect {
     static fromHash(hash) {
@@ -73,6 +75,17 @@ export class Rect {
 
     isBottomEdge([x, y]) {
         return y === this.height - 1 && x >= 0 && x < this.width
+    }
+
+    getCorners() {
+        const xMax = this.width - 1
+        const yMax = this.height - 1
+        return [
+            [[0, 0], Direction.NORTHWEST],
+            [[xMax, 0], Direction.NORTHEAST],
+            [[0, yMax], Direction.SOUTHWEST],
+            [[xMax, yMax], Direction.SOUTHEAST],
+        ]
     }
 
     wrap(point) {

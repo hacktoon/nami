@@ -1,7 +1,5 @@
 import { Grid } from '/src/lib/grid'
 import { Color } from '/src/lib/color'
-import { Direction } from '/src/lib/direction'
-import { Rect } from '/src/lib/geometry/rect'
 import { Point } from '/src/lib/geometry/point'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Random } from '/src/lib/random'
@@ -59,13 +57,7 @@ class RegionFloodFill extends ConcurrentFill {
         return fill.context.regionGrid.get(fillPoint) === EMPTY
     }
 
-    onFill(fill, fillPoint, center) {
-        const {zoneRect, regionGrid, worldPoint, regionTypes} = fill.context
-        if (Point.equals(worldPoint, [39, 8])) {
-
-        }
-        regionGrid.set(fillPoint, fill.id)
+    onFill(fill, fillPoint) {
+        fill.context.regionGrid.set(fillPoint, fill.id)
     }
-
-
 }
