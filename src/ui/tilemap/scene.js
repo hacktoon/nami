@@ -16,11 +16,13 @@ const ZOOM_INCREMENT = 10
 export function UITileMapScene(props) {
     const viewportRef = useRef(null)
     const viewport = useResize(viewportRef)
-    return <section className="UITileMapScene" ref={viewportRef}>
+    return <section className="UITileMapScene">
         <section className="UITileMapSceneDashboard">
             <Text>Seed: {props.tileMap.seed}, {props.tileMap.getDescription()}</Text>
         </section>
-        <UITileMapSceneContent viewport={viewport} {...props} />
+        <section className="UITileMapSceneView" ref={viewportRef}>
+            <UITileMapSceneContent viewport={viewport} {...props} />
+        </section>
     </section>
 }
 

@@ -22,7 +22,7 @@ export function buildModel(context) {
         return SURFACE_GRID_CACHE.get(hash)
     }
     const {regionGrid, originMap, regionColorMap} = buildRegionGridMap(context)
-    const regionTypes = buildRegionSurfaceMap({...context, regionGrid})
+    // const regionTypes = buildRegionSurfaceMap({...context, regionGrid})
     const landMaskGrid = buildLandMaskGrid(context)
     const model = {landMaskGrid, regionGrid, originMap, regionColorMap}
     SURFACE_GRID_CACHE.set(hash, model)
@@ -75,9 +75,10 @@ function isWaterChannel(context, direction) {
 }
 
 
-function selectRegionsInLine(context, target, direction) {
+function selectRegionsInLine(context, midPoint, direction) {
     const {worldPoint, regionGrid, zoneRect} = context
     const regions = []
+    direction.axis
     // regionGrid.get(zonePoint)
     return regions
 }
@@ -91,6 +92,9 @@ function buildLandMaskGrid(context) {
     const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
     const noiseRect = Rect.multiply(rect, zoneRect.width)
     return Grid.fromRect(zoneRect, zonePoint => {
+        // if (! world.surface.isBorder(worldPoint)) {
+        //     return world.surface.isLand(worldPoint)
+        // }
         const noisePoint = Point.plus(relativePoint, zonePoint)
         const noise = world.noise.get4DZoneOutline(noiseRect, noisePoint)
         return noise > SURFACE_NOISE_RATIO

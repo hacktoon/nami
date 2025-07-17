@@ -7,7 +7,7 @@ import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
 
 
 const EMPTY = null
-const REGION_SCALE = [2, 3]  // distance between region origins
+const REGION_SCALE = 3  // distance between region origins
 const REGION_GROWTH = [2, 1]
 const REGION_CHANCE = .1
 
@@ -16,7 +16,7 @@ export function buildRegionGridMap(context) {
     const {zoneRect} = context
     // create a grid with many regions fragmenting the zone map
     const regionGrid = Grid.fromRect(zoneRect, () => EMPTY)
-    const origins = EvenPointSampling.create(zoneRect, Random.choiceFrom(REGION_SCALE))
+    const origins = EvenPointSampling.create(zoneRect, REGION_SCALE)
     const originMap = new Map()
     const regionColorMap = new Map()
     // region type  {id: water | land}

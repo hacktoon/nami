@@ -42,10 +42,10 @@ export class SurfaceZone {
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const surface = this.get(zonePoint)
                 let color = surface.color
-                if (Point.equals(tilePoint, [39, 8])) {
+                if (Point.equals(tilePoint, [42, 4])) {
                     const regionId = this._regionGrid.get(zonePoint)
                     const regionColor = this._regionColorMap.get(regionId)
-                    color = regionColor.average(color).average(color)
+                    color = regionColor
                 }
 
                 // if (world.surface.isBorder(tilePoint)) {
