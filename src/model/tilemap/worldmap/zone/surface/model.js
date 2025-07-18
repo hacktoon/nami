@@ -9,10 +9,8 @@ import { buildRegionGridMap } from './region'
 
 const SURFACE_NOISE_RATIO = .6
 const SURFACE_GRID_CACHE = new FIFOCache(256)
-
-const m = [
-
-]
+const REGION_WATER = 0
+const REGION_LAND = 1
 
 
 export function buildModel(context) {
@@ -21,47 +19,34 @@ export function buildModel(context) {
     if (SURFACE_GRID_CACHE.has(hash)) {
         return SURFACE_GRID_CACHE.get(hash)
     }
-    const {regionGrid, originMap, regionColorMap} = buildRegionGridMap(context)
-    // const regionTypes = buildRegionSurfaceMap({...context, regionGrid})
-    const landMaskGrid = buildLandMaskGrid(context)
-    const model = {landMaskGrid, regionGrid, originMap, regionColorMap}
+    const regionGridContext = buildRegionGridMap(context)
+    const regionSurfaceMap = buildRegionSurfaceMap({...context, ...regionGridContext})
+    const landMaskGrid = buildLandMaskGrid({...context, ...regionGridContext, regionSurfaceMap})
+    const model = {landMaskGrid, ...regionGridContext}
     SURFACE_GRID_CACHE.set(hash, model)
     return model
 }
 
 
 function  buildRegionSurfaceMap(context) {
-    const {world, worldPoint, regionGrid, zoneRect} = context
-    const regionTypes = new Map()
+    const {world, worldPoint} = context
+    const surfaceTypeMap = new Map()
     const isWorldPointLand = world.surface.isLand(worldPoint)
-    const middle = Math.floor(zoneRect.with / 2)
-    const midPoint = [middle, middle]
-    // const isLake = world.surface.isLake(worldPoint)
+
     Point.around(worldPoint, (sidePoint, direction) => {
         if (isWorldPointLand) {
             if (world.surface.isLand(sidePoint)) {
                 if (isWaterChannel(context, direction)) {
-                    // mark regions as water  for in 4n square
-                    if (Point.equals(worldPoint, [39, 8])) {
-                        console.log(worldPoint, direction);
-                    }
+                    surfaceTypeMap.set(direction.id, REGION_WATER)
                 } else {
-                    const x = selectRegionsInLine(context, midPoint, direction)
-                    // mark regions as land
+                    surfaceTypeMap.set(direction.id, REGION_LAND)
                 }
             }
         } else {
-            // water
-            if (world.surface.isLand(sidePoint)) {
-                if (world.river.has(sidePoint)) {
-
-                }
-            } else {
-                // mark regions as water
-            }
+            surfaceTypeMap.set(direction.id, REGION_WATER)
         }
     })
-    return regionTypes
+    return surfaceTypeMap
 }
 
 
@@ -72,15 +57,6 @@ function isWaterChannel(context, direction) {
     const isWater1 = world.surface.isWater(Point.atDirection(worldPoint, ortoDirs[0]))
     const isWater2 = world.surface.isWater(Point.atDirection(worldPoint, ortoDirs[1]))
     return isWater1 && isWater2
-}
-
-
-function selectRegionsInLine(context, midPoint, direction) {
-    const {worldPoint, regionGrid, zoneRect} = context
-    const regions = []
-    direction.axis
-    // regionGrid.get(zonePoint)
-    return regions
 }
 
 
@@ -97,7 +73,7 @@ function buildLandMaskGrid(context) {
         // }
         const noisePoint = Point.plus(relativePoint, zonePoint)
         const noise = world.noise.get4DZoneOutline(noiseRect, noisePoint)
-        return noise > SURFACE_NOISE_RATIO
+        return noise > SURFACE_NOISE_RATIO ? REGION_LAND : REGION_WATER
     })
 }
 

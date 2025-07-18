@@ -63,9 +63,9 @@ export class Direction {
         return DIRECTION_MAP[id]
     }
 
-    // static fromAxis([x, y]) {
-    //     return AXIS_MAP.get(x).get(y)
-    // }
+    static fromAxis(x, y) {
+        return AXIS_MAP.get(x).get(y)
+    }
 
     static getName(direction) {
         return DIRECTION_MAP[direction.id].name

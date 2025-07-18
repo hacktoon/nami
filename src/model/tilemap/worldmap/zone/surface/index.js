@@ -1,4 +1,6 @@
 import { Point } from '/src/lib/geometry/point'
+import { Direction } from '/src/lib/direction'
+import { Color } from '/src/lib/color'
 
 import { buildModel } from './model'
 import {
@@ -13,11 +15,11 @@ export class SurfaceZone {
     constructor(context) {
         this.size = context.zoneSize
         this.world = context.world
-        const {landMaskGrid, regionGrid, originMap, regionColorMap} = buildModel(context)
+        const {landMaskGrid, regionGrid, regionDirMap} = buildModel(context)
         this.#landMaskGrid = landMaskGrid
         // DEBUG
         this._regionGrid = regionGrid
-        this._regionColorMap = regionColorMap
+        this._regionDirMap = regionDirMap
     }
 
     get(zonePoint) {
@@ -42,15 +44,19 @@ export class SurfaceZone {
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const surface = this.get(zonePoint)
                 let color = surface.color
-                if (Point.equals(tilePoint, [42, 4])) {
-                    const regionId = this._regionGrid.get(zonePoint)
-                    const regionColor = this._regionColorMap.get(regionId)
-                    color = regionColor
-                }
-
-                // if (world.surface.isBorder(tilePoint)) {
-                //     color = color.darken(20)
+                // if (Point.equals(tilePoint, [42, 4])) {
+                //     const regionId = this._regionGrid.get(zonePoint)
+                //     const direction = Direction.fromId(this._regionDirMap.get(regionId))
+                //     const c = direction.id + 1
+                //     color = new Color(c * 10, c * 20, c * 30)
                 // }
+                if (world.surface.isBorder(tilePoint)) {
+                    if (world.surface.isWater(tilePoint)) {
+                        color = color.average(Color.BLUE)
+                    } else color = color.average(Color.DARKGREEN)
+                    color = color.darken(20)
+
+                }
                 canvas.rect(zoneCanvasPoint, size, color.toHex())
             }
         }
