@@ -95,7 +95,7 @@ class CitySpacesFill extends ConcurrentFill {
         if (isOrigin || world.surface.isBorder(parentPoint)) {
             return Point.adjacents(parentPoint)
         }
-        return Point.around(parentPoint)
+        return Point.adjacents(parentPoint)
     }
 
     onInitFill(fill, fillPoint) {

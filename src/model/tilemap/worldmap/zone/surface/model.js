@@ -9,8 +9,8 @@ import { buildRegionGridMap } from './region'
 
 const SURFACE_NOISE_RATIO = .6
 const SURFACE_GRID_CACHE = new FIFOCache(256)
-const REGION_WATER = 0
-const REGION_LAND = 1
+const REGION_WATER = false
+const REGION_LAND = true
 
 
 export function buildModel(context) {
@@ -20,7 +20,7 @@ export function buildModel(context) {
         return SURFACE_GRID_CACHE.get(hash)
     }
     const regionGridContext = buildRegionGridMap(context)
-    const regionSurfaceMap = buildRegionSurfaceMap({...context, ...regionGridContext})
+    const regionSurfaceMap = buildDirectionTypeMap(context)
     const landMaskGrid = buildLandMaskGrid({...context, ...regionGridContext, regionSurfaceMap})
     const model = {landMaskGrid, ...regionGridContext}
     SURFACE_GRID_CACHE.set(hash, model)
@@ -28,25 +28,23 @@ export function buildModel(context) {
 }
 
 
-function  buildRegionSurfaceMap(context) {
+function  buildDirectionTypeMap(context) {
     const {world, worldPoint} = context
-    const surfaceTypeMap = new Map()
+    const directionTypeMap = new Map()
     const isWorldPointLand = world.surface.isLand(worldPoint)
 
-    Point.around(worldPoint, (sidePoint, direction) => {
+    Point.adjacents(worldPoint, (sidePoint, direction) => {
+        const isSideLand = world.surface.isLand(sidePoint)
         if (isWorldPointLand) {
-            if (world.surface.isLand(sidePoint)) {
-                if (isWaterChannel(context, direction)) {
-                    surfaceTypeMap.set(direction.id, REGION_WATER)
-                } else {
-                    surfaceTypeMap.set(direction.id, REGION_LAND)
-                }
+            if (isSideLand) {
+                const type = isWaterChannel(context, direction) ? REGION_WATER : REGION_LAND
+                directionTypeMap.set(direction.id, type)
             }
-        } else {
-            surfaceTypeMap.set(direction.id, REGION_WATER)
+        } else if (! isSideLand) {
+            directionTypeMap.set(direction.id, REGION_WATER)
         }
     })
-    return surfaceTypeMap
+    return directionTypeMap
 }
 
 

@@ -78,7 +78,7 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
-        return Point.around(parentPoint)
+        return Point.adjacents(parentPoint)
     }
 
     _fillBasin(fill, fillPoint, parentPoint) {
