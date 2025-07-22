@@ -20,8 +20,8 @@ export function buildModel(context) {
         return SURFACE_GRID_CACHE.get(hash)
     }
     const regionGridContext = buildRegionGridMap(context)
-    const regionSurfaceMap = buildDirectionTypeMap(context)
-    const landMaskGrid = buildLandMaskGrid({...context, ...regionGridContext, regionSurfaceMap})
+    const directionTypeMap = buildDirectionTypeMap(context)
+    const landMaskGrid = buildLandMaskGrid({...context, ...regionGridContext, directionTypeMap})
     const model = {landMaskGrid, ...regionGridContext}
     SURFACE_GRID_CACHE.set(hash, model)
     return model
@@ -30,44 +30,56 @@ export function buildModel(context) {
 
 function  buildDirectionTypeMap(context) {
     const {world, worldPoint} = context
+    const surfaceLayer = world.surface
     const directionTypeMap = new Map()
-    const isWorldPointLand = world.surface.isLand(worldPoint)
-
+    const isWorldPointLand = surfaceLayer.isLand(worldPoint)
+    // set center region
+    directionTypeMap.set(Direction.CENTER.id, isWorldPointLand)
+    // set adjacents regions
     Point.adjacents(worldPoint, (sidePoint, direction) => {
-        const isSideLand = world.surface.isLand(sidePoint)
+        const isSideLand = surfaceLayer.isLand(sidePoint)
+        if (isWorldPointLand == isSideLand) {
+            directionTypeMap.set(direction.id, isSideLand)
+        }
+    })
+    // set diagonal regions
+    Point.diagonals(worldPoint, (sidePoint, direction) => {
+        const ortoDirs = Direction.getComponents(direction)
+        const orto1 = Point.atDirection(worldPoint, ortoDirs[0])
+        const orto2 = Point.atDirection(worldPoint, ortoDirs[1])
         if (isWorldPointLand) {
-            if (isSideLand) {
-                const type = isWaterChannel(context, direction) ? REGION_WATER : REGION_LAND
-                directionTypeMap.set(direction.id, type)
-            }
-        } else if (! isSideLand) {
-            directionTypeMap.set(direction.id, REGION_WATER)
+            const sameType = surfaceLayer.isLand(sidePoint)
+            const ortoDiff = surfaceLayer.isWater(orto1) && surfaceLayer.isWater(orto2)
+            if (sameType && ortoDiff)
+                directionTypeMap.set(direction.id, REGION_WATER)
+        } else {
+            const sameType = surfaceLayer.isWater(sidePoint)
+            const ortoDiff = surfaceLayer.isLand(orto1) && surfaceLayer.isLand(orto2)
+            if (sameType && ortoDiff)
+                directionTypeMap.set(direction.id, REGION_WATER)
         }
     })
     return directionTypeMap
 }
 
 
-function isWaterChannel(context, direction) {
-    const {world, worldPoint} = context
-    const ortoDirs = Direction.getComponents(direction)
-    if (ortoDirs.length != 2) return false
-    const isWater1 = world.surface.isWater(Point.atDirection(worldPoint, ortoDirs[0]))
-    const isWater2 = world.surface.isWater(Point.atDirection(worldPoint, ortoDirs[1]))
-    return isWater1 && isWater2
-}
-
-
 function buildLandMaskGrid(context) {
-    /*
-        Generate a boolean grid (land or water)
-    */
-    const {worldPoint, world, rect, zoneRect} = context
+    // Generate a boolean grid (land or water)
+    const {
+        worldPoint, world, rect, zoneRect, regionGrid,
+        directionTypeMap, regionDirMap
+    } = context
     const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
     const noiseRect = Rect.multiply(rect, zoneRect.width)
     return Grid.fromRect(zoneRect, zonePoint => {
         // if (! world.surface.isBorder(worldPoint)) {
         //     return world.surface.isLand(worldPoint)
+        // }
+        const regionId = regionGrid.get(zonePoint)
+        const regionDirId = regionDirMap.get(regionId)
+        const regionType = directionTypeMap.get(regionDirId)
+        // if (regionType === REGION_LAND || regionType === REGION_WATER) {
+        //     return regionType
         // }
         const noisePoint = Point.plus(relativePoint, zonePoint)
         const noise = world.noise.get4DZoneOutline(noiseRect, noisePoint)

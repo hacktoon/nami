@@ -9,13 +9,14 @@ const ADJACENT_NEIGHBORHOOD = [
     [ 0,  1, Direction.SOUTH]
 ]
 
-
-const AROUND_NEIGHBORHOOD = ADJACENT_NEIGHBORHOOD.concat([
+const DIAGONAL_NEIGHBORHOOD = [
     [-1, -1, Direction.NORTHWEST],
     [ 1,  1, Direction.SOUTHEAST],
     [ 1, -1, Direction.NORTHEAST],
     [-1,  1, Direction.SOUTHWEST],
-])
+]
+
+const AROUND_NEIGHBORHOOD = ADJACENT_NEIGHBORHOOD.concat(DIAGONAL_NEIGHBORHOOD)
 
 
 export class Point {
@@ -65,6 +66,16 @@ export class Point {
     static adjacents(center, callback=()=>{}) {
         const points = []
         for (let [x, y, direction] of ADJACENT_NEIGHBORHOOD) {
+            const point = Point.plus(center, [x, y])
+            callback(point, direction)
+            points.push(point)
+        }
+        return points
+    }
+
+    static diagonals(center, callback=()=>{}) {
+        const points = []
+        for (let [x, y, direction] of DIAGONAL_NEIGHBORHOOD) {
             const point = Point.plus(center, [x, y])
             callback(point, direction)
             points.push(point)

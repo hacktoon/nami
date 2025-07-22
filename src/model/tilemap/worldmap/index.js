@@ -26,13 +26,13 @@ import { RiverZone } from './zone/river'
 
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.number('size', 'Size', { default: 100, min: 64, max: 200 }),
+    Type.number('size', 'Size', { default: 32, min: 32, max: 32 }),
     Type.text('seed', 'Seed', { default: '' }),
-    Type.number('realms', 'Realms', { default: 10, min: 3, max: 16 }),
+    Type.number('realms', 'Realms', { default: 8, min: 3, max: 8 }),
 )
 
 
-const ZONE_SIZE = 17
+const ZONE_SIZE = 13
 const ZONE_RECT = new Rect(ZONE_SIZE, ZONE_SIZE)
 
 
