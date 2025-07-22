@@ -44,19 +44,17 @@ export class SurfaceZone {
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const surface = this.get(zonePoint)
                 let color = surface.color
-                // if (Point.equals(tilePoint, [42, 4])) {
+                // if (Point.equals(tilePoint, [39, 8])) {
                 //     const regionId = this._regionGrid.get(zonePoint)
-                //     const direction = Direction.fromId(this._regionDirMap.get(regionId))
-                //     const c = direction.id + 1
-                //     color = new Color(c * 10, c * 20, c * 30)
+                //     color = new Color(regionId * 10, regionId * 20, regionId * 30))
                 // }
-                if (world.surface.isBorder(tilePoint)) {
-                    if (world.surface.isWater(tilePoint)) {
-                        color = color.average(Color.BLUE)
-                    } else color = color.average(Color.DARKGREEN)
-                    color = color.darken(20)
+                // if (world.surface.isBorder(tilePoint)) {
+                //     if (world.surface.isWater(tilePoint)) {
+                //         color = color.average(Color.BLUE)
+                //     } else color = color.average(Color.DARKGREEN)
+                //     color = color.darken(20)
 
-                }
+                // }
                 canvas.rect(zoneCanvasPoint, size, color.toHex())
             }
         }
