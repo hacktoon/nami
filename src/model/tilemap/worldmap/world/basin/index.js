@@ -128,7 +128,6 @@ export class BasinLayer {
         const directions = this.#erosionMaskGrid.get(tilePoint)
         for(let direction of directions) {
             // build a point for each flow that points to this point
-            // create a midpoint at tile's square side
             const sidePoint = Point.atDirection(tilePoint, direction)
             // get average between this point and neighbor
             const sideTopology = this.#world.topology.get(sidePoint)

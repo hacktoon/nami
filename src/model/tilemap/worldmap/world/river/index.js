@@ -84,7 +84,7 @@ export class RiverLayer {
 
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
-        props.world.biome.draw(props, params)
+        props.world.surface.draw(props, params)
         if (! this.has(tilePoint)) {
             return
         }
