@@ -1,16 +1,16 @@
 import { Point } from '/src/lib/geometry/point'
-import { buildRiverPoints } from './model'
+import { buildRiverGrid } from './model'
 
 
 export class RiverZone {
-    #points
+    #riverGrid
 
     constructor(context) {
-        this.#points = buildRiverPoints(context)
+        this.#riverGrid = buildRiverGrid(context)
     }
 
     has(point) {
-        return this.#points.has(point)
+        return this.#riverGrid.has(point)
     }
 
     draw(props, params) {
