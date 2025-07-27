@@ -35,6 +35,16 @@ export function buildRiverMap(context) {
 }
 
 
+export function buildMidpointGrid({rect, zoneRect}) {
+    return Grid.fromRect(rect, () => {
+        // TODO: use relative numbers in random x, y
+        const x = Random.int(2, zoneRect.width - 3)  // avoid edges
+        const y = Random.int(2, zoneRect.height - 3)
+        return zoneRect.pointToIndex([x, y])
+    })
+}
+
+
 function buildRiver(context, riverId, sourcePoint) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
@@ -76,3 +86,5 @@ function buildStretch(distance, maxDistance) {
     if (ratio >= .3) return RiverStretch.SLOW_COURSE
     return RiverStretch.DEPOSITIONAL
 }
+
+

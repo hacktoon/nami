@@ -4,7 +4,7 @@ import { Point } from '/src/lib/geometry/point'
 
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
-import { buildRiverMap } from './fill'
+import { buildRiverMap, buildMidpointGrid } from './model'
 import { RiverStretch } from './data'
 
 
@@ -16,6 +16,7 @@ export class RiverLayer {
     #riverPointGrid
     // map a point to a river direction mask
     #directionMaskGrid
+    #midpointGrid
     // map a river point to its river type
     #stretchMap
 
@@ -25,6 +26,7 @@ export class RiverLayer {
         const {rect, world, zoneRect} = context
         this.#zoneRect = zoneRect
         this.world = world
+        this.#midpointGrid = buildMidpointGrid(context)
         this.#directionMaskGrid = new DirectionBitMaskGrid(rect)
         this.#riverMouths = new PointSet(rect)
         this.#stretchMap = new PointMap(rect)
@@ -49,10 +51,12 @@ export class RiverLayer {
     get(point) {
         const id = this.#riverPointGrid.get(point)
         const stretchId = this.#stretchMap.get(point)
+        const midpointIndex = this.#midpointGrid.get(point)
         return {
             id,
             flows: this.world.basin.getFlows(point),
             name: this.#riverNames.get(id),
+            midpoint: this.#zoneRect.indexToPoint(midpointIndex),
             mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
         }
@@ -94,10 +98,7 @@ export class RiverLayer {
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         // calc meander offset point on canvas
         const zoneSize = this.#zoneRect.width
-        const midpoint = [
-            Math.floor(zoneSize / 2),
-            Math.floor(zoneSize / 2),
-        ]
+        const midpoint = river.midpoint
         const meanderOffsetPoint = Point.multiplyScalar(midpoint, tileSize / zoneSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         const hexColor = river.stretch.color.toHex()
