@@ -9,7 +9,6 @@ import { UITileMap } from '/src/ui/tilemap'
 
 import { NoiseLayer } from './world/noise'
 import { SurfaceLayer } from './world/surface'
-import { TopologyLayer } from './world/topology'
 import { BasinLayer } from './world/basin'
 import { ReliefLayer } from './world/relief'
 import { ClimateLayer } from './world/climate'
@@ -27,7 +26,7 @@ import { RiverZone } from './zone/river'
 
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.number('size', 'Size', { default: 32, min: 32, max: 128 }),
+    Type.number('size', 'Size', { default: 32, min: 32, max: 64 }),
     Type.text('seed', 'Seed', { default: '' }),
     Type.number('realms', 'Realms', { default: 8, min: 3, max: 8 }),
 )
@@ -66,7 +65,6 @@ export class WorldTileMap extends TileMap {
         }
         // The world creation follows order below
         world.noise = new NoiseLayer(context)
-        world.topology = new TopologyLayer(context)
         world.surface = new SurfaceLayer(context)
         world.climate = new ClimateLayer(context)
         world.rain = new RainLayer(context)
@@ -84,7 +82,6 @@ export class WorldTileMap extends TileMap {
         const wrappedPoint = this.rect.wrap(point)
         return [
             `Point(${Point.hash(point)})`,
-            this.world.topology.getText(wrappedPoint),
             this.world.surface.getText(wrappedPoint),
             this.world.climate.getText(wrappedPoint),
             this.world.rain.getText(wrappedPoint),

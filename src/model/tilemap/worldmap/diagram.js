@@ -14,7 +14,6 @@ const LAYERS = [
     {value: 'biome', label: 'Biome'},
     {value: 'civil', label: 'Civil'},
     {value: 'river', label: 'River'},
-    {value: 'topology', label: 'Topology'},
 ]
 
 const SCHEMA = new Schema(

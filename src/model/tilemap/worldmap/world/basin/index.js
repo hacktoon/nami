@@ -123,21 +123,21 @@ export class BasinLayer {
         ]
         const canvasMidpoint = Point.multiplyScalar(midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
-        const topology = this.#world.topology.get(tilePoint)
+
         // draw line for each neighbor with a basin connection
         const directions = this.#erosionMaskGrid.get(tilePoint)
         for(let direction of directions) {
             // build a point for each flow that points to this point
             const sidePoint = Point.atDirection(tilePoint, direction)
             // get average between this point and neighbor
-            const sideTopology = this.#world.topology.get(sidePoint)
-            const avgJoint = Math.min(topology.river, sideTopology.river)
+
+
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented
             const axisModifier = direction.axis.map(c => {
                 if (c < 0) return 0
                 if (c > 0) return tileSize
-                return Math.floor(tileSize * avgJoint)
+                return Math.floor(tileSize * .5)
             })
             const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
             props.canvas.line(canvasEdgePoint, meanderPoint, lineWidth, color)
