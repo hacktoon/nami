@@ -26,7 +26,6 @@ export function buildRegionGridMap(context) {
     const regionIdMap = new Map(origins.map((origin, id) => {
         const direction = getDirection(zoneRect, origin, REGION_CENTER_SIZE)
         regionDirMap.set(id, direction.id)
-
         // set the origin for each region
         originMap.set(id, origin)
         return [id, {origin}]

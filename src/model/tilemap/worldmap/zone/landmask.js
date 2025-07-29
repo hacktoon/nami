@@ -16,23 +16,25 @@ export class LandMaskZone {
         this.#landMaskGrid = buildModel(context)
     }
 
-    get(zonePoint) {
-        const isLand = this.#landMaskGrid.get(zonePoint)
-        return isLand
+    isLand(zonePoint) {
+        return this.#landMaskGrid.get(zonePoint)
     }
 
     draw(props, params) {
-        const {canvas, canvasPoint, tileSize} = props
+        const {canvas, canvasPoint, tilePoint, tileSize, world} = props
         const zoneSize = this.size
         const size = tileSize / zoneSize
         // render zone tiles
+        const isBorder = world.surface.isBorder(tilePoint)
         for (let x=0; x < zoneSize; x++) {
             const xSize = x * size
             for (let y=0; y < zoneSize; y++) {
                 const zonePoint = [y, x]
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const color = this.get(zonePoint) ? '#71b13e' : '#1d2255'
+                let color = this.isLand(zonePoint)
+                    ? isBorder ? '#57892d' : '#71b13e'
+                    : isBorder ? '#1d2255' : '#2f367d'
                 canvas.rect(zoneCanvasPoint, size, color)
             }
         }

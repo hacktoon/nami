@@ -5,10 +5,10 @@ import { buildRiverGrid } from './model'
 
 export class RiverZone {
     #riverGrid
-    #zoneRect
+    #zoneSize
 
     constructor(context) {
-        this.#zoneRect = context.zoneRect
+        this.#zoneSize = context.zoneSize
         this.#riverGrid = buildRiverGrid(context)
     }
 
@@ -18,16 +18,15 @@ export class RiverZone {
 
     draw(props, params) {
         const { canvas, tilePoint, canvasPoint, tileSize, world, zone } = props
-        const zoneSize = this.#zoneRect.width
-        const size = tileSize / zoneSize
+        const size = tileSize / this.#zoneSize
         // render zone tiles
         const showRiver = params.get('showRivers') && tileSize >= 8
         const river = world.river.get(tilePoint)
 
         zone.landmask.draw(props, params)
-        for (let x=0; x < zoneSize; x++) {
+        for (let x=0; x < this.#zoneSize; x++) {
             const xSize = x * size
-            for (let y=0; y < zoneSize; y++) {
+            for (let y=0; y < this.#zoneSize; y++) {
                 const zonePoint = [y, x]
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])

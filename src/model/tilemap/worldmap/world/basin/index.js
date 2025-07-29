@@ -105,7 +105,6 @@ export class BasinLayer {
             const text = basin.erosion.symbol
             const textColor = color.invert().toHex()
             canvas.text(canvasPoint, tileSize, text, textColor)
-            // canvas.text(canvasPoint, tileSize/5, joint.toFixed(2), '#000')
             this.#drawErosionLines(props, basin)
         }
     }

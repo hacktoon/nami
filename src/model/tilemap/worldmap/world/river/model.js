@@ -36,7 +36,7 @@ export function buildRiverMap(context) {
 
 
 export function buildMidpointGrid({rect, zoneRect}) {
-    const RATE = .6  // 60 %
+    const RATE = .6  // 60% around center point
     const centerIndex = Math.floor(zoneRect.width / 2)
     const offset = Math.floor(centerIndex * RATE)
 
