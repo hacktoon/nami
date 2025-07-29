@@ -36,10 +36,13 @@ export function buildRiverMap(context) {
 
 
 export function buildMidpointGrid({rect, zoneRect}) {
+    const RATE = .6  // 60 %
+    const centerIndex = Math.floor(zoneRect.width / 2)
+    const offset = Math.floor(centerIndex * RATE)
+
     return Grid.fromRect(rect, () => {
-        // TODO: use relative numbers in random x, y
-        const x = Random.int(2, zoneRect.width - 3)  // avoid edges
-        const y = Random.int(2, zoneRect.height - 3)
+        const x = centerIndex + Random.int(-offset, offset)
+        const y = centerIndex + Random.int(-offset, offset)
         return zoneRect.pointToIndex([x, y])
     })
 }

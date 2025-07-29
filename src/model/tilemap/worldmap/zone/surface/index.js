@@ -15,11 +15,9 @@ export class SurfaceZone {
     constructor(context) {
         this.size = context.zoneSize
         this.world = context.world
-        const {landMaskGrid, regionGrid, regionDirMap} = buildModel(context)
+        const {landMaskGrid, regionGrid} = buildModel(context)
         this.#landMaskGrid = landMaskGrid
-        // DEBUG
         this._regionGrid = regionGrid
-        this._regionDirMap = regionDirMap
     }
 
     get(zonePoint) {

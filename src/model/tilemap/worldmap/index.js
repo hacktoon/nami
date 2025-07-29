@@ -6,7 +6,7 @@ import { Random } from '/src/lib/random'
 import { WORLD_NAMES } from '/src/lib/names'
 import { TileMap } from '/src/model/tilemap/lib'
 import { UITileMap } from '/src/ui/tilemap'
-
+import { FIFOCache } from '/src/lib/cache'
 import { NoiseLayer } from './world/noise'
 import { SurfaceLayer } from './world/surface'
 import { BasinLayer } from './world/basin'
@@ -20,7 +20,6 @@ import { CivilLayer } from './world/civil'
 import { WorldTileMapDiagram } from './diagram'
 
 import { LandMaskZone } from './zone/landmask'
-import { SurfaceZone } from './zone/surface'
 import { RiverZone } from './zone/river'
 
 
@@ -34,7 +33,7 @@ const SCHEMA = new Schema(
 
 const ZONE_SIZE = 15
 const ZONE_RECT = new Rect(ZONE_SIZE, ZONE_SIZE)
-
+const ZONE_CACHE = new FIFOCache(256)
 
 export class WorldTileMap extends TileMap {
     static diagram = WorldTileMapDiagram
@@ -111,9 +110,14 @@ export class WorldTileMap extends TileMap {
             seed
         }
         Random.seed = seed  // change seed for this specific zone
+        const hash = Point.hash(worldPoint)
+        // cache de zone grid noise
+        if (ZONE_CACHE.has(hash)) {
+            return ZONE_CACHE.get(hash)
+        }
         zone.landmask = new LandMaskZone(context)
-        zone.surface = new SurfaceZone(context)
         zone.river = new RiverZone(context)
+        ZONE_CACHE.set(hash, zone)
         return zone
     }
 
