@@ -2,6 +2,8 @@ import { Point } from '/src/lib/geometry/point'
 import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
+import { Random } from '/src/lib/random'
+import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 
 import { buildRegionGridMap } from './region'
 
@@ -9,6 +11,10 @@ import { buildRegionGridMap } from './region'
 const SURFACE_NOISE_RATIO = .6
 const REGION_WATER = false
 const REGION_LAND = true
+const EMPTY = null
+
+const FILL_GROWTH = [2, 1]
+const FILL_CHANCE = .1
 
 
 export function buildModel(context) {
@@ -79,19 +85,22 @@ function buildLandMaskGrid(context) {
 }
 
 
-function getEdgePoints(rect) {
-    const xMax = rect.width - 1
-    const yMax = rect.height - 1
-    const points = []
-    // horizontal sweep
-    for (let x = 0; x <= xMax; x++) {
-        points.push([[x, 0], Direction.NORTH])
-        points.push([[x, yMax], Direction.SOUTH])
+class AreaFloodFill extends ConcurrentFill {
+    getGrowth() { return Random.choiceFrom(FILL_GROWTH) }
+    getChance() { return FILL_CHANCE }
+
+    getNeighbors(fill, parentPoint) {
+        const rect = fill.context.zoneRect
+        const points = Point.adjacents(parentPoint)
+        // avoid wrapping in zone rect - flood fill from borders to center
+        return points.filter(p => rect.isInside(p))
     }
-    // vertical sweep (avoid visited corners)
-    for (let y = 0; y <= yMax; y++) {
-        points.push([[0, y], Direction.WEST])
-        points.push([[xMax, y], Direction.EAST])
+
+    isEmpty(fill, fillPoint) {
+        return fill.context.regionGrid.get(fillPoint) === EMPTY
     }
-    return points
+
+    onFill(fill, fillPoint) {
+        fill.context.regionGrid.set(fillPoint, fill.id)
+    }
 }

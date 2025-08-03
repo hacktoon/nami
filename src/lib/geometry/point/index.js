@@ -63,6 +63,12 @@ export class Point {
         return [point[0] * xValue, point[1] * (yValue ?? xValue)]
     }
 
+    static midpoint(source, target) {
+        const [x1, y1] = source
+        const [x2, y2] = target
+        return [(x1 + x2) / 2, (y1 + y2) / 2]
+    }
+
     static adjacents(center, callback=()=>{}) {
         const points = []
         for (let [x, y, direction] of ADJACENT_NEIGHBORHOOD) {

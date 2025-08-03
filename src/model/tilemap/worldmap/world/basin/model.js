@@ -1,5 +1,6 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
+import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
 
 import {
@@ -18,7 +19,6 @@ const FILL_GROWTH = 10  // make fill basins grow bigger than others
 
 export function buildBasinGrid(baseContext) {
     const {rect, world, typeMap} = baseContext
-
     // init basin id counter
     let basinId = 0
     // get surface border points and setup basin types and fill
@@ -78,6 +78,8 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
+        // const adjacents = Point.adjacents(parentPoint)
+        // return Point.diagonals(parentPoint).filter(p => Random.chance(.6))
         return Point.around(parentPoint)
     }
 
