@@ -1,5 +1,6 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
+import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
 
@@ -14,7 +15,7 @@ import {
 
 
 const FILL_CHANCE = .1  // chance of fill growing
-const FILL_GROWTH = 10  // make fill basins grow bigger than others
+const FILL_GROWTH = 4  // make fill basins grow bigger than others
 
 
 export function buildBasinGrid(baseContext) {
@@ -78,8 +79,6 @@ class BasinGridFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
-        // const adjacents = Point.adjacents(parentPoint)
-        // return Point.diagonals(parentPoint).filter(p => Random.chance(.6))
         return Point.around(parentPoint)
     }
 
@@ -131,15 +130,14 @@ function surveyNeighbors(context, point) {
 
 
 function buildBasinType(world, survey) {
-    let type = ExorheicBasin
     if (world.surface.isLake(survey.oppositeBorder)) {
-        type = EndorheicLakeBasin
+        return EndorheicLakeBasin
     }
     if (world.surface.isSea(survey.oppositeBorder)) {
-        type = EndorheicSeaBasin
+        return EndorheicSeaBasin
     }
     if (survey.isRiverCapable) {
-        return type
+        return ExorheicBasin
     }
     return DiffuseLandBasin
 }
