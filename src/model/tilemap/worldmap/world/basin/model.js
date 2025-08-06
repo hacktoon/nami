@@ -1,7 +1,5 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
-import { Direction } from '/src/lib/direction'
-import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
 
 import {
@@ -96,9 +94,9 @@ class BasinGridFill extends ConcurrentFill {
         const {world, basinGrid, typeMap} = fill.context
         const basin = Basin.parse(typeMap.get(fill.id))
         if (basinGrid.get(fillPoint) !== EMPTY) return false
+        // avoid erosion flow on land borders
         if (world.surface.isBorder(fillPoint)) return false
         if (fill.level >= basin.reach) return false
-        // avoid erosion flow on land borders
         const target = world.surface.get(fillPoint)
         const parent = world.surface.get(parentPoint)
         // avoid fill if different types

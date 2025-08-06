@@ -65,18 +65,14 @@ export class BasinLayer {
         }
     }
 
-    getFlows(point) {
-        return this.#erosionMaskGrid.get(point)
-    }
-
     canCreateRiver(point) {
         if (! this.has(point))
             return false
         const id = this.#basinGrid.get(point)
         const typeId = this.#typeMap.get(id)
-        const type = Basin.parse(typeId)
+        const basinType = Basin.parse(typeId)
         const isDivide = this.#erosionMaskGrid.get(point).length === 1
-        return type.hasRivers && isDivide
+        return basinType.hasRivers && isDivide
     }
 
     getText(point) {
@@ -105,7 +101,7 @@ export class BasinLayer {
             const text = basin.erosion.symbol
             const textColor = color.invert().toHex()
             canvas.text(canvasPoint, tileSize, text, textColor)
-            this.#drawErosionLines(props, basin)
+            // this.#drawErosionLines(props, basin)
         }
     }
 
@@ -126,11 +122,6 @@ export class BasinLayer {
         // draw line for each neighbor with a basin connection
         const directions = this.#erosionMaskGrid.get(tilePoint)
         for(let direction of directions) {
-            // build a point for each flow that points to this point
-            const sidePoint = Point.atDirection(tilePoint, direction)
-            // get average between this point and neighbor
-
-
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented
             const axisModifier = direction.axis.map(c => {

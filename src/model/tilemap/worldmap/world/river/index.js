@@ -1,11 +1,16 @@
 import { PointSet } from '/src/lib/geometry/point/set'
 import { PointMap } from '/src/lib/geometry/point/map'
 import { Point } from '/src/lib/geometry/point'
+import { Grid } from '/src/lib/grid'
+import { Random } from '/src/lib/random'
 
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
-import { buildRiverMap, buildMidpointGrid } from './model'
+import { buildRiverModel } from './model'
 import { RiverStretch } from './data'
+
+
+const MIDPOINT_RATE = .6  // 60% around center point
 
 
 export class RiverLayer {
@@ -14,13 +19,14 @@ export class RiverLayer {
     #riverNames = new Map()
     // map a point to an id
     #riverPointGrid
-    // map a point to a river direction mask
+    // grid of river direction bitmasks
     #directionMaskGrid
+    // grid of river midpoints
     #midpointGrid
     // map a river point to its river type
     #stretchMap
-
     #riverMouths
+    #estuaryPointSet
 
     constructor(context) {
         const {rect, world, zoneRect} = context
@@ -29,15 +35,17 @@ export class RiverLayer {
         this.#midpointGrid = buildMidpointGrid(context)
         this.#directionMaskGrid = new DirectionBitMaskGrid(rect)
         this.#riverMouths = new PointSet(rect)
+        this.#estuaryPointSet = new PointSet(rect)
         this.#stretchMap = new PointMap(rect)
         const _context = {
             ...context,
             riverNames: this.#riverNames,
             riverMouths: this.#riverMouths,
+            estuaryPointSet: this.#estuaryPointSet,
             directionMaskGrid: this.#directionMaskGrid,
             stretchMap: this.#stretchMap,
         }
-        this.#riverPointGrid = buildRiverMap(_context)
+        this.#riverPointGrid = buildRiverModel(_context)
     }
 
     get count() {
@@ -52,18 +60,14 @@ export class RiverLayer {
         const id = this.#riverPointGrid.get(point)
         const stretchId = this.#stretchMap.get(point)
         const midpointIndex = this.#midpointGrid.get(point)
+        const flows = this.#directionMaskGrid.get(point)
         return {
             id,
-            flows: this.world.basin.getFlows(point),
+            flows,
             name: this.#riverNames.get(id),
             midpoint: this.#zoneRect.indexToPoint(midpointIndex),
-            mouth: this.#riverMouths.has(point),
             stretch: RiverStretch.get(stretchId),
         }
-    }
-
-    isMouth(point) {
-        return this.#riverMouths.has(point)
     }
 
     is(point, type) {
@@ -111,4 +115,16 @@ export class RiverLayer {
             canvas.line(edgeMidPoint, meanderPoint, riverWidth, hexColor)
         }
     }
+}
+
+
+function buildMidpointGrid({rect, zoneRect}) {
+    const centerIndex = Math.floor(zoneRect.width / 2)
+    const offset = Math.floor(centerIndex * MIDPOINT_RATE)
+
+    return Grid.fromRect(rect, () => {
+        const x = centerIndex + Random.int(-offset, offset)
+        const y = centerIndex + Random.int(-offset, offset)
+        return zoneRect.pointToIndex([x, y])
+    })
 }
