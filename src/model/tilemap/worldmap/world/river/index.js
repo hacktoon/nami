@@ -25,8 +25,6 @@ export class RiverLayer {
     #midpointGrid
     // map a river point to its river type
     #stretchMap
-    #riverMouths
-    #estuaryPointSet
 
     constructor(context) {
         const {rect, world, zoneRect} = context
@@ -34,16 +32,12 @@ export class RiverLayer {
         this.world = world
         this.#midpointGrid = buildMidpointGrid(context)
         this.#directionMaskGrid = new DirectionBitMaskGrid(rect)
-        this.#riverMouths = new PointSet(rect)
-        this.#estuaryPointSet = new PointSet(rect)
         this.#stretchMap = new PointMap(rect)
         const _context = {
             ...context,
             riverNames: this.#riverNames,
-            riverMouths: this.#riverMouths,
-            estuaryPointSet: this.#estuaryPointSet,
             directionMaskGrid: this.#directionMaskGrid,
-            stretchMap: this.#stretchMap,
+            stretchMap: this.#stretchMap
         }
         this.#riverPointGrid = buildRiverModel(_context)
     }
@@ -83,8 +77,8 @@ export class RiverLayer {
             return ''
         const river = this.get(point)
         const attrs = [
-             `${river.id}`,
-             `${river.name}${river.mouth ? ' mouth' : ''}`,
+             `id=${river.id}`,
+             `name=${river.name}`,
              `stretch=${river.stretch.name}`,
              `midpoint=${river.midpoint}`,
         ].filter(x=>x).join(',')

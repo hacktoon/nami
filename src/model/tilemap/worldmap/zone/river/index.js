@@ -31,13 +31,14 @@ export class RiverZone {
                 const zonePoint = [y, x]
                 const ySize = y * zoneTileSize
                 let zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
+                let color
                 if (showRiver && zone.river.has(zonePoint)) {
-                    let color = river.stretch.color
-                    if (Point.equals(river.midpoint, zonePoint)) {
-                        color = Color.RED
-                    }
+                    color = river.stretch.color
                     canvas.rect(zoneCanvasPoint, zoneTileSize, color.toHex())
                 }
+                // if (Point.equals(river.midpoint, zonePoint)) {
+                //     canvas.rect(zoneCanvasPoint, zoneTileSize, Color.RED.toHex())
+                // }
             }
         }
     }

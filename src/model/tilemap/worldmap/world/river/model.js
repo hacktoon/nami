@@ -1,9 +1,15 @@
 import { Point } from '/src/lib/geometry/point'
+import { PointSet } from '/src/lib/geometry/point/set'
 import { Random } from '/src/lib/random'
+import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
+import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
 import { HYDRO_NAMES } from '/src/lib/names'
 
 import { RiverStretch } from './data'
+
+const FILL_CHANCE = .1
+const FILL_GROWTH = 4
 
 
 /*
@@ -14,28 +20,24 @@ import { RiverStretch } from './data'
 export function buildRiverModel(context) {
     const {rect, world} = context
     const riverSources = []
-    const riverPoints = Grid.fromRect(rect, point => {
+    const estuaries = new PointSet(rect)
+    const riverGrid = Grid.fromRect(rect, point => {
         const isDivide = world.basin.canCreateRiver(point)
         if (isDivide && world.rain.canCreateRiver(point)) {
             riverSources.push(point)
         }
         return null
     })
-    const ctx = {...context, riverPoints, riverSources}
-    buildRiverPoints(ctx)
-    buildOceanNetwork(ctx)
-    return riverPoints
+    const ctx = {...context, riverGrid, riverSources, estuaries}
+    buildRivers(ctx)
+    buildWaterPaths(ctx)
+    return riverGrid
 }
 
 
-function buildOceanNetwork(context) {
-
-}
-
-
-function buildRiverPoints(context) {
+function buildRivers(context) {
     let riverId = 0
-    const {world, riverSources} = context
+    const {world, riverSources, riverNames} = context
     // create a list of pairs: (point, river distance to mouth)
     riverSources.map(point => {
         const distance = world.basin.get(point).distance
@@ -45,18 +47,20 @@ function buildRiverPoints(context) {
     // for starting rivers on basin divides
     .sort((a, b) => a[1] - b[1])
     .forEach(([point, ]) => {
-        buildRiver(context, riverId++, point)
+        buildRiverPath(context, riverId, point)
+        riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
+        riverId++
     })
 }
 
 
-
-function buildRiver(context, riverId, sourcePoint) {
+// TODO: split this function
+function buildRiverPath(context, riverId, sourcePoint) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const {
-        world, riverPoints, riverNames, riverMouths,
-        stretchMap, directionMaskGrid, estuaryPointSet
+        world, rect, riverGrid, estuaries,
+        stretchMap, directionMaskGrid,
     } = context
     let prevPoint = sourcePoint
     let nextPoint = sourcePoint
@@ -71,7 +75,7 @@ function buildRiver(context, riverId, sourcePoint) {
 
         stretchMap.set(point, stretch.id)
         // overwrite previous river id at point
-        riverPoints.set(point, riverId)
+        riverGrid.set(point, riverId)
 
         if (Point.differs(point, prevPoint)) {
             const upstream = Point.directionBetween(point, prevPoint)
@@ -85,9 +89,9 @@ function buildRiver(context, riverId, sourcePoint) {
         prevPoint = point
     }
     // current (last) point is water, add previous as river mouth
-    riverMouths.add(prevPoint)
-    estuaryPointSet.add(nextPoint)
-    riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
+    // riverMouthPointSet.add(prevPoint)
+    estuaries.add(rect.wrap(nextPoint))
+
 }
 
 
@@ -101,3 +105,55 @@ function buildStretch(distance, maxDistance) {
 }
 
 
+function buildWaterPaths(context) {
+    const {estuaries} = context
+    const fillMap = new Map()
+    estuaries.forEach((point, index) => {
+        fillMap.set(index, {origin: point})
+    })
+    // new WaterMaskFill(fillMap, context).complete()
+}
+
+
+class WaterMaskFill extends ConcurrentFill {
+    getChance(fill) { return FILL_CHANCE }
+    getGrowth(fill) { return FILL_GROWTH }
+
+    getNeighbors(fill, parentPoint) {
+        return Point.around(parentPoint)
+    }
+
+    onInitFill(fill, fillPoint) {
+        const {rect, riverGrid, directionMaskGrid} = fill.context
+        // check neighbor rivers
+        Point.adjacents(fillPoint, (sidePoint, direction) => {
+            if (riverGrid.get(sidePoint) != null) {
+                directionMaskGrid.add(fillPoint, direction)
+                if (Point.equals(fillPoint, [31, 16])) {
+                    console.log(`rivers: ${x}`);
+                    console.log(directionMaskGrid.get(fillPoint));
+
+                }
+            }
+        })
+        if (Point.equals(rect.wrap(fillPoint), [31, 16])) {
+            debugger;
+        }
+        // set negative value to indicate water
+        // riverGrid.set(fillPoint, -)
+    }
+
+    onFill(fill, fillPoint, parentPoint) {
+        const {waterMaskPoints, directionMaskGrid} = fill.context
+        // distance to source by point
+        waterMaskPoints.add(fillPoint)
+        // directionMaskGrid.add(fillPoint, direction)
+
+    }
+
+    isEmpty(fill, fillPoint, parentPoint) {
+        const {world, waterMaskPoints} = fill.context
+        if (world.surface.isLand(fillPoint)) return false
+        return ! waterMaskPoints.has(fillPoint)
+    }
+}

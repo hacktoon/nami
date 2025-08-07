@@ -3,12 +3,15 @@ import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/direction'
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
-import { buildBasinGrid } from './model'
+import {
+    buildBasinModel,
+    buildMidpointGrid
+} from './model'
 import {
     Basin,
+    WaterBasin,
     EMPTY,
     DiffuseLandBasin,
-    WaterBasin,
 } from './type'
 
 
@@ -18,6 +21,8 @@ export class BasinLayer {
 
     // grid of basin ids
     #basinGrid
+
+    #midpointGrid
 
     // the walk distance of each basin starting from shore
     // initial value is 0, used to determine river stretch
@@ -30,7 +35,7 @@ export class BasinLayer {
     #typeMap = new Map()
 
     // map a point to a basin zone direction bitmask
-    #erosionMaskGrid
+    #directionBitmask
 
     constructor(context) {
         const {rect, world, zoneRect} = context
@@ -38,13 +43,14 @@ export class BasinLayer {
         this.#zoneRect = zoneRect
         this.#distanceGrid = Grid.fromRect(rect, () => 0)
         this.#erosionGrid = Grid.fromRect(rect, () => null)
-        this.#erosionMaskGrid = new DirectionBitMaskGrid(rect)
-        this.#basinGrid = buildBasinGrid({
+        this.#midpointGrid = buildMidpointGrid(context)
+        this.#directionBitmask = new DirectionBitMaskGrid(rect)
+        this.#basinGrid = buildBasinModel({
             ...context,
             typeMap: this.#typeMap,
             erosionGrid: this.#erosionGrid,
             distanceGrid: this.#distanceGrid,
-            erosionMaskGrid: this.#erosionMaskGrid,
+            directionBitmask: this.#directionBitmask,
         })
     }
 
@@ -53,35 +59,38 @@ export class BasinLayer {
     }
 
     get(point) {
-        if (! this.has(point)) return null
         const id = this.#basinGrid.get(point)
         const typeId = this.#typeMap.get(id)
         const directionId = this.#erosionGrid.get(point)
+        const midpointIndex = this.#midpointGrid.get(point)
         return {
             id,
-            type: Basin.parse(typeId),
-            distance: this.#distanceGrid.get(point),
+            type: Basin.parse(typeId) || WaterBasin,
+            distance: this.#distanceGrid.get(point) || 0,
+            midpoint: this.#zoneRect.indexToPoint(midpointIndex),
             erosion: Direction.fromId(directionId),
         }
     }
 
     canCreateRiver(point) {
-        if (! this.has(point))
-            return false
         const id = this.#basinGrid.get(point)
         const typeId = this.#typeMap.get(id)
         const basinType = Basin.parse(typeId)
-        const isDivide = this.#erosionMaskGrid.get(point).length === 1
+        if (! basinType) {
+            console.log(point);
+
+            return false
+        }
+        const isDivide = this.#directionBitmask.get(point).length === 1
         return basinType.hasRivers && isDivide
     }
 
     getText(point) {
-        if (! this.has(point)) return ''
         const basin = this.get(point)
         const attrs = [
             `id=${basin.id}`,
             `type=${basin.type ? basin.type.name : ''}`,
-            `erosion=${basin.erosion.name}`,
+            `erosion=${basin.erosion ? basin.erosion.name : 'NADA'}`,
             `distance=${basin.distance}`,
         ].join(',')
         return `Basin(${attrs})`
@@ -94,14 +103,19 @@ export class BasinLayer {
         if (this.#world.surface.isLand(tilePoint)) {
             color = basin ? basin.type.color : DiffuseLandBasin.color
         } else {
-            color = WaterBasin.color
+            color =  WaterBasin.color
         }
         canvas.rect(canvasPoint, tileSize, color.toHex())
         if (basin && params.get('showErosion')) {
-            const text = basin.erosion.symbol
-            const textColor = color.invert().toHex()
-            canvas.text(canvasPoint, tileSize, text, textColor)
-            // this.#drawErosionLines(props, basin)
+            if (basin.erosion) {
+                const text = basin.erosion.symbol
+                const textColor = color.invert().toHex()
+                canvas.text(canvasPoint, tileSize, text, textColor)
+            } else {
+                console.log(tilePoint);
+
+            }
+            this.#drawErosionLines(props, basin)
         }
     }
 
@@ -111,16 +125,11 @@ export class BasinLayer {
         const lineWidth = Math.round(props.tileSize / 20)
         // calc midpoint point on canvas
         const pixelsPerZonePoint = tileSize / this.#zoneRect.width
-        const zoneSize = this.#zoneRect.width
-        const midpoint = [
-            Math.floor(zoneSize / 2),
-            Math.floor(zoneSize / 2),
-        ]
-        const canvasMidpoint = Point.multiplyScalar(midpoint, pixelsPerZonePoint)
+        const canvasMidpoint = Point.multiplyScalar(basin.midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
 
         // draw line for each neighbor with a basin connection
-        const directions = this.#erosionMaskGrid.get(tilePoint)
+        const directions = this.#directionBitmask.get(tilePoint)
         for(let direction of directions) {
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented

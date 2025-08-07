@@ -108,7 +108,7 @@ export class PointSet {
     forEach(callback) {
         this.#indexSet.forEach(index => {
             const point = this.rect.indexToPoint(index)
-            callback(point)
+            callback(point, index)
         })
     }
 }

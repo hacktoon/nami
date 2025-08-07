@@ -32,9 +32,10 @@ export class LandMaskZone {
                 const zonePoint = [y, x]
                 const ySize = y * size
                 const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                let color = this.isLand(zonePoint)
-                    ? isBorder ? '#57892d' : '#71b13e'
-                    : isBorder ? '#1d2255' : '#2f367d'
+                let color = this.isLand(zonePoint) ? '#71b13e' : '#2f367d'
+                // let color = this.isLand(zonePoint)
+                //     ? isBorder ? '#57892d' : '#71b13e'
+                //     : isBorder ? '#1d2255' : '#2f367d'
                 canvas.rect(zoneCanvasPoint, size, color)
             }
         }
