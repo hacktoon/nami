@@ -34,46 +34,50 @@ export function buildMidpointGrid({rect, zoneRect}) {
 
 
 export function buildBasinModel(baseContext) {
-    const {rect, world, typeMap} = baseContext
+    const {world, rect} = baseContext
     // init basin id counter
     let basinId = 0
     // get surface border points and setup basin types and fill
     const landFillMap = new Map()
     const waterFillMap = new Map()
     const surveyMap = new Map()
+    const basinContext = {
+        ...baseContext, surveyMap, landFillMap, waterFillMap
+    }
     const basinGrid = Grid.fromRect(rect, point => {
-        // reuse the process of basinGrid creation to determine river mouths
-        // is this point an erosion path (possible river mouth)?
         if (world.surface.isBorder(point)) {
-            if (world.surface.isLand(point)) {
-                const survey = surveyNeighbors(baseContext, point)
-                surveyMap.set(basinId, survey)
-                const type = buildBasinType(world, survey)
-                typeMap.set(basinId, type.id)
-                landFillMap.set(basinId, {origin: point})
-            } else {
-                typeMap.set(basinId, WaterBasin.id)
-                waterFillMap.set(basinId, {origin: point})
-            }
+            createBasin(basinContext, basinId, point)
             basinId++
         }
         return EMPTY
     })
-    const context = {...baseContext, basinGrid, surveyMap}
-    new LandBasinFill(landFillMap, context).complete()
-    new WaterBasinFill(waterFillMap, context).complete()
+
+    const fillContext = {...baseContext, basinGrid, surveyMap}
+    new LandBasinFill(landFillMap, fillContext).complete()
+    new WaterBasinFill(waterFillMap, fillContext).complete()
     return basinGrid
+}
+
+
+function createBasin(context, basinId, point) {
+    const {world, typeMap, surveyMap, landFillMap, waterFillMap} = context
+    let priority = 0
+    if (world.surface.isLand(point)) {
+        const survey = surveyNeighbors(context, point)
+        const type = buildBasinType(world, survey)
+        surveyMap.set(basinId, survey)
+        typeMap.set(basinId, type.id)
+        landFillMap.set(basinId, {origin: point, priority})
+    } else {
+        typeMap.set(basinId, WaterBasin.id)
+        waterFillMap.set(basinId, {origin: point, priority})
+    }
 }
 
 
 class LandBasinFill extends ConcurrentFill {
     getChance(fill) { return FILL_CHANCE }
-
-    getGrowth(fill) {
-        const {typeMap} = fill.context
-        const basin = Basin.parse(typeMap.get(fill.id))
-        return basin.isEndorheic ? 1 : FILL_GROWTH
-    }
+    getGrowth(fill) { return FILL_GROWTH }
 
     onInitFill(fill, fillPoint) {
         const {surveyMap} = fill.context
