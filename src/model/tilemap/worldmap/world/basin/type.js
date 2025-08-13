@@ -1,9 +1,6 @@
 import { Color } from '/src/lib/color'
 
 
-export const EMPTY = null
-
-
 export class Basin {
     static color = Color.fromHex('#8c8c8c')
 
@@ -53,7 +50,7 @@ export class WaterBasin extends Basin {
 }
 
 
-export class DiffuseLandBasin extends Basin {
+export class DiffuseBasin extends Basin {
     static id = 4
     static name = 'Diffuse'
     static reach = 0
@@ -68,5 +65,5 @@ const BASIN_MAP = {
     1: EndorheicSeaBasin,
     2: EndorheicLakeBasin,
     3: WaterBasin,
-    4: DiffuseLandBasin
+    4: DiffuseBasin
 }
