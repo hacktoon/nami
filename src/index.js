@@ -17,10 +17,10 @@ import { AudioSynth } from '/src/model/synth'
 
 
 const APPS = [
-    {value: 'AudioSynth', label: 'AudioSynth', AppModelClass: AudioSynth},
     {value: 'WorldMap', label: 'WorldMap', AppModelClass: WorldTileMap},
     {value: 'NoiseMap', label: 'NoiseMap', AppModelClass: NoiseTileMap},
     {value: 'RegionMap', label: 'RegionMap', AppModelClass: RegionTileMap},
+    {value: 'AudioSynth', label: 'AudioSynth', AppModelClass: AudioSynth},
 ]
 
 const UI_APP_COMPONENT_MAP = new Map(APPS.map(({value, AppModelClass}) => {
