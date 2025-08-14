@@ -1,13 +1,7 @@
 import { Point } from '/src/lib/geometry/point'
 import { Direction } from '/src/lib/direction'
-import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
-import {
-    buildBasinModel,
-    buildDistanceGrid,
-    buildErosionGrid,
-    buildMidpointGrid
-} from './model'
+import { buildBasinModel } from './model'
 import {
     Basin,
     WaterBasin
@@ -17,23 +11,6 @@ import {
 export class BasinLayer {
     #world
     #zoneRect
-
-    // grid of basin ids
-    #basinGrid
-
-    #midpointGrid
-
-    // the walk distance of each basin starting from shore
-    // initial value is 0, used to determine river stretch
-    #distanceGrid
-
-    // grid of direction ids
-    #erosionGrid
-
-    // map basin type for creating rivers or other features
-    #typeMap = new Map()
-
-    // map a point to a basin zone direction bitmask
     #model
 
     constructor(context) {
@@ -48,12 +25,14 @@ export class BasinLayer {
         const typeId = this.#model.type.get(id)
         const directionId = this.#model.erosion.get(point)
         const midpointIndex = this.#model.midpoint.get(point)
+        const directionBitmap = this.#model.directionBitmask.get(point)
         return {
             id,
             type: Basin.parse(typeId),
             distance: this.#model.distance.get(point),
             midpoint: this.#zoneRect.indexToPoint(midpointIndex),
             erosion: Direction.fromId(directionId),
+            isDivide: directionBitmap.length === 1
         }
     }
 
@@ -98,7 +77,6 @@ export class BasinLayer {
         const pixelsPerZonePoint = tileSize / this.#zoneRect.width
         const canvasMidpoint = Point.multiplyScalar(basin.midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
-
         // draw line for each neighbor with a basin connection
         const directions = this.#model.directionBitmask.get(tilePoint)
         for(let direction of directions) {

@@ -23,11 +23,17 @@ const MIDPOINT_RATE = .6
 
 export function buildBasinModel(context) {
     const model = {}
+    // map basin type for creating rivers or other features
     model.type = new Map()
+    // grid of erosion direction ids
     model.erosion = buildErosionGrid(context)
+    // random midpoint in each zone rect
     model.midpoint = buildMidpointGrid(context)
+    // the walk distance of each basin starting from shore
     model.distance = buildDistanceGrid(context)
+    // map a point to a basin zone direction bitmask
     model.directionBitmask = new DirectionBitMaskGrid(context.rect)
+    // grid of basin ids
     model.basin = buildBasinGrid({...context, model})
     return model
 }
@@ -51,6 +57,7 @@ export function buildMidpointGrid({rect, zoneRect}) {
 
 
 export function buildDistanceGrid({rect}) {
+    // Initial value 0 is used to determine river stretch
     return Grid.fromRect(rect, () => 0)
 }
 
