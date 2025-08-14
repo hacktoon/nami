@@ -22,24 +22,14 @@ const MIDPOINT_RATE = .6
 
 
 export function buildBasinModel(context) {
-    const typeMap = new Map()
-    const erosionGrid = buildErosionGrid(context)
-    const midpointGrid = buildMidpointGrid(context)
-    const distanceGrid = buildDistanceGrid(context)
-    const directionBitmask = new DirectionBitMaskGrid(context.rect)
-    // extend context for basin grid creation
-    const basinGrid = buildBasinGrid({
-        ...context, typeMap, erosionGrid,
-        midpointGrid, distanceGrid, directionBitmask
-    })
-    return {
-        basin: basinGrid,
-        midpoint: midpointGrid,
-        distance: distanceGrid,
-        erosion: erosionGrid,
-        type: typeMap,
-        directionBitmask: directionBitmask,
-    }
+    const model = {}
+    model.type = new Map()
+    model.erosion = buildErosionGrid(context)
+    model.midpoint = buildMidpointGrid(context)
+    model.distance = buildDistanceGrid(context)
+    model.directionBitmask = new DirectionBitMaskGrid(context.rect)
+    model.basin = buildBasinGrid({...context, model})
+    return model
 }
 
 
@@ -66,7 +56,7 @@ export function buildDistanceGrid({rect}) {
 
 
 function buildBasinGrid(context) {
-    const {world, rect, typeMap} = context
+    const {world, rect, model} = context
     const surveyMap = new Map()
     const landFillMap = new Map()
     const waterFillMap = new Map()
@@ -77,13 +67,13 @@ function buildBasinGrid(context) {
             const survey = surveyNeighbors(context, point)
             const type = detectLandBasinType(world, survey)
             surveyMap.set(basinId, survey)
-            typeMap.set(basinId, type.id)
+            model.type.set(basinId, type.id)
             landFillMap.set(basinId, {origin: point})
             basinId++
         }
         if (isBorder && world.surface.isWater(point)) {
             const type = WaterBasin
-            typeMap.set(basinId, type.id)
+            model.type.set(basinId, type.id)
             waterFillMap.set(basinId, {origin: point})
             basinId++
         }
@@ -147,13 +137,13 @@ class LandBasinFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {distanceGrid, directionBitmask} = fill.context
+        const {model} = fill.context
         // distance to source by point
-        const currentDistance = distanceGrid.get(parentPoint)
-        distanceGrid.wrapSet(fillPoint, currentDistance + 1)
+        const currentDistance = model.distance.get(parentPoint)
+        model.distance.wrapSet(fillPoint, currentDistance + 1)
         // update parent point erosion path
         const upstream = Point.directionBetween(parentPoint, fillPoint)
-        directionBitmask.add(parentPoint, upstream)
+        model.directionBitmask.add(parentPoint, upstream)
         this._fillBasin(fill, fillPoint, parentPoint)
     }
 
@@ -162,8 +152,8 @@ class LandBasinFill extends ConcurrentFill {
     }
 
     isEmpty(fill, fillPoint, parentPoint) {
-        const {world, basinGrid, typeMap} = fill.context
-        const basin = Basin.parse(typeMap.get(fill.id))
+        const {world, model, basinGrid} = fill.context
+        const basin = Basin.parse(model.type.get(fill.id))
         if (basinGrid.get(fillPoint) !== DiffuseBasin.id) return false
         // avoid erosion flow on land borders
         if (world.surface.isBorder(fillPoint)) return false
@@ -175,13 +165,13 @@ class LandBasinFill extends ConcurrentFill {
     }
 
     _fillBasin(fill, fillPoint, parentPoint) {
-        const {erosionGrid, directionBitmask, basinGrid} = fill.context
+        const {model, basinGrid} = fill.context
         // basin id is the same as fill id
         basinGrid.set(fillPoint, fill.id)
         // set erosion flow to parent
         const direction = Point.directionBetween(fillPoint, parentPoint)
-        erosionGrid.wrapSet(fillPoint, direction.id)
-        directionBitmask.add(fillPoint, direction)
+        model.erosion.wrapSet(fillPoint, direction.id)
+        model.directionBitmask.add(fillPoint, direction)
     }
 }
 
@@ -195,41 +185,41 @@ class WaterBasinFill extends ConcurrentFill {
     }
 
     onInitFill(fill, fillPoint) {
-        const { world, erosionGrid, directionBitmask, basinGrid, typeMap } = fill.context
+        const { world, model, basinGrid } = fill.context
         // basin id is the same as fill id
         let riverDirection
         basinGrid.set(fillPoint, fill.id)
         Point.adjacents(fillPoint, (sidePoint, direction) => {
             if (world.surface.isLand(sidePoint)) {
                 const sideId = basinGrid.get(sidePoint)
-                const sideType = Basin.parse(typeMap.get(sideId))
+                const sideType = Basin.parse(model.type.get(sideId))
                 if (sideType && sideType.hasRivers) {
                     riverDirection = Point.directionBetween(sidePoint, fillPoint)
-                    directionBitmask.add(fillPoint, direction)
+                    model.directionBitmask.add(fillPoint, direction)
                 }
             } else {
-                directionBitmask.add(fillPoint, direction)
+                model.directionBitmask.add(fillPoint, direction)
             }
         })
         const erosionDirection = riverDirection || Direction.randomCardinal()
-        erosionGrid.set(fillPoint, erosionDirection.id)
+        model.erosion.set(fillPoint, erosionDirection.id)
     }
 
     isEmpty(fill, point) {
-        const {world, basinGrid} = fill.context
+        const { world, basinGrid } = fill.context
         const basinIsEmpty = basinGrid.get(point) === DiffuseBasin.id
         const isWater = world.surface.isWater(point)
         return isWater && basinIsEmpty
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {basinGrid, erosionGrid, directionBitmask} = fill.context
+        const { model, basinGrid } = fill.context
         // update parent point erosion path
         const upstream = Point.directionBetween(fillPoint, parentPoint)
         const downstream = Point.directionBetween(parentPoint, fillPoint)
-        directionBitmask.add(fillPoint, upstream)
-        directionBitmask.add(parentPoint, downstream)
-        erosionGrid.set(fillPoint, upstream.id)
+        model.directionBitmask.add(fillPoint, upstream)
+        model.directionBitmask.add(parentPoint, downstream)
+        model.erosion.set(fillPoint, upstream.id)
         basinGrid.set(fillPoint, fill.id)
     }
 }
