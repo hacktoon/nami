@@ -42,7 +42,8 @@ export class ReliefLayer {
 
     #detectLandType(world, point) {
         const grainedNoise = world.noise.get4DGrained(this.rect, point)
-        if (world.basin.canCreateRiver(point)) {
+        const basin = world.basin.get(point)
+        if (basin.type.hasRivers && basin.isDivide) {
             if (grainedNoise >= MOUNTAIN_RATIO) return Relief.MOUNTAIN
             if (grainedNoise < HILL_RATIO) return Relief.HILL
             return Relief.PLAIN

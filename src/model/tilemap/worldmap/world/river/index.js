@@ -99,7 +99,8 @@ export class RiverLayer {
         const meanderPoint = Point.plus(canvasPoint, [midSize, midSize])
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
-        for(let direction of river.flows) {
+        const basin = props.world.basin.get(tilePoint)
+        for(let direction of basin.directionBitmap) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [

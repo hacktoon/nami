@@ -23,7 +23,6 @@ export class RiverZone {
         // render zone tiles
         const showRiver = params.get('showRivers') && tileSize >= 8
         const river = world.river.get(tilePoint)
-
         zone.landmask.draw(props, params)
         for (let x=0; x < this.#zoneSize; x++) {
             const xSize = x * zoneTileSize
@@ -34,7 +33,7 @@ export class RiverZone {
                 let color
                 if (showRiver && zone.river.has(zonePoint)) {
                     color = river.stretch.color
-                    canvas.rect(zoneCanvasPoint, zoneTileSize, color.toHex())
+                    canvas.rect(zoneCanvasPoint, zoneTileSize, '#2f367d')
                 }
                 // if (Point.equals(river.midpoint, zonePoint)) {
                 //     canvas.rect(zoneCanvasPoint, zoneTileSize, Color.RED.toHex())

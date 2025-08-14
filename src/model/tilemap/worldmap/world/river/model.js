@@ -22,7 +22,9 @@ export function buildRiverModel(context) {
     const riverSources = []
     const estuaries = new PointSet(rect)
     const riverGrid = Grid.fromRect(rect, point => {
-        const isDivide = world.basin.canCreateRiver(point)
+        const basin = world.basin.get(point)
+        const isDivide = basin.type.hasRivers && basin.isDivide
+
         if (isDivide && world.rain.canCreateRiver(point)) {
             riverSources.push(point)
         }
@@ -72,7 +74,6 @@ function buildRiverPath(context, riverId, sourcePoint) {
         // set river stretch by distance
         const basin = world.basin.get(point)
         const stretch = buildStretch(basin.distance, riverLength)
-
         stretchMap.set(point, stretch.id)
         // overwrite previous river id at point
         riverGrid.set(point, riverId)

@@ -28,20 +28,13 @@ export class BasinLayer {
         const directionBitmap = this.#model.directionBitmask.get(point)
         return {
             id,
+            directionBitmap,
             type: Basin.parse(typeId),
             distance: this.#model.distance.get(point),
             midpoint: this.#zoneRect.indexToPoint(midpointIndex),
             erosion: Direction.fromId(directionId),
-            isDivide: directionBitmap.length === 1
+            isDivide: directionBitmap.length === 1,
         }
-    }
-
-    canCreateRiver(point) {
-        const id = this.#model.basin.get(point)
-        const typeId = this.#model.type.get(id)
-        const basinType = Basin.parse(typeId)
-        const isDivide = this.#model.directionBitmask.get(point).length === 1
-        return basinType.hasRivers && isDivide
     }
 
     getText(point) {
@@ -51,6 +44,7 @@ export class BasinLayer {
             `type=${basin.type.name}`,
             `erosion=${basin.erosion.name}`,
             `distance=${basin.distance}`,
+            `isDivide=${basin.isDivide}`,
         ].join(',')
         return `Basin(${attrs})`
     }
@@ -59,7 +53,8 @@ export class BasinLayer {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
         const basin = this.get(tilePoint)
         const isWater = this.#world.surface.isWater(tilePoint)
-        const color = isWater ? WaterBasin.color : basin.type.color
+        const basinColor = isWater ? WaterBasin.color : basin.type.color
+        const color = basin.isDivide ? basinColor.brighten(20) : basinColor
         canvas.rect(canvasPoint, tileSize, color.toHex())
         if (params.get('showErosion')) {
             const text = basin.erosion.symbol
