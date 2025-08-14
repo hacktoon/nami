@@ -2,15 +2,15 @@ import { Point } from '/src/lib/geometry/point'
 import { PointSet } from '/src/lib/geometry/point/set'
 import { Random } from '/src/lib/random'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
 import { HYDRO_NAMES } from '/src/lib/names'
 
 import { RiverStretch } from './data'
 
+
 const FILL_CHANCE = .1
 const FILL_GROWTH = 4
-
+const MIDPOINT_RATE = .6  // 60% around center point
 
 /*
     The shape fill starts from river sources
@@ -32,8 +32,20 @@ export function buildRiverModel(context) {
     })
     const ctx = {...context, riverGrid, riverSources, estuaries}
     buildRivers(ctx)
-    buildWaterPaths(ctx)
+    // buildWaterPaths(ctx)
     return riverGrid
+}
+
+
+export function buildMidpointGrid({rect, zoneRect}) {
+    const centerIndex = Math.floor(zoneRect.width / 2)
+    const offset = Math.floor(centerIndex * MIDPOINT_RATE)
+
+    return Grid.fromRect(rect, () => {
+        const x = centerIndex + Random.int(-offset, offset)
+        const y = centerIndex + Random.int(-offset, offset)
+        return zoneRect.pointToIndex([x, y])
+    })
 }
 
 
@@ -61,8 +73,7 @@ function buildRiverPath(context, riverId, sourcePoint) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const {
-        world, rect, riverGrid, estuaries,
-        stretchMap, directionMaskGrid,
+        world, rect, riverGrid, estuaries, stretchMap,
     } = context
     let prevPoint = sourcePoint
     let nextPoint = sourcePoint
@@ -77,15 +88,8 @@ function buildRiverPath(context, riverId, sourcePoint) {
         stretchMap.set(point, stretch.id)
         // overwrite previous river id at point
         riverGrid.set(point, riverId)
-
-        if (Point.differs(point, prevPoint)) {
-            const upstream = Point.directionBetween(point, prevPoint)
-            directionMaskGrid.add(point, upstream)
-        }
         // get next river point
         nextPoint = Point.atDirection(point, basin.erosion)
-        const downstream = Point.directionBetween(point, nextPoint)
-        directionMaskGrid.add(point, downstream)
         // save previous point for mouth detection
         prevPoint = point
     }
@@ -125,31 +129,17 @@ class WaterMaskFill extends ConcurrentFill {
     }
 
     onInitFill(fill, fillPoint) {
-        const {rect, riverGrid, directionMaskGrid} = fill.context
+        const { rect, riverGrid } = fill.context
         // check neighbor rivers
-        Point.adjacents(fillPoint, (sidePoint, direction) => {
-            if (riverGrid.get(sidePoint) != null) {
-                directionMaskGrid.add(fillPoint, direction)
-                if (Point.equals(fillPoint, [31, 16])) {
-                    console.log(`rivers: ${x}`);
-                    console.log(directionMaskGrid.get(fillPoint));
 
-                }
-            }
-        })
-        if (Point.equals(rect.wrap(fillPoint), [31, 16])) {
-            debugger;
-        }
         // set negative value to indicate water
         // riverGrid.set(fillPoint, -)
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {waterMaskPoints, directionMaskGrid} = fill.context
+        const { waterMaskPoints } = fill.context
         // distance to source by point
         waterMaskPoints.add(fillPoint)
-        // directionMaskGrid.add(fillPoint, direction)
-
     }
 
     isEmpty(fill, fillPoint, parentPoint) {

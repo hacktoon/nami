@@ -33,7 +33,7 @@ const SCHEMA = new Schema(
 
 const ZONE_SIZE = 15
 const ZONE_RECT = new Rect(ZONE_SIZE, ZONE_SIZE)
-const ZONE_CACHE = new FIFOCache(256)
+
 
 export class WorldTileMap extends TileMap {
     static diagram = WorldTileMapDiagram
@@ -44,12 +44,15 @@ export class WorldTileMap extends TileMap {
         return new WorldTileMap(params)
     }
 
+    #zoneCache
+
     constructor(params) {
         super(params)
         this.name = Random.choiceFrom(WORLD_NAMES)
         this.world = this.#buildWorld(params, this.rect)
         this.width = this.size
         this.height = this.size
+        this.#zoneCache = new FIFOCache(256)
     }
 
     #buildWorld(params, rect) {
@@ -112,12 +115,12 @@ export class WorldTileMap extends TileMap {
         Random.seed = seed  // change seed for this specific zone
         const hash = Point.hash(worldPoint)
         // cache de zone grid noise
-        if (ZONE_CACHE.has(hash)) {
-            return ZONE_CACHE.get(hash)
+        if (this.#zoneCache.has(hash)) {
+            return this.#zoneCache.get(hash)
         }
         zone.landmask = new LandMaskZone(context)
         zone.river = new RiverZone(context)
-        ZONE_CACHE.set(hash, zone)
+        this.#zoneCache.set(hash, zone)
         return zone
     }
 
