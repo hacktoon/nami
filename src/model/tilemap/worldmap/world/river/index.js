@@ -1,5 +1,6 @@
 import { PointMap } from '/src/lib/geometry/point/map'
 import { Point } from '/src/lib/geometry/point'
+import { Random } from '/src/lib/random'
 
 import { buildRiverModel, buildMidpointGrid } from './model'
 import { RiverStretch } from './data'
@@ -72,28 +73,30 @@ export class RiverLayer {
     }
 
     draw(props, params) {
-        const {canvas, canvasPoint, tileSize, tilePoint} = props
-        props.world.surface.draw(props, params)
+        const {canvas, canvasPoint, tileSize, tilePoint, world} = props
+        world.surface.draw(props, params)
         if (! params.get('showRivers') || ! this.has(tilePoint)) {
             return
         }
         const river = this.get(tilePoint)
-        const riverWidth = Math.round(river.stretch.width * tileSize)
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-        // calc meander offset point on canvas
         const meanderPoint = Point.plus(canvasPoint, [midSize, midSize])
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
-        const basin = props.world.basin.get(tilePoint)
+        const basin = world.basin.get(tilePoint)
         for(let direction of basin.directionBitmap) {
+            const parentPoint = Point.atDirection(tilePoint, direction)
+            const isParentLand = world.surface.isLand(parentPoint)
+            if (isParentLand && ! this.has(parentPoint))
+                continue
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
                 midCanvasPoint[0] + direction.axis[0] * midSize,
                 midCanvasPoint[1] + direction.axis[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, riverWidth, hexColor)
+            canvas.line(edgeMidPoint, meanderPoint, 3, hexColor)
         }
     }
 }

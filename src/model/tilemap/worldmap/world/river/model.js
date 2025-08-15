@@ -24,7 +24,8 @@ export function buildRiverModel(context) {
     const riverGrid = Grid.fromRect(rect, point => {
         const basin = world.basin.get(point)
         const isDivide = basin.type.hasRivers && basin.isDivide
-        if (isDivide && world.rain.canCreateRiver(point)) {
+        const rainsEnough = world.rain.canCreateRiver(point)
+        if (isDivide && rainsEnough) {
             riverSources.push(point)
         }
         return null

@@ -20,6 +20,10 @@ export function buildRiverGrid(context) {
     const basin = world.basin.get(worldPoint)
     const midSize = Math.floor(zoneRect.width / 2)
     for(let direction of basin.directionBitmap) {
+        const parentPoint = Point.atDirection(worldPoint, direction)
+        const isParentLand = world.surface.isLand(parentPoint)
+        if (isParentLand && ! world.river.has(parentPoint))
+            continue
         const target = [
             midSize + (midSize * direction.axis[0]),
             midSize + (midSize * direction.axis[1])

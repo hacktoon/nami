@@ -117,6 +117,9 @@ function surveyNeighbors(context, point) {
 
 
 function detectLandBasinType(world, survey) {
+    if (! survey.isRiverCapable) {
+        return DiffuseBasin
+    }
     if (world.surface.isLake(survey.oppositeBorder)) {
         return EndorheicLakeBasin
     }
@@ -207,7 +210,7 @@ class WaterBasinFill extends ConcurrentFill {
                 model.directionBitmask.add(fillPoint, direction)
             }
         })
-        const erosionDirection = riverDirection || Direction.randomCardinal()
+        const erosionDirection = riverDirection || Direction.random()
         model.erosion.set(fillPoint, erosionDirection.id)
     }
 

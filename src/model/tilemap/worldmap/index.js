@@ -58,7 +58,10 @@ export class WorldTileMap extends TileMap {
     #buildWorld(params, rect) {
         const start = performance.now()
         // set a global struct for world
-        const world = {}
+        const world = {
+            rect,
+            size: rect.width
+        }
         const context = {
             world,
             rect,
