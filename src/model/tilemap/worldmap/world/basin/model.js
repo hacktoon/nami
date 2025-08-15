@@ -77,8 +77,7 @@ function buildBasinGrid(context) {
             model.type.set(basinId, type.id)
             landFillMap.set(basinId, {origin: point})
             basinId++
-        }
-        if (isBorder && world.surface.isWater(point)) {
+        } else if (isBorder && world.surface.isWater(point)) {
             const type = WaterBasin
             model.type.set(basinId, type.id)
             waterFillMap.set(basinId, {origin: point})

@@ -24,14 +24,12 @@ export function buildRiverModel(context) {
     const riverGrid = Grid.fromRect(rect, point => {
         const basin = world.basin.get(point)
         const isDivide = basin.type.hasRivers && basin.isDivide
-
         if (isDivide && world.rain.canCreateRiver(point)) {
             riverSources.push(point)
         }
         return null
     })
-    const ctx = {...context, riverGrid, riverSources, estuaries}
-    buildRivers(ctx)
+    buildRivers({...context, riverGrid, riverSources, estuaries})
     // buildWaterPaths(ctx)
     return riverGrid
 }

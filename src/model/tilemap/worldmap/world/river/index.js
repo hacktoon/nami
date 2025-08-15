@@ -10,7 +10,7 @@ export class RiverLayer {
     // maps an id to a name
     #riverNames = new Map()
     // map a point to an id
-    #riverPointGrid
+    #riverGrid
     // grid of river midpoints
     #midpointGrid
     // map a river point to its river type
@@ -22,12 +22,12 @@ export class RiverLayer {
         this.world = world
         this.#midpointGrid = buildMidpointGrid(context)
         this.#stretchMap = new PointMap(rect)
-        const _context = {
+        const ctx = {
             ...context,
             riverNames: this.#riverNames,
             stretchMap: this.#stretchMap
         }
-        this.#riverPointGrid = buildRiverModel(_context)
+        this.#riverGrid = buildRiverModel(ctx)
     }
 
     get count() {
@@ -35,11 +35,11 @@ export class RiverLayer {
     }
 
     has(point) {
-        return this.#riverPointGrid.get(point) !== null
+        return this.#riverGrid.get(point) !== null
     }
 
     get(point) {
-        const id = this.#riverPointGrid.get(point)
+        const id = this.#riverGrid.get(point)
         const stretchId = this.#stretchMap.get(point)
         const midpointIndex = this.#midpointGrid.get(point)
         return {
@@ -51,7 +51,7 @@ export class RiverLayer {
     }
 
     is(point, type) {
-        if (this.#riverPointGrid.get(point) == null) {
+        if (this.#riverGrid.get(point) == null) {
             return false
         }
         const river = this.get(point)
@@ -59,7 +59,7 @@ export class RiverLayer {
     }
 
     getText(point) {
-        if (this.#riverPointGrid.get(point) == null)
+        if (this.#riverGrid.get(point) == null)
             return ''
         const river = this.get(point)
         const attrs = [
@@ -74,7 +74,7 @@ export class RiverLayer {
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
         props.world.surface.draw(props, params)
-        if (! this.has(tilePoint)) {
+        if (! params.get('showRivers') || ! this.has(tilePoint)) {
             return
         }
         const river = this.get(tilePoint)
