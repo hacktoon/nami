@@ -30,12 +30,12 @@ export class RiverZone {
                 const ySize = y * zoneTileSize
                 let zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 let color
-                if (showRiver && zone.river.has(zonePoint)) {
+                if (showRiver && this.has(zonePoint)) {
                     color = river.stretch.color
                     canvas.rect(zoneCanvasPoint, zoneTileSize, '#2f367d')
-                }
-                if (Point.equals(river.midpoint, zonePoint)) {
-                    canvas.rect(zoneCanvasPoint, zoneTileSize, Color.RED.toHex())
+                    // if (Point.equals(river.midpoint, zonePoint)) {
+                    //     canvas.rect(zoneCanvasPoint, zoneTileSize, Color.RED.toHex())
+                    // }
                 }
             }
         }
