@@ -75,12 +75,12 @@ function buildBasinGrid(context) {
             const type = detectLandBasinType(world, survey)
             surveyMap.set(basinId, survey)
             model.type.set(basinId, type.id)
-            landFillMap.set(basinId, {origin: point})
+            landFillMap.set(basinId, {origin: point, type})
             basinId++
         } else if (isBorder && world.surface.isWater(point)) {
             const type = WaterBasin
             model.type.set(basinId, type.id)
-            waterFillMap.set(basinId, {origin: point})
+            waterFillMap.set(basinId, {origin: point, type})
             basinId++
         }
         // return default basin id (as empty cell) before flood fill
@@ -157,7 +157,10 @@ class LandBasinFill extends ConcurrentFill {
         if (basinGrid.get(fillPoint) !== EMPTY) return false
         // avoid erosion flow on land borders
         if (world.surface.isBorder(fillPoint)) return false
-        if (fill.level >= basin.reach) return false
+        if (fill.level >= basin.reach) {
+            // basinGrid.set(fillPoint, fill.id)
+            return false
+        }
         const target = world.surface.get(fillPoint)
         const parent = world.surface.get(parentPoint)
         // avoid fill if different types
@@ -189,13 +192,10 @@ class WaterBasinFill extends ConcurrentFill {
         basinGrid.set(fillPoint, fill.id)  // basin id is the same as fill id
         // discover adjacent river and water tiles
         Point.adjacents(fillPoint, (sidePoint, direction) => {
-            const sideId = basinGrid.get(sidePoint)
-            const sideType = Basin.parse(model.type.get(sideId))
-            const isLand = world.surface.isLand(sidePoint)
-            if (isLand) {
+            if (world.surface.isLand(sidePoint)) {
                 const sideDirection = Direction.fromId(model.erosion.get(sidePoint))
                 const mouth = Point.atDirection(sidePoint, sideDirection)
-                if (sideType.hasRivers && Point.equals(mouth, fillPoint)) {
+                if (Point.equals(mouth, fillPoint)) {
                     model.directionBitmask.add(fillPoint, direction)
                     model.erosion.set(fillPoint, direction.id)
                 }
@@ -220,14 +220,14 @@ class WaterBasinFill extends ConcurrentFill {
 
     onFill(fill, fillPoint, parentPoint) {
         const { world, model, basinGrid } = fill.context
+        const upstream = Point.directionBetween(fillPoint, parentPoint)
+        model.erosion.set(fillPoint, upstream.id)
+        // calculate downstream directions
         Point.adjacents(fillPoint, (sidePoint, direction) => {
             if (world.surface.isWater(sidePoint)) {
                 model.directionBitmask.add(fillPoint, direction)
             }
         })
-        const upstream = Point.directionBetween(fillPoint, parentPoint)
-        // model.directionBitmask.add(parentPoint, downstream)
-        model.erosion.set(fillPoint, upstream.id)
         basinGrid.set(fillPoint, fill.id)
     }
 }

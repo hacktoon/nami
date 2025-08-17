@@ -60,6 +60,7 @@ export class WorldTileMap extends TileMap {
         // set a global struct for world
         const world = {
             rect,
+            seed: this.seed,
             size: rect.width
         }
         const context = {
