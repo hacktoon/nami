@@ -40,9 +40,19 @@ export class WaterBasin extends Basin {
 }
 
 
+export class DiffuseBasin extends Basin {
+    static id = 4
+    static name = 'Diffuse'
+    static reach = 0
+    static color = Color.fromHex('#a5b0b7')
+}
+
+
+
 const BASIN_MAP = {
     0: ExorheicBasin,
     1: EndorheicSeaBasin,
     2: EndorheicLakeBasin,
     3: WaterBasin,
+    4: DiffuseBasin,
 }

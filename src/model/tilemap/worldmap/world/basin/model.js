@@ -12,10 +12,11 @@ import {
     EndorheicLakeBasin,
     ExorheicBasin,
     WaterBasin,
+    DiffuseBasin,
 } from './type'
 
 
-const EMPTY = null
+const NO_BASIN_ID = -1
 const FILL_CHANCE = .2  // chance of fill growing
 const FILL_GROWTH = 3  // make fill basins grow bigger than others
 const MIDPOINT_RATE = .6
@@ -70,21 +71,23 @@ function buildBasinGrid(context) {
     let basinId = 0
     const basinGrid = Grid.fromRect(rect, point => {
         const isBorder = world.surface.isBorder(point)
-        if (isBorder && world.surface.isLand(point)) {
+        const isLand = world.surface.isLand(point)
+        if (isBorder && isLand) {
             const survey = surveyNeighbors(context, point)
             const type = detectLandBasinType(world, survey)
             surveyMap.set(basinId, survey)
             model.type.set(basinId, type.id)
-            landFillMap.set(basinId, {origin: point, type})
+            landFillMap.set(basinId, {origin: point, retry: true})
             basinId++
-        } else if (isBorder && world.surface.isWater(point)) {
+        } else if (isBorder && ! isLand) {
             const type = WaterBasin
             model.type.set(basinId, type.id)
             waterFillMap.set(basinId, {origin: point, type})
             basinId++
         }
         // return default basin id (as empty cell) before flood fill
-        return EMPTY
+        model.type.set(NO_BASIN_ID, DiffuseBasin.id)
+        return NO_BASIN_ID
     })
     // start flood fills from each border, both land && water
     const fillContext = {...context, basinGrid, surveyMap}
@@ -154,7 +157,7 @@ class LandBasinFill extends ConcurrentFill {
     isEmpty(fill, fillPoint, parentPoint) {
         const {world, model, basinGrid} = fill.context
         const basin = Basin.parse(model.type.get(fill.id))
-        if (basinGrid.get(fillPoint) !== EMPTY) return false
+        if (basinGrid.get(fillPoint) !== NO_BASIN_ID) return false
         // avoid erosion flow on land borders
         if (world.surface.isBorder(fillPoint)) return false
         if (fill.level >= basin.reach) {
@@ -213,7 +216,7 @@ class WaterBasinFill extends ConcurrentFill {
 
     isEmpty(fill, point) {
         const { world, basinGrid } = fill.context
-        const basinIsEmpty = basinGrid.get(point) === EMPTY
+        const basinIsEmpty = basinGrid.get(point) === NO_BASIN_ID
         const isWater = world.surface.isWater(point)
         return isWater && basinIsEmpty
     }

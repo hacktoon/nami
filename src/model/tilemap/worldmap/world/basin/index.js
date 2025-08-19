@@ -53,11 +53,7 @@ export class BasinLayer {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
         const basin = this.get(tilePoint)
         const isWater = this.#world.surface.isWater(tilePoint)
-        if (! basin.id) {
-            canvas.rect(canvasPoint, tileSize, WaterBasin.color.toHex())
-            return
-        }
-        const basinColor = isWater ? WaterBasin.color : basin.type.color
+        const basinColor = basin.type.color
         const color = basin.isDivide ? basinColor.brighten(20) : basinColor
         canvas.rect(canvasPoint, tileSize, color.toHex())
         if (params.get('showErosion')) {
