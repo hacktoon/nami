@@ -11,13 +11,12 @@ export function buildRiverGrid(context) {
     // reads the wire data and create points for zone grid
     const {world, worldPoint, zoneRect} = context
     const points = new PointSet(zoneRect)
-
-    if (! world.river.has(worldPoint)) {
+    if (! (world.river.has(worldPoint) || world.surface.isWater(worldPoint))) {
         return points
     }
     const river = world.river.get(worldPoint)
-    const source = river.midpoint
     const basin = world.basin.get(worldPoint)
+    const source = basin.midpoint
     const midSize = Math.floor(zoneRect.width / 2)
     for(let direction of basin.directionBitmap) {
         const parentPoint = Point.atDirection(worldPoint, direction)
