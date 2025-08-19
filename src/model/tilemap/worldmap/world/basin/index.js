@@ -25,7 +25,7 @@ export class BasinLayer {
         const typeId = this.#model.type.get(id)
         const directionId = this.#model.erosion.get(point)
         const midpointIndex = this.#model.midpoint.get(point)
-        const directionBitmap = this.#model.directionBitmask.get(point)
+        const directionBitmap = this.#model.directionBitmap.get(point)
         return {
             id,
             directionBitmap,
@@ -73,7 +73,7 @@ export class BasinLayer {
         const canvasMidpoint = Point.multiplyScalar(basin.midpoint, pixelsPerZonePoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         // draw line for each neighbor with a basin connection
-        const directions = this.#model.directionBitmask.get(tilePoint)
+        const directions = this.#model.directionBitmap.get(tilePoint)
         for(let direction of directions) {
             // map each axis coordinate to random value in zone's rect edge
             // summing values from origin [0, 0] bottom-right oriented

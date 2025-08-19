@@ -33,7 +33,7 @@ export function buildBasinModel(context) {
     // the walk distance of each basin starting from shore
     model.distance = buildDistanceGrid(context)
     // map a point to a basin zone direction bitmask
-    model.directionBitmask = new DirectionBitMaskGrid(context.rect)
+    model.directionBitmap = new DirectionBitMaskGrid(context.rect)
     // grid of basin ids
     model.basin = buildBasinGrid({...context, model})
     return model
@@ -146,7 +146,7 @@ class LandBasinFill extends ConcurrentFill {
         model.distance.wrapSet(fillPoint, currentDistance + 1)
         // update parent point erosion path
         const upstream = Point.directionBetween(parentPoint, fillPoint)
-        model.directionBitmask.add(parentPoint, upstream)
+        model.directionBitmap.add(parentPoint, upstream)
         this._fillBasin(fill, fillPoint, parentPoint)
     }
 
@@ -177,7 +177,7 @@ class LandBasinFill extends ConcurrentFill {
         // set erosion flow to parent
         const direction = Point.directionBetween(fillPoint, parentPoint)
         model.erosion.wrapSet(fillPoint, direction.id)
-        model.directionBitmask.add(fillPoint, direction)
+        model.directionBitmap.add(fillPoint, direction)
     }
 }
 
@@ -199,18 +199,18 @@ class WaterBasinFill extends ConcurrentFill {
                 const sideDirection = Direction.fromId(model.erosion.get(sidePoint))
                 const mouth = Point.atDirection(sidePoint, sideDirection)
                 if (Point.equals(mouth, fillPoint)) {
-                    model.directionBitmask.add(fillPoint, direction)
+                    model.directionBitmap.add(fillPoint, direction)
                     model.erosion.set(fillPoint, direction.id)
                 }
             } else {
-                model.directionBitmask.add(fillPoint, direction)
+                model.directionBitmap.add(fillPoint, direction)
             }
         })
         // diagonals later
         Point.diagonals(fillPoint, (sidePoint, direction) => {
             if (world.surface.isLand(sidePoint)) return
             if (! world.surface.isBorder(sidePoint)) return
-            model.directionBitmask.add(fillPoint, direction)
+            model.directionBitmap.add(fillPoint, direction)
         })
     }
 
@@ -228,7 +228,7 @@ class WaterBasinFill extends ConcurrentFill {
         // calculate downstream directions
         Point.adjacents(fillPoint, (sidePoint, direction) => {
             if (world.surface.isWater(sidePoint)) {
-                model.directionBitmask.add(fillPoint, direction)
+                model.directionBitmap.add(fillPoint, direction)
             }
         })
         basinGrid.set(fillPoint, fill.id)
