@@ -25,7 +25,7 @@ export class LandMaskZone {
         const zoneSize = this.size
         const size = tileSize / zoneSize
         // render zone tiles
-        const isBorder = world.surface.isBorder(tilePoint)
+        // const isBorder = world.surface.isBorder(tilePoint)
         for (let x=0; x < zoneSize; x++) {
             const xSize = x * size
             for (let y=0; y < zoneSize; y++) {
@@ -44,11 +44,6 @@ export class LandMaskZone {
 
 
 function buildModel(context) {
-    const hash = Point.hash(context.worldPoint)
-    // cache de zone grid noise
-    // if (SURFACE_GRID_CACHE.has(hash)) {
-    //     return SURFACE_GRID_CACHE.get(hash)
-    // }
     // Generate a boolean grid (land or water)
     const {worldPoint, world, rect, zoneRect} = context
     const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
@@ -58,6 +53,5 @@ function buildModel(context) {
         const noise = world.noise.get4DZoneOutline(noiseRect, noisePoint)
         return noise > SURFACE_NOISE_RATIO ? REGION_LAND : REGION_WATER
     })
-    // SURFACE_GRID_CACHE.set(hash, landMaskGrid)
     return landMaskGrid
 }

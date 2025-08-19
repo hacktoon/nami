@@ -4,7 +4,7 @@ import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { clamp } from '/src/lib/function'
 
 
-const MEANDER = 3
+const MEANDER = 2
 
 
 export function buildRiverGrid(context) {
@@ -41,3 +41,44 @@ export function buildRiverGrid(context) {
     return points
 }
 
+
+// export function buildRiver2(context) {
+//     const {worldPoint, zoneRect} = context
+//     // create a grid with many regions fragmenting the zone map
+//     const regionGrid = Grid.fromRect(zoneRect, () => EMPTY)
+//     const origins = EvenPointSampling.create(zoneRect, REGION_SCALE)
+//     // region id map to direction in zone rect
+//     const regionDirMap = new Map()
+//     // prepare fill map with fill id => fill origin
+//     // it's also a map of all regions
+//     const regionIdMap = new Map(origins.map((origin, id) => {
+//         return [id, {origin}]
+//     }))
+//     const fillContext = {
+//         ...context,
+//         regionIdMap,
+//         regionGrid,
+//         regionDirMap,
+//     }
+//     new RegionFloodFill(regionIdMap, fillContext).complete()
+//     return {regionGrid, regionDirMap}
+// }
+// class RiverFloodFill extends ConcurrentFill {
+//     getGrowth() { return Random.choiceFrom(REGION_GROWTH) }
+//     getChance() { return REGION_CHANCE }
+
+//     getNeighbors(fill, parentPoint) {
+//         const rect = fill.context.zoneRect
+//         const points = Point.adjacents(parentPoint)
+//         // avoid wrapping in zone rect - flood fill from borders to center
+//         return points.filter(p => rect.isInside(p))
+//     }
+
+//     isEmpty(fill, fillPoint) {
+//         return fill.context.regionGrid.get(fillPoint) === EMPTY
+//     }
+
+//     onFill(fill, fillPoint) {
+//         fill.context.regionGrid.set(fillPoint, fill.id)
+//     }
+// }
