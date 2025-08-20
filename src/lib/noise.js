@@ -95,10 +95,11 @@ export class SimplexNoise {
         const t = y / rect.height
         const [x1, y1] = [2, 2]
         const [dx, dy] = [100 - x1, 100 - y1]
-        const nx = x1 + Math.cos(s * 2 * Math.PI) * dx / (2 * Math.PI)
-        const ny = y1 + Math.cos(t * 2 * Math.PI) * dy / (2 * Math.PI)
-        const nz = x1 + Math.sin(s * 2 * Math.PI) * dx / (2 * Math.PI)
-        const nw = y1 + Math.sin(t * 2 * Math.PI) * dy / (2 * Math.PI)
+        const doublePI = 2 * Math.PI
+        const nx = x1 + Math.cos(s * doublePI) * dx / doublePI
+        const ny = y1 + Math.cos(t * doublePI) * dy / doublePI
+        const nz = x1 + Math.sin(s * doublePI) * dx / doublePI
+        const nw = y1 + Math.sin(t * doublePI) * dy / doublePI
         return this.noise4D(nx, ny, nz, nw, args)
     }
 

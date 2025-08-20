@@ -22,14 +22,6 @@ export class ClimateLayer {
         return Climate.FROZEN
     }
 
-    getColor(point) {
-        if (this.world.surface.isLand(point)) {
-            return this.get(point).color
-        }
-        return this.world.surface.getColor(point)
-
-    }
-
     is(point, type) {
         const rain = this.get(point)
         return rain.id === type.id
@@ -41,8 +33,10 @@ export class ClimateLayer {
     }
 
     draw(props, params) {
-        const {canvas, canvasPoint, tileSize, tilePoint} = props
-        let color = this.get(tilePoint).color
-        canvas.rect(canvasPoint, tileSize, color.toHex())
+        const {canvas, canvasPoint, world, tileSize, tilePoint} = props
+        const isLand = world.surface.isLand(tilePoint)
+        // let color = isLand ? this.get(tilePoint).color.toHex() : '#2f367d'
+        let color = this.get(tilePoint).color.toHex()
+        canvas.rect(canvasPoint, tileSize, color)
     }
 }
