@@ -15,6 +15,18 @@ export class Random {
         return percentage >= value
     }
 
+    static shuffle(items) {
+        const newItems = [...items]
+        for (let i = items.length - 1; i >= 0; i--) {
+            let j = Random.int(0, i)  // gen random index
+            // swap values
+            const temp = newItems[i]
+            newItems[i] = newItems[j]
+            newItems[j] = temp
+        }
+        return newItems
+    }
+
     static choice(...items) {
         let index = Random.int(0, items.length - 1)
         return items[index]

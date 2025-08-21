@@ -48,6 +48,18 @@ const DIRECTION_MAP = (() => {
 })()
 
 
+const ALL = [
+    DIRECTIONS.NORTH,
+    DIRECTIONS.EAST,
+    DIRECTIONS.SOUTH,
+    DIRECTIONS.WEST,
+    DIRECTIONS.NORTHEAST,
+    DIRECTIONS.NORTHWEST,
+    DIRECTIONS.SOUTHEAST,
+    DIRECTIONS.SOUTHWEST,
+]
+
+
 export class Direction {
     static get CENTER () { return DIRECTIONS.CENTER }
     static get NORTH () { return DIRECTIONS.NORTH }
@@ -59,54 +71,33 @@ export class Direction {
     static get SOUTHEAST () { return DIRECTIONS.SOUTHEAST }
     static get SOUTHWEST () { return DIRECTIONS.SOUTHWEST }
 
-    static fromId(id) {
-        return DIRECTION_MAP[id]
-    }
+    static fromId(id) { return DIRECTION_MAP[id] }
 
-    static fromAxis(x, y) {
-        return AXIS_MAP.get(x).get(y)
-    }
+    static fromAxis(x, y) { return AXIS_MAP.get(x).get(y) }
 
-    static getName(direction) {
-        return DIRECTION_MAP[direction.id].name
-    }
+    static getName(direction) { return DIRECTION_MAP[direction.id].name }
 
-    static getSymbol(direction) {
-        return DIRECTION_MAP[direction.id].symbol
-    }
+    static getSymbol(direction) { return DIRECTION_MAP[direction.id].symbol }
 
-    static getAll() {
-        return [
-            Direction.NORTH,
-            Direction.EAST,
-            Direction.SOUTH,
-            Direction.WEST,
-            Direction.NORTHEAST,
-            Direction.NORTHWEST,
-            Direction.SOUTHEAST,
-            Direction.SOUTHWEST,
-        ]
-    }
+    static getAll() { return ALL }
 
-    static random() {
-        return Random.choiceFrom(Direction.getAll())
-    }
+    static random() { return Random.choiceFrom(ALL) }
 
     static randomCardinal() {
         return Random.choice(
-            Direction.NORTH,
-            Direction.EAST,
-            Direction.SOUTH,
-            Direction.WEST
+            DIRECTIONS.NORTH,
+            DIRECTIONS.EAST,
+            DIRECTIONS.SOUTH,
+            DIRECTIONS.WEST
         )
     }
 
     static isCardinal(direction) {
         return [
-            Direction.NORTH.id,
-            Direction.EAST.id,
-            Direction.SOUTH.id,
-            Direction.WEST.id
+            DIRECTIONS.NORTH.id,
+            DIRECTIONS.EAST.id,
+            DIRECTIONS.SOUTH.id,
+            DIRECTIONS.WEST.id
         ].includes(direction.id)
     }
 

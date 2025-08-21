@@ -30,6 +30,8 @@ export function buildBasinModel(context) {
     model.erosion = buildErosionGrid(context)
     // random midpoint in each zone rect
     model.midpoint = buildMidpointGrid(context)
+    // random joint value to connect zones
+    model.joint = buildJointGrid(context)
     // the walk distance of each basin starting from shore
     model.distance = buildDistanceGrid(context)
     // map a point to a basin zone direction bitmask
@@ -53,6 +55,14 @@ export function buildMidpointGrid({rect, zoneRect}) {
         const x = centerIndex + Random.int(-offset, offset)
         const y = centerIndex + Random.int(-offset, offset)
         return zoneRect.pointToIndex([x, y])
+    })
+}
+
+
+export function buildJointGrid({rect}) {
+    return Grid.fromRect(rect, () => {
+        const joint = Random.floatRange(.2, .8)
+        return joint.toFixed(2)
     })
 }
 
@@ -224,13 +234,19 @@ class WaterBasinFill extends ConcurrentFill {
     onFill(fill, fillPoint, parentPoint) {
         const { world, model, basinGrid } = fill.context
         const upstream = Point.directionBetween(fillPoint, parentPoint)
+        let sideCount = 0
         model.erosion.set(fillPoint, upstream.id)
+        const sides = Random.shuffle(Point.directionAdjacents(fillPoint))
+        const waterSides = sides.filter(([pt,]) => world.surface.isWater(pt))
         // calculate downstream directions
-        Point.adjacents(fillPoint, (sidePoint, direction) => {
-            if (world.surface.isWater(sidePoint)) {
-                model.directionBitmap.add(fillPoint, direction)
+        for (let [sidePoint, direction] of waterSides) {
+            if(fillPoint[0] == 8 && fillPoint[1] == 9) {
+                console.log(sidePoint, direction)
             }
-        })
+            // const isSideFilled = model.directionBitmap.has(sidePoint, )
+            model.directionBitmap.add(fillPoint, direction)
+            sideCount++
+        }
         basinGrid.set(fillPoint, fill.id)
     }
 }

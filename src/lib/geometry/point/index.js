@@ -70,33 +70,19 @@ export class Point {
     }
 
     static adjacents(center, callback=()=>{}) {
-        const points = []
-        for (let [x, y, direction] of ADJACENT_NEIGHBORHOOD) {
-            const point = Point.plus(center, [x, y])
-            callback(point, direction)
-            points.push(point)
-        }
-        return points
+        return getSides(ADJACENT_NEIGHBORHOOD, center, callback)
+    }
+
+    static directionAdjacents(center, callback=()=>{}) {
+        return getDirectionSides(ADJACENT_NEIGHBORHOOD, center, callback)
     }
 
     static diagonals(center, callback=()=>{}) {
-        const points = []
-        for (let [x, y, direction] of DIAGONAL_NEIGHBORHOOD) {
-            const point = Point.plus(center, [x, y])
-            callback(point, direction)
-            points.push(point)
-        }
-        return points
+        return getSides(DIAGONAL_NEIGHBORHOOD, center, callback)
     }
 
     static around(center, callback=()=>{}) {
-        const points = []
-        for (let [x, y, direction] of AROUND_NEIGHBORHOOD) {
-            const point = [center[0] + x, center[1] + y]
-            callback(point, direction)
-            points.push(point)
-        }
-        return points
+        return getSides(AROUND_NEIGHBORHOOD, center, callback)
     }
 
     static insideCircle(center, radius, callback) {
@@ -147,4 +133,26 @@ export class Point {
     static atSoutheast(p) { return [p[0] + 1, p[1] + 1] }
     static atNorthwest(p) { return [p[0] - 1, p[1] - 1] }
     static atSouthwest(p) { return [p[0] - 1, p[1] + 1] }
+}
+
+
+function getSides(directions, center, callback) {
+    const points = []
+    for (let [x, y, direction] of directions) {
+        const point = Point.plus(center, [x, y])
+        callback(point, direction)
+        points.push(point)
+    }
+    return points
+}
+
+
+function getDirectionSides(directions, center, callback) {
+    const points = []
+    for (let [x, y, direction] of directions) {
+        const point = Point.plus(center, [x, y])
+        callback(point, direction)
+        points.push([point, direction])
+    }
+    return points
 }

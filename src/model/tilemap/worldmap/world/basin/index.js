@@ -31,6 +31,7 @@ export class BasinLayer {
             directionBitmap,
             type: Basin.parse(typeId),
             distance: this.#model.distance.get(point),
+            joint: this.#model.joint.get(point),
             midpoint: this.#zoneRect.indexToPoint(midpointIndex),
             erosion: Direction.fromId(directionId),
             isDivide: directionBitmap.length === 1,
@@ -44,6 +45,7 @@ export class BasinLayer {
             `type=${basin.type.name}`,
             `erosion=${basin.erosion.name}`,
             `distance=${basin.distance}`,
+            `joint=${basin.joint}`,
             `isDivide=${basin.isDivide}`,
         ].join(',')
         return `Basin(${attrs})`
