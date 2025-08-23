@@ -204,7 +204,9 @@ class WaterBasinFill extends ConcurrentFill {
         const { world, model, basinGrid } = fill.context
         basinGrid.set(fillPoint, fill.id)  // basin id is the same as fill id
         // discover adjacent river and water tiles
+        const joint = model.joint.get(fillPoint)
         Point.adjacents(fillPoint, (sidePoint, direction) => {
+            const sideJoint = model.joint.get(sidePoint)
             if (world.surface.isLand(sidePoint)) {
                 const sideDirection = Direction.fromId(model.erosion.get(sidePoint))
                 const mouth = Point.atDirection(sidePoint, sideDirection)
@@ -216,7 +218,7 @@ class WaterBasinFill extends ConcurrentFill {
                 model.directionBitmap.add(fillPoint, direction)
             }
         })
-        // diagonals later
+        // diagonals later, only to non-border water sides
         Point.diagonals(fillPoint, (sidePoint, direction) => {
             if (world.surface.isLand(sidePoint)) return
             if (! world.surface.isBorder(sidePoint)) return
@@ -232,21 +234,15 @@ class WaterBasinFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const { world, model, basinGrid } = fill.context
+        const { model, basinGrid } = fill.context
         const upstream = Point.directionBetween(fillPoint, parentPoint)
-        let sideCount = 0
-        model.erosion.set(fillPoint, upstream.id)
-        const sides = Random.shuffle(Point.directionAdjacents(fillPoint))
-        const waterSides = sides.filter(([pt,]) => world.surface.isWater(pt))
+        // const joint = model.joint.get(fillPoint)
         // calculate downstream directions
-        for (let [sidePoint, direction] of waterSides) {
-            if(fillPoint[0] == 8 && fillPoint[1] == 9) {
-                console.log(sidePoint, direction)
-            }
-            // const isSideFilled = model.directionBitmap.has(sidePoint, )
+        Point.adjacents(fillPoint, (sidePoint, direction) => {
+            // const sideJoint = model.joint.get(sidePoint)
             model.directionBitmap.add(fillPoint, direction)
-            sideCount++
-        }
+        })
         basinGrid.set(fillPoint, fill.id)
+        model.erosion.set(fillPoint, upstream.id)
     }
 }

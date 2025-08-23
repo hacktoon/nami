@@ -4,7 +4,7 @@ import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { clamp } from '/src/lib/function'
 
 
-const MEANDER = 2
+const MEANDER = 3
 
 
 export function buildRiverGrid(context) {
