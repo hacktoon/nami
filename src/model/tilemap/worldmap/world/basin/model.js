@@ -3,6 +3,7 @@ import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
+import { clamp } from '/src/lib/function'
 
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
@@ -186,8 +187,28 @@ class LandBasinFill extends ConcurrentFill {
         basinGrid.set(fillPoint, fill.id)
         // set erosion flow to parent
         const direction = Point.directionBetween(fillPoint, parentPoint)
-        model.erosion.wrapSet(fillPoint, direction.id)
+        model.erosion.set(fillPoint, direction.id)
+        // update midpoint to account erosion
+        this._updateMidpoint(fill, fillPoint, direction)
         model.directionBitmap.add(fillPoint, direction)
+    }
+
+    _updateMidpoint(fill, fillPoint, direction) {
+        const {model, zoneRect, zoneSize} = fill.context
+        const [midX, midY] = [Math.floor(zoneSize / 2), Math.floor(zoneSize / 2)]
+        // const [zoneX, zoneY] = zoneRect.indexToPoint(index)
+        const [zoneX, zoneY] = zoneRect.indexToPoint(model.midpoint.get(fillPoint))
+        const [axisX, axisY] = direction.axis
+        const offset = 3
+        // rescale direction axis to rect corners
+        const cornerX = axisX < 0 ? offset : (axisX == 0 ? zoneX : zoneSize - offset)
+        const cornerY = axisY < 0 ? offset : (axisY == 0 ? zoneY : zoneSize - offset)
+        const zonePoint = [
+            Random.int(cornerX, midX),
+            Random.int(cornerY, midY),
+        ]
+        const newIndex = zoneRect.pointToIndex(zonePoint)
+        model.midpoint.set(fillPoint, newIndex)
     }
 }
 

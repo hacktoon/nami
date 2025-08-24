@@ -67,6 +67,7 @@ export class WorldTileMap extends TileMap {
         const context = {
             world,
             rect,
+            zoneSize: ZONE_SIZE,
             zoneRect: ZONE_RECT,
             realmCount: params.get('realms')
         }
