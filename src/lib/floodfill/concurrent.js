@@ -26,6 +26,10 @@ export class ConcurrentFill {
         }
     }
 
+    step() {
+        this.#step(this.fillMap)
+    }
+
     complete() {
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT

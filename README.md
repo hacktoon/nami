@@ -6,22 +6,13 @@
 
 
 ## ROADMAP
-- draw zone regions by horizontal and vertical lines, not topology
+
 - set biome as {
     temp > x
     rain > 4
   }
-  - zone river follows an independent path from downstream to each tributary joint
+
 - create secondary biomes for zones
-
-  if point is lake
-    all inner regions
-
-
-  - draw rivers
-  - draw roads
-- ZoneMap
-  - steps after region fill - setting regions' surface type by priority:
 - conclude wrapGet migration for grids
 
 

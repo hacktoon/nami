@@ -4,7 +4,7 @@ import { SimplexNoise } from '/src/lib/noise'
 
 const NOISE_SPEC = {
     'outline': {octaves: 6, resolution: .8, scale: .02},
-    'zoneOutline': {octaves: 8, resolution: .8, scale: .02},
+    'zoneOutline': {octaves: 7, resolution: .8, scale: .02},
     'climate': {octaves: 6, resolution: .65, scale: .02},
     'zoneClimate': {octaves: 8, resolution: .65, scale: .02},
     'rain': {octaves: 6, resolution: .8, scale: .02},

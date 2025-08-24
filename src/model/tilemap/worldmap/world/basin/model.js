@@ -3,7 +3,6 @@ import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
-import { clamp } from '/src/lib/function'
 
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 

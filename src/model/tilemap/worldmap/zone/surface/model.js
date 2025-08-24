@@ -1,5 +1,4 @@
 import { Point } from '/src/lib/geometry/point'
-import { Direction } from '/src/lib/direction'
 import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
 import { Random } from '/src/lib/random'
