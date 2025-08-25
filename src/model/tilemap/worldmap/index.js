@@ -22,6 +22,7 @@ import { WorldTileMapDiagram } from './diagram'
 import { LandMaskZone } from './zone/landmask'
 import { RiverZone } from './zone/river'
 import { ClimateZone } from './zone/climate'
+import { RainZone } from './zone/rain'
 
 
 const SCHEMA = new Schema(
@@ -125,8 +126,9 @@ export class WorldTileMap extends TileMap {
             return this.#zoneCache.get(hash)
         }
         zone.landmask = new LandMaskZone(context)
-        zone.climate = new ClimateZone(context)
         zone.river = new RiverZone(context)
+        zone.climate = new ClimateZone(context)
+        zone.rain = new RainZone(context)
         this.#zoneCache.set(hash, zone)
         return zone
     }

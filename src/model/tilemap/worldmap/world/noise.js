@@ -6,8 +6,9 @@ const NOISE_SPEC = {
     'outline': {octaves: 6, resolution: .8, scale: .02},
     'zoneOutline': {octaves: 7, resolution: .8, scale: .02},
     'climate': {octaves: 6, resolution: .65, scale: .02},
-    'zoneClimate': {octaves: 8, resolution: .65, scale: .02},
+    'zoneClimate': {octaves: 7, resolution: .65, scale: .02},
     'rain': {octaves: 6, resolution: .8, scale: .02},
+    'zoneRain': {octaves: 7, resolution: .8, scale: .02},
     'grained': {octaves: 6, resolution: .8, scale: .08},
 }
 
@@ -56,6 +57,11 @@ export class NoiseLayer {
 
     get4DRain(rect, point) {
         const specs = NOISE_SPEC['rain']
+        return this.rain.wrapped4D(rect, point, specs)
+    }
+
+    get4DZoneRain(rect, point) {
+        const specs = NOISE_SPEC['zoneRain']
         return this.rain.wrapped4D(rect, point, specs)
     }
 }
