@@ -6,10 +6,8 @@ import { buildRiverGrid } from './model'
 
 export class RiverZone {
     #riverGrid
-    #zoneSize
 
     constructor(context) {
-        this.#zoneSize = context.zoneSize
         this.#riverGrid = buildRiverGrid(context)
     }
 
@@ -18,21 +16,23 @@ export class RiverZone {
     }
 
     draw(props, params) {
-        const {canvas, tilePoint, canvasPoint, tileSize, world, zone} = props
-        const zoneTileSize = tileSize / this.#zoneSize
+        const {zone} = props
         zone.landmask.draw(props, params)
+        this.drawRiversOnly(props, params)
+    }
+
+    drawRiversOnly(props, params, color='#2f367d') {
+        const {canvas, canvasPoint, tileSize, zone} = props
+        const zoneTileSize = tileSize / zone.size
+
         if (! params.get('showRivers') || tileSize < 10) return
-        for (let x=0; x < this.#zoneSize; x++) {
+        for (let x=0; x < zone.size; x++) {
             const xSize = x * zoneTileSize
-            for (let y=0; y < this.#zoneSize; y++) {
+            for (let y=0; y < zone.size; y++) {
                 const zonePoint = [y, x]
                 const ySize = y * zoneTileSize
                 let zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 if (this.has(zonePoint)) {
-                    let color = '#2f367d'
-                    // if (basin.isDivide) {
-                    //     color = '#4c6da8'
-                    // }
                     canvas.rect(zoneCanvasPoint, zoneTileSize, color)
                 }
                 // if (Point.equals(basin.midpoint, zonePoint)) {

@@ -23,6 +23,7 @@ import { LandMaskZone } from './zone/landmask'
 import { RiverZone } from './zone/river'
 import { ClimateZone } from './zone/climate'
 import { RainZone } from './zone/rain'
+import { BiomeZone } from './zone/biome'
 
 
 const SCHEMA = new Schema(
@@ -109,7 +110,9 @@ export class WorldTileMap extends TileMap {
         // geração de seed específica para a zona
         // para evitar que zonas adjacentes tenham o mesmo conteúdo
         const seed = `${this.seed}-${Point.hash(worldPoint)}`
-        const zone = {}
+        const zone = {
+            size: ZONE_SIZE
+        }
         const context = {
             rect: this.rect,
             world: this.world,
@@ -129,6 +132,7 @@ export class WorldTileMap extends TileMap {
         zone.river = new RiverZone(context)
         zone.climate = new ClimateZone(context)
         zone.rain = new RainZone(context)
+        zone.biome = new BiomeZone(context)
         this.#zoneCache.set(hash, zone)
         return zone
     }
