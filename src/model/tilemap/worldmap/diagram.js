@@ -10,10 +10,10 @@ const LAYERS = [
     {value: 'climate', label: 'Climate'},
     {value: 'rain', label: 'Rain'},
     {value: 'basin', label: 'Basin'},
-    {value: 'relief', label: 'Relief'},
     {value: 'biome', label: 'Biome'},
-    {value: 'civil', label: 'Civil'},
     {value: 'river', label: 'River'},
+    {value: 'relief', label: 'Relief'},
+    {value: 'civil', label: 'Civil'},
 ]
 
 const SCHEMA = new Schema(

@@ -1,6 +1,5 @@
 import { Point } from '/src/lib/geometry/point'
 import { Color } from '/src/lib/color'
-import { displace } from '/src/lib/fractal/midpointdisplacement'
 import { buildRiverGrid } from './model'
 
 
@@ -22,9 +21,9 @@ export class RiverZone {
     }
 
     drawRiversOnly(props, params, color='#2f367d') {
-        const {canvas, canvasPoint, tileSize, zone} = props
+        const {canvas, canvasPoint, tilePoint, tileSize, world, zone} = props
         const zoneTileSize = tileSize / zone.size
-
+        const basin = world.basin.get(tilePoint)
         if (! params.get('showRivers') || tileSize < 10) return
         for (let x=0; x < zone.size; x++) {
             const xSize = x * zoneTileSize

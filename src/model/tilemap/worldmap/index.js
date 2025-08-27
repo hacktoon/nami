@@ -24,17 +24,18 @@ import { RiverZone } from './zone/river'
 import { ClimateZone } from './zone/climate'
 import { RainZone } from './zone/rain'
 import { BiomeZone } from './zone/biome'
+import { CivilZone } from './zone/civil'
 
 
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.number('size', 'Size', { default: 32, min: 32, max: 64 }),
+    Type.number('size', 'Size', { default: 16, min: 16, max: 16 }),
     Type.text('seed', 'Seed', { default: '' }),
     Type.number('realms', 'Realms', { default: 8, min: 3, max: 8 }),
 )
 
 
-const ZONE_SIZE = 15
+const ZONE_SIZE = 19
 const ZONE_RECT = new Rect(ZONE_SIZE, ZONE_SIZE)
 
 
@@ -64,7 +65,7 @@ export class WorldTileMap extends TileMap {
         const world = {
             rect,
             seed: this.seed,
-            size: rect.width
+            size: this.size
         }
         const context = {
             world,
@@ -110,9 +111,12 @@ export class WorldTileMap extends TileMap {
         // geração de seed específica para a zona
         // para evitar que zonas adjacentes tenham o mesmo conteúdo
         const seed = `${this.seed}-${Point.hash(worldPoint)}`
+        Random.seed = seed  // change seed for this specific zone
+        // set zone object
         const zone = {
             size: ZONE_SIZE
         }
+        // set context for
         const context = {
             rect: this.rect,
             world: this.world,
@@ -122,7 +126,6 @@ export class WorldTileMap extends TileMap {
             zone,
             seed
         }
-        Random.seed = seed  // change seed for this specific zone
         const hash = Point.hash(worldPoint)
         // cache de zone grid noise
         if (this.#zoneCache.has(hash)) {
@@ -133,6 +136,7 @@ export class WorldTileMap extends TileMap {
         zone.climate = new ClimateZone(context)
         zone.rain = new RainZone(context)
         zone.biome = new BiomeZone(context)
+        zone.civil = new CivilZone(context)
         this.#zoneCache.set(hash, zone)
         return zone
     }

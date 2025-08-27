@@ -29,7 +29,7 @@ export function buildCityPoints(context) {
         const isRiver = world.river.has(point) && Random.chance(CITY_CHANCE)
         // avoid too close cities
         const isEvenFilter = (point[0] + point[1]) % 2 == 0
-        if ((isRiver || isBorder) && isEvenFilter) {
+        if ((isBorder && isEvenFilter) || isRiver) {
             cityPoints.add(point)
         }
     })
@@ -72,7 +72,7 @@ export function buildCitySpaces(context) {
     const fillMap = new Map(cityPoints.points.map((origin, id) => {
         return [id, {origin}]
     }))
-    new CitySpacesFill(fillMap, fillContext).complete()
+    new CityAreaFill(fillMap, fillContext).complete()
     return {
         cityGrid,
         graph: cityGraph,
@@ -82,7 +82,7 @@ export function buildCitySpaces(context) {
 }
 
 
-class CitySpacesFill extends ConcurrentFill {
+class CityAreaFill extends ConcurrentFill {
     // this fills the city id grid
     // and sets the city neighborhood graph
     // along with routes

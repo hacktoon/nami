@@ -7,12 +7,13 @@
 
 ## ROADMAP
 
+- refactor civil model
 - set biome as {
     temp > x
     rain > 4
   }
 
-- create secondary biomes for zones
+- create secondary biomes for zones (with region grid)
 - conclude wrapGet migration for grids
 
 
@@ -26,9 +27,7 @@
 
 
 ### CivilLayer
-- Set city type using a fill from capital point
-  - Put inns/outposts at borders of city radius
-- Each city in block map can occupy tiles as zones or neighborhoods
+- Each city in zone map can occupy tiles as zones or neighborhoods
 - Dungeon types and levels like cat quest
   - dungeons at high level like 79
 - Add city ruins on dry rivers or dry land
