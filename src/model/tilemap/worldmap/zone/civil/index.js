@@ -1,4 +1,3 @@
-import { Point } from '/src/lib/geometry/point'
 import { buildModel } from './model'
 
 
@@ -14,7 +13,7 @@ export class CivilZone {
     }
 
     draw(props, params) {
-        const {zone} = props
+        const {world, zone} = props
         zone.biome.draw(props, params)
     }
 }

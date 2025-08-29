@@ -59,9 +59,9 @@ export function buildMidpointGrid({rect, zoneRect}) {
 }
 
 
-export function buildJointGrid({rect}) {
+export function buildJointGrid({rect, zoneSize}) {
     return Grid.fromRect(rect, () => {
-        const joint = Random.floatRange(.2, .8)
+        const joint = Random.floatRange(1, zoneSize - 2)
         return joint.toFixed(2)
     })
 }
@@ -224,9 +224,7 @@ class WaterBasinFill extends ConcurrentFill {
         const { world, model, basinGrid } = fill.context
         basinGrid.set(fillPoint, fill.id)  // basin id is the same as fill id
         // discover adjacent river and water tiles
-        const joint = model.joint.get(fillPoint)
         Point.adjacents(fillPoint, (sidePoint, direction) => {
-            const sideJoint = model.joint.get(sidePoint)
             if (world.surface.isLand(sidePoint)) {
                 const sideDirection = Direction.fromId(model.erosion.get(sidePoint))
                 const mouth = Point.atDirection(sidePoint, sideDirection)

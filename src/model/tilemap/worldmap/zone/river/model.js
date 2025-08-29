@@ -17,6 +17,7 @@ export function buildRiverGrid(context) {
     }
     const river = world.river.get(worldPoint)
     const basin = world.basin.get(worldPoint)
+    const joint = basin.joint
     const source = basin.midpoint
     const midSize = Math.floor(zoneSize / 2)
     for(let direction of basin.directionBitmap) {

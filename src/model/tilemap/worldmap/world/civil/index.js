@@ -7,14 +7,12 @@ import {
     buildCityMap,
     buildCityPoints,
     buildCitySpaces,
-    City,
 } from './city'
 
 
 // Define realms, cities and roads
 export class CivilLayer {
-    #zoneRect
-    #world
+    #context
     #realmMap            // map a realm id to a realm object
     #cityMap             // map a point to a city object
     #cityGrid            // grid of city ids in area
@@ -25,15 +23,13 @@ export class CivilLayer {
     #midpointIndexGrid
 
     constructor(context) {
-        // build the citys points
         const cityPoints = buildCityPoints(context)
         const cityMap = buildCityMap({...context, cityPoints})
         // build a city grid with a city id per flood area
         // build a graph connecting neighbor cities by id using fill data
         const midpointIndexGrid = Grid.fromRect(context.rect, () => null)
         const citySpaces = buildCitySpaces({...context, midpointIndexGrid, cityPoints, cityMap})
-        // TODO: remove
-        this.#zoneRect = context.zoneRect
+        this.#context = context
         this.#routeMaskGrid = citySpaces.routeMaskGrid
         this.#cityPoints = cityPoints
         this.#cityMap = cityMap
@@ -98,13 +94,14 @@ export class CivilLayer {
         const {world, canvas, canvasPoint, tileSize} = props
         const roadDirections = this.#routeMaskGrid.getAxis(point)
         if (roadDirections.length == 0) return
+        const zoneSize = this.#context.zoneSize
         const width = 3
         const hexColor = world.surface.isWater(point) ? "#036" : "#444"
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-        const tileRatio = tileSize / this.#zoneRect.width
+        const tileRatio = tileSize / zoneSize
         const midpointIndex = this.#midpointIndexGrid.get(point)
-        const midpoint = this.#zoneRect.indexToPoint(midpointIndex)
+        const midpoint = this.#context.zoneRect.indexToPoint(midpointIndex)
         const meanderOffsetPoint = Point.multiplyScalar(midpoint, tileRatio)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         // for each neighbor with a route connection

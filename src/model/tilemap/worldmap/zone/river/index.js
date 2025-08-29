@@ -34,9 +34,9 @@ export class RiverZone {
                 if (this.has(zonePoint)) {
                     canvas.rect(zoneCanvasPoint, zoneTileSize, color)
                 }
-                // if (Point.equals(basin.midpoint, zonePoint)) {
-                //     canvas.rect(zoneCanvasPoint, zoneTileSize, Color.RED.toHex())
-                // }
+                if (Point.equals(basin.midpoint, zonePoint)) {
+                    canvas.rect(zoneCanvasPoint, zoneTileSize, Color.RED.toHex())
+                }
             }
         }
     }

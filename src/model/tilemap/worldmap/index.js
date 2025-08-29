@@ -27,16 +27,16 @@ import { BiomeZone } from './zone/biome'
 import { CivilZone } from './zone/civil'
 
 
+const WORLD_SIZE = 32
+const ZONE_SIZE = 13
+const ZONE_RECT = new Rect(ZONE_SIZE, ZONE_SIZE)
+
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.number('size', 'Size', { default: 16, min: 16, max: 16 }),
+    Type.number('size', 'Size', { default: WORLD_SIZE, min: WORLD_SIZE, max: WORLD_SIZE }),
     Type.text('seed', 'Seed', { default: '' }),
     Type.number('realms', 'Realms', { default: 8, min: 3, max: 8 }),
 )
-
-
-const ZONE_SIZE = 19
-const ZONE_RECT = new Rect(ZONE_SIZE, ZONE_SIZE)
 
 
 export class WorldTileMap extends TileMap {
@@ -54,9 +54,7 @@ export class WorldTileMap extends TileMap {
         super(params)
         this.name = Random.choiceFrom(WORLD_NAMES)
         this.world = this.#buildWorld(params, this.rect)
-        this.width = this.size
-        this.height = this.size
-        this.#zoneCache = new FIFOCache(256)
+        this.#zoneCache = new FIFOCache(WORLD_SIZE * WORLD_SIZE)
     }
 
     #buildWorld(params, rect) {
@@ -65,7 +63,7 @@ export class WorldTileMap extends TileMap {
         const world = {
             rect,
             seed: this.seed,
-            size: this.size
+            size: WORLD_SIZE
         }
         const context = {
             world,
@@ -80,10 +78,10 @@ export class WorldTileMap extends TileMap {
         world.climate = new ClimateLayer(context)
         world.rain = new RainLayer(context)
         world.basin = new BasinLayer(context)
-        world.river = new RiverLayer(context)
-        world.relief = new ReliefLayer(context)
         world.biome = new BiomeLayer(context)
+        world.river = new RiverLayer(context)
         world.civil = new CivilLayer(context)
+        // world.relief = new ReliefLayer(context)
         const time = (performance.now() - start) | 0
         console.info(`Generated in ${time}ms`);
         return world
@@ -99,7 +97,7 @@ export class WorldTileMap extends TileMap {
             this.world.basin.getText(wrappedPoint),
             this.world.river.getText(wrappedPoint),
             this.world.biome.getText(wrappedPoint),
-            this.world.relief.getText(wrappedPoint),
+            // this.world.relief.getText(wrappedPoint),
             // this.world.landform.getText(wrappedPoint),
             this.world.civil.getText(wrappedPoint),
         ].filter(x => x != '')
