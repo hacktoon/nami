@@ -239,12 +239,8 @@ class WaterBasinFill extends ConcurrentFill {
         // discover adjacent river and water tiles
         Point.adjacents(fillPoint, (sidePoint, direction) => {
             if (world.surface.isLand(sidePoint)) {
-                const sideDirection = Direction.fromId(model.erosion.get(sidePoint))
-                const mouth = Point.atDirection(sidePoint, sideDirection)
-                if (Point.equals(mouth, fillPoint)) {
-                    model.directionBitmap.add(fillPoint, direction)
-                    model.erosion.set(fillPoint, direction.id)
-                }
+                model.directionBitmap.add(fillPoint, direction)
+                model.erosion.set(fillPoint, direction.id)
             } else {
                 model.directionBitmap.add(fillPoint, direction)
             }
