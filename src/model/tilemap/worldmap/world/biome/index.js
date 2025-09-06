@@ -100,7 +100,7 @@ export class BiomeLayer {
 
     get(point) {
         let biomeId = this.#grid.get(point)
-        return Biome.get(biomeId)
+        return Biome.parse(biomeId)
     }
 
     getColor(point) {

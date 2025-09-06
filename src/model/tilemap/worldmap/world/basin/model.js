@@ -16,7 +16,7 @@ import {
 } from './type'
 
 
-const NO_BASIN_ID = -1
+const NO_BASIN_ID = null
 const FILL_CHANCE = .2  // chance of fill growing
 const FILL_GROWTH = 3
 const MIDPOINT_RATE = .6  //random point in 60% of chunkrect area around center point
@@ -55,6 +55,7 @@ export function buildMidpointGrid({rect, chunkRect}) {
     return Grid.fromRect(rect, () => {
         const randX = Random.int(-offset, offset)
         const randY = Random.int(-offset, offset)
+        // random offset distance from center
         const midRandX = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
         const midRandY = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
         const x = centerIndex + (randX != 0 ? randX : midRandX)
@@ -85,8 +86,10 @@ function buildBasinGrid(context) {
     const waterFillMap = new Map()
     let basinId = 0
     const basinGrid = Grid.fromRect(rect, point => {
+        // prepare data for flood fill at each point
         const isBorder = world.surface.isBorder(point)
         const isLand = world.surface.isLand(point)
+        // basins start on borders and fill up grid
         if (isBorder && isLand) {
             const survey = surveyNeighbors(context, point)
             const type = detectLandBasinType(world, survey)
@@ -115,19 +118,19 @@ function buildBasinGrid(context) {
 function surveyNeighbors(context, point) {
     // point is on land
     const {world} = context
-    let waterNeighbors = 0
+    const waterNeighbors = []
     let oppositeBorder = null
     const neighbors = Point.adjacents(point)
     for (let neighbor of neighbors) {
         const isNeighborWater = world.surface.isWater(neighbor)
         if (isNeighborWater) {
-            waterNeighbors++
+            waterNeighbors.push(neighbor)
             // parent point for erosion algorithm
             oppositeBorder = neighbor
         }
     }
     // chess pattern to avoid rivers getting too close
-    return {oppositeBorder}
+    return {oppositeBorder, waterNeighbors}
 }
 
 
@@ -147,11 +150,19 @@ class LandBasinFill extends ConcurrentFill {
     getGrowth(fill) { return FILL_GROWTH }
 
     onInitFill(fill, fillPoint) {
-        const {surveyMap} = fill.context
+        const {model, surveyMap} = fill.context
         const survey = surveyMap.get(fill.id)
         // the basin opposite border is the parentPoint
-        // update erosion path
         this._fillBasin(fill, fillPoint, survey.oppositeBorder)
+        // update erosion path
+        for (let neighbor of survey.waterNeighbors) {
+            const direction = Point.directionBetween(fillPoint, neighbor)
+            if(fillPoint[0] == 24 && fillPoint[1] == 28) {
+                console.log(neighbor, direction.name);
+
+            }
+            model.directionBitmap.add(fillPoint, direction)
+        }
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -193,6 +204,7 @@ class LandBasinFill extends ConcurrentFill {
         basinGrid.set(fillPoint, fill.id)
         // set erosion flow to parent
         model.erosion.set(fillPoint, direction.id)
+        // mark the direction the erosion flows
         model.directionBitmap.add(fillPoint, direction)
         // update midpoint to account erosion
         this._updateMidpoint(fill, fillPoint, direction)
