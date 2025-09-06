@@ -13,7 +13,7 @@
     rain > 4
   }
 
-- create secondary biomes for zones (with region grid)
+- create secondary biomes for chunks (with region grid)
 - conclude wrapGet migration for grids
 
 
@@ -27,7 +27,7 @@
 
 
 ### CivilLayer
-- Each city in zone map can occupy tiles as zones or neighborhoods
+- Each city in chunk map can occupy tiles as chunks or neighborhoods
 - Dungeon types and levels like cat quest
   - dungeons at high level like 79
 - Add city ruins on dry rivers or dry land

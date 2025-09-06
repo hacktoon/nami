@@ -20,7 +20,7 @@ const SCHEMA = new Schema(
     'WorldTileMapDiagram',
     Type.selection('showLayer', 'Layer', {default: DEFAULT_LAYER, options: LAYERS}),
     Type.boolean('showErosion', 'Erosion', {default: false}),
-    Type.boolean('showZones', 'Zones', {default: true}),
+    Type.boolean('showChunks', 'Chunks', {default: true}),
     Type.boolean('showRivers', 'Rivers', {default: true}),
     Type.boolean('showCities', 'Cities', {default: false}),
     Type.boolean('showCityArea', 'CityArea', {default: false}),
@@ -42,11 +42,11 @@ export class WorldTileMapDiagram extends TileMapDiagram {
     draw(props) {
         const world = this.tileMap.world
         const layerName = this.params.get('showLayer')
-        const showZones = this.params.get('showZones') && props.tileSize >= 30
-        if (showZones) {
-            const zone = this.tileMap.getZone(props.tilePoint)
-            if (zone[layerName]) {
-                zone[layerName].draw({...props, world, zone}, this.params)
+        const showChunks = this.params.get('showChunks') && props.tileSize >= 30
+        if (showChunks) {
+            const chunk = this.tileMap.getChunk(props.tilePoint)
+            if (chunk[layerName]) {
+                chunk[layerName].draw({...props, world, chunk}, this.params)
             }
         } else {
             world[layerName].draw({...props, world}, this.params)

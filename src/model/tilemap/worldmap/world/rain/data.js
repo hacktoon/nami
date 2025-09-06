@@ -25,7 +25,7 @@ export class Rain {
     static DRY = Spec.build({name: 'Dry', color: '#c8ffc9'})
     static ARID = Spec.build({name: 'Arid', color: '#ffce64'})
 
-    static get(id) {
+    static parse(id) {
         return Spec.get(id)
     }
 }

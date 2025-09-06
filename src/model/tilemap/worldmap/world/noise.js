@@ -4,11 +4,11 @@ import { SimplexNoise } from '/src/lib/noise'
 
 const NOISE_SPEC = {
     'outline': {octaves: 6, resolution: .8, scale: .02},
-    'zoneOutline': {octaves: 7, resolution: .8, scale: .02},
+    'chunkOutline': {octaves: 7, resolution: .8, scale: .02},
     'climate': {octaves: 6, resolution: .65, scale: .02},
-    'zoneClimate': {octaves: 7, resolution: .65, scale: .02},
+    'chunkClimate': {octaves: 7, resolution: .65, scale: .02},
     'rain': {octaves: 6, resolution: .8, scale: .02},
-    'zoneRain': {octaves: 7, resolution: .8, scale: .02},
+    'chunkRain': {octaves: 7, resolution: .8, scale: .02},
     'grained': {octaves: 6, resolution: .8, scale: .08},
 }
 
@@ -39,8 +39,8 @@ export class NoiseLayer {
         return this.outline.wrapped4D(rect, point, specs)
     }
 
-    get4DZoneOutline(rect, point) {
-        const specs = NOISE_SPEC['zoneOutline']
+    get4DChunkOutline(rect, point) {
+        const specs = NOISE_SPEC['chunkOutline']
         const offsetPoint = Point.plus(point, [-10, -10])
         return this.outline.wrapped4D(rect, point, specs)
     }
@@ -50,8 +50,8 @@ export class NoiseLayer {
         return this.climate.wrapped4D(rect, point, specs)
     }
 
-    get4DZoneClimate(rect, point) {
-        const specs = NOISE_SPEC['zoneClimate']
+    get4DChunkClimate(rect, point) {
+        const specs = NOISE_SPEC['chunkClimate']
         return this.climate.wrapped4D(rect, point, specs)
     }
 
@@ -60,8 +60,8 @@ export class NoiseLayer {
         return this.rain.wrapped4D(rect, point, specs)
     }
 
-    get4DZoneRain(rect, point) {
-        const specs = NOISE_SPEC['zoneRain']
+    get4DChunkRain(rect, point) {
+        const specs = NOISE_SPEC['chunkRain']
         return this.rain.wrapped4D(rect, point, specs)
     }
 }

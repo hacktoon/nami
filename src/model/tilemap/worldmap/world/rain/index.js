@@ -1,5 +1,4 @@
 import { Grid } from '/src/lib/grid'
-import { Color } from '/src/lib/color'
 
 import { Rain } from './data'
 

@@ -35,14 +35,14 @@ export function buildRiverModel(context) {
 }
 
 
-export function buildMidpointGrid({rect, zoneRect}) {
-    const centerIndex = Math.floor(zoneRect.width / 2)
+export function buildMidpointGrid({rect, chunkRect}) {
+    const centerIndex = Math.floor(chunkRect.width / 2)
     const offset = Math.floor(centerIndex * MIDPOINT_RATE)
 
     return Grid.fromRect(rect, () => {
         const x = centerIndex + Random.int(-offset, offset)
         const y = centerIndex + Random.int(-offset, offset)
-        return zoneRect.pointToIndex([x, y])
+        return chunkRect.pointToIndex([x, y])
     })
 }
 

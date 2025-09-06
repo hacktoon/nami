@@ -25,7 +25,7 @@ export class Climate {
     static WARM = Spec.build({name: 'Warm', color: '#ffe500'})
     static HOT = Spec.build({name: 'Hot', color: '#ff5922'})
 
-    static get(id) {
+    static parse(id) {
         return Spec.get(id)
     }
 }

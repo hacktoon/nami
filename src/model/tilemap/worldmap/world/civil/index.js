@@ -19,7 +19,7 @@ export class CivilLayer {
     #wildernessGrid          // grid of civil wilderness
     #cityPoints
     #routeMaskGrid   // map a point to a direction bitmask
-    // map a point to a point index in a zone rect
+    // map a point to a point index in a chunk rect
     #midpointIndexGrid
 
     constructor(context) {
@@ -94,14 +94,14 @@ export class CivilLayer {
         const {world, canvas, canvasPoint, tileSize} = props
         const roadDirections = this.#routeMaskGrid.getAxis(point)
         if (roadDirections.length == 0) return
-        const zoneSize = this.#context.zoneSize
+        const chunkSize = this.#context.chunkSize
         const width = 3
         const hexColor = world.surface.isWater(point) ? "#036" : "#444"
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
-        const tileRatio = tileSize / zoneSize
+        const tileRatio = tileSize / chunkSize
         const midpointIndex = this.#midpointIndexGrid.get(point)
-        const midpoint = this.#context.zoneRect.indexToPoint(midpointIndex)
+        const midpoint = this.#context.chunkRect.indexToPoint(midpointIndex)
         const meanderOffsetPoint = Point.multiplyScalar(midpoint, tileRatio)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         // for each neighbor with a route connection

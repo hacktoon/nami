@@ -10,13 +10,13 @@ import {
 
 export class BasinLayer {
     #world
-    #zoneRect
+    #chunkRect
     #model
 
     constructor(context) {
-        const {world, zoneRect} = context
+        const {world, chunkRect} = context
         this.#world = world
-        this.#zoneRect = zoneRect
+        this.#chunkRect = chunkRect
         this.#model = buildBasinModel(context)
     }
 
@@ -32,7 +32,7 @@ export class BasinLayer {
             type: Basin.parse(typeId),
             distance: this.#model.distance.get(point),
             joint: this.#model.joint.get(point),
-            midpoint: this.#zoneRect.indexToPoint(midpointIndex),
+            midpoint: this.#chunkRect.indexToPoint(midpointIndex),
             erosion: Direction.fromId(directionId),
             isDivide: directionBitmap.length === 1,
         }
@@ -71,13 +71,13 @@ export class BasinLayer {
         const color = basin.type.color.darken(30).toHex()
         const lineWidth = Math.round(props.tileSize / 20)
         // calc midpoint point on canvas
-        const pixelsPerZonePoint = tileSize / this.#zoneRect.width
-        const canvasMidpoint = Point.multiplyScalar(basin.midpoint, pixelsPerZonePoint)
+        const pixelsPerChunkPoint = tileSize / this.#chunkRect.width
+        const canvasMidpoint = Point.multiplyScalar(basin.midpoint, pixelsPerChunkPoint)
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         // draw line for each neighbor with a basin connection
         const directions = this.#model.directionBitmap.get(tilePoint)
         for(let direction of directions) {
-            // map each axis coordinate to random value in zone's rect edge
+            // map each axis coordinate to random value in chunk's rect edge
             // summing values from origin [0, 0] bottom-right oriented
             const axisModifier = direction.axis.map(coord => {
                 if (coord < 0) return 0

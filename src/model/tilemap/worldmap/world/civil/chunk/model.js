@@ -17,9 +17,9 @@ class CivilFloodFill extends ConcurrentFill {
     getChance() { return .5 }
 
     getNeighbors(fill, parentPoint) {
-        const rect = fill.context.zoneRect
+        const rect = fill.context.chunkRect
         const points = Point.adjacents(parentPoint)
-        // avoid wrapping in zone rect - flood fill from borders to center
+        // avoid wrapping in chunk rect - flood fill from borders to center
         return points.filter(p => rect.isInside(p))
     }
 

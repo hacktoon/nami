@@ -19,7 +19,7 @@ import {
 const NO_BASIN_ID = -1
 const FILL_CHANCE = .2  // chance of fill growing
 const FILL_GROWTH = 3
-const MIDPOINT_RATE = .6  //random point in 60% of zonerect area around center point
+const MIDPOINT_RATE = .6  //random point in 60% of chunkrect area around center point
 const MIDDLE_OFFSET = 2  // used to avoid midpoints on middle
 
 
@@ -29,13 +29,13 @@ export function buildBasinModel(context) {
     model.type = new Map()
     // grid of erosion direction ids
     model.erosion = buildErosionGrid(context)
-    // random midpoint in each zone rect
+    // random midpoint in each chunk rect
     model.midpoint = buildMidpointGrid(context)
-    // random joint value to connect zones
+    // random joint value to connect chunks
     model.joint = buildJointGrid(context)
     // the walk distance of each basin starting from shore
     model.distance = buildDistanceGrid(context)
-    // map a point to a basin zone direction bitmask
+    // map a point to a basin chunk direction bitmask
     model.directionBitmap = new DirectionBitMaskGrid(context.rect)
     // grid of basin ids
     model.basin = buildBasinGrid({...context, model})
@@ -48,9 +48,9 @@ export function buildErosionGrid({rect}) {
 }
 
 
-export function buildMidpointGrid({rect, zoneRect}) {
-    const centerIndex = Math.floor(zoneRect.width / 2)
-    // select random point in 60% of zonerect area around center point
+export function buildMidpointGrid({rect, chunkRect}) {
+    const centerIndex = Math.floor(chunkRect.width / 2)
+    // select random point in 60% of chunkrect area around center point
     const offset = Math.floor(centerIndex * MIDPOINT_RATE)
     return Grid.fromRect(rect, () => {
         const randX = Random.int(-offset, offset)
@@ -59,14 +59,14 @@ export function buildMidpointGrid({rect, zoneRect}) {
         const midRandY = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
         const x = centerIndex + (randX != 0 ? randX : midRandX)
         const y = centerIndex + (randY != 0 ? randY : midRandY)
-        return zoneRect.pointToIndex([x, y])
+        return chunkRect.pointToIndex([x, y])
     })
 }
 
 
-export function buildJointGrid({rect, zoneSize}) {
+export function buildJointGrid({rect, chunkSize}) {
     return Grid.fromRect(rect, () => {
-        const joint = Random.floatRange(1, zoneSize - 2)
+        const joint = Random.floatRange(1, chunkSize - 2)
         return joint.toFixed(2)
     })
 }
@@ -199,20 +199,20 @@ class LandBasinFill extends ConcurrentFill {
     }
 
     _updateMidpoint(fill, fillPoint, direction) {
-        const {model, zoneRect, zoneSize} = fill.context
-        const [midX, midY] = [Math.floor(zoneSize / 2), Math.floor(zoneSize / 2)]
-        // const [zoneX, zoneY] = zoneRect.indexToPoint(index)
-        const [zoneX, zoneY] = zoneRect.indexToPoint(model.midpoint.get(fillPoint))
+        const {model, chunkRect, chunkSize} = fill.context
+        const [midX, midY] = [Math.floor(chunkSize / 2), Math.floor(chunkSize / 2)]
+        // const [chunkX, chunkY] = chunkRect.indexToPoint(index)
+        const [chunkX, chunkY] = chunkRect.indexToPoint(model.midpoint.get(fillPoint))
         const [axisX, axisY] = direction.axis
         const offset = 3
         // rescale direction axis to rect corners
-        const cornerX = axisX < 0 ? offset : (axisX == 0 ? zoneX : zoneSize - offset)
-        const cornerY = axisY < 0 ? offset : (axisY == 0 ? zoneY : zoneSize - offset)
-        const zonePoint = [
+        const cornerX = axisX < 0 ? offset : (axisX == 0 ? chunkX : chunkSize - offset)
+        const cornerY = axisY < 0 ? offset : (axisY == 0 ? chunkY : chunkSize - offset)
+        const chunkPoint = [
             Random.int(cornerX, midX),
             Random.int(cornerY, midY),
         ]
-        const newIndex = zoneRect.pointToIndex(zonePoint)
+        const newIndex = chunkRect.pointToIndex(chunkPoint)
         model.midpoint.set(fillPoint, newIndex)
     }
 }

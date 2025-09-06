@@ -1,17 +1,17 @@
 import { Grid } from '/src/lib/grid'
 
-import { Climate } from '../../zone/climate/data'
-import { Rain } from '../../zone/rain/data'
-import { Biome } from './data'
+import { Climate } from '../../climate/data'
+import { Rain } from '../../rain/data'
+import { Biome } from '../type'
 
 
 export function buildModel(context) {
     // generate a grid with (land or water) information in bool
-    const { zone, rect, zoneRect } = context
-    return Grid.fromRect(zoneRect, zonePoint => {
-        const isWater = ! zone.landmask.isLand(zonePoint)
-        const biomeType = isWater ? Biome.OCEAN : buildBiome(context, zonePoint)
-        // const biomeType = buildBiome(context, zonePoint)
+    const { chunk, rect, chunkRect } = context
+    return Grid.fromRect(chunkRect, chunkPoint => {
+        const isWater = ! chunk.surface.isLand(chunkPoint)
+        const biomeType = isWater ? Biome.OCEAN : buildBiome(context, chunkPoint)
+        // const biomeType = buildBiome(context, chunkPoint)
         return biomeType.id
     })
 }
@@ -19,9 +19,9 @@ export function buildModel(context) {
 
 function buildBiome(context, point) {
     // Determine the biome based on climate and rain only
-    const {zone} = context
-    const climate = zone.climate.get(point)
-    const rain = zone.rain.get(point)
+    const {chunk} = context
+    const climate = chunk.climate.get(point)
+    const rain = chunk.rain.get(point)
 
     if (climate.id == Climate.FROZEN.id) {
         return Biome.TUNDRA

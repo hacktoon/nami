@@ -99,10 +99,10 @@ class CityAreaFill extends ConcurrentFill {
     }
 
     onInitFill(fill, fillPoint) {
-        const {zoneRect, cityGrid, wildernessGrid, midpointIndexGrid} = fill.context
+        const {chunkRect, cityGrid, wildernessGrid, midpointIndexGrid} = fill.context
         cityGrid.wrapSet(fillPoint, fill.id)
         wildernessGrid.wrapSet(fillPoint, fill.level)
-        midpointIndexGrid.wrapSet(fillPoint, buildMidpointIndex(zoneRect))
+        midpointIndexGrid.wrapSet(fillPoint, buildMidpointIndex(chunkRect))
     }
 
     isEmpty(fill, fillPoint) {
@@ -143,7 +143,7 @@ class CityAreaFill extends ConcurrentFill {
     #buildCityRoute(fill, origin, target, initialPrevPoint) {
         // Builds a route from the middle of the road to the city point.
         const {
-            rect, zoneRect, fillDirectionGrid, routeMaskGrid, midpointIndexGrid
+            rect, chunkRect, fillDirectionGrid, routeMaskGrid, midpointIndexGrid
         } = fill.context
         const points = [origin]
         let nextPoint = origin
@@ -156,7 +156,7 @@ class CityAreaFill extends ConcurrentFill {
             routeMaskGrid.add(nextPoint, direction)
             routeMaskGrid.add(nextPoint, prevDirection)
             // set midpoint
-            midpointIndexGrid.wrapSet(nextPoint, buildMidpointIndex(zoneRect))
+            midpointIndexGrid.wrapSet(nextPoint, buildMidpointIndex(chunkRect))
             // update the previous point to follow the road
             prevPoint = nextPoint
             // the next point is at <direction> of current point
@@ -207,10 +207,10 @@ const TYPE_MAP = {
 
 const ZONE_OFFSET_RANGE = [0, 3]
 
-function buildMidpointIndex(zoneRect) {
+function buildMidpointIndex(chunkRect) {
     const offsetX = Random.int(...ZONE_OFFSET_RANGE) * Random.choice(1, -1)
     const offsetY = Random.int(...ZONE_OFFSET_RANGE) * Random.choice(1, -1)
-    const middle = Math.round(zoneRect.width / 2)
+    const middle = Math.round(chunkRect.width / 2)
     const midpoint = [middle + offsetX, middle + offsetY]
-    return zoneRect.pointToIndex(midpoint)
+    return chunkRect.pointToIndex(midpoint)
 }

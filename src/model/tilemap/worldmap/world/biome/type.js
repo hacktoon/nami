@@ -33,7 +33,7 @@ export class Biome {
     static CORAL = Spec.build({name: "Coral", color: "#8ea2ce"})
     static MANGROVE = Spec.build({name: "Mangrove", color: "#437718"})
 
-    static get(id) {
+    static parse(id) {
         return Spec.get(id)
     }
 }

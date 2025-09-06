@@ -3,33 +3,34 @@ import { Type } from '/src/lib/type'
 import { Rect } from '/src/lib/geometry/rect'
 import { Point } from '/src/lib/geometry/point'
 import { Random } from '/src/lib/random'
-import { WORLD_NAMES } from '/src/lib/names'
 import { TileMap } from '/src/model/tilemap/lib'
 import { UITileMap } from '/src/ui/tilemap'
 import { FIFOCache } from '/src/lib/cache'
+import { WORLD_NAMES } from '/src/lib/names'
+
 import { NoiseLayer } from './world/noise'
 import { SurfaceLayer } from './world/surface'
+import { SurfaceChunk } from './world/surface/chunk'
 import { BasinLayer } from './world/basin'
+import { BasinChunk } from './world/basin/chunk'
 import { ReliefLayer } from './world/relief'
 import { ClimateLayer } from './world/climate'
+import { ClimateChunk } from './world/climate/chunk'
 import { RainLayer } from './world/rain'
+import { RainChunk } from './world/rain/chunk'
 import { RiverLayer } from './world/river'
+import { RiverChunk } from './world/river/chunk'
 import { BiomeLayer } from './world/biome'
+import { BiomeChunk } from './world/biome/chunk'
 import { CivilLayer } from './world/civil'
+import { CivilChunk } from './world/civil/chunk'
 
 import { WorldTileMapDiagram } from './diagram'
 
-import { LandMaskZone } from './zone/landmask'
-import { RiverZone } from './zone/river'
-import { ClimateZone } from './zone/climate'
-import { RainZone } from './zone/rain'
-import { BiomeZone } from './zone/biome'
-import { CivilZone } from './zone/civil'
-
 
 const WORLD_SIZE = 32
-const ZONE_SIZE = 13
-const ZONE_RECT = new Rect(ZONE_SIZE, ZONE_SIZE)
+const CHUNK_SIZE = 13
+const CHUNK_RECT = new Rect(CHUNK_SIZE, CHUNK_SIZE)
 
 const SCHEMA = new Schema(
     'WorldTileMap',
@@ -48,13 +49,13 @@ export class WorldTileMap extends TileMap {
         return new WorldTileMap(params)
     }
 
-    #zoneCache
+    #chunkCache
 
     constructor(params) {
         super(params)
         this.name = Random.choiceFrom(WORLD_NAMES)
         this.world = this.#buildWorld(params, this.rect)
-        this.#zoneCache = new FIFOCache(WORLD_SIZE * WORLD_SIZE)
+        this.#chunkCache = new FIFOCache(WORLD_SIZE * WORLD_SIZE)
     }
 
     #buildWorld(params, rect) {
@@ -63,13 +64,14 @@ export class WorldTileMap extends TileMap {
         const world = {
             rect,
             seed: this.seed,
-            size: WORLD_SIZE
+            size: WORLD_SIZE,
+            chunkSize: CHUNK_SIZE,
         }
         const context = {
             world,
             rect,
-            zoneSize: ZONE_SIZE,
-            zoneRect: ZONE_RECT,
+            chunkSize: CHUNK_SIZE,
+            chunkRect: CHUNK_RECT,
             realmCount: params.get('realms')
         }
         // The world creation follows order below
@@ -105,38 +107,38 @@ export class WorldTileMap extends TileMap {
             .trim()
     }
 
-    getZone(worldPoint) {
+    getChunk(worldPoint) {
         // geração de seed específica para a zona
         // para evitar que zonas adjacentes tenham o mesmo conteúdo
         const seed = `${this.seed}-${Point.hash(worldPoint)}`
-        Random.seed = seed  // change seed for this specific zone
-        // set zone object
-        const zone = {
-            size: ZONE_SIZE
+        Random.seed = seed  // change seed for this specific chunk
+        // set chunk object
+        const chunk = {
+            size: CHUNK_SIZE
         }
         // set context for
         const context = {
             rect: this.rect,
             world: this.world,
-            zoneSize: ZONE_SIZE,
-            zoneRect: ZONE_RECT,
+            chunkSize: CHUNK_SIZE,
+            chunkRect: CHUNK_RECT,
             worldPoint,
-            zone,
+            chunk,
             seed
         }
         const hash = Point.hash(worldPoint)
-        // cache de zone grid noise
-        if (this.#zoneCache.has(hash)) {
-            return this.#zoneCache.get(hash)
+        // cache de chunk grid noise
+        if (this.#chunkCache.has(hash)) {
+            return this.#chunkCache.get(hash)
         }
-        zone.landmask = new LandMaskZone(context)
-        zone.river = new RiverZone(context)
-        zone.climate = new ClimateZone(context)
-        zone.rain = new RainZone(context)
-        zone.biome = new BiomeZone(context)
-        zone.civil = new CivilZone(context)
-        this.#zoneCache.set(hash, zone)
-        return zone
+        chunk.surface = new SurfaceChunk(context)
+        chunk.river = new RiverChunk(context)
+        chunk.climate = new ClimateChunk(context)
+        chunk.rain = new RainChunk(context)
+        chunk.biome = new BiomeChunk(context)
+        chunk.civil = new CivilChunk(context)
+        this.#chunkCache.set(hash, chunk)
+        return chunk
     }
 
     getDescription() {

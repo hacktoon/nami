@@ -16,35 +16,35 @@ const REGION_GROWTH = [2, 1]
 const REGION_CHANCE = .1
 
 
-export class LandMaskZone {
-    #landMaskGrid
+export class SurfaceChunk {
+    #grid
 
     constructor(context) {
-        this.size = context.zoneSize
-        this.#landMaskGrid = buildModel(context)
+        this.size = context.chunkSize
+        this.#grid = buildModel(context)
     }
 
-    isLand(zonePoint) {
-        return this.#landMaskGrid.get(zonePoint)
+    isLand(chunkPoint) {
+        return this.#grid.get(chunkPoint)
     }
 
     draw(props, params) {
         const {canvas, canvasPoint, tilePoint, tileSize, world} = props
-        const zoneSize = this.size
-        const size = tileSize / zoneSize
-        // render zone tiles
+        const chunkSize = this.size
+        const size = tileSize / chunkSize
+        // render chunk tiles
         // const isBorder = world.surface.isBorder(tilePoint)
-        for (let x=0; x < zoneSize; x++) {
+        for (let x=0; x < chunkSize; x++) {
             const xSize = x * size
-            for (let y=0; y < zoneSize; y++) {
-                const zonePoint = [y, x]
+            for (let y=0; y < chunkSize; y++) {
+                const chunkPoint = [y, x]
                 const ySize = y * size
-                const zoneCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                let color = this.isLand(zonePoint) ? '#71b13e' : '#2f367d'
-                // let color = this.isLand(zonePoint)
+                const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
+                let color = this.isLand(chunkPoint) ? '#71b13e' : '#2f367d'
+                // let color = this.isLand(chunkPoint)
                 //     ? isBorder ? '#57892d' : '#71b13e'
                 //     : isBorder ? '#1d2255' : '#2f367d'
-                canvas.rect(zoneCanvasPoint, size, color)
+                canvas.rect(chunkCanvasPoint, size, color)
             }
         }
     }
@@ -53,31 +53,31 @@ export class LandMaskZone {
 
 function buildModel(context) {
     // Generate a boolean grid (land or water)
-    const {worldPoint, world, rect, zoneRect} = context
-    const relativePoint = Point.multiplyScalar(worldPoint, zoneRect.width)
-    const noiseRect = Rect.multiply(rect, zoneRect.width)
+    const {worldPoint, world, rect, chunkRect} = context
+    const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
+    const noiseRect = Rect.multiply(rect, chunkRect.width)
     const isLand = world.surface.isLand(worldPoint)
-    const {regionGrid, borderRegions} = buildZoneRegionModel(context)
-    const landMaskGrid = Grid.fromRect(zoneRect, zonePoint => {
-        const regionId = regionGrid.get(zonePoint)
-        const noisePoint = Point.plus(relativePoint, zonePoint)
+    const {regionGrid, borderRegions} = buildChunkRegionModel(context)
+    const grid = Grid.fromRect(chunkRect, chunkPoint => {
+        const regionId = regionGrid.get(chunkPoint)
+        const noisePoint = Point.plus(relativePoint, chunkPoint)
         if (borderRegions.has(regionId)) {
-            const noise = world.noise.get4DZoneOutline(noiseRect, noisePoint)
+            const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
             return noise > SURFACE_NOISE_RATIO ? REGION_LAND : REGION_WATER
         } else {
             return isLand ? REGION_LAND : REGION_WATER
         }
     })
-    return landMaskGrid
+    return grid
 }
 
 
-function buildZoneRegionModel(context) {
-    const {zoneRect} = context
-    // create a grid with many regions fragmenting the zone map
-    const regionGrid = Grid.fromRect(zoneRect, () => EMPTY)
-    const origins = EvenPointSampling.create(zoneRect, REGION_SCALE)
-    // region id map to direction in zone rect
+function buildChunkRegionModel(context) {
+    const {chunkRect} = context
+    // create a grid with many regions fragmenting the chunk map
+    const regionGrid = Grid.fromRect(chunkRect, () => EMPTY)
+    const origins = EvenPointSampling.create(chunkRect, REGION_SCALE)
+    // region id map to direction in chunk rect
     const borderRegions = new Set()
     // prepare fill map with fill id => fill origin
     // it's also a map of all regions
@@ -93,9 +93,9 @@ class RegionFloodFill extends ConcurrentFill {
     getChance() { return REGION_CHANCE }
 
     getNeighbors(fill, parentPoint) {
-        const rect = fill.context.zoneRect
+        const rect = fill.context.chunkRect
         const points = Point.adjacents(parentPoint)
-        // avoid wrapping in zone rect - flood fill from borders to center
+        // avoid wrapping in chunk rect - flood fill from borders to center
         return points.filter(p => rect.isInside(p))
     }
 
@@ -104,8 +104,8 @@ class RegionFloodFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint) {
-        const {zoneRect, regionGrid, borderRegions} = fill.context
-        if (zoneRect.isEdge(fillPoint)) {
+        const {chunkRect, regionGrid, borderRegions} = fill.context
+        if (chunkRect.isEdge(fillPoint)) {
             borderRegions.add(fill.id)
         }
         regionGrid.set(fillPoint, fill.id)

@@ -1,7 +1,7 @@
 import { buildModel } from './model'
 
 
-export class CivilZone {
+export class CivilChunk {
     #grid
 
     constructor(context) {
@@ -13,8 +13,8 @@ export class CivilZone {
     }
 
     draw(props, params) {
-        const {world, zone} = props
-        zone.biome.draw(props, params)
+        const {world, chunk} = props
+        chunk.biome.draw(props, params)
     }
 }
 

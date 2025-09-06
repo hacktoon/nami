@@ -7,7 +7,7 @@ import { RiverStretch } from './data'
 
 
 export class RiverLayer {
-    #zoneRect
+    #chunkRect
     // maps an id to a name
     #riverNames = new Map()
     // map a point to an id
@@ -18,8 +18,8 @@ export class RiverLayer {
     #stretchMap
 
     constructor(context) {
-        const {rect, world, zoneRect} = context
-        this.#zoneRect = zoneRect
+        const {rect, world, chunkRect} = context
+        this.#chunkRect = chunkRect
         this.world = world
         this.#midpointGrid = buildMidpointGrid(context)
         this.#stretchMap = new PointMap(rect)
@@ -46,7 +46,7 @@ export class RiverLayer {
         return {
             id,
             name: this.#riverNames.get(id),
-            midpoint: this.#zoneRect.indexToPoint(midpointIndex),
+            midpoint: this.#chunkRect.indexToPoint(midpointIndex),
             stretch: RiverStretch.get(stretchId),
         }
     }
