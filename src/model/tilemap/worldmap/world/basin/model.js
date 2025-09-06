@@ -18,8 +18,9 @@ import {
 
 const NO_BASIN_ID = -1
 const FILL_CHANCE = .2  // chance of fill growing
-const FILL_GROWTH = 3  // make fill basins grow bigger than others
-const MIDPOINT_RATE = .6
+const FILL_GROWTH = 3
+const MIDPOINT_RATE = .6  //random point in 60% of zonerect area around center point
+const MIDDLE_OFFSET = 2  // used to avoid midpoints on middle
 
 
 export function buildBasinModel(context) {
@@ -49,11 +50,15 @@ export function buildErosionGrid({rect}) {
 
 export function buildMidpointGrid({rect, zoneRect}) {
     const centerIndex = Math.floor(zoneRect.width / 2)
-    // 60% around center point
+    // select random point in 60% of zonerect area around center point
     const offset = Math.floor(centerIndex * MIDPOINT_RATE)
     return Grid.fromRect(rect, () => {
-        const x = centerIndex + Random.int(-offset, offset)
-        const y = centerIndex + Random.int(-offset, offset)
+        const randX = Random.int(-offset, offset)
+        const randY = Random.int(-offset, offset)
+        const midRandX = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
+        const midRandY = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
+        const x = centerIndex + (randX != 0 ? randX : midRandX)
+        const y = centerIndex + (randY != 0 ? randY : midRandY)
         return zoneRect.pointToIndex([x, y])
     })
 }
@@ -161,17 +166,18 @@ class LandBasinFill extends ConcurrentFill {
     }
 
     getNeighbors(fill, parentPoint) {
-        return Point.around(parentPoint)
+        return Point.adjacents(parentPoint)
     }
 
     isEmpty(fill, fillPoint, parentPoint) {
         const {world, model, basinGrid} = fill.context
         const basin = Basin.parse(model.type.get(fill.id))
-        if (basinGrid.get(fillPoint) !== NO_BASIN_ID) return false
+        if (basinGrid.get(fillPoint) !== NO_BASIN_ID)
+            return false
         // avoid erosion flow on land borders
-        if (world.surface.isBorder(fillPoint)) return false
+        if (world.surface.isBorder(fillPoint))
+            return false
         if (fill.level >= basin.reach) {
-            // basinGrid.set(fillPoint, fill.id)
             return false
         }
         const target = world.surface.get(fillPoint)
@@ -182,14 +188,14 @@ class LandBasinFill extends ConcurrentFill {
 
     _fillBasin(fill, fillPoint, parentPoint) {
         const {model, basinGrid} = fill.context
+        const direction = Point.directionBetween(fillPoint, parentPoint)
         // basin id is the same as fill id
         basinGrid.set(fillPoint, fill.id)
         // set erosion flow to parent
-        const direction = Point.directionBetween(fillPoint, parentPoint)
         model.erosion.set(fillPoint, direction.id)
+        model.directionBitmap.add(fillPoint, direction)
         // update midpoint to account erosion
         this._updateMidpoint(fill, fillPoint, direction)
-        model.directionBitmap.add(fillPoint, direction)
     }
 
     _updateMidpoint(fill, fillPoint, direction) {
