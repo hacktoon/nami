@@ -76,13 +76,19 @@ export class BasinLayer {
         const meanderPoint = Point.plus(canvasPoint, canvasMidpoint)
         // draw line for each neighbor with a basin connection
         const directions = this.#model.directionBitmap.get(tilePoint)
+        const joint = this.#model.joint.get(tilePoint)
         for(let direction of directions) {
             // map each axis coordinate to random value in chunk's rect edge
             // summing values from origin [0, 0] bottom-right oriented
+            const sidePoint = Point.atDirection(tilePoint, direction)
+            const sideJoint = this.#model.joint.get(sidePoint)
+            const avgJoint = Math.floor((joint + sideJoint) / 2)
+            const jointPixel = pixelsPerChunkPoint * avgJoint
+            // map the neighbor axis to a chunk edge point
             const axisModifier = direction.axis.map(coord => {
                 if (coord < 0) return 0
                 if (coord > 0) return tileSize
-                return Math.floor(tileSize * .5)
+                return jointPixel
             })
             const canvasEdgePoint = Point.plus(canvasPoint, axisModifier)
             props.canvas.line(canvasEdgePoint, meanderPoint, lineWidth, color)

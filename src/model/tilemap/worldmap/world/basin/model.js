@@ -67,8 +67,7 @@ export function buildMidpointGrid({rect, chunkRect}) {
 
 export function buildJointGrid({rect, chunkSize}) {
     return Grid.fromRect(rect, () => {
-        const joint = Random.floatRange(1, chunkSize - 2)
-        return joint.toFixed(2)
+        return Random.int(1, chunkSize - 2)
     })
 }
 
@@ -157,10 +156,6 @@ class LandBasinFill extends ConcurrentFill {
         // update erosion path
         for (let neighbor of survey.waterNeighbors) {
             const direction = Point.directionBetween(fillPoint, neighbor)
-            if(fillPoint[0] == 24 && fillPoint[1] == 28) {
-                console.log(neighbor, direction.name);
-
-            }
             model.directionBitmap.add(fillPoint, direction)
         }
     }
