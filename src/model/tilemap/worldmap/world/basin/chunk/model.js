@@ -1,5 +1,4 @@
 import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
-import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointSet } from '/src/lib/geometry/point/set'
 import { Point } from '/src/lib/geometry/point'
 import { clamp } from '/src/lib/function'

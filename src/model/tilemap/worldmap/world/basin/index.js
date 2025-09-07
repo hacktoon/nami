@@ -2,10 +2,7 @@ import { Point } from '/src/lib/geometry/point'
 import { Direction } from '/src/lib/direction'
 
 import { buildBasinModel } from './model'
-import {
-    Basin,
-    WaterBasin
-} from './type'
+import { Basin } from './type'
 
 
 export class BasinLayer {

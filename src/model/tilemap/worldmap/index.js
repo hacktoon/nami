@@ -132,6 +132,7 @@ export class WorldTileMap extends TileMap {
             return this.#chunkCache.get(hash)
         }
         chunk.surface = new SurfaceChunk(context)
+        chunk.basin = new BasinChunk(context)
         chunk.river = new RiverChunk(context)
         chunk.climate = new ClimateChunk(context)
         chunk.rain = new RainChunk(context)
