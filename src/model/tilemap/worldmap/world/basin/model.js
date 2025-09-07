@@ -153,11 +153,6 @@ class LandBasinFill extends ConcurrentFill {
         const survey = surveyMap.get(fill.id)
         // the basin opposite border is the parentPoint
         this._fillBasin(fill, fillPoint, survey.oppositeBorder)
-        // update erosion path
-        for (let neighbor of survey.waterNeighbors) {
-            const direction = Point.directionBetween(fillPoint, neighbor)
-            model.directionBitmap.add(fillPoint, direction)
-        }
     }
 
     onFill(fill, fillPoint, parentPoint) {
@@ -239,9 +234,15 @@ class WaterBasinFill extends ConcurrentFill {
         // discover adjacent river and water tiles
         Point.adjacents(fillPoint, (sidePoint, direction) => {
             if (world.surface.isLand(sidePoint)) {
-                model.erosion.set(fillPoint, direction.id)
+                const sideDirection = Direction.fromId(model.erosion.get(sidePoint))
+                const mouth = Point.atDirection(sidePoint, sideDirection)
+                if (Point.equals(mouth, fillPoint)) {
+                    model.directionBitmap.add(fillPoint, direction)
+                    model.erosion.set(fillPoint, direction.id)
+                }
+            } else {
+                model.directionBitmap.add(fillPoint, direction)
             }
-            model.directionBitmap.add(fillPoint, direction)
         })
         // diagonals later, only to non-border water sides
         Point.diagonals(fillPoint, (sidePoint, direction) => {

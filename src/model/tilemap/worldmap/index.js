@@ -29,12 +29,11 @@ import { WorldTileMapDiagram } from './diagram'
 
 
 const WORLD_SIZE = 32
-const CHUNK_SIZE = 13
-const CHUNK_RECT = new Rect(CHUNK_SIZE, CHUNK_SIZE)
 
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.number('size', 'Size', { default: WORLD_SIZE, min: WORLD_SIZE, max: WORLD_SIZE }),
+    Type.number('size', 'Size', { default: WORLD_SIZE, min: 16, max: 128 }),
+    Type.number('chunk', 'Chunk', {step: 2, default: 15, min: 7, max: 19}),
     Type.text('seed', 'Seed', { default: '' }),
     Type.number('realms', 'Realms', { default: 8, min: 3, max: 8 }),
 )
@@ -50,28 +49,34 @@ export class WorldTileMap extends TileMap {
     }
 
     #chunkCache
+    #chunkRect
 
     constructor(params) {
         super(params)
+        const worldSize = params.get('size')
+        const chunkSize = params.get('chunk')
+        this.params = params
         this.name = Random.choiceFrom(WORLD_NAMES)
+        this.#chunkRect = new Rect(chunkSize, chunkSize)
+        this.#chunkCache = new FIFOCache(worldSize * worldSize)
         this.world = this.#buildWorld(params, this.rect)
-        this.#chunkCache = new FIFOCache(WORLD_SIZE * WORLD_SIZE)
     }
 
     #buildWorld(params, rect) {
         const start = performance.now()
+        const chunkSize = params.get('chunk')
         // set a global struct for world
         const world = {
             rect,
             seed: this.seed,
-            size: WORLD_SIZE,
-            chunkSize: CHUNK_SIZE,
+            size: params.get('size'),
+            chunkSize,
         }
         const context = {
-            world,
             rect,
-            chunkSize: CHUNK_SIZE,
-            chunkRect: CHUNK_RECT,
+            world,
+            chunkSize,
+            chunkRect: this.#chunkRect,
             realmCount: params.get('realms')
         }
         // The world creation follows order below
@@ -111,17 +116,18 @@ export class WorldTileMap extends TileMap {
         // geração de seed específica para a zona
         // para evitar que zonas adjacentes tenham o mesmo conteúdo
         const seed = `${this.seed}-${Point.hash(worldPoint)}`
+        const chunkSize = this.params.get('chunk')
         Random.seed = seed  // change seed for this specific chunk
         // set chunk object
         const chunk = {
-            size: CHUNK_SIZE
+            size: chunkSize
         }
         // set context for
         const context = {
             rect: this.rect,
             world: this.world,
-            chunkSize: CHUNK_SIZE,
-            chunkRect: CHUNK_RECT,
+            chunkSize,
+            chunkRect: this.#chunkRect,
             worldPoint,
             chunk,
             seed
