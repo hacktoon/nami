@@ -1,14 +1,14 @@
 import { Point } from '/src/lib/geometry/point'
 import { Color } from '/src/lib/color'
 
-import { buildErosionGrid } from './model'
+import { buildBasinGrid } from './model'
 
 
 export class BasinChunk {
     #grid
 
     constructor(context) {
-        this.#grid = buildErosionGrid(context)
+        this.#grid = buildBasinGrid(context)
     }
 
     has(point) {
