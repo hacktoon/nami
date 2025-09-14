@@ -35,14 +35,14 @@ export class BasinChunk {
                     color = '#2f367d'
                     if (chunk.surface.isLand(chunkPoint)) {
                         const colorObj = Color.fromHex('#52a83f')
-                        color = level < 5 ? colorObj.darken(level * 20) : colorObj
+                        color = level < 3 ? colorObj.darken(level * 2) : colorObj
                         color = color.toHex()
                     }
                 }
                 canvas.rect(chunkCanvasPoint, chunkTileSize, color)
-                if (showErosion && Point.equals(basin.midpoint, chunkPoint)) {
-                    canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
-                }
+                // if (showErosion && Point.equals(basin.midpoint, chunkPoint)) {
+                //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
+                // }
             }
         }
     }

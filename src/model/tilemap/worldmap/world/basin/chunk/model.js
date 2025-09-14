@@ -68,7 +68,7 @@ function buildGrid(context, flowPoints) {
 
 class BasinFloodFill extends ConcurrentFill {
     getGrowth() {
-        return 1
+        return 4
     }
 
     getChance() {
