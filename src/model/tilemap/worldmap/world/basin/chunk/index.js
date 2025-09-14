@@ -1,18 +1,18 @@
 import { Point } from '/src/lib/geometry/point'
 import { Color } from '/src/lib/color'
 
-import { buildBasinGrid } from './model'
+import { buildModel } from './model'
 
 
 export class BasinChunk {
-    #grid
+    #model
 
     constructor(context) {
-        this.#grid = buildBasinGrid(context)
+        this.#model = buildModel(context)
     }
 
-    has(point) {
-        return this.#grid.has(point)
+    get(point) {
+        return this.#model.grid.get(point)
     }
 
     draw(props, params) {
@@ -28,14 +28,16 @@ export class BasinChunk {
                 const chunkPoint = [y, x]
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                if (showErosion && this.has(chunkPoint)) {
+                const level = this.get(chunkPoint)
+                if (showErosion && level == 0) {
                     color = '#3f4693'
                 } else {
                     color = '#2f367d'
                     if (chunk.surface.isLand(chunkPoint)) {
-                        color = '#52a83f'
+                        const colorObj = Color.fromHex('#52a83f')
+                        color = level < 5 ? colorObj.darken(level * 20) : colorObj
+                        color = color.toHex()
                     }
-
                 }
                 canvas.rect(chunkCanvasPoint, chunkTileSize, color)
                 if (showErosion && Point.equals(basin.midpoint, chunkPoint)) {
