@@ -66,14 +66,14 @@ export class FloodPlainChunkBasin extends Basin {
 export class LowLandChunkBasin extends Basin {
     static id = 7
     static name = 'LowLandChunk'
-    static color = Color.fromHex('#80b058')
+    static color = Color.fromHex('#3fa05a')
 }
 
 
 export class HighLandChunkBasin extends Basin {
     static id = 8
     static name = 'HighLandChunk'
-    static color = Color.fromHex('#a4cf80')
+    static color = Color.fromHex('#58bd74')
 }
 
 

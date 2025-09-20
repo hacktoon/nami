@@ -90,10 +90,10 @@ function buildType(context, point, level) {
     const {chunk, world, chunkRect} = context
     if (! chunk.surface.isLand(point)) return OceanBasin
 
+    if (level > 7) return HighLandChunkBasin
+    if (level > 2) return LowLandChunkBasin
+    if (level > 0) return FloodPlainChunkBasin
     if (level == 0) return ValleyChunkBasin
-    if (level == 1) return FloodPlainChunkBasin
-    if (level > 3) return HighLandChunkBasin
-    return LowLandChunkBasin
 }
 
 
