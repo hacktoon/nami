@@ -2,6 +2,7 @@ import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointSet } from '/src/lib/geometry/point/set'
 import { Grid } from '/src/lib/grid'
+import { Rect } from '/src/lib/geometry/rect'
 import { Point } from '/src/lib/geometry/point'
 import { clamp } from '/src/lib/function'
 
@@ -87,11 +88,20 @@ function buildTypeGrid(context, levelGrid) {
 
 
 function buildType(context, point, level) {
-    const {chunk, world, chunkRect} = context
+    const {worldPoint, chunk, world, rect, chunkRect} = context
     if (! chunk.surface.isLand(point)) return OceanBasin
 
-    if (level > 7) return HighLandChunkBasin
-    if (level > 2) return LowLandChunkBasin
+    const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
+    const noiseRect = Rect.multiply(rect, chunkRect.width)
+    const noisePoint = Point.plus(relativePoint, point)
+    if (level > 5 && level < 12) {
+        const noise = world.noise.get4DGrained(noiseRect, noisePoint)
+        return noise > .3 ? HighLandChunkBasin : LowLandChunkBasin
+    }
+    if (level > 2) {
+        const noise = world.noise.get4DGrained(noiseRect, noisePoint)
+        return noise > .8 ? FloodPlainChunkBasin : LowLandChunkBasin
+    }
     if (level > 0) return FloodPlainChunkBasin
     if (level == 0) return ValleyChunkBasin
 }

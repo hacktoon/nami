@@ -9,7 +9,7 @@ const NOISE_SPEC = {
     'chunkClimate': {octaves: 7, resolution: .65, scale: .02},
     'rain': {octaves: 6, resolution: .8, scale: .02},
     'chunkRain': {octaves: 7, resolution: .8, scale: .02},
-    'grained': {octaves: 6, resolution: .8, scale: .08},
+    'grained': {octaves: 6, resolution: .8, scale: .1},
 }
 
 

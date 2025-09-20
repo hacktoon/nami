@@ -52,7 +52,7 @@ export class DiffuseBasin extends Basin {
 export class ValleyChunkBasin extends Basin {
     static id = 5
     static name = 'ValleyChunk'
-    static color = Color.fromHex('#3f4693')
+    static color = Color.fromHex('#285879')
 }
 
 
