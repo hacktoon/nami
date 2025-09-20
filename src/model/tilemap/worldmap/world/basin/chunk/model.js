@@ -94,9 +94,9 @@ function buildType(context, point, level) {
     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
     const noiseRect = Rect.multiply(rect, chunkRect.width)
     const noisePoint = Point.plus(relativePoint, point)
-    if (level > 5 && level < 12) {
+    if (level > 5) {
         const noise = world.noise.get4DGrained(noiseRect, noisePoint)
-        return noise > .3 ? HighLandChunkBasin : LowLandChunkBasin
+        return noise > .5 ? HighLandChunkBasin : LowLandChunkBasin
     }
     if (level > 2) {
         const noise = world.noise.get4DGrained(noiseRect, noisePoint)
