@@ -11,7 +11,7 @@ import {
     EndorheicSeaBasin,
     EndorheicLakeBasin,
     ExorheicBasin,
-    WaterBasin,
+    OceanBasin,
     DiffuseBasin,
 } from './type'
 
@@ -97,7 +97,7 @@ function buildBasinGrid(context) {
             landFillMap.set(basinId, {origin: point, retry: true})
             basinId++
         } else if (isBorder && ! isLand) {
-            const type = WaterBasin
+            const type = OceanBasin
             model.type.set(basinId, type.id)
             waterFillMap.set(basinId, {origin: point, type})
             basinId++

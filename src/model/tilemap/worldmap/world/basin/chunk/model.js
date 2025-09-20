@@ -5,6 +5,14 @@ import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/geometry/point'
 import { clamp } from '/src/lib/function'
 
+import {
+    OceanBasin,
+    ValleyChunkBasin,
+    FloodPlainChunkBasin,
+    LowLandChunkBasin,
+    HighLandChunkBasin,
+} from '../type'
+
 
 const MEANDER = 3
 const EMPTY = null
@@ -13,12 +21,13 @@ const EMPTY = null
 export function buildModel(context) {
     const flowPoints = buildFlowPoints(context)
     const grid = buildGrid(context, flowPoints)
-    return {grid, flowPoints}
+    const typeGrid = buildTypeGrid(context, grid)
+    return {grid, typeGrid, flowPoints}
 }
 
 
 function buildFlowPoints(context) {
-    // reads the wire data and create points for chunk grid
+    // reads the direction bitmask data and create points for chunk grid
     const {world, worldPoint, chunk, chunkRect} = context
     const points = new PointSet(chunkRect)
     const basin = world.basin.get(worldPoint)
@@ -66,9 +75,31 @@ function buildGrid(context, flowPoints) {
 }
 
 
+function buildTypeGrid(context, levelGrid) {
+    // reads the wire data and create points for chunk grid
+    const {chunkRect} = context
+    return Grid.fromRect(chunkRect, chunkPoint => {
+        const level = levelGrid.get(chunkPoint)
+        const type = buildType(context, chunkPoint, level)
+        return type.id
+    })
+}
+
+
+function buildType(context, point, level) {
+    const {chunk, world, chunkRect} = context
+    if (! chunk.surface.isLand(point)) return OceanBasin
+
+    if (level == 0) return ValleyChunkBasin
+    if (level == 1) return FloodPlainChunkBasin
+    if (level > 3) return HighLandChunkBasin
+    return LowLandChunkBasin
+}
+
+
 class BasinFloodFill extends ConcurrentFill {
     getGrowth() {
-        return 4
+        return 2
     }
 
     getChance() {
@@ -87,19 +118,7 @@ class BasinFloodFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint) {
-        const {grid, worldPoint, chunk, world, chunkRect} = fill.context
-        const level = fill.level
-        grid.set(fillPoint, level)
-        const isChunkLand = chunk.surface.isLand(fillPoint)
-        const isWorldBorder = world.surface.isBorder(worldPoint)
-        if (world.surface.isLand(worldPoint)) {
-            if (isWorldBorder) {
-                if (level == 1) {
-
-                }
-            }
-        } else {
-
-        }
+        const {grid} = fill.context
+        grid.set(fillPoint, fill.level)
     }
 }
