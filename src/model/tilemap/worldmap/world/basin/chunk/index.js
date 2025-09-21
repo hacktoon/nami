@@ -15,7 +15,6 @@ export class BasinChunk {
     get(point) {
         const typeId = this.#model.typeGrid.get(point)
         return {
-            level: this.#model.grid.get(point),
             type: Basin.parse(typeId),
         }
     }
@@ -24,7 +23,6 @@ export class BasinChunk {
         const {canvas, canvasPoint, tilePoint, tileSize, world, chunk} = props
         const chunkTileSize = tileSize / chunk.size
         if (tileSize < 10) return
-        let color
         for (let x=0; x < chunk.size; x++) {
             const xSize = x * chunkTileSize
             for (let y=0; y < chunk.size; y++) {
@@ -32,8 +30,7 @@ export class BasinChunk {
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const {type} = this.get(chunkPoint)
-                color = type.color.toHex()
-                canvas.rect(chunkCanvasPoint, chunkTileSize, color)
+                canvas.rect(chunkCanvasPoint, chunkTileSize, type.color.toHex())
                 // if (showErosion && Point.equals(basin.midpoint, chunkPoint)) {
                 //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
                 // }

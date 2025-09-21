@@ -29,11 +29,9 @@ export class SurfaceChunk {
     }
 
     draw(props, params) {
-        const {canvas, canvasPoint, tilePoint, tileSize, world} = props
+        const {canvas, canvasPoint, tileSize} = props
         const chunkSize = this.size
         const size = tileSize / chunkSize
-        // render chunk tiles
-        // const isBorder = world.surface.isBorder(tilePoint)
         for (let x=0; x < chunkSize; x++) {
             const xSize = x * size
             for (let y=0; y < chunkSize; y++) {
@@ -41,9 +39,6 @@ export class SurfaceChunk {
                 const ySize = y * size
                 const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 let color = this.isLand(chunkPoint) ? '#71b13e' : '#2f367d'
-                // let color = this.isLand(chunkPoint)
-                //     ? isBorder ? '#57892d' : '#71b13e'
-                //     : isBorder ? '#1d2255' : '#2f367d'
                 canvas.rect(chunkCanvasPoint, size, color)
             }
         }

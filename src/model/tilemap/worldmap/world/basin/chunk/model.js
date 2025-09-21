@@ -21,9 +21,9 @@ const EMPTY = null
 
 export function buildModel(context) {
     const flowPoints = buildFlowPoints(context)
-    const grid = buildGrid(context, flowPoints)
-    const typeGrid = buildTypeGrid(context, grid)
-    return {grid, typeGrid, flowPoints}
+    const levelGrid = buildLevelGrid(context, flowPoints)
+    const typeGrid = buildTypeGrid(context, levelGrid)
+    return {typeGrid, flowPoints}
 }
 
 
@@ -58,7 +58,7 @@ function buildFlowPoints(context) {
 }
 
 
-function buildGrid(context, flowPoints) {
+function buildLevelGrid(context, flowPoints) {
     // reads the wire data and create points for chunk grid
     const {world, worldPoint, chunk, chunkRect} = context
     const fillMap = new Map()
@@ -71,7 +71,7 @@ function buildGrid(context, flowPoints) {
         return EMPTY
     })
     const fillContext = {...context, grid}
-    new BasinFloodFill(fillMap, fillContext).complete()
+    new BasinLevelFloodFill(fillMap, fillContext).complete()
     return grid
 }
 
@@ -94,12 +94,11 @@ function buildType(context, point, level) {
     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
     const noiseRect = Rect.multiply(rect, chunkRect.width)
     const noisePoint = Point.plus(relativePoint, point)
+    const noise = world.noise.get4DGrained(noiseRect, noisePoint)
     if (level > 5) {
-        const noise = world.noise.get4DGrained(noiseRect, noisePoint)
         return noise > .5 ? HighLandChunkBasin : LowLandChunkBasin
     }
     if (level > 2) {
-        const noise = world.noise.get4DGrained(noiseRect, noisePoint)
         return noise > .8 ? FloodPlainChunkBasin : LowLandChunkBasin
     }
     if (level > 0) return FloodPlainChunkBasin
@@ -107,7 +106,7 @@ function buildType(context, point, level) {
 }
 
 
-class BasinFloodFill extends ConcurrentFill {
+class BasinLevelFloodFill extends ConcurrentFill {
     getGrowth() {
         return 2
     }

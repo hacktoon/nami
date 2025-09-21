@@ -52,6 +52,7 @@ export class DiffuseBasin extends Basin {
 export class ValleyChunkBasin extends Basin {
     static id = 5
     static name = 'ValleyChunk'
+    static allowsRiver = true
     static color = Color.fromHex('#285879')
 }
 
@@ -59,6 +60,7 @@ export class ValleyChunkBasin extends Basin {
 export class FloodPlainChunkBasin extends Basin {
     static id = 6
     static name = 'FloodPlainChunk'
+    static allowsRiver = false
     static color = Color.fromHex('#2c8746')
 }
 
@@ -66,6 +68,7 @@ export class FloodPlainChunkBasin extends Basin {
 export class LowLandChunkBasin extends Basin {
     static id = 7
     static name = 'LowLandChunk'
+    static allowsRiver = false
     static color = Color.fromHex('#3fa05a')
 }
 
@@ -73,6 +76,7 @@ export class LowLandChunkBasin extends Basin {
 export class HighLandChunkBasin extends Basin {
     static id = 8
     static name = 'HighLandChunk'
+    static allowsRiver = false
     static color = Color.fromHex('#58bd74')
 }
 
