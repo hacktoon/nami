@@ -1,11 +1,7 @@
-import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { PointSet } from '/src/lib/geometry/point/set'
+import { Grid } from '/src/lib/grid'
 import { Point } from '/src/lib/geometry/point'
-import { clamp } from '/src/lib/function'
-
-
-const MEANDER = 3
+import { PointSet } from '/src/lib/geometry/point/set'
 
 
 export function buildRiverGrid(context) {
@@ -15,33 +11,12 @@ export function buildRiverGrid(context) {
     if (! (world.river.has(worldPoint) || world.surface.isWater(worldPoint))) {
         return points
     }
-    const river = world.river.get(worldPoint)
-    const basin = world.basin.get(worldPoint)
-    const source = basin.midpoint
-    const midSize = Math.floor(chunk.size / 2)
-    for(let direction of basin.directionBitmap) {
-        const parentPoint = Point.atDirection(worldPoint, direction)
-        const isParentLand = world.surface.isLand(parentPoint)
-        if (isParentLand && ! world.river.has(parentPoint))
-            continue
-        const sideBasin = world.basin.get(parentPoint)
-        const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
-        const target = direction.axis.map(coord => {
-            if (coord < 0) return 0
-            if (coord > 0) return chunk.size - 1
-            return avgJoint
-        })
-        const distance = Math.floor(Point.distance(source, target))
-        const pointsTooClose = distance < midSize
-        const distortion = pointsTooClose ? 1 : MEANDER
-        midpointDisplacement(source, target, distortion, point => {
-            const [x, y] = point
-            points.add([
-                clamp(x, 0, chunk.size - 1),
-                clamp(y, 0, chunk.size - 1),
-            ])
-        })
-    }
+    Grid.fromRect(chunkRect, chunkPoint => {
+        const basinChunk = chunk.basin.get(chunkPoint)
+        if (basinChunk.type.allowsRiver) {
+            points.add(chunkPoint)
+        }
+    })
     return points
 }
 

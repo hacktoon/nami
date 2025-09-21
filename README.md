@@ -6,7 +6,7 @@
 
 
 ## ROADMAP
-
+- fix roads to fix surface chunk (add region to land)
 - refactor civil model
 - set biome as {
     temp > x
@@ -33,16 +33,12 @@
 - Add city ruins on dry rivers or dry land
 - create junction points between two route points to set midpath detours
   - follow road and calc nearest junction start
+- Start a fill on capitals to determine realms territory
 
 
 ### LandformLayer
   - type of stretch often make waterfalls or rapids
   - canyon / volcano / reef
-
-
-### SociologyLayer
-- Start a fill on capitals to determine realms territory
--
 
 
 ### RainLayer
