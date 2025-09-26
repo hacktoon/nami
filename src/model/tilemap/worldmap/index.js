@@ -120,7 +120,8 @@ export class WorldTileMap extends TileMap {
         Random.seed = seed  // change seed for this specific chunk
         // set chunk object
         const chunk = {
-            size: chunkSize
+            size: chunkSize,
+            rect: this.#chunkRect
         }
         // set context for
         const context = {
