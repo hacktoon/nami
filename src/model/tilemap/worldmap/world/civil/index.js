@@ -63,7 +63,7 @@ export class CivilLayer {
 
     draw(props, params) {
         const {world, tilePoint} = props
-        world.surface.draw(props, params)
+        world.biome.draw(props, params)
         if (params.get("showCityArea")) {
             this.#drawCityArea(tilePoint, props)
         }

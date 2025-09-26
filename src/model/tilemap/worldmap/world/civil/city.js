@@ -8,7 +8,7 @@ import { Random } from '/src/lib/random'
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
 
 
-const CITY_CHANCE = .6
+const CITY_CHANCE = .4
 
 // fill constants
 const CHANCE = .1  // chance of fill growing
@@ -28,8 +28,8 @@ export function buildCityPoints(context) {
         const isRiver = world.river.has(point)
         // avoid too close cities
         const isEvenFilter = (point[0] + point[1]) % 2 == 0
-        const conditionsMet = isRiver || isBorder
-        if (isEvenFilter && conditionsMet && Random.chance(CITY_CHANCE)) {
+        const isCity = isEvenFilter && (isRiver || isBorder)
+        if (isCity && Random.chance(CITY_CHANCE)) {
             cityPoints.add(point)
         }
     })
