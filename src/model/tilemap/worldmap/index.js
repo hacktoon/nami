@@ -70,6 +70,7 @@ export class WorldTileMap extends TileMap {
             rect,
             seed: this.seed,
             size: params.get('size'),
+            chunkRect: this.#chunkRect,
             chunkSize,
         }
         const context = {

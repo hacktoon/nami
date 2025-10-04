@@ -1,41 +1,17 @@
 import { Point } from '/src/lib/geometry/point'
 import { Color } from '/src/lib/color'
-import { Grid } from '/src/lib/grid'
 
 import { drawVillage, drawTown, drawCapital } from './draw'
-import {
-    buildCityMap,
-    buildCityPoints,
-    buildCitySpaces,
-} from './city'
+
+import { buildModel } from './model'
 
 
 // Define realms, cities and roads
 export class CivilLayer {
-    #cityMap             // map a point to a city object
-    #cityGrid            // grid of city ids in area
-    #wildernessGrid          // grid of civil wilderness
-    #cityPoints
-    #routeMaskGrid   // map a point to a direction bitmask
-    // map a point to a point index in a chunk rect
-    #midpointIndexGrid
     #model
 
     constructor(context) {
-        const cityPoints = buildCityPoints(context)
-        const cityMap = buildCityMap({...context, cityPoints})
-        // build a city grid with a city id per flood area
-        // build a graph connecting neighbor cities by id using fill data
-        const midpointIndexGrid = Grid.fromRect(context.rect, () => null)
-        const citySpaces = buildCitySpaces({...context, midpointIndexGrid, cityPoints, cityMap})
-        this.#model = {
-            routeMaskGrid: citySpaces.routeMaskGrid,
-            cityPoints: cityPoints,
-            cityMap: cityMap,
-            cityGrid: citySpaces.cityGrid,
-            wildernessGrid: citySpaces.wildernessGrid,
-            midpointIndexGrid: midpointIndexGrid,
-        }
+        this.#model = buildModel(context)
     }
 
     get(point) {
@@ -91,7 +67,7 @@ export class CivilLayer {
     }
 
     #drawRoute(point, props) {
-        const {world, chunk, canvas, canvasPoint, tileSize} = props
+        const {world, canvas, canvasPoint, tileSize} = props
         const roadDirections = this.#model.routeMaskGrid.getAxis(point)
         if (roadDirections.length == 0) return
         const width = 3
@@ -99,8 +75,8 @@ export class CivilLayer {
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         const midpointIndex = this.#model.midpointIndexGrid.get(point)
-        const midpoint = chunk.rect.indexToPoint(midpointIndex)
-        const meanderOffsetPoint = Point.multiplyScalar(midpoint, tileSize / chunk.size)
+        const midpoint = world.chunkRect.indexToPoint(midpointIndex)
+        const meanderOffsetPoint = Point.multiplyScalar(midpoint, tileSize / world.chunkSize)
         const meanderPoint = Point.plus(canvasPoint, meanderOffsetPoint)
         // for each neighbor with a route connection
         for(let axisOffset of roadDirections) {
