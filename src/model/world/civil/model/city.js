@@ -20,18 +20,37 @@ export function buildCityPoints(context) {
     const {rect, world} = context
     // eliminate city points too close of already chosen
     const cityPoints = new PointSet(rect)
+    const candidates = []
     // create city id grid
     Grid.fromRect(rect, point => {
-        if (world.surface.isWater(point))
-            return
-        const isBorder = world.surface.isBorder(point)
+        if (world.surface.isWater(point)) return
+        const isIsland = world.surface.isIsland(point)
         const isRiver = world.river.has(point)
-        // avoid cities which are too close to each other
-        const isEvenFilter = (point[0] + point[1]) % 2 == 0
-        const isCity = isEvenFilter && (isRiver || isBorder)
-        if (isCity && Random.chance(CITY_CHANCE)) {
-            cityPoints.add(point)
+        const river = world.river.get(point)
+        let priority = 3
+        if (world.surface.isBorder(point)) {
+            if (isRiver && river.length > 1) {
+                priority = 0
+                candidates.push([point, priority])
+                cityPoints.add(point)
+            }
+            if (isRiver && (isIsland || river.length == 1)) {
+                priority = 1
+                candidates.push([point, priority])
+                cityPoints.add(point)
+            }
+        } else {
+            if (isRiver) {
+                priority = 2
+            }
         }
+
+        // avoid cities which are too close to each other
+        // const isEvenFilter = (point[0] + point[1]) % 2 == 0
+        // const isCity = isEvenFilter && (isRiver || isBorder)
+        // if (isCity && Random.chance(CITY_CHANCE)) {
+        //     cityPoints.add(point)
+        // }
     })
     return cityPoints
 }
