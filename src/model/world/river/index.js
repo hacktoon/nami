@@ -16,6 +16,8 @@ export class RiverLayer {
     #midpointGrid
     // map a river point to its river type
     #stretchMap
+    // map a river id to its length
+    #riverLengths
 
     constructor(context) {
         const {rect, world, chunkRect} = context
@@ -23,8 +25,10 @@ export class RiverLayer {
         this.world = world
         this.#midpointGrid = buildMidpointGrid(context)
         this.#stretchMap = new PointMap(rect)
+        this.#riverLengths = new Map()
         const ctx = {
             ...context,
+            riverLengths: this.#riverLengths,
             riverNames: this.#riverNames,
             stretchMap: this.#stretchMap
         }
@@ -45,6 +49,7 @@ export class RiverLayer {
         const midpointIndex = this.#midpointGrid.get(point)
         return {
             id,
+            length: this.#riverLengths.get(id),
             name: this.#riverNames.get(id),
             midpoint: this.#chunkRect.indexToPoint(midpointIndex),
             stretch: RiverStretch.get(stretchId),
@@ -64,11 +69,12 @@ export class RiverLayer {
             return ''
         const river = this.get(point)
         const attrs = [
-             `id=${river.id}`,
-             `name=${river.name}`,
-             `stretch=${river.stretch.name}`,
-             `midpoint=${river.midpoint}`,
-        ].filter(x=>x).join(',')
+            `id=${river.id}`,
+            `name=${river.name}`,
+            `stretch=${river.stretch.name}`,
+            `midpoint=${river.midpoint}`,
+            `length=${river.length}`,
+        ].filter(x=>x).join(' | ')
         return `River(${attrs})`
     }
 

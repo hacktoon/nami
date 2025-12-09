@@ -45,7 +45,7 @@ function buildFlowPoints(context) {
         })
         const distance = Math.floor(Point.distance(source, target))
         const pointsTooClose = distance < midSize
-        const distortion = pointsTooClose ? 1 : MEANDER
+        const distortion = pointsTooClose ? 2 : MEANDER
         midpointDisplacement(source, target, distortion, point => {
             const [x, y] = point
             points.add([
@@ -59,26 +59,31 @@ function buildFlowPoints(context) {
 
 
 function buildLevelGrid(context, flowPoints) {
-    // reads the wire data and create points for chunk grid
+    // reads the path points in basin to help create basin relief
     const {world, worldPoint, chunk, chunkRect} = context
     const fillMap = new Map()
     let id = 0
     const grid = Grid.fromRect(chunkRect, chunkPoint => {
         if (flowPoints.has(chunkPoint)) {
             fillMap.set(id, {id, origin: chunkPoint})
-            id++
+        } else {
+            // On diffuse basins, there's no flow. Start fill from midpoint instead
+            const basin = world.basin.get(worldPoint)
+            fillMap.set(id, {id, origin: basin.midpoint})
         }
+        id++
         return EMPTY
     })
     const fillContext = {...context, grid}
     new BasinLevelFloodFill(fillMap, fillContext).complete()
+
     return grid
 }
 
 
 function buildTypeGrid(context, levelGrid) {
     // reads the wire data and create points for chunk grid
-    const {chunkRect} = context
+    const {worldPoint, chunkRect} = context
     return Grid.fromRect(chunkRect, chunkPoint => {
         const level = levelGrid.get(chunkPoint)
         const type = buildType(context, chunkPoint, level)

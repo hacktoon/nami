@@ -1,7 +1,6 @@
 import { Point } from '/src/lib/geometry/point'
 import { PointSet } from '/src/lib/geometry/point/set'
 import { Random } from '/src/lib/random'
-import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { HYDRO_NAMES } from '/src/lib/names'
 
@@ -49,17 +48,18 @@ export function buildMidpointGrid({rect, chunkRect}) {
 
 function buildRivers(context) {
     let riverId = 0
-    const {world, riverSources, riverNames} = context
-    // create a list of pairs: (point, river distance to mouth)
+    const {world, riverSources, riverLengths, riverNames} = context
+    // create a list of pairs: (point, river length)
     riverSources.map(point => {
         const distance = world.basin.get(point).distance
         return [point, distance]
     })
     // in ascendent order to get longest rivers first
-    // for starting rivers on basin divides
+    // for starting rivers on basin divides (sources)
     .sort((a, b) => a[1] - b[1])
-    .forEach(([point, ]) => {
+    .forEach(([point, distance]) => {
         buildRiverPath(context, riverId, point)
+        riverLengths.set(riverId, distance + 1)  // basin distance starts from 0
         riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
         riverId++
     })
@@ -94,7 +94,6 @@ function buildRiverPath(context, riverId, sourcePoint) {
     // current (last) point is water, add previous as river mouth
     // riverMouthPointSet.add(prevPoint)
     estuaries.add(rect.wrap(nextPoint))
-
 }
 
 
@@ -105,44 +104,4 @@ function buildStretch(distance, maxDistance) {
     if (ratio >= .5) return RiverStretch.FAST_COURSE
     if (ratio >= .3) return RiverStretch.SLOW_COURSE
     return RiverStretch.DEPOSITIONAL
-}
-
-
-function buildWaterPaths(context) {
-    const {estuaries} = context
-    const fillMap = new Map()
-    estuaries.forEach((point, index) => {
-        fillMap.set(index, {origin: point})
-    })
-    // new WaterMaskFill(fillMap, context).complete()
-}
-
-
-class WaterMaskFill extends ConcurrentFill {
-    getChance(fill) { return FILL_CHANCE }
-    getGrowth(fill) { return FILL_GROWTH }
-
-    getNeighbors(fill, parentPoint) {
-        return Point.around(parentPoint)
-    }
-
-    onInitFill(fill, fillPoint) {
-        const { rect, riverGrid } = fill.context
-        // check neighbor rivers
-
-        // set negative value to indicate water
-        // riverGrid.set(fillPoint, -)
-    }
-
-    onFill(fill, fillPoint, parentPoint) {
-        const { waterMaskPoints } = fill.context
-        // distance to source by point
-        waterMaskPoints.add(fillPoint)
-    }
-
-    isEmpty(fill, fillPoint, parentPoint) {
-        const {world, waterMaskPoints} = fill.context
-        if (world.surface.isLand(fillPoint)) return false
-        return ! waterMaskPoints.has(fillPoint)
-    }
 }
