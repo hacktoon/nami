@@ -12,9 +12,8 @@ import {
 } from './type'
 
 
-// use 0 and 1 as "empty" values
-const EMPTY_LANDBODY = 0
-const EMPTY_WATERBODY = 1
+const LAND = 0
+const WATER = 1
 // this is the first value considered "filled"
 const FIRST_BODY_ID = 2
 // Area ratios
@@ -34,13 +33,13 @@ export function buildSurfaceGrid(baseContext) {
         bodyAreaMap: new Map(),
     }
     // detect land or water tiles in the grid
-    const grid = detectLandWater(rect, world)
+    const landWaterGrid = detectLandWater(rect, world)
     // detect surface type by filling empty bodies
-    const waterArea = detectSurfaceAreas(context, grid)
+    detectSurfaceAreas(context, landWaterGrid)
     // // detect borders and set them as negative ids
-    detectBorders(context, grid)
+    const waterArea = detectBorders(context, landWaterGrid)
     return {
-        grid,
+        landWaterGrid,
         waterArea,
         bodyTypeMap: context.bodyTypeMap,
         bodyAreaMap: context.bodyAreaMap,
@@ -53,13 +52,12 @@ function detectLandWater(rect, world) {
     return Grid.fromRect(rect, point => {
         const noise = world.noise.get4DOutline(rect, point)
         const isWaterBody = noise < SURFACE_RATIO
-        return isWaterBody ? EMPTY_WATERBODY : EMPTY_LANDBODY
+        return isWaterBody ? WATER : LAND
     })
 }
 
 
 function detectSurfaceAreas(context, grid) {
-    let waterArea = 0
     // flood fill "empty" points and determine body type by total area
     grid.forEach(originPoint => {
         if (! isEmptyBody(grid, originPoint)) return
@@ -84,14 +82,12 @@ function detectSurfaceAreas(context, grid) {
         context.bodyTypeMap.set(context.bodyId, type.id)
         context.bodyAreaMap.set(context.bodyId, area)
         context.bodyId++
-        // update world water area
-        waterArea += type.isWater ? area : 0
     })
-    return waterArea
 }
 
 
 function detectBorders(context, grid) {
+    let waterArea = 0
     // surface body matrix already defined, update it by setting
     // water/land borders as negative ids
     grid.forEach(point => {
@@ -105,17 +101,23 @@ function detectBorders(context, grid) {
             }
         }
     })
+    context.bodyAreaMap.forEach((area, bodyId) => {
+        // update world water area
+        const type = Surface.parse(context.bodyTypeMap.get(bodyId))
+        waterArea += type.isWater ? area : 0
+    })
+    return waterArea
 }
 
 
 function isEmptyBody(grid, point) {
     const bodyId = grid.get(point)
-    return bodyId === EMPTY_LANDBODY || bodyId === EMPTY_WATERBODY
+    return bodyId === LAND || bodyId === WATER
 }
 
 
 function isEmptyWaterBody(grid, point) {
-    return grid.get(point) === EMPTY_WATERBODY
+    return grid.get(point) === WATER
 }
 
 

@@ -21,12 +21,12 @@ export class SurfaceLayer {
 
     constructor(context) {
         const {
-            bodyTypeMap, bodyAreaMap, waterArea, grid
+            bodyTypeMap, bodyAreaMap, waterArea, landWaterGrid
         } = buildSurfaceGrid(context)
         this.#bodyTypeMap = bodyTypeMap
         this.#bodyAreaMap = bodyAreaMap
         this.#waterArea = waterArea
-        this.#grid = grid
+        this.#grid = landWaterGrid
     }
 
     get(point) {
