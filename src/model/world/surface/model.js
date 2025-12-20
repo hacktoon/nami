@@ -62,7 +62,7 @@ function detectSurfaceAreas(context, grid) {
     grid.forEach(originPoint => {
         if (! isEmptyBody(grid, originPoint)) return
         // detect empty type before filling
-        const emptyWaterBody = isEmptyWaterBody(grid, originPoint)
+        const emptyWaterBody = grid.get(originPoint) === WATER
         const area = fillBodyArea(context, grid, originPoint)
         const surfaceAreaRatio = (area * 100) / grid.area
         // set continent as default type
@@ -116,17 +116,12 @@ function isEmptyBody(grid, point) {
 }
 
 
-function isEmptyWaterBody(grid, point) {
-    return grid.get(point) === WATER
-}
-
-
 function fillBodyArea(context, grid, originPoint) {
     // discover all points of same type ( water | land )
     let area = 0
-    const isOriginWater = isEmptyWaterBody(grid, originPoint)
+    const isOriginWater = grid.get(originPoint) === WATER
     const canFill = targetPoint => {
-        const isTargetWater = isEmptyWaterBody(grid, targetPoint)
+        const isTargetWater = grid.get(targetPoint) === WATER
         const isSameMaterial = isOriginWater === isTargetWater
         return isEmptyBody(grid, targetPoint) && isSameMaterial
     }
