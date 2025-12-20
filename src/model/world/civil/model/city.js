@@ -6,11 +6,11 @@ import { PointSet } from '/src/lib/geometry/point/set'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
 import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
+import { PointArraySet } from '/src/lib/geometry/point/set'
 
-
-const CITY_CHANCE = .5
 
 // fill constants
+const CITY_CHANCE = .2
 const CHANCE = .1  // chance of fill growing
 const GROWTH = 2  // make fill grow bigger than others
 const EMPTY = null
@@ -20,37 +20,36 @@ export function buildCityPoints(context) {
     const {rect, world} = context
     // eliminate city points too close of already chosen
     const cityPoints = new PointSet(rect)
-    const candidates = []
-    // create city id grid
+    const candidates = {
+        primary: new PointArraySet(rect),
+        secondary: new PointArraySet(rect),
+        terciary: new PointArraySet(rect),
+        quaternary: new PointArraySet(rect),
+    }
     Grid.fromRect(rect, point => {
         if (world.surface.isWater(point)) return
-        const isIsland = world.surface.isIsland(point)
+        // add land points as candidates to check
+        // const isTempHabitable = world.biome.is(point)
         const isRiver = world.river.has(point)
         const river = world.river.get(point)
-        let priority = 3
         if (world.surface.isBorder(point)) {
-            if (isRiver && river.length > 1) {
-                priority = 0
-                candidates.push([point, priority])
-                cityPoints.add(point)
+            if (isRiver) {
+                if (river.length > 1) {
+                    candidates.primary.add(point)
+                    cityPoints.add(point)
+                }
+                else candidates.secondary.add(point)
+                // if (Random.chance(CITY_CHANCE)) cityPoints.add(point)
             }
-            if (isRiver && (isIsland || river.length == 1)) {
-                priority = 1
-                candidates.push([point, priority])
-                cityPoints.add(point)
-            }
+            // TODO: isSeaBorder()
         } else {
             if (isRiver) {
-                priority = 2
+                candidates.secondary.add(point)
+                // if (Random.chance(CITY_CHANCE)) cityPoints.add(point)
+            } else {
+                candidates.terciary.add(point)
             }
         }
-
-        // avoid cities which are too close to each other
-        // const isEvenFilter = (point[0] + point[1]) % 2 == 0
-        // const isCity = isEvenFilter && (isRiver || isBorder)
-        // if (isCity && Random.chance(CITY_CHANCE)) {
-        //     cityPoints.add(point)
-        // }
     })
     return cityPoints
 }

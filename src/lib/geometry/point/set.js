@@ -58,7 +58,7 @@ export class PointArraySet {
         const x = this.#xIndexMap.random()
         // get yIndexMap in x axis
         const y = this.#xValueMap.get(x).random()
-        return [Number(x), Number(y)]
+        return [x, y]
     }
 
     forEach(callback) {
