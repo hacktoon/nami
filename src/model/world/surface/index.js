@@ -68,7 +68,7 @@ export class SurfaceLayer {
     }
 
     isBorder(point) {
-        return this.#model.border.has(point)
+        return this.#model.border.get(point) > 0
     }
 
     draw(props, params) {
