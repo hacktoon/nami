@@ -1,4 +1,4 @@
-import { buildSurfaceGrid } from './model'
+import { buildSurfaceModel } from './model'
 import {
     Surface,
     LakeSurface,
@@ -11,28 +11,15 @@ import {
 
 // Major world bodies with surface area and type
 export class SurfaceLayer {
-    // stores surface body id for each point
-    #grid
-    // maps a body id to its surface type
-    #bodyTypeMap
-    // maps a body id to its surface area
-    #bodyAreaMap
-    #waterArea
+    #model
 
     constructor(context) {
-        const {
-            bodyTypeMap, bodyAreaMap, waterArea, landWaterGrid
-        } = buildSurfaceGrid(context)
-        this.#bodyTypeMap = bodyTypeMap
-        this.#bodyAreaMap = bodyAreaMap
-        this.#waterArea = waterArea
-        this.#grid = landWaterGrid
+        this.#model = buildSurfaceModel(context)
     }
 
     get(point) {
-        // negative bodyId's are surface borders
-        const bodyId = Math.abs(this.#grid.get(point))
-        return Surface.parse(this.#bodyTypeMap.get(bodyId))
+        const bodyId = this.#model.body.get(point)
+        return Surface.parse(this.#model.bodyType.get(bodyId))
     }
 
     getText(point) {
@@ -43,12 +30,12 @@ export class SurfaceLayer {
     }
 
     getArea(point) {
-        const bodyId = Math.abs(this.#grid.get(point))
-        return this.#bodyAreaMap.get(bodyId)
+        const bodyId = this.#model.body.get(point)
+        return this.#model.bodyArea.get(bodyId)
     }
 
     getWaterArea() {
-        const area = (this.#waterArea * 100) / this.#grid.area
+        const area = (this.#model.waterArea * 100) / this.#model.body.area
         return area.toFixed(1)
     }
 
@@ -81,8 +68,7 @@ export class SurfaceLayer {
     }
 
     isBorder(point) {
-        // negative bodyId's are surface borders
-        return this.#grid.get(point) < 0
+        return this.#model.border.has(point)
     }
 
     draw(props, params) {
