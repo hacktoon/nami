@@ -25,8 +25,11 @@ export class SurfaceLayer {
     getText(point) {
         const surface = this.get(point)
         const surfaceArea = this.getArea(point)
-        const type = surface.isWater ? 'W' : 'L'
-        return `Surface(${surface.name}(${type}), area=${surfaceArea})`
+        const attrs = [
+            `${surface.name}`,
+            `area=${surfaceArea}`,
+        ].join(' | ')
+        return `Surface(${attrs})`
     }
 
     getArea(point) {
