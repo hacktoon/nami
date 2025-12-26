@@ -184,7 +184,7 @@ class LandBasinFill extends ConcurrentFill {
         const target = world.surface.get(fillPoint)
         const parent = world.surface.get(parentPoint)
         // avoid fill if different types
-        return target.isWater == parent.isWater
+        return target.type.isWater == parent.type.isWater
     }
 
     _fillBasin(fill, fillPoint, parentPoint) {

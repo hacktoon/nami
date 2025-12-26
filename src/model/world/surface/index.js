@@ -19,16 +19,21 @@ export class SurfaceLayer {
 
     get(point) {
         const bodyId = this.#model.body.get(point)
-        return Surface.parse(this.#model.bodyType.get(bodyId))
+        const borderId = this.#model.borderType.get(point)
+        return {
+            type: Surface.parse(this.#model.bodyType.get(bodyId)),
+            borderType: Surface.parse(borderId),
+        }
     }
 
     getText(point) {
         const surface = this.get(point)
         const surfaceArea = this.getArea(point)
         const attrs = [
-            `${surface.name}`,
+            `${surface.type.name}`,
             `area=${surfaceArea}`,
-        ].join(' | ')
+            `border=${surface.borderType.name}`,
+        ].join(', ')
         return `Surface(${attrs})`
     }
 
@@ -43,40 +48,41 @@ export class SurfaceLayer {
     }
 
     isWater(point) {
-        return this.get(point).isWater
-    }
-
-    isLake(point) {
-        return this.get(point).id == LakeSurface.id
-    }
-
-    isOcean(point) {
-        return this.get(point).id == OceanSurface.id
-    }
-
-    isSea(point) {
-        return this.get(point).id == SeaSurface.id
-    }
-
-    isIsland(point) {
-        return this.get(point).id == IslandSurface.id
-    }
-
-    isContinent(point) {
-        return this.get(point).id == ContinentSurface.id
+        return this.get(point).type.isWater
     }
 
     isLand(point) {
-        return ! this.get(point).isWater
+        return ! this.isWater(point)
     }
 
     isBorder(point) {
-        return this.#model.border.get(point) > 0
+        return this.#model.borderType.get(point) != Surface.id
+    }
+
+    isLake(point) {
+        return this.get(point).type.id == LakeSurface.id
+    }
+
+    isOcean(point) {
+        return this.get(point).type.id == OceanSurface.id
+    }
+
+    isSea(point) {
+        return this.get(point).type.id == SeaSurface.id
+    }
+
+    isIsland(point) {
+        return this.get(point).type.id == IslandSurface.id
+    }
+
+    isContinent(point) {
+        return this.get(point).type.id == ContinentSurface.id
     }
 
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
-        let color = this.get(tilePoint).color
+        const surface = this.get(tilePoint)
+        let color = surface.type.color
         if (this.isBorder(tilePoint)) {
             color = color.darken(20)
         }

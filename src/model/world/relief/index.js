@@ -30,7 +30,8 @@ export class ReliefLayer {
     #detectWaterType(world, point) {
         const outlineNoise = world.noise.get4DOutline(this.rect, point)
         const grainedNoise = world.noise.get4DGrained(this.rect, point)
-        if (world.surface.get(point).id == SeaSurface.id) {
+        const surface = world.surface.get(point)
+        if (surface.type.id == SeaSurface.id) {
             if (outlineNoise > OCEAN_RATIO) return Relief.OCEAN
             return Relief.PLATFORM
         }
