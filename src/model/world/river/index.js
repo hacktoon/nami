@@ -79,8 +79,13 @@ export class RiverLayer {
     }
 
     draw(props, params) {
-        const {canvas, canvasPoint, tileSize, tilePoint, world} = props
+        const {world} = props
         world.surface.draw(props, params)
+        this.drawOnlyRivers(props, params)
+    }
+
+    drawOnlyRivers(props, params) {
+        const {canvas, canvasPoint, tileSize, tilePoint, world} = props
         if (! params.get('showRivers') || ! this.has(tilePoint)) {
             return
         }

@@ -1,5 +1,4 @@
 import { Point } from '/src/lib/geometry/point'
-import { Color } from '/src/lib/color'
 import { buildRiverGrid } from './model'
 
 
