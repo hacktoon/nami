@@ -20,7 +20,7 @@ export class BasinChunk {
     }
 
     draw(props, params) {
-        const {canvas, canvasPoint, tilePoint, tileSize, world, chunk} = props
+        const {canvas, canvasPoint, tileSize, chunk} = props
         const chunkTileSize = tileSize / chunk.size
         if (tileSize < 10) return
         for (let x=0; x < chunk.size; x++) {

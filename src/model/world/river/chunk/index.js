@@ -1,5 +1,6 @@
 import { Point } from '/src/lib/geometry/point'
 import { Color } from '/src/lib/color'
+
 import { buildRiverGrid } from './model'
 
 
@@ -24,7 +25,8 @@ export class RiverChunk {
         const {canvas, canvasPoint, tilePoint, tileSize, world, chunk} = props
         const chunkTileSize = tileSize / chunk.size
         const basin = world.basin.get(tilePoint)
-        if (! params.get('showRivers') || tileSize < 10) return
+        if (! params.get('showRivers') || tileSize < 10)
+            return
         for (let x=0; x < chunk.size; x++) {
             const xSize = x * chunkTileSize
             for (let y=0; y < chunk.size; y++) {

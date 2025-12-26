@@ -20,7 +20,7 @@ const MINIMUN_OCEAN_RATIO = 2
 const MINIMUN_SEA_RATIO = .05
 const MINIMUN_CONTINENT_RATIO = 1
 
-export const EMPTY = null
+const EMPTY = null
 
 
 export function buildSurfaceModel(context) {
