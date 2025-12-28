@@ -64,7 +64,7 @@ function buildRivers(context) {
     const {world, riverSources, riverLengths, riverNames} = context
     // create a list of pairs: (point, river length)
     riverSources.map(point => {
-        const distance = world.basin.get(point).distance
+        const {distance} = world.basin.get(point)
         return [point, distance]
     })
     // in ascendent order to get longest rivers first
@@ -72,7 +72,7 @@ function buildRivers(context) {
     .sort((a, b) => a[1] - b[1])
     .forEach(([point, distance]) => {
         buildRiverPath(context, riverId, point)
-        riverLengths.set(riverId, distance + 1)  // basin distance starts from 0
+        riverLengths.set(riverId, distance)
         riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
         riverId++
     })

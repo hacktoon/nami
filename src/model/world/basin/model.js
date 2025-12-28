@@ -73,8 +73,8 @@ export function buildJointGrid({rect, chunkSize}) {
 
 
 export function buildDistanceGrid({rect}) {
-    // Initial value 0 is used to determine river stretch
-    return Grid.fromRect(rect, () => 0)
+    // Initial value 1 is used to determine river stretch
+    return Grid.fromRect(rect, () => 1)
 }
 
 
