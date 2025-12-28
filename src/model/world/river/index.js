@@ -1,63 +1,41 @@
-import { PointMap } from '/src/lib/geometry/point/map'
 import { Point } from '/src/lib/geometry/point'
-import { Random } from '/src/lib/random'
 
-import { buildRiverModel, buildMidpointGrid } from './model'
+import { buildRiverModel } from './model'
 import { RiverStretch } from './data'
 
 
 export class RiverLayer {
     #chunkRect
-    // maps an id to a name
-    #riverNames = new Map()
-    // map a point to an id
-    #riverGrid
-    // grid of river midpoints
-    #midpointGrid
-    // map a river point to its river type
-    #stretchMap
-    // map a river id to its length
-    #riverLengths
+    #model
 
     constructor(context) {
-        const {rect, world, chunkRect} = context
-        this.#chunkRect = chunkRect
-        this.world = world
-        this.#midpointGrid = buildMidpointGrid(context)
-        this.#stretchMap = new PointMap(rect)
-        this.#riverLengths = new Map()
-        const ctx = {
-            ...context,
-            riverLengths: this.#riverLengths,
-            riverNames: this.#riverNames,
-            stretchMap: this.#stretchMap
-        }
-        this.#riverGrid = buildRiverModel(ctx)
+        this.#chunkRect = context.chunkRect
+        this.#model = buildRiverModel(context)
     }
 
     get count() {
-        return this.#riverNames.size
+        return this.#model.riverNames.size
     }
 
     has(point) {
-        return this.#riverGrid.get(point) !== null
+        return this.#model.riverGrid.get(point) !== null
     }
 
     get(point) {
-        const id = this.#riverGrid.get(point)
-        const stretchId = this.#stretchMap.get(point)
-        const midpointIndex = this.#midpointGrid.get(point)
+        const id = this.#model.riverGrid.get(point)
+        const stretchId = this.#model.stretchMap.get(point)
+        const midpointIndex = this.#model.midpointGrid.get(point)
         return {
             id,
-            length: this.#riverLengths.get(id),
-            name: this.#riverNames.get(id),
+            length: this.#model.riverLengths.get(id),
+            name: this.#model.riverNames.get(id),
             midpoint: this.#chunkRect.indexToPoint(midpointIndex),
             stretch: RiverStretch.get(stretchId),
         }
     }
 
     is(point, type) {
-        if (this.#riverGrid.get(point) == null) {
+        if (this.#model.riverGrid.get(point) == null) {
             return false
         }
         const river = this.get(point)
@@ -65,7 +43,7 @@ export class RiverLayer {
     }
 
     getText(point) {
-        if (this.#riverGrid.get(point) == null)
+        if (this.#model.riverGrid.get(point) == null)
             return ''
         const river = this.get(point)
         const attrs = [

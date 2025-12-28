@@ -3,6 +3,7 @@ import { PointSet } from '/src/lib/geometry/point/set'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 import { HYDRO_NAMES } from '/src/lib/names'
+import { PointMap } from '/src/lib/geometry/point/map'
 
 import { RiverStretch } from './data'
 
@@ -19,6 +20,10 @@ const MIDPOINT_RATE = .6  // 60% around center point
 export function buildRiverModel(context) {
     const {rect, world} = context
     const riverSources = []
+    const midpointGrid = buildMidpointGrid(context)
+    const stretchMap = new PointMap(rect)
+    const riverLengths = new Map()
+    const riverNames = new Map()
     const estuaries = new PointSet(rect)
     const riverGrid = Grid.fromRect(rect, point => {
         const basin = world.basin.get(point)
@@ -28,9 +33,17 @@ export function buildRiverModel(context) {
         }
         return null
     })
-    buildRivers({...context, riverGrid, riverSources, estuaries})
-    // buildWaterPaths(ctx)
-    return riverGrid
+    buildRivers({
+        ...context, riverGrid, riverSources, estuaries,
+        riverLengths, riverNames, stretchMap
+    })
+    return {
+        riverGrid,
+        midpointGrid,
+        riverLengths,
+        riverNames,
+        stretchMap
+    }
 }
 
 
