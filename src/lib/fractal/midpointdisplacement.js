@@ -1,8 +1,9 @@
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
+import { clamp } from '/src/lib/function'
 
 
-export function midpointDisplacement(source, target, variance, callback) {
+export function midpointDisplacement(rect, source, target, variance, callback) {
     function recurse(p1, p2, variance) {
         if (Point.distance(p1, p2) < 2) {
             callback(p1)
@@ -30,8 +31,8 @@ export function midpointDisplacement(source, target, variance, callback) {
         const [px, py] = [nx / size, ny / size]
         const offset = Random.floatRange(-variance, variance)
         return [
-            Math.floor(mx + px * offset),
-            Math.floor(my + py * offset)
+            clamp(Math.floor(mx + px * offset), 0, rect.width - 1),
+            clamp(Math.floor(my + py * offset), 0, rect.height - 1)
         ]
     }
 

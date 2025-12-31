@@ -1,6 +1,6 @@
 import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { PointSet } from '/src/lib/geometry/point/set'
+import { PointMap } from '/src/lib/geometry/point/map'
 import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
 import { Point } from '/src/lib/geometry/point'
@@ -15,22 +15,22 @@ import {
 } from '../type'
 
 
-const MEANDER = 3
+const MEANDER = 2
 const EMPTY = null
 
 
 export function buildModel(context) {
-    const flowPoints = buildFlowPoints(context)
-    const levelGrid = buildLevelGrid(context, flowPoints)
+    const pointflowMap = buildPointFlowMap(context)
+    const levelGrid = buildLevelGrid(context, pointflowMap)
     const typeGrid = buildTypeGrid(context, levelGrid)
-    return {typeGrid, flowPoints}
+    return {typeGrid, pointflowMap}
 }
 
 
-function buildFlowPoints(context) {
+function buildPointFlowMap(context) {
     // reads the direction bitmask data and create points for chunk grid
     const {world, worldPoint, chunk, chunkRect} = context
-    const points = new PointSet(chunkRect)
+    const pointFlowMap = new PointMap(chunkRect)
     const basin = world.basin.get(worldPoint)
     const source = basin.midpoint
     const midSize = Math.floor(chunk.size / 2)
@@ -45,45 +45,41 @@ function buildFlowPoints(context) {
         })
         const distance = Math.floor(Point.distance(source, target))
         const pointsTooClose = distance < midSize
-        const distortion = pointsTooClose ? 2 : MEANDER
-        midpointDisplacement(source, target, distortion, point => {
-            const [x, y] = point
-            points.add([
-                clamp(x, 0, chunk.size - 1),
-                clamp(y, 0, chunk.size - 1),
-            ])
+        const distortion = pointsTooClose ? 0 : MEANDER
+        midpointDisplacement(chunkRect, source, target, distortion, point => {
+            pointFlowMap.set(point, direction.id)
         })
     }
-    return points
+    return pointFlowMap
 }
 
 
-function buildLevelGrid(context, flowPoints) {
+function buildLevelGrid(context, pointFlowMap) {
     // reads the path points in basin to help create basin relief
-    const {world, worldPoint, chunk, chunkRect} = context
+    const {world, worldPoint, chunkRect} = context
     const fillMap = new Map()
     let id = 0
     const grid = Grid.fromRect(chunkRect, chunkPoint => {
-        if (flowPoints.has(chunkPoint)) {
-            fillMap.set(id, {id, origin: chunkPoint})
+        if (pointFlowMap.has(chunkPoint)) {
+            // start level grid from bottom valley (deep erosion flows)
+            fillMap.set(id, {origin: chunkPoint})
         } else {
             // On diffuse basins, there's no flow. Start fill from midpoint instead
             const basin = world.basin.get(worldPoint)
-            fillMap.set(id, {id, origin: basin.midpoint})
+            fillMap.set(id, {origin: basin.midpoint})
         }
         id++
         return EMPTY
     })
-    const fillContext = {...context, grid}
+    const fillContext = {...context, grid, pointFlowMap}
     new BasinLevelFloodFill(fillMap, fillContext).complete()
-
     return grid
 }
 
 
 function buildTypeGrid(context, levelGrid) {
     // reads the wire data and create points for chunk grid
-    const {worldPoint, chunkRect} = context
+    const {chunkRect} = context
     return Grid.fromRect(chunkRect, chunkPoint => {
         const level = levelGrid.get(chunkPoint)
         const type = buildType(context, chunkPoint, level)
@@ -112,13 +108,8 @@ function buildType(context, point, level) {
 
 
 class BasinLevelFloodFill extends ConcurrentFill {
-    getGrowth() {
-        return 2
-    }
-
-    getChance() {
-        return .1
-    }
+    getGrowth() { return 2 }
+    getChance() { return .1 }
 
     getNeighbors(fill, parentPoint) {
         const rect = fill.context.chunkRect
