@@ -1,6 +1,7 @@
 import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Point } from '/src/lib/geometry/point'
+import { PointSet } from '/src/lib/geometry/point/set'
 import { Rect } from '/src/lib/geometry/rect'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
@@ -17,15 +18,29 @@ const REGION_CHANCE = .1
 
 
 export class SurfaceChunk {
-    #grid
+    #model
 
     constructor(context) {
         this.size = context.chunkSize
-        this.#grid = buildModel(context)
+        this.#model = buildModel(context)
+    }
+
+    get origins() {
+        return this.#model.origins
+    }
+
+    get(chunkPoint) {
+        return {
+            region: this.#model.regionGrid.get(chunkPoint)
+        }
     }
 
     isLand(chunkPoint) {
-        return this.#grid.get(chunkPoint)
+        return this.#model.typeGrid.get(chunkPoint)
+    }
+
+    isRegionOrigin(chunkPoint) {
+        return this.#model.origins.has(chunkPoint)
     }
 
     draw(props, params) {
@@ -39,6 +54,7 @@ export class SurfaceChunk {
                 const ySize = y * size
                 const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 let color = this.isLand(chunkPoint) ? '#71b13e' : '#2f367d'
+                // color = this.#model.origins.has(chunkPoint) ? '#548928' : color
                 canvas.rect(chunkCanvasPoint, size, color)
             }
         }
@@ -52,8 +68,9 @@ function buildModel(context) {
     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
     const noiseRect = Rect.multiply(rect, chunkRect.width)
     const isLand = world.surface.isLand(worldPoint)
-    const {regionGrid, borderRegions} = buildChunkRegionModel(context)
-    const grid = Grid.fromRect(chunkRect, chunkPoint => {
+    const {regionGrid, origins, borderRegions} = buildChunkRegionModel(context)
+    // type: water | land according to noise
+    const typeGrid = Grid.fromRect(chunkRect, chunkPoint => {
         const regionId = regionGrid.get(chunkPoint)
         const noisePoint = Point.plus(relativePoint, chunkPoint)
         if (borderRegions.has(regionId)) {
@@ -63,7 +80,11 @@ function buildModel(context) {
             return isLand ? REGION_LAND : REGION_WATER
         }
     })
-    return grid
+    return {
+        typeGrid,
+        regionGrid,
+        origins: new PointSet(chunkRect, origins)
+    }
 }
 
 
@@ -79,7 +100,7 @@ function buildChunkRegionModel(context) {
     const fillMap = new Map(origins.map((origin, id) => [id, {origin}]))
     const fillContext = {...context, regionGrid, borderRegions}
     new RegionFloodFill(fillMap, fillContext).complete()
-    return {regionGrid, borderRegions}
+    return {regionGrid, origins, borderRegions}
 }
 
 

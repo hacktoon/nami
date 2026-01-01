@@ -2,8 +2,8 @@ import { Point } from '/src/lib/geometry/point'
 import { Color } from '/src/lib/color'
 import { Direction } from '/src/lib/direction'
 
-import { buildModel } from './model'
 import { Basin } from '../type'
+import { buildModel } from './model'
 
 
 export class BasinChunk {
@@ -35,10 +35,12 @@ export class BasinChunk {
                 const basin = world.basin.get(tilePoint)
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const {type} = this.get(chunkPoint)
-                canvas.rect(chunkCanvasPoint, chunkTileSize, type.color.toHex())
-                if (Point.equals(basin.midpoint, chunkPoint)) {
-                    canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
-                }
+                let color = type.color
+                color = chunk.surface.isRegionOrigin(chunkPoint) ? color.darken(70) : color
+                canvas.rect(chunkCanvasPoint, chunkTileSize, color.toHex())
+                // if (Point.equals(basin.midpoint, chunkPoint)) {
+                //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
+                // }
             }
         }
     }

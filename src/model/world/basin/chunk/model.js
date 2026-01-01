@@ -1,10 +1,9 @@
-import { midpointDisplacement, generateRandomPath } from '/src/lib/fractal/midpointdisplacement'
+import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointMap } from '/src/lib/geometry/point/map'
 import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
 import { Point } from '/src/lib/geometry/point'
-import { clamp } from '/src/lib/function'
 
 import {
     OceanBasin,
@@ -23,9 +22,49 @@ export function buildModel(context) {
     const pointflowMap = buildPointFlowMap(context)
     const levelGrid = buildLevelGrid(context, pointflowMap)
     const typeGrid = buildTypeGrid(context, levelGrid)
+    const flowEdgePoints = buildFlowEdgePoints(context)
     return {typeGrid, pointflowMap}
 }
 
+function buildFlowPoints(context) {
+    // reads the direction bitmask data and create points for chunk grid
+    const {world, worldPoint, chunk, chunkRect} = context
+    const pointFlowMap = new PointMap(chunkRect)
+    return pointFlowMap
+}
+
+function buildFlowEdgePoints(context) {
+    const {world, worldPoint, chunk} = context
+    const basin = world.basin.get(worldPoint)
+    const pairs = []
+
+    function buildChunkEdgePoint(direction) {
+        const parentPoint = Point.atDirection(worldPoint, direction)
+        const sideBasin = world.basin.get(parentPoint)
+        const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
+        return direction.axis.map(coord => {
+            if (coord < 0) return 0
+            if (coord > 0) return chunk.size - 1
+            return avgJoint
+        })
+    }
+    const outflowEdge = buildChunkEdgePoint(basin.erosion)
+    for(const direction of basin.directionBitmap) {
+        if (basin.isDivide) {
+            pairs.push([basin.midpoint, outflowEdge])
+            // if(worldPoint[0] == 27 && worldPoint[1] == 29) {
+            //     console.log(`${basin.midpoint}, ${outflowEdge} ${direction.name}`);
+            // }
+        } else if (direction.id != basin.erosion.id) {
+            const source = buildChunkEdgePoint(direction)
+            pairs.push([source, outflowEdge])
+            // if(worldPoint[0] == 29 && worldPoint[1] == 29) {
+            //     console.log(`${source}, ${outflowEdge} ${direction.name}`);
+            // }
+        }
+    }
+    return pairs
+}
 
 function buildPointFlowMap(context) {
     // reads the direction bitmask data and create points for chunk grid
