@@ -1,4 +1,4 @@
-import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
+import { midpointDisplacement, generateRandomPath } from '/src/lib/fractal/midpointdisplacement'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointMap } from '/src/lib/geometry/point/map'
 import { Grid } from '/src/lib/grid'

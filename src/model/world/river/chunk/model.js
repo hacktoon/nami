@@ -11,8 +11,24 @@ export function buildRiverGrid(context) {
     if (! (world.river.has(worldPoint) || world.surface.isWater(worldPoint))) {
         return points
     }
+    // const river = world.river.get(worldPoint)
+    const basin = world.basin.get(worldPoint)
+
+    // create set of directions on this river
+    const riverDirections = new Set()
+    for(let direction of basin.directionBitmap) {
+        const sidePoint = Point.atDirection(worldPoint, direction)
+        const isSideWater = world.surface.isWater(sidePoint)
+        if (isSideWater || world.river.has(sidePoint))
+            riverDirections.add(direction.id)
+    }
+
     Grid.fromRect(chunkRect, chunkPoint => {
         const basinChunk = chunk.basin.get(chunkPoint)
+        const sameDirection = basinChunk.direction
+                            ? riverDirections.has(basinChunk.direction.id)
+                            : false
+        const isMidpoint = Point.equals(chunkPoint, basin.midpoint)
         if (basinChunk.type.allowsRiver) {
             points.add(chunkPoint)
         }
