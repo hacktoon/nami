@@ -100,6 +100,10 @@ export class PointSet {
         this.#indexSet.delete(index)
     }
 
+    copy() {
+        return new PointSet(this.points)
+    }
+
     has(point) {
         const index = this.rect.pointToIndex(point)
         return this.#indexSet.has(index)

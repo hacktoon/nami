@@ -36,7 +36,9 @@ export class BasinChunk {
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const {type} = this.get(chunkPoint)
                 let color = type.color
-                color = chunk.surface.isRegionOrigin(chunkPoint) ? color.darken(70) : color
+                const isEdge = chunk.rect.isEdge(chunkPoint)
+                const isOrigin = chunk.surface.isRegionOrigin(chunkPoint)
+                color = isOrigin && !isEdge ? color.darken(110) : color
                 canvas.rect(chunkCanvasPoint, chunkTileSize, color.toHex())
                 // if (Point.equals(basin.midpoint, chunkPoint)) {
                 //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())

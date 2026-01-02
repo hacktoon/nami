@@ -1,6 +1,7 @@
 import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointMap } from '/src/lib/geometry/point/map'
+import { PointSet } from '/src/lib/geometry/point/set'
 import { Grid } from '/src/lib/grid'
 import { Rect } from '/src/lib/geometry/rect'
 import { Point } from '/src/lib/geometry/point'
@@ -22,23 +23,45 @@ export function buildModel(context) {
     const pointflowMap = buildPointFlowMap(context)
     const levelGrid = buildLevelGrid(context, pointflowMap)
     const typeGrid = buildTypeGrid(context, levelGrid)
-    const flowEdgePoints = buildFlowEdgePoints(context)
+    const flowPoints = buildFlowPoints(context)
     return {typeGrid, pointflowMap}
 }
 
+////////////////////////////////////////////////////////////////
 function buildFlowPoints(context) {
     // reads the direction bitmask data and create points for chunk grid
-    const {world, worldPoint, chunk, chunkRect} = context
-    const pointFlowMap = new PointMap(chunkRect)
-    return pointFlowMap
+    const {chunkRect} = context
+    for (const [source, target] of buildFlowEdgePoints(context)) {
+        buildPath(context, source, target)
+    }
+    return
 }
 
+function buildPath(context, pointFlowMap, source, target) {
+    const {world, worldPoint, chunk, chunkRect} = context
+    const queue = new PointSet(chunkRect, [target])
+    chunk.surface.origins.forEach((point,) => {
+        if (! chunkRect.isEdge(point)) {  // ignore edge points
+            queue.add(point)
+        }
+    })
+    const fullDistance = Point.distance(source, target)
+    let currentPoint = source
+    while(Point.equals(currentPoint, target)) {
+        let low
+
+        const stepDistance = Point.distance(currentPoint, target)
+        queue.has()
+    }
+}
+
+
 function buildFlowEdgePoints(context) {
+    // get pairs of (start, end) points for drawing flow path
     const {world, worldPoint, chunk} = context
     const basin = world.basin.get(worldPoint)
-    const pairs = []
-
     function buildChunkEdgePoint(direction) {
+        // helper to calc edge point on chunk relative to direction
         const parentPoint = Point.atDirection(worldPoint, direction)
         const sideBasin = world.basin.get(parentPoint)
         const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
@@ -48,6 +71,7 @@ function buildFlowEdgePoints(context) {
             return avgJoint
         })
     }
+    const pairs = []
     const outflowEdge = buildChunkEdgePoint(basin.erosion)
     for(const direction of basin.directionBitmap) {
         if (basin.isDivide) {
@@ -66,6 +90,7 @@ function buildFlowEdgePoints(context) {
     return pairs
 }
 
+// TODO: remove this
 function buildPointFlowMap(context) {
     // reads the direction bitmask data and create points for chunk grid
     const {world, worldPoint, chunk, chunkRect} = context
@@ -93,6 +118,7 @@ function buildPointFlowMap(context) {
 }
 
 
+////////////////////////////////////////////////////////////////
 function buildLevelGrid(context, pointFlowMap) {
     // reads the path points in basin to help create basin relief
     const {world, worldPoint, chunkRect} = context
@@ -116,6 +142,7 @@ function buildLevelGrid(context, pointFlowMap) {
 }
 
 
+////////////////////////////////////////////////////////////////
 function buildTypeGrid(context, levelGrid) {
     // reads the wire data and create points for chunk grid
     const {chunkRect} = context
@@ -146,6 +173,7 @@ function buildType(context, point, level) {
 }
 
 
+////////////////////////////////////////////////////////////////
 class BasinLevelFloodFill extends ConcurrentFill {
     getGrowth() { return 2 }
     getChance() { return .1 }

@@ -101,7 +101,7 @@ class CanvasContext {
         const cSize = Math.round(size - lineWidth)
         this.#ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
         this.#ctx.lineWidth = lineWidth
-        this.#ctx.strokeRect(x-half, y-half, cSize+half, cSize+half)
+        this.#ctx.strokeRect(x-half, y-half, cSize+lineWidth*2, cSize+lineWidth*2)
     }
 }
 
