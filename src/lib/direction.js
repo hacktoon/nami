@@ -1,25 +1,47 @@
 import { Random } from '/src/lib/random'
 
+// bitmap code
 //  128     1      2
 //     NW   N   NE
 //  64 W    .    E 4
 //     SW   S   SE
 //   32     16     8
 
+const _CENTER    = 0
+const _NORTH     = 1
+const _NORTHEAST = 2
+const _EAST      = 3
+const _SOUTHEAST = 4
+const _SOUTH     = 5
+const _SOUTHWEST = 6
+const _WEST      = 7
+const _NORTHWEST = 8
+
+
 // these id counts starts from north, clockwise
 const DIRECTIONS = {
-    CENTER:    { id: 0, code: 0,   name: 'C',  symbol: 'o',      axis: [ 0,  0], components: []},
-    NORTH:     { id: 1, code: 1,   name: 'N',  symbol: '\u2191', axis: [ 0, -1], components: [1]},
-    NORTHEAST: { id: 2, code: 2,   name: 'NE', symbol: '\u2197', axis: [ 1, -1], components: [1, 3]},
-    EAST:      { id: 3, code: 4,   name: 'E',  symbol: '\u2192', axis: [ 1,  0], components: [3]},
-    SOUTHEAST: { id: 4, code: 8,   name: 'SE', symbol: '\u2198', axis: [ 1,  1], components: [5, 3]},
-    SOUTH:     { id: 5, code: 16,  name: 'S',  symbol: '\u2193', axis: [ 0,  1], components: [5]},
-    SOUTHWEST: { id: 6, code: 32,  name: 'SW', symbol: '\u2199', axis: [-1,  1], components: [5, 7]},
-    WEST:      { id: 7, code: 64,  name: 'W',  symbol: '\u2190', axis: [-1,  0], components: [7]},
-    NORTHWEST: { id: 8, code: 128, name: 'NW', symbol: '\u2196', axis: [-1, -1], components: [1, 7]},
+    CENTER:    { id: _CENTER,    code: 0,   name: 'C',  symbol: 'o',      axis: [ 0,  0]},
+    NORTH:     { id: _NORTH,     code: 1,   name: 'N',  symbol: '\u2191', axis: [ 0, -1]},
+    NORTHEAST: { id: _NORTHEAST, code: 2,   name: 'NE', symbol: '\u2197', axis: [ 1, -1]},
+    EAST:      { id: _EAST,      code: 4,   name: 'E',  symbol: '\u2192', axis: [ 1,  0]},
+    SOUTHEAST: { id: _SOUTHEAST, code: 8,   name: 'SE', symbol: '\u2198', axis: [ 1,  1]},
+    SOUTH:     { id: _SOUTH,     code: 16,  name: 'S',  symbol: '\u2193', axis: [ 0,  1]},
+    SOUTHWEST: { id: _SOUTHWEST, code: 32,  name: 'SW', symbol: '\u2199', axis: [-1,  1]},
+    WEST:      { id: _WEST,      code: 64,  name: 'W',  symbol: '\u2190', axis: [-1,  0]},
+    NORTHWEST: { id: _NORTHWEST, code: 128, name: 'NW', symbol: '\u2196', axis: [-1, -1]},
 }
 
 
+// map a diagonal X to its neighbors and its diagonal direction back to X
+const DIAGONAL_NEIGHBORS = new Map([
+    [_NORTHEAST, [{_EAST: DIRECTIONS.NORTHWEST}, {_NORTH: DIRECTIONS.SOUTHEAST}]],
+    [_NORTHWEST, [{_WEST: DIRECTIONS.NORTHEAST}, {_NORTH: DIRECTIONS.SOUTHWEST}]],
+    [_SOUTHEAST, [{_EAST: DIRECTIONS.SOUTHWEST}, {_SOUTH: DIRECTIONS.NORTHEAST}]],
+    [_SOUTHWEST, [{_WEST: DIRECTIONS.SOUTHEAST}, {_SOUTH: DIRECTIONS.NORTHWEST}]],
+])
+
+
+// map an axis pair to its direction
 const AXIS_MAP = new Map([
     [-1, new Map([
         [-1, DIRECTIONS.NORTHWEST],
@@ -101,7 +123,7 @@ export class Direction {
         ].includes(direction.id)
     }
 
-    static getComponents(direction) {
-        return direction.components.map(dir => Direction.fromId(dir))
+    static getDiagonalNeighbors() {
+        return DIAGONAL_NEIGHBORS
     }
 }

@@ -81,6 +81,10 @@ export class Point {
         return getSides(DIAGONAL_NEIGHBORHOOD, center, callback)
     }
 
+    static directionDiagonals(center, callback=()=>{}) {
+        return getDirectionSides(DIAGONAL_NEIGHBORHOOD, center, callback)
+    }
+
     static around(center, callback=()=>{}) {
         return getSides(AROUND_NEIGHBORHOOD, center, callback)
     }

@@ -2,7 +2,7 @@ import { midpointDisplacement, generateRandomPath } from '/src/lib/fractal/midpo
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointMap } from '/src/lib/geometry/point/map'
 import { Grid } from '/src/lib/grid'
-import { Rect } from '/src/lib/geometry/rect'
+import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/geometry/point'
 import { clamp } from '/src/lib/function'
 
@@ -59,6 +59,24 @@ function buildLevelGrid(context, pointFlowMap) {
     const {world, worldPoint, chunkRect} = context
     const fillMap = new Map()
     let id = 0
+
+    // checar se ha rios entre dois vizinhos diagonalmente opostos
+    // para criar seeds de level (a partir de FloodPlain) nesses pontos
+    /**
+    NE - side E tem bitmap NW || side N tem bitmap SE
+    NW - side W tem bitmap NE || side N tem bitmap SW
+    SE - side E tem bitmap SW || side S tem bitmap NE
+    SW - side W tem bitmap SE || side S tem bitmap NW
+     */
+    // const neighborMap = Direction.getDiagonalNeighbors(worldPoint)
+    // const diagSeedPoint =
+    // for (let [sidePoint, direction] of Point.directionDiagonals(worldPoint)) {
+    //     const diagonalNeighbors = neighborMap.get(direction.id) ?? []
+    //     for (let [diagDirectionId, diagDirection] of diagonalNeighbors) {
+
+    //     }
+    // }
+
     const grid = Grid.fromRect(chunkRect, chunkPoint => {
         if (pointFlowMap.has(chunkPoint)) {
             // start level grid from bottom valley (deep erosion flows)
@@ -91,21 +109,12 @@ function buildTypeGrid(context, levelGrid) {
 function buildType(context, point, level) {
     const {worldPoint, chunk, world, rect, chunkRect} = context
     if (! chunk.surface.isLand(point)) return OceanBasin
-
-    const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
-    const noiseRect = Rect.multiply(rect, chunkRect.width)
-    const noisePoint = Point.plus(relativePoint, point)
-    const noise = world.noise.get4DGrained(noiseRect, noisePoint)
-    if (level > 5) {
-        return noise > .5 ? HighLandChunkBasin : LowLandChunkBasin
-    }
-    if (level > 2) {
-        return noise > .8 ? FloodPlainChunkBasin : LowLandChunkBasin
-    }
+    if (level > 7) return HighLandChunkBasin
+    if (level > 2) return LowLandChunkBasin
     if (level > 0) return FloodPlainChunkBasin
-    if (level == 0) return ValleyChunkBasin
+    return ValleyChunkBasin
 }
-
+// usar o traçado dos flows no oceano para criar zonas profundas
 
 class BasinLevelFloodFill extends ConcurrentFill {
     getGrowth() { return 2 }
