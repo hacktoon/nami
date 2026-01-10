@@ -188,6 +188,10 @@ export class Direction {
         ].includes(direction.id)
     }
 
+    static getComponents(direction) {
+        return direction.components.map(dir => Direction.fromId(dir))
+    }
+
     static getDiagonalNeighbors() {
         return DIAGONAL_NEIGHBORS
     }

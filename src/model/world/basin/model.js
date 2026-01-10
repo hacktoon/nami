@@ -92,7 +92,7 @@ function buildBasinGrid(context) {
         // prepare data for flood fill at each point
         const isBorder = world.surface.isBorder(point)
         const isLand = world.surface.isLand(point)
-        // basins start on borders and fill up grid
+        // basins start on borders and fill inland
         if (isBorder && isLand) {
             const survey = surveyNeighbors(context, point)
             const type = detectLandBasinType(world, survey)
@@ -166,8 +166,8 @@ class LandBasinFill extends ConcurrentFill {
         const currentDistance = model.distance.get(parentPoint)
         model.distance.wrapSet(fillPoint, currentDistance + 1)
         // update parent point erosion path
-        const upstream = Point.directionBetween(parentPoint, fillPoint)
-        model.directionBitmap.add(parentPoint, upstream)
+        const downstream = Point.directionBetween(parentPoint, fillPoint)
+        model.directionBitmap.add(parentPoint, downstream)
         this._fillBasin(fill, fillPoint, parentPoint)
     }
 
