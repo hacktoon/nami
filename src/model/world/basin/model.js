@@ -4,7 +4,7 @@ import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
 
-import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
+import { DirectionBitMaskGrid } from '/src/lib/bitmask'
 
 import {
     Basin,
@@ -21,6 +21,7 @@ const FILL_CHANCE = .3  // chance of fill growing
 const FILL_GROWTH = 5
 const MIDPOINT_RATE = .7  //random point in 60% of chunkrect area around center point
 const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
+const INITIAL_DISTANCE = 1
 
 
 export function buildBasinModel(context) {
@@ -37,18 +38,21 @@ export function buildBasinModel(context) {
     model.distance = buildDistanceGrid(context)
     // map a point to a basin chunk direction bitmask
     model.directionBitmap = new DirectionBitMaskGrid(context.rect)
+    // map a point to a basin chunk corner connections (for diagonals)
+    // used do detect rivers passing on neighbor diagonals
+    model.cornerBitmap = new DirectionBitMaskGrid(context.rect)
     // grid of basin ids
     model.basin = buildBasinGrid({...context, model})
     return model
 }
 
 
-export function buildErosionGrid({rect}) {
+function buildErosionGrid({rect}) {
     return Grid.fromRect(rect, () => Direction.random().id)
 }
 
 
-export function buildMidpointGrid({rect, chunkRect}) {
+function buildMidpointGrid({rect, chunkRect}) {
     const centerIndex = Math.floor(chunkRect.width / 2)
     // select random point in 60% of chunkrect area around center point
     const offset = Math.floor(centerIndex * MIDPOINT_RATE)
@@ -65,16 +69,16 @@ export function buildMidpointGrid({rect, chunkRect}) {
 }
 
 
-export function buildJointGrid({rect, chunkSize}) {
+function buildJointGrid({rect, chunkSize}) {
     return Grid.fromRect(rect, () => {
         return Random.int(1, chunkSize - 2)
     })
 }
 
 
-export function buildDistanceGrid({rect}) {
+function buildDistanceGrid({rect}) {
     // Initial value 1 is used to determine river stretch
-    return Grid.fromRect(rect, () => 1)
+    return Grid.fromRect(rect, () => INITIAL_DISTANCE)
 }
 
 
@@ -96,7 +100,8 @@ function buildBasinGrid(context) {
             model.type.set(basinId, type.id)
             landFillMap.set(basinId, {origin: point, retry: true})
             basinId++
-        } else if (isBorder && ! isLand) {
+        }
+        if (isBorder && ! isLand) {
             const type = OceanBasin
             model.type.set(basinId, type.id)
             waterFillMap.set(basinId, {origin: point, type})
@@ -178,6 +183,7 @@ class LandBasinFill extends ConcurrentFill {
         // avoid erosion flow on land borders
         if (world.surface.isBorder(fillPoint))
             return false
+        // max basin reach inland
         if (fill.level >= basin.reach) {
             return false
         }
@@ -196,26 +202,6 @@ class LandBasinFill extends ConcurrentFill {
         model.erosion.set(fillPoint, direction.id)
         // mark the direction the erosion flows
         model.directionBitmap.add(fillPoint, direction)
-        // update midpoint to account erosion
-        this._updateMidpoint(fill, fillPoint, direction)
-    }
-
-    _updateMidpoint(fill, fillPoint, direction) {
-        const {model, chunkRect, chunkSize} = fill.context
-        const [midX, midY] = [Math.floor(chunkSize / 2), Math.floor(chunkSize / 2)]
-        // const [chunkX, chunkY] = chunkRect.indexToPoint(index)
-        const [chunkX, chunkY] = chunkRect.indexToPoint(model.midpoint.get(fillPoint))
-        const [axisX, axisY] = direction.axis
-        const offset = 3
-        // rescale direction axis to rect corners
-        const cornerX = axisX < 0 ? offset : (axisX == 0 ? chunkX : chunkSize - offset)
-        const cornerY = axisY < 0 ? offset : (axisY == 0 ? chunkY : chunkSize - offset)
-        const chunkPoint = [
-            Random.int(cornerX, midX),
-            Random.int(cornerY, midY),
-        ]
-        const newIndex = chunkRect.pointToIndex(chunkPoint)
-        model.midpoint.set(fillPoint, newIndex)
     }
 }
 

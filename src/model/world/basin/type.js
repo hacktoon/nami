@@ -53,7 +53,7 @@ export class ValleyChunkBasin extends Basin {
     static id = 5
     static name = 'ValleyChunk'
     static allowsRiver = true
-    static color = Color.fromHex('#2e6285')
+    static color = Color.fromHex('#32698d')
 }
 
 

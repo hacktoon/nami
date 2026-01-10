@@ -6,13 +6,11 @@ import { Basin } from './type'
 
 
 export class BasinLayer {
-    #world
     #chunkRect
     #model
 
     constructor(context) {
-        const {world, chunkRect} = context
-        this.#world = world
+        const {chunkRect} = context
         this.#chunkRect = chunkRect
         this.#model = buildBasinModel(context)
     }
@@ -51,7 +49,6 @@ export class BasinLayer {
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
         const basin = this.get(tilePoint)
-        const isWater = this.#world.surface.isWater(tilePoint)
         const basinColor = basin.type.color
         const color = basin.isDivide ? basinColor.brighten(20) : basinColor
         canvas.rect(canvasPoint, tileSize, color.toHex())

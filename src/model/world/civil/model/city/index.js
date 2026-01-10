@@ -1,12 +1,12 @@
-import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
 import { Graph } from '/src/lib/graph'
-import { Point } from '/src/lib/geometry/point'
-import { PointSet } from '/src/lib/geometry/point/set'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
-import { DirectionBitMaskGrid } from '/src/model/tilemap/lib/bitmask'
+import { Point } from '/src/lib/geometry/point'
+import { PointSet } from '/src/lib/geometry/point/set'
+import { DirectionBitMaskGrid } from '/src/lib/bitmask'
 import { PointArraySet } from '/src/lib/geometry/point/set'
+import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 
 
 // fill constants

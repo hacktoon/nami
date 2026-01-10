@@ -109,9 +109,9 @@ function buildTypeGrid(context, levelGrid) {
 function buildType(context, point, level) {
     const {worldPoint, chunk, world, rect, chunkRect} = context
     if (! chunk.surface.isLand(point)) return OceanBasin
-    if (level > 7) return HighLandChunkBasin
+    if (level > 7) return LowLandChunkBasin //HighLandChunkBasin
     if (level > 2) return LowLandChunkBasin
-    if (level > 0) return FloodPlainChunkBasin
+    if (level > 0) return LowLandChunkBasin //FloodPlainChunkBasin
     return ValleyChunkBasin
 }
 // usar o traçado dos flows no oceano para criar zonas profundas
