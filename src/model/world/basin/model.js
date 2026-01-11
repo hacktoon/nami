@@ -19,8 +19,8 @@ import {
 const NO_BASIN_ID = null
 const FILL_CHANCE = .3  // chance of fill growing
 const FILL_GROWTH = 5
-const MIDPOINT_RATE = .7  //random point in 60% of chunkrect area around center point
-const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
+const MIDPOINT_RATE = .6  //random point in 60% of chunkrect area around center point
+const MIDDLE_OFFSET = 2  // used to avoid midpoints on middle
 const INITIAL_DISTANCE = 1
 
 
@@ -154,7 +154,7 @@ class LandBasinFill extends ConcurrentFill {
     getGrowth(fill) { return FILL_GROWTH }
 
     onInitFill(fill, fillPoint) {
-        const {model, surveyMap} = fill.context
+        const {surveyMap} = fill.context
         const survey = surveyMap.get(fill.id)
         // the basin opposite border is the parentPoint
         this._fillBasin(fill, fillPoint, survey.oppositeBorder)
@@ -166,8 +166,10 @@ class LandBasinFill extends ConcurrentFill {
         const currentDistance = model.distance.get(parentPoint)
         model.distance.wrapSet(fillPoint, currentDistance + 1)
         // update parent point erosion path
+        // will set the inflows directions
         const downstream = Point.directionBetween(parentPoint, fillPoint)
         model.directionBitmap.add(parentPoint, downstream)
+        // will set the outflow direction
         this._fillBasin(fill, fillPoint, parentPoint)
     }
 
@@ -202,6 +204,18 @@ class LandBasinFill extends ConcurrentFill {
         model.erosion.set(fillPoint, direction.id)
         // mark the direction the erosion flows
         model.directionBitmap.add(fillPoint, direction)
+
+        if (Direction.isDiagonal(direction)) {
+            for (let sideDirection of Direction.getComponents(direction)) {
+                const sidePoint = Point.atDirection(fillPoint, sideDirection)
+                // mirror directions in one axis
+                const x = sideDirection.axis[0] == 0 ? direction.axis[0] : -1 * direction.axis[0]
+                const y = sideDirection.axis[1] == 0 ? direction.axis[1] : -1 * direction.axis[1]
+                const sideCornerDir = Direction.fromAxis(x, y)
+                // console.log(sideCornerDir.name, sideDirection.name);
+                model.cornerBitmap.add(sidePoint, sideCornerDir)
+            }
+        }
     }
 }
 

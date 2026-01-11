@@ -1,10 +1,8 @@
-import { midpointDisplacement, generateRandomPath } from '/src/lib/fractal/midpointdisplacement'
+import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointMap } from '/src/lib/geometry/point/map'
 import { Grid } from '/src/lib/grid'
-import { Direction } from '/src/lib/direction'
 import { Point } from '/src/lib/geometry/point'
-import { clamp } from '/src/lib/function'
 
 import {
     OceanBasin,
@@ -56,35 +54,25 @@ function buildPointFlowMap(context) {
 
 function buildLevelGrid(context, pointFlowMap) {
     // reads the path points in basin to help create basin relief
-    const {world, worldPoint, chunkRect} = context
+    const {world, worldPoint, chunkRect, chunkSize} = context
     const fillMap = new Map()
     let id = 0
 
-    // checar se ha rios entre dois vizinhos diagonalmente opostos
-    // para criar seeds de level (a partir de FloodPlain) nesses pontos
-    /**
-    NE - side E tem bitmap NW || side N tem bitmap SE
-    NW - side W tem bitmap NE || side N tem bitmap SW
-    SE - side E tem bitmap SW || side S tem bitmap NE
-    SW - side W tem bitmap SE || side S tem bitmap NW
-     */
-    // const neighborMap = Direction.getDiagonalNeighbors(worldPoint)
-    // const diagSeedPoint =
-    // for (let [sidePoint, direction] of Point.directionDiagonals(worldPoint)) {
-    //     const diagonalNeighbors = neighborMap.get(direction.id) ?? []
-    //     for (let [diagDirectionId, diagDirection] of diagonalNeighbors) {
-
-    //     }
-    // }
+    const {cornerBitmap} = world.basin.get(worldPoint)
+    // Fill setting level on river corners (diagonals)
+    for (let dir of cornerBitmap) {
+        const chunkPoint = dir.axis.map(coord => coord > 0 ? chunkSize-1 : 0)
+        fillMap.set(id++, {origin: chunkPoint, startLevel: 1})
+    }
 
     const grid = Grid.fromRect(chunkRect, chunkPoint => {
         if (pointFlowMap.has(chunkPoint)) {
             // start level grid from bottom valley (deep erosion flows)
-            fillMap.set(id, {origin: chunkPoint})
+            fillMap.set(id, {origin: chunkPoint, startLevel: 0})
         } else {
             // On diffuse basins, there's no flow. Start fill from midpoint instead
             const basin = world.basin.get(worldPoint)
-            fillMap.set(id, {origin: basin.midpoint})
+            fillMap.set(id, {origin: basin.midpoint, startLevel: 4})
         }
         id++
         return EMPTY
@@ -107,18 +95,19 @@ function buildTypeGrid(context, levelGrid) {
 
 
 function buildType(context, point, level) {
-    const {worldPoint, chunk, world, rect, chunkRect} = context
+    const { chunk } = context
     if (! chunk.surface.isLand(point)) return OceanBasin
-    if (level > 7) return LowLandChunkBasin //HighLandChunkBasin
+    if (level > 6) return HighLandChunkBasin
     if (level > 2) return LowLandChunkBasin
-    if (level > 0) return LowLandChunkBasin //FloodPlainChunkBasin
+    if (level > 0) return FloodPlainChunkBasin
     return ValleyChunkBasin
 }
 // usar o traçado dos flows no oceano para criar zonas profundas
 
+
 class BasinLevelFloodFill extends ConcurrentFill {
-    getGrowth() { return 2 }
-    getChance() { return .1 }
+    getGrowth(fill) { return 2 }
+    getChance(fill) { return .1 }
 
     getNeighbors(fill, parentPoint) {
         const rect = fill.context.chunkRect
@@ -133,6 +122,13 @@ class BasinLevelFloodFill extends ConcurrentFill {
 
     onFill(fill, fillPoint) {
         const {grid} = fill.context
-        grid.set(fillPoint, fill.level)
+        let level = fill.level
+        // if(fillPoint[0] == 5 && fillPoint[1] == 5) {
+        //     console.log(level, fill.startLevel);
+        // }
+        if (level <= fill.startLevel) {
+            level = fill.startLevel
+        }
+        grid.set(fillPoint, level)
     }
 }

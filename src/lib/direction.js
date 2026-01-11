@@ -180,12 +180,11 @@ export class Direction {
     }
 
     static isCardinal(direction) {
-        return [
-            DIRECTIONS.NORTH.id,
-            DIRECTIONS.EAST.id,
-            DIRECTIONS.SOUTH.id,
-            DIRECTIONS.WEST.id
-        ].includes(direction.id)
+        return [N_ID, E_ID, S_ID, W_ID].includes(direction.id)
+    }
+
+    static isDiagonal(direction) {
+        return [NE_ID, NW_ID, SE_ID, SW_ID].includes(direction.id)
     }
 
     static getComponents(direction) {

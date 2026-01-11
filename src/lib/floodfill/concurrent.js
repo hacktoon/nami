@@ -17,7 +17,7 @@ export class ConcurrentFill {
         const level = 0
         for(let [id, params] of fillMap) {
             const {origin} = params
-            const fill = {id, origin, level, context}
+            const fill = {...params, id, level, context}
             const neighbors = this.getNeighbors(fill, origin)
             this.#levelMap.set(id, level)
             this.#seedMap.set(id, [origin])
@@ -45,11 +45,9 @@ export class ConcurrentFill {
         // fill one or many layers for each fill
         let completedFills = 0
         for(let [id, params] of fillMap) {
-            const {origin} = params
             const level = this.#levelMap.get(id)
             const seeds = this.#seedMap.get(id)
-            const fill = {id, origin, level, context: this.context}
-
+            const fill = {...params, id, level, context: this.context}
             const nextSeeds = this.#fillSingleLayer(fill, seeds)
             // Increase number of completed fills if it has no seeds
             if (nextSeeds.length === 0) {

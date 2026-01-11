@@ -31,8 +31,8 @@ export function midpointDisplacement(rect, source, target, variance, callback) {
         const [px, py] = [nx / size, ny / size]
         const offset = Random.floatRange(-variance, variance)
         return [
-            clamp(Math.floor(mx + px * offset), 0, rect.width - 1),
-            clamp(Math.floor(my + py * offset), 0, rect.height - 1)
+            clamp(Math.floor(mx + px * offset), 1, rect.width - 2),
+            clamp(Math.floor(my + py * offset), 1, rect.height - 2)
         ]
     }
 
