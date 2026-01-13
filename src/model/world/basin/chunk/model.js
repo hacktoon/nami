@@ -2,7 +2,9 @@ import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointMap } from '/src/lib/geometry/point/map'
 import { Grid } from '/src/lib/grid'
+import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/geometry/point'
+import { clamp } from '/src/lib/function'
 
 import {
     OceanBasin,
@@ -25,13 +27,14 @@ export function buildModel(context) {
 }
 
 
-function buildPointFlowMap(context) {
+function buildPointFlowMap(baseContext) {
     // reads the direction bitmask data and create points for chunk grid
-    const {world, worldPoint, chunk, chunkRect} = context
+    const {world, worldPoint, chunk, chunkRect} = baseContext
     const pointFlowMap = new PointMap(chunkRect)
     const basin = world.basin.get(worldPoint)
     const source = basin.midpoint
     const midSize = Math.floor(chunk.size / 2)
+    const context = {...baseContext, pointFlowMap}
     for(let direction of basin.directionBitmap) {
         const parentPoint = Point.atDirection(worldPoint, direction)
         const sideBasin = world.basin.get(parentPoint)
@@ -41,14 +44,48 @@ function buildPointFlowMap(context) {
             if (coord > 0) return chunk.size - 1
             return avgJoint
         })
-        const distance = Math.floor(Point.distance(source, target))
+        // generateFlowPath(context, source, target, direction)
+        const distance = Point.distance(source, target)
         const pointsTooClose = distance < midSize
         const distortion = pointsTooClose ? 0 : MEANDER
         midpointDisplacement(chunkRect, source, target, distortion, point => {
             pointFlowMap.set(point, direction.id)
         })
     }
+    // if(worldPoint[0] == 47 && worldPoint[1] == 17) {
+    //     console.log(pointFlowMap.has([6, 6]));
+    //     console.log(pointFlowMap.has([7, 7]));
+    // }
+    // if (worldPoint[0] == 47 && worldPoint[1] == 17)
+    // console.log(pointFlowMap.get([6, 6]));
     return pointFlowMap
+}
+
+
+function generateFlowPath(context, source, target, direction) {
+    const {chunkRect, pointFlowMap} = context
+    const deltaX = Math.abs(source[0] - target[0])
+    const deltaY = Math.abs(source[1] - target[1])
+    const fixedAxis = deltaX > deltaY ? 0 : 1  // 0 for x, 1 for y
+    const displacedAxis = fixedAxis === 0 ? 1 : 0
+    // distance between source and target to fill with path
+    const size = Math.abs(target[fixedAxis] - source[fixedAxis])
+    const points = [source]
+    let current = source
+    pointFlowMap.set(target, direction.id)
+    const [tx, ty] = target
+    while (Point.differs(current, target)) {
+        let [x, y] = current
+        const [cx, cy] = current
+        if (Random.chance(.8))
+            x = cx > tx ? cx - 1 : (cx < tx ? cx + 1 : cx)
+        if (Random.chance(.8))
+            y = cy > ty ? cy - 1 : (cy < ty ? cy + 1 : cy)
+        // console.log(current);
+        current = [x, y]
+        pointFlowMap.set(current, direction.id)
+    }
+    return points
 }
 
 
@@ -62,24 +99,31 @@ function buildLevelGrid(context, pointFlowMap) {
     // Fill setting level on river corners (diagonals)
     for (let dir of cornerBitmap) {
         const chunkPoint = dir.axis.map(coord => coord > 0 ? chunkSize-1 : 0)
-        fillMap.set(id++, {origin: chunkPoint, startLevel: 1})
+        fillMap.set(id++, {origin: chunkPoint, basinLevel: 1})
     }
 
-    const grid = Grid.fromRect(chunkRect, chunkPoint => {
+    const levelGrid = Grid.fromRect(chunkRect, chunkPoint => {
+        const basin = world.basin.get(worldPoint)
         if (pointFlowMap.has(chunkPoint)) {
             // start level grid from bottom valley (deep erosion flows)
-            fillMap.set(id, {origin: chunkPoint, startLevel: 0})
+            fillMap.set(id, {origin: chunkPoint, basinLevel: 0})
         } else {
             // On diffuse basins, there's no flow. Start fill from midpoint instead
-            const basin = world.basin.get(worldPoint)
-            fillMap.set(id, {origin: basin.midpoint, startLevel: 4})
+            // fillMap.set(id, {origin: basin.midpoint, basinLevel: 2})
         }
+        // if (worldPoint[0] == 47 && worldPoint[1] == 17) {
+        // if (chunkPoint[0] == 6 && chunkPoint[1] == 6) {
+        //     console.log(x);
+        // }
+        // }
         id++
         return EMPTY
     })
-    const fillContext = {...context, grid, pointFlowMap}
+    // if (worldPoint[0] == 47 && worldPoint[1] == 17)
+    //     console.log(fillMap);
+    const fillContext = {...context, levelGrid}
     new BasinLevelFloodFill(fillMap, fillContext).complete()
-    return grid
+    return levelGrid
 }
 
 
@@ -97,7 +141,10 @@ function buildTypeGrid(context, levelGrid) {
 function buildType(context, point, level) {
     const { chunk } = context
     if (! chunk.surface.isLand(point)) return OceanBasin
-    if (level > 6) return HighLandChunkBasin
+    if (level > 4 && level < 9) {
+        return HighLandChunkBasin
+        // if (Random.chance(.9))
+    }
     if (level > 2) return LowLandChunkBasin
     if (level > 0) return FloodPlainChunkBasin
     return ValleyChunkBasin
@@ -110,25 +157,21 @@ class BasinLevelFloodFill extends ConcurrentFill {
     getChance(fill) { return .1 }
 
     getNeighbors(fill, parentPoint) {
-        const rect = fill.context.chunkRect
+        const {chunkRect} = fill.context
         const points = Point.adjacents(parentPoint)
         // avoid wrapping in chunk rect - flood fill from borders to center
-        return points.filter(p => rect.isInside(p))
+        return points.filter(p => chunkRect.isInside(p))
     }
 
     isEmpty(fill, fillPoint) {
-        return fill.context.grid.get(fillPoint) === EMPTY
+        return fill.context.levelGrid.get(fillPoint) === EMPTY
     }
 
     onFill(fill, fillPoint) {
-        const {grid} = fill.context
-        let level = fill.level
-        // if(fillPoint[0] == 5 && fillPoint[1] == 5) {
-        //     console.log(level, fill.startLevel);
-        // }
-        if (level <= fill.startLevel) {
-            level = fill.startLevel
-        }
-        grid.set(fillPoint, level)
+        const {levelGrid} = fill.context
+        let level = fill.level + fill.basinLevel
+        levelGrid.set(fillPoint, level)
     }
 }
+
+
