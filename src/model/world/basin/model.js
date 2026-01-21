@@ -113,8 +113,8 @@ function buildBasinGrid(context) {
     })
     // start flood fills from each border, both land && water
     const fillContext = {...context, basinGrid, surveyMap}
-    new LandBasinFill(landFillMap, fillContext).complete()
-    new WaterBasinFill(waterFillMap, fillContext).complete()
+    new LandBasinFill(rect, landFillMap, fillContext).complete()
+    new WaterBasinFill(rect, waterFillMap, fillContext).complete()
     return basinGrid
 }
 

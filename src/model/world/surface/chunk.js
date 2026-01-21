@@ -78,7 +78,7 @@ function buildChunkRegionModel(context) {
     // it's also a map of all regions
     const fillMap = new Map(origins.map((origin, id) => [id, {origin}]))
     const fillContext = {...context, regionGrid, borderRegions}
-    new RegionFloodFill(fillMap, fillContext).complete()
+    new RegionFloodFill(chunkRect, fillMap, fillContext).complete()
     return {regionGrid, borderRegions}
 }
 

@@ -1,17 +1,22 @@
 import { Random } from '/src/lib/random'
+import { PointSet } from '/src/lib/geometry/point/set'
 
 
-const MAX_LOOP_COUNT = 2000
+const MAX_LOOP_COUNT = 10000
 
 
 export class ConcurrentFill {
+    #rect
+    #context
+    #fillMap
     #seedMap = new Map()
-    // stores the level of each layer for each point
     #levelMap = new Map()
+    #stateMap = new Map()
 
-    constructor(fillMap, context={}) {
-        this.fillMap = fillMap
-        this.context = context
+    constructor(rect, fillMap, context={}) {
+        this.#rect = rect
+        this.#fillMap = fillMap
+        this.#context = context
 
         // Initialize data and fill origins
         const level = 0
@@ -27,27 +32,27 @@ export class ConcurrentFill {
     }
 
     step() {
-        this.#step(this.fillMap)
+        this.#step()
     }
 
     complete() {
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
         while(loopCount-- > 0) {
-            const completedFills = this.#step(this.fillMap)
-            if (completedFills === this.fillMap.size) {
+            const completedFills = this.#step(this.#fillMap)
+            if (completedFills === this.#fillMap.size) {
                 break
             }
         }
     }
 
-    #step(fillMap) {
+    #step() {
         // fill one or many layers for each fill
         let completedFills = 0
-        for(let [id, params] of fillMap) {
+        for(let [id, params] of this.#fillMap) {
             const level = this.#levelMap.get(id)
             const seeds = this.#seedMap.get(id)
-            const fill = {...params, id, level, context: this.context}
+            const fill = {...params, id, level, context: this.#context}
             const nextSeeds = this.#fillSingleLayer(fill, seeds)
             // Increase number of completed fills if it has no seeds
             if (nextSeeds.length === 0) {

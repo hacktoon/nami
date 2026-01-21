@@ -63,7 +63,7 @@ export class RegionTileMap extends TileMap {
             fillMap.set(id, {origin})
             return id
         })
-        new RegionFloodFill(fillMap, {
+        new RegionFloodFill(this.rect, fillMap, {
             regionGrid: this.#regionGrid,
             colorMap: this.#colorMap,
             levelGrid: this.#levelGrid,

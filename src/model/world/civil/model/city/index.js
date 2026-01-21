@@ -90,7 +90,7 @@ export function buildCitySpaces(context) {
     const fillMap = new Map(cityPoints.points.map((origin, id) => {
         return [id, {origin}]
     }))
-    new CityAreaFill(fillMap, fillContext).complete()
+    new CityAreaFill(rect, fillMap, fillContext).complete()
     return {
         cityGrid,
         graph: cityGraph,

@@ -122,7 +122,7 @@ function buildLevelGrid(context, pointFlowMap) {
     // if (worldPoint[0] == 47 && worldPoint[1] == 17)
     //     console.log(fillMap);
     const fillContext = {...context, levelGrid}
-    new BasinLevelFloodFill(fillMap, fillContext).complete()
+    new BasinLevelFloodFill(chunkRect, fillMap, fillContext).complete()
     return levelGrid
 }
 
