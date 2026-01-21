@@ -3,6 +3,9 @@ import { PointSet } from '/src/lib/geometry/point/set'
 
 
 const MAX_LOOP_COUNT = 10000
+const ST_ACTIVE = 1
+const ST_PAUSED = 2
+const ST_FINISHED = 3
 
 
 export class ConcurrentFill {
@@ -26,13 +29,10 @@ export class ConcurrentFill {
             const neighbors = this.getNeighbors(fill, origin)
             this.#levelMap.set(id, level)
             this.#seedMap.set(id, [origin])
+            this.#stateMap.set(id, ST_ACTIVE)
             // first fill step
             this.onInitFill(fill, origin, neighbors)
         }
-    }
-
-    step() {
-        this.#step()
     }
 
     complete() {
