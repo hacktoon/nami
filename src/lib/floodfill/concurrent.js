@@ -20,7 +20,6 @@ export class ConcurrentFill {
         this.#rect = rect
         this.#fillMap = fillMap
         this.#context = context
-
         // Initialize data and fill origins
         const level = 0
         for(let [id, params] of fillMap) {
@@ -38,51 +37,71 @@ export class ConcurrentFill {
     complete() {
         // Use loop count to avoid infinite loops
         let loopCount = MAX_LOOP_COUNT
-        while(loopCount-- > 0) {
-            const completedFills = this.#step(this.#fillMap)
-            if (completedFills === this.#fillMap.size) {
-                break
+        const fillMap = this.#fillMap
+        const queue = new Set(fillMap.keys())
+        while(queue.size > 0 && loopCount-- > 0) {
+            let totalPaused = 0
+            for(let [id, params] of fillMap) {
+                let state = this.#stateMap.get(id)
+                if (state == ST_ACTIVE) {
+                    const fillSeeds = this.#step(id, params)
+                    if (fillSeeds.length == 0) {
+                        this.#stateMap.set(id, ST_FINISHED)
+                        queue.delete(id)
+                    }
+                }
+                state = this.#stateMap.get(id)
+                totalPaused += state == ST_PAUSED ? 1 : 0
+            }
+            // detect if all remainging are paused
+            // if true, restart fill with all active
+            // restart fills if remaining are paused
+            if (queue.size == totalPaused) {
+                console.log(queue);
+
+                for(let id of fillMap.keys()) {
+                    this.#stateMap.set(id, ST_ACTIVE)
+                }
             }
         }
     }
 
-    #step() {
+    #step(id, params) {
         // fill one or many layers for each fill
-        let completedFills = 0
-        for(let [id, params] of this.#fillMap) {
-            const level = this.#levelMap.get(id)
-            const seeds = this.#seedMap.get(id)
-            const fill = {...params, id, level, context: this.#context}
-            const nextSeeds = this.#fillSingleLayer(fill, seeds)
-            // Increase number of completed fills if it has no seeds
-            if (nextSeeds.length === 0) {
-                completedFills++
-            } else {
-                const extraSeeds = this.#randomFillExtraLayers(fill, nextSeeds)
-                // set seeds for next layer
-                this.#seedMap.set(id, [...nextSeeds, ...extraSeeds])
-            }
-        }
-        return completedFills
+        const seeds = this.#seedMap.get(id)
+        const level = this.#levelMap.get(id)
+        const fill = {...params, id, level, context: this.#context}
+        const nextSeeds = this.#fillSingleLayer(fill, seeds)
+        const extraSeeds = this.#fillRandomExtraLayers(fill, nextSeeds)
+        // set seeds for next layer
+        const newSeeds = [...nextSeeds, ...extraSeeds]
+        this.#seedMap.set(id, newSeeds)
+        return newSeeds
     }
 
     #fillSingleLayer(fill, seeds) {
         // for each seed, get its neighbors and try to fill
         const nextSeeds = []
         const nextLevel = this.#levelMap.get(fill.id) + 1
-        for(let source of seeds) {
+        const state = this.#stateMap.get(fill.id)
+        for(let seed of seeds) {
+            // check state
+            if (state == ST_ACTIVE && this.shouldPause(fill, seed)) {
+                this.#stateMap.set(fill.id, ST_PAUSED)
+                return seeds
+            }
             // for each seed, try to fill its neighbors
-            const neighbors = this.getNeighbors(fill, source)
+            const neighbors = this.getNeighbors(fill, seed)
             for(let target of neighbors) {
-                if (this.isEmpty(fill, target, source)) {
+                if (this.isEmpty(fill, target, seed)) {
                     // update level if can be filled
                     const newLevelFill = {...fill, level: nextLevel}
                     // fill this neighbor
-                    this.onFill(newLevelFill, target, source, neighbors)
+                    this.onFill(newLevelFill, target, seed, neighbors)
                     // make the filled neighbor a seed for next iteration
                     nextSeeds.push(target)
                 } else {
-                    this.notEmpty(fill, target, source)
+                    this.notEmpty(fill, target, seed)
                 }
             }
         }
@@ -93,19 +112,18 @@ export class ConcurrentFill {
         return nextSeeds
     }
 
-    #randomFillExtraLayers(fill, seeds) {
+    #fillRandomExtraLayers(fill, seeds) {
+        if (seeds.length == 0)
+            return []
         const growth = this.getGrowth(fill)
         let extraSeeds = seeds
         for(let i = 0; i < growth; i++) {
             // split given seeds by chance
-            const [next, cached] = this.#splitSeeds(fill, extraSeeds)
+            const [next, postponed] = this.#splitSeeds(fill, extraSeeds)
             // fill an extra layer using a fraction of given seeds
-            // update level on fill context
-            const level = this.#levelMap.get(fill.id)
-            const newLevelFill = {...fill, level}
-            const filled = this.#fillSingleLayer(newLevelFill, next)
+            const filled = this.#fillSingleLayer(fill, next)
             // sum up filled & deferred seeds for next iteration
-            extraSeeds = cached.concat(filled)
+            extraSeeds = postponed.concat(filled)
         }
         return extraSeeds
     }
@@ -131,4 +149,5 @@ export class ConcurrentFill {
     getNeighbors(fill, target) { return [] }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }
+    shouldPause(fill, source) { return false }
 }
