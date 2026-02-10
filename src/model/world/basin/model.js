@@ -186,7 +186,8 @@ class LandBasinFill extends ConcurrentFill {
         if (world.surface.isBorder(fillPoint))
             return false
         // max basin reach inland
-        if (fill.level >= basin.reach) {
+        const currentDistance = model.distance.get(parentPoint)
+        if (currentDistance >= basin.reach) {
             return false
         }
         const target = world.surface.get(fillPoint)

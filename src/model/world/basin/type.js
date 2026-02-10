@@ -19,7 +19,7 @@ export class ExorheicBasin extends Basin {
 export class EndorheicSeaBasin extends Basin {
     static id = 1
     static name = 'Endorheic sea'
-    static reach = 1
+    static reach = 2
     static color = Color.fromHex('#7fc3c5')
 }
 
@@ -27,7 +27,7 @@ export class EndorheicSeaBasin extends Basin {
 export class EndorheicLakeBasin extends Basin {
     static id = 2
     static name = 'Endorheic lake'
-    static reach = 0
+    static reach = 1
     static color = Color.fromHex('#6caca1')
 }
 

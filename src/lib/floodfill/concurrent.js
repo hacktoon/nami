@@ -1,11 +1,7 @@
 import { Random } from '/src/lib/random'
-import { PointSet } from '/src/lib/geometry/point/set'
 
 
 const MAX_LOOP_COUNT = 10000
-const ST_ACTIVE = 1
-const ST_PAUSED = 2
-const ST_FINISHED = 3
 
 
 export class ConcurrentFill {
@@ -14,7 +10,6 @@ export class ConcurrentFill {
     #fillMap
     #seedMap = new Map()
     #levelMap = new Map()
-    #stateMap = new Map()
 
     constructor(rect, fillMap, context={}) {
         this.#rect = rect
@@ -28,7 +23,6 @@ export class ConcurrentFill {
             const neighbors = this.getNeighbors(fill, origin)
             this.#levelMap.set(id, level)
             this.#seedMap.set(id, [origin])
-            this.#stateMap.set(id, ST_ACTIVE)
             // first fill step
             this.onInitFill(fill, origin, neighbors)
         }
@@ -40,27 +34,10 @@ export class ConcurrentFill {
         const fillMap = this.#fillMap
         const queue = new Set(fillMap.keys())
         while(queue.size > 0 && loopCount-- > 0) {
-            let totalPaused = 0
             for(let [id, params] of fillMap) {
-                let state = this.#stateMap.get(id)
-                if (state == ST_ACTIVE) {
-                    const fillSeeds = this.#step(id, params)
-                    if (fillSeeds.length == 0) {
-                        this.#stateMap.set(id, ST_FINISHED)
-                        queue.delete(id)
-                    }
-                }
-                state = this.#stateMap.get(id)
-                totalPaused += state == ST_PAUSED ? 1 : 0
-            }
-            // detect if all remainging are paused
-            // if true, restart fill with all active
-            // restart fills if remaining are paused
-            if (queue.size == totalPaused) {
-                console.log(queue);
-
-                for(let id of fillMap.keys()) {
-                    this.#stateMap.set(id, ST_ACTIVE)
+                const fillSeeds = this.#step(id, params)
+                if (fillSeeds.length == 0) {
+                    queue.delete(id)
                 }
             }
         }
@@ -83,13 +60,7 @@ export class ConcurrentFill {
         // for each seed, get its neighbors and try to fill
         const nextSeeds = []
         const nextLevel = this.#levelMap.get(fill.id) + 1
-        const state = this.#stateMap.get(fill.id)
         for(let seed of seeds) {
-            // check state
-            if (state == ST_ACTIVE && this.shouldPause(fill, seed)) {
-                this.#stateMap.set(fill.id, ST_PAUSED)
-                return seeds
-            }
             // for each seed, try to fill its neighbors
             const neighbors = this.getNeighbors(fill, seed)
             for(let target of neighbors) {
@@ -149,5 +120,4 @@ export class ConcurrentFill {
     getNeighbors(fill, target) { return [] }
     getChance(fill) { return 0 }
     getGrowth(fill) { return 0 }
-    shouldPause(fill, source) { return false }
 }
