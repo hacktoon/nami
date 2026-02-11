@@ -14,25 +14,27 @@ const MEANDER = 2
 export function buildRiverGrid(context) {
     // reads the wire data and create points for chunk grid
     const {world, worldPoint, chunk, chunkRect} = context
-    const pointflowMap = buildPointFlowMap(context)
-
+    const pointMaskMap = buildPointMaskMap(context)
     // const river = world.river.get(worldPoint)
-    const basin = world.basin.get(worldPoint)
-
+    // const basin = world.basin.get(worldPoint)
     return Grid.fromRect(chunkRect, chunkPoint => {
-        const directionId = pointflowMap.get(chunkPoint)
+        const directionId = pointMaskMap.get(chunkPoint)
         return Boolean(directionId)
     })
 }
 
 
-function buildPointFlowMap(baseContext) {
+function buildPointMaskMap(baseContext) {
     // reads the direction bitmask data and create points for chunk grid
     const {world, worldPoint, chunk, chunkRect} = baseContext
-    const pointFlowMap = new PointMap(chunkRect)
+    const isLand = world.surface.isLand(worldPoint)
+    const noRiver = ! world.river.has(worldPoint)
+    const pointMaskMap = new PointMap(chunkRect)
+    if (isLand && noRiver)
+        return pointMaskMap
     const basin = world.basin.get(worldPoint)
-    const source = basin.midpoint
     const midSize = Math.floor(chunk.size / 2)
+    const source = basin.midpoint
     for(let direction of basin.directionBitmap) {
         const parentPoint = Point.atDirection(worldPoint, direction)
         const sideBasin = world.basin.get(parentPoint)
@@ -42,27 +44,19 @@ function buildPointFlowMap(baseContext) {
             if (coord > 0) return chunk.size - 1
             return avgJoint
         })
-        // generateFlowPath(context, source, target, direction)
         const distance = Point.distance(source, target)
         const pointsTooClose = distance < midSize
         const distortion = pointsTooClose ? 0 : MEANDER
-
-        const sidePoint = Point.atDirection(worldPoint, direction)
-        const isWater = world.surface.isWater(worldPoint)
-        const hasRiver = world.river.has(worldPoint)
-        const isSideWater = world.surface.isWater(sidePoint)
-        if (isWater || hasRiver) {
-            midpointDisplacement(chunkRect, source, target, distortion, point => {
-                pointFlowMap.set(point, direction.id)
-            })
-        }
+        midpointDisplacement(chunkRect, source, target, distortion, point => {
+            pointMaskMap.set(point, direction.id)
+        })
     }
-    return pointFlowMap
+    return pointMaskMap
 }
 
 
 function generateFlowPath(context, source, target, direction) {
-    const {chunkRect, pointFlowMap} = context
+    const {chunkRect, pointMaskMap} = context
     const deltaX = Math.abs(source[0] - target[0])
     const deltaY = Math.abs(source[1] - target[1])
     const fixedAxis = deltaX > deltaY ? 0 : 1  // 0 for x, 1 for y
@@ -71,7 +65,7 @@ function generateFlowPath(context, source, target, direction) {
     const size = Math.abs(target[fixedAxis] - source[fixedAxis])
     const points = [source]
     let current = source
-    pointFlowMap.set(target, direction.id)
+    pointMaskMap.set(target, direction.id)
     const [tx, ty] = target
     while (Point.differs(current, target)) {
         let [x, y] = current
@@ -82,7 +76,7 @@ function generateFlowPath(context, source, target, direction) {
             y = cy > ty ? cy - 1 : (cy < ty ? cy + 1 : cy)
         // console.log(current);
         current = [x, y]
-        pointFlowMap.set(current, direction.id)
+        pointMaskMap.set(current, direction.id)
     }
     return points
 }

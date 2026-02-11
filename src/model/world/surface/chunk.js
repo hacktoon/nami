@@ -5,6 +5,11 @@ import { Rect } from '/src/lib/geometry/rect'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
+import {
+    ContinentSurface,
+    OceanSurface,
+} from './type'
+
 
 const SURFACE_NOISE_RATIO = .6
 const REGION_WATER = false
@@ -38,8 +43,10 @@ export class SurfaceChunk {
                 const chunkPoint = [y, x]
                 const ySize = y * size
                 const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                let color = this.isLand(chunkPoint) ? '#71b13e' : '#2f367d'
-                canvas.rect(chunkCanvasPoint, size, color)
+                let color = this.isLand(chunkPoint)
+                    ? ContinentSurface.color
+                    : OceanSurface.color
+                canvas.rect(chunkCanvasPoint, size, color.toHex())
             }
         }
     }

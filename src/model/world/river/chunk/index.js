@@ -17,7 +17,7 @@ export class RiverChunk {
         this.drawRiversOnly(props, params)
     }
 
-    drawRiversOnly(props, params, color='#5259b0') {
+    drawRiversOnly(props, params, color='#1d2255') {
         const {canvas, canvasPoint, tilePoint, tileSize, chunk} = props
         const chunkTileSize = tileSize / chunk.size
         if (! params.get('showRivers') || tileSize < 10)
