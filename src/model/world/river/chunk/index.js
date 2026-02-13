@@ -1,7 +1,7 @@
 import { Point } from '/src/lib/geometry/point'
 import { Color } from '/src/lib/color'
 
-import { buildRiverGrid } from './model'
+import { buildRiverGrid, TYPE_RIVER, TYPE_OTHER } from './model'
 
 
 export class RiverChunk {
@@ -28,7 +28,9 @@ export class RiverChunk {
                 const chunkPoint = [y, x]
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                if (this.#riverGrid.get(chunkPoint)) {
+                const type = this.#riverGrid.get(chunkPoint)
+                if (type != TYPE_OTHER) {
+                    color = type == TYPE_RIVER ? color : '#d6c346'
                     canvas.rect(chunkCanvasPoint, chunkTileSize, color)
                 }
                 // if (Point.equals(basin.midpoint, chunkPoint)) {

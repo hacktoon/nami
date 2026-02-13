@@ -10,6 +10,10 @@ import { Grid } from '/src/lib/grid'
 
 const MEANDER = 2
 
+export const TYPE_RIVER = 1
+export const TYPE_MARGIN = 2
+export const TYPE_OTHER = 3
+
 
 export function buildRiverGrid(context) {
     // reads the wire data and create points for chunk grid
@@ -18,8 +22,10 @@ export function buildRiverGrid(context) {
     // const river = world.river.get(worldPoint)
     // const basin = world.basin.get(worldPoint)
     return Grid.fromRect(chunkRect, chunkPoint => {
-        const directionId = pointMaskMap.get(chunkPoint)
-        return Boolean(directionId)
+        if (pointMaskMap.has(chunkPoint)) {
+            return TYPE_RIVER
+        }
+        return TYPE_OTHER
     })
 }
 
@@ -37,6 +43,8 @@ function buildPointMaskMap(baseContext) {
     const source = basin.midpoint
     for(let direction of basin.directionBitmap) {
         const parentPoint = Point.atDirection(worldPoint, direction)
+        if (! world.river.has(parentPoint) && ! world.surface.isBorder(worldPoint))
+            continue
         const sideBasin = world.basin.get(parentPoint)
         const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
         const target = direction.axis.map(coord => {
@@ -48,11 +56,17 @@ function buildPointMaskMap(baseContext) {
         const pointsTooClose = distance < midSize
         const distortion = pointsTooClose ? 0 : MEANDER
         midpointDisplacement(chunkRect, source, target, distortion, point => {
-            pointMaskMap.set(point, direction.id)
+            pointMaskMap.set(point, TYPE_RIVER)
         })
     }
     return pointMaskMap
 }
+
+//  code for marking chunk corners
+// for (let dir of cornerBitmap) {
+//     const chunkPoint = dir.axis.map(coord => coord > 0 ? chunkSize-1 : 0)
+//     fillMap.set(id++, {origin: chunkPoint, basinLevel: 1})
+// }
 
 
 function generateFlowPath(context, source, target, direction) {
@@ -83,3 +97,24 @@ function generateFlowPath(context, source, target, direction) {
 
 
 
+// class RiverFloodFill extends ConcurrentFill {
+//     getGrowth(fill) { return 2 }
+//     getChance(fill) { return .1 }
+
+//     getNeighbors(fill, parentPoint) {
+//         const {chunkRect} = fill.context
+//         const points = Point.adjacents(parentPoint)
+//         // avoid wrapping in chunk rect - flood fill from borders to center
+//         return points.filter(p => chunkRect.isInside(p))
+//     }
+
+//     isEmpty(fill, fillPoint) {
+//         return fill.context.levelGrid.get(fillPoint) === EMPTY
+//     }
+
+//     onFill(fill, fillPoint) {
+//         const {levelGrid} = fill.context
+//         let level = fill.level + fill.basinLevel
+//         levelGrid.set(fillPoint, level)
+//     }
+// }
