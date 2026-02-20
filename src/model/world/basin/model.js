@@ -40,6 +40,11 @@ export function buildBasinModel(context) {
     model.directionBitmap = new DirectionBitMaskGrid(context.rect)
     // map a point to a basin chunk corner connections (for diagonals)
     // used do detect rivers passing on neighbor diagonals
+
+
+
+
+    // MOVE TO RIVER
     model.cornerBitmap = new DirectionBitMaskGrid(context.rect)
     // grid of basin ids
     model.basin = buildBasinGrid({...context, model})

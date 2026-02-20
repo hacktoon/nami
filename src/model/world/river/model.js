@@ -4,6 +4,7 @@ import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 import { HYDRO_NAMES } from '/src/lib/names'
 import { PointMap } from '/src/lib/geometry/point/map'
+import { DirectionBitMaskGrid } from '/src/lib/bitmask'
 
 import { RiverStretch } from './data'
 
@@ -18,36 +19,29 @@ const MIDPOINT_RATE = .6  // 60% around center point
     river gets.
 */
 export function buildRiverModel(context) {
-    const {rect, world} = context
-    const riverSources = []
+    const {rect} = context
     const midpointGrid = buildMidpointGrid(context)
     const stretchMap = new PointMap(rect)
     const riverLengths = new Map()
     const riverNames = new Map()
     const estuaries = new PointSet(rect)
-    const riverGrid = Grid.fromRect(rect, point => {
-        const basin = world.basin.get(point)
-        const rainsEnough = world.rain.canCreateRiver(point)
-        if (basin.isDivide && rainsEnough) {
-            riverSources.push(point)
-        }
-        return null
-    })
-    buildRivers({
-        ...context, riverGrid, riverSources, estuaries,
-        riverLengths, riverNames, stretchMap
+    const directionBitmap = new DirectionBitMaskGrid(rect)
+    const riverGrid = buildRiverGrid({
+        ...context, estuaries, riverLengths, riverNames,
+        stretchMap, directionBitmap
     })
     return {
         riverGrid,
         midpointGrid,
         riverLengths,
         riverNames,
-        stretchMap
+        stretchMap,
+        directionBitmap,
     }
 }
 
 
-export function buildMidpointGrid({rect, chunkRect}) {
+function buildMidpointGrid({rect, chunkRect}) {
     const centerIndex = Math.floor(chunkRect.width / 2)
     const offset = Math.floor(centerIndex * MIDPOINT_RATE)
 
@@ -59,9 +53,19 @@ export function buildMidpointGrid({rect, chunkRect}) {
 }
 
 
-function buildRivers(context) {
+function buildRiverGrid(context) {
+    const {rect, world, riverLengths, riverNames} = context
+    const riverSources = []
+    const riverGrid = Grid.fromRect(rect, point => {
+        const basin = world.basin.get(point)
+        const rainsEnough = world.rain.canCreateRiver(point)
+        if (basin.isDivide && rainsEnough) {
+            riverSources.push(point)
+        }
+        return null
+    })
+
     let riverId = 0
-    const {world, riverSources, riverLengths, riverNames} = context
     // create a list of pairs: (point, river length)
     riverSources.map(point => {
         const {distance} = world.basin.get(point)
@@ -71,21 +75,20 @@ function buildRivers(context) {
     // for starting rivers on basin divides (sources)
     .sort((a, b) => a[1] - b[1])
     .forEach(([point, distance]) => {
-        buildRiverPath(context, riverId, point)
+        buildRiverPath(context, riverGrid, riverId, point)
         riverLengths.set(riverId, distance)
         riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
         riverId++
     })
+    return riverGrid
 }
 
 
 // TODO: split this function
-function buildRiverPath(context, riverId, sourcePoint) {
+function buildRiverPath(context, riverGrid, riverId, sourcePoint) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
-    const {
-        world, rect, riverGrid, estuaries, stretchMap,
-    } = context
+    const {world, rect, estuaries, stretchMap} = context
     let prevPoint = sourcePoint
     let nextPoint = sourcePoint
     // follow river down following next land points
