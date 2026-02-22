@@ -23,7 +23,7 @@ const DIRECTIONS = {
     CENTER: {
         id: CENTER_ID,
         code: 0,
-        name: 'C',
+       shortName: 'C',
         symbol: 'o',
         axis: [0,  0],
         components: [CENTER_ID]
@@ -31,7 +31,7 @@ const DIRECTIONS = {
     NORTH: {
         id: N_ID,
         code: 1,
-        name: 'N',
+        shortName: 'N',
         symbol: '\u2191',
         axis: [0, -1],
         components: [N_ID]
@@ -39,7 +39,7 @@ const DIRECTIONS = {
     NORTHEAST: {
         id: NE_ID,
         code: 2,
-        name: 'NE',
+        shortName: 'NE',
         symbol: '\u2197',
         axis: [1, -1],
         components: [N_ID, E_ID]
@@ -47,7 +47,7 @@ const DIRECTIONS = {
     EAST: {
         id: E_ID,
         code: 4,
-        name: 'E',
+        shortName: 'E',
         symbol: '\u2192',
         axis: [1,  0],
         components: [E_ID]
@@ -55,7 +55,7 @@ const DIRECTIONS = {
     SOUTHEAST: {
         id: SE_ID,
         code: 8,
-        name: 'SE',
+        shortName: 'SE',
         symbol: '\u2198',
         axis: [1,  1],
         components: [S_ID, E_ID]
@@ -63,7 +63,7 @@ const DIRECTIONS = {
     SOUTH: {
         id: S_ID,
         code: 16,
-        name: 'S',
+        shortName: 'S',
         symbol: '\u2193',
         axis: [0,  1],
         components: [S_ID]
@@ -71,7 +71,7 @@ const DIRECTIONS = {
     SOUTHWEST: {
         id: SW_ID,
         code: 32,
-        name: 'SW',
+        shortName: 'SW',
         symbol: '\u2199',
         axis: [-1,  1],
         components: [S_ID, W_ID]
@@ -79,7 +79,7 @@ const DIRECTIONS = {
     WEST: {
         id: W_ID,
         code: 64,
-        name: 'W',
+        shortName: 'W',
         symbol: '\u2190',
         axis: [-1,  0],
         components: [W_ID]
@@ -87,7 +87,7 @@ const DIRECTIONS = {
     NORTHWEST: {
         id: NW_ID,
         code: 128,
-        name: 'NW',
+        shortName: 'NW',
         symbol: '\u2196',
         axis: [-1, -1],
         components: [N_ID, W_ID]
@@ -146,15 +146,15 @@ const ALL = [
 
 
 export class Direction {
-    static get CENTER () { return DIRECTIONS.CENTER }
-    static get NORTH () { return DIRECTIONS.NORTH }
-    static get EAST () { return DIRECTIONS.EAST }
-    static get SOUTH () { return DIRECTIONS.SOUTH }
-    static get WEST () { return DIRECTIONS.WEST }
-    static get NORTHEAST () { return DIRECTIONS.NORTHEAST }
-    static get NORTHWEST () { return DIRECTIONS.NORTHWEST }
-    static get SOUTHEAST () { return DIRECTIONS.SOUTHEAST }
-    static get SOUTHWEST () { return DIRECTIONS.SOUTHWEST }
+    static get CENTER () { return DIRECTION_MAP[CENTER_ID] }
+    static get NORTH () { return DIRECTION_MAP[N_ID] }
+    static get EAST () { return DIRECTION_MAP[E_ID] }
+    static get SOUTH () { return DIRECTION_MAP[S_ID] }
+    static get WEST () { return DIRECTION_MAP[W_ID] }
+    static get NORTHEAST () { return DIRECTION_MAP[NE_ID] }
+    static get NORTHWEST () { return DIRECTION_MAP[NW_ID] }
+    static get SOUTHEAST () { return DIRECTION_MAP[SE_ID] }
+    static get SOUTHWEST () { return DIRECTION_MAP[SW_ID] }
 
     static fromId(id) { return DIRECTION_MAP[id] }
 

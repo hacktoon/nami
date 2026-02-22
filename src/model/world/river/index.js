@@ -25,8 +25,10 @@ export class RiverLayer {
         const id = this.#model.riverGrid.get(point)
         const stretchId = this.#model.stretchMap.get(point)
         const midpointIndex = this.#model.midpointGrid.get(point)
+        const directionBitmap = this.#model.directionBitmap.get(point)
         return {
             id,
+            directionBitmap,
             length: this.#model.riverLengths.get(id),
             name: this.#model.riverNames.get(id),
             midpoint: this.#chunkRect.indexToPoint(midpointIndex),
@@ -49,6 +51,7 @@ export class RiverLayer {
         const attrs = [
             `id=${river.id}`,
             `name=${river.name}`,
+            `directionBitmap=${river.directionBitmap}`,
             `stretch=${river.stretch.name}`,
             `midpoint=${river.midpoint}`,
             `length=${river.length}`,
@@ -63,7 +66,7 @@ export class RiverLayer {
     }
 
     drawOnlyRivers(props, params) {
-        const {canvas, canvasPoint, tileSize, tilePoint, world} = props
+        const {canvas, canvasPoint, tileSize, tilePoint } = props
         if (! params.get('showRivers') || ! this.has(tilePoint)) {
             return
         }
@@ -73,12 +76,7 @@ export class RiverLayer {
         const meanderPoint = Point.plus(canvasPoint, [midSize, midSize])
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
-        const basin = world.basin.get(tilePoint)
-        for(let direction of basin.directionBitmap) {
-            const parentPoint = Point.atDirection(tilePoint, direction)
-            const isParentLand = world.surface.isLand(parentPoint)
-            if (isParentLand && ! this.has(parentPoint))
-                continue
+        for(let direction of river.directionBitmap) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
