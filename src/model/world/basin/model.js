@@ -40,11 +40,6 @@ export function buildBasinModel(context) {
     model.directionBitmap = new DirectionBitMaskGrid(context.rect)
     // map a point to a basin chunk corner connections (for diagonals)
     // used do detect rivers passing on neighbor diagonals
-
-
-
-
-    // MOVE TO RIVER
     model.cornerBitmap = new DirectionBitMaskGrid(context.rect)
     // grid of basin ids
     model.basin = buildBasinGrid({...context, model})
@@ -53,6 +48,7 @@ export function buildBasinModel(context) {
 
 
 function buildErosionGrid({rect}) {
+    // set random directions by default
     return Grid.fromRect(rect, () => Direction.random().id)
 }
 
@@ -218,7 +214,6 @@ class LandBasinFill extends ConcurrentFill {
                 const x = sideDirection.axis[0] == 0 ? direction.axis[0] : -1 * direction.axis[0]
                 const y = sideDirection.axis[1] == 0 ? direction.axis[1] : -1 * direction.axis[1]
                 const sideCornerDir = Direction.fromAxis(x, y)
-                // console.log(sideCornerDir.name, sideDirection.name);
                 model.cornerBitmap.add(sidePoint, sideCornerDir)
             }
         }
@@ -268,10 +263,7 @@ class WaterBasinFill extends ConcurrentFill {
     onFill(fill, fillPoint, parentPoint) {
         const { model, basinGrid } = fill.context
         const upstream = Point.directionBetween(fillPoint, parentPoint)
-        // const joint = model.joint.get(fillPoint)
-        // calculate downstream directions
         Point.adjacents(fillPoint, (sidePoint, direction) => {
-            // const sideJoint = model.joint.get(sidePoint)
             model.directionBitmap.add(fillPoint, direction)
         })
         basinGrid.set(fillPoint, fill.id)

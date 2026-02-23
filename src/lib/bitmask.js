@@ -69,4 +69,9 @@ export class DirectionBitMaskGrid {
         const bitmask = new BitMask(this.#grid.get(point))
         return bitmask.has(direction.code)
     }
+
+    remove(point, direction) {
+        const bitmask = new BitMask(this.#grid.get(point))
+        return bitmask.unset(direction.code)
+    }
 }

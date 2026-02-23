@@ -6,8 +6,9 @@
 
 
 ## ROADMAP
+- test river path by walking alternating diagonals
 - fix roads to fix surface chunk (add region to land)
-- refactor civil model
+- make water ways in basin less connected in hot water areas
 - set biome as {
     temp > x
     rain > 4
