@@ -10,7 +10,7 @@ import { Grid } from '/src/lib/grid'
 
 const MEANDER = 2
 const EMPTY = null
-const REGION_SCALE = 3  // distance between region origins
+const REGION_SCALE = 2  // distance between region origins
 const REGION_GROWTH = [2, 1]
 const REGION_CHANCE = .1
 
@@ -31,14 +31,12 @@ export function buildModel(context) {
     return Grid.fromRect(chunkRect, chunkPoint => {
         const regionId = regionGrid.get(chunkPoint)
         const isCenterRegion = ! borderRegions.has(regionId)
-        const isLand = world.surface.isLand(worldPoint)
         const isEroded = pointMaskMap.has(chunkPoint)
-        if (chunk.surface.isLand(chunkPoint)) {
-            return isEroded ? TYPE_RIVER : TYPE_LAND
-        } else {
-            if (isLand && isCenterRegion) return TYPE_LAND
-            return isEroded ? TYPE_CURRENT : TYPE_WATER
-        }
+        const isWorldLand = world.surface.isLand(worldPoint)
+        const isChunkLand = chunk.surface.isLand(chunkPoint)
+        if (isEroded) return isChunkLand ? TYPE_RIVER : TYPE_CURRENT
+        if (isCenterRegion) return isWorldLand ? TYPE_LAND : TYPE_WATER
+        return isChunkLand ? TYPE_LAND : TYPE_WATER
     })
 }
 
@@ -95,7 +93,6 @@ function generateFlowPath(context, source, target, direction) {
             x = cx > tx ? cx - 1 : (cx < tx ? cx + 1 : cx)
         if (Random.chance(.8))
             y = cy > ty ? cy - 1 : (cy < ty ? cy + 1 : cy)
-        // console.log(current);
         current = [x, y]
         pointMaskMap.set(current, direction.id)
     }
@@ -117,13 +114,6 @@ function buildRegionModel(context) {
     // fill grid
     new RegionFloodFill(chunkRect, fillMap, fillContext).complete()
     return {regionGrid, borderRegions}
-    // return Grid.fromRect(chunkRect, chunkPoint => {
-    //     const regionId = regionGrid.get(chunkPoint)
-    //     // if (! borderRegions.has(regionId)) {
-    //     //     // not on chunk border regions, same as world map
-    //     //     return isLand ? REGION_LAND : REGION_WATER
-    //     // }
-    // })
 }
 
 
@@ -143,9 +133,13 @@ class RegionFloodFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint) {
-        const {chunkRect, regionGrid, borderRegions} = fill.context
+        const {worldPoint, chunkRect, regionGrid, borderRegions} = fill.context
         if (chunkRect.isEdge(fillPoint)) {
             borderRegions.add(fill.id)
+        } else {
+            // if(worldPoint[0] == 50 && worldPoint[1] == 2) {
+            //     console.log(fill.id, fillPoint);
+            // }
         }
         regionGrid.set(fillPoint, fill.id)
     }

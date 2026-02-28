@@ -26,8 +26,7 @@ export class BasinChunk {
             [TYPE_RIVER]: '#272c66',
             [TYPE_CURRENT]: '#313777',
         }
-        if (! params.get('showRivers') || tileSize < 10)
-            return
+        if (tileSize < 10) return
         for (let x=0; x < chunk.size; x++) {
             const xSize = x * chunkTileSize
             for (let y=0; y < chunk.size; y++) {
