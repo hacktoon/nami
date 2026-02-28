@@ -14,23 +14,31 @@ const REGION_SCALE = 3  // distance between region origins
 const REGION_GROWTH = [2, 1]
 const REGION_CHANCE = .1
 
-export const TYPE_RIVER = 1
-export const TYPE_MARGIN = 2
-export const TYPE_OTHER = 3
+export const TYPE_LAND = 1
+export const TYPE_WATER = 2
+export const TYPE_RIVER = 3
+export const TYPE_CURRENT = 4
+export const TYPE_MARGIN = 5
 
 
 export function buildModel(context) {
     // reads the wire data and create points for chunk grid
-    const {chunkRect} = context
-    const regionGrid = buildRegionModel(context)
+    const {world, worldPoint, chunk, chunkRect} = context
+    const {regionGrid, borderRegions} = buildRegionModel(context)
     const pointMaskMap = buildPointMaskMap(context)
     // const river = world.river.get(worldPoint)
     // const basin = world.basin.get(worldPoint)
     return Grid.fromRect(chunkRect, chunkPoint => {
-        if (pointMaskMap.has(chunkPoint)) {
-            return TYPE_RIVER
+        const regionId = regionGrid.get(chunkPoint)
+        const isCenterRegion = ! borderRegions.has(regionId)
+        const isLand = world.surface.isLand(worldPoint)
+        const isEroded = pointMaskMap.has(chunkPoint)
+        if (chunk.surface.isLand(chunkPoint)) {
+            return isEroded ? TYPE_RIVER : TYPE_LAND
+        } else {
+            if (isLand && isCenterRegion) return TYPE_LAND
+            return isEroded ? TYPE_CURRENT : TYPE_WATER
         }
-        return TYPE_OTHER
     })
 }
 
@@ -98,6 +106,7 @@ function generateFlowPath(context, source, target, direction) {
 function buildRegionModel(context) {
     // Generate a boolean grid (land or water)
     const {worldPoint, world, rect, chunkRect} = context
+    // Each chunk point is a region ID
     const regionGrid = Grid.fromRect(chunkRect, () => EMPTY)
     const origins = EvenPointSampling.create(chunkRect, REGION_SCALE)
     const borderRegions = new Set()
@@ -107,13 +116,14 @@ function buildRegionModel(context) {
     const fillContext = {...context, regionGrid, borderRegions}
     // fill grid
     new RegionFloodFill(chunkRect, fillMap, fillContext).complete()
-    return Grid.fromRect(chunkRect, chunkPoint => {
-        const regionId = regionGrid.get(chunkPoint)
-        // if (! borderRegions.has(regionId)) {
-        //     // not on chunk border regions, same as world map
-        //     return isLand ? REGION_LAND : REGION_WATER
-        // }
-    })
+    return {regionGrid, borderRegions}
+    // return Grid.fromRect(chunkRect, chunkPoint => {
+    //     const regionId = regionGrid.get(chunkPoint)
+    //     // if (! borderRegions.has(regionId)) {
+    //     //     // not on chunk border regions, same as world map
+    //     //     return isLand ? REGION_LAND : REGION_WATER
+    //     // }
+    // })
 }
 
 
