@@ -3,16 +3,11 @@ import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { PointMap } from '/src/lib/geometry/point/map'
 import { Point } from '/src/lib/geometry/point'
-import { Rect } from '/src/lib/geometry/rect'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
 
 const MEANDER = 2
-const EMPTY = null
-const REGION_SCALE = 2  // distance between region origins
-const REGION_GROWTH = [2, 1]
-const REGION_CHANCE = .1
 
 export const TYPE_LAND = 1
 export const TYPE_WATER = 2
@@ -20,22 +15,30 @@ export const TYPE_RIVER = 3
 export const TYPE_CURRENT = 4
 export const TYPE_MARGIN = 5
 
+const EMPTY = null
+const REGION_SCALE = 2  // distance between region origins
+const REGION_GROWTH = 1
+const REGION_CHANCE = .1
+
 
 export function buildModel(context) {
     // reads the wire data and create points for chunk grid
-    const {world, worldPoint, chunk, chunkRect} = context
-    const {regionGrid, borderRegions} = buildRegionModel(context)
+    const { world, worldPoint, chunk, chunkRect } = context
     const pointMaskMap = buildPointMaskMap(context)
-    // const river = world.river.get(worldPoint)
-    // const basin = world.basin.get(worldPoint)
+    const { regionGrid, borderRegions } = buildRegionModel(context)
+    const riverPoints = []
     return Grid.fromRect(chunkRect, chunkPoint => {
-        const regionId = regionGrid.get(chunkPoint)
-        const isCenterRegion = ! borderRegions.has(regionId)
         const isEroded = pointMaskMap.has(chunkPoint)
         const isWorldLand = world.surface.isLand(worldPoint)
-        const isChunkLand = chunk.surface.isLand(chunkPoint)
-        if (isEroded) return isChunkLand ? TYPE_RIVER : TYPE_CURRENT
-        if (isCenterRegion) return isWorldLand ? TYPE_LAND : TYPE_WATER
+        const regionId = regionGrid.get(chunkPoint)
+        const isCenterRegion = !borderRegions.has(regionId)
+        const isChunkLand = isCenterRegion ? isWorldLand : chunk.surface.isLand(chunkPoint)
+        if (isEroded) {
+            if (! isChunkLand) return TYPE_CURRENT
+            // mark river points for post processing
+            if (isWorldLand) riverPoints.push(chunkPoint)
+            return isWorldLand ? TYPE_RIVER : TYPE_CURRENT
+        }
         return isChunkLand ? TYPE_LAND : TYPE_WATER
     })
 }
@@ -43,12 +46,12 @@ export function buildModel(context) {
 
 function buildPointMaskMap(baseContext) {
     // reads the direction bitmask data and create points for chunk grid
-    const {world, worldPoint, chunk, chunkRect} = baseContext
+    const { world, worldPoint, chunk, chunkRect } = baseContext
     const pointMaskMap = new PointMap(chunkRect)
     const basin = world.basin.get(worldPoint)
     const midSize = Math.floor(chunk.size / 2)
     const source = basin.midpoint
-    for(let direction of basin.directionBitmap) {
+    for (let direction of basin.directionBitmap) {
         const parentPoint = Point.atDirection(worldPoint, direction)
         const sideBasin = world.basin.get(parentPoint)
         const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
@@ -75,7 +78,7 @@ function buildPointMaskMap(baseContext) {
 
 
 function generateFlowPath(context, source, target, direction) {
-    const {chunkRect, pointMaskMap} = context
+    const { chunkRect, pointMaskMap } = context
     const deltaX = Math.abs(source[0] - target[0])
     const deltaY = Math.abs(source[1] - target[1])
     const fixedAxis = deltaX > deltaY ? 0 : 1  // 0 for x, 1 for y
@@ -100,25 +103,26 @@ function generateFlowPath(context, source, target, direction) {
 }
 
 
+
 function buildRegionModel(context) {
     // Generate a boolean grid (land or water)
-    const {worldPoint, world, rect, chunkRect} = context
+    const { chunkRect } = context
     // Each chunk point is a region ID
     const regionGrid = Grid.fromRect(chunkRect, () => EMPTY)
     const origins = EvenPointSampling.create(chunkRect, REGION_SCALE)
     const borderRegions = new Set()
     // prepare fill map with fill id => fill origin
     // it's also a map of all regions
-    const fillMap = new Map(origins.map((origin, id) => [id, {origin}]))
-    const fillContext = {...context, regionGrid, borderRegions}
+    const fillMap = new Map(origins.map((origin, id) => [id, { origin }]))
+    const fillContext = { ...context, regionGrid, borderRegions }
     // fill grid
     new RegionFloodFill(chunkRect, fillMap, fillContext).complete()
-    return {regionGrid, borderRegions}
+    return { regionGrid, borderRegions }
 }
 
 
 class RegionFloodFill extends ConcurrentFill {
-    getGrowth() { return Random.choiceFrom(REGION_GROWTH) }
+    getGrowth() { return REGION_GROWTH }
     getChance() { return REGION_CHANCE }
 
     getNeighbors(fill, parentPoint) {
@@ -133,13 +137,9 @@ class RegionFloodFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint) {
-        const {worldPoint, chunkRect, regionGrid, borderRegions} = fill.context
+        const { chunkRect, regionGrid, borderRegions } = fill.context
         if (chunkRect.isEdge(fillPoint)) {
             borderRegions.add(fill.id)
-        } else {
-            // if(worldPoint[0] == 50 && worldPoint[1] == 2) {
-            //     console.log(fill.id, fillPoint);
-            // }
         }
         regionGrid.set(fillPoint, fill.id)
     }

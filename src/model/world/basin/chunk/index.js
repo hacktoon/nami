@@ -23,10 +23,14 @@ export class BasinChunk {
         const colorMap = {
             [TYPE_LAND]: '#6fbc58',
             [TYPE_WATER]: '#272c66',
-            [TYPE_RIVER]: '#272c66',
-            [TYPE_CURRENT]: '#313777',
+            [TYPE_RIVER]: '#3e7931',
+            [TYPE_CURRENT]: '#343a7f',
         }
         if (tileSize < 10) return
+        if (! params.get('showErosion')) {
+            chunk.surface.draw(props, params)
+            return
+        }
         for (let x=0; x < chunk.size; x++) {
             const xSize = x * chunkTileSize
             for (let y=0; y < chunk.size; y++) {
