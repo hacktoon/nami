@@ -5,8 +5,8 @@ import { SimplexNoise } from '/src/lib/noise'
 const NOISE_SPEC = {
     'outline': {octaves: 6, resolution: .8, scale: .02},
     'chunkOutline': {octaves: 7, resolution: .8, scale: .02},
-    'climate': {octaves: 6, resolution: .65, scale: .02},
-    'chunkClimate': {octaves: 7, resolution: .65, scale: .02},
+    'climate': {octaves: 6, resolution: .65, scale: .01},
+    'chunkClimate': {octaves: 7, resolution: .65, scale: .01},
     'rain': {octaves: 6, resolution: .8, scale: .02},
     'chunkRain': {octaves: 7, resolution: .8, scale: .02},
     'grained': {octaves: 6, resolution: .8, scale: .8},
