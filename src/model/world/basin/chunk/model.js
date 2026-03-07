@@ -1,36 +1,68 @@
 import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
-import { PointMap } from '/src/lib/geometry/point/map'
 import { Point } from '/src/lib/geometry/point'
+import { PointMap } from '/src/lib/geometry/point/map'
+import { PointSet } from '/src/lib/geometry/point/set'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
 
-const MEANDER = 2
+const MEANDER = 3
 
 export const TYPE_LAND = 1
 export const TYPE_WATER = 2
 export const TYPE_RIVER = 3
 export const TYPE_CURRENT = 4
 export const TYPE_MARGIN = 5
-
+export const TYPE_SHORE = 6
 
 
 export function buildModel(context) {
     // reads the wire data and create points for chunk grid
-    const { world, worldPoint, chunk, chunkRect } = context
+    const { world, worldPoint, chunk, chunkRect, chunkSize } = context
     const pointMaskMap = buildPointMaskMap(context)
-    const riverPoints = []
-    return Grid.fromRect(chunkRect, chunkPoint => {
+    const marginPoints = new PointSet(chunkRect)
+    const shorePoints = new PointSet(chunkRect)
+    const isWorldLand = world.surface.isLand(worldPoint)
+    const baseGrid = Grid.fromRect(chunkRect, chunkPoint => {
         const isEroded = pointMaskMap.has(chunkPoint)
-        const isWorldLand = world.surface.isLand(worldPoint)
         const isChunkLand = chunk.surface.isLand(chunkPoint)
-        if (isEroded) {
-            if (! isChunkLand) return TYPE_CURRENT
-            // mark river points for post processing
-            if (isWorldLand) riverPoints.push(chunkPoint)
-            return isWorldLand ? TYPE_RIVER : TYPE_CURRENT
+        if (! isEroded) return isChunkLand ? TYPE_LAND : TYPE_WATER
+        // discover erosion path value
+        if (isWorldLand) {
+            Point.around(chunkPoint, sidePoint => {
+                if (chunkRect.isInside(sidePoint)) {
+                    marginPoints.add(sidePoint)
+                }
+            })
+            return TYPE_RIVER
         }
-        return isChunkLand ? TYPE_LAND : TYPE_WATER
+        // water paths
+        Point.adjacents(chunkPoint, sidePoint => {
+            if (chunkRect.isInside(sidePoint)) {
+                shorePoints.add(sidePoint)
+            }
+        })
+        return TYPE_CURRENT
+    })
+    // post process to add margins
+    return Grid.fromRect(chunkRect, chunkPoint => {
+        const isMargin = marginPoints.has(chunkPoint)
+        const type = baseGrid.get(chunkPoint)
+        //  code for marking chunk corners
+        const basin = world.basin.get(worldPoint)
+        for (let dir of basin.cornerBitmap) {
+            const chunkCornerPoint = dir.axis.map(coord => coord > 0 ? chunkSize-1 : 0)
+            Point.adjacents(chunkCornerPoint, sidePoint => {
+                if (chunkRect.isInside(sidePoint))
+                    marginPoints.add(sidePoint)
+            })
+            marginPoints.add(chunkCornerPoint)
+        }
+        if (type == TYPE_LAND || type == TYPE_WATER) {
+            if (isMargin) return TYPE_MARGIN
+            if (shorePoints.has(chunkPoint)) return TYPE_SHORE
+        }
+        return type
     })
 }
 
@@ -60,12 +92,6 @@ function buildPointMaskMap(baseContext) {
     }
     return pointMaskMap
 }
-
-//  code for marking chunk corners
-// for (let dir of cornerBitmap) {
-//     const chunkPoint = dir.axis.map(coord => coord > 0 ? chunkSize-1 : 0)
-//     fillMap.set(id++, {origin: chunkPoint, basinLevel: 1})
-// }
 
 
 function generateFlowPath(context, source, target, direction) {

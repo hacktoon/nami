@@ -81,7 +81,7 @@ function buildModel(context) {
         const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
         const regionId = regionModel.regionGrid.get(chunkPoint)
         // set central regions as the same as world point surface
-        if (!regionModel.borderRegions.has(regionId))
+        if (regionId % 2 == 0 && !regionModel.borderRegions.has(regionId))
             return isWorldLand
         // chunk border regions are set by noise
         return noise > SURFACE_NOISE_RATIO ? REGION_LAND : REGION_WATER

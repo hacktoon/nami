@@ -17,10 +17,10 @@ import {
 
 
 const NO_BASIN_ID = null
-const FILL_CHANCE = .3  // chance of fill growing
-const FILL_GROWTH = 5
+const FILL_CHANCE = .1  // chance of fill growing
+const FILL_GROWTH = 3
 const MIDPOINT_RATE = .6  //random point in 60% of chunkrect area around center point
-const MIDDLE_OFFSET = 2  // used to avoid midpoints on middle
+const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
 const INITIAL_DISTANCE = 1
 
 

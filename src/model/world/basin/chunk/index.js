@@ -6,8 +6,21 @@ import {
     TYPE_LAND,
     TYPE_RIVER,
     TYPE_WATER,
-    TYPE_CURRENT
+    TYPE_CURRENT,
+    TYPE_MARGIN,
+    TYPE_SHORE,
 } from './model'
+
+
+const COLOR_MAP = {
+    [TYPE_LAND]: '#71b13e',
+    [TYPE_WATER]: '#272c66',
+    [TYPE_RIVER]: '#3e7931',
+    [TYPE_CURRENT]: '#0f1235',
+    // [TYPE_MARGIN]: '#65a133',
+    [TYPE_MARGIN]: '#71b13e',
+    [TYPE_SHORE]: '#1b1f52',
+}
 
 
 export class BasinChunk {
@@ -20,12 +33,7 @@ export class BasinChunk {
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, chunk} = props
         const chunkTileSize = tileSize / chunk.size
-        const colorMap = {
-            [TYPE_LAND]: '#6fbc58',
-            [TYPE_WATER]: '#272c66',
-            [TYPE_RIVER]: '#3e7931',
-            [TYPE_CURRENT]: '#343a7f',
-        }
+
         if (tileSize < 10) return
         if (! params.get('showErosion')) {
             chunk.surface.draw(props, params)
@@ -38,7 +46,7 @@ export class BasinChunk {
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const type = this.#model.get(chunkPoint)
-                const color = colorMap[type]
+                const color = COLOR_MAP[type]
                 canvas.rect(chunkCanvasPoint, chunkTileSize, color)
                 // if (Point.equals(basin.midpoint, chunkPoint)) {
                 //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
