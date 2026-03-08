@@ -18,7 +18,7 @@ import {
 
 const NO_BASIN_ID = null
 const FILL_CHANCE = .1
-const FILL_GROWTH = 2
+const FILL_GROWTH = 3
 const MIDPOINT_RATE = .4  // random point in 40% of chunkrect area around center point
 const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
 const INITIAL_DISTANCE = 1
