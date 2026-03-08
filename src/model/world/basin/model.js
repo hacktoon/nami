@@ -18,7 +18,7 @@ import {
 
 const NO_BASIN_ID = null
 const FILL_CHANCE = .1
-const FILL_GROWTH = 3
+const FILL_GROWTH = 2
 const MIDPOINT_RATE = .4  // random point in 40% of chunkrect area around center point
 const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
 const INITIAL_DISTANCE = 1
@@ -96,11 +96,13 @@ function buildBasinGrid(context) {
         // basins start on borders and fill inland
         if (isBorder && isLand) {
             const survey = surveyNeighbors(context, point)
-            const type = detectLandBasinType(world, survey)
-            surveyMap.set(basinId, survey)
-            model.type.set(basinId, type.id)
-            landFillMap.set(basinId, {origin: point, retry: true})
-            basinId++
+            if(survey.waterNeighbors.length == 1) {
+                const type = detectLandBasinType(world, survey)
+                surveyMap.set(basinId, survey)
+                model.type.set(basinId, type.id)
+                landFillMap.set(basinId, {origin: point})
+                basinId++
+            }
         }
         if (isBorder && ! isLand) {
             const type = OceanBasin
@@ -206,17 +208,7 @@ class LandBasinFill extends ConcurrentFill {
         model.erosion.set(fillPoint, direction.id)
         // mark the direction the erosion flows
         model.directionBitmap.add(fillPoint, direction)
-
-        if (Direction.isDiagonal(direction)) {
-            for (let sideDirection of Direction.getComponents(direction)) {
-                const sidePoint = Point.atDirection(fillPoint, sideDirection)
-                // mirror directions in one axis
-                const x = sideDirection.axis[0] == 0 ? direction.axis[0] : -1 * direction.axis[0]
-                const y = sideDirection.axis[1] == 0 ? direction.axis[1] : -1 * direction.axis[1]
-                const sideCornerDir = Direction.fromAxis(x, y)
-                model.cornerBitmap.add(sidePoint, sideCornerDir)
-            }
-        }
+        _setCorner(model, fillPoint, direction)
     }
 }
 
@@ -268,5 +260,24 @@ class WaterBasinFill extends ConcurrentFill {
         })
         basinGrid.set(fillPoint, fill.id)
         model.erosion.set(fillPoint, upstream.id)
+        const direction = Point.directionBetween(fillPoint, parentPoint)
+        console.log(fillPoint)
+        if(fillPoint[0] == 12  && fillPoint[1] == 14 ) {
+            console.log(direction);
+        }
+        _setCorner(model, fillPoint, direction)
+    }
+}
+
+
+function _setCorner(model, fillPoint, direction) {
+    if (! Direction.isDiagonal(direction)) return
+    for (let sideDirection of Direction.getComponents(direction)) {
+        const sidePoint = Point.atDirection(fillPoint, sideDirection)
+        // mirror directions in one axis
+        const x = sideDirection.axis[0] == 0 ? direction.axis[0] : -1 * direction.axis[0]
+        const y = sideDirection.axis[1] == 0 ? direction.axis[1] : -1 * direction.axis[1]
+        const sideCornerDir = Direction.fromAxis(x, y)
+        model.cornerBitmap.add(sidePoint, sideCornerDir)
     }
 }
