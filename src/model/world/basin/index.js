@@ -21,10 +21,12 @@ export class BasinLayer {
         const directionId = this.#model.erosion.get(point)
         const midpointIndex = this.#model.midpoint.get(point)
         const directionBitmap = this.#model.directionBitmap.get(point)
-        const cornerBitmap = this.#model.cornerBitmap.get(point)
+        const riverCornerBitmap = this.#model.riverCornerBitmap.get(point)
+        const waterCornerBitmap = this.#model.waterCornerBitmap.get(point)
         return {
             id,
-            cornerBitmap,
+            riverCornerBitmap,
+            waterCornerBitmap,
             directionBitmap,
             type: Basin.parse(typeId),
             distance: this.#model.distance.get(point),

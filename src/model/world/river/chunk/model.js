@@ -64,7 +64,7 @@ function buildPointMaskMap(baseContext) {
 }
 
 //  code for marking chunk corners
-// for (let dir of cornerBitmap) {
+// for (let dir of riverCornerBitmap) {
 //     const chunkPoint = dir.axis.map(coord => coord > 0 ? chunkSize-1 : 0)
 //     fillMap.set(id++, {origin: chunkPoint, basinLevel: 1})
 // }

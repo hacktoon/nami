@@ -17,8 +17,8 @@ const COLOR_MAP = {
     [TYPE_WATER]: '#272c66',
     [TYPE_RIVER]: '#3e7931',
     [TYPE_CURRENT]: '#0f1235',
-    // [TYPE_MARGIN]: '#65a133',
-    [TYPE_MARGIN]: '#71b13e',
+    [TYPE_MARGIN]: '#65a133',
+    // [TYPE_MARGIN]: '#71b13e',
     [TYPE_SHORE]: '#1b1f52',
 }
 

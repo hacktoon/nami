@@ -40,7 +40,8 @@ export function buildBasinModel(context) {
     model.directionBitmap = new DirectionBitMaskGrid(context.rect)
     // map a point to a basin chunk corner connections (for diagonals)
     // used do detect rivers passing on neighbor diagonals
-    model.cornerBitmap = new DirectionBitMaskGrid(context.rect)
+    model.riverCornerBitmap = new DirectionBitMaskGrid(context.rect)
+    model.waterCornerBitmap = new DirectionBitMaskGrid(context.rect)
     // grid of basin ids
     model.basin = buildBasinGrid({...context, model})
     return model
@@ -200,7 +201,7 @@ class LandBasinFill extends ConcurrentFill {
     }
 
     _fillBasin(fill, fillPoint, parentPoint) {
-        const {model, basinGrid} = fill.context
+        const {world, model, basinGrid} = fill.context
         const direction = Point.directionBetween(fillPoint, parentPoint)
         // basin id is the same as fill id
         basinGrid.set(fillPoint, fill.id)
@@ -208,7 +209,7 @@ class LandBasinFill extends ConcurrentFill {
         model.erosion.set(fillPoint, direction.id)
         // mark the direction the erosion flows
         model.directionBitmap.add(fillPoint, direction)
-        _setCorner(model, fillPoint, direction)
+        _setCorner(world, model, fillPoint, direction)
     }
 }
 
@@ -239,9 +240,12 @@ class WaterBasinFill extends ConcurrentFill {
         })
         // diagonals later, only to non-border water sides
         Point.diagonals(fillPoint, (sidePoint, direction) => {
-            if (world.surface.isLand(sidePoint)) return
-            if (! world.surface.isBorder(sidePoint)) return
-            model.directionBitmap.add(fillPoint, direction)
+            if (world.surface.isLand(sidePoint))
+                return
+            _setCorner(world, model, fillPoint, direction)
+            if (world.surface.isBorder(sidePoint)) {
+                model.directionBitmap.add(fillPoint, direction)
+            }
         })
     }
 
@@ -253,31 +257,32 @@ class WaterBasinFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const { model, basinGrid } = fill.context
+        const { world, model, basinGrid } = fill.context
         const upstream = Point.directionBetween(fillPoint, parentPoint)
         Point.adjacents(fillPoint, (sidePoint, direction) => {
             model.directionBitmap.add(fillPoint, direction)
         })
+        // set water corners
+        const direction = Point.directionBetween(fillPoint, parentPoint)
+        _setCorner(world, model, fillPoint, direction)
         basinGrid.set(fillPoint, fill.id)
         model.erosion.set(fillPoint, upstream.id)
-        const direction = Point.directionBetween(fillPoint, parentPoint)
-        console.log(fillPoint)
-        if(fillPoint[0] == 12  && fillPoint[1] == 14 ) {
-            console.log(direction);
-        }
-        _setCorner(model, fillPoint, direction)
     }
 }
 
 
-function _setCorner(model, fillPoint, direction) {
+function _setCorner(world, model, fillPoint, direction) {
     if (! Direction.isDiagonal(direction)) return
     for (let sideDirection of Direction.getComponents(direction)) {
         const sidePoint = Point.atDirection(fillPoint, sideDirection)
-        // mirror directions in one axis
+        // mirror directions in one axis  '/'  =>  '\'
         const x = sideDirection.axis[0] == 0 ? direction.axis[0] : -1 * direction.axis[0]
         const y = sideDirection.axis[1] == 0 ? direction.axis[1] : -1 * direction.axis[1]
         const sideCornerDir = Direction.fromAxis(x, y)
-        model.cornerBitmap.add(sidePoint, sideCornerDir)
+        if (world.surface.isWater(fillPoint)) {
+            model.waterCornerBitmap.add(sidePoint, sideCornerDir)
+        } else {
+            model.riverCornerBitmap.add(sidePoint, sideCornerDir)
+        }
     }
 }
