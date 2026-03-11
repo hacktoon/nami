@@ -84,12 +84,12 @@ function setCorners(chunkRect, directions, collection) {
     const size = chunkRect.width
     for (let dir of directions) {
         const chunkCornerPoint = dir.axis.map(coord => coord > 0 ? size-1 : 0)
-        // mark a cross around the point
+        // mark a cross at corner point
         Point.adjacents(chunkCornerPoint, sidePoint => {
             if (chunkRect.isInside(sidePoint))
                 collection.add(sidePoint)
         })
-        // collection.add(chunkCornerPoint)
+        collection.add(chunkCornerPoint)
     }
 }
 

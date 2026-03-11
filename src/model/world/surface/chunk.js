@@ -30,16 +30,16 @@ export class SurfaceChunk {
         this.#model = buildModel(context)
     }
 
-    // get(chunkPoint) {
-    //     const model = this.#model
-    //     const region = model.regionGrid.get(chunkPoint)
-    //     return {
-    //         region,
-    //         isLand: model.surfaceGrid.get(chunkPoint),
-    //         anchor: model.anchorMap.get(region),
-    //         type: model.typeMap.get(region),
-    //     }
-    // }
+    get(chunkPoint) {
+        const model = this.#model
+        const region = model.regionGrid.get(chunkPoint)
+        return {
+            region,
+            isLand: model.surfaceGrid.get(chunkPoint),
+            anchor: model.anchorMap.get(region),
+            type: model.typeMap.get(region),
+        }
+    }
 
     isLand(chunkPoint) {
         return this.#model.surfaceGrid.get(chunkPoint)
@@ -60,7 +60,7 @@ export class SurfaceChunk {
                     ? ContinentSurface.color
                     : OceanSurface.color
                 // if (chunk.isLand && chunk.anchor && Point.equals(chunk.anchor, chunkPoint)) {
-                //     color = color.darken(chunk.region * 7)
+                //     canvas.rect(chunkCanvasPoint, size, '#840')
                 // }
                 canvas.rect(chunkCanvasPoint, size, color.toHex())
             }
@@ -76,13 +76,18 @@ function buildModel(context) {
     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
     const noiseRect = Rect.multiply(rect, chunkRect.width)
     const isWorldLand = world.surface.isLand(worldPoint)
+    const isWorldIsland = world.surface.isIsland(worldPoint)
     const surfaceGrid = Grid.fromRect(chunkRect, chunkPoint => {
         const noisePoint = Point.plus(relativePoint, chunkPoint)
         const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
         const regionId = regionModel.regionGrid.get(chunkPoint)
-        // set central regions as the same as world point surface
-        if (regionId % 2 == 0 && !regionModel.borderRegions.has(regionId))
+        // override noise on central regions
+        if (!regionModel.borderRegions.has(regionId)) {
+            if (isWorldIsland)  // islands use less land
+                return regionId % 2 == 0 ? REGION_LAND : REGION_WATER
+            // as the same as world point surface
             return isWorldLand
+        }
         // chunk border regions are set by noise
         return noise > SURFACE_NOISE_RATIO ? REGION_LAND : REGION_WATER
     })
@@ -101,8 +106,12 @@ function buildRegionModel(context) {
     const origins = EvenPointSampling.create(chunkRect, REGION_SCALE)
     const fillMap = new Map(origins.map((origin, id) => {
         // get origins except for edge points as anchors for tracing paths
-        if (!chunkRect.isEdge(origin)) {
-            // pick any region
+        const offset = 2
+        const [x, y] = origin
+        const insideX = x >= offset && x < chunkRect.width - offset
+        const insideY = y >= offset && y < chunkRect.height - offset
+        if (insideX && insideY) {
+            // pick any region 2 tiles inside
             const regionType = id % 2 == 0 || id % 5 == 0
             typeMap.set(id, regionType)
             anchorMap.set(id, origin)

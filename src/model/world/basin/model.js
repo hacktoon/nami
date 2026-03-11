@@ -92,7 +92,9 @@ function buildBasinGrid(context) {
     let basinId = 0
     const basinGrid = Grid.fromRect(rect, point => {
         // prepare data for flood fill at each point
+        const survey = surveyNeighbors(context, point)
         const isBorder = world.surface.isBorder(point)
+        // const survey.waterNeighbors.length
         const isLand = world.surface.isLand(point)
         // basins start on borders and fill inland
         if (isBorder && isLand) {
