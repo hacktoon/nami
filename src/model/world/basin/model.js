@@ -91,21 +91,18 @@ function buildBasinGrid(context) {
     const waterFillMap = new Map()
     let basinId = 0
     const basinGrid = Grid.fromRect(rect, point => {
-        // prepare data for flood fill at each point
+        // Prepare data for flood fill at each point
         const survey = surveyNeighbors(context, point)
         const isBorder = world.surface.isBorder(point)
-        // const survey.waterNeighbors.length
         const isLand = world.surface.isLand(point)
-        // basins start on borders and fill inland
-        if (isBorder && isLand) {
-            const survey = surveyNeighbors(context, point)
-            // if(survey.waterNeighbors.length == 1) {
-                const type = detectLandBasinType(world, survey)
-                surveyMap.set(basinId, survey)
-                model.type.set(basinId, type.id)
-                landFillMap.set(basinId, {origin: point})
-                basinId++
-            // }
+        // Basins start on borders and fill inland
+        // Create major erosion paths (basins) on tiles with just one water neighbor
+        if (isBorder && isLand && survey.waterNeighbors.length == 1) {
+            const type = detectLandBasinType(world, survey)
+            surveyMap.set(basinId, survey)
+            model.type.set(basinId, type.id)
+            landFillMap.set(basinId, {origin: point})
+            basinId++
         }
         if (isBorder && ! isLand) {
             const type = OceanBasin
@@ -113,11 +110,12 @@ function buildBasinGrid(context) {
             waterFillMap.set(basinId, {origin: point, type})
             basinId++
         }
-        // return default basin id (as empty cell) before flood fill
+        // Return default basin id (as empty cell) before flood fill
+        // this is created on chunk level
         model.type.set(NO_BASIN_ID, DiffuseBasin.id)
         return NO_BASIN_ID
     })
-    // start flood fills from each border, both land && water
+    // Start flood fills from each border, both land && water
     const fillContext = {...context, basinGrid, surveyMap}
     new LandBasinFill(rect, landFillMap, fillContext).complete()
     new WaterBasinFill(rect, waterFillMap, fillContext).complete()

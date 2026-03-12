@@ -29,8 +29,9 @@ export function buildModel(baseContext) {
         ...baseContext, regionModel, pointMaskMap, marginPoints, shorePoints
     }
     const baseGrid = buildBaseGrid(context)
+    const marginGrid = buildMarginGrid(baseGrid, context)
     return {
-        grid: buildMarginGrid(context, baseGrid),
+        grid: marginGrid,
         regionModel,
     }
 }
@@ -50,7 +51,6 @@ function buildBaseGrid(context) {
                 return isBorder ? TYPE_MARGIN : TYPE_LAND
             return isBorder ? TYPE_SHORE : TYPE_WATER
         }
-
         // discover erosion path value
         if (isWorldLand) {
             // set erosion margins
@@ -72,7 +72,7 @@ function buildBaseGrid(context) {
     })
 }
 
-function buildMarginGrid(context, baseGrid) {
+function buildMarginGrid(baseGrid, context) {
     const { world, worldPoint, chunkRect } = context
     const { marginPoints, shorePoints  } = context
     const isWorldLand = world.surface.isLand(worldPoint)
@@ -80,8 +80,8 @@ function buildMarginGrid(context, baseGrid) {
     // post process to add margins and shores to some chunk points
     const basin = world.basin.get(worldPoint)
     // check river/water chunk corners for grid building
-    setCorners(chunkRect, basin.riverCornerBitmap, marginPoints)
     setCorners(chunkRect, basin.waterCornerBitmap, shorePoints)
+    setCorners(chunkRect, basin.riverCornerBitmap, marginPoints)
     return Grid.fromRect(chunkRect, chunkPoint => {
         const type = baseGrid.get(chunkPoint)
         if (type == TYPE_LAND || type == TYPE_WATER) {

@@ -2,11 +2,6 @@ import { Point } from '/src/lib/geometry/point'
 import { Rect } from '/src/lib/geometry/rect'
 import { Grid } from '/src/lib/grid'
 
-import {
-    ContinentSurface,
-    OceanSurface,
-} from './type'
-
 
 const SURFACE_NOISE_RATIO = .6
 const WATER = 1
@@ -16,9 +11,9 @@ const WATER_BORDER = 4
 
 const COLOR_MAP = {
     [LAND]: '#71b13e',
-    [WATER]: '#272c66',
-    [LAND_BORDER]: '#3e7931',
-    [WATER_BORDER]: '#0f1235',
+    [WATER]: '#181c46',
+    [LAND_BORDER]: '#57894b',
+    [WATER_BORDER]: '#2c3062',
 }
 
 

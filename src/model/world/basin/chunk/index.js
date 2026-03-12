@@ -14,12 +14,11 @@ import {
 
 const COLOR_MAP = {
     [TYPE_LAND]: '#71b13e',
-    [TYPE_WATER]: '#0f1235',
-    [TYPE_RIVER]: '#32387c',
-    [TYPE_CURRENT]: '#272c66',
-    [TYPE_MARGIN]: '#458437',
-    // [TYPE_MARGIN]: '#71b13e',
-    [TYPE_SHORE]: '#1b1f52',
+    [TYPE_WATER]: '#181c46',
+    [TYPE_RIVER]: '#383c72',
+    [TYPE_MARGIN]: '#57894b', //'#71b13e',
+    [TYPE_CURRENT]: '#383c72',
+    [TYPE_SHORE]: '#2c3062',
 }
 
 
@@ -44,33 +43,17 @@ export class BasinChunk {
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const type = model.grid.get(chunkPoint)
+                // const type = model.margin.get(chunkPoint)
                 const region = model.regionModel.regionGrid.get(chunkPoint)
                 const anchor = model.regionModel.anchorMap.get(region)
                 const color = COLOR_MAP[type]
                 if (params.get('showErosion')) {
                     canvas.rect(chunkCanvasPoint, chunkTileSize, color)
                 }
-                if (anchor && Point.equals(anchor, chunkPoint)) {
-                    canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
-                }
+                // if (anchor && Point.equals(anchor, chunkPoint)) {
+                //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
+                // }
             }
         }
     }
 }
-
-
-
-// for (let x=0; x < chunk.size; x++) {
-        //     const xSize = x * chunkTileSize
-        //     for (let y=0; y < chunk.size; y++) {
-        //         const chunkPoint = [y, x]
-        //         const ySize = y * chunkTileSize
-        //         const basin = world.basin.get(tilePoint)
-        //         let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-        //         const {type} = this.get(chunkPoint)
-        //         canvas.rect(chunkCanvasPoint, chunkTileSize, type.color.toHex())
-        //         if (Point.equals(basin.midpoint, chunkPoint)) {
-        //             canvas.rect(chunkCanvasPoint, chunkTileSize, Color.BROWN.toHex())
-        //         }
-        //     }
-        // }
