@@ -50,6 +50,7 @@ function buildBaseGrid(context) {
                 return isBorder ? TYPE_MARGIN : TYPE_LAND
             return isBorder ? TYPE_SHORE : TYPE_WATER
         }
+
         // discover erosion path value
         if (isWorldLand) {
             // set erosion margins
