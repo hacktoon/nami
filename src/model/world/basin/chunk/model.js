@@ -44,8 +44,12 @@ function buildBaseGrid(context) {
     return Grid.fromRect(chunkRect, chunkPoint => {
         const isEroded = pointMaskMap.has(chunkPoint)
         // no erosion
-        if (! isEroded)
-            return chunk.surface.isLand(chunkPoint) ? TYPE_LAND : TYPE_WATER
+        if (! isEroded) {
+            const isBorder = chunk.surface.isBorder(chunkPoint)
+            if (chunk.surface.isLand(chunkPoint))
+                return isBorder ? TYPE_MARGIN : TYPE_LAND
+            return isBorder ? TYPE_SHORE : TYPE_WATER
+        }
         // discover erosion path value
         if (isWorldLand) {
             // set erosion margins

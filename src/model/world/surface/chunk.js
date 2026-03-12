@@ -9,8 +9,17 @@ import {
 
 
 const SURFACE_NOISE_RATIO = .6
-const REGION_WATER = false
-const REGION_LAND = true
+const WATER = 1
+const LAND = 2
+const LAND_BORDER = 3
+const WATER_BORDER = 4
+
+const COLOR_MAP = {
+    [LAND]: '#71b13e',
+    [WATER]: '#272c66',
+    [LAND_BORDER]: '#3e7931',
+    [WATER_BORDER]: '#0f1235',
+}
 
 
 export class SurfaceChunk {
@@ -22,7 +31,13 @@ export class SurfaceChunk {
     }
 
     isLand(chunkPoint) {
-        return this.#model.get(chunkPoint)
+        const type = this.#model.get(chunkPoint)
+        return type == LAND || type == LAND_BORDER
+    }
+
+    isBorder(chunkPoint) {
+        const type = this.#model.get(chunkPoint)
+        return type == WATER_BORDER || type == LAND_BORDER
     }
 
     draw(props, params) {
@@ -36,10 +51,9 @@ export class SurfaceChunk {
                 // const chunk = this.get(chunkPoint)
                 const ySize = y * size
                 const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                let color = this.isLand(chunkPoint)
-                    ? ContinentSurface.color
-                    : OceanSurface.color
-                canvas.rect(chunkCanvasPoint, size, color.toHex())
+                const id = this.#model.get(chunkPoint)
+                let color = COLOR_MAP[id]
+                canvas.rect(chunkCanvasPoint, size, color)
             }
         }
     }
@@ -52,14 +66,40 @@ function buildModel(context) {
     // Offset noise sampled at (0, 0) position in world map
     // It should have been sampled at chunk's midpoint. Solve this by offseting here.
     const offset = Math.floor(chunkSize / 2)
-    const noiseOffset = [offset, offset]
     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
-    const offsetChunkPoint = Point.minus(relativePoint, noiseOffset)
+    const offsetChunkPoint = Point.minus(relativePoint, [offset, offset])
     const noiseRect = Rect.multiply(rect, chunkRect.width)
     const surfaceGrid = Grid.fromRect(chunkRect, chunkPoint => {
         const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
-        const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
-        return noise > SURFACE_NOISE_RATIO ? REGION_LAND : REGION_WATER
+        return getType(context, noiseRect, noisePoint)
     })
-    return surfaceGrid
+    // Detect borders on base grid
+    const marginGrid = Grid.fromRect(chunkRect, chunkPoint => {
+        const surface = surfaceGrid.get(chunkPoint)
+        for (let sidePoint of Point.adjacents(chunkPoint)) {
+            let sideSurface = surfaceGrid.get(sidePoint)
+            // get negative indices to offset noisePoint
+            // sample noise outside chunkRect
+            if (! chunkRect.isInside(sidePoint)) {
+                const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
+                const [sideX, sideY] = sidePoint
+                const x = sideX < 0 ? - 1 : (sideX >= chunkSize ? 1 : 0)
+                const y = sideY < 0 ? - 1 : (sideY >= chunkSize ? 1 : 0)
+                const outerNoisePoint = Point.plus(noisePoint, [x, y])
+                sideSurface = getType(context, noiseRect, outerNoisePoint)
+            }
+            if (surface == LAND && sideSurface == WATER)
+                return LAND_BORDER
+            if (surface == WATER && sideSurface == LAND)
+                return WATER_BORDER
+        }
+        return surface
+    })
+    return marginGrid
+}
+
+function getType(context, noiseRect, noisePoint) {
+    const { world } = context
+    const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
+    return noise > SURFACE_NOISE_RATIO ? LAND : WATER
 }

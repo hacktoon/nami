@@ -7,12 +7,12 @@ import { TileMapDiagram } from '/src/model/tilemap/lib'
 const DEFAULT_LAYER = 'biome'
 const LAYERS = [
     {value: 'surface', label: 'Surface'},
-    {value: 'climate', label: 'Climate'},
-    {value: 'rain', label: 'Rain'},
     {value: 'basin', label: 'Basin'},
     {value: 'biome', label: 'Biome'},
     {value: 'river', label: 'River'},
     {value: 'civil', label: 'Civil'},
+    {value: 'climate', label: 'Climate'},
+    {value: 'rain', label: 'Rain'},
     // {value: 'relief', label: 'Relief'},
 ]
 

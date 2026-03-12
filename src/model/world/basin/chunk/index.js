@@ -15,9 +15,9 @@ import {
 const COLOR_MAP = {
     [TYPE_LAND]: '#71b13e',
     [TYPE_WATER]: '#272c66',
-    [TYPE_RIVER]: '#3e7931',
+    [TYPE_RIVER]: '#32387c',
     [TYPE_CURRENT]: '#0f1235',
-    [TYPE_MARGIN]: '#65a133',
+    [TYPE_MARGIN]: '#3e7931',
     // [TYPE_MARGIN]: '#71b13e',
     [TYPE_SHORE]: '#1b1f52',
 }
@@ -32,13 +32,13 @@ export class BasinChunk {
 
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, chunk} = props
-        const chunkTileSize = tileSize / chunk.size
-
-        if (tileSize < 10) return
+        if (tileSize < 10)
+            return
         if (! params.get('showErosion')) {
             chunk.surface.draw(props, params)
             return
         }
+        const chunkTileSize = tileSize / chunk.size
         const model = this.#model
         for (let x=0; x < chunk.size; x++) {
             const xSize = x * chunkTileSize
@@ -51,10 +51,9 @@ export class BasinChunk {
                 const anchor = model.regionModel.anchorMap.get(region)
                 const color = COLOR_MAP[type]
                 canvas.rect(chunkCanvasPoint, chunkTileSize, color)
-
-                if (anchor && Point.equals(anchor, chunkPoint)) {
-                    canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
-                }
+                // if (anchor && Point.equals(anchor, chunkPoint)) {
+                //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
+                // }
             }
         }
     }
