@@ -99,13 +99,13 @@ function buildBasinGrid(context) {
         // basins start on borders and fill inland
         if (isBorder && isLand) {
             const survey = surveyNeighbors(context, point)
-            if(survey.waterNeighbors.length == 1) {
+            // if(survey.waterNeighbors.length == 1) {
                 const type = detectLandBasinType(world, survey)
                 surveyMap.set(basinId, survey)
                 model.type.set(basinId, type.id)
                 landFillMap.set(basinId, {origin: point})
                 basinId++
-            }
+            // }
         }
         if (isBorder && ! isLand) {
             const type = OceanBasin

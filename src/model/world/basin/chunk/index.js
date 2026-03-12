@@ -39,18 +39,22 @@ export class BasinChunk {
             chunk.surface.draw(props, params)
             return
         }
+        const model = this.#model
         for (let x=0; x < chunk.size; x++) {
             const xSize = x * chunkTileSize
             for (let y=0; y < chunk.size; y++) {
                 const chunkPoint = [y, x]
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const type = this.#model.get(chunkPoint)
+                const type = model.grid.get(chunkPoint)
+                const region = model.regionModel.regionGrid.get(chunkPoint)
+                const anchor = model.regionModel.anchorMap.get(region)
                 const color = COLOR_MAP[type]
                 canvas.rect(chunkCanvasPoint, chunkTileSize, color)
-                // if (Point.equals(basin.midpoint, chunkPoint)) {
-                //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
-                // }
+
+                if (anchor && Point.equals(anchor, chunkPoint)) {
+                    canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
+                }
             }
         }
     }
