@@ -13,14 +13,14 @@ import { Title } from '/src/ui'
 import { NoiseTileMap } from '/src/model/tilemap/noisemap'
 import { RegionTileMap } from '/src/model/tilemap/regionmap'
 import { WorldTileMap } from '/src/model/tilemap/worldmap'
-import { AudioSynth } from '/src/model/synth'
+// import { AudioSynth } from '/src/model/synth'
 
 
 const APPS = [
     {value: 'WorldMap', label: 'WorldMap', AppModelClass: WorldTileMap},
     {value: 'NoiseMap', label: 'NoiseMap', AppModelClass: NoiseTileMap},
     {value: 'RegionMap', label: 'RegionMap', AppModelClass: RegionTileMap},
-    {value: 'AudioSynth', label: 'AudioSynth', AppModelClass: AudioSynth},
+    // {value: 'AudioSynth', label: 'AudioSynth', AppModelClass: AudioSynth},
 ]
 
 const UI_APP_COMPONENT_MAP = new Map(APPS.map(({value, AppModelClass}) => {
