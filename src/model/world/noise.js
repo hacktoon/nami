@@ -41,9 +41,7 @@ export class NoiseLayer {
 
     get4DChunkOutline(rect, point) {
         const specs = NOISE_SPEC['chunkOutline']
-        // fix offset for noise
-        const offsetPoint = Point.plus(point, [-5, -5])
-        return this.outline.wrapped4D(rect, offsetPoint, specs)
+        return this.outline.wrapped4D(rect, point, specs)
     }
 
     get4DClimate(rect, point) {
