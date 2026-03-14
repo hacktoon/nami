@@ -23,14 +23,11 @@ export function buildModel(baseContext) {
     const { chunkRect } = baseContext
     const pointMaskMap = buildPointMaskMap(baseContext)
     const regionModel = buildRegionModel(baseContext)
-    const marginPoints = new PointSet(chunkRect)
-    const shorePoints = new PointSet(chunkRect)
-    const context = {
-        ...baseContext, regionModel, pointMaskMap, marginPoints, shorePoints
-    }
+    const context = {...baseContext, regionModel, pointMaskMap}
     const baseGrid = buildBaseGrid(context)
     const marginGrid = buildMarginGrid(baseGrid, context)
     return {
+        // grid: baseGrid,
         grid: marginGrid,
         regionModel,
     }
@@ -40,48 +37,51 @@ export function buildModel(baseContext) {
 function buildBaseGrid(context) {
     // map each cell to LAND/WATER or RIVER/CURRENT if it has a path
     const { world, worldPoint, chunk, chunkRect } = context
-    const { marginPoints, shorePoints, pointMaskMap } = context
+    const { pointMaskMap } = context
     const isWorldLand = world.surface.isLand(worldPoint)
     return Grid.fromRect(chunkRect, chunkPoint => {
-        const isEroded = pointMaskMap.has(chunkPoint)
-        // no erosion
-        if (! isEroded) {
-            const isBorder = chunk.surface.isBorder(chunkPoint)
-            if (chunk.surface.isLand(chunkPoint))
-                return isBorder ? TYPE_MARGIN : TYPE_LAND
-            return isBorder ? TYPE_SHORE : TYPE_WATER
+        if (pointMaskMap.has(chunkPoint)) {
+            return isWorldLand ? TYPE_RIVER : TYPE_CURRENT
         }
-        // discover erosion path value
-        if (isWorldLand) {
-            // set erosion margins
-            Point.around(chunkPoint, sidePoint => {
-                if (chunkRect.isInside(sidePoint)) {
-                    marginPoints.add(sidePoint)
-                }
-            })
-            return TYPE_RIVER
-        } else {
-            // water paths
-            Point.adjacents(chunkPoint, sidePoint => {
-                if (chunkRect.isInside(sidePoint)) {
-                    shorePoints.add(sidePoint)
-                }
-            })
-            return TYPE_CURRENT
-        }
+        const isLand = chunk.surface.isLand(chunkPoint)
+        return isLand ? TYPE_LAND : TYPE_WATER
     })
 }
 
+// const isBorder = chunk.surface.isBorder(chunkPoint)
+// if (chunk.surface.isLand(chunkPoint))
+//             return isBorder ? TYPE_MARGIN : TYPE_LAND
+//         return isBorder ? TYPE_SHORE : TYPE_WATER
+
+// set margins of erosion points
+// Point.adjacents(chunkPoint, sidePoint => {
+//     if (chunkRect.isInside(sidePoint)) {
+//         const points = isWorldLand ? marginPoints : shorePoints
+//         points.add(sidePoint)
+//     }
+// })
+// if (isWorldLand) {
+//     if(worldPoint[0] == 18 && worldPoint[1] == 9) {
+
+//     }
+// }
+
 function buildMarginGrid(baseGrid, context) {
-    const { world, worldPoint, chunkRect } = context
-    const { marginPoints, shorePoints  } = context
-    const isWorldLand = world.surface.isLand(worldPoint)
-    const getSidePoints = isWorldLand ? Point.around : Point.adjacents
+    const { world, worldPoint, chunkRect, chunkSize } = context
+    const marginPoints = new PointSet(chunkRect)
+    const shorePoints = new PointSet(chunkRect)
     // post process to add margins and shores to some chunk points
     const basin = world.basin.get(worldPoint)
+    // get chunk corner point based on direction
+    const getCornerPoint = (dir) => dir.axis.map(coord => coord > 0 ? chunkSize - 1 : 0)
     // check river/water chunk corners for grid building
-    setCorners(chunkRect, basin.waterCornerBitmap, shorePoints)
-    setCorners(chunkRect, basin.riverCornerBitmap, marginPoints)
+    for (let dir of basin.waterCornerBitmap) {
+        shorePoints.add(getCornerPoint(dir))
+    }
+    for (let dir of basin.riverCornerBitmap) {
+        marginPoints.add(getCornerPoint(dir))
+    }
+    // apply margin/shores to grid
     return Grid.fromRect(chunkRect, chunkPoint => {
         const type = baseGrid.get(chunkPoint)
         if (type == TYPE_LAND || type == TYPE_WATER) {
@@ -92,19 +92,6 @@ function buildMarginGrid(baseGrid, context) {
     })
 }
 
-
-function setCorners(chunkRect, directions, collection) {
-    const size = chunkRect.width
-    for (let dir of directions) {
-        const chunkCornerPoint = dir.axis.map(coord => coord > 0 ? size-1 : 0)
-        // mark a cross at corner point
-        Point.adjacents(chunkCornerPoint, sidePoint => {
-            if (chunkRect.isInside(sidePoint))
-                collection.add(sidePoint)
-        })
-        collection.add(chunkCornerPoint)
-    }
-}
 
 function buildPointMaskMap(baseContext) {
     // reads the direction bitmask data and create points for chunk grid

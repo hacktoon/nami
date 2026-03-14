@@ -53,8 +53,7 @@ export class BasinLayer {
     draw(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint} = props
         const basin = this.get(tilePoint)
-        const basinColor = basin.type.color
-        const color = basin.isDivide ? basinColor.brighten(20) : basinColor
+        const color = basin.type.color
         canvas.rect(canvasPoint, tileSize, color.toHex())
         if (params.get('showErosion')) {
             this.#drawErosionPath(props, basin)

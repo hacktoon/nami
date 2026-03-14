@@ -45,14 +45,16 @@ export class BasinChunk {
                 const type = model.grid.get(chunkPoint)
                 // const type = model.margin.get(chunkPoint)
                 const region = model.regionModel.regionGrid.get(chunkPoint)
+                const regionType = model.regionModel.typeMap.get(region)
                 const anchor = model.regionModel.anchorMap.get(region)
                 const color = COLOR_MAP[type]
                 if (params.get('showErosion')) {
                     canvas.rect(chunkCanvasPoint, chunkTileSize, color)
                 }
-                // if (anchor && Point.equals(anchor, chunkPoint)) {
-                //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
-                // }
+                if (anchor && Point.equals(anchor, chunkPoint)) {
+                    let c = regionType ? '#F00' : '#4fF'
+                    canvas.rect(chunkCanvasPoint, chunkTileSize, c)
+                }
             }
         }
     }

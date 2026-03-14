@@ -13,7 +13,7 @@ const REGION_CHANCE = .1
 
 export function buildRegionModel(context) {
     // Generate a boolean grid (land or water)
-    const { chunkRect } = context
+    const { chunkRect, chunkSize, worldPoint } = context
     const typeMap = new Map()
     const anchorMap = new Map()
     const borderRegions = new Set()
@@ -21,15 +21,19 @@ export function buildRegionModel(context) {
     // it's also a map of all regions
     const origins = EvenPointSampling.create(chunkRect, REGION_SCALE)
     const fillMap = new Map(origins.map((origin, id) => {
-        // get origins except for edge points as anchors for tracing paths
-        const offset = 2
+        // get origins around the center to use as path anchors
         const [x, y] = origin
-        const insideX = x >= offset && x < chunkRect.width - offset
-        const insideY = y >= offset && y < chunkRect.height - offset
+        const offset = Math.floor(chunkSize / 3)
+        const middle = Math.floor(chunkSize / 2)
+        const insideX = x >= middle - offset && x <= middle + offset
+        const insideY = y >= middle - offset && y <= middle + offset
         if (insideX && insideY) {
-            // pick any region 2 tiles inside
-            const regionType = id % 2 == 0 || id % 5 == 0
-            typeMap.set(id, regionType)
+            // pick any region 2 tiles inside, 2 tiles distant from center
+            const regionType = id % 5 == 0
+            typeMap.set(id, true)  // not used
+            anchorMap.set(id, origin)
+        } else {
+            typeMap.set(id, false)  // not used
             anchorMap.set(id, origin)
         }
         return [id, { origin }]
