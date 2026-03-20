@@ -21,15 +21,17 @@ export const TYPE_SHORE = 6
 
 export function buildModel(baseContext) {
     const { chunkRect } = baseContext
+    const routes = buildRoutes(baseContext)
     const pointMaskMap = buildPointMaskMap(baseContext)
     const regionModel = buildRegionModel(baseContext)
-    const context = {...baseContext, regionModel, pointMaskMap}
+    const context = { ...baseContext, regionModel, pointMaskMap }
     const baseGrid = buildBaseGrid(context)
     const marginGrid = buildMarginGrid(baseGrid, context)
     return {
         // grid: baseGrid,
         grid: marginGrid,
         regionModel,
+        routes
     }
 }
 
@@ -47,24 +49,6 @@ function buildBaseGrid(context) {
         return isLand ? TYPE_LAND : TYPE_WATER
     })
 }
-
-// const isBorder = chunk.surface.isBorder(chunkPoint)
-// if (chunk.surface.isLand(chunkPoint))
-//             return isBorder ? TYPE_MARGIN : TYPE_LAND
-//         return isBorder ? TYPE_SHORE : TYPE_WATER
-
-// set margins of erosion points
-// Point.adjacents(chunkPoint, sidePoint => {
-//     if (chunkRect.isInside(sidePoint)) {
-//         const points = isWorldLand ? marginPoints : shorePoints
-//         points.add(sidePoint)
-//     }
-// })
-// if (isWorldLand) {
-//     if(worldPoint[0] == 18 && worldPoint[1] == 9) {
-
-//     }
-// }
 
 function buildMarginGrid(baseGrid, context) {
     const { world, worldPoint, chunkRect, chunkSize } = context
@@ -90,6 +74,48 @@ function buildMarginGrid(baseGrid, context) {
         }
         return type
     })
+    // const isBorder = chunk.surface.isBorder(chunkPoint)
+    // if (chunk.surface.isLand(chunkPoint))
+    //             return isBorder ? TYPE_MARGIN : TYPE_LAND
+    //         return isBorder ? TYPE_SHORE : TYPE_WATER
+
+    // set margins of erosion points
+    // Point.adjacents(chunkPoint, sidePoint => {
+    //     if (chunkRect.isInside(sidePoint)) {
+    //         const points = isWorldLand ? marginPoints : shorePoints
+    //         points.add(sidePoint)
+    //     }
+    // })
+}
+
+
+
+function buildRoutes(baseContext) {
+    // Each chunk has gates on its sides. A gate connect two chunks
+    // and is the same for both by averaging its joints
+    const { world, worldPoint, chunk } = baseContext
+    const basin = world.basin.get(worldPoint)
+    const routes = []
+    for (let gateDirection of basin.directionBitmap) {
+        const parentPoint = Point.atDirection(worldPoint, gateDirection)
+        const sideBasin = world.basin.get(parentPoint)
+        // get the point on chunk side
+        const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
+        // create point at chunk edge where it connects to neighbor chunk
+        const gatePoint = gateDirection.axis.map(coord => {
+            if (coord < 0) return 0
+            if (coord > 0) return chunk.size - 1
+            return avgJoint
+        })
+        // current gate is same as the basin flow, so route is from midpoint to gate
+        const isOutflowGate = basin.erosion.id == gateDirection.id
+        const source = isOutflowGate ? basin.midpoint : gatePoint
+        const target = isOutflowGate ? gatePoint : basin.midpoint
+        // route direction
+        const direction = isOutflowGate ? basin.erosion : sideBasin.erosion
+        routes.push({ source, target, direction })
+    }
+    return routes
 }
 
 
@@ -98,7 +124,6 @@ function buildPointMaskMap(baseContext) {
     const { world, worldPoint, chunk, chunkRect } = baseContext
     const pointMaskMap = new PointMap(chunkRect)
     const basin = world.basin.get(worldPoint)
-    const midSize = Math.floor(chunk.size / 2)
     const source = basin.midpoint
     for (let direction of basin.directionBitmap) {
         const parentPoint = Point.atDirection(worldPoint, direction)
@@ -109,10 +134,7 @@ function buildPointMaskMap(baseContext) {
             if (coord > 0) return chunk.size - 1
             return avgJoint
         })
-        const distance = Point.distance(source, target)
-        const pointsTooClose = distance < midSize
-        const distortion = pointsTooClose ? 2 : MEANDER
-        midpointDisplacement(chunkRect, source, target, distortion, point => {
+        midpointDisplacement(chunkRect, source, target, MEANDER, point => {
             pointMaskMap.set(point, TYPE_RIVER)
         })
     }

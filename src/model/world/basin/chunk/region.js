@@ -29,11 +29,8 @@ export function buildRegionModel(context) {
         const insideY = y >= middle - offset && y <= middle + offset
         if (insideX && insideY) {
             // pick any region 2 tiles inside, 2 tiles distant from center
-            const regionType = id % 5 == 0
-            typeMap.set(id, true)  // not used
-            anchorMap.set(id, origin)
-        } else {
-            typeMap.set(id, false)  // not used
+            const regionType = id % 2 == 0
+            typeMap.set(id, regionType)  // not used
             anchorMap.set(id, origin)
         }
         return [id, { origin }]
