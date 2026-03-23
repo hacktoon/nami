@@ -20,9 +20,8 @@ export const TYPE_SHORE = 6
 
 
 export function buildModel(baseContext) {
-    const { chunkRect } = baseContext
     const routes = buildRoutes(baseContext)
-    const pointMaskMap = buildPointMaskMap(baseContext)
+    const pointMaskMap = buildErosionPoints(routes, baseContext)
     const regionModel = buildRegionModel(baseContext)
     const context = { ...baseContext, regionModel, pointMaskMap }
     const baseGrid = buildBaseGrid(context)
@@ -51,7 +50,7 @@ function buildBaseGrid(context) {
 }
 
 function buildMarginGrid(baseGrid, context) {
-    const { world, worldPoint, chunkRect, chunkSize } = context
+    const { world, worldPoint, chunk, chunkRect, chunkSize } = context
     const marginPoints = new PointSet(chunkRect)
     const shorePoints = new PointSet(chunkRect)
     // post process to add margins and shores to some chunk points
@@ -65,29 +64,34 @@ function buildMarginGrid(baseGrid, context) {
     for (let dir of basin.riverCornerBitmap) {
         marginPoints.add(getCornerPoint(dir))
     }
-    // apply margin/shores to grid
+    // Apply erosion margins to base grid
     return Grid.fromRect(chunkRect, chunkPoint => {
         const type = baseGrid.get(chunkPoint)
+        // Apply margins only on land/water without borders
         if (type == TYPE_LAND || type == TYPE_WATER) {
+            for (let sidePoint of Point.around(chunkPoint)) {
+                const inside = chunkRect.isInside(sidePoint)
+                const type = baseGrid.get(sidePoint)
+                if (inside && type == TYPE_RIVER) return TYPE_MARGIN
+            }
+            for (let sidePoint of Point.adjacents(chunkPoint)) {
+                const inside = chunkRect.isInside(sidePoint)
+                const type = baseGrid.get(sidePoint)
+                if (inside && type == TYPE_CURRENT) return TYPE_SHORE
+            }
+            // set margins of erosion points
             if (marginPoints.has(chunkPoint)) return TYPE_MARGIN
             if (shorePoints.has(chunkPoint)) return TYPE_SHORE
+            const isBorder = chunk.surface.isBorder(chunkPoint)
+            // if (chunk.surface.isLand(chunkPoint))
+            //     return isBorder ? TYPE_MARGIN : TYPE_LAND
+            // return isBorder ? TYPE_SHORE : TYPE_WATER
         }
         return type
     })
-    // const isBorder = chunk.surface.isBorder(chunkPoint)
-    // if (chunk.surface.isLand(chunkPoint))
-    //             return isBorder ? TYPE_MARGIN : TYPE_LAND
-    //         return isBorder ? TYPE_SHORE : TYPE_WATER
 
-    // set margins of erosion points
-    // Point.adjacents(chunkPoint, sidePoint => {
-    //     if (chunkRect.isInside(sidePoint)) {
-    //         const points = isWorldLand ? marginPoints : shorePoints
-    //         points.add(sidePoint)
-    //     }
-    // })
+
 }
-
 
 
 function buildRoutes(baseContext) {
@@ -119,51 +123,14 @@ function buildRoutes(baseContext) {
 }
 
 
-function buildPointMaskMap(baseContext) {
+function buildErosionPoints(routes, baseContext) {
     // reads the direction bitmask data and create points for chunk grid
-    const { world, worldPoint, chunk, chunkRect } = baseContext
-    const pointMaskMap = new PointMap(chunkRect)
-    const basin = world.basin.get(worldPoint)
-    const source = basin.midpoint
-    for (let direction of basin.directionBitmap) {
-        const parentPoint = Point.atDirection(worldPoint, direction)
-        const sideBasin = world.basin.get(parentPoint)
-        const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
-        const target = direction.axis.map(coord => {
-            if (coord < 0) return 0
-            if (coord > 0) return chunk.size - 1
-            return avgJoint
-        })
+    const { chunkRect } = baseContext
+    const points = new PointMap(chunkRect)
+    for (let {source, target, direction} of routes) {
         midpointDisplacement(chunkRect, source, target, MEANDER, point => {
-            pointMaskMap.set(point, TYPE_RIVER)
+            points.set(point, TYPE_RIVER)
         })
-    }
-    return pointMaskMap
-}
-
-
-function generateFlowPath(context, source, target, direction) {
-    const { chunkRect, pointMaskMap } = context
-    const deltaX = Math.abs(source[0] - target[0])
-    const deltaY = Math.abs(source[1] - target[1])
-    const fixedAxis = deltaX > deltaY ? 0 : 1  // 0 for x, 1 for y
-    const displacedAxis = fixedAxis === 0 ? 1 : 0
-    // distance between source and target to fill with path
-    const size = Math.abs(target[fixedAxis] - source[fixedAxis])
-    const points = [source]
-    let current = source
-    pointMaskMap.set(target, direction.id)
-    const [tx, ty] = target
-    while (Point.differs(current, target)) {
-        let [x, y] = current
-        const [cx, cy] = current
-        if (Random.chance(.8))
-            x = cx > tx ? cx - 1 : (cx < tx ? cx + 1 : cx)
-        if (Random.chance(.8))
-            y = cy > ty ? cy - 1 : (cy < ty ? cy + 1 : cy)
-        current = [x, y]
-        pointMaskMap.set(current, direction.id)
     }
     return points
 }
-

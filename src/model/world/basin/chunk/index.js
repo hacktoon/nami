@@ -49,22 +49,23 @@ export class BasinChunk {
                 if (params.get('showErosion')) {
                     canvas.rect(chunkCanvasPoint, chunkTileSize, color)
                 }
-                const anchor = model.regionModel.anchorMap.get(region)
+                // const anchor = model.regionModel.anchorMap.get(region)
                 // if (anchor && Point.equals(anchor, chunkPoint)) {
-                //     canvas.rect(chunkCanvasPoint, chunkTileSize, '#F00')
+                //     canvas.rect(chunkCanvasPoint, chunkTileSize, '#444')
                 // }
             }
         }
-        model.routes.forEach(({ source, target, direction }) => {
-            let x = source[0] * chunkTileSize
-            let y = source[1] * chunkTileSize
-            let chunkCanvasPoint = Point.plus(canvasPoint, [x, y])
-            canvas.rect(chunkCanvasPoint, chunkTileSize, '#F00')
+        // gates
+        // model.routes.forEach(({ source, target }) => {
+        //     let x = source[0] * chunkTileSize
+        //     let y = source[1] * chunkTileSize
+        //     let chunkCanvasPoint = Point.plus(canvasPoint, [x, y])
+        //     canvas.rect(chunkCanvasPoint, chunkTileSize, '#F0F')
 
-            x = target[0] * chunkTileSize
-            y = target[1] * chunkTileSize
-            chunkCanvasPoint = Point.plus(canvasPoint, [x, y])
-            canvas.rect(chunkCanvasPoint, chunkTileSize, '#FF0')
-        })
+        //     x = target[0] * chunkTileSize
+        //     y = target[1] * chunkTileSize
+        //     chunkCanvasPoint = Point.plus(canvasPoint, [x, y])
+        //     canvas.rect(chunkCanvasPoint, chunkTileSize, '#FF0')
+        // })
     }
 }

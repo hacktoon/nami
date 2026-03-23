@@ -21,19 +21,13 @@ export function buildRegionModel(context) {
     // it's also a map of all regions
     const origins = EvenPointSampling.create(chunkRect, REGION_SCALE)
     const fillMap = new Map(origins.map((origin, id) => {
-        // get origins around the center to use as path anchors
-        const [x, y] = origin
-        const offset = Math.floor(chunkSize / 3)
-        const middle = Math.floor(chunkSize / 2)
-        const insideX = x >= middle - offset && x <= middle + offset
-        const insideY = y >= middle - offset && y <= middle + offset
-        if (insideX && insideY) {
-            // pick any region 2 tiles inside, 2 tiles distant from center
+        // get origins to use as path anchors, except for the edges
+        if (! chunkRect.isEdge(origin)) {
             const regionType = id % 2 == 0
             typeMap.set(id, regionType)  // not used
             anchorMap.set(id, origin)
         }
-        return [id, { origin }]
+        return [id, { origin }]  // Map entry
     }))
     // Each chunk point has a region ID
     const regionGrid = Grid.fromRect(chunkRect, () => EMPTY)
