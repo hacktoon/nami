@@ -83,14 +83,12 @@ function buildMarginGrid(baseGrid, context) {
             if (marginPoints.has(chunkPoint)) return TYPE_MARGIN
             if (shorePoints.has(chunkPoint)) return TYPE_SHORE
             const isBorder = chunk.surface.isBorder(chunkPoint)
-            // if (chunk.surface.isLand(chunkPoint))
-            //     return isBorder ? TYPE_MARGIN : TYPE_LAND
-            // return isBorder ? TYPE_SHORE : TYPE_WATER
+            if (chunk.surface.isLand(chunkPoint))
+                return isBorder ? TYPE_MARGIN : TYPE_LAND
+            return isBorder ? TYPE_SHORE : TYPE_WATER
         }
         return type
     })
-
-
 }
 
 
