@@ -19,7 +19,6 @@ export class BasinLayer {
         const id = this.#model.basin.get(point)
         const typeId = this.#model.type.get(id)
         const directionId = this.#model.erosion.get(point)
-        const midpointIndex = this.#model.midpoint.get(point)
         const directionBitmap = this.#model.directionBitmap.get(point)
         const riverCornerBitmap = this.#model.riverCornerBitmap.get(point)
         const waterCornerBitmap = this.#model.waterCornerBitmap.get(point)
@@ -31,7 +30,6 @@ export class BasinLayer {
             type: Basin.parse(typeId),
             distance: this.#model.distance.get(point),
             joint: this.#model.joint.get(point),
-            midpoint: this.#chunkRect.indexToPoint(midpointIndex),
             erosion: Direction.fromId(directionId),
             isDivide: directionBitmap.length === 1,
         }

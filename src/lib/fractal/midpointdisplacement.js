@@ -19,7 +19,8 @@ export function midpointDisplacement(rect, source, target, variance, callback) {
         const [x1, y1] = p1
         const [x2, y2] = p2
         // calc relative midpoint
-        const [mx, my] = [(x1 + x2) / 2, (y1 + y2) / 2]
+        const mx = (x1 + x2) / 2
+        const my = (y1 + y2) / 2
         // direction vector is a subtraction
         const dx = x2 - x1
         const dy = y2 - y1
@@ -28,12 +29,13 @@ export function midpointDisplacement(rect, source, target, variance, callback) {
         // magnitude of vector length
         const size = Math.hypot(nx, ny)
         // convert to 0..1 scale
-        const [px, py] = [nx / size, ny / size]
+        const px = nx / size
+        const py = ny / size
         const offset = Random.floatRange(-variance, variance)
-        return [
-            clamp(Math.floor(mx + px * offset), 1, rect.width - 2),
-            clamp(Math.floor(my + py * offset), 1, rect.height - 2)
-        ]
+        // limit the range
+        const x = clamp(Math.floor(mx + px * offset), 1, rect.width - 2)
+        const y = clamp(Math.floor(my + py * offset), 1, rect.height - 2)
+        return [x, y]
     }
 
     recurse(source, target, variance)

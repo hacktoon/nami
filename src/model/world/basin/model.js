@@ -19,8 +19,6 @@ import {
 const NO_BASIN_ID = null
 const FILL_CHANCE = .1
 const FILL_GROWTH = 2
-const MIDPOINT_RATE = .4  // random point in 40% of chunkrect area around center point
-const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
 const INITIAL_DISTANCE = 1
 
 
@@ -30,8 +28,6 @@ export function buildBasinModel(context) {
     model.type = new Map()
     // grid of erosion direction ids
     model.erosion = buildErosionGrid(context)
-    // random midpoint in each chunk rect
-    model.midpoint = buildMidpointGrid(context)
     // random joint value to connect chunks
     model.joint = buildJointGrid(context)
     // the walk distance of each basin starting from shore
@@ -53,22 +49,6 @@ function buildErosionGrid({rect}) {
     return Grid.fromRect(rect, () => Direction.random().id)
 }
 
-
-function buildMidpointGrid({rect, chunkRect}) {
-    const centerIndex = Math.floor(chunkRect.width / 2)
-    // select random point in 60% of chunkrect area around center point
-    const offset = Math.floor(centerIndex * MIDPOINT_RATE)
-    return Grid.fromRect(rect, () => {
-        const randX = Random.int(-offset, offset)
-        const randY = Random.int(-offset, offset)
-        // random offset distance from center
-        const midRandX = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
-        const midRandY = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
-        const x = centerIndex + (randX != 0 ? randX : midRandX)
-        const y = centerIndex + (randY != 0 ? randY : midRandY)
-        return chunkRect.pointToIndex([x, y])
-    })
-}
 
 
 function buildJointGrid({rect, chunkSize}) {

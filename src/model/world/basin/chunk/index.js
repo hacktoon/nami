@@ -49,10 +49,10 @@ export class BasinChunk {
                 if (params.get('showErosion')) {
                     canvas.rect(chunkCanvasPoint, chunkTileSize, color)
                 }
-                // const anchor = model.regionModel.anchorMap.get(region)
-                // if (anchor && Point.equals(anchor, chunkPoint)) {
-                //     canvas.rect(chunkCanvasPoint, chunkTileSize, '#444')
-                // }
+                const anchor = model.regionModel.anchorMap.get(region)
+                if (anchor && Point.equals(anchor, chunkPoint)) {
+                    canvas.rect(chunkCanvasPoint, chunkTileSize, '#444')
+                }
             }
         }
         // gates

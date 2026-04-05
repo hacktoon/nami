@@ -17,6 +17,8 @@ export const TYPE_RIVER = 3
 export const TYPE_CURRENT = 4
 export const TYPE_MARGIN = 5
 export const TYPE_SHORE = 6
+const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
+const MIDPOINT_RATE = .4  // random point in 40% of chunkrect area around center point
 
 
 export function buildModel(baseContext) {
@@ -48,6 +50,22 @@ function buildBaseGrid(context) {
         return isLand ? TYPE_LAND : TYPE_WATER
     })
 }
+
+
+function buildMidpoint(chunkRect) {
+    const centerIndex = Math.floor(chunkRect.width / 2)
+    // select random point in 60% of chunkrect area around center point
+    const offset = Math.floor(centerIndex * MIDPOINT_RATE)
+    const randX = Random.int(-offset, offset)
+    const randY = Random.int(-offset, offset)
+    // random offset distance from center
+    const midRandX = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
+    const midRandY = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
+    const x = centerIndex + (randX != 0 ? randX : midRandX)
+    const y = centerIndex + (randY != 0 ? randY : midRandY)
+    return [x, y]
+}
+
 
 function buildMarginGrid(baseGrid, context) {
     const { world, worldPoint, chunk, chunkRect, chunkSize } = context
@@ -95,7 +113,7 @@ function buildMarginGrid(baseGrid, context) {
 function buildRoutes(baseContext) {
     // Each chunk has gates on its sides. A gate connect two chunks
     // and is the same for both by averaging its joints
-    const { world, worldPoint, chunk } = baseContext
+    const { world, worldPoint, chunk, chunkRect } = baseContext
     const basin = world.basin.get(worldPoint)
     const routes = []
     for (let gateDirection of basin.directionBitmap) {
@@ -109,10 +127,11 @@ function buildRoutes(baseContext) {
             if (coord > 0) return chunk.size - 1
             return avgJoint
         })
+        const midpoint = buildMidpoint(chunkRect)
         // current gate is same as the basin flow, so route is from midpoint to gate
         const isOutflowGate = basin.erosion.id == gateDirection.id
-        const source = isOutflowGate ? basin.midpoint : gatePoint
-        const target = isOutflowGate ? gatePoint : basin.midpoint
+        const source = isOutflowGate ? midpoint : gatePoint
+        const target = isOutflowGate ? gatePoint : midpoint
         // route direction
         const direction = isOutflowGate ? basin.erosion : sideBasin.erosion
         routes.push({ source, target, direction })
