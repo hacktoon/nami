@@ -116,6 +116,7 @@ function buildRoutes(baseContext) {
     const { world, worldPoint, chunk, chunkRect } = baseContext
     const basin = world.basin.get(worldPoint)
     const routes = []
+    const midpoint = buildMidpoint(chunkRect)
     for (let gateDirection of basin.directionBitmap) {
         const parentPoint = Point.atDirection(worldPoint, gateDirection)
         const sideBasin = world.basin.get(parentPoint)
@@ -127,7 +128,6 @@ function buildRoutes(baseContext) {
             if (coord > 0) return chunk.size - 1
             return avgJoint
         })
-        const midpoint = buildMidpoint(chunkRect)
         // current gate is same as the basin flow, so route is from midpoint to gate
         const isOutflowGate = basin.erosion.id == gateDirection.id
         const source = isOutflowGate ? midpoint : gatePoint

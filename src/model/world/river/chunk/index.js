@@ -33,9 +33,6 @@ export class RiverChunk {
                     color = type == TYPE_RIVER ? color : '#d6c346'
                     canvas.rect(chunkCanvasPoint, chunkTileSize, color)
                 }
-                // if (Point.equals(basin.midpoint, chunkPoint)) {
-                //     canvas.rect(chunkCanvasPoint, chunkTileSize, Color.RED.toHex())
-                // }
             }
         }
     }
