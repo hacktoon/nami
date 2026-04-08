@@ -86,26 +86,28 @@ function buildMarginGrid(baseGrid, context) {
     return Grid.fromRect(chunkRect, chunkPoint => {
         const type = baseGrid.get(chunkPoint)
         // Apply margins only on land/water without borders
-        if (type == TYPE_LAND || type == TYPE_WATER) {
-            for (let sidePoint of Point.around(chunkPoint)) {
-                const inside = chunkRect.isInside(sidePoint)
-                const type = baseGrid.get(sidePoint)
-                if (inside && type == TYPE_RIVER) return TYPE_MARGIN
-            }
-            for (let sidePoint of Point.adjacents(chunkPoint)) {
-                const inside = chunkRect.isInside(sidePoint)
-                const type = baseGrid.get(sidePoint)
-                if (inside && type == TYPE_CURRENT) return TYPE_SHORE
-            }
-            // set margins of erosion points
-            if (marginPoints.has(chunkPoint)) return TYPE_MARGIN
-            if (shorePoints.has(chunkPoint)) return TYPE_SHORE
-            const isBorder = chunk.surface.isBorder(chunkPoint)
-            if (chunk.surface.isLand(chunkPoint))
-                return isBorder ? TYPE_MARGIN : TYPE_LAND
-            return isBorder ? TYPE_SHORE : TYPE_WATER
+        if (type != TYPE_LAND && type != TYPE_WATER) {
+            return type
         }
-        return type
+        for (let sidePoint of Point.around(chunkPoint)) {
+            const inside = chunkRect.isInside(sidePoint)
+            const type = baseGrid.get(sidePoint)
+            if (inside && type == TYPE_RIVER)
+                return TYPE_MARGIN
+        }
+        for (let sidePoint of Point.adjacents(chunkPoint)) {
+            const inside = chunkRect.isInside(sidePoint)
+            const type = baseGrid.get(sidePoint)
+            if (inside && type == TYPE_CURRENT)
+                return TYPE_SHORE
+        }
+        // set margins of erosion points
+        if (marginPoints.has(chunkPoint)) return TYPE_MARGIN
+        if (shorePoints.has(chunkPoint)) return TYPE_SHORE
+        const isBorder = chunk.surface.isBorder(chunkPoint)
+        if (chunk.surface.isLand(chunkPoint))
+            return isBorder ? TYPE_MARGIN : TYPE_LAND
+        return isBorder ? TYPE_SHORE : TYPE_WATER
     })
 }
 
@@ -150,4 +152,32 @@ function buildErosionPoints(routes, baseContext) {
         })
     }
     return points
+}
+
+
+function calcPath(source, target, context) {
+    // reads the direction bitmask data and create points for chunk grid
+    const path = []
+    let currentPoint = source
+    let maxIter = 2000
+    while(Point.differs(currentPoint, target) && maxIter > 0) {
+        path.push(currentPoint)
+        currentPoint = getNextPoint(currentPoint, target, context)
+        maxIter--
+    }
+    path.push(currentPoint)  // add last point (target)
+    return path
+}
+
+
+function generateMidpoint(p1, p2, context) {
+    const { chunkRect } = context
+}
+
+
+function getNextPoint(source, target, context) {
+    const [sx, sy] = source
+    const [tx, ty] = target
+    const { chunkRect } = context
+
 }
