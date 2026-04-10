@@ -111,6 +111,13 @@ export class Point {
         return Math.sqrt(deltaX + deltaY)
     }
 
+    static chebyshevDistance(p1, p2) {
+        // maior valor absoluto entre as diferenças de cada coordenada
+        const deltaX = Math.abs(p1[0] - p2[0])
+        const deltaY = Math.abs(p1[1] - p2[1])
+            return Math.max(deltaX, deltaY)
+    }
+
     static atDirection(point, direction) {
         return Point.plus(point, direction.axis)
     }

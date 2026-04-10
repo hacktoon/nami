@@ -52,21 +52,6 @@ function buildBaseGrid(context) {
 }
 
 
-function buildMidpoint(chunkRect) {
-    const centerIndex = Math.floor(chunkRect.width / 2)
-    // select random point in 60% of chunkrect area around center point
-    const offset = Math.floor(centerIndex * MIDPOINT_RATE)
-    const randX = Random.int(-offset, offset)
-    const randY = Random.int(-offset, offset)
-    // random offset distance from center
-    const midRandX = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
-    const midRandY = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
-    const x = centerIndex + (randX != 0 ? randX : midRandX)
-    const y = centerIndex + (randY != 0 ? randY : midRandY)
-    return [x, y]
-}
-
-
 function buildMarginGrid(baseGrid, context) {
     const { world, worldPoint, chunk, chunkRect, chunkSize } = context
     const marginPoints = new PointSet(chunkRect)
@@ -83,7 +68,7 @@ function buildMarginGrid(baseGrid, context) {
         marginPoints.add(getCornerPoint(dir))
     }
     // Apply erosion margins to base grid
-    return Grid.fromRect(chunkRect, chunkPoint => {
+    const buildMargin = (chunkPoint) => {
         const type = baseGrid.get(chunkPoint)
         // Apply margins only on land/water without borders
         if (type != TYPE_LAND && type != TYPE_WATER) {
@@ -108,7 +93,9 @@ function buildMarginGrid(baseGrid, context) {
         if (chunk.surface.isLand(chunkPoint))
             return isBorder ? TYPE_MARGIN : TYPE_LAND
         return isBorder ? TYPE_SHORE : TYPE_WATER
-    })
+    }
+
+    return Grid.fromRect(chunkRect, buildMargin)
 }
 
 
@@ -142,6 +129,21 @@ function buildRoutes(baseContext) {
 }
 
 
+function buildMidpoint(chunkRect) {
+    const centerIndex = Math.floor(chunkRect.width / 2)
+    // select random point in 60% of chunkrect area around center point
+    const offset = Math.floor(centerIndex * MIDPOINT_RATE)
+    const randX = Random.int(-offset, offset)
+    const randY = Random.int(-offset, offset)
+    // random offset distance from center
+    const midRandX = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
+    const midRandY = Random.choice(-MIDDLE_OFFSET, MIDDLE_OFFSET)
+    const x = centerIndex + (randX != 0 ? randX : midRandX)
+    const y = centerIndex + (randY != 0 ? randY : midRandY)
+    return [x, y]
+}
+
+
 function buildErosionPoints(routes, baseContext) {
     // reads the direction bitmask data and create points for chunk grid
     const { chunkRect } = baseContext
@@ -155,14 +157,23 @@ function buildErosionPoints(routes, baseContext) {
 }
 
 
+function buildErosionPoints2(routes, context) {
+    // reads the direction bitmask data and create points for chunk grid
+    const midpoint = generateMidpoint(source, target, context)
+    calcPath(source, midpoint)
+    calcPath(midpoint, target)
+    return points
+}
+
+
 function calcPath(source, target, context) {
     // reads the direction bitmask data and create points for chunk grid
     const path = []
     let currentPoint = source
-    let maxIter = 2000
+    let maxIter = 2000  // avoid infinite loops
     while(Point.differs(currentPoint, target) && maxIter > 0) {
         path.push(currentPoint)
-        currentPoint = getNextPoint(currentPoint, target, context)
+        currentPoint = getNextPoint(currentPoint, midpoint, context)
         maxIter--
     }
     path.push(currentPoint)  // add last point (target)
@@ -171,11 +182,39 @@ function calcPath(source, target, context) {
 
 
 function generateMidpoint(p1, p2, context) {
-    const { chunkRect } = context
+    const { chunkSize } = context
+    const [x1, y1] = p1
+    const [x2, y2] = p2
+    const deltaX = Math.abs(x1 - x2)
+    const deltaY = Math.abs(y1 - y2)
+    let x = Math.round((x1 + x2) / 2)
+    let y = Math.round((y1 + y2) / 2)
+    if (deltaY > deltaX) {
+        x = generateCoordinate(x1, x2, chunkSize)
+        y = Math.round((y1 + y2) / 2)
+    } else if (deltaX > deltaY) {
+        x = Math.round((x1 + x2) / 2)
+        y = generateCoordinate(y1, y2, chunkSize)
+    }
+    return [x, y]
+}
+
+function generateCoordinate(c1, c2, length) {
+    // Get candidate points in an coordinate axis given
+    // two points and pick a random one
+    const candidates = []
+    const max = Math.max(c1, c2)
+    const min = Math.min(c1, c2)
+    // avoid selecting edges and p in closed range [x1..x2]
+    for (let i = 1; i < length - 1; i++) {
+        if (i < min || i > max)
+            candidates.push(c)
+    }
+    return Random.choiceFrom(candidates)
 }
 
 
-function getNextPoint(source, target, context) {
+function getNextPoint(currentPoint, source, target, context) {
     const [sx, sy] = source
     const [tx, ty] = target
     const { chunkRect } = context
