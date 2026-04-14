@@ -3,38 +3,41 @@ import { Point } from '/src/lib/geometry/point'
 import { clamp } from '/src/lib/function'
 
 
-export function midpointDisplacement(rect, source, target, variance, callback) {
+export function midpointDisplacement(wp, rect, source, target, variance, callback) {
     function recurse(p1, p2, variance) {
         if (Point.distance(p1, p2) < 2) {
             callback(p1)
             callback(p2)
             return
         }
-        const midpoint = generateMidpoint(p1, p2, variance)
+        const midpoint = generateMidpoint(p1, p2, variance, wp)
         recurse(p1, midpoint, variance / 2)
         recurse(midpoint, p2, variance / 2)
     }
 
-    function generateMidpoint(p1, p2, variance) {
+    function generateMidpoint(p1, p2, variance, wp) {
         const [x1, y1] = p1
         const [x2, y2] = p2
-        // calc relative midpoint
-        const mx = (x1 + x2) / 2
-        const my = (y1 + y2) / 2
         // direction vector is a subtraction
         const dx = x2 - x1
         const dy = y2 - y1
         // get perpendicular vector: (-dy, dx) or (dy, -dx)
-        const [nx, ny] = [-dy, dx]
+        const [nx, ny] = Random.choice([-dy, dx], [dy, -dx])
         // magnitude of vector length
         const size = Math.hypot(nx, ny)
-        // convert to 0..1 scale
-        const px = nx / size
-        const py = ny / size
         const offset = Random.floatRange(-variance, variance)
+        // convert to 0..1 scale
+        const px = (nx / size) * offset
+        const py = (ny / size) * offset
+        // get midpoint
+        const mx = (x1 + x2) / 2
+        const my = (y1 + y2) / 2
+        const fx = Math.floor(mx + px)
+        const fy = Math.floor(my + py)
+
         // limit the range
-        const x = clamp(Math.floor(mx + px * offset), 1, rect.width - 2)
-        const y = clamp(Math.floor(my + py * offset), 1, rect.height - 2)
+        const x = clamp(Math.floor(mx + px), 1, rect.width - 2)
+        const y = clamp(Math.floor(my + py), 1, rect.height - 2)
         return [x, y]
     }
 

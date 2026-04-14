@@ -52,6 +52,7 @@ function buildErosionGrid({rect}) {
 
 
 function buildJointGrid({rect, chunkSize}) {
+    // choose a value at chunk sides, avoiding edges
     return Grid.fromRect(rect, () => {
         return Random.int(1, chunkSize - 2)
     })

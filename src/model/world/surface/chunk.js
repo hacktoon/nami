@@ -3,7 +3,7 @@ import { Rect } from '/src/lib/geometry/rect'
 import { Grid } from '/src/lib/grid'
 
 
-const SURFACE_NOISE_RATIO = .6
+const SURFACE_NOISE_RATIO = .55
 const WATER = 1
 const LAND = 2
 const LAND_BORDER = 3

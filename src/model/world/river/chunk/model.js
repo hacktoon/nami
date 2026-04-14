@@ -59,7 +59,7 @@ function buildPointMaskMap(baseContext) {
         const distance = Point.distance(source, target)
         const pointsTooClose = distance < midSize
         const distortion = pointsTooClose ? 0 : MEANDER
-        midpointDisplacement(chunkRect, source, target, distortion, point => {
+        midpointDisplacement(worldPoint, chunkRect, source, target, distortion, point => {
             pointMaskMap.set(point, TYPE_RIVER)
         })
     }

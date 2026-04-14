@@ -22,7 +22,16 @@ export function buildRegionModel(context) {
     const origins = EvenPointSampling.create(chunkRect, REGION_SCALE)
     const fillMap = new Map(origins.map((origin, id) => {
         // get origins to use as path anchors, except for the edges
+        // const middle = Math.round(chunkSize / 2)
+        // const distance = Point.manhattanDistance(origin, [middle, middle])
+        // if(worldPoint[0] == 19 && worldPoint[1] == 19) {
+        //     // console.log(Point.chebyshevDistance(origin, [middle, middle]))
+        //     console.log(origin, distance, distance < 7)
+        // }
+        // if (distance < 6) {
+        const [x, y] = origin
         if (! chunkRect.isEdge(origin)) {
+        // if (x > 1 && x < chunkSize - 2 && y > 1 && y < chunkSize - 2) {
             const regionType = id % 2 == 0
             typeMap.set(id, regionType)  // not used
             anchorMap.set(id, origin)

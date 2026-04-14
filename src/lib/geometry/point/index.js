@@ -111,11 +111,17 @@ export class Point {
         return Math.sqrt(deltaX + deltaY)
     }
 
+    static manhattanDistance(p1, p2) {
+        const deltaX = Math.abs(p1[0] - p2[0])
+        const deltaY = Math.abs(p1[1] - p2[1])
+        return deltaX + deltaY
+    }
+
     static chebyshevDistance(p1, p2) {
         // maior valor absoluto entre as diferenças de cada coordenada
         const deltaX = Math.abs(p1[0] - p2[0])
         const deltaY = Math.abs(p1[1] - p2[1])
-            return Math.max(deltaX, deltaY)
+        return Math.max(deltaX, deltaY)
     }
 
     static atDirection(point, direction) {
