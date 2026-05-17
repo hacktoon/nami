@@ -7,8 +7,7 @@
 
 ## ROADMAP
 - basin erosion path
-  - use pivot points (in surface chunk) as guides. mark some of them unwalkable
-  - add portal points to chunk
+  - create two types:  mouth, source and confluence
   - regenerate river mouth in chunk based on discover instead of midpoint
 - fix roads to fix surface chunk (add region to land)
 - make water ways in basin less connected in hot water areas

@@ -10,6 +10,7 @@ const NOISE_SPEC = {
     'rain': {octaves: 6, resolution: .8, scale: .02},
     'chunkRain': {octaves: 7, resolution: .8, scale: .02},
     'grained': {octaves: 6, resolution: .8, scale: .8},
+    'chunkGrained': {octaves: 7, resolution: .9, scale: .8},
 }
 
 
@@ -31,6 +32,11 @@ export class NoiseLayer {
 
     get4DGrained(rect, point) {
         const specs = NOISE_SPEC['grained']
+        return this.grained.wrapped4D(rect, point, specs)
+    }
+
+    get4DChunkGrained(rect, point) {
+        const specs = NOISE_SPEC['chunkGrained']
         return this.grained.wrapped4D(rect, point, specs)
     }
 

@@ -1,15 +1,18 @@
 import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { Point } from '/src/lib/geometry/point'
+import { Rect } from '/src/lib/geometry/rect'
 import { PointMap } from '/src/lib/geometry/point/map'
 import { PointSet } from '/src/lib/geometry/point/set'
 import { Direction } from '/src/lib/direction'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
-
 import { buildRegionModel } from './region'
 
 
+const BLOCKED_NOISE_RATE = .5
+const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
+const MIDPOINT_RATE = .4  // random point in 40% of chunkrect area around center point
 const MEANDER = 4
 
 export const TYPE_LAND = 1
@@ -18,27 +21,38 @@ export const TYPE_RIVER = 3
 export const TYPE_CURRENT = 4
 export const TYPE_MARGIN = 5
 export const TYPE_SHORE = 6
-const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
-const MIDPOINT_RATE = .4  // random point in 40% of chunkrect area around center point
 
 
 export function buildModel(baseContext) {
     const chunkMidpoint = buildChunkMidpoint(baseContext.chunkRect)
-    const routes = buildRoutes({...baseContext, chunkMidpoint})
-    let pointMaskMap = buildErosionPoints(routes, baseContext)
+    const routes = buildRoutes_old({...baseContext, chunkMidpoint})
+    const blockedMaskGrid = buildNoiseMaskGrid(baseContext)
+    let pointMaskMap = buildErosionPoints(routes, {...baseContext, blockedMaskGrid})
     // if(baseContext.worldPoint[0] == 16 && baseContext.worldPoint[1] == 17) {
-    //     pointMaskMap = buildErosionPoints2(routes, baseContext)
-    // }
-    // const regionModel = buildRegionModel(baseContext)
-    const context = { ...baseContext, pointMaskMap }
+        //     pointMaskMap = buildErosionPoints2(routes, baseContext)
+        // }
+        // const regionModel = buildRegionModel(baseContext)
+        const context = { ...baseContext, pointMaskMap }
     const baseGrid = buildBaseGrid(context)
     const marginGrid = buildMarginGrid(baseGrid, context)
     return {
-        // grid: baseGrid,
+        blocked: blockedMaskGrid,
         grid: marginGrid,
         // regionModel,
         routes
     }
+}
+
+
+function buildNoiseMaskGrid(context) {
+    const { world, worldPoint, rect, chunkRect } = context
+    const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
+    const noiseRect = Rect.multiply(rect, chunkRect.width)
+    return Grid.fromRect(chunkRect, chunkPoint => {
+        const noisePoint = Point.plus(relativePoint, chunkPoint)
+        const noise = world.noise.get4DChunkGrained(noiseRect, noisePoint)
+        return noise > BLOCKED_NOISE_RATE
+    })
 }
 
 
@@ -59,6 +73,40 @@ function buildChunkMidpoint(chunkRect) {
 
 
 function buildRoutes(baseContext) {
+    // Each chunk has gates on its sides. A gate connects two chunks
+    // and is the same for both by averaging its joints
+    const { world, worldPoint, chunk } = baseContext
+    const basin = world.basin.get(worldPoint)
+    const gateSpecs = []
+    const routes = []
+    let outflow
+    for (let gateDirection of basin.directionBitmap) {
+        const parentPoint = Point.atDirection(worldPoint, gateDirection)
+        const sideBasin = world.basin.get(parentPoint)
+        // get the point on chunk side
+        const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
+        // create point at chunk edge where it connects to neighbor chunk
+        const gatePoint = gateDirection.axis.map(coord => {
+            if (coord < 0) return 0  // -1 means NORTH or EAST
+            if (coord > 0) return chunk.size - 1  // +1 means SOUTH or WEST
+            return avgJoint  //  0 means any value at chunk side
+        })
+        // current gate is same as the basin flow, mark outflow variable
+        if (basin.erosion.id == gateDirection.id) {
+            outflow = gatePoint
+        } else {
+            gateSpecs.push({gatePoint, direction: sideBasin.erosion})
+        }
+    }
+    // generate routes (all sources =>  outflow gate)
+    for (let {gatePoint, direction} of gateSpecs) {
+        routes.push({source: gatePoint, target: outflow, direction})
+    }
+    return routes
+}
+
+
+function buildRoutes_old(baseContext) {
     // Each chunk has gates on its sides. A gate connects two chunks
     // and is the same for both by averaging its joints
     const { world, worldPoint, chunk, chunkMidpoint } = baseContext
@@ -168,10 +216,10 @@ function _buildErosionPoints(routes, context) {
     for (let route of routes) {
         const {source, target} = route
         // reads the direction bitmask data and create pointMap for chunk grid
-        const midpoint = buildRouteMidpoint(route, context)
-        setHalfPath(source, midpoint, pointMap, route, context)
-        // console.log(source, midpoint, target)
-        setHalfPath(midpoint, target, pointMap, route, context)
+        // const midpoint = buildRouteMidpoint(route, context)
+        // setHalfPath(source, midpoint, pointMap, route, context)
+        // // console.log(source, midpoint, target)
+        // setHalfPath(midpoint, target, pointMap, route, context)
     }
     return pointMap
 }

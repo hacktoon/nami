@@ -48,9 +48,11 @@ export class BasinChunk {
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const type = model.grid.get(chunkPoint)
+                const blocked = model.blocked.get(chunkPoint)
                 // const region = model.regionModel.regionGrid.get(chunkPoint)
-                const color = Color.fromHex(COLOR_MAP[type])
+                let color = Color.fromHex(COLOR_MAP[type])
                 if (params.get('showErosion')) {
+                    // if (blocked) color = color.darken(100)
                     canvas.rect(chunkCanvasPoint, chunkTileSize, color.toHex())
                 }
                 // const regionColor = regionColorMap.get(region).average(color).average(color).toHex()
