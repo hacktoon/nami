@@ -3,15 +3,25 @@ import { Rect } from '/src/lib/geometry/rect'
 import { Grid } from '/src/lib/grid'
 
 
-const SURFACE_NOISE_RATIO = .55
-const WATER = 1
-const LAND = 2
-const LAND_BORDER = 3
-const WATER_BORDER = 4
+const DEEPWATER_NOISE_RATIO = .35
+const LAND_NOISE_RATIO = .55
+const HIGHLAND_NOISE_RATIO = .7
+const DEPRESSION_NOISE_RATIO = .8
+const PEAKLAND_NOISE_RATIO = .3
+const DEEPWATER = 1
+const WATER = 2
+const LAND = 3
+const HIGHLAND = 4
+const PEAKLAND = 5
+const LAND_BORDER = 6
+const WATER_BORDER = 7
 
 const COLOR_MAP = {
     [LAND]: '#71b13e',
-    [WATER]: '#181c46',
+    [HIGHLAND]: '#a4cc6b',
+    [PEAKLAND]: '#d5ddca',
+    [WATER]: '#282d68',
+    [DEEPWATER]: '#181c46',
     [LAND_BORDER]: '#57894b',
     [WATER_BORDER]: '#2c3062',
 }
@@ -64,27 +74,29 @@ function buildModel(context) {
     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
     const offsetChunkPoint = Point.minus(relativePoint, [offset, offset])
     const noiseRect = Rect.multiply(rect, chunkRect.width)
-    const surfaceGrid = Grid.fromRect(chunkRect, chunkPoint => {
+    // this only differentiates land / water
+    const baseSurfaceGrid = Grid.fromRect(chunkRect, chunkPoint => {
         const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
         return getType(context, noiseRect, noisePoint)
     })
     // Detect borders on base grid
     const marginGrid = Grid.fromRect(chunkRect, chunkPoint => {
-        const surface = surfaceGrid.get(chunkPoint)
+        const surface = baseSurfaceGrid.get(chunkPoint)
         for (let sidePoint of Point.adjacents(chunkPoint)) {
-            let sideSurface = surfaceGrid.get(sidePoint)
+            let sideSurface = baseSurfaceGrid.get(sidePoint)
             // get negative indices to offset noisePoint
             // sample noise outside chunkRect
+            const [sideX, sideY] = sidePoint
+            const x = sideX < 0 ? - 1 : (sideX >= chunkSize ? 1 : 0)
+            const y = sideY < 0 ? - 1 : (sideY >= chunkSize ? 1 : 0)
+            const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
+            const outerNoisePoint = Point.plus(noisePoint, [x, y])
             if (! chunkRect.isInside(sidePoint)) {
-                const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
-                const [sideX, sideY] = sidePoint
-                const x = sideX < 0 ? - 1 : (sideX >= chunkSize ? 1 : 0)
-                const y = sideY < 0 ? - 1 : (sideY >= chunkSize ? 1 : 0)
-                const outerNoisePoint = Point.plus(noisePoint, [x, y])
                 sideSurface = getType(context, noiseRect, outerNoisePoint)
             }
-            if (surface == LAND && sideSurface == WATER)
+            if (surface == LAND && sideSurface == WATER) {
                 return LAND_BORDER
+            }
             if (surface == WATER && sideSurface == LAND)
                 return WATER_BORDER
         }
@@ -95,6 +107,19 @@ function buildModel(context) {
 
 function getType(context, noiseRect, noisePoint) {
     const { world } = context
-    const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
-    return noise > SURFACE_NOISE_RATIO ? LAND : WATER
+    const dirtNoisePoint = noisePoint
+    const noise = world.noise.get4DChunkOutline(noiseRect, dirtNoisePoint)
+    const grainedNoise = world.noise.get4DChunkGrained(noiseRect, dirtNoisePoint)
+    if (noise > LAND_NOISE_RATIO) {
+        // highland
+        if (noise > DEPRESSION_NOISE_RATIO && noise > HIGHLAND_NOISE_RATIO) {
+            return grainedNoise > PEAKLAND_NOISE_RATIO ? HIGHLAND : PEAKLAND
+        }
+        if (grainedNoise < PEAKLAND_NOISE_RATIO) {
+            return HIGHLAND
+        }
+        return LAND
+    } else {
+        return noise < DEEPWATER_NOISE_RATIO ? DEEPWATER : WATER
+    }
 }
