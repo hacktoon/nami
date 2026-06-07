@@ -64,6 +64,11 @@ export class BasinChunk {
                 // }
             }
         }
+        let x = model.chunkMidpoint[0] * chunkTileSize
+        let y = model.chunkMidpoint[1] * chunkTileSize
+        let chunkCanvasPoint = Point.plus(canvasPoint, [x, y])
+        canvas.rect(chunkCanvasPoint, chunkTileSize, '#F00')
+
         // gates
         // model.routes.forEach(({ source, target }) => {
         //     let x = source[0] * chunkTileSize

@@ -24,8 +24,9 @@ export const TYPE_SHORE = 6
 
 
 export function buildModel(baseContext) {
+    const {chunkRect} = baseContext
     const chunkMidpoint = buildChunkMidpoint(baseContext.chunkRect)
-    const routes = buildRoutes_old({...baseContext, chunkMidpoint})
+    const routes = buildRoutes({...baseContext, chunkMidpoint})
     const blockedMaskGrid = buildNoiseMaskGrid(baseContext)
     let pointMaskMap = buildErosionPoints(routes, {...baseContext, blockedMaskGrid})
     // if(baseContext.worldPoint[0] == 16 && baseContext.worldPoint[1] == 17) {
@@ -38,6 +39,7 @@ export function buildModel(baseContext) {
     return {
         blocked: blockedMaskGrid,
         grid: marginGrid,
+        chunkMidpoint,
         // regionModel,
         routes
     }
@@ -73,40 +75,6 @@ function buildChunkMidpoint(chunkRect) {
 
 
 function buildRoutes(baseContext) {
-    // Each chunk has gates on its sides. A gate connects two chunks
-    // and is the same for both by averaging its joints
-    const { world, worldPoint, chunk } = baseContext
-    const basin = world.basin.get(worldPoint)
-    const gateSpecs = []
-    const routes = []
-    let outflow
-    for (let gateDirection of basin.directionBitmap) {
-        const parentPoint = Point.atDirection(worldPoint, gateDirection)
-        const sideBasin = world.basin.get(parentPoint)
-        // get the point on chunk side
-        const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
-        // create point at chunk edge where it connects to neighbor chunk
-        const gatePoint = gateDirection.axis.map(coord => {
-            if (coord < 0) return 0  // -1 means NORTH or EAST
-            if (coord > 0) return chunk.size - 1  // +1 means SOUTH or WEST
-            return avgJoint  //  0 means any value at chunk side
-        })
-        // current gate is same as the basin flow, mark outflow variable
-        if (basin.erosion.id == gateDirection.id) {
-            outflow = gatePoint
-        } else {
-            gateSpecs.push({gatePoint, direction: sideBasin.erosion})
-        }
-    }
-    // generate routes (all sources =>  outflow gate)
-    for (let {gatePoint, direction} of gateSpecs) {
-        routes.push({source: gatePoint, target: outflow, direction})
-    }
-    return routes
-}
-
-
-function buildRoutes_old(baseContext) {
     // Each chunk has gates on its sides. A gate connects two chunks
     // and is the same for both by averaging its joints
     const { world, worldPoint, chunk, chunkMidpoint } = baseContext
