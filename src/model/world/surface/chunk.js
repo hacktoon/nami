@@ -7,7 +7,7 @@ const DEEPWATER_NOISE_RATIO = .35
 const LAND_NOISE_RATIO = .55
 const HIGHLAND_NOISE_RATIO = .7
 const DEPRESSION_NOISE_RATIO = .8
-const PEAKLAND_NOISE_RATIO = .3
+const PEAKLAND_NOISE_RATIO = .4
 const DEEPWATER = 1
 const WATER = 2
 const LAND = 3
@@ -17,13 +17,13 @@ const LAND_BORDER = 6
 const WATER_BORDER = 7
 
 const COLOR_MAP = {
-    [LAND]: '#71b13e',
-    [HIGHLAND]: '#a4cc6b',
-    [PEAKLAND]: '#d5ddca',
+    [LAND_BORDER]: '#547f2f',
+    [LAND]: '#6aa538',
+    [HIGHLAND]: '#85c254',
+    [PEAKLAND]: '#b6db83',
+    [WATER_BORDER]: '#2c3062',
     [WATER]: '#282d68',
     [DEEPWATER]: '#181c46',
-    [LAND_BORDER]: '#57894b',
-    [WATER_BORDER]: '#2c3062',
 }
 
 
