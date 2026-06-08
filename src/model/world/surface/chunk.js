@@ -3,24 +3,21 @@ import { Rect } from '/src/lib/geometry/rect'
 import { Grid } from '/src/lib/grid'
 
 
-const DEEPWATER_NOISE_RATIO = .35
-const LAND_NOISE_RATIO = .55
-const HIGHLAND_NOISE_RATIO = .7
-const DEPRESSION_NOISE_RATIO = .8
-const PEAKLAND_NOISE_RATIO = .4
+const DEEPWATER_RATIO = .4
+const LAND_NOISE = .55
+const HIGHLAND_MIN_RATIO = .65
+const HIGHLAND_MAX_RATIO = .9
 const DEEPWATER = 1
 const WATER = 2
 const LAND = 3
 const HIGHLAND = 4
-const PEAKLAND = 5
-const LAND_BORDER = 6
-const WATER_BORDER = 7
+const LAND_BORDER = 5
+const WATER_BORDER = 6
 
 const COLOR_MAP = {
     [LAND_BORDER]: '#547f2f',
     [LAND]: '#6aa538',
     [HIGHLAND]: '#85c254',
-    [PEAKLAND]: '#b6db83',
     [WATER_BORDER]: '#2c3062',
     [WATER]: '#282d68',
     [DEEPWATER]: '#181c46',
@@ -37,7 +34,11 @@ export class SurfaceChunk {
 
     isLand(chunkPoint) {
         const type = this.#model.get(chunkPoint)
-        return type == LAND || type == LAND_BORDER
+        return type == LAND || type == HIGHLAND || type == LAND_BORDER
+    }
+
+    isHighland(chunkPoint) {
+        return this.#model.get(chunkPoint) == HIGHLAND
     }
 
     isBorder(chunkPoint) {
@@ -94,10 +95,10 @@ function buildModel(context) {
             if (! chunkRect.isInside(sidePoint)) {
                 sideSurface = getType(context, noiseRect, outerNoisePoint)
             }
-            if (surface == LAND && sideSurface == WATER) {
+            if ((surface == LAND || surface == HIGHLAND) && sideSurface == WATER) {
                 return LAND_BORDER
             }
-            if (surface == WATER && sideSurface == LAND)
+            if (surface == WATER && (sideSurface == LAND || sideSurface == HIGHLAND))
                 return WATER_BORDER
         }
         return surface
@@ -106,20 +107,14 @@ function buildModel(context) {
 }
 
 function getType(context, noiseRect, noisePoint) {
-    const { world } = context
-    const dirtNoisePoint = noisePoint
-    const noise = world.noise.get4DChunkOutline(noiseRect, dirtNoisePoint)
-    const grainedNoise = world.noise.get4DChunkGrained(noiseRect, dirtNoisePoint)
-    if (noise > LAND_NOISE_RATIO) {
-        // highland
-        if (noise > DEPRESSION_NOISE_RATIO && noise > HIGHLAND_NOISE_RATIO) {
-            return grainedNoise > PEAKLAND_NOISE_RATIO ? HIGHLAND : PEAKLAND
-        }
-        if (grainedNoise < PEAKLAND_NOISE_RATIO) {
-            return HIGHLAND
-        }
-        return LAND
+    const { world, chunkSize } = context
+    const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
+    const offsetPoint = Point.plus(noisePoint, [chunkSize, chunkSize])
+    if (noise > LAND_NOISE) {
+        const hNoise = world.noise.get4DChunkOutline(noiseRect, offsetPoint)
+        const isHighland = hNoise > HIGHLAND_MIN_RATIO && hNoise < HIGHLAND_MAX_RATIO
+        return isHighland ? HIGHLAND : LAND
     } else {
-        return noise < DEEPWATER_NOISE_RATIO ? DEEPWATER : WATER
+        return noise < DEEPWATER_RATIO ? DEEPWATER : WATER
     }
 }
