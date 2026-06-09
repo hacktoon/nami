@@ -3,24 +3,17 @@ import { Rect } from '/src/lib/geometry/rect'
 import { Grid } from '/src/lib/grid'
 
 
-const DEEPWATER_RATIO = .4
 const LAND_NOISE = .55
-const HIGHLAND_MIN_RATIO = .65
-const HIGHLAND_MAX_RATIO = .9
-const DEEPWATER = 1
-const WATER = 2
-const LAND = 3
-const HIGHLAND = 4
-const LAND_BORDER = 5
-const WATER_BORDER = 6
+const WATER = 1
+const LAND = 2
+const LAND_BORDER = 3
+const WATER_BORDER = 4
 
 const COLOR_MAP = {
     [LAND_BORDER]: '#547f2f',
     [LAND]: '#6aa538',
-    [HIGHLAND]: '#85c254',
     [WATER_BORDER]: '#2c3062',
     [WATER]: '#282d68',
-    [DEEPWATER]: '#181c46',
 }
 
 
@@ -34,11 +27,7 @@ export class SurfaceChunk {
 
     isLand(chunkPoint) {
         const type = this.#model.get(chunkPoint)
-        return type == LAND || type == HIGHLAND || type == LAND_BORDER
-    }
-
-    isHighland(chunkPoint) {
-        return this.#model.get(chunkPoint) == HIGHLAND
+        return type == LAND || type == LAND_BORDER
     }
 
     isBorder(chunkPoint) {
@@ -95,10 +84,10 @@ function buildModel(context) {
             if (! chunkRect.isInside(sidePoint)) {
                 sideSurface = getType(context, noiseRect, outerNoisePoint)
             }
-            if ((surface == LAND || surface == HIGHLAND) && sideSurface == WATER) {
+            if (surface == LAND && sideSurface == WATER) {
                 return LAND_BORDER
             }
-            if (surface == WATER && (sideSurface == LAND || sideSurface == HIGHLAND))
+            if (surface == WATER && sideSurface == LAND)
                 return WATER_BORDER
         }
         return surface
@@ -110,11 +99,5 @@ function getType(context, noiseRect, noisePoint) {
     const { world, chunkSize } = context
     const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
     const offsetPoint = Point.plus(noisePoint, [chunkSize, chunkSize])
-    if (noise > LAND_NOISE) {
-        const hNoise = world.noise.get4DChunkOutline(noiseRect, offsetPoint)
-        const isHighland = hNoise > HIGHLAND_MIN_RATIO && hNoise < HIGHLAND_MAX_RATIO
-        return isHighland ? HIGHLAND : LAND
-    } else {
-        return noise < DEEPWATER_RATIO ? DEEPWATER : WATER
-    }
+    return noise > LAND_NOISE ? LAND : WATER
 }
