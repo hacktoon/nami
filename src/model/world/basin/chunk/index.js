@@ -14,11 +14,12 @@ import {
 
 const COLOR_MAP = {
     [TYPE_LAND]: '#71b13e',
-    [TYPE_WATER]: '#181c46',
-    [TYPE_RIVER]: '#383c72',
-    [TYPE_MARGIN]: '#57894b', //'#71b13e',
-    [TYPE_CURRENT]: '#383c72',
-    [TYPE_SHORE]: '#2c3062',
+    [TYPE_WATER]: '#1f2e5d',
+    [TYPE_RIVER]: '#254a65',
+    [TYPE_MARGIN]: '#57894b',
+    // [TYPE_MARGIN]: '#71b13e',
+    [TYPE_CURRENT]: '#0e112e',
+    [TYPE_SHORE]: '#18264f',
 }
 
 
@@ -48,7 +49,7 @@ export class BasinChunk {
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
                 const type = model.grid.get(chunkPoint)
-                const blocked = model.blocked.get(chunkPoint)
+                // const blocked = model.blocked.get(chunkPoint)
                 // const region = model.regionModel.regionGrid.get(chunkPoint)
                 let color = Color.fromHex(COLOR_MAP[type])
                 if (params.get('showErosion')) {

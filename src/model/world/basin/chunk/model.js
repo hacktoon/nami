@@ -13,7 +13,7 @@ import { buildRegionModel } from './region'
 const BLOCKED_NOISE_RATE = .5
 const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
 const MIDPOINT_RATE = .4  // random point in 40% of chunkrect area around center point
-const MEANDER = 4
+const MEANDER = 3
 
 export const TYPE_LAND = 1
 export const TYPE_WATER = 2
@@ -24,20 +24,20 @@ export const TYPE_SHORE = 6
 
 
 export function buildModel(baseContext) {
-    const {chunkRect} = baseContext
+    const { chunkRect } = baseContext
     const chunkMidpoint = buildChunkMidpoint(baseContext.chunkRect)
-    const routes = buildRoutes({...baseContext, chunkMidpoint})
-    const blockedMaskGrid = buildNoiseMaskGrid(baseContext)
-    let pointMaskMap = buildErosionPoints(routes, {...baseContext, blockedMaskGrid})
+    const routes = buildRoutes({ ...baseContext, chunkMidpoint })
+    // const blockedMaskGrid = buildNoiseMaskGrid(baseContext)
+    let pointMaskMap = buildErosionPoints(routes, baseContext)
     // if(baseContext.worldPoint[0] == 16 && baseContext.worldPoint[1] == 17) {
-        //     pointMaskMap = buildErosionPoints2(routes, baseContext)
-        // }
-        // const regionModel = buildRegionModel(baseContext)
-        const context = { ...baseContext, pointMaskMap }
+    //     pointMaskMap = buildErosionPoints2(routes, baseContext)
+    // }
+    // const regionModel = buildRegionModel(baseContext)
+    const context = { ...baseContext, pointMaskMap }
     const baseGrid = buildBaseGrid(context)
     const marginGrid = buildMarginGrid(baseGrid, context)
     return {
-        blocked: blockedMaskGrid,
+        // blocked: blockedMaskGrid,
         grid: marginGrid,
         chunkMidpoint,
         // regionModel,
@@ -169,7 +169,7 @@ function buildErosionPoints(routes, context) {
     // reads the direction bitmask data and create points for chunk grid
     const { chunkRect, worldPoint } = context
     const points = new PointMap(chunkRect)
-    for (let {source, target, direction} of routes) {
+    for (let { source, target, direction } of routes) {
         midpointDisplacement(worldPoint, chunkRect, source, target, MEANDER, point => {
             points.set(point, TYPE_RIVER)
         })
@@ -178,96 +178,45 @@ function buildErosionPoints(routes, context) {
 }
 
 
-function _buildErosionPoints(routes, context) {
-    const { chunkRect } = context
-    const pointMap = new PointMap(chunkRect)
-    for (let route of routes) {
-        const {source, target} = route
-        // reads the direction bitmask data and create pointMap for chunk grid
-        // const midpoint = buildRouteMidpoint(route, context)
-        // setHalfPath(source, midpoint, pointMap, route, context)
-        // // console.log(source, midpoint, target)
-        // setHalfPath(midpoint, target, pointMap, route, context)
-    }
-    return pointMap
-}
+// function setHalfPath(source, target, pointMap, route, context) {
+//     const { direction, isOutflow } = route
+//     let currentPoint = source
+//     let prevPoint = source
+//     let maxIter = 100  // avoid infinite loops
+//     while (Point.differs(currentPoint, target) && maxIter > 0) {
+//         pointMap.set(currentPoint, TYPE_RIVER)
+//         prevPoint = currentPoint
+//         currentPoint = getNextPoint(prevPoint, currentPoint, target, pointMap, context)
+//         if (pointMap.has(currentPoint) && !isOutflow) {
+//             return
+//         }
+//         maxIter--
+//     }
+//     pointMap.set(currentPoint, TYPE_RIVER)
+// }
 
 
-function buildRouteMidpoint(route, context) {
-    const {source, target} = route
-    const { chunkSize } = context
-    const [x1, y1] = source
-    const [x2, y2] = target
-    const deltaX = Math.abs(x1 - x2)
-    const deltaY = Math.abs(y1 - y2)
-    // set default heuristic
-    let x = Math.round((x1 + x2) / 2)
-    let y = Math.round((y1 + y2) / 2)
-    if (deltaY > deltaX) {
-        x = generateCoordinate(x1, x2, chunkSize)
-    } else if (deltaX > deltaY) {
-        y = generateCoordinate(y1, y2, chunkSize)
-    }
-    return [x, y]
-}
-
-
-function generateCoordinate(c1, c2, length) {
-    // Get candidate points in an coordinate axis given
-    // two points and pick a random one
-    const candidates = []
-    const max = Math.max(c1, c2)
-    const min = Math.min(c1, c2)
-    // avoid selecting edges and p in closed range [x1..x2]
-    for (let i = 1; i < length - 1; i++) {
-        if (i < min || i > max) {
-            // console.log(`c1=${c1}, c2=${c2}, length=${length}, max=${max}, min=${min}`);
-            candidates.push(i)
-        }
-    }
-    return Random.choiceFrom(candidates)
-}
-
-
-function setHalfPath(source, target, pointMap, route, context) {
-    const { direction, isOutflow } = route
-    let currentPoint = source
-    let prevPoint = source
-    let maxIter = 100  // avoid infinite loops
-    while(Point.differs(currentPoint, target) && maxIter > 0) {
-        pointMap.set(currentPoint, TYPE_RIVER)
-        prevPoint = currentPoint
-        currentPoint = getNextPoint(prevPoint, currentPoint, target, pointMap, context)
-        if (pointMap.has(currentPoint) && !isOutflow) {
-            return
-        }
-        maxIter--
-    }
-    pointMap.set(currentPoint, TYPE_RIVER)
-}
-
-
-function getNextPoint(prevPoint, currentPoint, target, pointMap, context) {
-    const { chunkRect } = context
-    const [sx, sy] = currentPoint
-    const [tx, ty] = target
-    const candidates = []
-    const add = (dir) => {
-        // avoid adding points on edges
-        const candidate = Point.atDirection(currentPoint, dir)
-        if (Point.differs(candidate, target) && chunkRect.isEdge(candidate)) {
-            // avoid electing a point in edge, except for the target
-            return
-        }
-        candidates.push(candidate)
-    }
-    if (sx < tx) add(Direction.EAST)
-    if (sx > tx) add(Direction.WEST)
-    if (sy < ty) add(Direction.SOUTH)
-    if (sy > ty) add(Direction.NORTH)
-    if (sx < tx && sy < ty) add(Direction.SOUTHEAST)
-    if (sx > tx && sy < ty) add(Direction.SOUTHWEST)
-    if (sx < tx && sy > ty) add(Direction.NORTHEAST)
-    if (sx > tx && sy > ty) add(Direction.NORTHWEST)
-    return Random.choiceFrom(candidates)
-}
+// function getNextPoint(prevPoint, currentPoint, target, pointMap, context) {
+//     const { chunkRect } = context
+//     const [sx, sy] = currentPoint
+//     const [tx, ty] = target
+//     const candidates = []
+//     const add = (dir) => {
+//         // avoid adding points on edges
+//         const candidate = Point.atDirection(currentPoint, dir)
+//         if (Point.differs(candidate, target) && chunkRect.isEdge(candidate)) {
+//             // avoid electing a point in edge, except for the target
+//             return
+//         }
+//         candidates.push(candidate)
+//     }
+//     if (sx < tx) add(Direction.EAST)
+//     if (sx > tx) add(Direction.WEST)
+//     if (sy < ty) add(Direction.SOUTH)
+//     if (sy > ty) add(Direction.NORTH)
+//     if (sx < tx && sy < ty) add(Direction.SOUTHEAST)
+//     if (sx > tx && sy < ty) add(Direction.SOUTHWEST)
+//     if (sx < tx && sy > ty) add(Direction.NORTHEAST)
+//     if (sx > tx && sy > ty) add(Direction.NORTHWEST)
+//     return Random.choiceFrom(candidates)
+// }
