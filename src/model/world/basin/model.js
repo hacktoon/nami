@@ -17,8 +17,8 @@ import {
 
 
 const NO_BASIN_ID = null
-const FILL_CHANCE = .1
-const FILL_GROWTH = 2
+const FILL_CHANCE = .2
+const FILL_GROWTH = 3
 const INITIAL_DISTANCE = 1
 
 

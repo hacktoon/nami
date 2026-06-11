@@ -10,7 +10,7 @@ import { useResize } from '/src/ui'
 import { UITileMapMouse } from './mouse'
 
 
-const ZOOM_INCREMENT = 20
+const ZOOM_INCREMENT = 25
 
 
 export function UITileMapScene(props) {

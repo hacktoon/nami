@@ -3,8 +3,8 @@ import { PointSet } from '/src/lib/math/point/set'
 import { Rect } from '/src/lib/math/rect'
 import { Grid } from '/src/lib/grid'
 
-import { buildLevelGrid } from './level'
 
+const LAND_NOISE = .55
 
 export const WATER = 1
 export const LAND = 2
@@ -16,11 +16,8 @@ export function buildModel(context) {
     const model = {}
     model.type = buildTypeGrid(context)
     model.surface = buildSurfaceGrid(context, model)
-    model.level = buildLevelGrid(context, model)
     return model
 }
-
-const LAND_NOISE = .55
 
 
 function buildTypeGrid(context) {
@@ -37,6 +34,14 @@ function buildTypeGrid(context) {
         const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
         return getType(context, noiseRect, noisePoint)
     })
+}
+
+
+function getType(context, noiseRect, noisePoint) {
+    const { world, chunkSize } = context
+    const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
+    const offsetPoint = Point.plus(noisePoint, [chunkSize, chunkSize])
+    return noise > LAND_NOISE ? LAND : WATER
 }
 
 
@@ -72,12 +77,4 @@ function buildSurfaceGrid(context, model) {
         }
         return surface
     })
-}
-
-
-function getType(context, noiseRect, noisePoint) {
-    const { world, chunkSize } = context
-    const noise = world.noise.get4DChunkOutline(noiseRect, noisePoint)
-    const offsetPoint = Point.plus(noisePoint, [chunkSize, chunkSize])
-    return noise > LAND_NOISE ? LAND : WATER
 }

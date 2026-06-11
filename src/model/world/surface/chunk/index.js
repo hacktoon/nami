@@ -15,8 +15,8 @@ import {
 const COLOR_MAP = {
     [LAND_BORDER]: '#547f2f',
     [LAND]: '#6aa538',
-    [WATER_BORDER]: '#2c3062',
-    [WATER]: '#282d68',
+    [WATER_BORDER]: '#34386e',
+    [WATER]: '#0f1235',
 }
 
 
@@ -28,19 +28,13 @@ export class SurfaceChunk {
         this.#model = buildModel(context)
     }
 
-    get(chunkPoint) {
-        const type = this.#model.surface.get(chunkPoint)
-        const level = this.#model.level.get(chunkPoint)
-        return { type, level }
-    }
-
     isLand(chunkPoint) {
-        const type = this.#model.type.get(chunkPoint)
+        const type = this.#model.surface.get(chunkPoint)
         return type == LAND || type == LAND_BORDER
     }
 
     isBorder(chunkPoint) {
-        const type = this.#model.type.get(chunkPoint)
+        const type = this.#model.surface.get(chunkPoint)
         return type == WATER_BORDER || type == LAND_BORDER
     }
 
@@ -52,14 +46,12 @@ export class SurfaceChunk {
             const xSize = x * size
             for (let y = 0; y < chunkSize; y++) {
                 const chunkPoint = [y, x]
-                const { type, level } = this.get(chunkPoint)
+                const type = this.#model.surface.get(chunkPoint)
                 // const chunk = this.get(chunkPoint)
                 const ySize = y * size
                 const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                let color = Color.fromHex(COLOR_MAP[type])
-                if (level < 4)
-                    color = color.darken(level * 10)
-                canvas.rect(chunkCanvasPoint, size, color.toHex())
+                const color = COLOR_MAP[type]
+                canvas.rect(chunkCanvasPoint, size, color)
             }
         }
     }
