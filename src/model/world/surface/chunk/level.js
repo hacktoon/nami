@@ -8,12 +8,12 @@ import { LAND_BORDER } from './model'
 const EMPTY = null
 
 
-export function buildLevelGrid(model, context) {
+export function buildLevelGrid(context, model) {
     const { worldPoint, world, rect, chunkRect, chunkSize } = context
     const landBorders = []
     // init grid and dectect seeds
     const levelGrid = Grid.fromRect(chunkRect, chunkPoint => {
-        const type = model.type.get(chunkPoint)
+        const type = model.surface.get(chunkPoint)
         if (type == LAND_BORDER)
             landBorders.push(chunkPoint)
         return EMPTY

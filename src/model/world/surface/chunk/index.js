@@ -2,6 +2,7 @@ import { Point } from '/src/lib/math/point'
 import { PointSet } from '/src/lib/math/point/set'
 import { Rect } from '/src/lib/math/rect'
 import { Grid } from '/src/lib/grid'
+import { Color } from '/src/lib/color'
 
 import {
     buildModel,
@@ -28,7 +29,7 @@ export class SurfaceChunk {
     }
 
     get(chunkPoint) {
-        const type = this.#model.type.get(chunkPoint)
+        const type = this.#model.surface.get(chunkPoint)
         const level = this.#model.level.get(chunkPoint)
         return { type, level }
     }
@@ -51,12 +52,14 @@ export class SurfaceChunk {
             const xSize = x * size
             for (let y = 0; y < chunkSize; y++) {
                 const chunkPoint = [y, x]
+                const { type, level } = this.get(chunkPoint)
                 // const chunk = this.get(chunkPoint)
                 const ySize = y * size
                 const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const { type, level } = this.get(chunkPoint)
-                let color = COLOR_MAP[type]
-                canvas.rect(chunkCanvasPoint, size, color)
+                let color = Color.fromHex(COLOR_MAP[type])
+                if (level < 4)
+                    color = color.darken(level * 10)
+                canvas.rect(chunkCanvasPoint, size, color.toHex())
             }
         }
     }
