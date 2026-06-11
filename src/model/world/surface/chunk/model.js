@@ -1,6 +1,6 @@
-import { Point } from '/src/lib/geometry/point'
-import { PointSet } from '/src/lib/geometry/point/set'
-import { Rect } from '/src/lib/geometry/rect'
+import { Point } from '/src/lib/math/point'
+import { PointSet } from '/src/lib/math/point/set'
+import { Rect } from '/src/lib/math/rect'
 import { Grid } from '/src/lib/grid'
 
 import { buildLevelGrid } from './level'

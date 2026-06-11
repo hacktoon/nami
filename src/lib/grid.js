@@ -1,4 +1,4 @@
-import { Rect } from '/src/lib/geometry/rect'
+import { Rect } from '/src/lib/math/rect'
 
 
 export class Grid {

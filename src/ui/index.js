@@ -1,6 +1,6 @@
 import { React, useLayoutEffect, useState } from 'react'
 
-import { Rect } from '/src/lib/geometry/rect'
+import { Rect } from '/src/lib/math/rect'
 
 
 // HELPER FUNCTIONS ==============================================

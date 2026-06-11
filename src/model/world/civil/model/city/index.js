@@ -2,10 +2,10 @@ import { Grid } from '/src/lib/grid'
 import { Graph } from '/src/lib/graph'
 import { Color } from '/src/lib/color'
 import { Random } from '/src/lib/random'
-import { Point } from '/src/lib/geometry/point'
-import { PointSet } from '/src/lib/geometry/point/set'
+import { Point } from '/src/lib/math/point'
+import { PointSet } from '/src/lib/math/point/set'
 import { DirectionBitMaskGrid } from '/src/lib/bitmask'
-import { PointArraySet } from '/src/lib/geometry/point/set'
+import { PointArraySet } from '/src/lib/math/point/set'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 
 

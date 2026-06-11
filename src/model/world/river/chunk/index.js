@@ -1,4 +1,4 @@
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 import { Color } from '/src/lib/color'
 
 import { buildRiverGrid, TYPE_RIVER, TYPE_OTHER } from './model'

@@ -1,4 +1,4 @@
-import { Direction } from '/src/lib/direction'
+import { Direction } from '/src/lib/math/direction'
 import { Random } from '/src/lib/random'
 
 
@@ -118,7 +118,7 @@ export class Point {
     }
 
     static chebyshevDistance(p1, p2) {
-        // maior valor absoluto entre as diferenças de cada coordenada
+        // greater absolute value between deltas
         const deltaX = Math.abs(p1[0] - p2[0])
         const deltaY = Math.abs(p1[1] - p2[1])
         return Math.max(deltaX, deltaY)
@@ -129,17 +129,16 @@ export class Point {
     }
 
     static directionBetween(source, target) {
-        // need to get unwrapped points to get real angle
         const [sx, sy] = source
         const [tx, ty] = target
         if (tx == sx + 1 && ty == sy) return Direction.EAST
         if (tx == sx - 1 && ty == sy) return Direction.WEST
         if (ty == sy - 1 && tx == sx) return Direction.NORTH
         if (ty == sy + 1 && tx == sx) return Direction.SOUTH
-        if (tx == sx + 1 && ty == sy - 1) return Direction.NORTHEAST;
-        if (tx == sx - 1 && ty == sy - 1) return Direction.NORTHWEST;
-        if (tx == sx + 1 && ty == sy + 1) return Direction.SOUTHEAST;
-        if (tx == sx - 1 && ty == sy + 1) return Direction.SOUTHWEST;
+        if (tx == sx + 1 && ty == sy - 1) return Direction.NORTHEAST
+        if (tx == sx - 1 && ty == sy - 1) return Direction.NORTHWEST
+        if (tx == sx + 1 && ty == sy + 1) return Direction.SOUTHEAST
+        if (tx == sx - 1 && ty == sy + 1) return Direction.SOUTHWEST
     }
 
     static atNorth(p) { return [p[0], p[1] - 1] }

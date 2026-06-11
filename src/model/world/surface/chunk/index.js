@@ -1,6 +1,6 @@
-import { Point } from '/src/lib/geometry/point'
-import { PointSet } from '/src/lib/geometry/point/set'
-import { Rect } from '/src/lib/geometry/rect'
+import { Point } from '/src/lib/math/point'
+import { PointSet } from '/src/lib/math/point/set'
+import { Rect } from '/src/lib/math/rect'
 import { Grid } from '/src/lib/grid'
 
 import {
@@ -27,6 +27,12 @@ export class SurfaceChunk {
         this.#model = buildModel(context)
     }
 
+    get(chunkPoint) {
+        const type = this.#model.type.get(chunkPoint)
+        const level = this.#model.level.get(chunkPoint)
+        return { type, level }
+    }
+
     isLand(chunkPoint) {
         const type = this.#model.type.get(chunkPoint)
         return type == LAND || type == LAND_BORDER
@@ -48,8 +54,8 @@ export class SurfaceChunk {
                 // const chunk = this.get(chunkPoint)
                 const ySize = y * size
                 const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const id = this.#model.type.get(chunkPoint)
-                let color = COLOR_MAP[id]
+                const { type, level } = this.get(chunkPoint)
+                let color = COLOR_MAP[type]
                 canvas.rect(chunkCanvasPoint, size, color)
             }
         }

@@ -1,6 +1,6 @@
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 import { Color } from '/src/lib/color'
-import { Rect } from '/src/lib/geometry/rect'
+import { Rect } from '/src/lib/math/rect'
 import { clamp } from '/src/lib/function'
 
 

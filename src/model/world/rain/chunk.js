@@ -1,5 +1,5 @@
-import { Point } from '/src/lib/geometry/point'
-import { Rect } from '/src/lib/geometry/rect'
+import { Point } from '/src/lib/math/point'
+import { Rect } from '/src/lib/math/rect'
 import { Grid } from '/src/lib/grid'
 
 import { Rain } from './data'

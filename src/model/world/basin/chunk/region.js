@@ -1,6 +1,6 @@
-import { EvenPointSampling } from '/src/lib/geometry/point/sampling'
+import { EvenPointSampling } from '/src/lib/math/point/sampling'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 import { Grid } from '/src/lib/grid'
 
 

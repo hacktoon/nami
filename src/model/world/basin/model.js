@@ -1,8 +1,8 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
 import { Grid } from '/src/lib/grid'
-import { Direction } from '/src/lib/direction'
+import { Direction } from '/src/lib/math/direction'
 import { Random } from '/src/lib/random'
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 
 import { DirectionBitMaskGrid } from '/src/lib/bitmask'
 

@@ -1,8 +1,8 @@
 import { React, useMemo, useState, useEffect } from 'react'
 
-import { Rect } from '/src/lib/geometry/rect'
+import { Rect } from '/src/lib/math/rect'
 import { Color } from '/src/lib/color'
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 
 
 export function FieldSet({types, data, onChange}) {

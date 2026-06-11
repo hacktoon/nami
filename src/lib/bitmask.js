@@ -1,4 +1,4 @@
-import { Direction } from '/src/lib/direction'
+import { Direction } from '/src/lib/math/direction'
 import { Grid } from '/src/lib/grid'
 
 

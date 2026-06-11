@@ -1,10 +1,10 @@
 import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { PointSet } from '/src/lib/geometry/point/set'
-import { PointMap } from '/src/lib/geometry/point/map'
-import { Point } from '/src/lib/geometry/point'
+import { PointSet } from '/src/lib/math/point/set'
+import { PointMap } from '/src/lib/math/point/map'
+import { Point } from '/src/lib/math/point'
 import { Random } from '/src/lib/random'
-import { Direction } from '/src/lib/direction'
+import { Direction } from '/src/lib/math/direction'
 import { Grid } from '/src/lib/grid'
 
 

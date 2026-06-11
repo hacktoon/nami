@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { Rect } from '/src/lib/geometry/rect'
+import { Rect } from '/src/lib/math/rect'
 
 
 test('rect wrapping', () => {

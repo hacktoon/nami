@@ -1,5 +1,5 @@
-import { Point } from '/src/lib/geometry/point'
-import { Direction } from '/src/lib/direction'
+import { Point } from '/src/lib/math/point'
+import { Direction } from '/src/lib/math/direction'
 
 import { buildBasinModel } from './model'
 import { Basin } from './type'

@@ -1,4 +1,4 @@
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 
 
 export function drawIcon(props, template, colorMap) {

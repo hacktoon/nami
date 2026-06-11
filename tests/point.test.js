@@ -1,8 +1,8 @@
 import { expect, test } from 'vitest'
-import { Point } from '/src/lib/geometry/point'
-import { Direction } from '/src/lib/direction'
-import { Rect } from '/src/lib/geometry/rect'
-import { PointArraySet } from '/src/lib/geometry/point/set'
+import { Point } from '/src/lib/math/point'
+import { Direction } from '/src/lib/math/direction'
+import { Rect } from '/src/lib/math/rect'
+import { PointArraySet } from '/src/lib/math/point/set'
 
 
 test("point multiplication", () => {

@@ -1,5 +1,5 @@
-import { Point } from '/src/lib/geometry/point'
-import { PointArraySet } from '/src/lib/geometry/point/set'
+import { Point } from '/src/lib/math/point'
+import { PointArraySet } from '/src/lib/math/point/set'
 
 
 export class EvenPointSampling {

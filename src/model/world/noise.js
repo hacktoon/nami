@@ -1,4 +1,4 @@
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 import { SimplexNoise } from '/src/lib/noise'
 
 

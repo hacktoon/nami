@@ -1,5 +1,5 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 import { Grid } from '/src/lib/grid'
 
 import { LAND_BORDER } from './model'
@@ -26,7 +26,7 @@ export function buildLevelGrid(model, context) {
 
     const fillContext = { ...context, levelGrid }
     new LevelFloodFill(chunkRect, fillMap, fillContext).complete()
-    return { levelGrid }
+    return levelGrid
 }
 
 
@@ -40,7 +40,6 @@ class LevelFloodFill extends ConcurrentFill {
     }
 
     onFill(fill, fillPoint) {
-        console.log(fill.level)
         fill.context.levelGrid.set(fillPoint, fill.level)
     }
 }

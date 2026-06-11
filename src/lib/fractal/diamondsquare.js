@@ -1,7 +1,7 @@
 import { clamp, sum } from '/src/lib/function'
 
 import { Grid } from '/src/lib/grid'
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 import { Random } from '/src/lib/random'
 
 

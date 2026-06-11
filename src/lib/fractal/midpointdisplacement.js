@@ -1,5 +1,5 @@
 import { Random } from '/src/lib/random'
-import { Point } from '/src/lib/geometry/point'
+import { Point } from '/src/lib/math/point'
 import { clamp } from '/src/lib/function'
 
 

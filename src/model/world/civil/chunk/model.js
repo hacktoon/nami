@@ -1,6 +1,6 @@
 import { ConcurrentFill } from '/src/lib/floodfill/concurrent'
-import { PointSet } from '/src/lib/geometry/point/set'
-import { Point } from '/src/lib/geometry/point'
+import { PointSet } from '/src/lib/math/point/set'
+import { Point } from '/src/lib/math/point'
 import { clamp } from '/src/lib/function'
 
 

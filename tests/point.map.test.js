@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
-import { PointMap } from '/src/lib/geometry/point/map'
-import { Rect } from '/src/lib/geometry/rect'
+import { PointMap } from '/src/lib/math/point/map'
+import { Rect } from '/src/lib/math/rect'
 
 
 test("Creates a PointMap", () => {
