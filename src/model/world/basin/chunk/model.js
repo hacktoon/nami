@@ -18,7 +18,7 @@ const MEANDER = 3
 export const TYPE_LAND = 1
 export const TYPE_WATER = 2
 export const TYPE_RIVER = 3
-export const TYPE_CURRENT = 4
+export const TYPE_CHANNEL = 4
 export const TYPE_MARGIN = 5
 export const TYPE_SHORE = 6
 
@@ -110,7 +110,7 @@ function buildBaseGrid(context) {
     const isWorldLand = world.surface.isLand(worldPoint)
     return Grid.fromRect(chunkRect, chunkPoint => {
         if (pointMaskMap.has(chunkPoint)) {
-            return isWorldLand ? TYPE_RIVER : TYPE_CURRENT
+            return isWorldLand ? TYPE_RIVER : TYPE_CHANNEL
         }
         const isLand = chunk.surface.isLand(chunkPoint)
         return isLand ? TYPE_LAND : TYPE_WATER
@@ -149,7 +149,7 @@ function buildMarginGrid(baseGrid, context) {
         for (let sidePoint of Point.adjacents(chunkPoint)) {
             const inside = chunkRect.isInside(sidePoint)
             const type = baseGrid.get(sidePoint)
-            if (inside && type == TYPE_CURRENT)
+            if (inside && type == TYPE_CHANNEL)
                 return TYPE_SHORE
         }
         // set margins of erosion points

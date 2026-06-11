@@ -1,61 +1,27 @@
 import { Point } from '/src/lib/geometry/point'
+import { PointSet } from '/src/lib/geometry/point/set'
 import { Rect } from '/src/lib/geometry/rect'
 import { Grid } from '/src/lib/grid'
 
+import { buildLevelGrid } from './level'
+
+
+export const WATER = 1
+export const LAND = 2
+export const LAND_BORDER = 3
+export const WATER_BORDER = 4
+
+
+export function buildModel(context) {
+    const model = {}
+    model.type = buildTypeGrid(context)
+    model.level = buildLevelGrid(model, context)
+    return model
+}
 
 const LAND_NOISE = .55
-const WATER = 1
-const LAND = 2
-const LAND_BORDER = 3
-const WATER_BORDER = 4
 
-const COLOR_MAP = {
-    [LAND_BORDER]: '#547f2f',
-    [LAND]: '#6aa538',
-    [WATER_BORDER]: '#2c3062',
-    [WATER]: '#282d68',
-}
-
-
-export class SurfaceChunk {
-    #model
-
-    constructor(context) {
-        this.size = context.chunkSize
-        this.#model = buildModel(context)
-    }
-
-    isLand(chunkPoint) {
-        const type = this.#model.get(chunkPoint)
-        return type == LAND || type == LAND_BORDER
-    }
-
-    isBorder(chunkPoint) {
-        const type = this.#model.get(chunkPoint)
-        return type == WATER_BORDER || type == LAND_BORDER
-    }
-
-    draw(props, params) {
-        const { canvas, canvasPoint, tileSize } = props
-        const chunkSize = this.size
-        const size = tileSize / chunkSize
-        for (let x = 0; x < chunkSize; x++) {
-            const xSize = x * size
-            for (let y = 0; y < chunkSize; y++) {
-                const chunkPoint = [y, x]
-                // const chunk = this.get(chunkPoint)
-                const ySize = y * size
-                const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const id = this.#model.get(chunkPoint)
-                let color = COLOR_MAP[id]
-                canvas.rect(chunkCanvasPoint, size, color)
-            }
-        }
-    }
-}
-
-
-function buildModel(context) {
+function buildTypeGrid(context) {
     // Generate a boolean grid (land or water)
     const { worldPoint, world, rect, chunkRect, chunkSize } = context
     // Offset noise sampled at (0, 0) position in world map
@@ -63,36 +29,35 @@ function buildModel(context) {
     const offset = Math.floor(chunkSize / 2)
     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
     const offsetChunkPoint = Point.minus(relativePoint, [offset, offset])
-    const noiseRect = Rect.multiply(rect, chunkRect.width)
+    const noiseRect = Rect.multiply(rect, chunkSize)
     // this only differentiates land / water
     const baseSurfaceGrid = Grid.fromRect(chunkRect, chunkPoint => {
         const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
         return getType(context, noiseRect, noisePoint)
     })
     // Detect borders on base grid
-    const marginGrid = Grid.fromRect(chunkRect, chunkPoint => {
+    return Grid.fromRect(chunkRect, chunkPoint => {
         const surface = baseSurfaceGrid.get(chunkPoint)
         for (let sidePoint of Point.adjacents(chunkPoint)) {
+            // default value from base grid, transform it based on neighbors
             let sideSurface = baseSurfaceGrid.get(sidePoint)
             // get negative indices to offset noisePoint
             // sample noise outside chunkRect
             const [sideX, sideY] = sidePoint
             const x = sideX < 0 ? - 1 : (sideX >= chunkSize ? 1 : 0)
             const y = sideY < 0 ? - 1 : (sideY >= chunkSize ? 1 : 0)
-            const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
-            const outerNoisePoint = Point.plus(noisePoint, [x, y])
-            if (! chunkRect.isInside(sidePoint)) {
+            if (!chunkRect.isInside(sidePoint)) {
+                const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
+                const outerNoisePoint = Point.plus(noisePoint, [x, y])
                 sideSurface = getType(context, noiseRect, outerNoisePoint)
             }
-            if (surface == LAND && sideSurface == WATER) {
+            if (surface == LAND && sideSurface == WATER)
                 return LAND_BORDER
-            }
             if (surface == WATER && sideSurface == LAND)
                 return WATER_BORDER
         }
         return surface
     })
-    return marginGrid
 }
 
 function getType(context, noiseRect, noisePoint) {
@@ -101,3 +66,4 @@ function getType(context, noiseRect, noisePoint) {
     const offsetPoint = Point.plus(noisePoint, [chunkSize, chunkSize])
     return noise > LAND_NOISE ? LAND : WATER
 }
+

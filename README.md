@@ -6,6 +6,7 @@
 
 
 ## ROADMAP
+- level grid for surface chunk
 - basin erosion path
   - create two types:  mouth, source and body
   - regenerate river mouth in chunk based on discover instead of midpoint

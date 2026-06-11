@@ -6,9 +6,9 @@ import {
     TYPE_LAND,
     TYPE_RIVER,
     TYPE_WATER,
-    TYPE_CURRENT,
     TYPE_MARGIN,
     TYPE_SHORE,
+    TYPE_CHANNEL,
 } from './model'
 
 
@@ -18,7 +18,7 @@ const COLOR_MAP = {
     [TYPE_RIVER]: '#254a65',
     [TYPE_MARGIN]: '#57894b',
     // [TYPE_MARGIN]: '#71b13e',
-    [TYPE_CURRENT]: '#0e112e',
+    [TYPE_CHANNEL]: '#0e112e',
     [TYPE_SHORE]: '#18264f',
 }
 
