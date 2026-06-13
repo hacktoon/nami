@@ -76,7 +76,7 @@ function buildBasinGrid(context) {
         const survey = surveyNeighbors(context, point)
         const isBorder = world.surface.isBorder(point)
         const isLand = world.surface.isLand(point)
-        // Basins start on borders and fill inland
+        // Basins start on borders (water or land)
         // Create major erosion paths (basins) on tiles with just one water neighbor
         if (isBorder && isLand && survey.waterNeighbors.length == 1) {
             const type = detectLandBasinType(world, survey)
@@ -85,6 +85,7 @@ function buildBasinGrid(context) {
             landFillMap.set(basinId, {origin: point})
             basinId++
         }
+        // use water borders to start water basin fill
         if (isBorder && ! isLand) {
             const type = OceanBasin
             model.type.set(basinId, type.id)
@@ -184,10 +185,10 @@ class LandBasinFill extends ConcurrentFill {
     _fillBasin(fill, fillPoint, parentPoint) {
         const {world, model, basinGrid} = fill.context
         const direction = Point.directionBetween(fillPoint, parentPoint)
-        // basin id is the same as fill id
-        basinGrid.set(fillPoint, fill.id)
         // set erosion flow to parent
         model.erosion.set(fillPoint, direction.id)
+        // basin id is the same as fill id
+        basinGrid.set(fillPoint, fill.id)
         // mark the direction the erosion flows
         model.directionBitmap.add(fillPoint, direction)
         _setCorner(world, model, fillPoint, direction)

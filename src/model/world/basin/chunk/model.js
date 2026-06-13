@@ -112,8 +112,8 @@ function buildBaseGrid(context) {
         if (pointMaskMap.has(chunkPoint)) {
             return isWorldLand ? TYPE_RIVER : TYPE_CHANNEL
         }
-        const isLand = chunk.surface.isLand(chunkPoint)
-        return isLand ? TYPE_LAND : TYPE_WATER
+        const isChunkLand = chunk.surface.isLand(chunkPoint)
+        return isChunkLand ? TYPE_LAND : TYPE_WATER
     })
 }
 
@@ -124,14 +124,20 @@ function buildMarginGrid(baseGrid, context) {
     const shorePoints = new PointSet(chunkRect)
     // post process to add margins and shores to some chunk points
     const basin = world.basin.get(worldPoint)
-    // get chunk corner point based on direction
+    // get chunk corner point based on direction: NORTHWEST = [0, 0]
     const getCornerPoint = (dir) => dir.axis.map(coord => coord > 0 ? chunkSize - 1 : 0)
     // check river/water chunk corners for grid building
     for (let dir of basin.waterCornerBitmap) {
         shorePoints.add(getCornerPoint(dir))
     }
     for (let dir of basin.riverCornerBitmap) {
-        marginPoints.add(getCornerPoint(dir))
+        const cornerPoint = getCornerPoint(dir)
+        marginPoints.add(cornerPoint)
+        // mark a 1x1 cross on this corner point
+        for (let sidePoint of Point.adjacents(cornerPoint)) {
+            if (chunkRect.isInside(sidePoint))
+                marginPoints.add(sidePoint)
+        }
     }
     // Apply erosion margins to base grid
     const buildMargin = (chunkPoint) => {
@@ -153,7 +159,9 @@ function buildMarginGrid(baseGrid, context) {
                 return TYPE_SHORE
         }
         // set margins of erosion points
-        if (marginPoints.has(chunkPoint)) return TYPE_MARGIN
+        if (marginPoints.has(chunkPoint)) {
+            return TYPE_MARGIN
+        }
         if (shorePoints.has(chunkPoint)) return TYPE_SHORE
         const isBorder = chunk.surface.isBorder(chunkPoint)
         if (chunk.surface.isLand(chunkPoint))
