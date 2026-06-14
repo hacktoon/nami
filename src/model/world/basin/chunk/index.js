@@ -6,8 +6,8 @@ import {
     TYPE_LAND,
     TYPE_RIVER,
     TYPE_WATER,
-    TYPE_MARGIN,
-    TYPE_SHORE,
+    TYPE_RIVER_SIDE,
+    TYPE_CHANNEL_SIDE,
     TYPE_CHANNEL,
 } from './model'
 
@@ -16,10 +16,10 @@ const COLOR_MAP = {
     [TYPE_LAND]: '#71b13e',
     [TYPE_WATER]: '#1f2e5d',
     [TYPE_RIVER]: '#254a65',
-    [TYPE_MARGIN]: '#57894b',
-    // [TYPE_MARGIN]: '#71b13e',
+    [TYPE_RIVER_SIDE]: '#57894b',
+    // [TYPE_RIVER_SIDE]: '#71b13e',
     [TYPE_CHANNEL]: '#0e112e',
-    [TYPE_SHORE]: '#18264f',
+    [TYPE_CHANNEL_SIDE]: '#18264f',
 }
 
 

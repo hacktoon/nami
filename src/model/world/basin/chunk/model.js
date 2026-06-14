@@ -19,8 +19,8 @@ export const TYPE_LAND = 1
 export const TYPE_WATER = 2
 export const TYPE_RIVER = 3
 export const TYPE_CHANNEL = 4
-export const TYPE_MARGIN = 5
-export const TYPE_SHORE = 6
+export const TYPE_RIVER_SIDE = 5
+export const TYPE_CHANNEL_SIDE = 6
 
 
 export function buildModel(baseContext) {
@@ -150,23 +150,18 @@ function buildMarginGrid(baseGrid, context) {
             const inside = chunkRect.isInside(sidePoint)
             const type = baseGrid.get(sidePoint)
             if (inside && type == TYPE_RIVER)
-                return TYPE_MARGIN
+                return TYPE_RIVER_SIDE
         }
         for (let sidePoint of Point.adjacents(chunkPoint)) {
             const inside = chunkRect.isInside(sidePoint)
             const type = baseGrid.get(sidePoint)
             if (inside && type == TYPE_CHANNEL)
-                return TYPE_SHORE
+                return TYPE_CHANNEL_SIDE
         }
         // set margins of erosion points
-        if (marginPoints.has(chunkPoint)) {
-            return TYPE_MARGIN
-        }
-        if (shorePoints.has(chunkPoint)) return TYPE_SHORE
-        const isBorder = chunk.surface.isBorder(chunkPoint)
-        if (chunk.surface.isLand(chunkPoint))
-            return isBorder ? TYPE_MARGIN : TYPE_LAND
-        return isBorder ? TYPE_SHORE : TYPE_WATER
+        if (marginPoints.has(chunkPoint)) return TYPE_RIVER_SIDE
+        if (shorePoints.has(chunkPoint)) return TYPE_CHANNEL_SIDE
+        return type
     }
 
     return Grid.fromRect(chunkRect, buildMargin)

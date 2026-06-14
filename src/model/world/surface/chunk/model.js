@@ -8,14 +8,11 @@ const LAND_NOISE = .55
 
 export const WATER = 1
 export const LAND = 2
-export const LAND_BORDER = 3
-export const WATER_BORDER = 4
 
 
 export function buildModel(context) {
     const model = {}
     model.type = buildTypeGrid(context)
-    model.surface = buildSurfaceGrid(context, model)
     return model
 }
 
@@ -45,36 +42,33 @@ function getType(context, noiseRect, noisePoint) {
 }
 
 
-function buildSurfaceGrid(context, model) {
-    // Generate a boolean grid (land or water)
-    const { worldPoint, world, rect, chunkRect, chunkSize } = context
-    // Offset noise sampled at (0, 0) position in world map
-    // It should have been sampled at chunk's midpoint. Solve this by offseting here.
-    const offset = Math.floor(chunkSize / 2)
-    const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
-    const offsetChunkPoint = Point.minus(relativePoint, [offset, offset])
-    const noiseRect = Rect.multiply(rect, chunkSize)
+// function buildSurfaceGrid(context, model) {
+//     const { worldPoint, world, rect, chunkRect, chunkSize } = context
+//     // Offset noise sampled at (0, 0) position in world map
+//     // It should have been sampled at chunk's midpoint. Solve this by offseting here.
+//     const offset = Math.floor(chunkSize / 2)
+//     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
+//     const offsetChunkPoint = Point.minus(relativePoint, [offset, offset])
+//     const noiseRect = Rect.multiply(rect, chunkSize)
 
-    return Grid.fromRect(chunkRect, chunkPoint => {
-        const surface = model.type.get(chunkPoint)
-        for (let sideChunkPoint of Point.adjacents(chunkPoint)) {
-            // default value from base grid, transform it based on neighbors
-            let sideSurface = model.type.get(sideChunkPoint)
-            // get negative indices to offset noisePoint
-            // sample noise outside chunkRect
-            const [sideX, sideY] = sideChunkPoint
-            const x = sideX < 0 ? - 1 : (sideX >= chunkSize ? 1 : 0)
-            const y = sideY < 0 ? - 1 : (sideY >= chunkSize ? 1 : 0)
-            if (!chunkRect.isInside(sideChunkPoint)) {
-                const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
-                const outerNoisePoint = Point.plus(noisePoint, [x, y])
-                sideSurface = getType(context, noiseRect, outerNoisePoint)
-            }
-            if (surface == LAND && sideSurface == WATER)
-                return LAND_BORDER
-            if (surface == WATER && sideSurface == LAND)
-                return WATER_BORDER
-        }
-        return surface
-    })
-}
+//     return Grid.fromRect(chunkRect, chunkPoint => {
+//         const surface = model.type.get(chunkPoint)
+//         for (let sideChunkPoint of Point.adjacents(chunkPoint)) {
+//             // default value from base grid, transform it based on neighbors
+//             let sideSurface = model.type.get(sideChunkPoint)
+//             // get negative indices to offset noisePoint
+//             // sample noise outside chunkRect
+//             const [sideX, sideY] = sideChunkPoint
+//             const x = sideX < 0 ? - 1 : (sideX >= chunkSize ? 1 : 0)
+//             const y = sideY < 0 ? - 1 : (sideY >= chunkSize ? 1 : 0)
+//             if (!chunkRect.isInside(sideChunkPoint)) {
+//                 const noisePoint = Point.plus(offsetChunkPoint, chunkPoint)
+//                 const outerNoisePoint = Point.plus(noisePoint, [x, y])
+//                 sideSurface = getType(context, noiseRect, outerNoisePoint)
+//             }
+//             if (surface == LAND && sideSurface == WATER)
+//                 return WATER_BORDER
+//         }
+//         return surface
+//     })
+// }

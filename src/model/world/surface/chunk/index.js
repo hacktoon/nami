@@ -7,15 +7,11 @@ import { Color } from '/src/lib/color'
 import {
     buildModel,
     WATER,
-    LAND,
-    LAND_BORDER,
-    WATER_BORDER
+    LAND
 } from './model'
 
 const COLOR_MAP = {
-    [LAND_BORDER]: '#547f2f',
     [LAND]: '#6aa538',
-    [WATER_BORDER]: '#34386e',
     [WATER]: '#0f1235',
 }
 
@@ -29,13 +25,8 @@ export class SurfaceChunk {
     }
 
     isLand(chunkPoint) {
-        const type = this.#model.surface.get(chunkPoint)
-        return type == LAND || type == LAND_BORDER
-    }
-
-    isBorder(chunkPoint) {
-        const type = this.#model.surface.get(chunkPoint)
-        return type == WATER_BORDER || type == LAND_BORDER
+        const type = this.#model.type.get(chunkPoint)
+        return type == LAND
     }
 
     draw(props, params) {
@@ -46,7 +37,7 @@ export class SurfaceChunk {
             const xSize = x * size
             for (let y = 0; y < chunkSize; y++) {
                 const chunkPoint = [y, x]
-                const type = this.#model.surface.get(chunkPoint)
+                const type = this.#model.type.get(chunkPoint)
                 // const chunk = this.get(chunkPoint)
                 const ySize = y * size
                 const chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
