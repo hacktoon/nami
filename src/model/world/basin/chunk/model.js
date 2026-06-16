@@ -17,9 +17,9 @@ const MEANDER = 3
 
 export const TYPE_LAND = 1
 export const TYPE_WATER = 2
-export const TYPE_RIVER = 3
+export const TYPE_EROSION = 3
 export const TYPE_CHANNEL = 4
-export const TYPE_RIVER_SIDE = 5
+export const TYPE_EROSION_SIDE = 5
 export const TYPE_CHANNEL_SIDE = 6
 
 
@@ -36,27 +36,27 @@ export function buildModel(baseContext) {
     const context = { ...baseContext, pointMaskMap }
     const baseGrid = buildBaseGrid(context)
     const cornerMargins = buildCornerMargins(baseGrid, context)
-    const marginGrid = buildMarginGrid(baseGrid, { ...context, ...cornerMargins })
+    const typeGrid = buildTypeGrid(baseGrid, { ...context, ...cornerMargins })
     return {
-        // blocked: blockedMaskGrid,
-        grid: marginGrid,
+        type: typeGrid,
         chunkMidpoint,
-        // regionModel,
         routes
+        // regionModel,
+        // blocked: blockedMaskGrid,
     }
 }
 
 
-function buildNoiseMaskGrid(context) {
-    const { world, worldPoint, rect, chunkRect } = context
-    const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
-    const noiseRect = Rect.multiply(rect, chunkRect.width)
-    return Grid.fromRect(chunkRect, chunkPoint => {
-        const noisePoint = Point.plus(relativePoint, chunkPoint)
-        const noise = world.noise.get4DChunkGrained(noiseRect, noisePoint)
-        return noise > BLOCKED_NOISE_RATE
-    })
-}
+// function buildNoiseMaskGrid(context) {
+//     const { world, worldPoint, rect, chunkRect } = context
+//     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
+//     const noiseRect = Rect.multiply(rect, chunkRect.width)
+//     return Grid.fromRect(chunkRect, chunkPoint => {
+//         const noisePoint = Point.plus(relativePoint, chunkPoint)
+//         const noise = world.noise.get4DChunkGrained(noiseRect, noisePoint)
+//         return noise > BLOCKED_NOISE_RATE
+//     })
+// }
 
 
 function buildChunkMidpoint(chunkRect) {
@@ -111,7 +111,7 @@ function buildBaseGrid(context) {
     const isWorldLand = world.surface.isLand(worldPoint)
     return Grid.fromRect(chunkRect, chunkPoint => {
         if (pointMaskMap.has(chunkPoint)) {
-            return isWorldLand ? TYPE_RIVER : TYPE_CHANNEL
+            return isWorldLand ? TYPE_EROSION : TYPE_CHANNEL
         }
         const isChunkLand = chunk.surface.isLand(chunkPoint)
         return isChunkLand ? TYPE_LAND : TYPE_WATER
@@ -144,7 +144,7 @@ function buildCornerMargins(baseGrid, context) {
 }
 
 
-function buildMarginGrid(baseGrid, context) {
+function buildTypeGrid(baseGrid, context) {
     // Add channel/river margins to some chunk corner points
     const { world, worldPoint, chunk, chunkRect, chunkSize } = context
     const { erosionSidePoints, channelSidePoints } = context
@@ -155,11 +155,14 @@ function buildMarginGrid(baseGrid, context) {
         if (type != TYPE_LAND && type != TYPE_WATER) {
             return type
         }
+        // set margins of erosion points
+        if (erosionSidePoints.has(chunkPoint)) return TYPE_EROSION_SIDE
+        if (channelSidePoints.has(chunkPoint)) return TYPE_CHANNEL_SIDE
         for (let sidePoint of Point.around(chunkPoint)) {
             const inside = chunkRect.isInside(sidePoint)
             const type = baseGrid.get(sidePoint)
-            if (inside && type == TYPE_RIVER)
-                return TYPE_RIVER_SIDE
+            if (inside && type == TYPE_EROSION)
+                return TYPE_EROSION_SIDE
         }
         for (let sidePoint of Point.adjacents(chunkPoint)) {
             const inside = chunkRect.isInside(sidePoint)
@@ -167,9 +170,6 @@ function buildMarginGrid(baseGrid, context) {
             if (inside && type == TYPE_CHANNEL)
                 return TYPE_CHANNEL_SIDE
         }
-        // set margins of erosion points
-        if (erosionSidePoints.has(chunkPoint)) return TYPE_RIVER_SIDE
-        if (channelSidePoints.has(chunkPoint)) return TYPE_CHANNEL_SIDE
         return type
     })
 }
@@ -181,7 +181,7 @@ function buildErosionPoints(routes, context) {
     const points = new PointMap(chunkRect)
     for (let { source, target, direction } of routes) {
         midpointDisplacement(worldPoint, chunkRect, source, target, MEANDER, point => {
-            points.set(point, TYPE_RIVER)
+            points.set(point, TYPE_EROSION)
         })
     }
     return points
@@ -194,7 +194,7 @@ function buildErosionPoints(routes, context) {
 //     let prevPoint = source
 //     let maxIter = 100  // avoid infinite loops
 //     while (Point.differs(currentPoint, target) && maxIter > 0) {
-//         pointMap.set(currentPoint, TYPE_RIVER)
+//         pointMap.set(currentPoint, TYPE_EROSION)
 //         prevPoint = currentPoint
 //         currentPoint = getNextPoint(prevPoint, currentPoint, target, pointMap, context)
 //         if (pointMap.has(currentPoint) && !isOutflow) {
@@ -202,7 +202,7 @@ function buildErosionPoints(routes, context) {
 //         }
 //         maxIter--
 //     }
-//     pointMap.set(currentPoint, TYPE_RIVER)
+//     pointMap.set(currentPoint, TYPE_EROSION)
 // }
 
 
