@@ -38,12 +38,11 @@ export class BasinChunk {
     }
 
     draw(props, params) {
-        const {canvas, canvasPoint, tileSize, world, chunk} = props
-        if (tileSize < 10)
+        const {canvas, canvasPoint, tilePoint, tileSize, world, chunk} = props
+        if (tileSize < 20)
             return
         chunk.surface.draw(props, params)
         const chunkTileSize = tileSize / chunk.size
-        const model = this.#model
         // const anchorMap = model.regionModel.anchorMap
         // const regionColorMap = new Map()
         // for(let id =0; id < 50; id++) {
@@ -55,7 +54,7 @@ export class BasinChunk {
                 const chunkPoint = [y, x]
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const type = model.type.get(chunkPoint)
+                const { type } = this.get(chunkPoint)
                 // const blocked = model.blocked.get(chunkPoint)
                 // const region = model.regionModel.regionGrid.get(chunkPoint)
                 let color = Color.fromHex(COLOR_MAP[type])
@@ -79,7 +78,7 @@ export class BasinChunk {
 
         // gates
 
-        // model.routes.forEach(({ source, target }) => {
+        // chunkBasin.routes.forEach(({ source, target }) => {
         //     let x = source[0] * chunkTileSize
         //     let y = source[1] * chunkTileSize
         //     let chunkCanvasPoint = Point.plus(canvasPoint, [x, y])
