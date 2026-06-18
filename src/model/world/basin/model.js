@@ -23,6 +23,7 @@ const INITIAL_DISTANCE = 1
 
 export function buildBasinModel(context) {
     const model = {}
+    const { rect } = context
     // map basin type for creating rivers or other features
     model.type = new Map()
     // grid of erosion direction ids
@@ -32,25 +33,25 @@ export function buildBasinModel(context) {
     // the walk distance of each basin starting from shore
     model.distance = buildDistanceGrid(context)
     // map a point to a basin chunk direction bitmask
-    model.directionBitmap = new DirectionBitMaskGrid(context.rect)
+    model.directionBitmap = new DirectionBitMaskGrid(rect)
     // map a point to a basin chunk corner connections (for diagonals)
     // used do detect rivers passing on neighbor diagonals
-    model.riverCornerBitmap = new DirectionBitMaskGrid(context.rect)
-    model.waterCornerBitmap = new DirectionBitMaskGrid(context.rect)
+    model.riverCornerBitmap = new DirectionBitMaskGrid(rect)
+    model.waterCornerBitmap = new DirectionBitMaskGrid(rect)
     // grid of basin ids
-    model.basin = buildBasinGrid({...context, model})
+    model.basin = buildBasinGrid({ ...context, model })
     return model
 }
 
 
-function buildErosionGrid({rect}) {
+function buildErosionGrid({ rect }) {
     // set random directions by default
     return Grid.fromRect(rect, () => Direction.random().id)
 }
 
 
 
-function buildJointGrid({rect, chunkSize}) {
+function buildJointGrid({ rect, chunkSize }) {
     // choose a value at chunk sides, avoiding edges
     return Grid.fromRect(rect, () => {
         return Random.int(2, chunkSize - 3)
@@ -58,14 +59,14 @@ function buildJointGrid({rect, chunkSize}) {
 }
 
 
-function buildDistanceGrid({rect}) {
+function buildDistanceGrid({ rect }) {
     // Initial value 1 is used to determine river stretch
     return Grid.fromRect(rect, () => INITIAL_DISTANCE)
 }
 
 
 function buildBasinGrid(context) {
-    const {world, rect, model} = context
+    const { world, rect, model } = context
     const surveyMap = new Map()
     const landFillMap = new Map()
     const waterFillMap = new Map()
@@ -81,20 +82,20 @@ function buildBasinGrid(context) {
             const type = detectLandBasinType(world, survey)
             surveyMap.set(basinId, survey)
             model.type.set(basinId, type.id)
-            landFillMap.set(basinId, {origin: point})
+            landFillMap.set(basinId, { origin: point })
             basinId++
         }
         // use water borders to start water basin fill
-        if (isBorder && ! isLand) {
+        if (isBorder && !isLand) {
             const type = OceanBasin
             model.type.set(basinId, type.id)
-            waterFillMap.set(basinId, {origin: point, type})
+            waterFillMap.set(basinId, { origin: point, type })
             basinId++
         }
         return NO_BASIN_ID
     })
     // Start flood fills from each border, both land && water
-    const fillContext = {...context, basinGrid, surveyMap}
+    const fillContext = { ...context, basinGrid, surveyMap }
     new LandBasinFill(rect, landFillMap, fillContext).complete()
     new WaterBasinFill(rect, waterFillMap, fillContext).complete()
     return basinGrid
@@ -103,7 +104,7 @@ function buildBasinGrid(context) {
 
 function surveyNeighbors(context, point) {
     // point is on land
-    const {world} = context
+    const { world } = context
     const waterNeighbors = []
     let oppositeBorder = null
     const neighbors = Point.adjacents(point)
@@ -116,7 +117,7 @@ function surveyNeighbors(context, point) {
         }
     }
     // chess pattern to avoid rivers getting too close
-    return {oppositeBorder, waterNeighbors}
+    return { oppositeBorder, waterNeighbors }
 }
 
 
@@ -136,14 +137,14 @@ class LandBasinFill extends ConcurrentFill {
     getGrowth(fill) { return FILL_GROWTH }
 
     onInitFill(fill, fillPoint) {
-        const {surveyMap} = fill.context
+        const { surveyMap } = fill.context
         const survey = surveyMap.get(fill.id)
         // the basin opposite border is the parentPoint
         this._fillBasin(fill, fillPoint, survey.oppositeBorder)
     }
 
     onFill(fill, fillPoint, parentPoint) {
-        const {model} = fill.context
+        const { model } = fill.context
         // distance to source by point
         const currentDistance = model.distance.get(parentPoint)
         model.distance.wrapSet(fillPoint, currentDistance + 1)
@@ -160,7 +161,7 @@ class LandBasinFill extends ConcurrentFill {
     }
 
     isEmpty(fill, fillPoint, parentPoint) {
-        const {world, model, basinGrid} = fill.context
+        const { world, model, basinGrid } = fill.context
         const basin = Basin.parse(model.type.get(fill.id))
         if (basinGrid.get(fillPoint) !== NO_BASIN_ID)
             return false
@@ -179,7 +180,7 @@ class LandBasinFill extends ConcurrentFill {
     }
 
     _fillBasin(fill, fillPoint, parentPoint) {
-        const {world, model, basinGrid} = fill.context
+        const { world, model, basinGrid } = fill.context
         const direction = Point.directionBetween(fillPoint, parentPoint)
         // set erosion flow to parent
         model.erosion.set(fillPoint, direction.id)
@@ -250,7 +251,7 @@ class WaterBasinFill extends ConcurrentFill {
 
 
 function _setCorner(world, model, fillPoint, direction) {
-    if (! Direction.isDiagonal(direction)) return
+    if (!Direction.isDiagonal(direction)) return
     for (let sideDirection of Direction.getComponents(direction)) {
         const sidePoint = Point.atDirection(fillPoint, sideDirection)
         // mirror directions in one axis  '/'  =>  '\'
