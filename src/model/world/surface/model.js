@@ -16,19 +16,19 @@ const LAND = 0
 const WATER = 1
 // Area ratios
 const SURFACE_RATIO = .6
-const MINIMUN_OCEAN_RATIO = 2
-const MINIMUN_SEA_RATIO = .05
+const MINIMUN_OCEAN_AREA_RATIO = 2
+const MINIMUN_SEA_RATIO = .09
 const MINIMUN_CONTINENT_RATIO = 1
 
 const EMPTY = null
 
 
 export function buildSurfaceModel(context) {
-    const {rect, world} = context
+    const { rect, world } = context
     // detect land or water tiles in the grid
     const landWaterGrid = detectLandWater(rect, world)
     // detect surface type by filling empty bodies
-    const {bodyGrid, bodyTypeMap, bodyAreaMap} = detectBodies(context, landWaterGrid)
+    const { bodyGrid, bodyTypeMap, bodyAreaMap } = detectBodies(context, landWaterGrid)
     const borderTypeGrid = detectBorderTypes(context, bodyTypeMap, bodyGrid)
     const waterArea = readWaterArea(bodyTypeMap, bodyAreaMap)
     return {
@@ -56,10 +56,10 @@ function detectBodies(baseContext, landWaterGrid) {
     const bodyTypeMap = new Map()
     const bodyAreaMap = new Map()
     const bodyGrid = Grid.fromRect(baseContext.rect, () => EMPTY)
-    const context = {...baseContext, bodyGrid, landWaterGrid}
+    const context = { ...baseContext, bodyGrid, landWaterGrid }
 
     landWaterGrid.forEach(originPoint => {
-        if(bodyGrid.get(originPoint) != EMPTY) return
+        if (bodyGrid.get(originPoint) != EMPTY) return
         // detect empty type before filling
         const emptyWaterBody = landWaterGrid.get(originPoint) === WATER
         const area = fillBodyArea(context, originPoint, bodyId)
@@ -68,7 +68,7 @@ function detectBodies(baseContext, landWaterGrid) {
         let type = ContinentSurface
         // area is filled; decide type
         if (emptyWaterBody) {
-            if (surfaceAreaRatio >= MINIMUN_OCEAN_RATIO) {
+            if (surfaceAreaRatio >= MINIMUN_OCEAN_AREA_RATIO) {
                 type = OceanSurface
             } else if (surfaceAreaRatio >= MINIMUN_SEA_RATIO) {
                 type = SeaSurface
@@ -82,13 +82,13 @@ function detectBodies(baseContext, landWaterGrid) {
         bodyAreaMap.set(bodyId, area)
         bodyId++
     })
-    return {bodyGrid, bodyTypeMap, bodyAreaMap}
+    return { bodyGrid, bodyTypeMap, bodyAreaMap }
 }
 
 function fillBodyArea(context, originPoint, bodyId) {
     // discover all points of same type ( water | land )
     let area = 0
-    const {rect, landWaterGrid, bodyGrid} = context
+    const { rect, landWaterGrid, bodyGrid } = context
     const isOriginWater = landWaterGrid.get(originPoint) === WATER
     const canFill = targetPoint => {
         const isEmpty = bodyGrid.get(targetPoint) === EMPTY
@@ -102,7 +102,7 @@ function fillBodyArea(context, originPoint, bodyId) {
     const wrapPoint = point => rect.wrap(point)
     // belowRation is water; search all sidepoints (water fills)
     const Fill = isOriginWater ? ScanlineFill8 : ScanlineFill
-    new Fill(originPoint, {canFill, wrapPoint, onFill}).fill()
+    new Fill(originPoint, { canFill, wrapPoint, onFill }).fill()
     return area
 }
 
@@ -116,7 +116,7 @@ function detectBorderTypes(context, bodyTypeMap, bodyGrid) {
         let type = getType(point)
         for (let sidePoint of Point.adjacents(point)) {
             const sideType = getType(sidePoint)
-            if (type.isWater && ! sideType.isWater || ! type.isWater && sideType.isWater) {
+            if (type.isWater && !sideType.isWater || !type.isWater && sideType.isWater) {
                 return sideType.id
             }
         }

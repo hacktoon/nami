@@ -12,7 +12,6 @@ import {
     EndorheicLakeBasin,
     ExorheicBasin,
     OceanBasin,
-    DiffuseBasin,
 } from './type'
 
 
@@ -54,7 +53,7 @@ function buildErosionGrid({rect}) {
 function buildJointGrid({rect, chunkSize}) {
     // choose a value at chunk sides, avoiding edges
     return Grid.fromRect(rect, () => {
-        return Random.int(1, chunkSize - 2)
+        return Random.int(2, chunkSize - 3)
     })
 }
 
@@ -78,7 +77,7 @@ function buildBasinGrid(context) {
         const isLand = world.surface.isLand(point)
         // Basins start on borders (water or land)
         // Create major erosion paths (basins) on tiles with just one water neighbor
-        if (isBorder && isLand && survey.waterNeighbors.length == 1) {
+        if (isBorder && isLand) {
             const type = detectLandBasinType(world, survey)
             surveyMap.set(basinId, survey)
             model.type.set(basinId, type.id)
@@ -92,9 +91,6 @@ function buildBasinGrid(context) {
             waterFillMap.set(basinId, {origin: point, type})
             basinId++
         }
-        // Return default basin id (as empty cell) before flood fill
-        // this is created on chunk level
-        model.type.set(NO_BASIN_ID, DiffuseBasin.id)
         return NO_BASIN_ID
     })
     // Start flood fills from each border, both land && water

@@ -39,18 +39,9 @@ export class OceanBasin extends Basin {
     static color = Color.fromHex('#285879')
 }
 
-
-export class DiffuseBasin extends Basin {
-    static id = 4
-    static name = 'Diffuse'
-    static reach = 0
-    static color = Color.fromHex('#a5b0b7')
-}
-
-
 /* CHUNK BASIN TYPES ***************************/
 export class ValleyChunkBasin extends Basin {
-    static id = 5
+    static id = 4
     static name = 'ValleyChunk'
     static allowsRiver = true
     static color = Color.fromHex('#32698d')
@@ -58,7 +49,7 @@ export class ValleyChunkBasin extends Basin {
 
 
 export class FloodPlainChunkBasin extends Basin {
-    static id = 6
+    static id = 5
     static name = 'FloodPlainChunk'
     static allowsRiver = false
     static color = Color.fromHex('#2c8746')
@@ -66,7 +57,7 @@ export class FloodPlainChunkBasin extends Basin {
 
 
 export class LowLandChunkBasin extends Basin {
-    static id = 7
+    static id = 6
     static name = 'LowLandChunk'
     static allowsRiver = false
     static color = Color.fromHex('#3fa05a')
@@ -74,7 +65,7 @@ export class LowLandChunkBasin extends Basin {
 
 
 export class HighLandChunkBasin extends Basin {
-    static id = 8
+    static id = 7
     static name = 'HighLandChunk'
     static allowsRiver = false
     static color = Color.fromHex('#58bd74')
@@ -86,9 +77,8 @@ const BASIN_MAP = {
     1: EndorheicSeaBasin,
     2: EndorheicLakeBasin,
     3: OceanBasin,
-    4: DiffuseBasin,
-    5: ValleyChunkBasin,
-    6: FloodPlainChunkBasin,
-    7: LowLandChunkBasin,
-    8: HighLandChunkBasin,
+    4: ValleyChunkBasin,
+    5: FloodPlainChunkBasin,
+    6: LowLandChunkBasin,
+    7: HighLandChunkBasin,
 }
