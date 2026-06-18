@@ -35,7 +35,7 @@ export function buildBasinModel(context) {
     // map a point to a basin chunk direction bitmask
     model.directionBitmap = new DirectionBitMaskGrid(rect)
     // map a point to a basin chunk corner connections (for diagonals)
-    // used do detect rivers passing on neighbor diagonals
+    // used to detect erosion/channels passing on neighbor diagonals
     model.riverCornerBitmap = new DirectionBitMaskGrid(rect)
     model.waterCornerBitmap = new DirectionBitMaskGrid(rect)
     // grid of basin ids
@@ -77,8 +77,8 @@ function buildBasinGrid(context) {
         const isBorder = world.surface.isBorder(point)
         const isLand = world.surface.isLand(point)
         // Basins start on borders (water or land)
-        // Create major erosion paths (basins) on tiles with just one water neighbor
-        if (isBorder && isLand && survey.waterNeighbors.length < 3) {
+        // Create major erosion paths (land basins)
+        if (isBorder && isLand) {
             const type = detectLandBasinType(world, survey)
             surveyMap.set(basinId, survey)
             model.type.set(basinId, type.id)
@@ -251,7 +251,8 @@ class WaterBasinFill extends ConcurrentFill {
 
 
 function _setCorner(world, model, fillPoint, direction) {
-    if (!Direction.isDiagonal(direction)) return
+    if (!Direction.isDiagonal(direction))
+        return
     for (let sideDirection of Direction.getComponents(direction)) {
         const sidePoint = Point.atDirection(fillPoint, sideDirection)
         // mirror directions in one axis  '/'  =>  '\'
