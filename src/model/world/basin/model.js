@@ -77,7 +77,7 @@ function buildBasinGrid(context) {
         const isLand = world.surface.isLand(point)
         // Basins start on borders (water or land)
         // Create major erosion paths (basins) on tiles with just one water neighbor
-        if (isBorder && isLand) {
+        if (isBorder && isLand && survey.waterNeighbors.length < 3) {
             const type = detectLandBasinType(world, survey)
             surveyMap.set(basinId, survey)
             model.type.set(basinId, type.id)
