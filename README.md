@@ -7,7 +7,9 @@
 
 ## ROADMAP
 - start from route water to land, land to water
-- corner between land should use region grid to set as land
+  - if world is border
+    - found water -> switch to water
+- 4-around-corner between land should use region grid to set as land
 - level grid for surface chunk
   - return a % in getLevel
 - basin erosion path

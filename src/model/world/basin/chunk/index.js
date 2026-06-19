@@ -16,8 +16,8 @@ const COLOR_MAP = {
     [TYPE_LAND]: '#678e8d',
     [TYPE_WATER]: '#1f2e5d',
     [TYPE_EROSION]: '#314046',
-    [TYPE_EROSION_SIDE]: '#537776',
-    // [TYPE_EROSION_SIDE]: '#57894b',
+    // [TYPE_EROSION_SIDE]: '#537776',
+    [TYPE_EROSION_SIDE]: '#678e8d',
     [TYPE_CHANNEL]: '#090c22',
     [TYPE_CHANNEL_SIDE]: '#142142',
 }
