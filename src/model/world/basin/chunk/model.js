@@ -28,12 +28,12 @@ export function buildModel(baseContext) {
     const chunkMidpoint = buildChunkMidpoint(baseContext.chunkRect)
     const routes = buildRoutes({ ...baseContext, chunkMidpoint })
     // const blockedMaskGrid = buildNoiseMaskGrid(baseContext)
-    let pointMaskMap = buildErosionPoints(routes, baseContext)
+    const erosionPoints = buildErosionPoints(routes, baseContext)
     // if(baseContext.worldPoint[0] == 16 && baseContext.worldPoint[1] == 17) {
-    //     pointMaskMap = buildErosionPoints2(routes, baseContext)
+    //     erosionPoints = buildErosionPoints2(routes, baseContext)
     // }
     // const regionModel = buildRegionModel(baseContext)
-    const context = { ...baseContext, pointMaskMap }
+    const context = { ...baseContext, erosionPoints }
     const baseGrid = buildBaseGrid(context)
     const cornerMargins = buildCornerMargins(baseGrid, context)
     const typeGrid = buildTypeGrid(baseGrid, { ...context, ...cornerMargins })
@@ -107,13 +107,19 @@ function buildRoutes(baseContext) {
 function buildBaseGrid(context) {
     // map each cell to LAND/WATER or RIVER/CURRENT if it has a path
     const { world, worldPoint, chunk, chunkRect } = context
-    const { pointMaskMap } = context
+    const { erosionPoints } = context
     const isWorldLand = world.surface.isLand(worldPoint)
+    const isWorldBorder = world.surface.isBorder(worldPoint)
     return Grid.fromRect(chunkRect, chunkPoint => {
-        if (pointMaskMap.has(chunkPoint)) {
-            return isWorldLand ? TYPE_EROSION : TYPE_CHANNEL
-        }
         const isChunkLand = chunk.surface.isLand(chunkPoint)
+        if (erosionPoints.has(chunkPoint)) {
+            if (isWorldLand) {
+                // return TYPE_EROSION
+                return isChunkLand ? TYPE_EROSION : TYPE_CHANNEL
+            } else {
+                return TYPE_CHANNEL
+            }
+        }
         return isChunkLand ? TYPE_LAND : TYPE_WATER
     })
 }
