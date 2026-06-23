@@ -33,7 +33,8 @@ export class BasinChunk {
     get(chunkPoint) {
         return {
             type: this.#model.type.get(chunkPoint),
-            routes: this.#model.routes,
+            gates: this.#model.gates,
+            erosion: this.#model.erosion,
         }
     }
 
@@ -41,9 +42,7 @@ export class BasinChunk {
         const {canvas, canvasPoint, tilePoint, tileSize, world, chunk} = props
         if (tileSize < 20)
             return
-        chunk.surface.draw(props, params)
         const chunkTileSize = tileSize / chunk.size
-        // const anchorMap = model.regionModel.anchorMap
         // const regionColorMap = new Map()
         // for(let id =0; id < 50; id++) {
         //     regionColorMap.set(id, new Color())
@@ -54,14 +53,16 @@ export class BasinChunk {
                 const chunkPoint = [y, x]
                 const ySize = y * chunkTileSize
                 let chunkCanvasPoint = Point.plus(canvasPoint, [ySize, xSize])
-                const { type } = this.get(chunkPoint)
+                const { type, erosion } = this.get(chunkPoint)
                 // const blocked = model.blocked.get(chunkPoint)
                 // const region = model.regionModel.regionGrid.get(chunkPoint)
                 let color = Color.fromHex(COLOR_MAP[type])
                 if (params.get('showErosion')) {
-                    // if (blocked) color = color.darken(100)
-                    canvas.rect(chunkCanvasPoint, chunkTileSize, color.toHex())
+                    if (erosion.has(chunkPoint)) {
+                        color = color.darken(50)
+                    }
                 }
+                canvas.rect(chunkCanvasPoint, chunkTileSize, color.toHex())
                 // const regionColor = regionColorMap.get(region).average(color).average(color).toHex()
                 // const regionColor = region % 2 == 0 ? '#000' : color.toHex()
                 // canvas.rect(chunkCanvasPoint, chunkTileSize, regionColor)

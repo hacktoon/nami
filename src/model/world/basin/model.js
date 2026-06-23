@@ -241,11 +241,11 @@ class WaterBasinFill extends ConcurrentFill {
         Point.adjacents(fillPoint, (sidePoint, direction) => {
             model.directionBitmap.add(fillPoint, direction)
         })
+        model.erosion.set(fillPoint, upstream.id)
+        basinGrid.set(fillPoint, fill.id)
         // set water corners
         const direction = Point.directionBetween(fillPoint, parentPoint)
         _setCorner(world, model, fillPoint, direction)
-        basinGrid.set(fillPoint, fill.id)
-        model.erosion.set(fillPoint, upstream.id)
     }
 }
 

@@ -6,6 +6,11 @@
 
 
 ## ROADMAP
+LAND
+1-3 sources + target
+rio: source -> random walk -> target
+sources to midpoint
+
 - start from route water to land, land to water
   - if world is border
     - found water -> switch to water

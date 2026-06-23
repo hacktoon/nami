@@ -23,7 +23,8 @@ const DIRECTIONS = {
     CENTER: {
         id: CENTER_ID,
         code: 0,
-       shortName: 'C',
+        shortName: 'C',
+        name: 'CENTER',
         symbol: 'o',
         axis: [0,  0],
         components: [CENTER_ID]
@@ -32,6 +33,7 @@ const DIRECTIONS = {
         id: N_ID,
         code: 1,
         shortName: 'N',
+        name: 'NORTH',
         symbol: '\u2191',
         axis: [0, -1],
         components: [N_ID]
@@ -40,6 +42,7 @@ const DIRECTIONS = {
         id: NE_ID,
         code: 2,
         shortName: 'NE',
+        name: 'NORTHEAST',
         symbol: '\u2197',
         axis: [1, -1],
         components: [N_ID, E_ID]
@@ -48,6 +51,7 @@ const DIRECTIONS = {
         id: E_ID,
         code: 4,
         shortName: 'E',
+        name: 'EAST',
         symbol: '\u2192',
         axis: [1,  0],
         components: [E_ID]
@@ -56,6 +60,7 @@ const DIRECTIONS = {
         id: SE_ID,
         code: 8,
         shortName: 'SE',
+        name: 'SOUTHEAST',
         symbol: '\u2198',
         axis: [1,  1],
         components: [S_ID, E_ID]
@@ -64,6 +69,7 @@ const DIRECTIONS = {
         id: S_ID,
         code: 16,
         shortName: 'S',
+        name: 'SOUTH',
         symbol: '\u2193',
         axis: [0,  1],
         components: [S_ID]
@@ -72,6 +78,7 @@ const DIRECTIONS = {
         id: SW_ID,
         code: 32,
         shortName: 'SW',
+        name: 'SOUTHWEST',
         symbol: '\u2199',
         axis: [-1,  1],
         components: [S_ID, W_ID]
@@ -80,6 +87,7 @@ const DIRECTIONS = {
         id: W_ID,
         code: 64,
         shortName: 'W',
+        name: 'WEST',
         symbol: '\u2190',
         axis: [-1,  0],
         components: [W_ID]
@@ -88,6 +96,7 @@ const DIRECTIONS = {
         id: NW_ID,
         code: 128,
         shortName: 'NW',
+        name: 'NORTHWEST',
         symbol: '\u2196',
         axis: [-1, -1],
         components: [N_ID, W_ID]
@@ -127,7 +136,7 @@ const AXIS_MAP = new Map([
 const DIRECTION_MAP = (() => {
     let _map = {}
     for(let [name, props] of Object.entries(DIRECTIONS)) {
-        _map[props.id] = {...props, name}
+        _map[props.id] = props
     }
     return _map
 })()
