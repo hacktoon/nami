@@ -25,21 +25,15 @@ export const TYPE_CHANNEL_SIDE = 6
 
 export function buildModel(baseContext) {
     const { chunkRect } = baseContext
-    const chunkMidpoint = buildChunkMidpoint(baseContext.chunkRect)
-    const routes = buildRoutes({ ...baseContext, chunkMidpoint })
-    // const blockedMaskGrid = buildNoiseMaskGrid(baseContext)
+    const routes = buildRoutes(baseContext)
     const erosionPoints = buildErosionPoints(routes, baseContext)
-    // if(baseContext.worldPoint[0] == 16 && baseContext.worldPoint[1] == 17) {
-    //     erosionPoints = buildErosionPoints2(routes, baseContext)
-    // }
     // const regionModel = buildRegionModel(baseContext)
     const context = { ...baseContext, erosionPoints }
     const baseGrid = buildBaseGrid(context)
     const cornerMargins = buildCornerMargins(baseGrid, context)
     const typeGrid = buildTypeGrid(baseGrid, { ...context, ...cornerMargins })
     return {
-        type: typeGrid,
-        chunkMidpoint,
+        type: baseGrid,
         routes
         // regionModel,
         // blocked: blockedMaskGrid,
@@ -47,16 +41,6 @@ export function buildModel(baseContext) {
 }
 
 
-// function buildNoiseMaskGrid(context) {
-//     const { world, worldPoint, rect, chunkRect } = context
-//     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
-//     const noiseRect = Rect.multiply(rect, chunkRect.width)
-//     return Grid.fromRect(chunkRect, chunkPoint => {
-//         const noisePoint = Point.plus(relativePoint, chunkPoint)
-//         const noise = world.noise.get4DChunkGrained(noiseRect, noisePoint)
-//         return noise > BLOCKED_NOISE_RATE
-//     })
-// }
 
 
 function buildChunkMidpoint(chunkRect) {
@@ -78,7 +62,8 @@ function buildChunkMidpoint(chunkRect) {
 function buildRoutes(baseContext) {
     // Each chunk has gates on its sides. A gate connects two chunks
     // and is the same for both by averaging its joints
-    const { world, worldPoint, chunk, chunkMidpoint } = baseContext
+    const { world, worldPoint, chunk, chunkRect } = baseContext
+    const chunkMidpoint = buildChunkMidpoint(chunkRect)
     const basin = world.basin.get(worldPoint)
     const routes = []
     for (let gateDirection of basin.directionBitmap) {
@@ -105,7 +90,7 @@ function buildRoutes(baseContext) {
 
 
 function buildBaseGrid(context) {
-    // map each cell to LAND/WATER or RIVER/CURRENT if it has a path
+    // map each cell to LAND/WATER or EROSION/CHANNEL if it has a path
     const { world, worldPoint, chunk, chunkRect } = context
     const { erosionPoints } = context
     const isWorldLand = world.surface.isLand(worldPoint)
@@ -113,12 +98,7 @@ function buildBaseGrid(context) {
     return Grid.fromRect(chunkRect, chunkPoint => {
         const isChunkLand = chunk.surface.isLand(chunkPoint)
         if (erosionPoints.has(chunkPoint)) {
-            if (isWorldLand) {
-                // return TYPE_EROSION
-                return isChunkLand ? TYPE_EROSION : TYPE_CHANNEL
-            } else {
-                return TYPE_CHANNEL
-            }
+            return isWorldLand ? TYPE_EROSION : TYPE_CHANNEL
         }
         return isChunkLand ? TYPE_LAND : TYPE_WATER
     })
@@ -235,4 +215,15 @@ function buildErosionPoints(routes, context) {
 //     if (sx < tx && sy > ty) add(Direction.NORTHEAST)
 //     if (sx > tx && sy > ty) add(Direction.NORTHWEST)
 //     return Random.choiceFrom(candidates)
+// }
+
+// function buildNoiseMaskGrid(context) {
+//     const { world, worldPoint, rect, chunkRect } = context
+//     const relativePoint = Point.multiplyScalar(worldPoint, chunkRect.width)
+//     const noiseRect = Rect.multiply(rect, chunkRect.width)
+//     return Grid.fromRect(chunkRect, chunkPoint => {
+//         const noisePoint = Point.plus(relativePoint, chunkPoint)
+//         const noise = world.noise.get4DChunkGrained(noiseRect, noisePoint)
+//         return noise > BLOCKED_NOISE_RATE
+//     })
 // }
