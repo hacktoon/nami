@@ -25,7 +25,10 @@ export function buildErosionGatePoints(baseContext) {
             return avgJoint  //  0 means any value at chunk side
         })
         // current gate is same as the basin flow, so route is from midpoint to gate
-        gates.push([gatePoint, midPoint, gateDirection])
+        const isOutflow = basin.erosion.id == gateDirection.id
+        let source = isOutflow ? midPoint : gatePoint
+        let target = isOutflow ? gatePoint : midPoint
+        gates.push({source, target, isOutflow})
     }
     return gates
 }

@@ -11,7 +11,7 @@ import { buildErosionGatePoints } from './gate'
 
 
 const BLOCKED_NOISE_RATE = .5
-const MEANDER = 3
+const MEANDER = 5
 
 export const TYPE_LAND = 1
 export const TYPE_WATER = 2
@@ -86,8 +86,8 @@ function buildErosionPoints(gates, landBorders, context) {
     // reads the direction bitmask data and create points for chunk grid
     const { chunk, chunkRect, worldPoint } = context
     const points = new PointSet(chunkRect)
-    for (let [gatePoint, midPoint, gateDirection] of gates) {
-        midpointDisplacement(worldPoint, chunkRect, gatePoint, midPoint, MEANDER, point => {
+    for (let {source, target, isOutflow} of gates) {
+        midpointDisplacement(chunkRect, source, target, MEANDER, point => {
             points.add(point)
         })
     }

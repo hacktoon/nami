@@ -3,19 +3,19 @@ import { Point } from '/src/lib/math/point'
 import { clamp } from '/src/lib/function'
 
 
-export function midpointDisplacement(wp, rect, source, target, variance, callback) {
+export function midpointDisplacement(rect, source, target, variance, callback) {
     function recurse(p1, p2, variance) {
         if (Point.distance(p1, p2) < 2) {
             callback(p1)
             callback(p2)
             return
         }
-        const midpoint = generateMidpoint(p1, p2, variance, wp)
+        const midpoint = generateMidpoint(p1, p2, variance)
         recurse(p1, midpoint, variance / 2)
         recurse(midpoint, p2, variance / 2)
     }
 
-    function generateMidpoint(p1, p2, variance, wp) {
+    function generateMidpoint(p1, p2, variance) {
         const [x1, y1] = p1
         const [x2, y2] = p2
         // direction vector is a subtraction
