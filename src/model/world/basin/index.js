@@ -64,7 +64,7 @@ export class BasinLayer {
     #drawErosionPath(props, basin) {
         const {canvasPoint, tilePoint, tileSize} = props
         const color = basin.type.color.darken(30).toHex()
-        const lineWidth = Math.round(props.tileSize / 30)
+        const lineWidth = Math.round(props.tileSize / 20)
         const chunkSize = this.#chunkRect.width
         // calc midpoint point on canvas
         const pixelsPerChunkPoint = tileSize / chunkSize
