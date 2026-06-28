@@ -1,4 +1,3 @@
-import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { Point } from '/src/lib/math/point'
 import { Rect } from '/src/lib/math/rect'
 import { PointSet } from '/src/lib/math/point/set'
@@ -7,11 +6,8 @@ import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
 import { buildRegionModel } from './region'
-import { buildErosionGatePoints } from './route'
+import { buildErosionGatePoints, buildErosionMask } from './route'
 
-
-const BLOCKED_NOISE_RATE = .5
-const MEANDER = 5
 
 export const TYPE_LAND = 1
 export const TYPE_WATER = 2
@@ -79,19 +75,6 @@ function buildCornerMargins(context) {
         }
     }
     return { erosionSidePoints, channelSidePoints }
-}
-
-
-function buildErosionMask(gates, context) {
-    // reads the direction bitmask data and create points for chunk grid
-    const { chunk, chunkRect, worldPoint } = context
-    const points = new PointSet(chunkRect)
-    for (let {source, target} of gates) {
-        midpointDisplacement(chunkRect, source, target, MEANDER, point => {
-            points.add(point)
-        })
-    }
-    return points
 }
 
 

@@ -1,9 +1,12 @@
+import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/math/point'
+import { PointSet } from '/src/lib/math/point/set'
 
 
 const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
 const MIDPOINT_RATE = .4  // random point in 40% of chunkrect area around center point
+const MEANDER = 5
 
 
 export function buildErosionGatePoints(baseContext) {
@@ -47,4 +50,17 @@ function buildChunkMidpoint(chunkRect) {
     const x = centerIndex + (randX != 0 ? randX : midRandX)
     const y = centerIndex + (randY != 0 ? randY : midRandY)
     return [x, y]
+}
+
+
+export function buildErosionMask(gates, context) {
+    // reads the direction bitmask data and create points for chunk grid
+    const { chunk, chunkRect, worldPoint } = context
+    const points = new PointSet(chunkRect)
+    for (let {source, target} of gates) {
+        midpointDisplacement(chunkRect, source, target, MEANDER, point => {
+            points.add(point)
+        })
+    }
+    return points
 }
