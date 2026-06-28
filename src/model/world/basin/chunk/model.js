@@ -7,7 +7,7 @@ import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
 import { buildRegionModel } from './region'
-import { buildErosionGatePoints } from './gate'
+import { buildErosionGatePoints } from './route'
 
 
 const BLOCKED_NOISE_RATE = .5
@@ -24,7 +24,7 @@ export const TYPE_CHANNEL_SIDE = 6
 export function buildModel(baseContext) {
     const gates = buildErosionGatePoints(baseContext)
     const landBorders = buildLandBorders(baseContext)
-    const erosionPoints = buildErosionPoints(gates, landBorders, baseContext)
+    const erosionPoints = buildErosionMask(gates, baseContext)
     const cornerMargins = buildCornerMargins(baseContext)
     const typeGrid = buildTypeGrid(cornerMargins, landBorders, baseContext)
     return {
@@ -82,14 +82,24 @@ function buildCornerMargins(context) {
 }
 
 
-function buildErosionPoints(gates, landBorders, context) {
+function buildErosionMask(gates, context) {
     // reads the direction bitmask data and create points for chunk grid
     const { chunk, chunkRect, worldPoint } = context
     const points = new PointSet(chunkRect)
-    for (let {source, target, isOutflow} of gates) {
+    for (let {source, target} of gates) {
         midpointDisplacement(chunkRect, source, target, MEANDER, point => {
             points.add(point)
         })
+    }
+    return points
+}
+
+
+function buildErosionPath(gates, erosionPoints, context) {
+    // reads the direction bitmask data and create points for chunk grid
+    const { chunk, chunkRect, worldPoint } = context
+    for (let {source, target, isOutflow} of gates) {
+
     }
     return points
 }
