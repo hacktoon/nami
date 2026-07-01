@@ -39,46 +39,20 @@ export class OceanBasin extends Basin {
     static color = Color.fromHex('#285879')
 }
 
-/* CHUNK BASIN TYPES ***************************/
-export class ValleyChunkBasin extends Basin {
-    static id = 4
-    static name = 'ValleyChunk'
-    static allowsRiver = true
-    static color = Color.fromHex('#32698d')
+
+export class RiverStretch {
+    static HEADWATERS = Spec.build({
+        name: 'Headwaters', width: .05, color: '#2893c1'
+    })
+    static FAST_COURSE = Spec.build({
+        name: 'Fast course', width: .1, color: '#2a83af'
+    })
+    static SLOW_COURSE = Spec.build({
+        name: 'Slow course', width: .15, color: '#26749b'
+    })
+    static DEPOSITIONAL = Spec.build({
+        name: 'Depositional', width: .2, color: '#216384'
+    })
+
 }
 
-
-export class FloodPlainChunkBasin extends Basin {
-    static id = 5
-    static name = 'FloodPlainChunk'
-    static allowsRiver = false
-    static color = Color.fromHex('#2c8746')
-}
-
-
-export class LowLandChunkBasin extends Basin {
-    static id = 6
-    static name = 'LowLandChunk'
-    static allowsRiver = false
-    static color = Color.fromHex('#3fa05a')
-}
-
-
-export class HighLandChunkBasin extends Basin {
-    static id = 7
-    static name = 'HighLandChunk'
-    static allowsRiver = false
-    static color = Color.fromHex('#58bd74')
-}
-
-
-const BASIN_MAP = {
-    0: ExorheicBasin,
-    1: EndorheicSeaBasin,
-    2: EndorheicLakeBasin,
-    3: OceanBasin,
-    4: ValleyChunkBasin,
-    5: FloodPlainChunkBasin,
-    6: LowLandChunkBasin,
-    7: HighLandChunkBasin,
-}
