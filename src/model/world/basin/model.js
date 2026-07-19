@@ -145,7 +145,7 @@ class LandBasinFill extends ConcurrentFill {
 
     onFill(fill, fillPoint, parentPoint) {
         const { model } = fill.context
-        // distance to source by point
+        // update distance to source at point
         const currentDistance = model.distance.get(parentPoint)
         model.distance.wrapSet(fillPoint, currentDistance + 1)
         // update parent point erosion path

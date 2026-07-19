@@ -1,6 +1,23 @@
 import { Color } from '/src/lib/color'
 
 
+class Spec {
+    static total = 0
+    static map = new Map()
+
+    static build(spec) {
+        const id = Spec.total++
+        const item = {...spec, id, color: Color.fromHex(spec.color)}
+        Spec.map.set(id, item)
+        return item
+    }
+
+    static get(id) {
+        return Spec.map.get(id)
+    }
+}
+
+
 export class Basin {
     static parse(id) {
         return BASIN_MAP[id]
@@ -37,6 +54,14 @@ export class OceanBasin extends Basin {
     static name = 'Ocean'
     static reach = Infinity
     static color = Color.fromHex('#285879')
+}
+
+
+const BASIN_MAP = {
+    0: ExorheicBasin,
+    1: EndorheicSeaBasin,
+    2: EndorheicLakeBasin,
+    3: OceanBasin
 }
 
 
