@@ -19,8 +19,6 @@ export function buildRiverGrid(context) {
     // reads the wire data and create points for chunk grid
     const {world, worldPoint, chunk, chunkRect} = context
     const pointMaskMap = buildPointMaskMap(context)
-    // const river = world.river.get(worldPoint)
-    // const basin = world.basin.get(worldPoint)
     return Grid.fromRect(chunkRect, chunkPoint => {
         if (pointMaskMap.has(chunkPoint)) {
             return TYPE_RIVER

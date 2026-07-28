@@ -43,9 +43,9 @@ export class CivilLayer {
         if (params.get("showCityArea")) {
             this.#drawCityArea(tilePoint, props)
         }
-        if (params.get("showRivers")) {
-            world.river.draw(props, params)
-        }
+        // if (params.get("showRivers")) {
+        //     world.river.draw(props, params)
+        // }
         if (params.get('showRoutes')) {
             this.#drawRoute(tilePoint, props)
         }

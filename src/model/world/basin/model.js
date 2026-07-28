@@ -5,6 +5,8 @@ import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/math/point'
 
 import { DirectionBitMaskGrid } from '/src/lib/bitmask'
+import { buildRiverModel } from './river'
+import { RiverStretch } from './type'
 
 import {
     Basin,
@@ -40,6 +42,13 @@ export function buildBasinModel(context) {
     model.waterCornerBitmap = new DirectionBitMaskGrid(rect)
     // grid of basin ids
     model.basin = buildBasinGrid({ ...context, model })
+    model.river = buildRiverModel({
+        ...context,
+        directionBitmaskGrid: model.directionBitmap,
+        distanceGrid: model.distance,
+        erosionGrid: model.erosion
+    })
+    // console.log(model.river)
     return model
 }
 

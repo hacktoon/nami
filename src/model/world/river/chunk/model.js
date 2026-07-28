@@ -34,7 +34,7 @@ function buildPointMaskMap(baseContext) {
     // reads the direction bitmask data and create points for chunk grid
     const {world, worldPoint, chunk, chunkRect, chunkSize } = baseContext
     const isLand = world.surface.isLand(worldPoint)
-    const river = world.river.get(worldPoint)
+    const river = world.basin.getRiver(worldPoint)
     const pointMaskMap = new PointMap(chunkRect)
     if (isLand && ! river)
         return pointMaskMap
@@ -47,7 +47,7 @@ function buildPointMaskMap(baseContext) {
     const directions = basin.directionBitmap
     for(let direction of directions) {
         const parentPoint = Point.atDirection(worldPoint, direction)
-        if (! world.river.has(parentPoint) && ! world.surface.isBorder(worldPoint))
+        if (! world.basin.hasRiver(parentPoint) && ! world.surface.isBorder(worldPoint))
             continue
         const sideBasin = world.basin.get(parentPoint)
         const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)

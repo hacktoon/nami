@@ -42,23 +42,23 @@ export function buildRiverModel(context) {
 
 
 function buildRiverGrid(context) {
-    const {rect, world} = context
+    const { rect, world, directionBitmaskGrid, distanceGrid } = context
     const riverSources = []
     // STEP 1 - discover the river sources
     const riverGrid = Grid.fromRect(rect, point => {
-        const basin = world.basin.get(point)
         const rainsEnough = world.rain.canCreateRiver(point)
-        if (basin.isDivide && rainsEnough) {
+        const isDivide = directionBitmaskGrid.get(point).length === 1
+        if (isDivide && rainsEnough) {
             riverSources.push(point)
         }
         return null
     })
     // STEP 2 - follow river paths from each source
-    const ctx = {...context, riverGrid}
+    const ctx = {...context, riverGrid, distanceGrid}
     // create a list of pairs: (point, river length)
     riverSources.map(point => {
-        const basin = world.basin.get(point)
-        return [point, basin.distance]
+        const basinDistance = distanceGrid.get(point)
+        return [point, basinDistance]
     })
     // in ascendent order to get longest rivers dominant
     // for starting rivers on basin divides (sources)
@@ -71,19 +71,24 @@ function buildRiverGrid(context) {
 function buildRiver(context, sourcePoint, distance, riverId) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
-    const {world, rect, stretchMap, directionBitmap, riverGrid} = context
+    const {
+        world, rect, stretchMap, directionBitmap,
+        riverGrid, distanceGrid, erosionGrid
+    } = context
     let prevPoint = sourcePoint
     let nextPoint = sourcePoint
     // follow river down following next land points
-    const riverLength = world.basin.get(sourcePoint).distance
+    const riverLength = distanceGrid.get(sourcePoint)
     while (world.surface.isLand(nextPoint)) {
         const point = nextPoint
-        const basin = world.basin.get(point)
-        const stretch = buildStretch(basin.distance, riverLength)
+        const basinDistance = distanceGrid.get(point)
+        const stretch = buildStretch(basinDistance, riverLength)
         // set river stretch by distance
         stretchMap.set(point, stretch.id)
+        // erosion normalized
+        const erosion = Direction.fromId(erosionGrid.get(point))
         // set river bitmap with parent (inflow & outflow)
-        directionBitmap.add(point, basin.erosion)
+        directionBitmap.add(point, erosion)
         if (Point.differs(point, prevPoint)) {
             const parentDirection = Point.directionBetween(point, prevPoint)
             directionBitmap.add(point, parentDirection)
@@ -91,7 +96,7 @@ function buildRiver(context, sourcePoint, distance, riverId) {
         // overwrite previous river id at point
         riverGrid.set(point, riverId)
         // get next river point
-        nextPoint = Point.atDirection(point, basin.erosion)
+        nextPoint = Point.atDirection(point, erosion)
         // save previous point for mouth detection
         prevPoint = point
     }

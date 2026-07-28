@@ -18,8 +18,6 @@ import { ClimateLayer } from '/src/model/world/climate'
 import { ClimateChunk } from '/src/model/world/climate/chunk'
 import { RainLayer } from '/src/model/world/rain'
 import { RainChunk } from '/src/model/world/rain/chunk'
-import { RiverLayer } from '/src/model/world/river'
-import { RiverChunk } from '/src/model/world/river/chunk'
 import { BiomeLayer } from '/src/model/world/biome'
 import { BiomeChunk } from '/src/model/world/biome/chunk'
 import { CivilLayer } from '/src/model/world/civil'
@@ -87,7 +85,6 @@ export class WorldTileMap extends TileMap {
         world.rain = new RainLayer(context)
         world.basin = new BasinLayer(context)
         world.biome = new BiomeLayer(context)
-        world.river = new RiverLayer(context)
         world.civil = new CivilLayer(context)
         // world.relief = new ReliefLayer(context)
         const time = (performance.now() - start) | 0
@@ -103,7 +100,6 @@ export class WorldTileMap extends TileMap {
             this.world.climate.getText(wrappedPoint),
             this.world.rain.getText(wrappedPoint),
             this.world.basin.getText(wrappedPoint),
-            this.world.river.getText(wrappedPoint),
             this.world.biome.getText(wrappedPoint),
             // this.world.relief.getText(wrappedPoint),
             // this.world.landform.getText(wrappedPoint),
@@ -141,7 +137,6 @@ export class WorldTileMap extends TileMap {
         }
         chunk.surface = new SurfaceChunk(context)
         chunk.basin = new BasinChunk(context)
-        chunk.river = new RiverChunk(context)
         chunk.climate = new ClimateChunk(context)
         chunk.rain = new RainChunk(context)
         chunk.biome = new BiomeChunk(context)
@@ -154,7 +149,7 @@ export class WorldTileMap extends TileMap {
         return [
             `World: ${this.name}`,
             `${this.world.surface.getWaterArea()}% water`,
-            `Rivers: ${this.world.river.count}`,
+            `Rivers: ${this.world.basin.riverCount}`,
             `Cities: ${this.world.civil.getTotalCities()}`,
         ].join(', ').trim()
     }

@@ -30,8 +30,8 @@ export function buildCityPoints(context) {
         if (world.surface.isWater(point)) return
         // add land points as candidates to check
         // const isTempHabitable = world.biome.is(point)
-        const isRiver = world.river.has(point)
-        const river = world.river.get(point)
+        const isRiver = world.basin.hasRiver(point)
+        const river = world.basin.getRiver(point)
         if (world.surface.isBorder(point)) {
             if (isRiver) {
                 if (river.length > 1) {

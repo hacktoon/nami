@@ -79,5 +79,8 @@ export class RiverStretch {
         name: 'Depositional', width: .2, color: '#216384'
     })
 
+    static get(id) {
+        return Spec.get(id)
+    }
 }
 
