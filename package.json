@@ -19,7 +19,7 @@
     "url": "git+https://github.com/hacktoon/nami.git"
   },
   "dependencies": {
-    "@babel/cli": "^7.28.3",
+    "@babel/cli": "^8.0.4",
     "@babel/core": "^7.28.5",
     "parcel": "^2.16.3",
     "react": "^19.2.3",
@@ -31,11 +31,10 @@
     "vitest": "^4.0.16"
   },
   "allowScripts": {
-    "@parcel/watcher@2.5.6": true,
-    "@swc/core@1.15.41": true,
+    "@parcel/watcher@2.6.0": true,
+    "@swc/core@1.15.46": true,
     "esbuild@0.25.12": true,
     "lmdb@2.8.5": true,
     "msgpackr-extract@3.0.4": true
   }
 }
-

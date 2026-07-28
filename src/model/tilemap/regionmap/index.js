@@ -5,7 +5,7 @@ import { PointSet } from '/src/lib/math/point/set'
 import { Grid } from '/src/lib/grid'
 import { Color } from '/src/lib/color'
 import { Graph } from '/src/lib/graph'
-import { EvenPointSampling } from '/src/lib/math/point/sampling'
+import { createEvenPointSampling } from '/src/lib/math/point/sampling'
 import { PointMap } from '/src/lib/math/point/map'
 
 import { TileMap } from '/src/model/tilemap/lib'
@@ -54,7 +54,7 @@ export class RegionTileMap extends TileMap {
         super(params)
         const fillMap = new Map()
         const scale = params.get('scale')
-        this.#origins = EvenPointSampling.create(this.rect, scale)
+        this.#origins = createEvenPointSampling(this.rect, scale)
         this.#regionGrid = Grid.fromRect(this.rect, () => EMPTY)
         this.#levelGrid = Grid.fromRect(this.rect, () => 0)
         this.#centerPoints = new PointSet(this.rect, this.#origins)
