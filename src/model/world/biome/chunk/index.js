@@ -32,7 +32,7 @@ export class BiomeChunk {
                 canvas.rect(chunkCanvasPoint, size, color.toHex())
             }
         }
-        chunk.river.drawRiversOnly(props, params, '#216384')
+        // chunk.river.drawRiversOnly(props, params, '#216384')
     }
 }
 

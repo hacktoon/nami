@@ -20,17 +20,18 @@ const MIDPOINT_RATE = .6  // 60% around center point
     following the direction and marking how much strong a
     river gets.
 */
-export function buildRiverModel(context) {
-    const {rect} = context
+export function buildRiverModel(context, model) {
+    const { rect } = context
     const stretchMap = new PointMap(rect)
     const riverLengths = new Map()
     const riverNames = new Map()
     const estuaries = new PointSet(rect)
     const directionBitmap = new DirectionBitMaskGrid(rect)
-    const riverGrid = buildRiverGrid({
-        ...context, estuaries, riverLengths, riverNames,
+    const {riverGrid, riverSources} = buildRiverBase(context, model)
+    fillRiverGrid({
+        ...context, estuaries, riverGrid, riverLengths, riverNames,
         stretchMap, directionBitmap
-    })
+    }, model, riverSources)
     return {
         riverGrid,
         riverLengths,
@@ -41,52 +42,58 @@ export function buildRiverModel(context) {
 }
 
 
-function buildRiverGrid(context) {
-    const { rect, world, directionBitmaskGrid, distanceGrid } = context
+function buildRiverBase(context, model) {
+    const { rect, world } = context
     const riverSources = []
-    // STEP 1 - discover the river sources
+    // discover the river sources while building the river grid
     const riverGrid = Grid.fromRect(rect, point => {
         const rainsEnough = world.rain.canCreateRiver(point)
-        const isDivide = directionBitmaskGrid.get(point).length === 1
+        const isDivide = model.directionBitmap.get(point).length === 1
         if (isDivide && rainsEnough) {
             riverSources.push(point)
         }
         return null
     })
-    // STEP 2 - follow river paths from each source
-    const ctx = {...context, riverGrid, distanceGrid}
+    return { riverGrid, riverSources }
+}
+
+
+function fillRiverGrid(context, model, riverSources) {
+    const { rect, world } = context
+    // follow river paths from each source
     // create a list of pairs: (point, river length)
     riverSources.map(point => {
-        const basinDistance = distanceGrid.get(point)
+        const basinDistance = model.distance.get(point)
         return [point, basinDistance]
     })
     // in ascendent order to get longest rivers dominant
     // for starting rivers on basin divides (sources)
     .sort((a, b) => a[1] - b[1])
-    .forEach((args, index) => buildRiver(ctx, ...args, index))
-    return riverGrid
+    .forEach((args, index) => buildRiver(index, args, model, context))
 }
 
+
 // TODO: split this function, calculate points first
-function buildRiver(context, sourcePoint, distance, riverId) {
+function buildRiver(riverId, args, model, context) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
+    const [sourcePoint, basinDistance] = args
     const {
-        world, rect, stretchMap, directionBitmap,
-        riverGrid, distanceGrid, erosionGrid
+        world, rect, stretchMap, directionBitmap, estuaries,
+        riverGrid, riverNames, riverLengths
     } = context
     let prevPoint = sourcePoint
     let nextPoint = sourcePoint
     // follow river down following next land points
-    const riverLength = distanceGrid.get(sourcePoint)
+    const basinMaxDistance = model.distance.get(sourcePoint)
     while (world.surface.isLand(nextPoint)) {
         const point = nextPoint
-        const basinDistance = distanceGrid.get(point)
-        const stretch = buildStretch(basinDistance, riverLength)
+        const basinDistance = model.distance.get(point)
+        const stretch = buildStretch(basinDistance, basinMaxDistance)
         // set river stretch by distance
         stretchMap.set(point, stretch.id)
         // erosion normalized
-        const erosion = Direction.fromId(erosionGrid.get(point))
+        const erosion = Direction.fromId(model.erosion.get(point))
         // set river bitmap with parent (inflow & outflow)
         directionBitmap.add(point, erosion)
         if (Point.differs(point, prevPoint)) {
@@ -101,9 +108,9 @@ function buildRiver(context, sourcePoint, distance, riverId) {
         prevPoint = point
     }
     // water point that receives river flow
-    context.estuaries.add(rect.wrap(nextPoint))
-    context.riverLengths.set(riverId, distance)
-    context.riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
+    estuaries.add(rect.wrap(nextPoint))
+    riverLengths.set(riverId, basinDistance)
+    riverNames.set(riverId, Random.choiceFrom(HYDRO_NAMES))
 }
 
 

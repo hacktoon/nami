@@ -3,10 +3,9 @@ import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/math/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/math/point'
-
 import { DirectionBitMaskGrid } from '/src/lib/bitmask'
+
 import { buildRiverModel } from './river'
-import { RiverStretch } from './type'
 
 import {
     Basin,
@@ -14,6 +13,7 @@ import {
     EndorheicLakeBasin,
     ExorheicBasin,
     OceanBasin,
+    RiverStretch,
 } from './type'
 
 
@@ -24,53 +24,30 @@ const INITIAL_DISTANCE = 1
 
 
 export function buildBasinModel(context) {
+    const { rect, chunkSize } = context
     const model = {}
-    const { rect } = context
     // map basin type for creating rivers or other features
     model.type = new Map()
     // grid of erosion direction ids
-    model.erosion = buildErosionGrid(context)
+    model.erosion = Grid.fromRect(rect, () => Direction.random().id)
     // random joint value to connect chunks
-    model.joint = buildJointGrid(context)
+    // choose a value at chunk sides, avoiding edges
+    model.joint = Grid.fromRect(rect, () => Random.int(2, chunkSize - 3))
     // the walk distance of each basin starting from shore
-    model.distance = buildDistanceGrid(context)
+    // Initial value 1 is used to determine river stretch
+    model.distance = Grid.fromRect(rect, () => INITIAL_DISTANCE)
     // map a point to a basin chunk direction bitmask
     model.directionBitmap = new DirectionBitMaskGrid(rect)
+    // mark which direction has a river (N, SE, W...)
+    model.erosionRiverMap = new Map()
     // map a point to a basin chunk corner connections (for diagonals)
     // used to detect erosion/channels passing on neighbor diagonals
     model.riverCornerBitmap = new DirectionBitMaskGrid(rect)
     model.waterCornerBitmap = new DirectionBitMaskGrid(rect)
     // grid of basin ids
     model.basin = buildBasinGrid({ ...context, model })
-    model.river = buildRiverModel({
-        ...context,
-        directionBitmaskGrid: model.directionBitmap,
-        distanceGrid: model.distance,
-        erosionGrid: model.erosion
-    })
-    // console.log(model.river)
+    model.river = buildRiverModel(context, model)
     return model
-}
-
-
-function buildErosionGrid({ rect }) {
-    // set random directions by default
-    return Grid.fromRect(rect, () => Direction.random().id)
-}
-
-
-
-function buildJointGrid({ rect, chunkSize }) {
-    // choose a value at chunk sides, avoiding edges
-    return Grid.fromRect(rect, () => {
-        return Random.int(2, chunkSize - 3)
-    })
-}
-
-
-function buildDistanceGrid({ rect }) {
-    // Initial value 1 is used to determine river stretch
-    return Grid.fromRect(rect, () => INITIAL_DISTANCE)
 }
 
 
