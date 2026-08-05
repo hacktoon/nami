@@ -47,10 +47,9 @@ export function buildBasinModel(context) {
     model.waterCornerBitmap = new DirectionBitMaskGrid(rect)
     // mark which direction has a river (N, SE, W...)
     // model.erosionRiverMap = new Map()
-    model.basin = Grid.fromRect(rect, () => NO_BASIN_ID)
-    const { landBorders, waterBorders } = detectBorders(context)
     // init grid of basin ids
-    buildBasinGrid(context, landBorders, waterBorders, model)
+    const borders = detectBorders(context)
+    model.basin = buildBasinGrid(context, model, borders)
     // mark chunk paths from river sources
     model.river = buildRiverModel(context, model)
     return model
@@ -59,42 +58,59 @@ export function buildBasinModel(context) {
 
 function detectBorders(context) {
     const { world, rect } = context
-    const landBorders = []
-    const waterBorders = []
-    Grid.fromRect(rect, point => {
-        // Prepare data for flood fill at each point
-        if(! world.surface.isBorder(point)) return
-        const borders = world.surface.isLand(point) ? landBorders : waterBorders
-        borders.push(point)
+    const land = []
+    const water = []
+    // detect land/water borders
+    const grid = Grid.fromRect(rect, point => {
+        const isBorder = world.surface.isBorder(point)
+        const isWater = world.surface.isWater(point)
+        let landBorder = null
+        let waterBorder = null
+        // detect borders by type, the last ones are chosen
+        if (isBorder) {
+            for (let border of Point.adjacents(point)) {
+                if (world.surface.isWater(border)) {
+                    waterBorder = border
+                } else {
+                    landBorder = border
+                }
+            }
+        }
+        if (isBorder && isWater) {
+            water.push({ point, landBorder })
+        }
+        if (isBorder && !isWater) {
+            land.push({ point, waterBorder })
+        }
+        return NO_BASIN_ID
     })
-    return { landBorders, waterBorders }
+    return { land, water }
 }
 
 
-function buildBasinGrid(context, landBorders, waterBorders, model) {
+function buildBasinGrid(context, model, borders) {
     const { world, rect } = context
-    const surveyMap = new Map()
     const landFillMap = new Map()
     const waterFillMap = new Map()
     let basinId = 0
-    for (let border of landBorders) {
-        const survey = surveyNeighbors(context, border)
-        const type = detectLandBasinType(world, survey)
-        surveyMap.set(basinId, survey)
+    for (let {point, waterBorder} of borders.land) {
+        const type = detectBasinType(context, point)
         model.type.set(basinId, type.id)
-        landFillMap.set(basinId, { origin: border })
+        landFillMap.set(basinId, { origin: point })
         basinId++
     }
-    for (let border of waterBorders) {
+    for (let {point, landBorder} of borders.water) {
         const type = OceanBasin
         model.type.set(basinId, type.id)
-        waterFillMap.set(basinId, { origin: border, type })
+        waterFillMap.set(basinId, { origin: point })
         basinId++
     }
+    const basinGrid = Grid.fromRect(rect, () => NO_BASIN_ID)
+    const fillContext = { ...context, model, basinGrid }
     // Start flood fills from each border, both land && water
-    const fillContext = { ...context, model, surveyMap }
     new LandBasinFill(rect, landFillMap, fillContext).complete()
     new WaterBasinFill(rect, waterFillMap, fillContext).complete()
+    return basinGrid
 }
 
 
@@ -114,31 +130,13 @@ function buildRiverBase(context, model) {
 }
 
 
-function surveyNeighbors(context, point) {
-    // point is on land
+function detectBasinType(context, waterBorder) {
     const { world } = context
-    const waterNeighbors = []
-    let oppositeBorder = null
-    const neighbors = Point.adjacents(point)
-    for (let neighbor of neighbors) {
-        const isNeighborWater = world.surface.isWater(neighbor)
-        if (isNeighborWater) {
-            waterNeighbors.push(neighbor)
-            // parent point for erosion algorithm
-            oppositeBorder = neighbor
-        }
-    }
-    return { oppositeBorder, waterNeighbors }
-}
-
-
-function detectLandBasinType(world, survey) {
-    if (world.surface.isLake(survey.oppositeBorder)) {
+    if (world.surface.isLake(waterBorder)) {
         return EndorheicLakeBasin
     }
-    if (world.surface.isSea(survey.oppositeBorder)) {
+    if (world.surface.isSea(waterBorder)) {
         return EndorheicSeaBasin
     }
     return ExorheicBasin
 }
-
