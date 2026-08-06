@@ -15,14 +15,8 @@ export class LandBasinFill extends ConcurrentFill {
     getGrowth(fill) { return FILL_GROWTH }
 
     onInitFill(fill, fillPoint) {
-        const { world } = fill.context
-        let waterBorder = null
-        for (let neighbor of Point.adjacents(fillPoint)) {
-            waterBorder = neighbor  // parent point for erosion algorithm
-            if (world.surface.isWater(neighbor)) break
-        }
         // the basin erosion
-        this._fillBasin(fill, fillPoint, waterBorder)
+        this._fillBasin(fill, fillPoint, fill.opposite)
     }
 
     onFill(fill, fillPoint, parentPoint) {

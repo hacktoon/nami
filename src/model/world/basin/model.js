@@ -29,8 +29,6 @@ const INITIAL_DISTANCE = 1
 export function buildBasinModel(context) {
     const { rect, chunkSize } = context
     const model = {}
-    // map basin type for creating rivers or other features
-    model.type = new Map()
     // grid of erosion direction ids
     model.erosion = Grid.fromRect(rect, () => Direction.random().id)
     // random joint value to connect chunks
@@ -43,69 +41,80 @@ export function buildBasinModel(context) {
     model.directionBitmap = new DirectionBitMaskGrid(rect)
     // map a point to a basin chunk corner connections (for diagonals)
     // used to detect erosion/channels passing on neighbor diagonals
+
+    // TODO: move these to chunk generation
     model.riverCornerBitmap = new DirectionBitMaskGrid(rect)
     model.waterCornerBitmap = new DirectionBitMaskGrid(rect)
     // mark which direction has a river (N, SE, W...)
     // model.erosionRiverMap = new Map()
     // init grid of basin ids
-    const borders = detectBorders(context)
-    model.basin = buildBasinGrid(context, model, borders)
+    const basins = initBasins(context)
+    model.type = buildTypeMap(context, basins)
+    model.basin = buildBasinGrid(context, model, basins)
     // mark chunk paths from river sources
     model.river = buildRiverModel(context, model)
     return model
 }
 
 
-function detectBorders(context) {
+function initBasins(context) {
     const { world, rect } = context
-    const land = []
-    const water = []
+    const basins = []
+    let basinId = 0
     // detect land/water borders
-    const grid = Grid.fromRect(rect, point => {
-        const isBorder = world.surface.isBorder(point)
-        const isWater = world.surface.isWater(point)
-        let landBorder = null
-        let waterBorder = null
-        // detect borders by type, the last ones are chosen
-        if (isBorder) {
-            for (let border of Point.adjacents(point)) {
-                if (world.surface.isWater(border)) {
-                    waterBorder = border
-                } else {
-                    landBorder = border
-                }
+    Grid.fromRect(rect, point => {
+        if (!world.surface.isBorder(point))
+            return
+        let type, opposite
+        const isLand = world.surface.isLand(point)
+        for (let sidePoint of Point.adjacents(point)) {
+            const landWater = isLand && world.surface.isWater(sidePoint)
+            const waterLand = !isLand && world.surface.isLand(sidePoint)
+            if (landWater || waterLand) {
+                opposite = sidePoint
+                break
             }
         }
-        if (isBorder && isWater) {
-            water.push({ point, landBorder })
-        }
-        if (isBorder && !isWater) {
-            land.push({ point, waterBorder })
-        }
-        return NO_BASIN_ID
+        basins.push({ basinId, point, opposite })
+        basinId++
     })
-    return { land, water }
+    return basins
 }
 
 
-function buildBasinGrid(context, model, borders) {
+function buildTypeMap(context, basins) {
+    const { world } = context
+    const typeMap = new Map()
+    for (let { basinId, point, opposite } of basins) {
+        let type
+        // detect type by border, the last ones are chosen
+        if (world.surface.isLand(point)) {
+            type = ExorheicBasin
+            if (world.surface.isLake(opposite)) type = EndorheicLakeBasin
+            if (world.surface.isSea(opposite)) type = EndorheicSeaBasin
+        } else {
+            type = OceanBasin
+        }
+        typeMap.set(basinId, type.id)
+    }
+    return typeMap
+}
+
+
+function buildBasinGrid(context, model, basins) {
     const { world, rect } = context
     const landFillMap = new Map()
     const waterFillMap = new Map()
-    let basinId = 0
-    for (let {point, waterBorder} of borders.land) {
-        const type = detectBasinType(context, point)
-        model.type.set(basinId, type.id)
-        landFillMap.set(basinId, { origin: point })
-        basinId++
+    for (let { basinId, point, opposite } of basins) {
+        const isLand = world.surface.isLand(point)
+        const fillData = { origin: point, opposite}
+        if (isLand) {
+            landFillMap.set(basinId, fillData)
+        } else {
+            waterFillMap.set(basinId, fillData)
+        }
     }
-    for (let {point, landBorder} of borders.water) {
-        const type = OceanBasin
-        model.type.set(basinId, type.id)
-        waterFillMap.set(basinId, { origin: point })
-        basinId++
-    }
-    const basinGrid = Grid.fromRect(rect, () => NO_BASIN_ID)
+    const basinGrid = Grid.fromRect(rect, point => NO_BASIN_ID)
     const fillContext = { ...context, model, basinGrid }
     // Start flood fills from each border, both land && water
     new LandBasinFill(rect, landFillMap, fillContext).complete()
@@ -114,29 +123,17 @@ function buildBasinGrid(context, model, borders) {
 }
 
 
-function buildRiverBase(context, model) {
-    const { rect, world } = context
-    const riverSources = []
-    // discover the river sources while building the river grid
-    const riverGrid = Grid.fromRect(rect, point => {
-        const rainsEnough = world.rain.canCreateRiver(point)
-        const isDivide = model.directionBitmap.get(point).length === 1
-        if (isDivide && rainsEnough) {
-            riverSources.push(point)
-        }
-        return null
-    })
-    return { riverGrid, riverSources }
-}
-
-
-function detectBasinType(context, waterBorder) {
-    const { world } = context
-    if (world.surface.isLake(waterBorder)) {
-        return EndorheicLakeBasin
-    }
-    if (world.surface.isSea(waterBorder)) {
-        return EndorheicSeaBasin
-    }
-    return ExorheicBasin
-}
+// function buildRiverBase(context, model) {
+//     const { rect, world } = context
+//     const riverSources = []
+//     // discover the river sources while building the river grid
+//     const riverGrid = Grid.fromRect(rect, point => {
+//         const rainsEnough = world.rain.canCreateRiver(point)
+//         const isDivide = model.directionBitmap.get(point).length === 1
+//         if (isDivide && rainsEnough) {
+//             riverSources.push(point)
+//         }
+//         return null
+//     })
+//     return { riverGrid, riverSources }
+// }
