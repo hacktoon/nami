@@ -15,7 +15,6 @@ export class LandBasinFill extends ConcurrentFill {
     getGrowth(fill) { return FILL_GROWTH }
 
     onInitFill(fill, fillPoint) {
-        // the basin erosion
         this._fillBasin(fill, fillPoint, fill.opposite)
     }
 
@@ -64,7 +63,7 @@ export class LandBasinFill extends ConcurrentFill {
         basinGrid.set(fillPoint, fill.id)
         // mark the direction the erosion flows
         model.directionBitmap.add(fillPoint, direction)
-        _setCorner(world, model, fillPoint, direction)
+        _setCorners(world, model, fillPoint, direction)
     }
 }
 
@@ -85,7 +84,8 @@ export class WaterBasinFill extends ConcurrentFill {
             if (world.surface.isLand(sidePoint)) {
                 const sideDirection = Direction.fromId(model.erosion.get(sidePoint))
                 const mouth = Point.atDirection(sidePoint, sideDirection)
-                if (Point.equals(mouth, fillPoint)) {
+                const receivesErosion = Point.equals(mouth, fillPoint)
+                if (receivesErosion) {
                     model.directionBitmap.add(fillPoint, direction)
                     model.erosion.set(fillPoint, direction.id)
                 }
@@ -97,7 +97,7 @@ export class WaterBasinFill extends ConcurrentFill {
         Point.diagonals(fillPoint, (sidePoint, direction) => {
             if (world.surface.isLand(sidePoint))
                 return
-            _setCorner(world, model, fillPoint, direction)
+            _setCorners(world, model, fillPoint, direction)
             if (world.surface.isBorder(sidePoint)) {
                 model.directionBitmap.add(fillPoint, direction)
             }
@@ -120,12 +120,12 @@ export class WaterBasinFill extends ConcurrentFill {
         model.erosion.set(fillPoint, upstream.id)
         basinGrid.set(fillPoint, fill.id)
         // set water corners
-        _setCorner(world, model, fillPoint, upstream)
+        _setCorners(world, model, fillPoint, upstream)
     }
 }
 
 
-function _setCorner(world, model, fillPoint, direction) {
+function _setCorners(world, model, fillPoint, direction) {
     if (!Direction.isDiagonal(direction))
         return
     for (let sideDirection of Direction.getComponents(direction)) {

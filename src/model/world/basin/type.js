@@ -29,7 +29,7 @@ export class ExorheicBasin extends Basin {
     static id = 0
     static name = 'Exorheic river'
     static reach = Infinity
-    static color = Color.fromHex('#38a378')
+    static color = Color.fromHex('#3ea87e')
 }
 
 

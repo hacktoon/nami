@@ -27,10 +27,7 @@ export class BasinLayer {
         const riverCornerBitmap = this.#model.riverCornerBitmap.get(point)
         const waterCornerBitmap = this.#model.waterCornerBitmap.get(point)
         return {
-            id,
-            riverCornerBitmap,
-            waterCornerBitmap,
-            directionBitmap,
+            id, riverCornerBitmap, waterCornerBitmap, directionBitmap,
             type: Basin.parse(typeId),
             distance: this.#model.distance.get(point),
             joint: this.#model.joint.get(point),
@@ -82,14 +79,14 @@ export class BasinLayer {
             canvas.text(canvasPoint, tileSize, text, textColor)
         }
         if (params.get('showRivers')) {
-            this.drawOnlyRivers(props, params)
+            this.drawRivers(props, params)
         }
     }
 
     #drawErosionPath(props, basin) {
         const {canvasPoint, tilePoint, tileSize} = props
-        const color = basin.type.color.darken(30).toHex()
-        const lineWidth = Math.round(props.tileSize / 20)
+        const color = basin.type.color.darken(20).toHex()
+        const lineWidth = Math.round(props.tileSize / 12)
         const chunkSize = this.#chunkRect.width
         // calc midpoint point on canvas
         const pixelsPerChunkPoint = tileSize / chunkSize
@@ -110,7 +107,7 @@ export class BasinLayer {
         }
     }
 
-    drawOnlyRivers(props, params) {
+    drawRivers(props, params) {
         const {canvas, canvasPoint, tileSize, tilePoint } = props
         if (! this.hasRiver(tilePoint)) {
             return
@@ -128,7 +125,7 @@ export class BasinLayer {
                 midCanvasPoint[0] + direction.axis[0] * midSize,
                 midCanvasPoint[1] + direction.axis[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, 5, hexColor)
+            canvas.line(edgeMidPoint, meanderPoint, 12, hexColor)
         }
     }
 }

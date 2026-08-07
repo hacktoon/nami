@@ -106,9 +106,8 @@ function buildBasinGrid(context, model, basins) {
     const landFillMap = new Map()
     const waterFillMap = new Map()
     for (let { basinId, point, opposite } of basins) {
-        const isLand = world.surface.isLand(point)
-        const fillData = { origin: point, opposite}
-        if (isLand) {
+        const fillData = { origin: point, opposite }
+        if (world.surface.isLand(point)) {
             landFillMap.set(basinId, fillData)
         } else {
             waterFillMap.set(basinId, fillData)

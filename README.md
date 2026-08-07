@@ -6,8 +6,10 @@
 
 
 ## ROADMAP
+- basin trimming step to reduce "square" basin sides
+  - take a source from one, pass to neighbor
+  - reduce paths on oceans all neighbors = water
 LAND
-
 1-3 sources + target
 rio: source -> random walk -> target
 sources to midpoint
