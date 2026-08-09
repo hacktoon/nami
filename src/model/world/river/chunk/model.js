@@ -66,12 +66,6 @@ function buildPointMaskMap(baseContext) {
     return pointMaskMap
 }
 
-//  code for marking chunk corners
-// for (let dir of riverCornerBitmap) {
-//     const chunkPoint = dir.axis.map(coord => coord > 0 ? chunkSize-1 : 0)
-//     fillMap.set(id++, {origin: chunkPoint, basinLevel: 1})
-// }
-
 
 function generateFlowPath(context, source, target, direction) {
     const {chunkRect, pointMaskMap} = context

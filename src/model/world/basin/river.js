@@ -27,7 +27,7 @@ export function buildRiverModel(context, model) {
     const riverNames = new Map()
     const estuaries = new PointSet(rect)
     const directionBitmap = new DirectionBitMaskGrid(rect)
-    const {riverGrid, riverSources} = buildRiverBase(context, model)
+    const {riverGrid, riverSources} = initRivers(context, model)
     fillRiverGrid({
         ...context, estuaries, riverGrid, riverLengths, riverNames,
         stretchMap, directionBitmap
@@ -42,7 +42,7 @@ export function buildRiverModel(context, model) {
 }
 
 
-function buildRiverBase(context, model) {
+function initRivers(context, model) {
     const { rect, world } = context
     const riverSources = []
     // discover the river sources while building the river grid

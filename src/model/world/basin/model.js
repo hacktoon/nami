@@ -41,13 +41,9 @@ export function buildBasinModel(context) {
     model.directionBitmap = new DirectionBitMaskGrid(rect)
     // map a point to a basin chunk corner connections (for diagonals)
     // used to detect erosion/channels passing on neighbor diagonals
-
-    // TODO: move these to chunk generation
-    model.riverCornerBitmap = new DirectionBitMaskGrid(rect)
-    model.waterCornerBitmap = new DirectionBitMaskGrid(rect)
-    // mark which direction has a river (N, SE, W...)
-    // model.erosionRiverMap = new Map()
-    // init grid of basin ids
+    // mark a direction to a river (N, SE, W...) -> id
+    model.erosionRiverMap = new Map()
+    // init grid of basin base information
     const basins = initBasins(context)
     model.type = buildTypeMap(context, basins)
     model.basin = buildBasinGrid(context, model, basins)
@@ -120,19 +116,3 @@ function buildBasinGrid(context, model, basins) {
     new WaterBasinFill(rect, waterFillMap, fillContext).complete()
     return basinGrid
 }
-
-
-// function buildRiverBase(context, model) {
-//     const { rect, world } = context
-//     const riverSources = []
-//     // discover the river sources while building the river grid
-//     const riverGrid = Grid.fromRect(rect, point => {
-//         const rainsEnough = world.rain.canCreateRiver(point)
-//         const isDivide = model.directionBitmap.get(point).length === 1
-//         if (isDivide && rainsEnough) {
-//             riverSources.push(point)
-//         }
-//         return null
-//     })
-//     return { riverGrid, riverSources }
-// }

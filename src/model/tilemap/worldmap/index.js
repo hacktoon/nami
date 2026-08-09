@@ -83,8 +83,8 @@ export class WorldTileMap extends TileMap {
         world.surface = new SurfaceLayer(context)
         world.climate = new ClimateLayer(context)
         world.rain = new RainLayer(context)
-        world.basin = new BasinLayer(context)
         world.biome = new BiomeLayer(context)
+        world.basin = new BasinLayer(context)
         world.civil = new CivilLayer(context)
         // world.relief = new ReliefLayer(context)
         const time = (performance.now() - start) | 0

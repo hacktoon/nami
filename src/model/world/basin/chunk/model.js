@@ -21,8 +21,8 @@ export function buildModel(baseContext) {
     const gates = buildErosionGatePoints(baseContext)
     const landBorders = buildLandBorders(baseContext)
     const erosionPoints = buildErosionMask(gates, baseContext)
-    const cornerMargins = buildCornerMargins(baseContext)
-    const typeGrid = buildTypeGrid(cornerMargins, landBorders, baseContext)
+    // const cornerMargins = buildCornerMargins(baseContext)
+    const typeGrid = buildTypeGrid(landBorders, baseContext)
     return {
         type: typeGrid,
         erosion: erosionPoints,
@@ -53,29 +53,29 @@ function buildLandBorders(context) {
 }
 
 
-function buildCornerMargins(context) {
-    // Add channel/river margins to some chunk corner points
-    const { world, worldPoint, chunk, chunkRect, chunkSize } = context
-    const erosionSidePoints = new PointSet(chunkRect)
-    const channelSidePoints = new PointSet(chunkRect)
-    const basin = world.basin.get(worldPoint)
-    // get chunk corner point based on direction: NORTHWEST = [0, 0]
-    const getCornerPoint = (dir) => dir.axis.map(coord => coord > 0 ? chunkSize - 1 : 0)
-    // check river/water chunk corners checking for rivers/channels in that corner
-    for (let dir of basin.waterCornerBitmap) {
-        channelSidePoints.add(getCornerPoint(dir))
-    }
-    for (let dir of basin.riverCornerBitmap) {
-        const cornerPoint = getCornerPoint(dir)
-        erosionSidePoints.add(cornerPoint)
-        // mark a 1x1 cross on this corner point to avoid water "leaking"
-        for (let sidePoint of Point.adjacents(cornerPoint)) {
-            if (chunkRect.isInside(sidePoint))
-                erosionSidePoints.add(sidePoint)
-        }
-    }
-    return { erosionSidePoints, channelSidePoints }
-}
+// function buildCornerMargins(context) {
+//     // Add channel/river margins to some chunk corner points
+//     const { world, worldPoint, chunk, chunkRect, chunkSize } = context
+//     const erosionSidePoints = new PointSet(chunkRect)
+//     const channelSidePoints = new PointSet(chunkRect)
+//     const basin = world.basin.get(worldPoint)
+//     // get chunk corner point based on direction: NORTHWEST = [0, 0]
+//     const getCornerPoint = (dir) => dir.axis.map(coord => coord > 0 ? chunkSize - 1 : 0)
+//     // check river/water chunk corners checking for rivers/channels in that corner
+//     for (let dir of basin.waterCorner) {
+//         channelSidePoints.add(getCornerPoint(dir))
+//     }
+//     for (let dir of basin.riverCorner ) {
+//         const cornerPoint = getCornerPoint(dir)
+//         erosionSidePoints.add(cornerPoint)
+//         // mark a 1x1 cross on this corner point to avoid water "leaking"
+//         for (let sidePoint of Point.adjacents(cornerPoint)) {
+//             if (chunkRect.isInside(sidePoint))
+//                 erosionSidePoints.add(sidePoint)
+//         }
+//     }
+//     return { erosionSidePoints, channelSidePoints }
+// }
 
 
 function buildErosionPath(gates, erosionPoints, context) {
@@ -88,10 +88,10 @@ function buildErosionPath(gates, erosionPoints, context) {
 }
 
 
-function buildTypeGrid(cornerMargins, landBorders, context) {
+function buildTypeGrid(landBorders, context) {
     // Add channel/river margins to some chunk corner points
     const { world, worldPoint, chunk, chunkRect, chunkSize } = context
-    const { erosionSidePoints, channelSidePoints } = cornerMargins
+    // const { erosionSidePoints, channelSidePoints } = cornerMargins
     // Apply erosion margins to base grid
     return Grid.fromRect(chunkRect, (chunkPoint) => {
         const isLand = chunk.surface.isLand(chunkPoint)

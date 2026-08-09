@@ -63,7 +63,6 @@ export class LandBasinFill extends ConcurrentFill {
         basinGrid.set(fillPoint, fill.id)
         // mark the direction the erosion flows
         model.directionBitmap.add(fillPoint, direction)
-        _setCorners(world, model, fillPoint, direction)
     }
 }
 
@@ -97,7 +96,6 @@ export class WaterBasinFill extends ConcurrentFill {
         Point.diagonals(fillPoint, (sidePoint, direction) => {
             if (world.surface.isLand(sidePoint))
                 return
-            _setCorners(world, model, fillPoint, direction)
             if (world.surface.isBorder(sidePoint)) {
                 model.directionBitmap.add(fillPoint, direction)
             }
@@ -119,25 +117,23 @@ export class WaterBasinFill extends ConcurrentFill {
         })
         model.erosion.set(fillPoint, upstream.id)
         basinGrid.set(fillPoint, fill.id)
-        // set water corners
-        _setCorners(world, model, fillPoint, upstream)
     }
 }
 
 
-function _setCorners(world, model, fillPoint, direction) {
-    if (!Direction.isDiagonal(direction))
-        return
-    for (let sideDirection of Direction.getComponents(direction)) {
-        const sidePoint = Point.atDirection(fillPoint, sideDirection)
-        // mirror directions in one axis  '/'  =>  '\'
-        const x = sideDirection.axis[0] == 0 ? direction.axis[0] : -1 * direction.axis[0]
-        const y = sideDirection.axis[1] == 0 ? direction.axis[1] : -1 * direction.axis[1]
-        const sideCornerDir = Direction.fromAxis(x, y)
-        if (world.surface.isWater(fillPoint)) {
-            model.waterCornerBitmap.add(sidePoint, sideCornerDir)
-        } else {
-            model.riverCornerBitmap.add(sidePoint, sideCornerDir)
-        }
-    }
-}
+// function _setCorners(world, model, fillPoint, direction) {
+//     if (!Direction.isDiagonal(direction))
+//         return
+//     for (let sideDirection of Direction.getComponents(direction)) {
+//         const sidePoint = Point.atDirection(fillPoint, sideDirection)
+//         // mirror directions in one axis  '/'  =>  '\'
+//         const x = sideDirection.axis[0] == 0 ? direction.axis[0] : -1 * direction.axis[0]
+//         const y = sideDirection.axis[1] == 0 ? direction.axis[1] : -1 * direction.axis[1]
+//         const sideCornerDir = Direction.fromAxis(x, y)
+//         if (world.surface.isWater(fillPoint)) {
+//             model.waterCorner .add(sidePoint, sideCornerDir)
+//         } else {
+//             model.riverCorner .add(sidePoint, sideCornerDir)
+//         }
+//     }
+// }
