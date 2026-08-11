@@ -16,7 +16,7 @@ export function buildErosionGatePoints(baseContext) {
     const basin = world.basin.get(worldPoint)
     const midPoint = buildChunkMidpoint(chunkRect)
     const gates = []
-    for (let gateDirection of basin.directionBitmap) {
+    for (let gateDirection of basin.erosionDirectionBitmask) {
         const parentPoint = Point.atDirection(worldPoint, gateDirection)
         const sideBasin = world.basin.get(parentPoint)
         // get the point on chunk side

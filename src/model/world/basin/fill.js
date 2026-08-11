@@ -26,7 +26,7 @@ export class LandBasinFill extends ConcurrentFill {
         // update parent point erosion path
         // will set the inflows directions
         const downstream = Point.directionBetween(parentPoint, fillPoint)
-        model.directionBitmap.add(parentPoint, downstream)
+        model.erosionDirectionBitmask.add(parentPoint, downstream)
         // will set the outflow direction
         this._fillBasin(fill, fillPoint, parentPoint)
     }
@@ -62,7 +62,7 @@ export class LandBasinFill extends ConcurrentFill {
         // basin id is the same as fill id
         basinGrid.set(fillPoint, fill.id)
         // mark the direction the erosion flows
-        model.directionBitmap.add(fillPoint, direction)
+        model.erosionDirectionBitmask.add(fillPoint, direction)
     }
 }
 
@@ -85,11 +85,11 @@ export class WaterBasinFill extends ConcurrentFill {
                 const mouth = Point.atDirection(sidePoint, sideDirection)
                 const receivesErosion = Point.equals(mouth, fillPoint)
                 if (receivesErosion) {
-                    model.directionBitmap.add(fillPoint, direction)
+                    model.erosionDirectionBitmask.add(fillPoint, direction)
                     model.erosion.set(fillPoint, direction.id)
                 }
             } else {
-                model.directionBitmap.add(fillPoint, direction)
+                model.erosionDirectionBitmask.add(fillPoint, direction)
             }
         })
         // diagonals later, only to non-border water sides
@@ -97,7 +97,7 @@ export class WaterBasinFill extends ConcurrentFill {
             if (world.surface.isLand(sidePoint))
                 return
             if (world.surface.isBorder(sidePoint)) {
-                model.directionBitmap.add(fillPoint, direction)
+                model.erosionDirectionBitmask.add(fillPoint, direction)
             }
         })
     }
@@ -113,7 +113,7 @@ export class WaterBasinFill extends ConcurrentFill {
         const { world, model, basinGrid } = fill.context
         const upstream = Point.directionBetween(fillPoint, parentPoint)
         Point.adjacents(fillPoint, (sidePoint, direction) => {
-            model.directionBitmap.add(fillPoint, direction)
+            model.erosionDirectionBitmask.add(fillPoint, direction)
         })
         model.erosion.set(fillPoint, upstream.id)
         basinGrid.set(fillPoint, fill.id)

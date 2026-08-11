@@ -7,13 +7,9 @@ import { HYDRO_NAMES } from '/src/lib/names'
 import { PointMap } from '/src/lib/math/point/map'
 import { DirectionBitMaskGrid } from '/src/lib/bitmask'
 
+
 import { RiverStretch } from './type'
 
-
-const EMPTY = null
-const FILL_CHANCE = .1
-const FILL_GROWTH = 4
-const MIDPOINT_RATE = .6  // 60% around center point
 
 /*
     The shape fill starts from river sources
@@ -26,18 +22,19 @@ export function buildRiverModel(context, model) {
     const riverLengths = new Map()
     const riverNames = new Map()
     const estuaries = new PointSet(rect)
-    const directionBitmap = new DirectionBitMaskGrid(rect)
+    const erosionDirectionBitmask = new DirectionBitMaskGrid(rect)
+
     const {riverGrid, riverSources} = initRivers(context, model)
     fillRiverGrid({
         ...context, estuaries, riverGrid, riverLengths, riverNames,
-        stretchMap, directionBitmap
+        stretchMap, erosionDirectionBitmask
     }, model, riverSources)
     return {
         riverGrid,
         riverLengths,
         riverNames,
         stretchMap,
-        directionBitmap,
+        erosionDirectionBitmask,
     }
 }
 
@@ -47,9 +44,7 @@ function initRivers(context, model) {
     const riverSources = []
     // discover the river sources while building the river grid
     const riverGrid = Grid.fromRect(rect, point => {
-        const rainsEnough = world.rain.canCreateRiver(point)
-        const isDivide = model.directionBitmap.get(point).length === 1
-        if (isDivide && rainsEnough) {
+        if (world.rain.canCreateRiver(point)) {
             riverSources.push(point)
         }
         return null
@@ -79,7 +74,7 @@ function buildRiver(riverId, args, model, context) {
     // according to basin flow and builds a river.
     const [sourcePoint, basinDistance] = args
     const {
-        world, rect, stretchMap, directionBitmap, estuaries,
+        world, rect, stretchMap, erosionDirectionBitmask, estuaries,
         riverGrid, riverNames, riverLengths
     } = context
     let prevPoint = sourcePoint
@@ -95,10 +90,10 @@ function buildRiver(riverId, args, model, context) {
         // erosion normalized
         const erosion = Direction.fromId(model.erosion.get(point))
         // set river bitmap with parent (inflow & outflow)
-        directionBitmap.add(point, erosion)
+        erosionDirectionBitmask.add(point, erosion)
         if (Point.differs(point, prevPoint)) {
             const parentDirection = Point.directionBetween(point, prevPoint)
-            directionBitmap.add(point, parentDirection)
+            erosionDirectionBitmask.add(point, parentDirection)
         }
         // overwrite previous river id at point
         riverGrid.set(point, riverId)

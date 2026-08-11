@@ -23,14 +23,14 @@ export class BasinLayer {
         const id = this.#model.basin.get(point)
         const typeId = this.#model.type.get(id)
         const directionId = this.#model.erosion.get(point)
-        const directionBitmap = this.#model.directionBitmap.get(point)
+        const erosionDirectionBitmask = this.#model.erosionDirectionBitmask.get(point)
         return {
-            id, directionBitmap,
+            id, erosionDirectionBitmask,
             type: Basin.parse(typeId),
             distance: this.#model.distance.get(point),
             joint: this.#model.joint.get(point),
             erosion: Direction.fromId(directionId),
-            isDivide: directionBitmap.length === 1,
+            isDivide: erosionDirectionBitmask.length === 1,
         }
     }
 
@@ -42,10 +42,10 @@ export class BasinLayer {
     getRiver(point) {
         const id = this.#model.river.riverGrid.get(point)
         const stretchId = this.#model.river.stretchMap.get(point)
-        const directionBitmap = this.#model.river.directionBitmap.get(point)
+        const erosionDirectionBitmask = this.#model.river.erosionDirectionBitmask.get(point)
         return {
             id,
-            directionBitmap,
+            erosionDirectionBitmask,
             length: this.#model.river.riverLengths.get(id),
             name: this.#model.river.riverNames.get(id),
             stretch: RiverStretch.get(stretchId),
@@ -92,7 +92,7 @@ export class BasinLayer {
         const canvasMidpoint = Point.multiplyScalar([mid, mid], pixelsPerChunkPoint)
         const midPoint = Point.plus(canvasPoint, canvasMidpoint)
         // draw line for each neighbor with a basin connection
-        const directions = this.#model.directionBitmap.get(tilePoint)
+        const directions = this.#model.erosionDirectionBitmask.get(tilePoint)
         for(let direction of directions) {
             // map the neighbor axis to a chunk edge point
             const axisModifier = direction.axis.map(coord => {
@@ -116,7 +116,7 @@ export class BasinLayer {
         const meanderPoint = Point.plus(canvasPoint, [midSize, midSize])
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
-        for(let direction of river.directionBitmap) {
+        for(let direction of river.erosionDirectionBitmask) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [

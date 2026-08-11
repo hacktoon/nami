@@ -1,4 +1,5 @@
 import { Direction } from '/src/lib/math/direction'
+import { PointMap } from '/src/lib/math/point/map'
 import { Grid } from '/src/lib/grid'
 
 
@@ -72,6 +73,46 @@ export class DirectionBitMaskGrid {
 
     remove(point, direction) {
         const bitmask = new BitMask(this.#grid.get(point))
+        return bitmask.unset(direction.code)
+    }
+}
+
+
+export class PointDirectionBitMaskMap {
+    // Maps a point to a bitmask code
+    #map
+
+    constructor(rect) {
+        this.#map = new PointMap(rect)
+    }
+
+    get(point) {
+        const dirs = []
+        const code = this.#map.get(point)
+        const bitmask = new BitMask(code)
+        // select flagged directions only
+        for(let direction of Direction.getAll()) {
+            if (bitmask.has(direction.code)) {
+                dirs.push(direction)
+            }
+        }
+        return dirs
+    }
+
+    add(point, direction) {
+        const code = this.#map.get(point)
+        const bitmask = new BitMask(code)
+        bitmask.set(direction.code)
+        this.#map.set(point, bitmask.code)
+    }
+
+    has(point, direction) {
+        const bitmask = new BitMask(this.#map.get(point))
+        return bitmask.has(direction.code)
+    }
+
+    remove(point, direction) {
+        const bitmask = new BitMask(this.#map.get(point))
         return bitmask.unset(direction.code)
     }
 }

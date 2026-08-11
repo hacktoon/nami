@@ -2,7 +2,10 @@ import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/math/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/math/point'
-import { DirectionBitMaskGrid } from '/src/lib/bitmask'
+import {
+    DirectionBitMaskGrid,
+    PointDirectionBitMaskMap
+} from '/src/lib/bitmask'
 
 import { buildRiverModel } from './river'
 import {
@@ -38,11 +41,11 @@ export function buildBasinModel(context) {
     // Initial value 1 is used to determine river stretch
     model.distance = Grid.fromRect(rect, () => INITIAL_DISTANCE)
     // map a point to a basin chunk direction bitmask
-    model.directionBitmap = new DirectionBitMaskGrid(rect)
+    model.erosionDirectionBitmask = new DirectionBitMaskGrid(rect)
     // map a point to a basin chunk corner connections (for diagonals)
     // used to detect erosion/channels passing on neighbor diagonals
     // mark a direction to a river (N, SE, W...) -> id
-    model.erosionRiverMap = new Map()
+    model.riverDirectionMap = new PointDirectionBitMaskMap(rect)
     // init grid of basin base information
     const basins = initBasins(context)
     model.type = buildTypeMap(context, basins)
