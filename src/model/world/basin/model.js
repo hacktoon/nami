@@ -44,12 +44,12 @@ export function buildBasinModel(context) {
     model.erosionDirectionBitmask = new DirectionBitMaskGrid(rect)
     // map a point to a basin chunk corner connections (for diagonals)
     // used to detect erosion/channels passing on neighbor diagonals
-    // mark a direction to a river (N, SE, W...) -> id
-    model.riverDirectionMap = new PointDirectionBitMaskMap(rect)
     // init grid of basin base information
     const basins = initBasins(context)
     model.type = buildTypeMap(context, basins)
     model.basin = buildBasinGrid(context, model, basins)
+    // mark a point to direction bitmask (N, SE, W...) marking as river
+    model.riverDirectionMap = new PointDirectionBitMaskMap(rect)
     // mark chunk paths from river sources
     model.river = buildRiverModel(context, model)
     return model
