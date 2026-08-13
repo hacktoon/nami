@@ -72,8 +72,8 @@ function fillRivers(context, model, riverSources) {
         riverNames.set(index, Random.choiceFrom(HYDRO_NAMES))
         riverLengths.set(index, basinDistance)
         buildRiver(index, args, model, context)
-        // water point that receives river flow
-        // estuaries.add(rect.wrap(nextPoint))
+        // const rp = buildRiverPoints(index, args, model, context)
+        // water point that receives river flow:  rect.wrap(nextPoint)
     })
 }
 
@@ -97,7 +97,6 @@ function buildRiver(riverId, args, model, context) {
         // set river stretch by distance
         stretchMap.set(point, stretch.id)
         riverPoints.push(point)
-        // erosion normalized
         const erosion = Direction.fromId(model.erosion.get(point))
         // set river bitmap with parent (inflow & outflow)
         erosionDirectionBitmask.add(point, erosion)
@@ -115,6 +114,26 @@ function buildRiver(riverId, args, model, context) {
     return riverPoints
 }
 
+
+function buildRiverPoints(riverId, args, model, context) {
+    // start from river source point. Follows the points
+    // according to basin flow and builds a river.
+    const [ sourcePoint, ] = args
+    const { world, rect } = context
+    const riverPoints = []
+    // follow river down following next land points
+    let prevPoint = sourcePoint
+    let nextPoint = sourcePoint
+    const basinMaxDistance = model.distance.get(sourcePoint)
+    while (world.surface.isLand(nextPoint)) {
+        const point = nextPoint
+        const erosion = Direction.fromId(model.erosion.get(point))
+        nextPoint = Point.atDirection(point, erosion)
+        prevPoint = point  // save previous point for mouth detection
+        riverPoints.push(point)
+    }
+    return riverPoints
+}
 
 function buildStretch(distance, maxDistance) {
     if (maxDistance < 2) return RiverStretch.FAST_COURSE
