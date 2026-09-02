@@ -21,70 +21,83 @@ export function buildRiverModel(context, model) {
     const stretchMap = new PointMap(rect)
     const riverLengths = new Map()
     const riverNames = new Map()
-    // const estuaries = new PointSet(rect)
-    const erosionDirectionBitmask = new DirectionBitMaskGrid(rect)
+    const riverDirectionBitmask = new DirectionBitMaskGrid(rect)
     const {riverGrid, riverSources} = initRivers(context, model)
-    fillRivers({
+    // stretch is mapped by  point and direction
+    const ctx = {
         ...context, riverGrid, riverLengths, riverNames,
-        stretchMap, erosionDirectionBitmask
-    }, model, riverSources)
+        stretchMap, riverDirectionBitmask
+    }
+    // in ascendent order to get longest rivers dominant
+    // for starting rivers on basin divides (sources)
+    //.sort((a, b) => a[1] - b[1])
+    // REMOVE  BITMASK, USE  LIST OF COORDINATES FOR RIVER PATHS
+    //
+    riverSources.forEach(([id, sourcePoint]) => {
+        const basinDistance = model.distance.get(sourcePoint)
+        // const rp = buildRiver2(index, sourcePoint, model, context)
+        riverNames.set(id, 'a')
+        riverLengths.set(id, basinDistance)
+        buildRiver(id, sourcePoint, model, ctx)
+        // console.log(rp)
+        // water point that receives river flow:  rect.wrap(nextPoint)
+    })
+
     return {
         riverGrid,
         riverLengths,
         riverNames,
         stretchMap,
-        erosionDirectionBitmask,
+        riverDirectionBitmask,
     }
 }
 
 
 function initRivers(context, model) {
+    // Initialize rivers data
     const { rect, world } = context
     const riverSources = []
-    // discover the river sources while building the river grid
-    const riverGrid = Grid.fromRect(rect, point => {
-        if (world.rain.canCreateRiver(point)) {
-            riverSources.push(point)
+    // discover the river sources while initializing an empty river id grid
+    let id = 0
+    const riverGrid = Grid.fromRect(rect, sourcePoint => {
+        const isDivide = model.erosionDirectionBitmask.get(sourcePoint) == 1
+        if (world.rain.canCreateRiver(sourcePoint)) {
+            riverSources.push([id++, sourcePoint])
         }
         return null
     })
+    // build rivers from their sources
+    for(let [id, sourcePoint] of riverSources) {
+        const points = buildRiverPoints(sourcePoint, model, context)
+        const riverSize = points.length
+        // console.log(id, `${sourcePoint}`, riverSize, points)
+    }
     return { riverGrid, riverSources }
 }
 
 
-function fillRivers(context, model, riverSources) {
-    const { rect, world, riverNames, riverLengths } = context
-    // follow river paths from each source
-    // create a list of pairs: (point, river length)
-    // REEDIT
-    // riverSources deve conter apenas os pontos do rio descendo
-    riverSources.map(point => {
-        const basinDistance = model.distance.get(point)
-        return [point, basinDistance]
-    })
-    .sort((a, b) => {
-        // in ascendent order to get longest rivers dominant
-        // for starting rivers on basin divides (sources)
-        return a[1] - b[1]
-    })
-    .forEach((args, index) => {
-        const [_, basinDistance] = args
-        riverNames.set(index, Random.choiceFrom(HYDRO_NAMES))
-        riverLengths.set(index, basinDistance)
-        buildRiver(index, args, model, context)
-        // const rp = buildRiverPoints(index, args, model, context)
-        // water point that receives river flow:  rect.wrap(nextPoint)
-    })
+function buildRiverPoints(sourcePoint, model, context) {
+    // start from river source point. Follows the points
+    // according to basin flow and builds a river.
+    const { world } = context
+    let nextPoint = sourcePoint
+    const points = []
+    // follow river down following erosion direction
+    while (world.surface.isLand(nextPoint)) {
+        const erosion = Direction.fromId(model.erosion.get(nextPoint))
+        points.push([nextPoint, erosion])
+        nextPoint = Point.atDirection(nextPoint, erosion)
+    }
+    return points
 }
 
 
 // TODO: split this function, calculate points first
-function buildRiver(riverId, args, model, context) {
+function buildRiver(riverId, sourcePoint, model, context) {
     // start from river source point. Follows the points
     // according to basin flow and builds a river.
     const riverPoints = []
-    const [sourcePoint, basinDistance] = args
-    const {world, rect, stretchMap, erosionDirectionBitmask, riverGrid} = context
+    const {world, rect, stretchMap, riverGrid} = context
     let prevPoint = sourcePoint
     let nextPoint = sourcePoint
     // follow river down following next land points
@@ -99,10 +112,10 @@ function buildRiver(riverId, args, model, context) {
         riverPoints.push(point)
         const erosion = Direction.fromId(model.erosion.get(point))
         // set river bitmap with parent (inflow & outflow)
-        erosionDirectionBitmask.add(point, erosion)
+        model.riverDirectionMap.add(point, erosion)
         if (Point.differs(point, prevPoint)) {
             const parentDirection = Point.directionBetween(point, prevPoint)
-            erosionDirectionBitmask.add(point, parentDirection)
+            model.riverDirectionMap.add(point, parentDirection)
         }
         // overwrite previous river id at point
         riverGrid.set(point, riverId)
@@ -115,25 +128,6 @@ function buildRiver(riverId, args, model, context) {
 }
 
 
-function buildRiverPoints(riverId, args, model, context) {
-    // start from river source point. Follows the points
-    // according to basin flow and builds a river.
-    const [ sourcePoint, ] = args
-    const { world, rect } = context
-    const riverPoints = []
-    // follow river down following next land points
-    let prevPoint = sourcePoint
-    let nextPoint = sourcePoint
-    const basinMaxDistance = model.distance.get(sourcePoint)
-    while (world.surface.isLand(nextPoint)) {
-        const point = nextPoint
-        const erosion = Direction.fromId(model.erosion.get(point))
-        nextPoint = Point.atDirection(point, erosion)
-        prevPoint = point  // save previous point for mouth detection
-        riverPoints.push(point)
-    }
-    return riverPoints
-}
 
 function buildStretch(distance, maxDistance) {
     if (maxDistance < 2) return RiverStretch.FAST_COURSE

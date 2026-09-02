@@ -42,7 +42,7 @@ export class BasinLayer {
     getRiver(point) {
         const id = this.#model.river.riverGrid.get(point)
         const stretchId = this.#model.river.stretchMap.get(point)
-        const erosionDirectionBitmask = this.#model.river.erosionDirectionBitmask.get(point)
+        const erosionDirectionBitmask = this.#model.riverDirectionMap.get(point)
         return {
             id,
             erosionDirectionBitmask,
