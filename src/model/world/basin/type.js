@@ -67,16 +67,24 @@ const BASIN_MAP = {
 
 export class RiverStretch {
     static HEADWATERS = Spec.build({
-        name: 'Headwaters', width: .05, color: '#2893c1'
+        name: 'Headwaters',
+        width: 5,
+        color: '#2893c1'
     })
     static FAST_COURSE = Spec.build({
-        name: 'Fast course', width: .1, color: '#2a83af'
+        name: 'Fast course',
+        width: 8,
+        color: '#2a83af'
     })
     static SLOW_COURSE = Spec.build({
-        name: 'Slow course', width: .15, color: '#26749b'
+        name: 'Slow course',
+        width: 10,
+        color: '#26749b'
     })
     static DEPOSITIONAL = Spec.build({
-        name: 'Depositional', width: .2, color: '#216384'
+        name: 'Depositional',
+        width: 13,
+        color: '#216384'
     })
 
     static get(id) {

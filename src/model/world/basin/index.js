@@ -123,7 +123,7 @@ export class BasinLayer {
                 midCanvasPoint[0] + direction.axis[0] * midSize,
                 midCanvasPoint[1] + direction.axis[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, 12, hexColor)
+            canvas.line(edgeMidPoint, meanderPoint, river.stretch.width, hexColor)
         }
     }
 }

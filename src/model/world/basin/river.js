@@ -21,12 +21,11 @@ export function buildRiverModel(context, model) {
     const stretchMap = new PointMap(rect)
     const riverLengths = new Map()
     const riverNames = new Map()
-    const riverDirectionBitmask = new DirectionBitMaskGrid(rect)
     const {riverGrid, riverSources} = initRivers(context, model)
     // stretch is mapped by  point and direction
     const ctx = {
         ...context, riverGrid, riverLengths, riverNames,
-        stretchMap, riverDirectionBitmask
+        stretchMap
     }
     // in ascendent order to get longest rivers dominant
     // for starting rivers on basin divides (sources)
@@ -35,8 +34,8 @@ export function buildRiverModel(context, model) {
     //
     riverSources.forEach(([id, sourcePoint]) => {
         const basinDistance = model.distance.get(sourcePoint)
-        // const rp = buildRiver2(index, sourcePoint, model, context)
-        riverNames.set(id, 'a')
+        // const rp = buildRiver2(index, point, model, context)
+        riverNames.set(id, Random.choice(HYDRO_NAMES))
         riverLengths.set(id, basinDistance)
         buildRiver(id, sourcePoint, model, ctx)
         // console.log(rp)
@@ -48,7 +47,6 @@ export function buildRiverModel(context, model) {
         riverLengths,
         riverNames,
         stretchMap,
-        riverDirectionBitmask,
     }
 }
 
@@ -60,17 +58,17 @@ function initRivers(context, model) {
     // discover the river sources while initializing an empty river id grid
     let id = 0
     const riverGrid = Grid.fromRect(rect, sourcePoint => {
-        const isDivide = model.erosionDirectionBitmask.get(sourcePoint) == 1
-        if (world.rain.canCreateRiver(sourcePoint)) {
+        const isDivide = model.erosionDirectionBitmask.get(sourcePoint).length == 1
+        if (world.rain.canCreateRiver(sourcePoint) && isDivide) {
+            const points = buildRiverPoints(sourcePoint, model, context)
             riverSources.push([id++, sourcePoint])
         }
         return null
     })
     // build rivers from their sources
     for(let [id, sourcePoint] of riverSources) {
-        const points = buildRiverPoints(sourcePoint, model, context)
-        const riverSize = points.length
-        // console.log(id, `${sourcePoint}`, riverSize, points)
+
+
     }
     return { riverGrid, riverSources }
 }
