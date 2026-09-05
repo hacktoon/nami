@@ -54,7 +54,7 @@ export class RiverLayer {
             `directionBitmap=${river.directionBitmap}`,
             `stretch=${river.stretch.name}`,
             `midpoint=${river.midpoint}`,
-            `length=${river.length}`,
+
         ].filter(x=>x).join(' | ')
         return `River(${attrs})`
     }

@@ -27,7 +27,6 @@ export class BasinLayer {
         return {
             id, erosionDirectionBitmask,
             type: Basin.parse(typeId),
-            distance: this.#model.distance.get(point),
             joint: this.#model.joint.get(point),
             erosion: Direction.fromId(directionId),
             isDivide: erosionDirectionBitmask.length === 1,
@@ -46,7 +45,6 @@ export class BasinLayer {
         return {
             id,
             paths,
-            length: this.#model.river.riverLengths.get(id),
             name: this.#model.river.riverNames.get(id),
             stretch: RiverStretch.get(stretchId),
         }
@@ -58,7 +56,6 @@ export class BasinLayer {
             `id=${basin.id}`,
             `type=${basin.type.name}`,
             `erosion=${basin.erosion.name}`,
-            `distance=${basin.distance}`,
             `joint=${basin.joint}`,
             `isDivide=${basin.isDivide}`,
         ].join(',')
@@ -123,7 +120,7 @@ export class BasinLayer {
                 midCanvasPoint[0] + direction.axis[0] * midSize,
                 midCanvasPoint[1] + direction.axis[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, 12, hexColor)
+            canvas.line(edgeMidPoint, meanderPoint, river.stretch.width, hexColor)
         }
     }
 }

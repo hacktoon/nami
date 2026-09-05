@@ -96,4 +96,12 @@ export class Rect {
         if (y < 0) { y = this.height - 1 - Math.abs(y + 1) % this.height }
         return [x, y]
     }
+
+    iterate(callback) {
+        const max = this.area
+        for (let index = 0; index < max; index++) {
+            const point = this.indexToPoint(index)
+            callback(point, index)
+        }
+    }
 }

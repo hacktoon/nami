@@ -1,6 +1,7 @@
 import { Point } from '/src/lib/math/point'
 import { PointSet } from '/src/lib/math/point/set'
 import { Random } from '/src/lib/random'
+import { Rect } from '/src/lib/math/rect'
 import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/math/direction'
 import { HYDRO_NAMES } from '/src/lib/names'
@@ -17,87 +18,75 @@ import { RiverStretch } from './type'
     river gets.
 */
 export function buildRiverModel(context, model) {
-    const { rect } = context
-    const stretchMap = new PointMap(rect)
-    const riverLengths = new Map()
+    const { world, rect } = context
     const riverNames = new Map()
-    const riverDirectionBitmask = new DirectionBitMaskGrid(rect)
-    const {riverGrid, riverSources} = initRivers(context, model)
-    // stretch is mapped by  point and direction
-    const ctx = {
-        ...context, riverGrid, riverLengths, riverNames,
-        stretchMap, riverDirectionBitmask
-    }
-    // in ascendent order to get longest rivers dominant
-    // for starting rivers on basin divides (sources)
-    //.sort((a, b) => a[1] - b[1])
+    const stretchMap = new PointMap(rect)
+    const specs = []
+    // init id grid for later use
+    const riverGrid = Grid.fromRect(rect, _ => null)
+    const riverPaths = buildRiverPaths(model, context)
+    // iterate on grid to get river sources
+
+    // stretch is mapped by point and direction
     // REMOVE  BITMASK, USE  LIST OF COORDINATES FOR RIVER PATHS
-    //
-    riverSources.forEach(([id, sourcePoint]) => {
-        const basinDistance = model.distance.get(sourcePoint)
-        // const rp = buildRiver2(index, sourcePoint, model, context)
-        riverNames.set(id, 'a')
-        riverLengths.set(id, basinDistance)
-        buildRiver(id, sourcePoint, model, ctx)
-        // console.log(rp)
-        // water point that receives river flow:  rect.wrap(nextPoint)
-    })
-
-    return {
-        riverGrid,
-        riverLengths,
-        riverNames,
-        stretchMap,
-        riverDirectionBitmask,
+    for (let [id, points] of specs) {
+        riverNames.set(id, Random.choice(HYDRO_NAMES))
+        buildRiverStretch(id, points, model, {...context, stretchMap})
     }
+    return { riverGrid, riverNames, stretchMap }
 }
 
 
-function initRivers(context, model) {
-    // Initialize rivers data
-    const { rect, world } = context
-    const riverSources = []
-    // discover the river sources while initializing an empty river id grid
-    let id = 0
-    const riverGrid = Grid.fromRect(rect, sourcePoint => {
-        const isDivide = model.erosionDirectionBitmask.get(sourcePoint) == 1
-        if (world.rain.canCreateRiver(sourcePoint)) {
-            riverSources.push([id++, sourcePoint])
+function buildRiverPaths(model, context) {
+    // Start from river source point following the points
+    // according to basin flow.
+    const { world, rect } = context
+    let riverId = 0
+    const paths = []
+    rect.iterate(point => {
+        const isSource = isDivide(point, model) && world.rain.canCreateRiver(point)
+        if (! isSource)
+            return
+        const points = []
+        let nextPoint = point
+        while (world.surface.isLand(nextPoint)) {
+            const erosion = Direction.fromId(model.erosion.get(nextPoint))
+            points.push([nextPoint, erosion])
+            nextPoint = Point.atDirection(nextPoint, erosion)
         }
-        return null
+        paths.push([riverId++, points])
     })
-    // build rivers from their sources
-    for(let [id, sourcePoint] of riverSources) {
-        const points = buildRiverPoints(sourcePoint, model, context)
-        const riverSize = points.length
-        // console.log(id, `${sourcePoint}`, riverSize, points)
-    }
-    return { riverGrid, riverSources }
+    return paths
 }
 
 
-function buildRiverPoints(sourcePoint, model, context) {
-    // start from river source point. Follows the points
-    // according to basin flow and builds a river.
-    const { world } = context
-    let nextPoint = sourcePoint
-    const points = []
-    // follow river down following erosion direction
-    while (world.surface.isLand(nextPoint)) {
-        const erosion = Direction.fromId(model.erosion.get(nextPoint))
-        points.push([nextPoint, erosion])
-        nextPoint = Point.atDirection(nextPoint, erosion)
+function buildRiverStretch(id, points, model, context) {
+    const { stretchMap } = context
+    const riverSize = points.length
+    for (let i = 0; i < points.length; i++) {
+        const [point, erosion] = points[i]
+        if (i == 0) {  // source
+
+        } else if (i == points.length - 1) {  // mouth
+
+        } else {
+            // set river stretch by distance
+            // const stretch = buildStretch(basinDistance, riverSize)
+            // stretchMap.set(source, stretch.id)
+        }
     }
-    return points
 }
+
+function isDivide(sourcePoint, model) {
+    return model.erosionDirectionBitmask.get(sourcePoint).length == 1
+}
+
 
 
 // TODO: split this function, calculate points first
 function buildRiver(riverId, sourcePoint, model, context) {
-    // start from river source point. Follows the points
-    // according to basin flow and builds a river.
-    const riverPoints = []
-    const {world, rect, stretchMap, riverGrid} = context
+    const riverPaths = []
+    const { world, rect, stretchMap, riverGrid } = context
     let prevPoint = sourcePoint
     let nextPoint = sourcePoint
     // follow river down following next land points
@@ -109,7 +98,7 @@ function buildRiver(riverId, sourcePoint, model, context) {
         const stretch = buildStretch(basinDistance, basinMaxDistance)
         // set river stretch by distance
         stretchMap.set(point, stretch.id)
-        riverPoints.push(point)
+        riverPaths.push(point)
         const erosion = Direction.fromId(model.erosion.get(point))
         // set river bitmap with parent (inflow & outflow)
         model.riverDirectionMap.add(point, erosion)
@@ -124,7 +113,7 @@ function buildRiver(riverId, sourcePoint, model, context) {
         // save previous point for mouth detection
         prevPoint = point
     }
-    return riverPoints
+    return riverPaths
 }
 
 

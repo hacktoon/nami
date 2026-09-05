@@ -34,11 +34,11 @@ export function buildCityPoints(context) {
         const river = world.basin.getRiver(point)
         if (world.surface.isBorder(point)) {
             if (isRiver) {
-                if (river.length > 1) {
-                    candidates.primary.add(point)
-                    cityPoints.add(point)
-                }
-                else candidates.secondary.add(point)
+                // if (river.length > 1) {
+                //     candidates.primary.add(point)
+                //     cityPoints.add(point)
+                // }
+                // else candidates.secondary.add(point)
                 // if (Random.chance(CITY_CHANCE)) cityPoints.add(point)
             }
             // TODO: isSeaBorder()
