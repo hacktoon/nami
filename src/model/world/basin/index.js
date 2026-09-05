@@ -42,10 +42,10 @@ export class BasinLayer {
     getRiver(point) {
         const id = this.#model.river.riverGrid.get(point)
         const stretchId = this.#model.river.stretchMap.get(point)
-        const erosionDirectionBitmask = this.#model.riverDirectionMap.get(point)
+        const paths = this.#model.riverDirectionMap.get(point)
         return {
             id,
-            erosionDirectionBitmask,
+            paths,
             length: this.#model.river.riverLengths.get(id),
             name: this.#model.river.riverNames.get(id),
             stretch: RiverStretch.get(stretchId),
@@ -116,7 +116,7 @@ export class BasinLayer {
         const meanderPoint = Point.plus(canvasPoint, [midSize, midSize])
         const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
-        for(let direction of river.erosionDirectionBitmask) {
+        for(let direction of river.paths) {
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
