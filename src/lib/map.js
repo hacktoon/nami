@@ -57,54 +57,60 @@ export class IndexMap {
  * Maps a pair of values to any value
  */
 export class PairMap {
-    #sources
-    #size
+    #map = new Map()
+    #sizeB
 
-    constructor() {
-        this.#size = 0
-        this.#sources = new Map()
+    constructor(sizeB) {
+        if (!Number.isInteger(sizeB) || sizeB <= 0) {
+            throw new RangeError(`Invalid data offset: ${sizeB}`)
+        }
+        this.#sizeB = sizeB
     }
 
     get size() {
-        return this.#size
+        return this.#map.size
     }
 
-    get(source, target) {
-        if (! this.#sources.has(source)) return
-        return this.#sources.get(source).get(target)
+    #key(a, b) {
+        return a * this.#sizeB + b
     }
 
-    set(source, target, value) {
-        if (! this.#sources.has(source)) {
-            this.#sources.set(source, new Map())
-        }
-        const targets = this.#sources.get(source)
-        if (! targets.has(target)) this.#size++
-        targets.set(target, value)
+    get(a, b) {
+        return this.#map.get(this.#key(a, b))
     }
 
-    has(source, target) {
-        if (! this.#sources.has(source)) return false
-        return this.#sources.get(source).has(target)
+    set(a, b, value) {
+        this.#map.set(this.#key(a, b), value)
+        return this
     }
 
-    delete(source, target) {
-        if (! this.has(source, target)) return false
-        const targetMap = this.#sources.get(source)
-        targetMap.delete(target)
-        // delete internal Map if there's no source
-        if (targetMap.size === 0) {
-            this.#sources.delete(source)
-        }
-        this.#size--
-        return true
+    has(a, b) {
+        return this.#map.has(this.#key(a, b))
+    }
+
+    delete(a, b) {
+        return this.#map.delete(this.#key(a, b))
+    }
+
+    clear() {
+        this.#map.clear()
     }
 
     forEach(callback) {
-        this.#sources.forEach((yMap, x) => {
-            yMap.forEach((value, y) => {
-                callback([x, y], value)
-            })
+        const s = this.#sizeB
+        this.#map.forEach((value, key) => {
+            callback(value, Math.floor(key / s), key % s)
         })
+    }
+
+    *entries() {
+        const s = this.#sizeB
+        for (const [key, value] of this.#map) {
+            yield [Math.floor(key / s), key % s, value]
+        }
+    }
+
+    [Symbol.iterator]() {
+        return this.entries()
     }
 }

@@ -188,6 +188,10 @@ export class Direction {
         )
     }
 
+    static equals(d1, d2) {
+        return d1.id == d2.id
+    }
+
     static isCardinal(direction) {
         return [N_ID, E_ID, S_ID, W_ID].includes(direction.id)
     }

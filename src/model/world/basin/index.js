@@ -40,13 +40,13 @@ export class BasinLayer {
 
     getRiver(point) {
         const id = this.#model.river.riverGrid.get(point)
-        const stretchId = this.#model.river.stretchMap.get(point)
-        const paths = this.#model.riverDirectionMap.get(point)
+        const stretchId = this.#model.river.riverStretchMap.get(point)
+        // const paths = this.#model.riverDirectionMap.get(point)
         return {
             id,
-            paths,
+            // paths,
             name: this.#model.river.riverNames.get(id),
-            stretch: RiverStretch.get(stretchId),
+            stretch: RiverStretch.parse(stretchId),
         }
     }
 

@@ -48,8 +48,6 @@ export function buildBasinModel(context) {
     const basins = initBasins(context)
     model.type = buildTypeMap(context, basins)
     model.basin = buildBasinGrid(context, model, basins)
-    // mark a point to direction bitmask (N, SE, W...) marking as river
-    model.riverDirectionMap = new PointDirectionBitMaskMap(rect)
     // mark chunk paths from river sources
     model.river = buildRiverModel(context, model)
     return model

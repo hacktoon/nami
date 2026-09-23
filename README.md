@@ -6,24 +6,9 @@
 
 
 ## ROADMAP
-- basin trimming step to reduce "square" basin sides
-  - take a source from one, pass to neighbor
-  - reduce paths on oceans all neighbors = water
-LAND
-1-3 sources + target
-rio: source -> random walk -> target
-sources to midpoint
-
-- start from route water to land, land to water
-  - if world is border
-    - found water -> switch to water
-- 4-around-corner between land should use region grid to set as land
-- level grid for surface chunk
-  - return a % in getLevel
-- basin erosion path
-  - create two types: mouth, source and body
-  - regenerate river mouth in chunk based on discover instead of midpoint
-- make water ways in basin less connected in hot water areas
+- each tile in basin:
+  - riverMap(PointMap) [tileIndex, flowDir.id] -> river id
+  - stretchMap(PointMap) [tileIndex, flowDir.id] -> river stretch/type
 - set biome as {
     temp > x
     rain > 4

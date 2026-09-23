@@ -1,52 +1,53 @@
 import { Point } from '/src/lib/math/point'
-import { PointSet } from '/src/lib/math/point/set'
+import { PointMap } from '/src/lib/math/point/map'
 import { Random } from '/src/lib/random'
-import { Rect } from '/src/lib/math/rect'
 import { Grid } from '/src/lib/grid'
+import { PairMap } from '/src/lib/map'
 import { Direction } from '/src/lib/math/direction'
 import { HYDRO_NAMES } from '/src/lib/names'
-import { PointMap } from '/src/lib/math/point/map'
-import { DirectionBitMaskGrid } from '/src/lib/bitmask'
+
+import {
+    SourceStretch,
+    TransitionalStretch,
+    DepositionalStretch
+} from './type'
 
 
-import { RiverStretch } from './type'
-
-
-/*
-    The shape fill starts from river sources
-    following the direction and marking how much strong a
-    river gets.
-*/
 export function buildRiverModel(context, model) {
-    const { world, rect } = context
+    const { rect } = context
     const riverNames = new Map()
-    const stretchMap = new PointMap(rect)
-    const specs = []
-    // init id grid for later use
-    const riverGrid = Grid.fromRect(rect, _ => null)
-    const riverPaths = buildRiverPaths(model, context)
     // iterate on grid to get river sources
+    const riverSources = buildRiverSources(model, context)
+    const riverPaths = buildRiverPaths(model, { ...context, riverSources })
+    // init id grid for later use
+    const riverGrid = Grid.fromRect(rect, _ => null)  // TODO: remove
+    const { riverMap, riverStretchMap } = buildRiverStretchMap(riverPaths, model, context)
+    // riverNames.set(id, Random.choice(HYDRO_NAMES))
+    return { riverGrid, riverNames, riverMap, riverStretchMap }
+}
 
-    // stretch is mapped by point and direction
-    // REMOVE  BITMASK, USE  LIST OF COORDINATES FOR RIVER PATHS
-    for (let [id, points] of specs) {
-        riverNames.set(id, Random.choice(HYDRO_NAMES))
-        buildRiverStretch(id, points, model, {...context, stretchMap})
-    }
-    return { riverGrid, riverNames, stretchMap }
+
+function buildRiverSources(model, context) {
+    // Start from river source point following the points
+    // according to basin flow.
+    const { world, rect } = context
+    const sources = []
+    rect.iterate((point, riverId) => {
+        const isDivide = model.erosionDirectionBitmask.get(point).length == 1
+        const isRainy = world.rain.canCreateRiver(point)
+        if (isRainy && isDivide)
+            sources.push([riverId, point])
+    })
+    return sources
 }
 
 
 function buildRiverPaths(model, context) {
     // Start from river source point following the points
-    // according to basin flow.
-    const { world, rect } = context
-    let riverId = 0
+    // according to basin flow, storing point and erosion path.
+    const { world, riverSources } = context
     const paths = []
-    rect.iterate(point => {
-        const isSource = isDivide(point, model) && world.rain.canCreateRiver(point)
-        if (! isSource)
-            return
+    for (let [riverId, point] of riverSources) {
         const points = []
         let nextPoint = point
         while (world.surface.isLand(nextPoint)) {
@@ -54,33 +55,48 @@ function buildRiverPaths(model, context) {
             points.push([nextPoint, erosion])
             nextPoint = Point.atDirection(nextPoint, erosion)
         }
-        paths.push([riverId++, points])
-    })
+        paths.push([riverId, points])
+    }
     return paths
 }
 
 
-function buildRiverStretch(id, points, model, context) {
-    const { stretchMap } = context
+function buildRiverStretchMap(riverPaths, model, context) {
+    const riverMap = new PairMap(Direction.getAll().length)
+    const riverStretchMap = new PairMap(Direction.getAll().length)
+    const ctx = { ...context, riverMap, riverStretchMap }
+    for (let path of riverPaths) {
+        buildRiverStretch(path, model, ctx)
+    }
+    return { riverMap, riverStretchMap }
+}
+
+
+function buildRiverStretch(riverPath, model, context) {
+    const { rect, riverMap, riverStretchMap } = context
+    const [riverId, points] = riverPath
     const riverSize = points.length
-    for (let i = 0; i < points.length; i++) {
-        const [point, erosion] = points[i]
+    let jointLevel = 0  // up to 3 joints
+    for (let i = 0; i < riverSize; i++) {
+        const [point, outflowDirection] = points[i]
         if (i == 0) {  // source
-
-        } else if (i == points.length - 1) {  // mouth
-
-        } else {
+            riverStretchMap.set(point, SourceStretch.id)
+        } else if (i == riverSize - 1) {  // mouth
+            const type = riverSize > 3 ? DepositionalStretch : TransitionalStretch
+            riverStretchMap.set(point, type.id)
+        } else {  // midcourse
+            const parent = points[i - 1]
+            const inflowDirection = Point.directionBetween(point, parent)
+            const type = DepositionalStretch
+            // need to get total inflows to decide if headwaters
+            // more than 1 inflow -> outflow = transitional
+            riverStretchMap.set(point, type.id)
             // set river stretch by distance
             // const stretch = buildStretch(basinDistance, riverSize)
             // stretchMap.set(source, stretch.id)
         }
     }
 }
-
-function isDivide(sourcePoint, model) {
-    return model.erosionDirectionBitmask.get(sourcePoint).length == 1
-}
-
 
 
 // TODO: split this function, calculate points first
@@ -101,10 +117,10 @@ function buildRiver(riverId, sourcePoint, model, context) {
         riverPaths.push(point)
         const erosion = Direction.fromId(model.erosion.get(point))
         // set river bitmap with parent (inflow & outflow)
-        model.riverDirectionMap.add(point, erosion)
+        // model.riverDirectionMap.add(point, erosion)
         if (Point.differs(point, prevPoint)) {
             const parentDirection = Point.directionBetween(point, prevPoint)
-            model.riverDirectionMap.add(point, parentDirection)
+            // model.riverDirectionMap.add(point, parentDirection)
         }
         // overwrite previous river id at point
         riverGrid.set(point, riverId)
@@ -117,12 +133,11 @@ function buildRiver(riverId, sourcePoint, model, context) {
 }
 
 
-
-function buildStretch(distance, maxDistance) {
-    if (maxDistance < 2) return RiverStretch.FAST_COURSE
-    let ratio = (distance / maxDistance).toFixed(1)
-    if (ratio >= .8) return RiverStretch.HEADWATERS
-    if (ratio >= .5) return RiverStretch.FAST_COURSE
-    if (ratio >= .3) return RiverStretch.SLOW_COURSE
-    return RiverStretch.DEPOSITIONAL
-}
+// function buildStretch(distance, maxDistance) {
+//     if (maxDistance < 2) return RiverStretch.FAST_COURSE
+//     let ratio = (distance / maxDistance).toFixed(1)
+//     if (ratio >= .8) return RiverStretch.HEADWATERS
+//     if (ratio >= .5) return RiverStretch.FAST_COURSE
+//     if (ratio >= .3) return RiverStretch.SLOW_COURSE
+//     return RiverStretch.DEPOSITIONAL
+// }

@@ -66,29 +66,38 @@ const BASIN_MAP = {
 
 
 export class RiverStretch {
-    static HEADWATERS = Spec.build({
-        name: 'Headwaters',
-        width: 5,
-        color: '#2893c1'
-    })
-    static FAST_COURSE = Spec.build({
-        name: 'Fast course',
-        width: 8,
-        color: '#2a83af'
-    })
-    static SLOW_COURSE = Spec.build({
-        name: 'Slow course',
-        width: 10,
-        color: '#26749b'
-    })
-    static DEPOSITIONAL = Spec.build({
-        name: 'Depositional',
-        width: 13,
-        color: '#216384'
-    })
-
-    static get(id) {
-        return Spec.get(id)
+    static parse(id) {
+        return STRETCH_MAP[id]
     }
 }
 
+
+export class SourceStretch extends RiverStretch {
+    static id = 0
+    static name = 'River source'
+    static width = 4
+    static color = Color.fromHex('#2893c1')
+}
+
+
+export class TransitionalStretch extends RiverStretch {
+    static id = 1
+    static name = 'River transition'
+    static width = 10
+    static color = Color.fromHex('#26749b')
+}
+
+
+export class DepositionalStretch extends RiverStretch {
+    static id = 2
+    static name = 'River mouth'
+    static width = 13
+    static color = Color.fromHex('#216384')
+}
+
+
+const STRETCH_MAP = {
+    0: SourceStretch,
+    1: TransitionalStretch,
+    2: DepositionalStretch,
+}
