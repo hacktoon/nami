@@ -30,10 +30,9 @@ export function buildCityPoints(context) {
         if (world.surface.isWater(point)) return
         // add land points as candidates to check
         // const isTempHabitable = world.biome.is(point)
-        const isRiver = world.basin.hasRiver(point)
-        const river = world.basin.getRiver(point)
+        const rivers = world.basin.getRivers(point)
         if (world.surface.isBorder(point)) {
-            if (isRiver) {
+            if (rivers.length > 0) {
                 // if (river.length > 1) {
                 //     candidates.primary.add(point)
                 //     cityPoints.add(point)
@@ -43,7 +42,7 @@ export function buildCityPoints(context) {
             }
             // TODO: isSeaBorder()
         } else {
-            if (isRiver) {
+            if (rivers.length > 0) {
                 candidates.secondary.add(point)
                 // if (Random.chance(CITY_CHANCE)) cityPoints.add(point)
             } else {

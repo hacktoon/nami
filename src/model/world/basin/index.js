@@ -10,7 +10,7 @@ export class BasinLayer {
     #model
 
     constructor(context) {
-        const {chunkRect} = context
+        const { chunkRect } = context
         this.#chunkRect = chunkRect
         this.#model = buildBasinModel(context)
     }
@@ -33,21 +33,19 @@ export class BasinLayer {
         }
     }
 
-    hasRiver(point) {
-        // console.log(this.#model.river.riverGrid.get(point))
-        return this.#model.river.riverGrid.get(point) !== null
-    }
-
-    getRiver(point) {
-        const id = this.#model.river.riverGrid.get(point)
-        const stretchId = this.#model.river.riverStretchMap.get(point)
-        // const paths = this.#model.riverDirectionMap.get(point)
-        return {
-            id,
-            // paths,
-            name: this.#model.river.riverNames.get(id),
-            stretch: RiverStretch.parse(stretchId),
+    getRivers(point) {
+        const { riverMap } = this.#model.river
+        const rivers = []
+        const directions = this.#model.erosionDirectionBitmask.get(point)
+        for (let direction of directions) {
+            if (riverMap.has(point, direction)) {
+                const id = riverMap.get(point, direction)
+                const stretchId = 1  //this.#model.river.riverStretchMap.get(point)
+                const stretch = RiverStretch.parse(stretchId)
+                rivers.push({ id, direction, stretch })
+            }
         }
+        return rivers
     }
 
     getText(point) {
@@ -59,11 +57,12 @@ export class BasinLayer {
             `joint=${basin.joint}`,
             `isDivide=${basin.isDivide}`,
         ].join(',')
-        return `Basin(${attrs})`
+        const d = this.getRivers(point).map(r => `${r.id}|${r.dir.name}| ${r.stretch.name}`)
+        return `Basin(${attrs}) ${d.join(', ')}`
     }
 
     draw(props, params) {
-        const {canvas, canvasPoint, tileSize, tilePoint} = props
+        const { canvas, canvasPoint, tileSize, tilePoint } = props
         const basin = this.get(tilePoint)
         const color = basin.type.color
         canvas.rect(canvasPoint, tileSize, color.toHex())
@@ -79,7 +78,7 @@ export class BasinLayer {
     }
 
     #drawErosionPath(props, basin) {
-        const {canvasPoint, tilePoint, tileSize} = props
+        const { canvasPoint, tilePoint, tileSize } = props
         const color = basin.type.color.darken(20).toHex()
         const lineWidth = Math.round(props.tileSize / 12)
         const chunkSize = this.#chunkRect.width
@@ -90,7 +89,7 @@ export class BasinLayer {
         const midPoint = Point.plus(canvasPoint, canvasMidpoint)
         // draw line for each neighbor with a basin connection
         const directions = this.#model.erosionDirectionBitmask.get(tilePoint)
-        for(let direction of directions) {
+        for (let direction of directions) {
             // map the neighbor axis to a chunk edge point
             const axisModifier = direction.axis.map(coord => {
                 if (coord < 0) return 0
@@ -103,24 +102,24 @@ export class BasinLayer {
     }
 
     drawRivers(props, params) {
-        const {canvas, canvasPoint, tileSize, tilePoint } = props
-        if (! this.hasRiver(tilePoint)) {
+        const { canvas, canvasPoint, tileSize, tilePoint } = props
+        const rivers = this.getRivers(tilePoint)
+        if (rivers.length == 0) {
             return
         }
-        const river = this.getRiver(tilePoint)
         const midSize = Math.round(tileSize / 2)
         const midCanvasPoint = Point.plusScalar(canvasPoint, midSize)
         const meanderPoint = Point.plus(canvasPoint, [midSize, midSize])
-        const hexColor = river.stretch.color.toHex()
         // for each neighbor with a river connection
-        for(let direction of river.paths) {
+        for (let { direction, stretch} of rivers) {
+            const hexColor = stretch.color.toHex()
             // build a point for each flow that points to this point
             // create a midpoint at tile's square side
             const edgeMidPoint = [
                 midCanvasPoint[0] + direction.axis[0] * midSize,
                 midCanvasPoint[1] + direction.axis[1] * midSize
             ]
-            canvas.line(edgeMidPoint, meanderPoint, river.stretch.width, hexColor)
+            canvas.line(edgeMidPoint, meanderPoint, stretch.width, hexColor)
         }
     }
 }

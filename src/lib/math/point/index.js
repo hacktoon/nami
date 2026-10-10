@@ -139,6 +139,7 @@ export class Point {
         if (tx == sx - 1 && ty == sy - 1) return Direction.NORTHWEST
         if (tx == sx + 1 && ty == sy + 1) return Direction.SOUTHEAST
         if (tx == sx - 1 && ty == sy + 1) return Direction.SOUTHWEST
+        return Direction.CENTER
     }
 
     static atNorth(p) { return [p[0], p[1] - 1] }
