@@ -1,3 +1,4 @@
+import { clamp } from '/src/lib/function'
 import { Color } from '/src/lib/color'
 
 
@@ -49,8 +50,10 @@ const BASIN_MAP = {
 
 
 export class Stretch {
-    static parse(id) {
-        return STRETCH_MAP[id]
+    static parse(stretchId) {
+        const ids = Array.from(STRETCH_MAP.keys())
+        const id = clamp(stretchId, ids[0], ids.at(-1))
+        return STRETCH_MAP.get(id)
     }
 }
 
@@ -91,10 +94,10 @@ export class DepositionalStretch extends Stretch {
 }
 
 
-const STRETCH_MAP = {
-    1: HeadwaterStretch,
-    2: TorrentStretch,
-    3: RiffleStretch,
-    4: MeanderStretch,
-    5: DepositionalStretch,
-}
+const STRETCH_MAP = new Map([
+    [1, HeadwaterStretch],
+    [2, TorrentStretch],
+    [3, RiffleStretch],
+    [4, MeanderStretch],
+    [5, DepositionalStretch],
+])

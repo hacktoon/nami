@@ -1,5 +1,4 @@
 import { Point } from '/src/lib/math/point'
-import { clamp } from '/src/lib/function'
 import { Direction } from '/src/lib/math/direction'
 import { Random } from '/src/lib/random'
 import { HYDRO_NAMES } from '/src/lib/names'
@@ -9,7 +8,8 @@ import {
     TorrentStretch,
     RiffleStretch,
     MeanderStretch,
-    DepositionalStretch
+    DepositionalStretch,
+    Stretch
 } from './type'
 
 
