@@ -1,6 +1,5 @@
 import { Point } from '/src/lib/math/point'
-import { Grid } from '/src/lib/grid'
-import { PairMap } from '/src/lib/map'
+import { clamp } from '/src/lib/function'
 import { Direction } from '/src/lib/math/direction'
 import { Random } from '/src/lib/random'
 import { HYDRO_NAMES } from '/src/lib/names'
@@ -15,10 +14,6 @@ import {
 
 
 export function buildRiverModel(context, model) {
-    const { rect } = context
-    // iterate on grid to get river sources
-    // TODO: remove
-    const riverGrid = Grid.fromRect(rect, _ => null)
     const riverNames = new Map()
     const sources = buildRiverSources(model, context)
     const pointMap = buildPointMap(sources, model, context)
@@ -26,7 +21,7 @@ export function buildRiverModel(context, model) {
     const riverMap = buildRiverMap(pointMap, context)
     const riverStretchMap = buildStretchMap(pointMap, model, { ...context, riverMap })
     // riverNames.set(id, Random.choice(HYDRO_NAMES))
-    return { riverGrid, riverNames, riverMap, riverStretchMap }
+    return { riverNames, riverMap, riverStretchMap }
 }
 
 
@@ -96,14 +91,20 @@ function buildRiverMap(pointMap, context) {
 
 
 function buildStretchMap(pointMap, model, context) {
+    /*
+    The Strahler stream order algorithm classifies the hierarchical size and branching structure of streams and rivers within a drainage basin
+    */
     const { rect } = context
     const stretchMap = new DirectionPairMap(rect)
-    pointMap.forEach((riverPoints, _) => {
-        let stretchId = HeadwaterStretch.id
+    pointMap.forEach((riverPoints, riverId) => {
+        let stretchId = HeadwaterStretch.id  // initial value
         for (let [point, flow] of riverPoints) {
+            let currentStretchId = stretchMap.get(point, flow)
             if (stretchMap.has(point, flow)) {
-                let currentStretchId = stretchMap.get(point, flow)
-                stretchId += stretchId >= currentStretchId ? 1 : 0
+                if (stretchId < currentStretchId ) break
+                if (stretchId == currentStretchId ) {
+                    stretchId += 1
+                }
             }
             stretchMap.set(point, flow, stretchId)
         }

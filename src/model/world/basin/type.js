@@ -48,47 +48,46 @@ const BASIN_MAP = {
 }
 
 
-export class StretchType {
+export class Stretch {
     static parse(id) {
         return STRETCH_MAP[id]
     }
-
-    static merge(stretch0, stretch1) {
-        if (stretch0.id == HeadwaterStretch.id) {
-
-        }
-    }
 }
 
 
-export class HeadwaterStretch extends StretchType {
+export class HeadwaterStretch extends Stretch {
     static id = 1
     static name = 'Headwater'
-    static color = Color.fromHex('#3fa5d1')
+    static width = 4
+    static color = Color.fromHex('#2893c1')
 }
 
-export class TorrentStretch extends StretchType {
+export class TorrentStretch extends Stretch {
     static id = 2
     static name = 'Torrent'
-    static color = Color.fromHex('#2893c1')
+    static width = 7
+    static color = Color.fromHex('#2086b2')
 }
 
-export class RiffleStretch extends StretchType {
+export class RiffleStretch extends Stretch {
     static id = 3
     static name = 'Riffle'
-    static color = Color.fromHex('#2893c1')
+    static width = 10
+    static color = Color.fromHex('#16749c')
 }
 
-export class MeanderStretch extends StretchType {
+export class MeanderStretch extends Stretch {
     static id = 4
     static name = 'Meander'
-    static color = Color.fromHex('#26749b')
+    static width = 12
+    static color = Color.fromHex('#0e668b')
 }
 
-export class DepositionalStretch extends StretchType {
+export class DepositionalStretch extends Stretch {
     static id = 5
     static name = 'Depositional'
-    static color = Color.fromHex('#216384')
+    static width = 14
+    static color = Color.fromHex('#055273')
 }
 
 

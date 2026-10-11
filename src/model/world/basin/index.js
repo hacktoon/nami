@@ -2,7 +2,7 @@ import { Point } from '/src/lib/math/point'
 import { Direction } from '/src/lib/math/direction'
 
 import { buildBasinModel } from './model'
-import { Basin, StretchType } from './type'
+import { Basin, Stretch } from './type'
 
 
 export class BasinLayer {
@@ -34,14 +34,14 @@ export class BasinLayer {
     }
 
     getRivers(point) {
-        const { riverMap } = this.#model.river
+        const { riverMap, riverStretchMap } = this.#model.river
         const rivers = []
         const directions = this.#model.erosionDirectionBitmask.get(point)
         for (let direction of directions) {
             if (riverMap.has(point, direction)) {
                 const id = riverMap.get(point, direction)
-                const stretchId = 1  //this.#model.river.riverStretchMap.get(point)
-                const stretch = StretchType.parse(stretchId)
+                const stretchId = riverStretchMap.get(point, direction)
+                const stretch = Stretch.parse(stretchId)
                 rivers.push({ id, direction, stretch })
             }
         }
@@ -57,8 +57,8 @@ export class BasinLayer {
             `joint=${basin.joint}`,
             `isDivide=${basin.isDivide}`,
         ].join(',')
-        const d = this.getRivers(point).map(r => `${r.id}|${r.dir.name}| ${r.stretch.name}`)
-        return `Basin(${attrs}) ${d.join(', ')}`
+        const d = this.getRivers(point).map(r => `(${r.id}|${r.direction.name}|${r.stretch.name})`)
+        return `Basin(${attrs})\nRivers(${d.join(', ')})`
     }
 
     draw(props, params) {
@@ -79,7 +79,7 @@ export class BasinLayer {
 
     #drawErosionPath(props, basin) {
         const { canvasPoint, tilePoint, tileSize } = props
-        const color = basin.type.color.darken(20).toHex()
+        const color = basin.type.color.darken(10).toHex()
         const lineWidth = Math.round(props.tileSize / 12)
         const chunkSize = this.#chunkRect.width
         // calc midpoint point on canvas
