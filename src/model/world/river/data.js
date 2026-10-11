@@ -18,7 +18,7 @@ class Spec {
 }
 
 
-export class RiverStretch {
+export class StretchType {
     static HEADWATERS = Spec.build({
         name: 'Headwaters', width: .05, color: '#2893c1'
     })

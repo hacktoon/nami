@@ -1,7 +1,7 @@
 import { Point } from '/src/lib/math/point'
 
 import { buildRiverModel } from './model'
-import { RiverStretch } from './data'
+import { StretchType } from './data'
 
 
 export class RiverLayer {
@@ -32,7 +32,7 @@ export class RiverLayer {
             length: this.#model.riverLengths.get(id),
             name: this.#model.riverNames.get(id),
             midpoint: this.#chunkRect.indexToPoint(midpointIndex),
-            stretch: RiverStretch.get(stretchId),
+            stretch: StretchType.get(stretchId),
         }
     }
 

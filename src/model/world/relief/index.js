@@ -1,7 +1,7 @@
 import { Grid } from '/src/lib/grid'
 
 import { Relief } from './data'
-import { RiverStretch } from '../river/data'
+import { StretchType } from '../river/data'
 import { SeaSurface } from '../surface/type'
 
 
@@ -53,8 +53,8 @@ export class ReliefLayer {
             if (grainedNoise < HILL_RATIO) return Relief.HILL
             return Relief.PLAIN
         }
-        const isHeadWaters = world.river.is(point, RiverStretch.HEADWATERS)
-        const isFastCourse = world.river.is(point, RiverStretch.FAST_COURSE)
+        const isHeadWaters = world.river.is(point, StretchType.HEADWATERS)
+        const isFastCourse = world.river.is(point, StretchType.FAST_COURSE)
         // Set type according to river stretch.
         // Headwaters and fast courses will appear on hills
         if (isFastCourse || isHeadWaters) return Relief.HILL

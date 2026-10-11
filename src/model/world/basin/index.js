@@ -2,7 +2,7 @@ import { Point } from '/src/lib/math/point'
 import { Direction } from '/src/lib/math/direction'
 
 import { buildBasinModel } from './model'
-import { Basin, RiverStretch } from './type'
+import { Basin, StretchType } from './type'
 
 
 export class BasinLayer {
@@ -41,7 +41,7 @@ export class BasinLayer {
             if (riverMap.has(point, direction)) {
                 const id = riverMap.get(point, direction)
                 const stretchId = 1  //this.#model.river.riverStretchMap.get(point)
-                const stretch = RiverStretch.parse(stretchId)
+                const stretch = StretchType.parse(stretchId)
                 rivers.push({ id, direction, stretch })
             }
         }

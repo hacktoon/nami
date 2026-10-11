@@ -7,7 +7,7 @@ import { HYDRO_NAMES } from '/src/lib/names'
 import { PointMap } from '/src/lib/math/point/map'
 import { DirectionBitMaskGrid } from '/src/lib/bitmask'
 
-import { RiverStretch } from './data'
+import { StretchType } from './data'
 
 
 const EMPTY = null
@@ -117,10 +117,10 @@ function buildRiver(context, sourcePoint, distance, riverId) {
 
 
 function buildStretch(distance, maxDistance) {
-    if (maxDistance < 2) return RiverStretch.FAST_COURSE
+    if (maxDistance < 2) return StretchType.FAST_COURSE
     let ratio = (distance / maxDistance).toFixed(1)
-    if (ratio >= .8) return RiverStretch.HEADWATERS
-    if (ratio >= .5) return RiverStretch.FAST_COURSE
-    if (ratio >= .3) return RiverStretch.SLOW_COURSE
-    return RiverStretch.DEPOSITIONAL
+    if (ratio >= .8) return StretchType.HEADWATERS
+    if (ratio >= .5) return StretchType.FAST_COURSE
+    if (ratio >= .3) return StretchType.SLOW_COURSE
+    return StretchType.DEPOSITIONAL
 }

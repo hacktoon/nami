@@ -19,7 +19,7 @@ import {
     EndorheicLakeBasin,
     ExorheicBasin,
     OceanBasin,
-    RiverStretch,
+    StretchType,
 } from './type'
 
 

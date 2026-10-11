@@ -6,8 +6,10 @@ import { Random } from '/src/lib/random'
 import { HYDRO_NAMES } from '/src/lib/names'
 
 import {
-    SourceStretch,
-    TransitionalStretch,
+    HeadwaterStretch,
+    TorrentStretch,
+    RiffleStretch,
+    MeanderStretch,
     DepositionalStretch
 } from './type'
 
@@ -94,39 +96,23 @@ function buildRiverMap(pointMap, context) {
 
 
 function buildStretchMap(pointMap, model, context) {
-    const { rect, riverMap } = context
+    const { rect } = context
     const stretchMap = new DirectionPairMap(rect)
-    // let currentStretch = SourceStretch.id
-    // riverPaths.forEach((riverPoints, riverId) => {
-    //     const riverSize = riverPoints.length
-    //     for (let i = 0; i < riverSize; i++) {
-    //         const [point, flow] = riverPoints[i]
-    //         let flowStretch = stretchMap.get(flow) ?? SourceStretch.id
-    //         let type = SourceStretch
-    //         // console.log(riverId, point, inflow.name, outflow.name)
-    //         if (inflowRiverId === EMPTY) {  // no river yet
-    //             riverMap.set(...inflowKey, riverId)
-    //         } else {
-
-    //         }
-    //         if (outflowRiverId == EMPTY) {  // no river yet
-    //             riverMap.set(...outflowKey, riverId)
-    //         }
-    //         type = DepositionalStretch
-
-    //         stretchMap.set(...inflowKey, type.id)
-    //         riverMap.set(...inflowKey, riverId)
-
-    //         // set the outflow
-    //         stretchMap.set(...outflowKey, type.id)
-
-    //     }
-    // })
+    pointMap.forEach((riverPoints, _) => {
+        let stretchId = HeadwaterStretch.id
+        for (let [point, flow] of riverPoints) {
+            if (stretchMap.has(point, flow)) {
+                let currentStretchId = stretchMap.get(point, flow)
+                stretchId += stretchId >= currentStretchId ? 1 : 0
+            }
+            stretchMap.set(point, flow, stretchId)
+        }
+    })
     return stretchMap
 }
 
 
-export class DirectionPairMap {
+class DirectionPairMap {
     #map = new Map()
     #dataOffset
     #rect
