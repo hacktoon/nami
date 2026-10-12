@@ -26,12 +26,12 @@ import { CivilChunk } from '/src/model/world/civil/chunk'
 import { WorldTileMapDiagram } from './diagram'
 
 
-const WORLD_SIZE = 40
+const WORLD_SIZE = 64
 
 const SCHEMA = new Schema(
     'WorldTileMap',
-    Type.number('size', 'Size', { default: WORLD_SIZE, min: 30, max: 50 }),
-    Type.number('chunk', 'Chunk', {step: 2, default: 13, min: 7, max: 19}),
+    Type.number('size', 'Size', { default: WORLD_SIZE, min: 30, max: 64 }),
+    Type.number('chunk', 'Chunk', {step: 2, default: 11, min: 7, max: 19}),
     Type.text('seed', 'Seed', { default: '' }),
     Type.number('realms', 'Realms', { default: 8, min: 3, max: 8 }),
 )

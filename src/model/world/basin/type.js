@@ -61,36 +61,36 @@ export class Stretch {
 export class HeadwaterStretch extends Stretch {
     static id = 1
     static name = 'Headwater'
-    static width = 4
+    static width = 3
     static color = Color.fromHex('#2893c1')
 }
 
 export class TorrentStretch extends Stretch {
     static id = 2
     static name = 'Torrent'
-    static width = 7
+    static width = 8
     static color = Color.fromHex('#2086b2')
 }
 
 export class RiffleStretch extends Stretch {
     static id = 3
     static name = 'Riffle'
-    static width = 10
+    static width = 13
     static color = Color.fromHex('#16749c')
 }
 
 export class MeanderStretch extends Stretch {
     static id = 4
     static name = 'Meander'
-    static width = 12
-    static color = Color.fromHex('#0e668b')
+    static width = 16
+    static color = Color.fromHex('#12758b')
 }
 
 export class DepositionalStretch extends Stretch {
     static id = 5
     static name = 'Depositional'
-    static width = 14
-    static color = Color.fromHex('#055273')
+    static width = 23
+    static color = Color.fromHex('#345671')
 }
 
 

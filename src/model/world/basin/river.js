@@ -92,19 +92,20 @@ function buildRiverMap(pointMap, context) {
 
 function buildStretchMap(pointMap, model, context) {
     /*
-    The Strahler stream order algorithm classifies the hierarchical size and branching structure of streams and rivers within a drainage basin
+    The Strahler stream order algorithm classifies the hierarchical size
+    and branching structure of streams and rivers within a drainage basin
     */
     const { rect } = context
     const stretchMap = new DirectionPairMap(rect)
     pointMap.forEach((riverPoints, riverId) => {
         let stretchId = HeadwaterStretch.id  // initial value
         for (let [point, flow] of riverPoints) {
-            let currentStretchId = stretchMap.get(point, flow)
-            if (stretchMap.has(point, flow)) {
-                if (stretchId < currentStretchId ) break
-                if (stretchId == currentStretchId ) {
+            if (stretchMap.has(point, flow)) {  // maybe ovewrite if already present
+                const currentStretchId = stretchMap.get(point, flow)
+                if (stretchId < currentStretchId )
+                    break  // stop loop if current stretch is higher
+                if (stretchId == currentStretchId ) // same stretch, level up current
                     stretchId += 1
-                }
             }
             stretchMap.set(point, flow, stretchId)
         }
