@@ -44,15 +44,15 @@ export class ReliefLayer {
     #detectLandType(world, point) {
         const grainedNoise = world.noise.get4DGrained(this.rect, point)
         const basin = world.basin.get(point)
-        if (basin.isDivide) {
-            if (grainedNoise >= MOUNTAIN_RATIO) return Relief.MOUNTAIN
-            if (grainedNoise < HILL_RATIO) return Relief.HILL
-            return Relief.PLAIN
-        }
-        if (! world.river.has(point)) {
-            if (grainedNoise < HILL_RATIO) return Relief.HILL
-            return Relief.PLAIN
-        }
+        // if (basin.isDivide) {
+        //     if (grainedNoise >= MOUNTAIN_RATIO) return Relief.MOUNTAIN
+        //     if (grainedNoise < HILL_RATIO) return Relief.HILL
+        //     return Relief.PLAIN
+        // }
+        // if (! world.river.has(point)) {
+        //     if (grainedNoise < HILL_RATIO) return Relief.HILL
+        //     return Relief.PLAIN
+        // }
         const isHeadWaters = world.river.is(point, StretchType.HEADWATERS)
         const isFastCourse = world.river.is(point, StretchType.FAST_COURSE)
         // Set type according to river stretch.

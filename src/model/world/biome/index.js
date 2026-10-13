@@ -121,6 +121,6 @@ export class BiomeLayer {
         const {world, canvas, canvasPoint, tileSize, tilePoint} = props
         let color = this.get(tilePoint).color
         canvas.rect(canvasPoint, tileSize, color.toHex())
-
+        world.basin.drawRivers(props, params)
     }
 }

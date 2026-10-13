@@ -3,29 +3,10 @@ import { Direction } from '/src/lib/math/direction'
 import { Random } from '/src/lib/random'
 import { HYDRO_NAMES } from '/src/lib/names'
 
-import {
-    HeadwaterStretch,
-    TorrentStretch,
-    RiffleStretch,
-    MeanderStretch,
-    DepositionalStretch,
-    Stretch
-} from './type'
+import { HeadwaterStretch } from './type'
 
 
-export function buildRiverModel(context, model) {
-    const riverNames = new Map()
-    const sources = buildRiverSources(model, context)
-    const pointMap = buildPointMap(sources, model, context)
-    // init id grid for later use
-    const riverMap = buildRiverMap(pointMap, context)
-    const riverStretchMap = buildStretchMap(pointMap, model, { ...context, riverMap })
-    // riverNames.set(id, Random.choice(HYDRO_NAMES))
-    return { riverNames, riverMap, riverStretchMap }
-}
-
-
-function buildRiverSources(model, context) {
+export function buildRiverSources(model, context) {
     // Start from river source point following the points
     // according to basin flow.
     const { world, rect } = context
@@ -40,7 +21,19 @@ function buildRiverSources(model, context) {
 }
 
 
-function buildPointMap(sources, model, context) {
+export function buildNameMap(sources) {
+    // Start from river source point following the points
+    // according to basin flow, storing point and erosion path.
+    const nameMap = new Map()
+    for (let [riverId, _] of sources) {
+        const name = Random.choiceFrom(HYDRO_NAMES)
+        nameMap.set(riverId, name)
+    }
+    return nameMap
+}
+
+
+export function buildPointMap(sources, model, context) {
     // Start from river source point following the points
     // according to basin flow, storing point and erosion path.
     const { world } = context
@@ -69,7 +62,7 @@ function buildPointMap(sources, model, context) {
 }
 
 
-function buildRiverMap(pointMap, context) {
+export function buildRiverMap(pointMap, context) {
     const { rect } = context
     const riverMap = new DirectionPairMap(rect)
     pointMap.forEach((riverPoints, candidateRiverId) => {
@@ -90,7 +83,7 @@ function buildRiverMap(pointMap, context) {
 }
 
 
-function buildStretchMap(pointMap, model, context) {
+export function buildStretchMap(pointMap, model, context) {
     /*
     The Strahler stream order algorithm classifies the hierarchical size
     and branching structure of streams and rivers within a drainage basin
@@ -102,9 +95,9 @@ function buildStretchMap(pointMap, model, context) {
         for (let [point, flow] of riverPoints) {
             if (stretchMap.has(point, flow)) {  // maybe ovewrite if already present
                 const currentStretchId = stretchMap.get(point, flow)
-                if (stretchId < currentStretchId )
+                if (stretchId < currentStretchId)
                     break  // stop loop if current stretch is higher
-                if (stretchId == currentStretchId ) // same stretch, level up current
+                if (stretchId == currentStretchId) // same stretch, level up current
                     stretchId += 1
             }
             stretchMap.set(point, flow, stretchId)

@@ -42,10 +42,10 @@ export class OceanBasin extends Basin {
 
 
 const BASIN_MAP = {
-    0: ExorheicBasin,
-    1: EndorheicSeaBasin,
-    2: EndorheicLakeBasin,
-    3: OceanBasin
+    [ExorheicBasin.id]: ExorheicBasin,
+    [EndorheicSeaBasin.id]: EndorheicSeaBasin,
+    [EndorheicLakeBasin.id]: EndorheicLakeBasin,
+    [OceanBasin.id]: OceanBasin
 }
 
 
@@ -65,12 +65,14 @@ export class HeadwaterStretch extends Stretch {
     static color = Color.fromHex('#2893c1')
 }
 
+
 export class TorrentStretch extends Stretch {
     static id = 2
     static name = 'Torrent'
     static width = 8
     static color = Color.fromHex('#2086b2')
 }
+
 
 export class RiffleStretch extends Stretch {
     static id = 3
@@ -79,6 +81,7 @@ export class RiffleStretch extends Stretch {
     static color = Color.fromHex('#16749c')
 }
 
+
 export class MeanderStretch extends Stretch {
     static id = 4
     static name = 'Meander'
@@ -86,18 +89,19 @@ export class MeanderStretch extends Stretch {
     static color = Color.fromHex('#12758b')
 }
 
+
 export class DepositionalStretch extends Stretch {
     static id = 5
     static name = 'Depositional'
-    static width = 23
+    static width = 20
     static color = Color.fromHex('#345671')
 }
 
 
 const STRETCH_MAP = new Map([
-    [1, HeadwaterStretch],
-    [2, TorrentStretch],
-    [3, RiffleStretch],
-    [4, MeanderStretch],
-    [5, DepositionalStretch],
+    [HeadwaterStretch.id, HeadwaterStretch],
+    [TorrentStretch.id, TorrentStretch],
+    [RiffleStretch.id, RiffleStretch],
+    [MeanderStretch.id, MeanderStretch],
+    [DepositionalStretch.id, DepositionalStretch],
 ])

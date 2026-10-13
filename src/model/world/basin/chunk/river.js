@@ -8,8 +8,6 @@ import { Direction } from '/src/lib/math/direction'
 import { Grid } from '/src/lib/grid'
 
 
-const MEANDER = 2
-
 export const TYPE_RIVER = 1
 export const TYPE_RIVER_SIDE = 2
 export const TYPE_OTHER = 3

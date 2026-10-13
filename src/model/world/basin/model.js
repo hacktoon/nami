@@ -2,30 +2,28 @@ import { Grid } from '/src/lib/grid'
 import { Direction } from '/src/lib/math/direction'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/math/point'
-import {
-    DirectionBitMaskGrid,
-    PointDirectionBitMaskMap
-} from '/src/lib/bitmask'
+import { DirectionBitMaskGrid } from '/src/lib/bitmask'
 
-import { buildRiverModel } from './river'
+import {
+    buildRiverSources,
+    buildNameMap,
+    buildPointMap,
+    buildRiverMap,
+    buildStretchMap,
+} from './river'
 import {
     LandBasinFill,
     WaterBasinFill
 } from './fill'
-
 import {
-    Basin,
     EndorheicSeaBasin,
     EndorheicLakeBasin,
     ExorheicBasin,
     OceanBasin,
-    StretchType,
 } from './type'
 
 
 const NO_BASIN_ID = null
-const FILL_CHANCE = .2
-const FILL_GROWTH = 3
 const INITIAL_DISTANCE = 1
 
 
@@ -48,8 +46,13 @@ export function buildBasinModel(context) {
     const basins = initBasins(context)
     model.type = buildTypeMap(context, basins)
     model.basin = buildBasinGrid(context, model, basins)
-    // mark chunk paths from river sources
-    model.river = buildRiverModel(context, model)
+    const riverSources = buildRiverSources(model, context)
+    const pointMap = buildPointMap(riverSources, model, context)
+    // init id grid for later use
+    const riverMap = buildRiverMap(pointMap, context)
+    model.riverNames = buildNameMap(riverSources)
+    model.riverStretchMap = buildStretchMap(pointMap, model, { ...context, riverMap })
+    model.riverMap = riverMap
     return model
 }
 
