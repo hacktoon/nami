@@ -5,8 +5,8 @@ import { Direction } from '/src/lib/math/direction'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
-import { buildRegionModel } from './region'
 import { buildErosionGatePoints, buildErosionMask } from './route'
+import { buildRegionModel } from './region'
 
 
 export const TYPE_LAND = 1
@@ -19,10 +19,10 @@ export const TYPE_CHANNEL_SIDE = 6
 
 export function buildModel(baseContext) {
     const gates = buildErosionGatePoints(baseContext)
-    const landBorders = buildLandBorders(baseContext)
     const erosionPoints = buildErosionMask(gates, baseContext)
+    // const landBorders = buildLandBorders(baseContext)
     // const cornerMargins = buildCornerMargins(baseContext)
-    const typeGrid = buildTypeGrid(landBorders, baseContext)
+    const typeGrid = buildTypeGrid(baseContext)
     return {
         type: typeGrid,
         erosion: erosionPoints,
@@ -39,13 +39,12 @@ function buildLandBorders(context) {
     const landBorderPoints = new PointSet(chunkRect)
     Grid.fromRect(chunkRect, chunkPoint => {
         // will read only land points
-        if (chunk.surface.isLand(chunkPoint)) {
-            for (let sidePoint of Point.adjacents(chunkPoint)) {
-                // check for any water neighbors
-                if (! chunk.surface.isLand(sidePoint)) {
-                    landBorderPoints.add(sidePoint)
-                    return
-                }
+        if (chunk.surface.isWater(chunkPoint)) return
+        for (let sidePoint of Point.adjacents(chunkPoint)) {
+            // check for any water neighbors
+            if (! chunk.surface.isLand(sidePoint)) {
+                landBorderPoints.add(sidePoint)
+                return
             }
         }
     })
@@ -88,7 +87,7 @@ function buildErosionPath(gates, erosionPoints, context) {
 }
 
 
-function buildTypeGrid(landBorders, context) {
+function buildTypeGrid(context) {
     // Add channel/river margins to some chunk corner points
     const { world, worldPoint, chunk, chunkRect, chunkSize } = context
     // const { erosionSidePoints, channelSidePoints } = cornerMargins
@@ -97,7 +96,7 @@ function buildTypeGrid(landBorders, context) {
         const isLand = chunk.surface.isLand(chunkPoint)
         // Apply margins only on land/water without borders
         if (isLand) return TYPE_LAND
-        else return TYPE_WATER
+        return TYPE_WATER
 
         // set margins of erosion points
         // if (erosionSidePoints.has(chunkPoint)) return TYPE_EROSION_SIDE

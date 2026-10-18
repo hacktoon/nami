@@ -6,15 +6,13 @@
 
 
 ## ROADMAP
-- each tile in basin:
-  - riverMap(PointMap) [tileIndex, flowDir.id] -> river id
-  - stretchMap(PointMap) [tileIndex, flowDir.id] -> river stretch/type
+- river chunk
+  -
 - set biome as {
     temp > x
     rain > 4
   }
 
-- create secondary biomes for chunks (with region grid)
 - conclude wrapGet migration for grids
 
 
@@ -38,12 +36,12 @@
 
 
 ### LandformLayer
-  - type of stretch often make waterfalls or rapids
-  - canyon / volcano / reef
+- type of stretch often make waterfalls or rapids
+- canyon / volcano / reef
 
 
 ### RainLayer
-- Make rain dynamic using noise offset and season `temp.get(point, season)`
+- Make rain dynamic using noise offset and season `temp.set(point, season)`
 
 
 ## INSPIRATIONS
