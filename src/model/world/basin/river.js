@@ -33,7 +33,7 @@ export function buildNameMap(sources) {
 }
 
 
-export function buildPointMap(sources, model, context) {
+export function buildRiverPointMap(sources, model, context) {
     // Start from river source point following the points
     // according to basin flow, storing point and erosion path.
     const { world } = context
@@ -63,8 +63,10 @@ export function buildPointMap(sources, model, context) {
 
 
 export function buildRiverMap(pointMap, context) {
+    // Map a pair of (world point, flow direction) to the riverId
     const { rect } = context
     const riverMap = new DirectionPairMap(rect)
+    // Loop through the river points, set a riverId to each flow in that point
     pointMap.forEach((riverPoints, candidateRiverId) => {
         for (let [point, flow] of riverPoints) {
             let riverId = candidateRiverId  //  set candidateRiverId by default
@@ -83,7 +85,7 @@ export function buildRiverMap(pointMap, context) {
 }
 
 
-export function buildStretchMap(pointMap, model, context) {
+export function buildStretchMap(pointMap, context) {
     /*
     The Strahler stream order algorithm classifies the hierarchical size
     and branching structure of streams and rivers within a drainage basin

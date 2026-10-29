@@ -1,7 +1,7 @@
 import { Point } from '/src/lib/math/point'
-import { Rect } from '/src/lib/math/rect'
 import { PointSet } from '/src/lib/math/point/set'
 import { Direction } from '/src/lib/math/direction'
+import { Rect } from '/src/lib/math/rect'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
@@ -17,17 +17,14 @@ export const TYPE_EROSION_SIDE = 5
 export const TYPE_CHANNEL_SIDE = 6
 
 
-export function buildModel(baseContext) {
-    const gates = buildErosionGatePoints(baseContext)
-    const erosionPoints = buildErosionMask(gates, baseContext)
-    // const landBorders = buildLandBorders(baseContext)
-    // const cornerMargins = buildCornerMargins(baseContext)
-    const typeGrid = buildTypeGrid(baseContext)
-    return {
-        type: typeGrid,
-        erosion: erosionPoints,
-        gates
-    }
+export function buildModel(context) {
+    const gates = buildErosionGatePoints(context)
+    const erosionMask = buildErosionMask(gates, context)
+    const rivers = buildRivers(gates, erosionMask, context)
+    // const landBorders = buildLandBorders(context)
+    // const cornerMargins = buildCornerMargins(context)
+    const type = buildTypeGrid(erosionMask, context)
+    return { type, erosion: erosionMask, gates }
 }
 
 
@@ -77,17 +74,31 @@ function buildLandBorders(context) {
 // }
 
 
-function buildErosionPath(gates, erosionPoints, context) {
+function buildRivers(gates, erosionMask, context) {
+    // reads the direction bitmask data and create points for chunk grid
+    const { world, chunk, chunkRect, worldPoint } = context
+    for (let {source, target, isOutflow} of gates) {
+        if(worldPoint[0] == 24 && worldPoint[1] == 27) {
+            const rivers = world.basin.getRivers(worldPoint)
+            // map direction & point
+            console.log(source, target, rivers)
+        }
+    }
+    return
+}
+
+
+function buildRiver(erosionMask, context) {
     // reads the direction bitmask data and create points for chunk grid
     const { chunk, chunkRect, worldPoint } = context
     for (let {source, target, isOutflow} of gates) {
 
     }
-    return points
+    return
 }
 
 
-function buildTypeGrid(context) {
+function buildTypeGrid(erosionMask, context) {
     // Add channel/river margins to some chunk corner points
     const { world, worldPoint, chunk, chunkRect, chunkSize } = context
     // const { erosionSidePoints, channelSidePoints } = cornerMargins

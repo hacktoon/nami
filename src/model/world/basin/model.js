@@ -7,7 +7,7 @@ import { DirectionBitMaskGrid } from '/src/lib/bitmask'
 import {
     buildRiverSources,
     buildNameMap,
-    buildPointMap,
+    buildRiverPointMap,
     buildRiverMap,
     buildStretchMap,
 } from './river'
@@ -45,14 +45,13 @@ export function buildBasinModel(context) {
     // init grid of basin base information
     const basins = initBasins(context)
     model.type = buildTypeMap(context, basins)
-    model.basin = buildBasinGrid(context, model, basins)
+    model.basin = buildBasinGrid(basins, model, context)
     const riverSources = buildRiverSources(model, context)
-    const pointMap = buildPointMap(riverSources, model, context)
+    const pointMap = buildRiverPointMap(riverSources, model, context)
     // init id grid for later use
-    const riverMap = buildRiverMap(pointMap, context)
+    model.riverMap = buildRiverMap(pointMap, context)
     model.riverNames = buildNameMap(riverSources)
-    model.riverStretchMap = buildStretchMap(pointMap, model, { ...context, riverMap })
-    model.riverMap = riverMap
+    model.riverStretchMap = buildStretchMap(pointMap, context)
     return model
 }
 
@@ -101,7 +100,7 @@ function buildTypeMap(context, basins) {
 }
 
 
-function buildBasinGrid(context, model, basins) {
+function buildBasinGrid(basins, model, context) {
     const { world, rect } = context
     const landFillMap = new Map()
     const waterFillMap = new Map()
@@ -113,7 +112,7 @@ function buildBasinGrid(context, model, basins) {
             waterFillMap.set(basinId, fillData)
         }
     }
-    const basinGrid = Grid.fromRect(rect, point => NO_BASIN_ID)
+    const basinGrid = Grid.fromRect(rect, () => NO_BASIN_ID)
     const fillContext = { ...context, model, basinGrid }
     // Start flood fills from each border, both land && water
     new LandBasinFill(rect, landFillMap, fillContext).complete()
