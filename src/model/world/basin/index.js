@@ -29,7 +29,8 @@ export class BasinLayer {
             directions,
             type: Basin.parse(typeId),
             joint: this.#model.joint.get(point),
-            erosion: Direction.fromId(directionId)
+            erosion: Direction.fromId(directionId),
+            isDivide: directions.length == 1
         }
     }
 
@@ -79,7 +80,7 @@ export class BasinLayer {
     #drawErosionPath(props, basin) {
         const { canvasPoint, tilePoint, tileSize } = props
         const color = basin.type.color.darken(10).toHex()
-        const lineWidth = Math.round(props.tileSize / 12)
+        const lineWidth = Math.round(props.tileSize / 10)
         const chunkSize = this.#chunkRect.width
         // calc midpoint point on canvas
         const pixelsPerChunkPoint = tileSize / chunkSize

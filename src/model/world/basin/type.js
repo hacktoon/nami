@@ -61,7 +61,7 @@ export class Stretch {
 export class HeadwaterStretch extends Stretch {
     static id = 1
     static name = 'Headwater'
-    static width = 3
+    static width = 4
     static color = Color.fromHex('#2893c1')
 }
 

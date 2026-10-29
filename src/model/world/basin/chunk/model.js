@@ -5,7 +5,7 @@ import { Rect } from '/src/lib/math/rect'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
-import { buildErosionGatePoints, buildErosionMask } from './route'
+import { buildErosionGatePoints, buildErosionMask } from './gate'
 import { buildRegionModel } from './region'
 
 

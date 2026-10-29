@@ -99,8 +99,9 @@ export function buildStretchMap(pointMap, context) {
                 const currentStretchId = stretchMap.get(point, flow)
                 if (stretchId < currentStretchId)
                     break  // stop loop if current stretch is higher
-                if (stretchId == currentStretchId) // same stretch, level up current
+                if (stretchId == currentStretchId) {  // same stretch, level up current
                     stretchId += 1
+                }
             }
             stretchMap.set(point, flow, stretchId)
         }
