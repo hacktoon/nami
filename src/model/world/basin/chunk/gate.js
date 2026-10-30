@@ -16,30 +16,30 @@ export function buildErosionGatePoints(baseContext) {
     const basin = world.basin.get(worldPoint)
     const midPoint = buildChunkMidpoint(chunkRect)
     const gates = []
-    for (let gateDirection of basin.directions) {
-        const parentPoint = Point.atDirection(worldPoint, gateDirection)
+    for (let direction of basin.directions) {
+        const parentPoint = Point.atDirection(worldPoint, direction)
         const sideBasin = world.basin.get(parentPoint)
         // get the point on chunk side
         const avgJoint = Math.floor((basin.joint + sideBasin.joint) / 2)
         // create point at chunk edge where it connects to neighbor chunk
-        const gatePoint = gateDirection.axis.map(coord => {
+        const gatePoint = direction.axis.map(coord => {
             if (coord < 0) return 0  // -1 means NORTH or EAST
             if (coord > 0) return chunk.size - 1  // +1 means SOUTH or WEST
             return avgJoint  //  0 means any value at chunk side
         })
         // current gate is same as the basin flow, so route is from midpoint to gate
-        const isOutflow = basin.erosion.id == gateDirection.id
+        const isOutflow = basin.erosion.id == direction.id
         let source = isOutflow ? midPoint : gatePoint
         let target = isOutflow ? gatePoint : midPoint
-        gates.push({source, target, isOutflow})
+        gates.push({source, target, direction, isOutflow})
     }
     return gates
 }
 
 
-export function buildErosionMask(gates, context) {
+export function buildErosionPoints(gates, context) {
     // reads the direction bitmask data and create points for chunk grid
-    const { chunk, chunkRect, worldPoint } = context
+    const { chunkRect } = context
     const points = new PointSet(chunkRect)
     for (let {source, target} of gates) {
         midpointDisplacement(chunkRect, source, target, MEANDER, point => {

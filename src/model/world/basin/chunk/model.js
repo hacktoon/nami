@@ -5,7 +5,7 @@ import { Rect } from '/src/lib/math/rect'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
-import { buildErosionGatePoints, buildErosionMask } from './gate'
+import { buildErosionGatePoints, buildErosionPoints } from './gate'
 import { buildRegionModel } from './region'
 
 
@@ -19,12 +19,12 @@ export const TYPE_CHANNEL_SIDE = 6
 
 export function buildModel(context) {
     const gates = buildErosionGatePoints(context)
-    const erosionMask = buildErosionMask(gates, context)
-    const rivers = buildRivers(gates, erosionMask, context)
+    const erosionPoints = buildErosionPoints(gates, context)
+    const rivers = buildRivers(gates, erosionPoints, context)
     // const landBorders = buildLandBorders(context)
     // const cornerMargins = buildCornerMargins(context)
-    const type = buildTypeGrid(erosionMask, context)
-    return { type, erosion: erosionMask, gates }
+    const type = buildTypeGrid(erosionPoints, context)
+    return { type, erosion: erosionPoints, gates }
 }
 
 
@@ -39,7 +39,7 @@ function buildLandBorders(context) {
         if (chunk.surface.isWater(chunkPoint)) return
         for (let sidePoint of Point.adjacents(chunkPoint)) {
             // check for any water neighbors
-            if (! chunk.surface.isLand(sidePoint)) {
+            if (!chunk.surface.isLand(sidePoint)) {
                 landBorderPoints.add(sidePoint)
                 return
             }
@@ -74,31 +74,73 @@ function buildLandBorders(context) {
 // }
 
 
-function buildRivers(gates, erosionMask, context) {
+function buildRivers(gates, erosionPoints, context) {
     // reads the direction bitmask data and create points for chunk grid
     const { world, chunk, chunkRect, worldPoint } = context
-    for (let {source, target, isOutflow} of gates) {
-        if(worldPoint[0] == 24 && worldPoint[1] == 27) {
-            const rivers = world.basin.getRivers(worldPoint)
-            // map direction & point
-            console.log(source, target, rivers)
+    // map the chunk river gates by direction
+    const gateMap = new Map(gates.map(gate => [gate.direction.id, gate]))
+    if(worldPoint[0] == 37 && worldPoint[1] == 37) {
+        for (let river of world.basin.getRivers(worldPoint)) {
+            const { direction } = river
+            const gate = gateMap.get(direction.id)
+            buildRiverStretch(gate, river, erosionPoints, context)
         }
     }
     return
 }
 
 
-function buildRiver(erosionMask, context) {
+function buildRiverStretch(gate, river, erosionPoints, context) {
     // reads the direction bitmask data and create points for chunk grid
     const { chunk, chunkRect, worldPoint } = context
-    for (let {source, target, isOutflow} of gates) {
-
+    const { source, target, direction, isOutflow } = gate
+    let currentPoint = source
+    let prevPoint = source
+    let maxIter = 1000  // avoid infinite loops
+    while (true || maxIter > 0) {
+        prevPoint = currentPoint
+        currentPoint = getNextPoint(currentPoint, target, erosionPoints)
+        --maxIter
+        console.log(maxIter, direction.name, prevPoint, ' => ', currentPoint, ' => ', target)
+        try {
+            if (Point.equals(currentPoint, target))
+                break
+        } catch (error) {
+            console.log('ERROR', direction.name, currentPoint, target)
+            return
+        }
     }
-    return
 }
 
 
-function buildTypeGrid(erosionMask, context) {
+function getNextPoint(source, target, erosionPoints) {
+    const [sx, sy] = source
+    const [tx, ty] = target
+    const candidates = []
+    const add = (direction) => {
+        const candidate = Point.atDirection(source, direction)
+        // console.log(candidate, source);
+        // console.log('candidate:', candidate, erosionPoints.has(candidate))
+        const notReached = Point.differs(candidate, target)
+        const insideErosionPath = erosionPoints.has(candidate)
+        if (insideErosionPath && notReached) {
+            candidates.push(candidate)
+        }
+    }
+    if (sx < tx) add(Direction.EAST)
+    if (sx > tx) add(Direction.WEST)
+    if (sy < ty) add(Direction.SOUTH)
+    if (sy > ty) add(Direction.NORTH)
+    if (sx < tx && sy < ty) add(Direction.SOUTHEAST)
+    if (sx > tx && sy < ty) add(Direction.SOUTHWEST)
+    if (sx < tx && sy > ty) add(Direction.NORTHEAST)
+    if (sx > tx && sy > ty) add(Direction.NORTHWEST)
+    return Random.choiceFrom(candidates)
+}
+
+
+
+function buildTypeGrid(erosionPoints, context) {
     // Add channel/river margins to some chunk corner points
     const { world, worldPoint, chunk, chunkRect, chunkSize } = context
     // const { erosionSidePoints, channelSidePoints } = cornerMargins
@@ -129,48 +171,6 @@ function buildTypeGrid(erosionMask, context) {
 }
 
 
-// function setHalfPath(source, target, pointMap, route, context) {
-//     const { direction, isOutflow } = route
-//     let currentPoint = source
-//     let prevPoint = source
-//     let maxIter = 100  // avoid infinite loops
-//     while (Point.differs(currentPoint, target) && maxIter > 0) {
-//         pointMap.set(currentPoint, TYPE_EROSION)
-//         prevPoint = currentPoint
-//         currentPoint = getNextPoint(prevPoint, currentPoint, target, pointMap, context)
-//         if (pointMap.has(currentPoint) && !isOutflow) {
-//             return
-//         }
-//         maxIter--
-//     }
-//     pointMap.set(currentPoint, TYPE_EROSION)
-// }
-
-
-// function getNextPoint(prevPoint, currentPoint, target, pointMap, context) {
-//     const { chunkRect } = context
-//     const [sx, sy] = currentPoint
-//     const [tx, ty] = target
-//     const candidates = []
-//     const add = (dir) => {
-//         // avoid adding points on edges
-//         const candidate = Point.atDirection(currentPoint, dir)
-//         if (Point.differs(candidate, target) && chunkRect.isEdge(candidate)) {
-//             // avoid electing a point in edge, except for the target
-//             return
-//         }
-//         candidates.push(candidate)
-//     }
-//     if (sx < tx) add(Direction.EAST)
-//     if (sx > tx) add(Direction.WEST)
-//     if (sy < ty) add(Direction.SOUTH)
-//     if (sy > ty) add(Direction.NORTH)
-//     if (sx < tx && sy < ty) add(Direction.SOUTHEAST)
-//     if (sx > tx && sy < ty) add(Direction.SOUTHWEST)
-//     if (sx < tx && sy > ty) add(Direction.NORTHEAST)
-//     if (sx > tx && sy > ty) add(Direction.NORTHWEST)
-//     return Random.choiceFrom(candidates)
-// }
 
 // function buildNoiseMaskGrid(context) {
 //     const { world, worldPoint, rect, chunkRect } = context
