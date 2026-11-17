@@ -1,12 +1,12 @@
 import { Point } from '/src/lib/math/point'
 import { PointSet } from '/src/lib/math/point/set'
 import { Direction } from '/src/lib/math/direction'
-import { Rect } from '/src/lib/math/rect'
 import { Random } from '/src/lib/random'
 import { Grid } from '/src/lib/grid'
 
-import { buildErosionGatePoints, buildErosionPoints } from './gate'
-import { buildRegionModel } from './region'
+import { buildErosionGatePoints, buildErosionPoints } from './erosion'
+// import { buildRegionModel } from './region'
+import { buildRivers } from './fill'
 
 
 export const TYPE_LAND = 1
@@ -20,7 +20,7 @@ export const TYPE_CHANNEL_SIDE = 6
 export function buildModel(context) {
     const gates = buildErosionGatePoints(context)
     const erosionPoints = buildErosionPoints(gates, context)
-    const rivers = buildRivers(gates, erosionPoints, context)
+    const rivers = buildRivers(gates, context)
     // const landBorders = buildLandBorders(context)
     // const cornerMargins = buildCornerMargins(context)
     const type = buildTypeGrid(erosionPoints, context)
@@ -74,21 +74,6 @@ function buildLandBorders(context) {
 // }
 
 
-function buildRivers(gates, erosionPoints, context) {
-    // reads the direction bitmask data and create points for chunk grid
-    const { world, chunk, chunkRect, worldPoint } = context
-    // map the chunk river gates by direction
-    const gateMap = new Map(gates.map(gate => [gate.direction.id, gate]))
-    if(worldPoint[0] == 37 && worldPoint[1] == 37) {
-        for (let river of world.basin.getRivers(worldPoint)) {
-            const { direction } = river
-            const gate = gateMap.get(direction.id)
-            buildRiverStretch(gate, river, erosionPoints, context)
-        }
-    }
-    return
-}
-
 
 function buildRiverStretch(gate, river, erosionPoints, context) {
     // reads the direction bitmask data and create points for chunk grid
@@ -123,7 +108,7 @@ function getNextPoint(source, target, erosionPoints) {
         // console.log('candidate:', candidate, erosionPoints.has(candidate))
         const notReached = Point.differs(candidate, target)
         const insideErosionPath = erosionPoints.has(candidate)
-        if (insideErosionPath && notReached) {
+        if (notReached) {
             candidates.push(candidate)
         }
     }

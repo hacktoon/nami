@@ -32,9 +32,6 @@ export function midpointDisplacement(rect, source, target, variance, callback) {
         // get midpoint
         const mx = (x1 + x2) / 2
         const my = (y1 + y2) / 2
-        const fx = Math.floor(mx + px)
-        const fy = Math.floor(my + py)
-
         // limit the range
         const x = clamp(Math.floor(mx + px), 1, rect.width - 2)
         const y = clamp(Math.floor(my + py), 1, rect.height - 2)
