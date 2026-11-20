@@ -31,7 +31,7 @@ function fillRiver(gate, river, context) {
     const { chunk, chunkRect, worldPoint } = context
     const { source, target, direction, isOutflow } = gate
     const fillContext = { ...context, gate }
-    console.log(river.direction.name, source, target, isOutflow)
+    // console.log(river.direction.name, source, target, isOutflow)
     new RiverFill(source, fillContext).complete()
 }
 

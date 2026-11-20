@@ -20,7 +20,7 @@ export const TYPE_CHANNEL_SIDE = 6
 export function buildModel(context) {
     const gates = buildErosionGatePoints(context)
     const erosionPoints = buildErosionPoints(gates, context)
-    const rivers = buildRivers(gates, context)
+    // const rivers = buildRivers(gates, context)
     // const landBorders = buildLandBorders(context)
     // const cornerMargins = buildCornerMargins(context)
     const type = buildTypeGrid(erosionPoints, context)
