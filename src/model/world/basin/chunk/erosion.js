@@ -99,12 +99,7 @@ function getNextPoint(source, target, erosionPoints) {
     const candidates = []
     const add = (direction) => {
         const candidate = Point.atDirection(source, direction)
-        // console.log(candidate, source);
-        // console.log('candidate:', candidate, erosionPoints.has(candidate))
-
-        if (1) {
-            candidates.push(candidate)
-        }
+        candidates.push(candidate)
     }
     if (sx < tx) add(Direction.EAST)
     if (sx > tx) add(Direction.WEST)
