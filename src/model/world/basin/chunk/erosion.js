@@ -53,15 +53,20 @@ export function _buildErosionPoints(gates, context) {
 
 export function buildErosionPoints(gates, context) {
     // reads the direction bitmask data and create points for chunk grid
-    const { chunkRect } = context
+    const { world, chunkRect, worldPoint } = context
+    const gateMap = new Map(gates.map(gate => [gate.direction.id, gate]))
     const points = new PointSet(chunkRect)
-    for (let gate of gates) {
+    for (let river of world.basin.getRivers(worldPoint)) {
+        const gate = gateMap.get(river.direction.id)
         buildPoints(points, gate, context)
     }
+    // if (worldPoint[0] == 37 && worldPoint[1] == 37) {
+
+    // }
     return points
 }
 
-//  TODO:
+
 function buildPoints(erosionPoints, gate, context) {
     // reads the direction bitmask data and create points for chunk grid
     const { chunk, chunkRect, worldPoint } = context
@@ -69,16 +74,15 @@ function buildPoints(erosionPoints, gate, context) {
     let currentPoint = source
     let prevPoint = source
     let maxIter = 1000  // avoid infinite loops
-    if (worldPoint[0] != 37 && worldPoint[1] != 37) {
-        return
-    }
     while (true || maxIter > 0) {
         prevPoint = currentPoint
+        erosionPoints.add(currentPoint)
         currentPoint = getNextPoint(currentPoint, target, erosionPoints)
         --maxIter
         // console.log(maxIter, direction.name, prevPoint, ' => ', currentPoint, ' => ', target)
         try {
             if (Point.equals(currentPoint, target)) {
+                erosionPoints.add(currentPoint)
                 break
             }
         } catch (error) {
