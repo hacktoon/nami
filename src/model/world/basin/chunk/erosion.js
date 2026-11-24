@@ -1,13 +1,12 @@
 import { midpointDisplacement } from '/src/lib/fractal/midpointdisplacement'
 import { Random } from '/src/lib/random'
 import { Point } from '/src/lib/math/point'
-import { Direction } from '/src/lib/math/direction'
+
 import { PointSet } from '/src/lib/math/point/set'
 
 
 const MIDDLE_OFFSET = 1  // used to avoid midpoints on middle
 const MIDPOINT_RATE = .4  // random point in 40% of chunkrect area around center point
-const MEANDER = 5
 
 
 export function buildErosionGatePoints(baseContext) {
@@ -38,81 +37,18 @@ export function buildErosionGatePoints(baseContext) {
 }
 
 
-export function _buildErosionPoints(gates, context) {
+export function buildErosionPoints(gates, context) {
     // reads the direction bitmask data and create points for chunk grid
-    const { chunkRect } = context
+    const { chunkSize, chunkRect } = context
     const points = new PointSet(chunkRect)
     for (let {source, target} of gates) {
-        midpointDisplacement(chunkRect, source, target, MEANDER, point => {
+        const meander = chunkSize / 2
+        midpointDisplacement(chunkRect, source, target, meander, point => {
             points.add(point)
         })
     }
     return points
 }
-
-
-export function buildErosionPoints(gates, context) {
-    // reads the direction bitmask data and create points for chunk grid
-    const { world, chunkRect, worldPoint } = context
-    const gateMap = new Map(gates.map(gate => [gate.direction.id, gate]))
-    const points = new PointSet(chunkRect)
-    for (let river of world.basin.getRivers(worldPoint)) {
-        const gate = gateMap.get(river.direction.id)
-        buildPoints(points, gate, context)
-    }
-    // if (worldPoint[0] == 37 && worldPoint[1] == 37) {
-
-    // }
-    return points
-}
-
-
-function buildPoints(erosionPoints, gate, context) {
-    // reads the direction bitmask data and create points for chunk grid
-    const { chunk, chunkRect, worldPoint } = context
-    const { source, target, direction, isOutflow } = gate
-    let currentPoint = source
-    let prevPoint = source
-    let maxIter = 1000  // avoid infinite loops
-    while (true || maxIter > 0) {
-        prevPoint = currentPoint
-        erosionPoints.add(currentPoint)
-        currentPoint = getNextPoint(currentPoint, target, erosionPoints)
-        --maxIter
-        // console.log(maxIter, direction.name, prevPoint, ' => ', currentPoint, ' => ', target)
-        try {
-            if (Point.equals(currentPoint, target)) {
-                erosionPoints.add(currentPoint)
-                break
-            }
-        } catch (error) {
-            console.log('ERROR', direction.name, currentPoint, target)
-            return
-        }
-    }
-}
-
-
-function getNextPoint(source, target, erosionPoints) {
-    const [sx, sy] = source
-    const [tx, ty] = target
-    const candidates = []
-    const add = (direction) => {
-        const candidate = Point.atDirection(source, direction)
-        candidates.push(candidate)
-    }
-    if (sx < tx) add(Direction.EAST)
-    if (sx > tx) add(Direction.WEST)
-    if (sy < ty) add(Direction.SOUTH)
-    if (sy > ty) add(Direction.NORTH)
-    if (sx < tx && sy < ty) add(Direction.SOUTHEAST)
-    if (sx > tx && sy < ty) add(Direction.SOUTHWEST)
-    if (sx < tx && sy > ty) add(Direction.NORTHEAST)
-    if (sx > tx && sy > ty) add(Direction.NORTHWEST)
-    return Random.choiceFrom(candidates)
-}
-
-
 
 
 function buildChunkMidpoint(chunkRect) {
@@ -129,5 +65,3 @@ function buildChunkMidpoint(chunkRect) {
     const y = centerIndex + (randY != 0 ? randY : midRandY)
     return [x, y]
 }
-
-

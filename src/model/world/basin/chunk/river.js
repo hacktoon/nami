@@ -27,6 +27,77 @@ export function buildRiverGrid(context) {
 
 
 
+export function buildRiverPoints(gates, context) {
+    // reads the direction bitmask data and create points for chunk grid
+    const { world, chunkRect, worldPoint } = context
+    const gateMap = new Map(gates.map(gate => [gate.direction.id, gate]))
+    const points = new PointSet(chunkRect)
+    for (let river of world.basin.getRivers(worldPoint)) {
+        const gate = gateMap.get(river.direction.id)
+        buildPoints(points, gate, context)
+    }
+    // if (worldPoint[0] == 37 && worldPoint[1] == 37) {
+
+    // }
+    return points
+}
+
+
+function buildPoints(erosionPoints, gate, baseContext) {
+    // reads the direction bitmask data and create points for chunk grid
+    const { source, target, direction, isOutflow } = gate
+    let currentPoint = source
+    let prevPoint = source
+    const context = {...baseContext, erosionPoints}
+    let maxIter = 1000  // avoid infinite loops
+    while (true || maxIter > 0) {
+        prevPoint = currentPoint
+        erosionPoints.add(currentPoint)
+        currentPoint = getNextPoint(currentPoint, target, context)
+        --maxIter
+        // console.log(maxIter, direction.name, prevPoint, ' => ', currentPoint, ' => ', target)
+        try {
+            if (Point.equals(currentPoint, target)) {
+                erosionPoints.add(currentPoint)
+                break
+            }
+        } catch (error) {
+            console.log('ERROR', direction.name, currentPoint, target)
+            return
+        }
+    }
+}
+
+
+function getNextPoint(source, target, context) {
+    const { chunk, chunkRect, worldPoint } = context
+    const { erosionPoints } = context
+    const [sx, sy] = source
+    const [tx, ty] = target
+    const candidates = []
+    const add = (direction) => {
+        const candidate = Point.atDirection(source, direction)
+        const isEdge = chunkRect.isEdge(candidate)
+        const isCorner = chunkRect.isCorner(candidate)
+        const isTarget = Point.equals(candidate, target)
+        if (isTarget || ! isEdge )
+            candidates.push(candidate)
+    }
+    if (sx < tx) add(Direction.EAST)
+    if (sx > tx) add(Direction.WEST)
+    if (sy < ty) add(Direction.SOUTH)
+    if (sy > ty) add(Direction.NORTH)
+    if (sx < tx && sy < ty) add(Direction.SOUTHEAST)
+    if (sx > tx && sy < ty) add(Direction.SOUTHWEST)
+    if (sx < tx && sy > ty) add(Direction.NORTHEAST)
+    if (sx > tx && sy > ty) add(Direction.NORTHWEST)
+    return Random.choiceFrom(candidates)
+}
+
+
+
+
+
 
 // function generateFlowPath(context, source, target, direction) {
 //     const {chunkRect, pointMaskMap} = context
